@@ -1,4 +1,4 @@
-# dominoswiss Binding
+# Dominoswiss Binding
 
 This binding allows the controll of rollershutters, using an egate as gateway and dominoswiss radio receivers. The egate-gateway is connectet via ethernet to openhab and sends it's commands via radio to all rollershutters. See https://www.brelag.com/ for more information.
 
@@ -49,15 +49,15 @@ Thing blind officeBlind "Office" @ "1stFloor" [ id="1"]
 The blind-Thing has the following channels:
 | Channel Type ID  | Item Type | Description                                                                                       |   |   |
 |------------------|-----------|---------------------------------------------------------------------------------------------------|---|---|
-| pulseup            |Blind      |sends one pulse up to this blind.|
-| pulsedown          |Blind      |sends one pulse down to this blind|
-| continuousup       |Blind      |sends a continuous up to this blind. The blind will automatically stop as it is fully up.|
-|continuousdown      |Blind      | send a continous down to this blind. The blind will automatically stop as it is fully down.|
+| pulseUp            |Blind      |sends one pulse up to this blind.|
+| pulseDown          |Blind      |sends one pulse down to this blind|
+| continuousUp       |Blind      |sends a continuous up to this blind. The blind will automatically stop as it is fully up.|
+|continuousDown      |Blind      | send a continous down to this blind. The blind will automatically stop as it is fully down.|
 | stop               |Blind      | stop the action of the blind. The command will be imadiatly sent to the blind.|
 | shutter            |Blind      |this is used to bind the channel to the shutter item. There are no further rules needed this channel will handel the up/down/stop commands. See example for usage.|
 | tilt               |Blind      | same as shutter, this will handel all up/down/stop - tilt commands to be used with the shutter-item.| 
-| tiltup             |Blind      | sends 3 pulse-up commands to this blind to tilt the blind. If your blind needs more than 3 pulse-up, create a rule yourself with three pluse-up commands. Between each pulse-up you should wait 150ms to let the command be processed. 
-| tiltdown           |Blind      |sends 3 pulse-down commands to this blind to tilt the blind. If your blind needs more than 3 pulse-down, create a rule yourself with three pluse-down commands. Between each pulse-down you should wait 150ms to let the command be processed. |
+| tiltUp             |Blind      | sends 3 pulse-up commands to this blind to tilt the blind. If your blind needs more than 3 pulse-up, create a rule yourself with three pluse-up commands. Between each pulse-up you should wait 150ms to let the command be processed. 
+| tiltDown           |Blind      |sends 3 pulse-down commands to this blind to tilt the blind. If your blind needs more than 3 pulse-down, create a rule yourself with three pluse-down commands. Between each pulse-down you should wait 150ms to let the command be processed. |
 
 ## Full Example
 

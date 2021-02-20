@@ -29,15 +29,15 @@
 		<label>Blinds controlled by Dominoswiss</label>
 		<description>Provides various controlcommands for Dominoswiss receivers</description>
 		<channels>
-			<channel id="pulseup" typeId="pulseup"/>
-			<channel id="pulsedown" typeId="pulsedown"/>
-			<channel id="continuousup" typeId="continuousup"/>
-			<channel id="continuousdown" typeId="continuousdown"/>
+			<channel id="pulseUp" typeId="pulseUp"/>
+			<channel id="pulseDown" typeId="pulseDown"/>
+			<channel id="continuousUp" typeId="continuousUp"/>
+			<channel id="continuousDown" typeId="continuousDown"/>
 			<channel id="stop" typeId="stop"/>
 			<channel id="shutter" typeId="shutter"/>
 			<channel id="tilt" typeId="tilt"/>
-			<channel id="tiltup" typeId="tiltup"/>
-			<channel id="tiltdown" typeId="tiltdown"/>
+			<channel id="tiltUp" typeId="tiltUp"/>
+			<channel id="tiltDown" typeId="tiltDown"/>
 		</channels>
 		<properties>
 			<property name="vendor">Dominoswiss</property>
@@ -53,73 +53,73 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="pulseup">
+	<channel-type id="pulseUp">
 		<item-type>Number</item-type>
-		<label>PulseUp</label>
+		<label>Pulse Up</label>
 		<description>Send one pulse up</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pulsedown">
+	<channel-type id="pulseDown">
 		<item-type>Number</item-type>
-		<label>PulseDown</label>
+		<label>Pulse Down</label>
 		<description>Send one pulse down</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="continuousup">
+	<channel-type id="continuousUp">
 		<item-type>Number</item-type>
-		<label>ContinuousUp</label>
-		<description>Send Continuous Up command to blind</description>
+		<label>Continuous Up</label>
+		<description>Send continuous up command to blind</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="continuousdown">
+	<channel-type id="continuousDown">
 		<item-type>Number</item-type>
-		<label>ContinousDown</label>
-		<description>Send Continuous Down command to blind</description>
+		<label>Continous Down</label>
+		<description>Send continuous down command to blind</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="stop">
 		<item-type>Number</item-type>
 		<label>Stop</label>
-		<description>Send Stop impulse to stop the blinds</description>
+		<description>Send stop impulse to stop the blinds</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="shutter">
 		<item-type>UpDownType</item-type>
 		<label>shutter</label>
-		<description>handle the commands up/down/stop </description>
+		<description>Handle the commands up/down/stop </description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tilt">
 		<item-type>UpDownType</item-type>
 		<label>shutter</label>
-		<description>handle the commands tiltup/tiltdown/stop </description>
+		<description>Handle the commands tiltUp/tiltDown/stop </description>
 		<state readOnly="true"/>
 	</channel-type>
 
 
-	<channel-type id="tiltup">
+	<channel-type id="tiltUp">
 		<item-type>Number</item-type>
-		<label>TiltUp</label>
-		<description>handle the command for 3 tilts up </description>
+		<label>Tilt Up</label>
+		<description>Handle the command for 3 tilts up </description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tiltdown">
+	<channel-type id="tiltDown">
 		<item-type>Number</item-type>
-		<label>TiltDown</label>
-		<description>handle the command for 3 tilts down </description>
+		<label>Tilt Down</label>
+		<description>Handle the command for 3 tilts down </description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="getconfig">
+	<channel-type id="getConfig">
 		<item-type>Number</item-type>
-		<label>getconfig</label>
+		<label>get Config</label>
 		<description>getconfig of egate server </description>
 		<state readOnly="true"/>
 	</channel-type>

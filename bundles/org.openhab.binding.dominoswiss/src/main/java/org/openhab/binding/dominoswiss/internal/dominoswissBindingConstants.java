@@ -39,11 +39,11 @@ public class dominoswissBindingConstants {
     public static final String UP = "UP";
     public static final String DOWN = "DOWN";
     public static final String SHUTTER = "shutter";
-    public static final String TILTUP = "tiltup";
+    public static final String TILTUP = "tiltUp";
     public static final String TILTDOWN = "tiltDown";
     public static final String TILT = "tilt";
 
-    public static final String GETCONFIG = "getconfig";
+    public static final String GETCONFIG = "getConfig";
 
     public static final String CR = "\r";
 }

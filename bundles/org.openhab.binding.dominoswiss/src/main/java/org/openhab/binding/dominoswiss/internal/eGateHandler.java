@@ -110,45 +110,33 @@ public class eGateHandler extends BaseBridgeHandler {
                         egateSocket.close();
                         updateStatus(ThingStatus.OFFLINE);
                     } catch (IOException e1) {
-                        if (logger.isErrorEnabled()) {
-                            logger.error("EGate Socket not closed {}", e1.toString());
-                        }
+                        logger.warn("EGate Socket not closed {}", e1.toString());
                     }
                     egateSocket = null;
                 } catch (SocketException e) {
-                    if (logger.isErrorEnabled()) {
-                        logger.error("{}", e.getLocalizedMessage());
-                    }
+                    logger.warn("{}", e.getLocalizedMessage());
                     try {
                         egateSocket.close();
                         updateStatus(ThingStatus.OFFLINE);
                     } catch (IOException e1) {
-                        if (logger.isErrorEnabled()) {
-                            logger.error("EGate Socket not closed {}", e1.toString());
-                        }
+                        logger.warn("EGate Socket not closed {}", e1.toString());
                     }
                     egateSocket = null;
                 } catch (Exception e) {
-                    if (logger.isErrorEnabled()) {
-                        logger.error(
-                                "Error while establishing connection to Dominoswiss eGate Server with Port: {} and IP: {} Error: {}",
-                                port, host, e.toString());
-                    }
+                    logger.error(
+                            "Error while establishing connection to Dominoswiss eGate Server with Port: {} and IP: {} Error: {}",
+                            port, host, e.toString());
                     updateStatus(ThingStatus.OFFLINE);
                 }
                 if (egateSocket != null) {
                     updateStatus(ThingStatus.ONLINE);
                 }
                 startAutomaticRefresh();
-                if (logger.isDebugEnabled()) {
-                    logger.debug("EGate Handler connected and online, Status {} ",
-                            this.getThing().getStatus().toString());
-                }
+                logger.debug("EGate Handler connected and online, Status {} ", this.getThing().getStatus().toString());
+
             }
         } else {
-            if (logger.isErrorEnabled()) {
-                logger.error("Invalid IP address for dominoswiss eGate or wrong port : '{}'/'{}'", host, port);
-            }
+            logger.warn("Invalid IP address for dominoswiss eGate or wrong port : '{}'/'{}'", host, port);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to dominoswiss eGate gateway. host IP address or port are not set.");
         }
@@ -162,10 +150,7 @@ public class eGateHandler extends BaseBridgeHandler {
             refreshJob.cancel(true);
             logger.debug("EGate Handler connection closed, disposing");
         } catch (IOException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("EGate Handler Error on dispose: {} ", e.toString());
-            }
-
+            logger.error("EGate Handler Error on dispose: {} ", e.toString());
         }
     }
 
@@ -192,11 +177,9 @@ public class eGateHandler extends BaseBridgeHandler {
         for (int i = 0; i < 3; i++) {
             pulseUp(id);
             try {
-                Thread.sleep(150); // sleep to not confues the blinds
+                Thread.sleep(150); // sleep to not confuse the blinds
             } catch (InterruptedException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("EGate tipUp error: {}", e.toString());
-                }
+                logger.error("EGate tiltUp error: {}", e.toString());
             }
         }
     }
@@ -205,11 +188,9 @@ public class eGateHandler extends BaseBridgeHandler {
         for (int i = 0; i < 3; i++) {
             pulseDown(id);
             try {
-                Thread.sleep(150);// sleep to not confues the blinds
+                Thread.sleep(150);// sleep to not confuse the blinds
             } catch (InterruptedException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("EGate tipdown error: {} ", e.toString());
-                }
+                logger.error("EGate tiltDown error: {} ", e.toString());
             }
         }
     }
@@ -270,21 +251,6 @@ public class eGateHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             logger.error("Error while sending command {} to Dominoswiss eGate Server {} ", command, e.toString());
         }
-        /*
-         * try {
-         * BufferedReader reader = new BufferedReader(new InputStreamReader(egateSocket.getInputStream()));
-         * logger.debug("Socket State: " + egateSocket.isConnected() + " to: " + egateSocket.toString());
-         * egateSocket.setSoTimeout(SOCKET_TIMEOUT);
-         * while (!reader.ready()) {
-         *
-         * }
-         * String input = reader.readLine();
-         * logger.debug("Reader got from EGATE: {}", input);
-         *
-         * } catch (IOException e) {
-         * logger.error("Error while reading command {} from Dominoswiss eGate Server {} ", command, e.toString());
-         * }
-         */
     }
 
     private void startAutomaticRefresh() {
@@ -296,9 +262,7 @@ public class eGateHandler extends BaseBridgeHandler {
                     if (reader == null) {
                         reader = new BufferedReader(new InputStreamReader(egateSocket.getInputStream()));
                     }
-
-                    // logger.debug("Socket State: " + egateSocket.isConnected() + " to: " + egateSocket.toString());
-                    // egateSocket.setSoTimeout(SOCKET_TIMEOUT);
+                    logger.debug("Socket State: {} to: {}", egateSocket.isConnected(), egateSocket.toString());
                     if (reader.ready()) {
                         String input = reader.readLine();
                         logger.debug("Reader got from EGATE: {}", input);
