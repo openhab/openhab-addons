@@ -96,15 +96,37 @@
 				"channel": "led",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "SetLedState",
+						"parameterType": "NUMBER"
+					}
+				]
 			},
 			{
 				"property": "TipSound_State",
 				"friendlyName": "TipSound State",
 				"channel": "sound",
-				"type": "String",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "No TipSound"
+						},
+						{
+							"value": "1",
+							"label": "No TipSound"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "SetTipSound_Status",
+						"parameterType": "NUMBER"
+					}
+				]
 			},
 			{
 				"property": "wet_and_protect",

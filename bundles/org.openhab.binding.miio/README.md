@@ -621,7 +621,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
 | led                  | Number               | LED                                      |            |
-| sound                | String               | TipSound State                           |            |
+| sound                | Number               | TipSound State                           |            |
 | wet_and_protect      | Number               | Wet and Protect                          |            |
 | watertankstatus      | String               | Watertank Status                         |            |
 
@@ -634,7 +634,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
 | led                  | Number               | LED                                      |            |
-| sound                | String               | TipSound State                           |            |
+| sound                | Number               | TipSound State                           |            |
 | wet_and_protect      | Number               | Wet and Protect                          |            |
 | watertankstatus      | String               | Watertank Status                         |            |
 
@@ -647,7 +647,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
 | led                  | Number               | LED                                      |            |
-| sound                | String               | TipSound State                           |            |
+| sound                | Number               | TipSound State                           |            |
 | wet_and_protect      | Number               | Wet and Protect                          |            |
 | watertankstatus      | String               | Watertank Status                         |            |
 
@@ -4762,7 +4762,7 @@ Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
 Number led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
-String sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
 Number wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
 String watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
@@ -4778,7 +4778,7 @@ Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
 Number led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
-String sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
 Number wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
 String watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
@@ -4794,7 +4794,7 @@ Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
 Number led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
-String sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
 Number wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
 String watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
