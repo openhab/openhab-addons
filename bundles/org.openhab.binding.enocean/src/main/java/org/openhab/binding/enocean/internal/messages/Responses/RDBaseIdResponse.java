@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages;
+package org.openhab.binding.enocean.internal.messages.Responses;
 
 import org.openhab.binding.enocean.internal.Helper;
+import org.openhab.binding.enocean.internal.messages.Response;
 
 /**
  *
