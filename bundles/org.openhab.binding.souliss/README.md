@@ -343,8 +343,3 @@ Spanish Group, [here] (https://groups.google.com/forum/#!forum/souliss-es)
 ## Contribution
 
 Official repository for contributing to the Souliss project, GitHub page: [here](https://github.com/souliss)
-
-
-## Download 
-
-To download latest compiled binding go to releases tab: [here](https://github.com/souliss/bindingopenhab2/releases)
