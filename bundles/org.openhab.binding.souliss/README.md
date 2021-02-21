@@ -342,7 +342,7 @@ Spanish Group, [here] (https://groups.google.com/forum/#!forum/souliss-es)
 
 ## Contribution
 
-Officiale repository for contribution in souliss github area: [here](https://github.com/souliss)
+Official repository for contributing to the Souliss project, GitHub page: [here](https://github.com/souliss)
 
 
 ## Download 
