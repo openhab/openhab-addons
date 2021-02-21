@@ -118,12 +118,12 @@
 				"property": "wet_and_protect",
 				"friendlyName": "Wet and Protect",
 				"channel": "wet_and_protect",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "Set_wet_and_protect",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
