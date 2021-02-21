@@ -6,9 +6,14 @@ Souliss is an open-source and community driven project, you can use the [wiki](h
 
 ## Prerequisites
 
-The binding requires a deployed network.  As a minimum, you need one Souliss node with Ethernet or WiFi access configured as a [Gateway](https://github.com/souliss/souliss/wiki/Gateway). A Gateway is a special node that is able to communicate with the user interfaces. The binding interacts as a user interface for Souliss.
+The binding requires a deployed network.
+As a minimum, you need one Souliss node with Ethernet or WiFi access configured as a [Gateway](https://github.com/souliss/souliss/wiki/Gateway).
+A Gateway is a special node that is able to communicate with the user interfaces.
+The binding interacts as a user interface for Souliss.
 
-A starting point is the [Souliss wiki](https://github.com/souliss/souliss/wiki). The best is to start with a single node and connect with SoulissApp. The code for networking activities of this binding is based on [SoulissApp](https://github.com/souliss/souliss/wiki/SoulissApp) code, so once connected with SoulissApp, you can move to openHAB directly.
+A starting point is the [Souliss wiki](https://github.com/souliss/souliss/wiki).
+The best is to start with a single node and connect with SoulissApp.
+The code for networking activities of this binding is based on [SoulissApp](https://github.com/souliss/souliss/wiki/SoulissApp) code, so once connected with SoulissApp, you can move to openHAB directly.
 
 You can use SoulissApp and the Souliss binding at the same time, and generally up to five (by default, but can be increased) user interfaces simultaneously.
 
@@ -23,7 +28,8 @@ This binding does not require any special configuration.
 
 ## Discovery
 
-This binding can automatically discover devices. First Gateway Node, then Peer Nodes. 
+This binding can automatically discover devices. 
+First Gateway Node, then Peer Nodes. 
 
 ## Supported Things
 
@@ -151,7 +157,8 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 ## Manual Things Configuration
 
 If after discovery your thing is not listed you can add it manually.
-You have to choice it from disponible items. Firts gateway, after items!
+You have to choice it from disponible items. 
+Firts gateway, after items!
 To configure Gateway you can leave default value on Thing ID and write your value on "IP or Host Name" and "Gateway port".
 
 To configure a typical (items) you have to choice your "Name" and "Location", you have to choice your "Gateway" and insert correct "Thing ID".
