@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.airq.internal;
 
-import static org.openhab.binding.airq.internal.airqBindingConstants.THING_TYPE_AIRQ;
+import static org.openhab.binding.airq.internal.AirqBindingConstants.THING_TYPE_AIRQ;
 
 import java.util.Collections;
 import java.util.Set;
@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.airq", service = ThingHandlerFactory.class)
-public class airqHandlerFactory extends BaseThingHandlerFactory {
+public class AirqHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(airqHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(AirqHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AIRQ);
 
@@ -64,7 +64,6 @@ public class airqHandlerFactory extends BaseThingHandlerFactory {
                 "air-Q - airqHandlerFactory - createThing: start with thingTypeUID={}, configuration={}, thingUID={}, bridgeUID={}",
                 thingTypeUID, configuration, thingUID, bridgeUID);
         Thing th = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
-        logger.trace("air-Q - airqHandlerFactory - createThing: result Thing={}", th);
         return th;
     }
 }

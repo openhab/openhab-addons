@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Aurelio Caliaro - Initial contribution
  */
 @NonNullByDefault
-public class airqBindingConstants {
+public class AirqBindingConstants {
     private static final String BINDING_ID = "airq";
     public static final ThingTypeUID THING_TYPE_AIRQ = new ThingTypeUID(BINDING_ID, "airq");
 }

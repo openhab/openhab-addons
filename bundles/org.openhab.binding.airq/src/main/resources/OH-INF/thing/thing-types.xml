@@ -48,23 +48,23 @@
 
 			<!-- Maximum error -->
 			<!-- <channel id="bat_maxerr" typeId="bat_maxerr"/> For future use -->
-			<channel id="cnt0_3_maxerr" typeId="cnt0_3_maxerr"/>
-			<channel id="cnt0_5_maxerr" typeId="cnt0_5_maxerr"/>
-			<channel id="cnt1_maxerr" typeId="cnt1_maxerr"/>
-			<channel id="cnt2_5_maxerr" typeId="cnt2_5_maxerr"/>
-			<channel id="cnt5_maxerr" typeId="cnt5_maxerr"/>
-			<channel id="cnt10_maxerr" typeId="cnt10_maxerr"/>
+			<channel id="fineDustCnt00_3_maxerr" typeId="cnt0_3_maxerr"/>
+			<channel id="fineDustCnt00_5_maxerr" typeId="cnt0_5_maxerr"/>
+			<channel id="fineDustCnt01_maxerr" typeId="cnt1_maxerr"/>
+			<channel id="fineDustCnt02_5_maxerr" typeId="cnt2_5_maxerr"/>
+			<channel id="fineDustCnt05_maxerr" typeId="cnt5_maxerr"/>
+			<channel id="fineDustCnt10_maxerr" typeId="cnt10_maxerr"/>
 			<channel id="co_maxerr" typeId="co_maxerr"/>
 			<channel id="co2_maxerr" typeId="co2_maxerr"/>
 			<channel id="dewpt_maxerr" typeId="dewpt_maxerr"/>
-			<channel id="humidity_maxerr" typeId="humidity_maxerr"/>
-			<channel id="humidity_abs_maxerr" typeId="humidity_abs_maxerr"/>
+			<channel id="humidityRelative_maxerr" typeId="humidity_maxerr"/>
+			<channel id="humidityAbsolute_maxerr" typeId="humidity_abs_maxerr"/>
 			<channel id="no2_maxerr" typeId="no2_maxerr"/>
 			<channel id="o3_maxerr" typeId="o3_maxerr"/>
-			<channel id="oxygen_maxerr" typeId="oxygen_maxerr"/>
-			<channel id="pm1_maxerr" typeId="pm1_maxerr"/>
-			<channel id="pm10_maxerr" typeId="pm10_maxerr"/>
-			<channel id="pm2_5_maxerr" typeId="pm2_5_maxerr"/>
+			<channel id="o2_maxerr" typeId="oxygen_maxerr"/>
+			<channel id="fineDustConc01_maxerr" typeId="pm1_maxerr"/>
+			<channel id="fineDustConc02_5_maxerr" typeId="pm2_5_maxerr"/>
+			<channel id="fineDustConc10_maxerr" typeId="pm10_maxerr"/>
 			<channel id="pressure_maxerr" typeId="pressure_maxerr"/>
 			<channel id="so2_maxerr" typeId="so2_maxerr"/>
 			<channel id="sound_maxerr" typeId="sound_maxerr"/>
@@ -73,7 +73,7 @@
 
 			<!-- configuration data -->
 			<channel id="wifi" typeId="Wifi"/>
-			<channel id="SSID" typeId="WLANssid"/>
+			<channel id="ssid" typeId="WLANssid"/>
 			<channel id="password" typeId="pass"/>
 			<channel id="wifiInfo" typeId="WifiInfo"/>
 			<channel id="timeServer" typeId="TimeServer"/>
@@ -90,12 +90,12 @@
 			<channel id="deleteKey" typeId="DeleteKey"/>
 			<channel id="fireAlarm" typeId="FireAlarm"/>
 			<!-- <channel id="air-Q-Hardware-Version" typeId="air-Q-Hardware-Version"/> -->
-			<channel id="WLAN_config_gateway" typeId="WLAN_config_Gateway"/>
-			<channel id="WLAN_config_MAC" typeId="WLAN_config_MAC"/>
-			<channel id="WLAN_config_SSID" typeId="WLAN_config_SSID"/>
-			<channel id="WLAN_config_IPAddress" typeId="WLAN_config_IPAddress"/>
-			<channel id="WLAN_config_netMask" typeId="WLAN_config_NetMask"/>
-			<channel id="WLAN_config_BSSID" typeId="WLAN_config_BSSID"/>
+			<channel id="wlanConfigGateway" typeId="WLAN_config_Gateway"/>
+			<channel id="wlanConfigMac" typeId="WLAN_config_MAC"/>
+			<channel id="wlanConfigSsid" typeId="WLAN_config_SSID"/>
+			<channel id="wlanConfigIPAddress" typeId="WLAN_config_IPAddress"/>
+			<channel id="wlanConfigNetMask" typeId="WLAN_config_NetMask"/>
+			<channel id="wlanConfigBssid" typeId="WLAN_config_BSSID"/>
 			<channel id="cloudUpload" typeId="cloudUpload"/>
 			<channel id="averagingRhythm" typeId="SecondsMeasurementDelay"/>
 			<channel id="powerFreqSuppression" typeId="Rejection"/>
