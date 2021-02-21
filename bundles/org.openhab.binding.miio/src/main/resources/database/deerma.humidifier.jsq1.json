@@ -61,6 +61,13 @@
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"category": "humidity",
@@ -75,6 +82,13 @@
 				"channel": "humidity_set",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": false
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -90,7 +104,7 @@
 			},
 			{
 				"property": "Led_State",
-				"friendlyName": "LED",
+				"friendlyName": "LED indicator Light",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
@@ -103,7 +117,7 @@
 			},
 			{
 				"property": "TipSound_State",
-				"friendlyName": "TipSound State",
+				"friendlyName": "Notification Sounds",
 				"channel": "sound",
 				"type": "Switch",
 				"refresh": true,
@@ -113,6 +127,18 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				]
+			},
+			{
+				"property": "watertankstatus",
+				"friendlyName": "Watertank Status",
+				"channel": "watertankstatus",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
 			},
 			{
 				"property": "wet_and_protect",
@@ -126,14 +152,6 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				]
-			},
-			{
-				"property": "watertankstatus",
-				"friendlyName": "Watertank Status",
-				"channel": "watertankstatus",
-				"type": "Number",
-				"refresh": true,
-				"actions": []
 			}
 		]
 	}

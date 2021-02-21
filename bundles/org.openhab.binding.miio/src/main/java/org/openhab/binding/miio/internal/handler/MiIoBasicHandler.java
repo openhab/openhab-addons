@@ -574,9 +574,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 case "switch":
                     if (val.getAsJsonPrimitive().isNumber()) {
                         updateState(basicChannel.getChannel(), val.getAsInt() > 0 ? OnOffType.ON : OnOffType.OFF);
+                    } else {
+                        String strVal = val.getAsString().toLowerCase();
+                        updateState(basicChannel.getChannel(),
+                                strVal.equals("on") || strVal.equals("true") ? OnOffType.ON : OnOffType.OFF);
                     }
-                    updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
-                            || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
                     break;
                 case "color":
                     Color rgb = new Color(val.getAsInt());
