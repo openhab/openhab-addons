@@ -165,9 +165,9 @@ Thing ID:
 ```
 
 
-## Basic UI and Classic UI
+## Basic UI 
 
-Examples to configure items in Basic UI and Classic UI
+Examples to configure items in Basic UI 
 Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location" [ <parameters> ]
     
 The general syntax for .things files is defined as follows (parts in <..> are required):
