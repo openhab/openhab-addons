@@ -32,7 +32,7 @@ public enum CommandParameterType {
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
     COLOR("color"),
-    UNKNOWN("unknown"),;
+    UNKNOWN("unknown");
 
     private String text;
 
