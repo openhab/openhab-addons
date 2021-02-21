@@ -8,6 +8,16 @@
 		<label>aWATTar Bridge</label>
 		<description>Provides price data from the aWATTar API.</description>
 		<config-description uri="bridge-type:awattar:awattar-bridge">
+			<parameter name="country" type="text">
+				<label>Country</label>
+				<default>DE</default>
+				<description>Country to get prices for. Only DE (Germany) and AT (Austria) are supported.</description>
+				<options>
+					<option value="DE">DE</option>
+					<option value="AT">AT</option>
+				</options>
+			</parameter>
+
 			<parameter name="vatPercent" type="decimal">
 				<label>VAT Percent</label>
 				<description>Specifies the value added tax percentage</description>

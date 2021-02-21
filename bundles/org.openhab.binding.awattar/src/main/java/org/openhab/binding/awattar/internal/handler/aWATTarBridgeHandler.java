@@ -46,7 +46,9 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> dataRefresher;
 
-    private final String URL = "https://api.awattar.de/v1/marketdata";
+    private final String URL_DE = "https://api.awattar.de/v1/marketdata";
+    private final String URL_AT = "https://api.awattar.at/v1/marketdata";
+    private String URL;
 
     // This cache stores price data for up to two days
     private SortedMap<Long, aWATTarPrice> priceMap = null;
@@ -65,6 +67,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         super(thing);
         logger.trace("Creating aWATTarBridgeHandler instance {}", this);
         this.httpClient = httpClient;
+        URL = URL_DE;
     }
 
     @Override
@@ -86,6 +89,18 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid timezone format");
             return;
         }
+        switch (config.country) {
+            case "DE":
+                URL = URL_DE;
+                break;
+            case "AT":
+                URL = URL_AT;
+                break;
+            default:
+                logger.error("Invalid country {}, only DE and AT are supported", config.country);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unsupported country");
+                return;
+        }
 
         logger.trace("Start Data refresh job at interval {} seconds.", dataRefreshInterval);
         dataRefresher = scheduler.scheduleAtFixedRate(this::refreshIfNeeded,
@@ -97,6 +112,8 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         logger.trace("Disposing aWATTar bridge {}", this);
         dataRefresher.cancel(true);
         dataRefresher = null;
+        priceMap = null;
+        lastUpdated = 0;
     }
 
     public void refreshIfNeeded() {
@@ -198,11 +215,9 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         return zone;
     }
 
-    public SortedMap<Long, aWATTarPrice> getPriceMap() {
+    public synchronized SortedMap<Long, aWATTarPrice> getPriceMap() {
         if (priceMap == null) {
-            synchronized (this) {
-                refresh();
-            }
+            refresh();
         }
         return priceMap;
     }
