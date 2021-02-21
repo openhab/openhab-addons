@@ -620,10 +620,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | mode                 | Number               | Mode                                     |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
-| led                  | Number               | LED                                      |            |
-| sound                | Number               | TipSound State                           |            |
-| wet_and_protect      | Number               | Wet and Protect                          |            |
-| watertankstatus      | String               | Watertank Status                         |            |
+| led                  | Switch               | LED                                      |            |
+| sound                | Switch               | TipSound State                           |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
 
 ### Mi S Smart humidifer  (<a name="deerma-humidifier-jsq1">deerma.humidifier.jsq1</a>) Channels
 
@@ -633,10 +632,10 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | mode                 | Number               | Mode                                     |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
-| led                  | Number               | LED                                      |            |
-| sound                | Number               | TipSound State                           |            |
+| led                  | Switch               | LED                                      |            |
+| sound                | Switch               | TipSound State                           |            |
 | wet_and_protect      | Number               | Wet and Protect                          |            |
-| watertankstatus      | String               | Watertank Status                         |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
 
 ### Mi Smart Humidifier (<a name="deerma-humidifier-mjjsq">deerma.humidifier.mjjsq</a>) Channels
 
@@ -646,10 +645,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | mode                 | Number               | Mode                                     |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
-| led                  | Number               | LED                                      |            |
-| sound                | Number               | TipSound State                           |            |
-| wet_and_protect      | Number               | Wet and Protect                          |            |
-| watertankstatus      | String               | Watertank Status                         |            |
+| led                  | Switch               | LED                                      |            |
+| sound                | Switch               | TipSound State                           |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
 
 ### Mi Fresh Air Ventilator A1-150 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
 
@@ -4761,10 +4759,9 @@ Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
-Number led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
-Number sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
-Number wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
-String watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+Switch led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
 
 ### Mi S Smart humidifer  (deerma.humidifier.jsq1) item file lines
@@ -4777,10 +4774,10 @@ Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
-Number led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
-Number sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Switch led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
 Number wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
-String watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
 
 ### Mi Smart Humidifier (deerma.humidifier.mjjsq) item file lines
@@ -4793,10 +4790,9 @@ Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
-Number led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
-Number sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
-Number wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
-String watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+Switch led "LED" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "TipSound State" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
 
 ### Mi Fresh Air Ventilator A1-150 (dmaker.airfresh.a1) item file lines

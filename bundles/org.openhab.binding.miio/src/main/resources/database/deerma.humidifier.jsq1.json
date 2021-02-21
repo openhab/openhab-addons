@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"deerma.humidifier.mjjsq",
-			"deerma.humidifier.jsq"
+			"deerma.humidifier.jsq1"
 		],
 		"maxProperties": 1,
 		"channels": [
@@ -112,6 +111,19 @@
 					{
 						"command": "SetTipSound_Status",
 						"parameterType": "ONOFFNUMBER"
+					}
+				]
+			},
+			{
+				"property": "wet_and_protect",
+				"friendlyName": "Wet and Protect",
+				"channel": "wet_and_protect",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_wet_and_protect",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
