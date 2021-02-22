@@ -131,14 +131,14 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 |Thing type| Parameters Name and Default Value| Description|
 |-- |-- |-- |
-|Gateway|GATEWAY_IP_ADDRESS="" |Will be resolved by discovery if auto configured|
-|"|GATEWAY_PORT_NUMBER=230 ||
-|"|PREFERRED_LOCAL_PORT_NUMBER=0 |Default port is 0. It means that it is random|
-|"|PING_INTERVAL=30 |Interval in seconds to check for device presence|
-|"|SUBSCRIBTION_INTERVAL=2|Interval in minutes to subcribe Souliss Gateway|
-|"|HEALTHY_INTERVAL=35|Interval in seconds to send nodes healthy|
-|"|USER_INDEX=70|Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)|
-|"|NODE_INDEX=120|Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)|
+|Gateway|gatewayIpAddress="" |Will be resolved by discovery if auto configured|
+|"|gatewayPortNumber=230 ||
+|"|preferredLocalPortNumber=0 |Default port is 0. It means that it is random|
+|"|pingInterval=30 |Interval in seconds to check for device presence|
+|"|subscriptionInterval=2|Interval in minutes to subcribe Souliss Gateway|
+|"|healthyInterval=35|Interval in seconds to send nodes healthy|
+|"|userIndex=70|Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)|
+|"|nodeIndex=120|Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)|
 |T11|sleep=5|Set sleep timer in cycles|
 |T12|||
 |T13|||
@@ -191,7 +191,7 @@ Thing <type_id> <thing_id>  [ <parameters> ]
 souliss.things:
 
 ```
-Bridge souliss:gateway:105 "Souliss Gateway - 105" [GATEWAY_IP_ADDRESS="192.168.1.105", GATEWAY_PORT_NUMBER=230, PREFERRED_LOCAL_PORT_NUMBER=0, PING_INTERVAL=30, SUBSCRIBTION_INTERVAL=2, HEALTHY_INTERVAL=38, USER_INDEX=72, NODE_INDEX=38,  TIMEOUT_TO_REQUEUE=5000, TIMEOUT_TO_REMOVE_PACKET=20000]
+Bridge souliss:gateway:105 "Souliss Gateway - 105" [gatewayIpAddress="192.168.1.105", gatewayPortNumber=230, preferredLocalPortNumber=0, pingInterval=30, subscriptionInterval=2, healthyInterval=38, userIndex=72, nodeIndex=38,  timeoutToRequeue=5000, timeoutToRemovePacket=20000]
 {  
 Thing t14 1-6 "Portoncino"@"Rientro"
 Thing t14 1-7 "Cancello"@"Rientro"
