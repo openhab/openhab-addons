@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="philipsair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ac2889_10">
+		<label>Philips Air Purifier AC2889/10 Binding Thing</label>
+		<description>Philips Air Purifier AC2889/10 Binding Thing</description>
+		<channel-groups>
+			<channel-group typeId="controls-basic" id="controls"/>
+			<channel-group typeId="controls-ui" id="controls-ui"/>
+			<channel-group typeId="sensors-basic" id="sensors"/>
+			<channel-group typeId="filters" id="filters"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:philipsair:config"/>
+	</thing-type>
+
+	<thing-type id="universal">
+		<label>Philips Air Purifier</label>
+		<description>Philips Air Purifier</description>
+		<channel-groups>
+			<channel-group typeId="controls-basic" id="controls"/>
+			<channel-group typeId="controls-ui" id="controls-ui"/>
+			<channel-group typeId="sensors-basic" id="sensors"/>
+			<channel-group typeId="filters" id="filters"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:philipsair:config"/>
+	</thing-type>
+
+	<thing-type id="ac2729">
+		<label>Philips Air Purifier AC2729 Binding Thing</label>
+		<description>Philips Air Purifier AC2729 Binding Thing</description>
+		<channel-groups>
+			<channel-group typeId="controls-adv" id="controls"/>
+			<channel-group typeId="controls-ui" id="controls-ui"/>
+			<channel-group typeId="sensors-adv" id="sensors"/>
+			<channel-group typeId="filters-wicks" id="filters"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:philipsair:config"/>
+	</thing-type>
+
+	<thing-type id="ac1214_10">
+		<label>Philips Air Purifier AC1214/10 Binding Thing</label>
+		<description>Philips Air Purifier AC1214/10 Binding Thing</description>
+		<channel-groups>
+			<channel-group typeId="controls-basic" id="controls"/>
+			<channel-group typeId="controls-ui" id="controls-ui"/>
+			<channel-group typeId="sensors-basic" id="sensors"/>
+			<channel-group typeId="filters" id="filters"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:philipsair:config"/>
+	</thing-type>
+
+	<thing-type id="ac3829_10">
+		<label>Philips Air Purifier AC3829/10 Binding Thing</label>
+		<description>Philips Air Purifier Ac3829/10 Binding Thing</description>
+		<channel-groups>
+			<channel-group typeId="controls-adv" id="controls"/>
+			<channel-group typeId="controls-ui" id="controls-ui"/>
+			<channel-group typeId="sensors-adv" id="sensors"/>
+			<channel-group typeId="filters-wicks" id="filters"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:philipsair:config"/>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="philipsair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="controls-ui">
+		<label>Controls-UI</label>
+		<channels>
+			<channel id="uil" typeId="uil"/>
+			<channel id="aqil" typeId="aqil"/>
+			<channel id="ddp" typeId="ddp"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="controls-basic">
+		<label>Controls</label>
+		<channels>
+			<channel id="pwr" typeId="pwr"/>
+			<channel id="om" typeId="om"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="dt" typeId="dt"/>
+			<channel id="dtrs" typeId="dtrs"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="controls-adv">
+		<label>Controls</label>
+		<channels>
+			<channel id="pwr" typeId="pwr"/>
+			<channel id="om" typeId="om"/>
+			<channel id="cl" typeId="cl"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="dt" typeId="dt"/>
+			<channel id="dtrs" typeId="dtrs"/>
+			<channel id="rhset" typeId="rhset"/>
+			<channel id="func" typeId="func"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="sensors-basic">
+		<label>Sensors</label>
+		<channels>
+			<channel id="pm25" typeId="pm25"/>
+			<channel id="iaql" typeId="iaql"/>
+			<channel id="aqit" typeId="aqit"/>
+			<channel id="err" typeId="err"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="sensors-adv">
+		<label>Sensors</label>
+		<channels>
+			<channel id="pm25" typeId="pm25"/>
+			<channel id="temp" typeId="temp"/>
+			<channel id="rh" typeId="rh"/>
+			<channel id="wl" typeId="wl"/>
+			<channel id="iaql" typeId="iaql"/>
+			<channel id="aqit" typeId="aqit"/>
+			<channel id="err" typeId="err"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="filters">
+		<label>Filters</label>
+		<channels>
+			<channel id="fltsts0" typeId="fltsts0"/>
+			<channel id="fltsts1" typeId="fltsts1"/>
+			<channel id="fltsts2" typeId="fltsts2"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="filters-wicks">
+		<label>Filters with Wick</label>
+		<channels>
+			<channel id="fltsts0" typeId="fltsts0"/>
+			<channel id="fltsts1" typeId="fltsts1"/>
+			<channel id="fltsts2" typeId="fltsts2"/>
+			<channel id="wicksts" typeId="wicksts"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
