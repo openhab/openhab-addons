@@ -548,6 +548,8 @@ public class ShellyApiJsonDTO {
         ShellyStatusCloud cloud;
         @SerializedName("sleep_mode")
         public ShellySensorSleepMode sleepMode; // FW 1.6
+        @SerializedName("external_power")
+        public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
 
         public String timezone;
         public Double lat;

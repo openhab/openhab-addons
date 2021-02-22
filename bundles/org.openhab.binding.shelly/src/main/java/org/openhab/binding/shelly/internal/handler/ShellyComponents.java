@@ -245,7 +245,7 @@ public class ShellyComponents {
         ShellyDeviceProfile profile = thingHandler.getProfile();
 
         boolean updated = false;
-        if (profile.isSensor || profile.hasBattery || profile.isSense) {
+        if (profile.isSensor || profile.hasBattery) {
             ShellyStatusSensor sdata = thingHandler.api.getSensorStatus();
 
             if (!thingHandler.areChannelsCreated()) {
@@ -327,10 +327,21 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
                         getDecimal(adc.voltage));
             }
+
+            boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
+            if ((profile.settings.externalPower != null) || (sdata.charger != null)) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
+                        charger ? OnOffType.ON : OnOffType.OFF);
+            }
             if (sdata.bat != null) { // no update for Sense
-                thingHandler.logger.trace("{}: Updating battery", thingHandler.thingName);
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                        toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                // Shelly HT has external_power under settings, Sense and Motion charger under status
+                if (!charger || !profile.isHT) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
+                            toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                } else {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
+                            UnDefType.UNDEF);
+                }
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getDouble(sdata.bat.value) < thingHandler.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
                 updated |= changed;
@@ -338,10 +349,7 @@ public class ShellyComponents {
                     thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
                 }
             }
-            if (sdata.externalPower != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_BAT_EXT_POWER,
-                        getOnOff(sdata.externalPower));
-            }
+
             if (sdata.motion != null) { // Shelly Sense
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                         getOnOff(sdata.motion));
@@ -350,15 +358,12 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                         getOnOff(sdata.sensor.motion));
                 long timestamp = getLong(sdata.sensor.motionTimestamp);
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
-                        timestamp != 0 ? getTimestamp(getString(profile.settings.timezone), timestamp)
-                                : UnDefType.UNDEF);
+                if (timestamp != 0) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
+                            getTimestamp(getString(profile.settings.timezone), timestamp));
+                }
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                         getOnOff(sdata.sensor.vibration));
-            }
-            if (sdata.charger != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
-                        getOnOff(sdata.charger));
             }
 
             updated |= thingHandler.updateInputs(status);

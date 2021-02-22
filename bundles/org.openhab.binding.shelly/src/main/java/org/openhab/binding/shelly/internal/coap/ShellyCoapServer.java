@@ -49,7 +49,7 @@ public class ShellyCoapServer {
     boolean started = false;
     private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().build();
     private @Nullable UdpMulticastConnector statusConnector;
-    private CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);;
+    private CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
     private final Set<ShellyCoapListener> coapListeners = ConcurrentHashMap.newKeySet();
 
     protected class ShellyStatusListener extends CoapResource {
