@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * Server-Sent-Events client for Home Connect API.
  *
  * @author Jonas Brüstel - Initial contribution
+ * @author Laurent Garnier - Replace okhttp SSE by JAX-RS SSE
  *
  */
 @NonNullByDefault
@@ -122,7 +123,7 @@ public class HomeConnectEventSourceClient {
      * Unregister {@link HomeConnectEventListener}.
      *
      * @param eventListener appliance event listener
-     * @param completed true when the event source is known as already closed
+     * @param immediate true when the unregistering of the event source has to be fast
      */
     public synchronized void unregisterEventListener(HomeConnectEventListener eventListener, boolean immediate) {
         if (eventSourceConnections.containsKey(eventListener)) {

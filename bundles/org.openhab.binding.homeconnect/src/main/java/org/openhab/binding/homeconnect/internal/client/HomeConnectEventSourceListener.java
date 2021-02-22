@@ -47,6 +47,7 @@ import com.google.gson.JsonParser;
  * Event source listener (Server-Sent-Events).
  *
  * @author Jonas Brüstel - Initial contribution
+ * @author Laurent Garnier - Replace okhttp SSE by JAX-RS SSE
  *
  */
 @NonNullByDefault

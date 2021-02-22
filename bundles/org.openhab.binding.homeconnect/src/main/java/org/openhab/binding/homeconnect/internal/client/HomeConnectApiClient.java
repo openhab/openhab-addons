@@ -63,6 +63,7 @@ import com.google.gson.JsonParser;
  * Client for Home Connect API.
  *
  * @author Jonas Brüstel - Initial contribution
+ * @author Laurent Garnier - Replace okhttp by the Jetty HTTP client provided by the openHAB core framework
  *
  */
 @NonNullByDefault

@@ -50,6 +50,7 @@ import io.github.bucket4j.Bucket4j;
  * okHttp helper.
  *
  * @author Jonas Brüstel - Initial contribution
+ * @author Laurent Garnier - Removed okhttp
  *
  */
 @NonNullByDefault
