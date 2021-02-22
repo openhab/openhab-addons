@@ -41,6 +41,7 @@
 			<channel id="tempf" typeId="system.outdoor-temperature"/>
 			<channel id="indoortempf" typeId="indoor-temperature"/>
 			<channel id="soiltempf" typeId="soil-temperature"/>
+			<channel id="windchillf" typeId="wind-chill"/>
 		</channels>
 	</channel-group-type>
 
@@ -64,6 +65,9 @@
 		<channels>
 			<channel id="rainin" typeId="rain"/>
 			<channel id="dailyrainin" typeId="rain-daily"/>
+			<channel id="weeklyrainin" typeId="rain-weekly"/>
+			<channel id="monthlyrainin" typeId="rain-monthly"/>
+			<channel id="yearlyrainin" typeId="rain-yearly"/>
 		</channels>
 	</channel-group-type>
 
@@ -89,7 +93,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="pollution-group">
+	<channel-group-type id="pollution-group" advanced="true">
 		<label>Pollution</label>
 		<description>Pollutant measurements</description>
 		<category>Pollution</category>

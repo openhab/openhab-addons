@@ -37,7 +37,7 @@
 			<tag>Measurement</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f m/s"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wind-gust-speed">
@@ -49,7 +49,7 @@
 			<tag>Measurement</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f m/s"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wind-gust-direction">
@@ -73,7 +73,7 @@
 			<tag>Measurement</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f m/s"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wind-direction-avg-2min">
@@ -97,7 +97,7 @@
 			<tag>Measurement</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f m/s"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wind-gust-direction-10min">
@@ -121,7 +121,7 @@
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="indoor-humidity">
@@ -133,7 +133,7 @@
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="dew-point">
@@ -146,6 +146,18 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wind-chill">
+		<item-type>Number:Temperature</item-type>
+		<label>Wind Chill</label>
+		<description>The apparent wind chill temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- for extra outdoor sensors use temp2f, temp3f, and so on -->
@@ -176,26 +188,62 @@
 
 	<channel-type id="rain">
 		<item-type>Number:Length</item-type>
-		<label>Rain in past hour</label>
+		<label>Hourly Rain</label>
 		<description>Rain over the past hour.</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f mm"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain-daily">
 		<item-type>Number:Length</item-type>
-		<label>Rain since start of day</label>
-		<description>Rain so far today in local time.</description>
+		<label>Daily Rain</label>
+		<description>Rain since the start of the day.</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f mm"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-weekly">
+		<item-type>Number:Length</item-type>
+		<label>Weekly Rain</label>
+		<description>Rain since the start of this week.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-monthly">
+		<item-type>Number:Length</item-type>
+		<label>Monthly Rain</label>
+		<description>Rain since the start if this month.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-yearly">
+		<item-type>Number:Length</item-type>
+		<label>Yearly Rain</label>
+		<description>Rain since the start of this year.</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="metar">
@@ -224,7 +272,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<!-- for sensor 2 use leafwetness2 -->
@@ -237,7 +285,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="solarradiation">

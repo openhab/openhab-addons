@@ -57,6 +57,7 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
     private static final Object LOCK = new Object();
 
     private boolean active = false;
+    private String errorDetail = "";
 
     public WundergroundUpdateReceiverServlet(HttpService httpService) {
         super(httpService);
@@ -65,6 +66,12 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
     public boolean isActive() {
         synchronized (LOCK) {
             return this.active;
+        }
+    }
+
+    public String getErrorDetail() {
+        synchronized (LOCK) {
+            return this.errorDetail;
         }
     }
 
@@ -83,11 +90,16 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
                 logger.debug("Starting servlet {} at {}", getClass().getSimpleName(), alias);
                 Dictionary<String, String> props = new Hashtable<>(1, 10);
                 httpService.registerServlet(alias, this, props, httpContext);
+                errorDetail = "";
                 active = true;
             } catch (NamespaceException e) {
-                logger.error("Error during servlet registration - alias {} already in use", alias, e);
+                active = false;
+                errorDetail = "Servlet couldn't be registered - alias " + alias + " already in use";
+                logger.warn("Error during servlet registration - alias {} already in use", alias, e);
             } catch (ServletException e) {
-                logger.error("Error during servlet registration", e);
+                active = false;
+                errorDetail = "Servlet couldn't be registered - " + e.getMessage();
+                logger.warn("Error during servlet registration", e);
             }
         }
     }
@@ -131,7 +143,7 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
         if (req.getRequestURI() == null) {
             return;
         }
-        logger.debug("doGet {}", req.getQueryString());
+        logger.trace("doGet {}", req.getQueryString());
 
         Optional<WundergroundUpdateReceiverHandler> maybeHandler = Optional
                 .ofNullable(this.handlers.get(req.getParameter(STATION_ID_PARAMETER)));
@@ -156,6 +168,7 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
         synchronized (LOCK) {
             logger.debug("Stopping servlet {} at {}", getClass().getSimpleName(), SERVLET_URL);
             super.deactivate(SERVLET_URL);
+            errorDetail = "";
             active = false;
         }
     }
@@ -166,7 +179,7 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
                     .stream().filter(entry -> handler.getThing().getUID().equals(entry.getValue().getThing().getUID()))
                     .collect(toSet());
             changedStationIds.forEach(entry -> {
-                logger.info("Re-assigning listener from station ID {} to station id {}", entry.getKey(),
+                logger.debug("Re-assigning listener from station ID {} to station id {}", entry.getKey(),
                         handler.getStationId());
                 this.removeHandler(entry.getKey());
                 this.addHandler(handler);
