@@ -70,12 +70,14 @@
 
 			<parameter name="userIndex" type="integer" required="true">
 				<label>User Index</label>
-				<description>User Index</description>
+				<description>Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)
+				</description>
 				<default>70</default>
 			</parameter>
 			<parameter name="nodeIndex" type="integer" required="true">
 				<label>Node Index</label>
-				<description>Node Index</description>
+				<description>Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)
+				</description>
 				<default>120</default>
 			</parameter>
 		</config-description>
