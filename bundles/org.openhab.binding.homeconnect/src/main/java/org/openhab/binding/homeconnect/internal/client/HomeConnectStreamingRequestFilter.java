@@ -43,6 +43,7 @@ public class HomeConnectStreamingRequestFilter implements ClientRequestFilter {
         if (requestContext != null) {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders();
             headers.putSingle(HttpHeaders.AUTHORIZATION, authorizationHeader);
+            headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-cache");
             headers.putSingle(HttpHeaders.ACCEPT, TEXT_EVENT_STREAM);
         }
     }
