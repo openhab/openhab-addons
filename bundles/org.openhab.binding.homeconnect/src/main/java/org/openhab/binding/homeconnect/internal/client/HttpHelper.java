@@ -16,7 +16,6 @@ import static io.github.bucket4j.Bandwidth.classic;
 import static io.github.bucket4j.Refill.intervally;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
@@ -24,12 +23,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpContentResponse;
-import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -56,7 +52,7 @@ import io.github.bucket4j.Bucket4j;
 @NonNullByDefault
 public class HttpHelper {
     private static final String BEARER = "Bearer ";
-    private static final int OAUTH_EXPIRE_BUFFER = 10;
+    private static final int OAUTH_EXPIRE_BUFFER = 30;
     private static final JsonParser JSON_PARSER = new JsonParser();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Bucket BUCKET = Bucket4j.builder()
@@ -67,19 +63,14 @@ public class HttpHelper {
 
     public static ContentResponse sendRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
-        ContentResponse response;
-        if (!HttpMethod.GET.name().equals(request.getMethod())) {
-            response = request.send();
-        } else if (BUCKET.tryConsume(1)) {
-            response = request.send();
-        } else {
-            LoggerFactory.getLogger(HttpHelper.class).debug("Request blocked by bucket4j.");
-            HttpResponse httpResponse = new HttpResponse(request, null).status(HttpStatus.TOO_MANY_REQUESTS_429)
-                    .reason("Too Many Requests").version(request.getVersion());
-            response = new HttpContentResponse(httpResponse, "Too Many Requests".getBytes(StandardCharsets.UTF_8),
-                    "text/plain", StandardCharsets.UTF_8.toString());
+        if (HttpMethod.GET.name().equals(request.getMethod())) {
+            try {
+                BUCKET.asScheduler().consume(1);
+            } catch (InterruptedException e) {
+                LoggerFactory.getLogger(HttpHelper.class).error("Rate limiting error! error={}", e.getMessage());
+            }
         }
-        return response;
+        return request.send();
     }
 
     public static String formatJsonBody(@Nullable String jsonString) {

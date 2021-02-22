@@ -280,8 +280,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         if (isBridgeOnline() && isThingAccessibleViaServerSentEvents()) {
             getEventSourceClient().ifPresent(client -> {
                 try {
-                    client.registerEventListener(getThingHaId(), this);
                     ignoreEventSourceClosedEvent = false;
+                    client.registerEventListener(getThingHaId(), this);
                 } catch (CommunicationException | AuthorizationException e) {
                     logger.warn("Could not open event source connection. thing={}, haId={}, error={}", getThingLabel(),
                             getThingHaId(), e.getMessage());
