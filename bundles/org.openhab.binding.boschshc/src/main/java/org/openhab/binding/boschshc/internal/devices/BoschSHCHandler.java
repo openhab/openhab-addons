@@ -130,7 +130,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             var bridgeHandler = this.getBridgeHandler();
             var info = bridgeHandler.getDeviceInfo(deviceId);
-            logger.trace("Device initialized:\n%s", GSON.toJson(info));
+            logger.trace("Device initialized:\n{}", GSON.toJson(info));
         } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
