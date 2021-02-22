@@ -118,20 +118,22 @@ public class RemoteServiceHandler implements StringResponseCallback {
     }
 
     public void getState() {
-        serviceExecuting.ifPresentOrElse(service -> {
-            if (counter >= GIVEUP_COUNTER) {
-                logger.warn("Giving up updating state for {} after {} times", service, GIVEUP_COUNTER);
-                reset();
-                // immediately refresh data
-                handler.getData();
-            }
-            counter++;
-            final MultiMap<String> dataMap = new MultiMap<String>();
-            dataMap.add(SERVICE_TYPE, serviceExecuting.get());
-            proxy.get(serviceExecutionStateAPI, dataMap, this);
-        }, () -> {
-            logger.warn("No Service executed to get state");
-        });
+        synchronized (this) {
+            serviceExecuting.ifPresentOrElse(service -> {
+                if (counter >= GIVEUP_COUNTER) {
+                    logger.warn("Giving up updating state for {} after {} times", service, GIVEUP_COUNTER);
+                    reset();
+                    // immediately refresh data
+                    handler.getData();
+                }
+                counter++;
+                final MultiMap<String> dataMap = new MultiMap<String>();
+                dataMap.add(SERVICE_TYPE, service);
+                proxy.get(serviceExecutionStateAPI, dataMap, this);
+            }, () -> {
+                logger.warn("No Service executed to get state");
+            });
+        }
     }
 
     @Override
@@ -141,13 +143,16 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
                 if (esc != null && esc.executionStatus != null) {
                     String status = esc.executionStatus.status;
-                    handler.updateRemoteExecutionStatus(serviceExecuting.get(), status);
-                    if (ExecutionState.EXECUTED.name().equals(status)) {
-                        // refresh loop ends - update of status handled in the normal refreshInterval. Earlier update
-                        // doesn't
-                        // show better results!
-                        reset();
-                        return;
+                    synchronized (this) {
+                        handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), status);
+                        if (ExecutionState.EXECUTED.name().equals(status)) {
+                            // refresh loop ends - update of status handled in the normal refreshInterval. Earlier
+                            // update
+                            // doesn't
+                            // show better results!
+                            reset();
+                            return;
+                        }
                     }
                 }
             } catch (JsonSyntaxException jse) {
@@ -160,15 +165,15 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     @Override
     public void onError(NetworkError error) {
-        handler.updateRemoteExecutionStatus(serviceExecuting.get(),
-                ExecutionState.ERROR.name() + Constants.SPACE + Integer.toString(error.status));
-        reset();
+        synchronized (this) {
+            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+                    ExecutionState.ERROR.name() + Constants.SPACE + Integer.toString(error.status));
+            reset();
+        }
     }
 
     private void reset() {
-        synchronized (this) {
-            serviceExecuting = Optional.empty();
-            counter = 0;
-        }
+        serviceExecuting = Optional.empty();
+        counter = 0;
     }
 }
