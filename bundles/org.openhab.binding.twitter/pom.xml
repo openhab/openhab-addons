@@ -14,6 +14,10 @@
 
   <name>openHAB Add-ons :: Bundles :: Twitter Binding</name>
 
+  <properties>
+    <bnd.importpackage>!android.*,!com.android.org.*</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.twitter4j</groupId>
