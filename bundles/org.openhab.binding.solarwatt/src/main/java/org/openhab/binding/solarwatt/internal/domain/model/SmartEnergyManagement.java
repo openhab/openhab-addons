@@ -40,7 +40,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class SmartEnergyManagement extends Device {
-    public static final String solarWattClassname = "com.solarwatt.devices.sem.SmartEnergyManagement";
+    public static final String SOLAR_WATT_CLASSNAME = "com.solarwatt.devices.sem.SmartEnergyManagement";
 
     public SmartEnergyManagement(DeviceDTO deviceDTO) {
         super(deviceDTO);

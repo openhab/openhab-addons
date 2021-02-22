@@ -69,7 +69,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class EnergyManager extends Device {
-    public static final String solarWattClassname = "com.kiwigrid.devices.em.EnergyManager";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.em.EnergyManager";
 
     @Nullable
     private ZoneId zoneId;

@@ -203,7 +203,7 @@ public class DeviceDTO {
                 state = UnDefType.NULL;
             }
         } catch (Exception ex) {
-            this.logger.error("failed getting state for {}", channelName, ex);
+            this.logger.debug("failed getting state for {}", channelName, ex);
         }
 
         return state;

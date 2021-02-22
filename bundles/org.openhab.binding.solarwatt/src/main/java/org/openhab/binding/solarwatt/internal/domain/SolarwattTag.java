@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.solarwatt.internal.domain;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Helper to handle different character cases between energy manager tagnames
  * and openhab channel names.
  *
  * @author Sven Carstens - Initial contribution
  */
+@NonNullByDefault
 public class SolarwattTag {
     private final String tagName;
     private final String channelName;

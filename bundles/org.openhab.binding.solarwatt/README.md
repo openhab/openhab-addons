@@ -4,7 +4,6 @@ Binding to query a [solarwatt](https://www.solarwatt.de/) [energy manager](https
 
 All supported values and devices were discovered while playing with my own energy manager.
 
-
 ## Supported Things
 
 * EnergyManager  
@@ -29,8 +28,8 @@ All supported values and devices were discovered while playing with my own energ
 
 ## Discovery
 
-You have to enter the hostname or ip-address of the energymanager itself. The attached devices and supported channels
-are discovered automatically.
+You have to enter the hostname or ip-address of the energymanager itself.
+The attached devices and supported channels are discovered automatically.
 
 ## Binding Configuration
 

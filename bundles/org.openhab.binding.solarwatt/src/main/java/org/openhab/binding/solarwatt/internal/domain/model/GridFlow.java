@@ -56,7 +56,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class GridFlow extends Device {
-    public static final String solarWattClassname = "com.kiwigrid.kiwiapp.gridflow.GridFlow";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.kiwiapp.gridflow.GridFlow";
     private final Logger logger = LoggerFactory.getLogger(GridFlow.class);
 
     private @Nullable ConfigInverterControl configInverterControl;
@@ -77,7 +77,7 @@ public class GridFlow extends Device {
             this.configInverterControl = gson.fromJson(rawConfigInverterControl, GridFlow.ConfigInverterControl.class);
         } catch (Exception ex) {
             this.configInverterControl = null;
-            this.logger.error("Could not read ConfigInverterControl", ex);
+            this.logger.debug("Could not read ConfigInverterControl", ex);
         }
 
         GridFlow.ConfigInverterControl localConfigInverterControl = this.configInverterControl;

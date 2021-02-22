@@ -26,8 +26,10 @@ public class SolarwattConfiguration {
 
     /**
      * Hostname or ip where the solarwatt energymanager is reachable.
+     *
+     * Energy manager does not set a default name via DHCP.
      */
-    public String hostname = "default name";
+    public String hostname = "";
 
     /**
      * Refresh interval for updating devices data

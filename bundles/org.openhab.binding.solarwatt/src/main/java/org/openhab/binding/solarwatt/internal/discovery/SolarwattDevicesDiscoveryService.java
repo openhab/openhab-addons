@@ -156,7 +156,7 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
                         // deprecated class
                         this.logger.trace("Ignoring deprecated device {}", entry.getClass().getName());
                     } else {
-                        this.logger.info("Ignoring device {}", entry.getClass().getName());
+                        this.logger.debug("Ignoring device {}", entry.getClass().getName());
                     }
                 });
             }

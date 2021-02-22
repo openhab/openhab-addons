@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EnergyManagerCollection {
-    private static Logger logger = LoggerFactory.getLogger(EnergyManagerCollection.class);
+    private Logger logger = LoggerFactory.getLogger(EnergyManagerCollection.class);
 
     private Map<String, Device> devices;
 
@@ -39,14 +39,22 @@ public class EnergyManagerCollection {
         this.devices = new HashMap<>();
 
         energyManagerDTO.getItems().forEach(deviceDTO -> {
-            Device device = EnergyManagerDevicesFactory.getEnergyManagerDevice(deviceDTO);
+            try {
+                Device device = EnergyManagerDevicesFactory.getEnergyManagerDevice(deviceDTO);
 
-            if (device != null) {
-                this.devices.put(device.getGuid(), device);
+                if (device != null) {
+                    this.devices.put(device.getGuid(), device);
+                } else {
+                    this.logger.debug("Don't know how to handle device {}: {}", deviceDTO.getGuid(),
+                            deviceDTO.getDeviceModel());
+                }
+            } catch (Exception ex) {
+                this.logger.error("Error setting up initial device {}: {}", deviceDTO.getGuid(),
+                        deviceDTO.getDeviceModel(), ex);
             }
         });
 
-        logger.trace("found devices {}", this.devices);
+        this.logger.trace("found devices {}", this.devices);
     }
 
     public Map<String, Device> getDevices() {

@@ -77,7 +77,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class BatteryConverter extends Inverter {
-    public static final String solarWattClassname = "com.kiwigrid.devices.batteryconverter.BatteryConverter";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.batteryconverter.BatteryConverter";
 
     public BatteryConverter(DeviceDTO deviceDTO) {
         super(deviceDTO);

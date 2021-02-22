@@ -27,7 +27,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class SunSpecInverter extends Inverter {
-    public static final String solarWattClassname = "com.kiwigrid.devices.sunspec.SunSpecInverter";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.sunspec.SunSpecInverter";
 
     public SunSpecInverter(DeviceDTO deviceDTO) {
         super(deviceDTO);

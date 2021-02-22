@@ -78,7 +78,7 @@ public class SolarwattHandlerFactory extends BaseThingHandlerFactory {
             return new DeviceHandler(thing, this.channelTypeProvider);
         }
 
-        this.logger.error("No matching handler for {} from {}", thingTypeUID, SUPPORTED_THING_TYPES_UIDS);
+        this.logger.trace("No matching handler for {} from {}", thingTypeUID, SUPPORTED_THING_TYPES_UIDS);
         return null;
     }
 }

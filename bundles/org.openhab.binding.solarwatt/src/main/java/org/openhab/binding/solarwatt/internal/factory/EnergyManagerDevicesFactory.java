@@ -18,8 +18,6 @@ import org.openhab.binding.solarwatt.internal.domain.EnergyManagerCollection;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
 import org.openhab.binding.solarwatt.internal.domain.dto.EnergyManagerDTO;
 import org.openhab.binding.solarwatt.internal.domain.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Factory to produce concrete instances which match the device structure returned by the energy manager.
@@ -28,8 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EnergyManagerDevicesFactory {
-    private static final Logger logger = LoggerFactory.getLogger(EnergyManagerDevicesFactory.class);
-
     /**
      * Generate a concrete collection of devices which where discovered by the energy manager.
      *
@@ -50,76 +46,70 @@ public class EnergyManagerDevicesFactory {
      * @return device fille from the {@link DeviceDTO}
      */
     public static @Nullable Device getEnergyManagerDevice(DeviceDTO deviceDTO) {
-        try {
-            // objects on level 3
-            if (deviceDTO.getDeviceModelStrings().contains(MyReserve.solarWattClassname)) {
-                return new MyReserve(deviceDTO);
-            }
-            // objects on level 2
-            if (deviceDTO.getDeviceModelStrings().contains(S0Counter.solarWattClassname)) {
-                return new S0Counter(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(KebaEv.solarWattClassname)) {
-                return new KebaEv(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(MyReservePowerMeter.solarWattClassname)) {
-                return new MyReservePowerMeter(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(SunSpecInverter.solarWattClassname)) {
-                return new SunSpecInverter(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(MyReserveInverter.solarWattClassname)) {
-                return new MyReserveInverter(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(BatteryConverter.solarWattClassname)) {
-                return new BatteryConverter(deviceDTO);
-            }
-            // objects on level 1
-            if (deviceDTO.getDeviceModelStrings().contains(ScheduleApp.solarWattClassname)) {
-                return new ScheduleApp(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(SmartEnergyManagement.solarWattClassname)) {
-                return new SmartEnergyManagement(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(EnergyManager.solarWattClassname)) {
-                return new EnergyManager(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(Forecast.solarWattClassname)) {
-                return new Forecast(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(Location.solarWattClassname)) {
-                return new Location(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(EVStation.solarWattClassname)) {
-                return new EVStation(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(PowerMeter.solarWattClassname)) {
-                return new PowerMeter(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(SimpleSwitcher.solarWattClassname)) {
-                return new SimpleSwitcher(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(GridFlow.solarWattClassname)) {
-                return new GridFlow(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(PVPlant.solarWattClassname)) {
-                return new PVPlant(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(Inverter.solarWattClassname)) {
-                return new Inverter(deviceDTO);
-            }
-            if (deviceDTO.getDeviceModelStrings().contains(ProfileApp.solarWattClassname)) {
-                return new ProfileApp(deviceDTO);
-            }
+        // objects on level 3
+        if (deviceDTO.getDeviceModelStrings().contains(MyReserve.SOLAR_WATT_CLASSNAME)) {
+            return new MyReserve(deviceDTO);
+        }
+        // objects on level 2
+        if (deviceDTO.getDeviceModelStrings().contains(S0Counter.SOLAR_WATT_CLASSNAME)) {
+            return new S0Counter(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(KebaEv.SOLAR_WATT_CLASSNAME)) {
+            return new KebaEv(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(MyReservePowerMeter.SOLAR_WATT_CLASSNAME)) {
+            return new MyReservePowerMeter(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(SunSpecInverter.SOLAR_WATT_CLASSNAME)) {
+            return new SunSpecInverter(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(MyReserveInverter.SOLAR_WATT_CLASSNAME)) {
+            return new MyReserveInverter(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(BatteryConverter.SOLAR_WATT_CLASSNAME)) {
+            return new BatteryConverter(deviceDTO);
+        }
+        // objects on level 1
+        if (deviceDTO.getDeviceModelStrings().contains(ScheduleApp.SOLAR_WATT_CLASSNAME)) {
+            return new ScheduleApp(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(SmartEnergyManagement.SOLAR_WATT_CLASSNAME)) {
+            return new SmartEnergyManagement(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(EnergyManager.SOLAR_WATT_CLASSNAME)) {
+            return new EnergyManager(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(Forecast.SOLAR_WATT_CLASSNAME)) {
+            return new Forecast(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(Location.SOLAR_WATT_CLASSNAME)) {
+            return new Location(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(EVStation.SOLAR_WATT_CLASSNAME)) {
+            return new EVStation(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(PowerMeter.SOLAR_WATT_CLASSNAME)) {
+            return new PowerMeter(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(SimpleSwitcher.SOLAR_WATT_CLASSNAME)) {
+            return new SimpleSwitcher(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(GridFlow.SOLAR_WATT_CLASSNAME)) {
+            return new GridFlow(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(PVPlant.SOLAR_WATT_CLASSNAME)) {
+            return new PVPlant(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(Inverter.SOLAR_WATT_CLASSNAME)) {
+            return new Inverter(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(ProfileApp.SOLAR_WATT_CLASSNAME)) {
+            return new ProfileApp(deviceDTO);
+        }
 
-            // Objects on level 0
-            if (deviceDTO.getDeviceModelStrings().contains(Device.solarWattClassname)) {
-                return new Device(deviceDTO);
-            }
-
-            logger.debug("Don't know how to handle device {}: {}", deviceDTO.getGuid(), deviceDTO.getDeviceModel());
-        } catch (Exception ex) {
-            logger.error("Error setting up initial device {}: {}", deviceDTO.getGuid(), deviceDTO.getDeviceModel(), ex);
+        // Objects on level 0
+        if (deviceDTO.getDeviceModelStrings().contains(Device.SOLAR_WATT_CLASSNAME)) {
+            return new Device(deviceDTO);
         }
 
         return null;

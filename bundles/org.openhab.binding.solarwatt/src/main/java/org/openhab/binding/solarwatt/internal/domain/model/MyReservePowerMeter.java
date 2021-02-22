@@ -30,7 +30,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class MyReservePowerMeter extends PowerMeter {
-    public static final String solarWattClassname = "com.kiwigrid.devices.powermeter.PowerMeter";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.powermeter.PowerMeter";
 
     public MyReservePowerMeter(DeviceDTO deviceDTO) {
         super(deviceDTO);

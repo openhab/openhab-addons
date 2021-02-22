@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Class that aggregates all devices which are found in one location
@@ -85,7 +86,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class Location extends Device {
     private final Logger logger = LoggerFactory.getLogger(Location.class);
-    public static final String solarWattClassname = "com.kiwigrid.devices.location.Location";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.location.Location";
 
     private @Nullable IdDevicesMap devicesMap;
 
@@ -145,10 +146,20 @@ public class Location extends Device {
             this.devicesMap = gson.fromJson(rawDevicesMap, IdDevicesMap.class);
         } catch (Exception ex) {
             this.devicesMap = null;
-            this.logger.error("Could not read IdDevicesMap", ex);
+            this.logger.debug("Could not read IdDevicesMap", ex);
         }
     }
 
+    /**
+     * Helper to generate a new state calculated from the difference between two states.
+     *
+     * channelTarget = channelValue - channelSubtract
+     *
+     * @param channelValue left side of the subtraction
+     * @param channelSubtract right side of the subtration
+     * @param channelTarget where to put the nwe state
+     * @param category for the new state
+     */
     private void calculateDifferenceToState(String channelValue, String channelSubtract, String channelTarget,
             String category) {
         State stateValue = this.stateValues.get(channelValue);
@@ -159,18 +170,18 @@ public class Location extends Device {
             QuantityType quantityValue = stateValue.as(QuantityType.class);
             @SuppressWarnings("rawtypes")
             @Nullable
-            QuantityType qunatitySubtract = stateSubtract.as(QuantityType.class);
+            QuantityType quantitySubtract = stateSubtract.as(QuantityType.class);
 
-            if (quantityValue != null && qunatitySubtract != null) {
+            if (quantityValue != null && quantitySubtract != null) {
                 @SuppressWarnings("rawtypes")
                 QuantityType quantityTarget = new QuantityType(
-                        quantityValue.toBigDecimal().subtract(qunatitySubtract.toBigDecimal()),
-                        qunatitySubtract.getUnit());
+                        quantityValue.toBigDecimal().subtract(quantitySubtract.toBigDecimal()),
+                        quantitySubtract.getUnit());
                 this.stateValues.put(channelTarget, quantityTarget);
 
                 if (!this.solarwattChannelSet.containsKey(channelTarget)) {
                     this.solarwattChannelSet.put(channelTarget,
-                            new SolarwattChannel(channelTarget, qunatitySubtract.getUnit(), category));
+                            new SolarwattChannel(channelTarget, quantitySubtract.getUnit(), category));
                 }
             }
         }
@@ -186,45 +197,53 @@ public class Location extends Device {
     }
 
     public static class IdDevicesMap {
-        private @Nullable Set<String> INNER_BUFFER;
-        private @Nullable Set<String> INNER_CONSUMER;
-        private @Nullable Set<String> POWERMETER_CONSUMPTION;
-        private @Nullable Set<String> OUTER_CONSUMER;
-        private @Nullable Set<String> OUTER_BUFFER;
-        private @Nullable Set<String> POWERMETER_PRODUCTION;
-        private @Nullable Set<String> OUTER_PRODUCER;
-        private @Nullable Set<String> INNER_PRODUCER;
+        @SerializedName("INNER_BUFFER")
+        private @Nullable Set<String> innerBuffer;
+        @SerializedName("INNER_CONSUMER")
+        private @Nullable Set<String> innerConsumer;
+        @SerializedName("POWERMETER_CONSUMPTION")
+        private @Nullable Set<String> powermeterConsumption;
+        @SerializedName("OUTER_CONSUMER")
+        private @Nullable Set<String> outerConsumer;
+        @SerializedName("OUTER_BUFFER")
+        private @Nullable Set<String> outerBuffer;
+        @SerializedName("POWERMETER_PRODUCTION")
+        private @Nullable Set<String> powermeterProduction;
+        @SerializedName("OUTER_PRODUCER")
+        private @Nullable Set<String> outerProducer;
+        @SerializedName("INNER_PRODUCER")
+        private @Nullable Set<String> innerProducer;
 
         public @Nullable Set<String> getInnerBuffer() {
-            return this.INNER_BUFFER;
+            return this.innerBuffer;
         }
 
         public @Nullable Set<String> getInnerConsumer() {
-            return this.INNER_CONSUMER;
+            return this.innerConsumer;
         }
 
         public @Nullable Set<String> getPowermeterConsumption() {
-            return this.POWERMETER_CONSUMPTION;
+            return this.powermeterConsumption;
         }
 
         public @Nullable Set<String> getOuterConsumer() {
-            return this.OUTER_CONSUMER;
+            return this.outerConsumer;
         }
 
         public @Nullable Set<String> getOuterBuffer() {
-            return this.OUTER_BUFFER;
+            return this.outerBuffer;
         }
 
         public @Nullable Set<String> getPowermeterProduction() {
-            return this.POWERMETER_PRODUCTION;
+            return this.powermeterProduction;
         }
 
         public @Nullable Set<String> getOuterProducer() {
-            return this.OUTER_PRODUCER;
+            return this.outerProducer;
         }
 
         public @Nullable Set<String> getInnerProducer() {
-            return this.INNER_PRODUCER;
+            return this.innerProducer;
         }
     }
 }

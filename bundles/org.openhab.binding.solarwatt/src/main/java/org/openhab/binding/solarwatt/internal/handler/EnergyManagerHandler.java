@@ -135,7 +135,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
                 try {
                     this.findEnergyManagerGuid(devices);
                 } catch (SolarwattConnectionException ex) {
-                    this.logger.error("Failed updating EnergyManager channels: {}", ex.getMessage());
+                    this.logger.warn("Failed updating EnergyManager channels: {}", ex.getMessage());
                 }
             }
             @Nullable
@@ -149,7 +149,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
                     this.updateState(stateName, stateValue);
                 });
             } else {
-                this.logger.error("updateChannels failed, missing device EnergyManager {}", this.energyManagerGuid);
+                this.logger.warn("updateChannels failed, missing device EnergyManager {}", this.energyManagerGuid);
             }
         }
     }
@@ -280,7 +280,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
         @Nullable
         ScheduledFuture<?> localRefreshJob = this.refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-            this.logger.info("Setting Energymanager refreshInterval to '{}' seconds", localConfig.refresh);
+            this.logger.trace("Setting Energymanager refreshInterval to '{}' seconds", localConfig.refresh);
             this.refreshJob = this.scheduler.scheduleWithFixedDelay(this.refreshRunnable, 0, localConfig.refresh,
                     TimeUnit.SECONDS);
         }
@@ -328,7 +328,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             @Nullable
             EnergyManager energyManager = (EnergyManager) devices.get(this.energyManagerGuid);
             if (energyManager != null) {
-
                 BigDecimal[] bigDecimals = timestamp.divideAndRemainder(BigDecimal.valueOf(1_000));
                 Instant instant = Instant.ofEpochSecond(bigDecimals[0].longValue(),
                         bigDecimals[1].multiply(BigDecimal.valueOf(1_000_000)).longValue());
@@ -396,7 +395,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
                             childThing.getProperties().get(THING_PROPERTIES_GUID));
                 }
             } catch (Exception ex) {
-                this.logger.error("Error processing child with uid {}", childThing.getUID(), ex);
+                this.logger.warn("Error processing child with uid {}", childThing.getUID(), ex);
             }
         });
     }

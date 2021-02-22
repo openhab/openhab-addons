@@ -30,7 +30,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class SimpleSwitcher extends Device {
-    public static final String solarWattClassname = "com.kiwigrid.devices.simpleswitcher.SimpleSwitcher";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.simpleswitcher.SimpleSwitcher";
 
     public SimpleSwitcher(DeviceDTO deviceDTO) {
         super(deviceDTO);

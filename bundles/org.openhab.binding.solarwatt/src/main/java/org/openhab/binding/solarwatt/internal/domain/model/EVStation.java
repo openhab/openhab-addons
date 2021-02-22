@@ -58,7 +58,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class EVStation extends Device {
-    public static final String solarWattClassname = "com.kiwigrid.devices.evstation.EVStation";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.evstation.EVStation";
 
     public EVStation(DeviceDTO deviceDTO) {
         super(deviceDTO);

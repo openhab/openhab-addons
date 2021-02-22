@@ -33,7 +33,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class MyReserveInverter extends Inverter {
-    public static final String solarWattClassname = "com.kiwigrid.devices.solarwatt.MyReserveInverter";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.solarwatt.MyReserveInverter";
 
     public MyReserveInverter(DeviceDTO deviceDTO) {
         super(deviceDTO);

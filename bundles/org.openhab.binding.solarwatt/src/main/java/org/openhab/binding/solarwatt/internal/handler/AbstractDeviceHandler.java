@@ -86,6 +86,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
         if (bridgeHandler != null) {
             if (command instanceof RefreshType) {
+                this.logger.debug("update command for {}", this.getThing().getUID());
                 this.updateStatus(ThingStatus.ONLINE);
                 this.updateDeviceProperties();
                 this.updateDeviceChannels();
@@ -100,7 +101,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      * Update the state of all channels.
      */
     protected void updateDeviceChannels() {
-        this.logger.debug("updateDeviceChannels for {}", this.getThing().getUID());
+        this.logger.trace("updateDeviceChannels for {}", this.getThing().getUID());
         // find device for the thing
         @Nullable
         Device device = this.getDevice();
@@ -134,7 +135,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      * Update the properties for this device.
      */
     protected void updateDeviceProperties() {
-        this.logger.debug("updateDeviceProperties for {}", this.getThing().getUID());
+        this.logger.trace("updateDeviceProperties for {}", this.getThing().getUID());
         // find device for the thing
         @Nullable
         Device device = this.getDevice();
@@ -228,7 +229,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
                 this.logger.error("BridgeHandler is not implementing EnergyManagerHandler {}", bridgeHandler);
             }
         } else {
-            // this handler canÄt work without a bridge
+            // this handler can't work without a bridge
             this.logger.error("Bridge is null");
         }
 
@@ -251,7 +252,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
             }
         }
 
-        this.logger.error("Device not found for thing with guid {}", this.editProperties().get(THING_PROPERTIES_GUID));
+        this.logger.warn("Device not found for thing with guid {}", this.editProperties().get(THING_PROPERTIES_GUID));
 
         return null;
     }

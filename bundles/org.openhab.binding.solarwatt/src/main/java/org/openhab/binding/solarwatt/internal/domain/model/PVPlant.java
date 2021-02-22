@@ -52,7 +52,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class PVPlant extends Device {
-    public static final String solarWattClassname = "com.kiwigrid.devices.pvplant.PVPlant";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.pvplant.PVPlant";
 
     public PVPlant(DeviceDTO deviceDTO) {
         super(deviceDTO);

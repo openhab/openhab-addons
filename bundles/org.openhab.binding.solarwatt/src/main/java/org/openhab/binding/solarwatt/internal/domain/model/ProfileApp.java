@@ -29,7 +29,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class ProfileApp extends Device {
-    public static final String solarWattClassname = "com.kiwigrid.application.schedule.ProfileApp";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.application.schedule.ProfileApp";
 
     public ProfileApp(DeviceDTO deviceDTO) {
         super(deviceDTO);

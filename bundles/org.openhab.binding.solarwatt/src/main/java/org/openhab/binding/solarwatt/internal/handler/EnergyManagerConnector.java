@@ -70,7 +70,6 @@ public class EnergyManagerConnector {
             } else {
                 this.logger.debug("Hostname is empty");
             }
-
         } else {
             this.logger.debug("Config is empty");
         }
@@ -124,7 +123,7 @@ public class EnergyManagerConnector {
                 throw new SolarwattConnectionException(response.getReason());
             }
         } catch (final JsonSyntaxException e) {
-            this.logger.error("Error parsing json: {}", content, e);
+            this.logger.debug("Error parsing json: {}", content, e);
             throw new SolarwattConnectionException(e.getMessage());
         }
     }

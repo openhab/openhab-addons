@@ -55,7 +55,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class Device {
 
-    public static final String solarWattClassname = "com.kiwigrid.lib.device.Device";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.lib.device.Device";
 
     private final String guid;
     private @Nullable String idName;

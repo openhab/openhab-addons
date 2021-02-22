@@ -28,7 +28,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class S0Counter extends PowerMeter {
-    public static final String solarWattClassname = "com.kiwigrid.devices.s0counter.S0Counter";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.devices.s0counter.S0Counter";
 
     public S0Counter(DeviceDTO deviceDTO) {
         super(deviceDTO);

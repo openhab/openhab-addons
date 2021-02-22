@@ -37,7 +37,7 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
  */
 @NonNullByDefault
 public class ScheduleApp extends Device {
-    public static final String solarWattClassname = "com.kiwigrid.application.schedule.ScheduleApp";
+    public static final String SOLAR_WATT_CLASSNAME = "com.kiwigrid.application.schedule.ScheduleApp";
 
     public ScheduleApp(DeviceDTO deviceDTO) {
         super(deviceDTO);
