@@ -32,6 +32,7 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Ignoring command {}", command);
+        logger.trace("Ignoring command {}", command);
     }
 
     @Override
@@ -85,17 +86,18 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         wundergroundUpdateReceiverServlet.addHandler(this);
         if (wundergroundUpdateReceiverServlet.isActive()) {
             updateStatus(ThingStatus.ONLINE);
-            logger.info("Wunderground update receiver listening for updates to station id {}", config.stationId);
+            logger.debug("Wunderground update receiver listening for updates to station id {}", config.stationId);
             return;
         }
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                wundergroundUpdateReceiverServlet.getErrorDetail());
     }
 
     @Override
     public void dispose() {
         wundergroundUpdateReceiverServlet.removeHandler(this.getStationId());
         super.dispose();
-        logger.info("Wunderground update receiver stopped listening for updates to station id {}", config.stationId);
+        logger.debug("Wunderground update receiver stopped listening for updates to station id {}", config.stationId);
     }
 
     public void updateChannelStates(WundergroundUpdateReceiverHandler handler, Map<String, String> channelIds) {
@@ -106,7 +108,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         });
         updateState(lastReceivedChannel, StringType.valueOf(UUID.randomUUID().toString()));
         String lastQuery = channelIds.getOrDefault(LAST_QUERY, "");
-        if ("".equals(lastQuery)) {
+        if (lastQuery.isEmpty()) {
             return;
         }
         updateState(queryStateChannel, StringType.valueOf(lastQuery));
