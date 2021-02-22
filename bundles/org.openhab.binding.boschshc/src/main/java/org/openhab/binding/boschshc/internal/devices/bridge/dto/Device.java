@@ -55,7 +55,7 @@ public class Device {
     public String status;
     public List<String> childDeviceIds;
 
-    public static boolean isValid(Device obj) {
+    public static Boolean isValid(Device obj) {
         return obj != null && obj.id != null;
     }
 }

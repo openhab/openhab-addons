@@ -111,12 +111,13 @@ public class LongPolling {
                     new String[] { "com/bosch/sh/remote/*", null });
             logger.debug("Subscribe: Sending request: {} - using httpClient {}", gson.toJson(request), httpClient);
             Request httpRequest = httpClient.createRequest(url, POST, request);
-            SubscribeResult response = httpClient.sendRequest(httpRequest, SubscribeResult.class);
+            SubscribeResult response = httpClient.sendRequest(httpRequest, SubscribeResult.class,
+                    SubscribeResult::isValid, null);
 
             logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
             String subscriptionId = response.getResult();
             return subscriptionId;
-        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+        } catch (TimeoutException | ExecutionException | InterruptedException | BoschSHCException e) {
             throw new LongPollingFailedException(
                     String.format("Error on subscribe (Http client: %s): %s", httpClient.toString(), e.getMessage()),
                     e);

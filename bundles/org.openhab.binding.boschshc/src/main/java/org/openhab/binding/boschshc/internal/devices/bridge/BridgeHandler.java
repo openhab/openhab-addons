@@ -408,32 +408,21 @@ public class BridgeHandler extends BaseBridgeHandler {
         String url = httpClient.getBoschSmartHomeUrl(String.format("devices/%s", deviceId));
         Request request = httpClient.createRequest(url, GET);
 
-        ContentResponse contentResponse = request.send();
-
-        String content = contentResponse.getContentAsString();
-
-        int statusCode = contentResponse.getStatus();
-        if (statusCode != 200) {
+        return httpClient.sendRequest(request, Device.class, Device::isValid, (Integer statusCode, String content) -> {
             JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
             if (errorResponse != null && JsonRestExceptionResponse.isValid(errorResponse)) {
                 if (errorResponse.errorCode.equals(JsonRestExceptionResponse.ENTITY_NOT_FOUND)) {
-                    throw new BoschSHCException("@text/offline.conf-error.invalid-device-id");
+                    return new BoschSHCException("@text/offline.conf-error.invalid-device-id");
                 } else {
-                    throw new BoschSHCException(
+                    return new BoschSHCException(
                             String.format("Request for info of device %s failed with status code %d and error code %s",
                                     deviceId, errorResponse.statusCode, errorResponse.errorCode));
                 }
             } else {
-                throw new BoschSHCException(String.format("Request for info for device %s failed with status code %d",
+                return new BoschSHCException(String.format("Request for info for device %s failed with status code %d",
                         deviceId, statusCode));
             }
-        }
-
-        Device deviceInfo = gson.fromJson(content, Device.class);
-        if (deviceInfo == null || !Device.isValid(deviceInfo)) {
-            throw new BoschSHCException(String.format("Received invalid device info: %s", content));
-        }
-        return deviceInfo;
+        });
     }
 
     /**
