@@ -14,12 +14,9 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,6 +38,9 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.RemoteService;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils.ChargeKeyDay;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils.ChargeKeyHour;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
@@ -94,57 +94,6 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
     private Optional<String> chargeProfileSent = Optional.empty();
-
-    private static class ChargeKeyHour {
-        ChargeKeyHour(final ProfileKey key, final boolean isHour) {
-            this.key = key;
-            this.isHour = isHour;
-        }
-
-        final ProfileKey key;
-        final boolean isHour;
-    }
-
-    private static class ChargeKeyDay {
-        ChargeKeyDay(final ProfileKey key, final DayOfWeek day) {
-            this.key = key;
-            this.day = day;
-        }
-
-        final ProfileKey key;
-        final DayOfWeek day;
-    }
-
-    @SuppressWarnings("serial")
-    private static final Map<String, ProfileKey> chargeEnableChannelKeys = new HashMap<>() {
-        {
-            VehicleChannelHandler.timedChannels.forEach((key, channel) -> {
-                put(channel.timer + CHARGE_ENABLED, key);
-            });
-            put(CHARGE_PROFILE_CLIMATE, ProfileKey.CLIMATE);
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final Map<String, ChargeKeyHour> chargeTimeChannelKeys = new HashMap<>() {
-        {
-            VehicleChannelHandler.timedChannels.forEach((key, channel) -> {
-                put(channel.time + CHARGE_HOUR, new ChargeKeyHour(key, true));
-                put(channel.time + CHARGE_MINUTE, new ChargeKeyHour(key, false));
-            });
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final Map<String, ChargeKeyDay> chargeDayChannelKeys = new HashMap<>() {
-        {
-            VehicleChannelHandler.dayChannels.forEach((dayOfWeek, dayChannel) -> {
-                put(CHARGE_TIMER1 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER1, dayOfWeek));
-                put(CHARGE_TIMER2 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER2, dayOfWeek));
-                put(CHARGE_TIMER3 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER3, dayOfWeek));
-            });
-        }
-    };
 
     public VehicleHandler(Thing thing, BMWConnectedDriveOptionProvider op, String type, boolean imperial) {
         super(thing, op, type, imperial);
@@ -798,13 +747,13 @@ public class VehicleHandler extends VehicleChannelHandler {
                         break;
                 }
             } else if (command instanceof OnOffType) {
-                final ProfileKey enableKey = chargeEnableChannelKeys.get(id);
+                final ProfileKey enableKey = ChargeProfileUtils.getEnableKey(id);
                 if (enableKey != null) {
                     profile.setEnabled(enableKey, OnOffType.ON.equals(command));
                     updateTimedState(profile, enableKey);
                     processed = true;
                 } else {
-                    final ChargeKeyDay chargeKeyDay = chargeDayChannelKeys.get(id);
+                    final ChargeKeyDay chargeKeyDay = ChargeProfileUtils.getKeyDay(id);
                     if (chargeKeyDay != null) {
                         profile.setDayEnabled(chargeKeyDay.key, chargeKeyDay.day, OnOffType.ON.equals(command));
                         updateTimedState(profile, chargeKeyDay.key);
@@ -812,7 +761,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     }
                 }
             } else if (command instanceof DecimalType) {
-                final ChargeKeyHour keyHour = chargeTimeChannelKeys.get(id);
+                final ChargeKeyHour keyHour = ChargeProfileUtils.getKeyHour(id);
                 if (keyHour != null) {
                     if (keyHour.isHour) {
                         profile.setHour(keyHour.key, ((DecimalType) command).intValue());
