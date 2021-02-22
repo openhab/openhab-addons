@@ -119,7 +119,6 @@ public class DeviceManagerFactory {
                 }
             }
         });
-
     }
 
     @Deactivate
