@@ -19,11 +19,11 @@
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true">
 			<options>
-				<option value="TH..">TH</option>
-				<option value="HC..">HC</option>
-				<option value="HP..">HP</option>
-				<option value="HN..">HN</option>
-				<option value="PM..">PM</option>
+				<option value="TH">TH</option>
+				<option value="HC">HC</option>
+				<option value="HP">HP</option>
+				<option value="HN">HN</option>
+				<option value="PM">PM</option>
 				<option value="HCJB">HCJB</option>
 				<option value="HCJW">HCJW</option>
 				<option value="HCJR">HCJR</option>

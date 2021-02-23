@@ -139,7 +139,9 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
         for (Entry<Label, String> entry : frame.getLabelToValues().entrySet()) {
             Label label = entry.getKey();
             if (!label.getChannelName().equals(NOT_A_CHANNEL)) {
-                if (label.getType() == ValueType.STRING) {
+                if (label == Label.PTEC) {
+                    updateState(label.getChannelName(), StringType.valueOf(entry.getValue().replace(".", "")));
+                } else if (label.getType() == ValueType.STRING) {
                     updateState(label.getChannelName(), StringType.valueOf(entry.getValue()));
                 } else if (label.getType() == ValueType.INTEGER) {
                     updateState(label.getChannelName(),
