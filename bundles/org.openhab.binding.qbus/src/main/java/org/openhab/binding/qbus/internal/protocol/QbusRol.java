@@ -145,6 +145,3 @@ public final class QbusRol {
             } catch (InterruptedException e) {
                 logger.warn("Could not send command for slat {}, {}", this.id, e.getMessage());
             }
-        }
-    }
-}

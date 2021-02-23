@@ -44,9 +44,7 @@ public class QbusCO2Handler extends QbusGlobalHandler {
 
     private @Nullable String sn;
 
-    public QbusCO2Handler(Thing thing) {
-        super(thing);
-    }
+    protected @Nullable QbusThingsConfig config;
 
     /**
      * Main initialization

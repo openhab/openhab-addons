@@ -90,7 +90,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Dimmer</label>
-		<description>Qbus dimmer output</description>
+		<description>Qbus Dimmer Output</description>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -148,7 +148,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat</label>
-		<description>Qbus thermostat</description>
+		<description>Qbus Thermostat</description>
 		<channels>
 			<channel id="measured" typeId="measured"/>
 			<channel id="mode" typeId="mode"/>
@@ -165,14 +165,14 @@
 	<channel-type id="scene">
 		<item-type>Switch</item-type>
 		<label>Scene</label>
-		<description>Scene control for Qbus</description>
+		<description>Scene Control for Qbus</description>
 		<category>Scene</category>
 	</channel-type>
 
 	<channel-type id="measured">
 		<item-type>Number:Temperature</item-type>
 		<label>Measured</label>
-		<description>Temperature measured by thermostat</description>
+		<description>Temperature Measured by Thermostat</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>CurrentTemperature</tag>
@@ -183,7 +183,7 @@
 	<channel-type id="setpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
-		<description>Setpoint temperature of thermostat</description>
+		<description>Setpoint Temperature of Thermostat</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>TargetTemperature</tag>
@@ -194,7 +194,7 @@
 	<channel-type id="mode">
 		<item-type>Number</item-type>
 		<label>Mode</label>
-		<description>Thermostat mode</description>
+		<description>Thermostat Mode</description>
 		<category>Number</category>
 		<state>
 			<options>
@@ -217,7 +217,7 @@
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
-		<description>Rollershutter control for Qbus</description>
+		<description>Rollershutter Control for Qbus</description>
 		<category>Blinds</category>
 	</channel-type>
 
