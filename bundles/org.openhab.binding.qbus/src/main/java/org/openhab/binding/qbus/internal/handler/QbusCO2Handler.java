@@ -39,16 +39,15 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusCO2Handler extends QbusGlobalHandler {
 
+    protected @Nullable QbusThingsConfig config;
+
+    private int co2Id;
+
+    private @Nullable String sn;
+
     public QbusCO2Handler(Thing thing) {
         super(thing);
     }
-
-    protected @NonNullByDefault({}) QbusThingsConfig config;
-
-    int co2Id = 0;
-
-    @Nullable
-    String sn;
 
     /**
      * Main initialization
@@ -111,7 +110,6 @@ public class QbusCO2Handler extends QbusGlobalHandler {
                         "Bridge communication not initialized when trying to execute command for CO2 " + co2Id);
                 return;
             } else {
-
                 scheduler.submit(() -> {
                     if (!QComm.communicationActive()) {
                         restartCommunication(QComm, "CO2", co2Id);
@@ -122,7 +120,6 @@ public class QbusCO2Handler extends QbusGlobalHandler {
                             handleStateUpdate(QCo2);
                             return;
                         }
-
                     }
                 });
             }
@@ -167,7 +164,7 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
-        config = getConfig().as(QbusThingsConfig.class);
+        this.config = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
@@ -176,8 +173,8 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      * @return co2Id
      */
     public int getId() {
-        if (config != null) {
-            return config.co2Id;
+        if (this.config != null) {
+            return this.config.co2Id;
         } else {
             return 0;
         }

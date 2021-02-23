@@ -26,11 +26,9 @@ import org.openhab.binding.qbus.internal.handler.QbusCO2Handler;
 @NonNullByDefault
 public final class QbusCO2 {
 
-    @Nullable
-    private Integer state;
+    private @Nullable Integer state;
 
-    @Nullable
-    private QbusCO2Handler thingHandler;
+    private @Nullable QbusCO2Handler thingHandler;
 
     /**
      * This method should be called if the ThingHandler for the thing corresponding to this CO2 is initialized.

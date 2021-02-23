@@ -13,6 +13,7 @@
 package org.openhab.binding.qbus.internal.handler;
 
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
+import static org.openhab.core.library.types.UpDownType.DOWN;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
 import org.openhab.binding.qbus.internal.protocol.QbusRol;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -40,16 +42,15 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusRolHandler extends QbusGlobalHandler {
 
+    protected @Nullable QbusThingsConfig config;
+
+    private int rolId;
+
+    private @Nullable String sn;
+
     public QbusRolHandler(Thing thing) {
         super(thing);
     }
-
-    protected @NonNullByDefault({}) QbusThingsConfig config;
-
-    int rolId;
-
-    @Nullable
-    String sn;
 
     /**
      * Main initialization
@@ -142,7 +143,6 @@ public class QbusRolHandler extends QbusGlobalHandler {
                     }
 
                     if (QComm.communicationActive()) {
-
                         if (command == REFRESH) {
                             handleStateUpdate(QRol);
                             return;
@@ -151,17 +151,11 @@ public class QbusRolHandler extends QbusGlobalHandler {
                         switch (channelUID.getId()) {
                             case CHANNEL_ROLLERSHUTTER:
                                 handleScreenposCommand(QRol, command);
-                                updateStatus(ThingStatus.ONLINE);
                                 break;
 
                             case CHANNEL_SLATS:
                                 handleSlatsposCommand(QRol, command);
-                                updateStatus(ThingStatus.ONLINE);
                                 break;
-
-                            default:
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "Channel unknown " + channelUID.getId());
                         }
                     }
                 });
@@ -181,11 +175,10 @@ public class QbusRolHandler extends QbusGlobalHandler {
      * Executes the command for screen up/down position
      */
     private void handleScreenposCommand(QbusRol QRol, Command command) {
-        @Nullable
         String snr = getSN();
-        if (command instanceof org.openhab.core.library.types.UpDownType) {
-            org.openhab.core.library.types.UpDownType s = (org.openhab.core.library.types.UpDownType) command;
-            if (s == org.openhab.core.library.types.UpDownType.DOWN) {
+        if (command instanceof UpDownType) {
+            UpDownType upDown = (UpDownType) command;
+            if (upDown == DOWN) {
                 if (snr != null) {
                     QRol.execute(0, snr);
                 } else {
@@ -198,16 +191,14 @@ public class QbusRolHandler extends QbusGlobalHandler {
                     thingOffline("No serial number configured for  " + rolId);
                 }
             }
-        } else if (command instanceof IncreaseDecreaseType)
-
-        {
-            IncreaseDecreaseType s = (IncreaseDecreaseType) command;
+        } else if (command instanceof IncreaseDecreaseType) {
+            IncreaseDecreaseType inc = (IncreaseDecreaseType) command;
             int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
             Integer currentValue = QRol.getState();
             int newValue;
             int sendValue;
             if (currentValue != null) {
-                if (s == IncreaseDecreaseType.INCREASE) {
+                if (inc == IncreaseDecreaseType.INCREASE) {
                     newValue = currentValue + stepValue;
                     // round down to step multiple
                     newValue = newValue - newValue % stepValue;
@@ -252,7 +243,6 @@ public class QbusRolHandler extends QbusGlobalHandler {
      * Executes the command for screen slats position
      */
     private void handleSlatsposCommand(QbusRol QRol, Command command) {
-        @Nullable
         String snr = getSN();
         if (command instanceof org.openhab.core.library.types.UpDownType) {
             org.openhab.core.library.types.UpDownType s = (org.openhab.core.library.types.UpDownType) command;
@@ -321,7 +311,6 @@ public class QbusRolHandler extends QbusGlobalHandler {
      * Method to update state of channel, called from Qbus Screen/Store.
      */
     public void handleStateUpdate(QbusRol qRol) {
-
         Integer rolState = qRol.getState();
         Integer slatState = qRol.getStateSlats();
 
@@ -339,7 +328,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
-        config = getConfig().as(QbusThingsConfig.class);
+        this.config = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
@@ -348,8 +337,8 @@ public class QbusRolHandler extends QbusGlobalHandler {
      * @return rolId
      */
     public int getId() {
-        if (config != null) {
-            return config.rolId;
+        if (this.config != null) {
+            return this.config.rolId;
         } else {
             return 0;
         }

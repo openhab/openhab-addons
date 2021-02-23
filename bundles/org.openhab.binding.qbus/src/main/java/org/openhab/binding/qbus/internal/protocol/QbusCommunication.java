@@ -53,22 +53,19 @@ public final class QbusCommunication {
 
     private final Logger logger = LoggerFactory.getLogger(QbusCommunication.class);
 
-    @Nullable
-    private Socket qSocket;
-    @Nullable
-    private PrintWriter qOut;
-    @Nullable
-    private BufferedReader qIn;
+    private @Nullable Socket qSocket;
+    private @Nullable PrintWriter qOut;
+    private @Nullable BufferedReader qIn;
 
     private boolean listenerStopped;
     private boolean qEventsRunning;
 
     private Gson gsonOut = new Gson();
     private Gson gsonIn;
-    @Nullable
-    private String CTD;
 
-    private Boolean CTDConnected = false;
+    private @Nullable String CTD;
+
+    private boolean CTDConnected = false;
 
     private final Map<Integer, QbusBistabiel> bistabiel = new HashMap<>();
     private final Map<Integer, QbusScene> scene = new HashMap<>();
@@ -77,8 +74,7 @@ public final class QbusCommunication {
     private final Map<Integer, QbusThermostat> thermostat = new HashMap<>();
     private final Map<Integer, QbusCO2> co2 = new HashMap<>();
 
-    @Nullable
-    private QbusBridgeHandler bridgeCallBack;
+    private @Nullable QbusBridgeHandler bridgeCallBack;
 
     /**
      * Constructor for Qbus communication object, manages communication with
@@ -97,62 +93,53 @@ public final class QbusCommunication {
      *
      * @param addr : IP-address of Qbus Server
      * @param port : Communication port of Qbus server
+     * @throws InterruptedException
+     * @throws IOException
      *
      */
 
-    public synchronized void startCommunication() {
+    public synchronized void startCommunication() throws IOException, InterruptedException {
         QbusBridgeHandler handler = bridgeCallBack;
         CTDConnected = false;
-        try {
 
-            for (int i = 1; qEventsRunning && (i <= 5); i++) {
-                Thread.sleep(1000);
-            }
-            if (qEventsRunning) {
-                logger.error("Starting from thread {}, but previous connection still active after 5000ms",
-                        Thread.currentThread().getId());
-                throw new IOException();
-            }
+        if (qEventsRunning) {
+            throw new IOException("Previous listening thread is still active.");
+        }
 
-            if (handler == null) {
-                throw new IOException();
-            }
+        if (handler == null) {
+            throw new IOException("No Bridge handler initialised.");
+        }
 
-            InetAddress addr = InetAddress.getByName(handler.getAddress());
-            Integer port = handler.getPort();
+        InetAddress addr = InetAddress.getByName(handler.getAddress());
+        Integer port = handler.getPort();
 
-            if (port != null) {
-                Socket socket = new Socket(addr, port);
-                qSocket = socket;
-                qOut = new PrintWriter(socket.getOutputStream(), true);
-                qIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                logger.info("Connected via local port {} from thread {}", socket.getLocalPort(),
-                        Thread.currentThread().getId());
-            } else {
-                return;
-            }
+        if (port != null) {
+            Socket socket = new Socket(addr, port);
+            qSocket = socket;
+            qOut = new PrintWriter(socket.getOutputStream(), true);
+            qIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            logger.debug("Connected via local port {} from thread {}", socket.getLocalPort(),
+                    Thread.currentThread().getId());
+        } else {
+            return;
+        }
 
-            setSN();
-            getSN();
+        setSN();
+        getSN();
 
-            // Connect to Qbus server
-            Connect();
+        // Connect to Qbus server
+        Connect();
 
-            // If Qbus Client is connected then initialize, else put Bridge offline
-            if (CTDConnected == true) {
-                initialize();
-                (new Thread(qEvents)).start();
-            } else {
-                handler.bridgeOffline("No communication with Qbus client");
-            }
-        } catch (IOException | InterruptedException e) {
-            logger.warn("Error initializing communication from thread {}", Thread.currentThread().getId());
-            // No connection with Qbus server, put Bridge offline
-            stopCommunication();
-            if (handler != null) {
-                handler.bridgeOffline("No communication with Qbus server");
-            }
-
+        // If Qbus Client is connected then initialize and start listening for incoming commands, else put Bridge
+        // offline
+        if (CTDConnected == true) {
+            initialize();
+            Thread thread = new Thread(this::qEvents);
+            thread.setName("OH-binding");
+            thread.setDaemon(true);
+            thread.start();
+        } else {
+            handler.bridgeOffline("No communication with Qbus client");
         }
     }
 
@@ -183,13 +170,19 @@ public final class QbusCommunication {
 
     /**
      * Close and restart communication with Qbus Server.
+     *
+     * @throws InterruptedException
      */
     public synchronized void restartCommunication() {
         stopCommunication();
 
         logger.debug("Qbus: restart communication from thread {}", Thread.currentThread().getId());
 
-        startCommunication();
+        try {
+            startCommunication();
+        } catch (InterruptedException | IOException e) {
+            logger.warn("Error on restaring communication.");
+        }
     }
 
     /**
@@ -198,7 +191,6 @@ public final class QbusCommunication {
      * @return True if active
      */
     public boolean communicationActive() {
-
         return qSocket != null;
     }
 
@@ -219,8 +211,10 @@ public final class QbusCommunication {
      * and interprets all incomming json messages. It triggers state updates for active channels linked to the
      * Qbus outputs. It is started after initialization of the communication.
      *
+     * @return
+     *
      */
-    private Runnable qEvents = () -> {
+    private void qEvents() {
         String qMessage;
 
         logger.info("Listening for events on thread {}", Thread.currentThread().getId());
@@ -231,9 +225,9 @@ public final class QbusCommunication {
 
         try {
             if (reader == null) {
-                throw new IOException();
+                throw new IOException("Bufferreader for incomming messages not initialized.");
             }
-            while (!listenerStopped & ((qMessage = reader.readLine()) != null)) {
+            while (!Thread.currentThread().isInterrupted() & ((qMessage = reader.readLine()) != null)) {
                 if (qMessage != null) {
                     readMessage(qMessage);
                 }
@@ -241,7 +235,7 @@ public final class QbusCommunication {
         } catch (IOException e) {
             if (!listenerStopped) {
                 qEventsRunning = false;
-                logger.warn("Qbus: IO error in listener on thread {}", Thread.currentThread().getId());
+                logger.error("Qbus: IO error in listener on thread {}", Thread.currentThread().getId());
 
                 QbusBridgeHandler handler = bridgeCallBack;
 
@@ -249,23 +243,20 @@ public final class QbusCommunication {
                     CTDConnected = false;
                     handler.bridgeOffline("No communication with Qbus server");
                 }
-
-                return;
             }
         }
 
         qEventsRunning = false;
-
-        logger.warn("Event listener thread stopped on thread {}", Thread.currentThread().getId());
-
+        logger.trace("Event listener thread stopped on thread {}", Thread.currentThread().getId());
     };
 
     /**
      * Called by other methods to send json data to Qbus.
      *
      * @param qMessage
+     * @throws InterruptedException
      */
-    synchronized void sendMessage(Object qMessage) {
+    synchronized void sendMessage(Object qMessage) throws InterruptedException {
         PrintWriter writer = qOut;
         String json = gsonOut.toJson(qMessage);
 
@@ -275,7 +266,7 @@ public final class QbusCommunication {
             try {
                 TimeUnit.MILLISECONDS.sleep(250);
             } catch (InterruptedException e) {
-                // No reaction on error is required
+                throw new InterruptedException(e.toString());
             }
 
         }
@@ -301,7 +292,6 @@ public final class QbusCommunication {
         @Nullable
         String snr = getSN();
         if (snr != null) {
-
             QbusMessageCmd qCmd = new QbusMessageCmd(snr, command);
 
             sendMessage(qCmd);
@@ -342,7 +332,6 @@ public final class QbusCommunication {
 
         if (sn != null && CTD != null) {
             try {
-
                 if (Integer.parseInt(sn) == Integer.parseInt(CTD) && qMessageGson != null) {
                     // Get the compatible outputs from the Qbus server
                     if ("returnBistabiel".equals(cmd)) {
@@ -352,7 +341,7 @@ public final class QbusCommunication {
                     } else if (("returnThermostat").equals(cmd)) {
                         cmdListThermostat(((QbusMessageListMap) qMessageGson).getOutputs());
                     } else if (("returnScene").equals(cmd)) {
-                        cmdlistscenes(((QbusMessageListMap) qMessageGson).getOutputs());
+                        cmdListscenes(((QbusMessageListMap) qMessageGson).getOutputs());
                     } else if (("returnCo2").equals(cmd)) {
                         cmdlistco2(((QbusMessageListMap) qMessageGson).getOutputs());
                     } else if (("returnRol02p").equals(cmd)) {
@@ -409,7 +398,6 @@ public final class QbusCommunication {
      */
 
     private void initialize() throws IOException, InterruptedException {
-
         if (bridgeCallBack != null) {
             if (CTDConnected) {
                 sendAndReadMessage("getBistabiel");
@@ -431,7 +419,7 @@ public final class QbusCommunication {
                 return;
             }
         } else {
-            logger.error("Initialization error");
+            logger.trace("Initialization error");
         }
     }
 
@@ -510,7 +498,7 @@ public final class QbusCommunication {
      *
      * @param outputs
      */
-    private void cmdlistscenes(@Nullable List<Map<String, String>> outputs) {
+    private void cmdListscenes(@Nullable List<Map<String, String>> outputs) {
         if (outputs != null) {
             for (Map<String, String> scene : outputs) {
                 String idStr = scene.get("id");
@@ -588,7 +576,6 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdlistrolslats(@Nullable List<Map<String, String>> outputs) {
-        logger.debug("Qbus: ROL02PSLATS received from Qbus server");
         if (outputs != null) {
             for (Map<String, String> rol : outputs) {
                 String idStr = rol.get("id");
@@ -891,7 +878,7 @@ public final class QbusCommunication {
     }
 
     /**
-     * Return all screen outûts in the Qbus Controller.
+     * Return all rollershutter outûts in the Qbus Controller.
      *
      * @return
      */

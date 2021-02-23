@@ -106,4 +106,5 @@ Rollershutter       Roller2                                             {channel
 Dimmer              Roller2_slats                                       {channel="qbus:rollershutter_slats:CTD007841:121:slats"}
 ```
 
-This is the link to the [Qbus forum](https://qbusforum.be). This forum is mainly in dutch and you can find a lot of information about the pre testings af this binding and offers a way to communicate with other users.
+This is the link to the [Qbus forum](https://qbusforum.be). This forum is mainly in dutch and you can find a lot of information about the pre testings of this binding and offers a way to communicate with other users.
+

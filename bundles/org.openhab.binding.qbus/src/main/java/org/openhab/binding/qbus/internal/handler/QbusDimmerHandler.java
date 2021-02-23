@@ -40,16 +40,15 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusDimmerHandler extends QbusGlobalHandler {
 
+    protected @Nullable QbusThingsConfig config;
+
+    private int dimmerId;
+
+    private @Nullable String sn;
+
     public QbusDimmerHandler(Thing thing) {
         super(thing);
     }
-
-    protected @NonNullByDefault({}) QbusThingsConfig config;
-
-    int dimmerId;
-
-    @Nullable
-    private String sn;
 
     /**
      * Main initialization
@@ -134,14 +133,12 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
                         "Bridge communication not initialized when trying to execute command for dimmer " + dimmerId);
                 return;
             } else {
-
                 scheduler.submit(() -> {
                     if (!QComm.communicationActive()) {
                         restartCommunication(QComm, "Dimmer", dimmerId);
                     }
 
                     if (QComm.communicationActive()) {
-
                         if (command == REFRESH) {
                             handleStateUpdate(QDimmer);
                             return;
@@ -150,17 +147,11 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
                         switch (channelUID.getId()) {
                             case CHANNEL_SWITCH:
                                 handleSwitchCommand(QDimmer, command);
-                                updateStatus(ThingStatus.ONLINE);
                                 break;
 
                             case CHANNEL_BRIGHTNESS:
                                 handleBrightnessCommand(QDimmer, command);
-                                updateStatus(ThingStatus.ONLINE);
                                 break;
-
-                            default:
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "Channel unknown " + channelUID.getId());
                         }
                     }
                 });
@@ -185,7 +176,6 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
     private void handleSwitchCommand(QbusDimmer QDimmer, Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
-            @Nullable
             String snr = getSN();
 
             if (s == OnOffType.OFF) {
@@ -208,7 +198,6 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      * Executes the brightness command
      */
     private void handleBrightnessCommand(QbusDimmer QDimmer, Command command) {
-        @Nullable
         String snr = getSN();
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
@@ -277,7 +266,6 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      * Method to update state of channel, called from Qbus Dimmer.
      */
     public void handleStateUpdate(QbusDimmer QDimmer) {
-
         Integer dimmerState = QDimmer.getState();
         if (dimmerState != null) {
             updateState(CHANNEL_BRIGHTNESS, new PercentType(dimmerState));
@@ -289,7 +277,7 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
-        config = getConfig().as(QbusThingsConfig.class);
+        this.config = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
@@ -298,8 +286,8 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      * @return dimmerId
      */
     public int getId() {
-        if (config != null) {
-            return config.dimmerId;
+        if (this.config != null) {
+            return this.config.dimmerId;
         } else {
             return 0;
         }
