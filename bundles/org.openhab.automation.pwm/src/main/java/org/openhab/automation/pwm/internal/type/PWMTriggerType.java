@@ -49,9 +49,9 @@ public class PWMTriggerType extends TriggerType {
                 .withRequired(true) //
                 .withMultiple(false) //
                 .withDefault("600") //
-                .withLabel("PWM Period") //
+                .withLabel("PWM Interval") //
                 .withUnit("s") //
-                .withDescription("Duration of one PWM period in sec.").build());
+                .withDescription("Duration of the PWM interval in sec.").build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_MIN_DUTYCYCLE, Type.DECIMAL) //
                 .withRequired(false) //
                 .withMultiple(false) //

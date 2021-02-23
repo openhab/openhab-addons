@@ -8,7 +8,7 @@ The higher the control percentage (duty cycle), the longer the ON phase.
 
 Example: If the fixed interval is 10 sec and the duty cycle is 30%, the output is ON for 3 sec and OFF for 7 sec.
 
-This module is unsuitable for controlling LED lights as the high PWM frequency can't be met.
+This module is **unsuitable** for controlling LED lights as the high PWM frequency can't be met.
 
 > Note: The module starts to work only if the duty cycle has been updated at least once.
 
@@ -51,7 +51,7 @@ When the duty cycle is updated again, the module returns to normal operation.
 
 ## Control Algorithm
 
-This module is designed to act fast on duty cycle changes, but at the same time maintains a constant interval and the min/max ON/OFF parameters.
+This module is designed to respond fast to duty cycle changes, but at the same time maintains a constant interval and the min/max ON/OFF parameters.
 For that reason, the module might seem to act peculiarly in rare cases:
 
 - When the output is ON and the duty cycle is decreased, the output might switch off immediately, if applicable.
