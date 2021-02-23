@@ -25,16 +25,14 @@
 		<config-description>
 			<parameter name="stationId" type="text" required="true" pattern="\w+">
 				<label>The stationid as configured in the weather station</label>
-				<description><![CDATA[
-				<p>
+				<description><![CDATA[<br />
 					The wunderground.com update api requires a station id, that is defined for the WeatherUnderground
-					account to submit observations to.
-				</p>
-				<p>
+					account measurements are to be submitted to.<br />
+					<br />
 					In this binding it is used to identify a unique thing, so each weather-station or
-					other apparatus submitting measurements can have a separate id, but if you don't set up an HttpBinding to forward
+					other apparatus submitting measurements can have a separate id, but if you don't intend to forward
 					the observations to wunderground.com, this value can be any non-blank string.
-				</p> ]]>
+				]]>
 				</description>
 			</parameter>
 		</config-description>

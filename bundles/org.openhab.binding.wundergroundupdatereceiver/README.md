@@ -1,4 +1,4 @@
-# WundergroundUpdateReceiver Binding
+# Wunderground Update Receiver Binding
 
 Many personal weather stations are only capable of submitting measurements to the wunderground.com update site.
 
@@ -7,6 +7,11 @@ to https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php. If
 weather stations based on the Fine Offset Electronics WH2600-IP - this is simple, otherwise you have to set up dns
 such that it resolves the above hostname to your server, without preventing the server from resolving the proper ip if
 you want to forward the request.
+
+The server thus listens at http(s)://<your-openHAB-server>:<openHAB-port>/weatherstation/updateweatherstation.php and the weather station
+needs to be pointed at this address. If you can't configure the weather station itself to submit to an alternate hostname you would need
+to set up a dns server that resolves rtupdate.wunderground.com to the IP-address of your server and provide as dns to the weather station
+does DHCP. Make sure not to use this dns server instance for any other DHCP clients. 
 
 The request is in itself simple to parse, so by redirecting it to your openhab server you can intercept the values and use them to
 control items in your home. E.g. use measured wind-speed to close an awning or turn on the sprinkler system after some time without rain.

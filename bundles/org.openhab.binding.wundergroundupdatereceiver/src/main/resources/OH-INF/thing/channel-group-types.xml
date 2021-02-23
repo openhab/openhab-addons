@@ -93,7 +93,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="pollution-group" advanced="true">
+	<channel-group-type id="pollution-group">
 		<label>Pollution</label>
 		<description>Pollutant measurements</description>
 		<category>Pollution</category>

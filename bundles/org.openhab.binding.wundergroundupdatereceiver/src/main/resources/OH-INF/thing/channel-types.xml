@@ -16,7 +16,7 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
-	<channel-type id="datetime-utc">
+	<channel-type id="datetime-utc" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Updated</label>
 		<description>The date and time of the last update in UTC as submitted by the weather station. This can be 'now'.</description>
@@ -64,7 +64,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wind-speed-avg-2min">
+	<channel-type id="wind-speed-avg-2min" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed 2min Average</label>
 		<description>2 minute average wind speed.</description>
@@ -76,7 +76,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="wind-direction-avg-2min">
+	<channel-type id="wind-direction-avg-2min" advanced="true">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction 2min Average</label>
 		<description>2 minute average wind direction.</description>
@@ -88,7 +88,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wind-gust-speed-10min">
+	<channel-type id="wind-gust-speed-10min" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Gust Speed 10min Average</label>
 		<description>10 minute average gust speed.</description>
@@ -100,7 +100,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="wind-gust-direction-10min">
+	<channel-type id="wind-gust-direction-10min" advanced="true">
 		<item-type>Number:Angle</item-type>
 		<label>Gust Direction 10min Average</label>
 		<description>10 minute average gust direction.</description>
@@ -136,7 +136,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="dew-point">
+	<channel-type id="dew-point" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
 		<description>Outdoor dew point.</description>
@@ -148,7 +148,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wind-chill">
+	<channel-type id="wind-chill" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Wind Chill</label>
 		<description>The apparent wind chill temperature.</description>
@@ -174,7 +174,7 @@
 	</channel-type>
 
 	<!-- for sensors 2,3,4 use soiltemp2f, soiltemp3f, and soiltemp4f -->
-	<channel-type id="soil-temperature">
+	<channel-type id="soil-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Soil Temperature</label>
 		<description>Soil temperature.</description>
@@ -210,7 +210,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="rain-weekly">
+	<channel-type id="rain-weekly" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Weekly Rain</label>
 		<description>Rain since the start of this week.</description>
@@ -222,7 +222,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="rain-monthly">
+	<channel-type id="rain-monthly" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Monthly Rain</label>
 		<description>Rain since the start if this month.</description>
@@ -234,7 +234,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="rain-yearly">
+	<channel-type id="rain-yearly" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Yearly Rain</label>
 		<description>Rain since the start of this year.</description>
@@ -246,7 +246,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="metar">
+	<channel-type id="metar" advanced="true">
 		<item-type>String</item-type>
 		<label>METAR weather report</label>
 		<description>METAR formatted weather report</description>
@@ -254,7 +254,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="clouds">
+	<channel-type id="clouds" advanced="true">
 		<item-type>String</item-type>
 		<label>Cloud cover</label>
 		<description>METAR style cloud cover.</description>
@@ -263,7 +263,7 @@
 	</channel-type>
 
 	<!-- for sensors 2,3,4 use soilmoisture2, soilmoisture3, and soilmoisture4 -->
-	<channel-type id="soil-moisture">
+	<channel-type id="soil-moisture" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Soil Moisture</label>
 		<description>Soil moisture in %.</description>
@@ -276,7 +276,7 @@
 	</channel-type>
 
 	<!-- for sensor 2 use leafwetness2 -->
-	<channel-type id="leafwetness">
+	<channel-type id="leafwetness" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Leaf wetness</label>
 		<description>Leaf wetness in %.</description>
@@ -312,7 +312,7 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
-	<channel-type id="visibility">
+	<channel-type id="visibility" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
 		<description>Visibility.</description>
@@ -324,7 +324,7 @@
 	</channel-type>
 
 	<!-- Pollution Fields: -->
-	<channel-type id="nitric-oxide">
+	<channel-type id="nitric-oxide" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Nitric Oxide</label>
 		<description>Nitric Oxide ppm.</description>
@@ -335,7 +335,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="nitrogen-dioxide-measured">
+	<channel-type id="nitrogen-dioxide-measured" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Nitrogen Dioxide</label>
 		<description>Nitrogen Dioxide, true measure ppb.</description>
@@ -346,7 +346,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="nitrogen-dioxide-nox-no">
+	<channel-type id="nitrogen-dioxide-nox-no" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>NO2 X computed</label>
 		<description>NO2 computed, NOx-NO ppb.</description>
@@ -357,7 +357,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="nitrogen-dioxide-noy-no">
+	<channel-type id="nitrogen-dioxide-noy-no" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>NO2 Y computed, NOy-NO ppb</label>
 		<description>NO2 computed, NOy-NO ppb.</description>
@@ -368,7 +368,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="nitrogen-oxides">
+	<channel-type id="nitrogen-oxides" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Nitrogen Oxides</label>
 		<description>Nitrogen Oxides ppb.</description>
@@ -379,7 +379,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="total-reactive-nitrogen">
+	<channel-type id="total-reactive-nitrogen" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Total Reactive Nitrogen</label>
 		<description>Total reactive nitrogen.</description>
@@ -390,7 +390,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="no3-ion">
+	<channel-type id="no3-ion" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>NO3 ion</label>
 		<description>NO3 ion (nitrate, not adjusted for ammonium ion) µG/m3.</description>
@@ -401,7 +401,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="so4-ion">
+	<channel-type id="so4-ion" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>SO4 ion</label>
 		<description>SO4 ion (sulfate, not adjusted for ammonium ion) µG/m3.</description>
@@ -412,7 +412,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="sulfur-dioxide">
+	<channel-type id="sulfur-dioxide" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Sulfur Dioxide</label>
 		<description>Sulfur Dioxide, conventional ppb.</description>
@@ -423,7 +423,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="sulfur-dioxide-trace-levels">
+	<channel-type id="sulfur-dioxide-trace-levels" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Sulfur Dioxide Trace Levels</label>
 		<description>Sulfur Dioxide, trace levels ppb.</description>
@@ -434,7 +434,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="carbon-monoxide">
+	<channel-type id="carbon-monoxide" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Carbon Monoxide</label>
 		<description>Carbon Monoxide, conventional ppm.</description>
@@ -445,7 +445,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="carbon-monoxide-trace-levels">
+	<channel-type id="carbon-monoxide-trace-levels" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Carbon Monoxide Trace Levels</label>
 		<description>Carbon Monoxide, trace levels ppb.</description>
@@ -456,7 +456,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="elemental-carbon">
+	<channel-type id="elemental-carbon" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>Elemental Carbon</label>
 		<description>Elemental Carbon, PM2.5 µG/m3.</description>
@@ -467,7 +467,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="organic-carbon">
+	<channel-type id="organic-carbon" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>Organic Carbon</label>
 		<description>Organic Carbon, not adjusted for oxygen and hydrogen, PM2.5 µG/m3.</description>
@@ -478,7 +478,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="black-carbon">
+	<channel-type id="black-carbon" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>Black Carbon</label>
 		<description>Black Carbon at 880 nm, µG/m3.</description>
@@ -489,7 +489,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="aethalometer">
+	<channel-type id="aethalometer" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>Second Channel of Aethalometer</label>
 		<description>second channel of Aethalometer at 370 nm, µG/m3.</description>
@@ -500,7 +500,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pm2_5-mass">
+	<channel-type id="pm2_5-mass" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>PM2.5 Mass</label>
 		<description>PM2.5 mass, µG/m3.</description>
@@ -511,7 +511,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pm10-mass">
+	<channel-type id="pm10-mass" advanced="true">
 		<item-type>Number:Density</item-type>
 		<label>PM10 Mass</label>
 		<description>PM10 mass, µG/m3.</description>
@@ -522,7 +522,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ozone">
+	<channel-type id="ozone" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Ozone</label>
 		<description>Ozone, ppb.</description>
@@ -533,7 +533,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="softwaretype">
+	<channel-type id="softwaretype" advanced="true">
 		<item-type>String</item-type>
 		<label>Software Type</label>
 		<description>A software type string from the weather station</description>
@@ -541,7 +541,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="last-query-state">
+	<channel-type id="last-query-state" advanced="true">
 		<item-type>String</item-type>
 		<kind>state</kind>
 		<label>The last query</label>
