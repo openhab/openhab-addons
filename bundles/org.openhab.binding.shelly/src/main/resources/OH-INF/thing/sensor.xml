@@ -115,7 +115,7 @@
 	</thing-type>
 
 	<thing-type id="shellymotion">
-		<label>Shelly Motion</label>
+		<label>Shelly Motion (SHMOS-1)</label>
 		<description>Shelly Motion Sensor (battery powered)</description>
 
 		<channel-groups>
