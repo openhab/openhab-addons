@@ -122,7 +122,8 @@
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">
-				<label>IP address / hostname of the heat pump</label>
+				<context>network-address</context>
+				<label>Address of heat pump</label>
 				<description>Enter the IP address or the hostname of the EcoTouch display unit</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">
@@ -131,14 +132,15 @@
 					that, the username default was admin</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
+				<context>password</context>
 				<label>Password for login</label>
 				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
 					that, the password default was wtkadmin</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 				<default>60</default>
-				<label>Refresh interval in s</label>
-				<description>This is the refresh interval in s for all channels.</description>
+				<label>Refresh interval</label>
+				<description>This is the refresh interval in seconds for all channels.</description>
 			</parameter>
 		</config-description>
 
@@ -266,7 +268,8 @@
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">
-				<label>IP address / hostname of the heat pump</label>
+				<context>network-address</context>
+				<label>Address of heat pump</label>
 				<description>Enter the IP address or the hostname of the EcoTouch display unit</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">
@@ -275,14 +278,15 @@
 					that, the username default was admin</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
+				<context>password</context>
 				<label>Password for login</label>
 				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
 					that, the password default was wtkadmin</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 				<default>60</default>
-				<label>Refresh interval in s</label>
-				<description>This is the refresh interval in s for all channels.</description>
+				<label>Refresh interval</label>
+				<description>This is the refresh interval in seconds for all channels.</description>
 			</parameter>
 		</config-description>
 
@@ -405,14 +409,14 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="temperature_pool">
+	<channel-type id="temperature_pool" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Pool</label>
 		<description></description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="temperature_solar">
+	<channel-type id="temperature_solar" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Solar</label>
 		<description></description>
@@ -525,7 +529,7 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="temperature_pool_set2">
+	<channel-type id="temperature_pool_set2" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Pool Setpoint BMS</label>
 		<description></description>
@@ -570,26 +574,26 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="nviNormAussen">
+	<channel-type id="nviNormAussen" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>nviNormAussen</label>
 		<description></description>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="nviHeizkreisNorm">
+	<channel-type id="nviHeizkreisNorm" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>nviHeizkreisNorm</label>
 		<description></description>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="nviTHeizgrenze">
+	<channel-type id="nviTHeizgrenze" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>nviTHeizgrenze</label>
 		<description></description>
 		<category>Temperature</category>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="nviTHeizgrenzeSoll">
+	<channel-type id="nviTHeizgrenzeSoll" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>nviTHeizgrenze Setpoint</label>
 		<description></description>
@@ -700,7 +704,7 @@
 		<description></description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="operating_hours_compressor1">
+	<channel-type id="operating_hours_compressor1" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Operating Hours Compressor 1</label>
 		<description></description>
@@ -712,19 +716,19 @@
 		<description></description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="operating_hours_circulation_pump">
+	<channel-type id="operating_hours_circulation_pump" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Operating Hours Circulation Pump</label>
 		<description></description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="operating_hours_source_pump">
+	<channel-type id="operating_hours_source_pump" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Operating Hours Source Pump</label>
 		<description></description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="operating_hours_solar">
+	<channel-type id="operating_hours_solar" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Operating Hours Solar</label>
 		<description></description>
@@ -748,13 +752,13 @@
 		<description></description>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="enable_pool">
+	<channel-type id="enable_pool" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Pool</label>
 		<description></description>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="enable_pv">
+	<channel-type id="enable_pv" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable PV</label>
 		<description></description>
