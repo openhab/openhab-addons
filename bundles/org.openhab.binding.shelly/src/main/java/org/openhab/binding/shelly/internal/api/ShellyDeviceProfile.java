@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsInput;
@@ -54,6 +55,8 @@ public class ShellyDeviceProfile {
     public String hostname = "";
     public String mode = "";
     public boolean discoverable = true;
+    public boolean auth = false;
+    public boolean alwaysOn = true;
 
     public String hwRev = "";
     public String hwBatchId = "";
@@ -115,11 +118,11 @@ public class ShellyDeviceProfile {
         hostname = settings.device.hostname != null && !settings.device.hostname.isEmpty()
                 ? settings.device.hostname.toLowerCase()
                 : "shelly-" + mac.toUpperCase().substring(6, 11);
-        mode = !getString(settings.mode).isEmpty() ? getString(settings.mode).toLowerCase() : "";
+        mode = getString(settings.mode).toLowerCase();
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(settings.fw, "/");
-        fwVersion = substringBetween(settings.fw, "/", "@");
+        fwVersion = extractFwVersion(settings.fw);
         fwId = substringAfter(settings.fw, "@");
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
@@ -129,8 +132,6 @@ public class ShellyDeviceProfile {
         if ((numRelays > 0) && (settings.relays == null)) {
             numRelays = 0;
         }
-        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2);
-        isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(settings.device.numRollers);
         numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
@@ -177,6 +178,9 @@ public class ShellyDeviceProfile {
             return;
         }
 
+        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2);
+        isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
+
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
                 || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
@@ -198,14 +202,14 @@ public class ShellyDeviceProfile {
         isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR);
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion; // we assume that Sense is connected to
-                                                                                 // the charger
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion;
+
+        alwaysOn = !hasBattery || isMotion || isSense; // true means: device is reachable all the time (no sleep mode)
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
         if (hasRelays) {
-            // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after
-            // initialization
+            // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after init
             if (status.inputs != null) {
                 numInputs = status.inputs.size();
             }
@@ -316,5 +320,18 @@ public class ShellyDeviceProfile {
             return settings.favorites.get(id).pos;
         }
         return -1;
+    }
+
+    public static String extractFwVersion(@Nullable String version) {
+        if (version != null) {
+            if (version.contains("@")) { // standard format
+                return substringBetween(getString(version), "/", "@");
+            }
+            if (version.indexOf('/') != version.lastIndexOf('/')) {
+                // includes 2 /, e.g. beta
+                return substringAfterLast(version, "/");
+            }
+        }
+        return "";
     }
 }

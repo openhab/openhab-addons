@@ -267,7 +267,7 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellySettingsMqtt {
-        public Boolean enabled;
+        public Boolean enable;
         public String server;
         public String user;
         @SerializedName("reconnect_timeout_max")
@@ -294,8 +294,13 @@ public class ShellyApiJsonDTO {
         public Integer updatePeriod;
     }
 
+    public static class ShellyStatusMqtt {
+        public Boolean connected;
+    }
+
     public static class ShellySettingsSntp {
         public String server;
+        public Boolean enabled;
     }
 
     public static class ShellySettingsLogin {
@@ -316,10 +321,6 @@ public class ShellyApiJsonDTO {
 
     public static class ShellyStatusCloud {
         public Boolean enabled;
-        public Boolean connected;
-    }
-
-    public static class ShellyStatusMqtt {
         public Boolean connected;
     }
 
@@ -532,8 +533,11 @@ public class ShellyApiJsonDTO {
         public ShellySettingsWiFiNetwork wifiSta;
         @SerializedName("wifi_sta1")
         public ShellySettingsWiFiNetwork wifiSta1;
-        // public ShellySettingsMqtt mqtt; // not used for now
-        // public ShellySettingsSntp sntp; // not used for now
+        @SerializedName("wifirecovery_reboot_enabled")
+        public Boolean wifiRecoveryReboot;
+
+        public ShellySettingsMqtt mqtt; // not used for now
+        public ShellySettingsSntp sntp; // not used for now
         public ShellySettingsCoiot coiot; // Firmware 1.6+
         public ShellySettingsLogin login;
         @SerializedName("pin_code")
@@ -544,8 +548,8 @@ public class ShellyApiJsonDTO {
         public Boolean discoverable; // FW 1.6+
         public String fw;
         @SerializedName("build_info")
-        ShellySettingsBuildInfo buildInfo;
-        ShellyStatusCloud cloud;
+        public ShellySettingsBuildInfo buildInfo;
+        public ShellyStatusCloud cloud;
         @SerializedName("sleep_mode")
         public ShellySensorSleepMode sleepMode; // FW 1.6
         @SerializedName("external_power")
@@ -644,11 +648,17 @@ public class ShellyApiJsonDTO {
         public String fw; // current FW version
     }
 
+    public static class ShellyActionsStats {
+        public Integer skipped;
+    }
+
     public static class ShellySettingsStatus {
         public String name; // FW 1.8: Symbolic Device name is configurable
 
         @SerializedName("wifi_sta")
         public ShellySettingsWiFiNetwork wifiSta; // WiFi client configuration. See /settings/sta for details
+        public ShellyStatusCloud cloud;
+        public ShellyStatusMqtt mqtt;
 
         public String time;
         public Integer serial;
@@ -658,6 +668,8 @@ public class ShellyApiJsonDTO {
         public Boolean discoverable; // FW 1.6+
         @SerializedName("cfg_changed_cnt")
         public Integer cfgChangedCount; // FW 1.8
+        @SerializedName("actions_stats")
+        public ShellyActionsStats astats;
 
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsRoller> rollers;
@@ -953,8 +965,6 @@ public class ShellyApiJsonDTO {
 
         public Boolean motion; // Shelly Sense: true=motion detected
         public Boolean charger; // Shelly Sense: true=charger connected
-        @SerializedName("external_power")
-        public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
 
         @SerializedName("act_reasons")
         public List<Object> actReasons; // HT/Smoke/Flood: list of reasons which woke up the device

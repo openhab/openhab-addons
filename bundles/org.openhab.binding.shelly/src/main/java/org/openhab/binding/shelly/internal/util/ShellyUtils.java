@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.measure.Unit;
 
@@ -266,6 +267,19 @@ public class ShellyUtils {
             // Unable to convert device's timezone, use system one
             return getTimestamp();
         }
+    }
+
+    public static String getTimestamp(DateTimeType dt) {
+        return dt.getZonedDateTime().toString().replace('T', ' ').replace('-', '/');
+    }
+
+    public static String convertTimestamp(long ts) {
+        if (ts == 0) {
+            return "";
+        }
+        String time = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN)
+                .format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+        return time.replace('T', ' ').replace('-', '/');
     }
 
     public static Integer getLightIdFromGroup(String groupName) {

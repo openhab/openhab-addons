@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +26,7 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyProtectedHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -141,8 +143,12 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    public Map<String, ShellyBaseHandler> getThingHandlers() {
-        return deviceListeners;
+    public Map<String, ShellyManagerInterface> getThingHandlers() {
+        Map<String, ShellyManagerInterface> handlers = new TreeMap<>();
+        for (Map.Entry<String, ShellyBaseHandler> bh : deviceListeners.entrySet()) {
+            handlers.put(bh.getKey(), bh.getValue());
+        }
+        return handlers;
     }
 
     /**

@@ -194,11 +194,10 @@ public class ShellyHttpApi {
                     .convert(getDouble(status.tmp.value));
             status.tmp.tF = status.tmp.units.equals(SHELLY_TEMP_FAHRENHEIT) ? status.tmp.value : f;
         }
-        if ((status.charger == null) && (status.externalPower != null)) {
+        if ((status.charger == null) && (profile.settings.externalPower != null)) {
             // SHelly H&T uses external_power, Sense uses charger
-            status.charger = status.externalPower != 0;
+            status.charger = profile.settings.externalPower != 0;
         }
-
         return status;
     }
 
@@ -249,6 +248,10 @@ public class ShellyHttpApi {
 
     public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException {
         return callApi("/ota?" + uri, ShellySettingsUpdate.class);
+    }
+
+    public String setCloud(boolean enabled) throws ShellyApiException {
+        return callApi("/settings/cloud/?enabled=" + (enabled ? "1" : "0"), String.class);
     }
 
     /**
