@@ -109,10 +109,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                 lastTripCache.ifPresent(lastTrip -> lastTripCallback.onResponse(lastTrip));
             } else if (CHANNEL_GROUP_LIFETIME.equals(group)) {
                 allTripsCache.ifPresent(allTrips -> allTripsCallback.onResponse(allTrips));
-            } else if (CHANNEL_GROUP_LAST_TRIP.equals(group)) {
-                lastTripCache.ifPresent(lastTrip -> lastTripCallback.onResponse(lastTrip));
-            } else if (CHANNEL_GROUP_LAST_TRIP.equals(group)) {
-                lastTripCache.ifPresent(lastTrip -> lastTripCallback.onResponse(lastTrip));
+            } else if (CHANNEL_GROUP_DESTINATION.equals(group)) {
+                destinationCache.ifPresent(destination -> destinationCallback.onResponse(destination));
             } else if (CHANNEL_GROUP_STATUS.equals(group)) {
                 vehicleStatusCache.ifPresent(vehicleStatus -> vehicleStatusCallback.onResponse(vehicleStatus));
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {

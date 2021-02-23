@@ -129,7 +129,6 @@ public class ConnectedDriveProxy {
             if (encoded != null) {
                 req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, encoded, Charset.defaultCharset()));
             }
-            ;
         } else {
             completeUrl = encoded == null ? url : url + Constants.QUESTION + encoded;
             req = httpClient.newRequest(completeUrl);
