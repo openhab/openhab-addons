@@ -38,16 +38,15 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusSceneHandler extends QbusGlobalHandler {
 
+    protected @Nullable QbusThingsConfig config;
+
+    private int sceneId;
+
+    private @Nullable String sn;
+
     public QbusSceneHandler(Thing thing) {
         super(thing);
     }
-
-    protected @NonNullByDefault({}) QbusThingsConfig config;
-
-    int sceneId;
-
-    @Nullable
-    String sn;
 
     /**
      * Main initialization
@@ -134,23 +133,16 @@ public class QbusSceneHandler extends QbusGlobalHandler {
                         "Bridge communication not initialized when trying to execute command for Scene " + sceneId);
                 return;
             } else {
-
                 scheduler.submit(() -> {
                     if (!QComm.communicationActive()) {
                         restartCommunication(QComm, "Scene", sceneId);
                     }
 
                     if (QComm.communicationActive()) {
-
                         switch (channelUID.getId()) {
                             case CHANNEL_SCENE:
                                 handleSwitchCommand(QScene, channelUID, command);
-                                updateStatus(ThingStatus.ONLINE);
                                 break;
-
-                            default:
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "Channel unknown " + channelUID.getId());
                         }
                     }
                 });
@@ -162,7 +154,6 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      * Method to update state of channel, called from Qbus Scene.
      */
     public void handleStateUpdate(QbusScene QScene) {
-
         Integer sceneState = QScene.getState();
         if (sceneState != null) {
             updateState(CHANNEL_SCENE, (sceneState == 0) ? OnOffType.OFF : OnOffType.ON);
@@ -182,7 +173,6 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      * Executes the scene command
      */
     private void handleSwitchCommand(QbusScene QScene, ChannelUID channelUID, Command command) {
-        @Nullable
         String snr = getSN();
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
@@ -206,7 +196,7 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
-        config = getConfig().as(QbusThingsConfig.class);
+        this.config = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
@@ -215,8 +205,8 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      * @return sceneId
      */
     public int getId() {
-        if (config != null) {
-            return config.sceneId;
+        if (this.config != null) {
+            return this.config.sceneId;
         } else {
             return 0;
         }

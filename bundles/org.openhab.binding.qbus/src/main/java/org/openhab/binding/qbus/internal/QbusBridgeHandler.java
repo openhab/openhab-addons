@@ -13,6 +13,7 @@
 
 package org.openhab.binding.qbus.internal;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +28,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link QbusBridgeHandler} is the handler for a Qbus controller
@@ -37,9 +40,11 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusBridgeHandler extends BaseBridgeHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(QbusBridgeHandler.class);
+
     private @Nullable QbusCommunication qbusComm;
 
-    protected @NonNullByDefault({}) QbusConfiguration config;
+    protected @Nullable QbusConfiguration config;
 
     private @Nullable ScheduledFuture<?> refreshTimer;
 
@@ -53,9 +58,10 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         readConfig();
+
         InetAddress addr;
         Integer port = getPort();
-        Integer Refresh = getRefresh();
+        Integer refresh = getRefresh();
 
         if (port == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -77,8 +83,8 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                     "Incorrect ip address set for Qbus Server");
         }
 
-        if (Refresh != null) {
-            this.setupRefreshTimer(Refresh);
+        if (refresh != null) {
+            this.setupRefreshTimer(refresh);
         }
     }
 
@@ -105,7 +111,11 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
             setBridgeCallBack();
 
             if (qbusComm != null) {
-                qbusComm.startCommunication();
+                try {
+                    qbusComm.startCommunication();
+                } catch (InterruptedException | IOException e) {
+                    logger.warn("Error on restaring communication.");
+                }
             }
 
             if (qbusComm != null) {
@@ -214,7 +224,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * Sets the configuration parameters
      */
     protected void readConfig() {
-        config = getConfig().as(QbusConfiguration.class);
+        this.config = getConfig().as(QbusConfiguration.class);
     }
 
     /**
@@ -232,8 +242,8 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the ip address
      */
     public @Nullable String getAddress() {
-        if (config != null) {
-            return config.addr;
+        if (this.config != null) {
+            return this.config.addr;
         } else {
             return null;
         }
@@ -245,8 +255,8 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public @Nullable Integer getPort() {
-        if (config != null) {
-            return config.port;
+        if (this.config != null) {
+            return this.config.port;
         } else {
             return null;
         }
@@ -258,8 +268,8 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the serial nr of the controller
      */
     public @Nullable String getSn() {
-        if (config != null) {
-            return config.sn;
+        if (this.config != null) {
+            return this.config.sn;
         } else {
             return null;
         }
@@ -271,8 +281,8 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the refresh interval
      */
     public @Nullable Integer getRefresh() {
-        if (config != null) {
-            return config.refresh;
+        if (this.config != null) {
+            return this.config.refresh;
         } else {
             return null;
         }

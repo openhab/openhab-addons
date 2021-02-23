@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Qbus Binding</name>
-	<description>This is the binding for Qbus.</description>
-	<author>Koen Schockaert</author>
+	<description>This is the binding for the Qbus home automation system. Qbus is a system made and developed in Belgium
+		(https://www.qbus.be/nl-nl)</description>
 
 </binding:binding>
