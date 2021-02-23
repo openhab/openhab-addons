@@ -38,23 +38,21 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusBistabielHandler extends QbusGlobalHandler {
 
+    protected @Nullable QbusThingsConfig config;
+
+    private int bistabielId;
+
+    private @Nullable String sn;
+
     public QbusBistabielHandler(Thing thing) {
         super(thing);
     }
-
-    protected @NonNullByDefault({}) QbusThingsConfig config;
-
-    int bistabielId;
-
-    @Nullable
-    private String sn;
 
     /**
      * Main initialization
      */
     @Override
     public void initialize() {
-
         readConfig();
         bistabielId = getId();
 
@@ -133,7 +131,7 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
 
             if (QBistabiel == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Bridge communication not initialized when trying to execute command for bistabiel "
+                        "bridge communication not initialized when trying to execute command for bistabiel "
                                 + bistabielId);
                 return;
             } else {
@@ -143,7 +141,6 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
                     }
 
                     if (QComm.communicationActive()) {
-
                         if (command == REFRESH) {
                             handleStateUpdate(QBistabiel);
                             return;
@@ -151,7 +148,6 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
 
                         handleSwitchCommand(QBistabiel, channelUID, command);
                     }
-
                 });
             }
         } else {
@@ -162,11 +158,12 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
 
     /**
      * Executes the switch command
+     *
+     * @throws InterruptedException
      */
     private void handleSwitchCommand(QbusBistabiel QBistabiel, ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
-            @Nullable
             String snr = getSN();
             if (snr != null) {
                 if (s == OnOffType.OFF) {
@@ -196,7 +193,7 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void readConfig() {
-        config = getConfig().as(QbusThingsConfig.class);
+        this.config = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
@@ -205,8 +202,8 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      * @return
      */
     public int getId() {
-        if (config != null) {
-            return config.bistabielId;
+        if (this.config != null) {
+            return this.config.bistabielId;
         } else {
             return 0;
         }

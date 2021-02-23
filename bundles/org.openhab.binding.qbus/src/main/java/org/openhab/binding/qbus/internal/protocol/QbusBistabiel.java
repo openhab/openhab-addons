@@ -15,6 +15,8 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusBistabielHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusBistabiel} class represents the Qbus BISTABIEL output.
@@ -25,16 +27,15 @@ import org.openhab.binding.qbus.internal.handler.QbusBistabielHandler;
 @NonNullByDefault
 public final class QbusBistabiel {
 
-    @Nullable
-    private QbusCommunication QComm;
+    private final Logger logger = LoggerFactory.getLogger(QbusBistabiel.class);
+
+    private @Nullable QbusCommunication QComm;
 
     private String id;
 
-    @Nullable
-    private Integer state;
+    private @Nullable Integer state;
 
-    @Nullable
-    private QbusBistabielHandler thingHandler;
+    private @Nullable QbusBistabielHandler thingHandler;
 
     QbusBistabiel(String id) {
         this.id = id;
@@ -90,12 +91,18 @@ public final class QbusBistabiel {
 
     /**
      * Sends bistabiel to Qbus.
+     *
+     * @throws InterruptedException
      */
     public void execute(int value, String sn) {
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeBistabiel").withId(this.id).withState(value);
         QbusCommunication comm = QComm;
         if (comm != null) {
-            comm.sendMessage(QCmd);
+            try {
+                comm.sendMessage(QCmd);
+            } catch (InterruptedException e) {
+                logger.warn("Could not send command for bistabiel {}", this.id);
+            }
         }
     }
 }

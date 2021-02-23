@@ -46,7 +46,6 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
         final JsonObject jsonObject = json.getAsJsonObject();
 
         try {
-
             String cmd = null;
             String CTD = null;
 
@@ -104,7 +103,7 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
 
             return message;
 
-        } catch (IllegalStateException | ClassCastException e) {
+        } catch (IllegalStateException e) {
             throw new JsonParseException("Unexpected Json type");
         }
     }

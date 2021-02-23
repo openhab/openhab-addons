@@ -15,6 +15,8 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusSceneHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusScene} class represents the action Qbus Scene output.
@@ -25,14 +27,13 @@ import org.openhab.binding.qbus.internal.handler.QbusSceneHandler;
 @NonNullByDefault
 public final class QbusScene {
 
-    @Nullable
-    private QbusCommunication QComm;
+    private final Logger logger = LoggerFactory.getLogger(QbusScene.class);
 
-    @Nullable
-    public QbusSceneHandler thingHandler;
+    private @Nullable QbusCommunication QComm;
 
-    @Nullable
-    private Integer state;
+    public @Nullable QbusSceneHandler thingHandler;
+
+    private @Nullable Integer state;
 
     private String id;
 
@@ -58,7 +59,11 @@ public final class QbusScene {
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeScene").withId(this.id).withState(value);
         QbusCommunication comm = QComm;
         if (comm != null) {
-            comm.sendMessage(QCmd);
+            try {
+                comm.sendMessage(QCmd);
+            } catch (InterruptedException e) {
+                logger.warn("Could not send command for scene {}", this.id);
+            }
         }
     }
 

@@ -15,6 +15,8 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusDimmerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusDimmer} class represents the action Qbus Dimmer output.
@@ -25,16 +27,15 @@ import org.openhab.binding.qbus.internal.handler.QbusDimmerHandler;
 @NonNullByDefault
 public final class QbusDimmer {
 
-    @Nullable
-    private QbusCommunication QComm;
+    private final Logger logger = LoggerFactory.getLogger(QbusDimmer.class);
+
+    private @Nullable QbusCommunication QComm;
 
     private String id;
 
-    @Nullable
-    private Integer state;
+    private @Nullable Integer state;
 
-    @Nullable
-    private QbusDimmerHandler thingHandler;
+    private @Nullable QbusDimmerHandler thingHandler;
 
     QbusDimmer(String id) {
         this.id = id;
@@ -109,7 +110,11 @@ public final class QbusDimmer {
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeDimmer").withId(this.id).withState(percent);
         QbusCommunication comm = QComm;
         if (comm != null) {
-            comm.sendMessage(QCmd);
+            try {
+                comm.sendMessage(QCmd);
+            } catch (InterruptedException e) {
+                logger.warn("Could not send command for dimmer {}", this.id);
+            }
         }
     }
 }

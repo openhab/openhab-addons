@@ -41,16 +41,15 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusThermostatHandler extends QbusGlobalHandler {
 
+    protected @Nullable QbusThingsConfig config;
+
+    private int thermostatId;
+
+    private @Nullable String sn;
+
     public QbusThermostatHandler(Thing thing) {
         super(thing);
     }
-
-    protected @NonNullByDefault({}) QbusThingsConfig config;
-
-    int thermostatId;
-
-    @Nullable
-    String sn;
 
     /**
      * Main initialization
@@ -140,37 +139,26 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
                                 + thermostatId);
                 return;
             } else {
-
                 scheduler.submit(() -> {
                     if (!QComm.communicationActive()) {
                         restartCommunication(QComm, "Thermostat", thermostatId);
                     }
 
                     if (QComm.communicationActive()) {
-
                         if (command == REFRESH) {
                             handleStateUpdate(QThermostat);
                             return;
                         }
 
                         switch (channelUID.getId()) {
-                            case CHANNEL_MEASURED:
-                                updateStatus(ThingStatus.ONLINE);
-                                break;
-
                             case CHANNEL_MODE:
                                 handleModeCommand(QThermostat, command);
-                                updateStatus(ThingStatus.ONLINE);
                                 break;
 
                             case CHANNEL_SETPOINT:
                                 handleSetpointCommand(QThermostat, command);
-                                updateStatus(ThingStatus.ONLINE);
                                 break;
 
-                            default:
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "Channel unknown " + channelUID.getId());
                         }
                     }
                 });
@@ -191,7 +179,6 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      * Executes the Mode command
      */
     private void handleModeCommand(QbusThermostat QThermostat, Command command) {
-        @Nullable
         String snr = getSN();
         if (command instanceof DecimalType) {
             int mode = ((DecimalType) command).intValue();
@@ -207,7 +194,6 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      * Executes the Setpoint command
      */
     private void handleSetpointCommand(QbusThermostat QThermostat, Command command) {
-        @Nullable
         String snr = getSN();
         if (command instanceof QuantityType<?>) {
             QuantityType<?> s = (QuantityType<?>) command;
@@ -227,7 +213,6 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      *
      */
     public void handleStateUpdate(QbusThermostat QThermostat) {
-
         updateState(CHANNEL_MEASURED, new QuantityType<>(QThermostat.getMeasured(), CELSIUS));
 
         updateState(CHANNEL_SETPOINT, new QuantityType<>(QThermostat.getSetpoint(), CELSIUS));
@@ -241,7 +226,7 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
-        config = getConfig().as(QbusThingsConfig.class);
+        this.config = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
@@ -250,8 +235,8 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      * @return dimmerId
      */
     public int getId() {
-        if (config != null) {
-            return config.thermostatId;
+        if (this.config != null) {
+            return this.config.thermostatId;
         } else {
             return 0;
         }

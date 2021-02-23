@@ -15,6 +15,8 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusRolHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusRol} class represents the action Qbus Shutter/Slats output.
@@ -25,18 +27,17 @@ import org.openhab.binding.qbus.internal.handler.QbusRolHandler;
 @NonNullByDefault
 public final class QbusRol {
 
-    @Nullable
-    private QbusCommunication QComm;
+    private final Logger logger = LoggerFactory.getLogger(QbusRol.class);
+
+    private @Nullable QbusCommunication QComm;
 
     private String id;
 
-    @Nullable
-    private Integer state;
-    @Nullable
-    private Integer slats;
+    private @Nullable Integer state;
 
-    @Nullable
-    private QbusRolHandler thingHandler;
+    private @Nullable Integer slats;
+
+    private @Nullable QbusRolHandler thingHandler;
 
     QbusRol(String id) {
         this.id = id;
@@ -124,7 +125,11 @@ public final class QbusRol {
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeStore").withId(this.id).withState(value);
         QbusCommunication comm = QComm;
         if (comm != null) {
-            comm.sendMessage(QCmd);
+            try {
+                comm.sendMessage(QCmd);
+            } catch (InterruptedException e) {
+                logger.warn("Could not send command for store {}", this.id);
+            }
         }
     }
 
@@ -135,7 +140,11 @@ public final class QbusRol {
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeSlats").withId(this.id).withSlatState(value);
         QbusCommunication comm = QComm;
         if (comm != null) {
-            comm.sendMessage(QCmd);
+            try {
+                comm.sendMessage(QCmd);
+            } catch (InterruptedException e) {
+                logger.warn("Could not send command for slat {}", this.id);
+            }
         }
     }
 }
