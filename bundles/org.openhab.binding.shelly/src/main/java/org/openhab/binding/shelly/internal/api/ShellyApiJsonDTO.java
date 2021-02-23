@@ -35,6 +35,7 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_URL_SETTINGS_CLOUD = "/settings/cloud";
     public static final String SHELLY_URL_LIST_IR = "/ir/list";
     public static final String SHELLY_URL_SEND_IR = "/ir/emit";
+    public static final String SHELLY_URL_RESTART = "/reboot";
 
     public static final String SHELLY_URL_SETTINGS_RELAY = "/settings/relay";
     public static final String SHELLY_URL_STATUS_RELEAY = "/status/relay";
@@ -231,6 +232,11 @@ public class ShellyApiJsonDTO {
         public String hostname;
         public String fw;
         public Boolean auth;
+
+        @SerializedName("coiot") // Shelly Motion Multicast Endpoint
+        public String coiot;
+        public Integer longid;
+
         @SerializedName("num_outputs")
         public Integer numOutputs;
         @SerializedName("num_meters")
@@ -513,6 +519,8 @@ public class ShellyApiJsonDTO {
         public String newVersion;
         @SerializedName("old_version")
         public String oldVersion;
+        @SerializedName("beta_version")
+        public String betaVersion;
     }
 
     public static class ShellySettingsGlobal {
@@ -540,6 +548,8 @@ public class ShellyApiJsonDTO {
         ShellyStatusCloud cloud;
         @SerializedName("sleep_mode")
         public ShellySensorSleepMode sleepMode; // FW 1.6
+        @SerializedName("external_power")
+        public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
 
         public String timezone;
         public Double lat;

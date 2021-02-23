@@ -83,6 +83,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     protected ShellyBindingConfiguration bindingConfig;
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
     protected ShellyDeviceProfile profile = new ShellyDeviceProfile(); // init empty profile to avoid NPE
+    protected ShellyDeviceStats stats = new ShellyDeviceStats();
     private final ShellyCoapHandler coap;
     public boolean autoCoIoT = false;
 
@@ -90,9 +91,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     protected boolean stopping = false;
     private boolean channelsCreated = false;
 
-    private long lastUptime = 0;
-    private long lastAlarmTs = 0;
-    private long lastTimeoutErros = -1;
     private long watchdog = now();
 
     private @Nullable ScheduledFuture<?> statusJob;
@@ -179,7 +177,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     /**
-     * This routine is called every time the Thing configuration has been changed.
+     * This routine is called every time the Thing configuration has been changed
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
@@ -218,7 +216,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         // Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing could not be
         // fully initialized here. In this case the CoAP messages triggers auto-initialization (like the Action URL does
         // when enabled)
-        if (config.eventsCoIoT && profile.hasBattery && !profile.isSense) {
+        if (config.eventsCoIoT && profile.hasBattery && !profile.isMotion && !profile.isSense) {
             coap.start(thingName, config);
         }
 
@@ -240,6 +238,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode");
             return false;
         }
+        if (!getString(devInfo.coiot).isEmpty()) {
+            // New Shelly devices might use a different endpoint for the CoAP listener
+            tmpPrf.coiotEndpoint = devInfo.coiot;
+        }
 
         logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {} ({})",
                 thingName, tmpPrf.hostname, tmpPrf.deviceType, tmpPrf.hwRev, tmpPrf.hwBatchId, tmpPrf.fwVersion,
@@ -255,10 +257,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 tmpPrf.updatePeriod);
 
         // update thing properties
-        ShellySettingsStatus status = api.getStatus();
-        tmpPrf.updateFromStatus(status);
-        updateProperties(tmpPrf, status);
-        checkVersion(tmpPrf, status);
+        tmpPrf.status = api.getStatus();
+        tmpPrf.updateFromStatus(tmpPrf.status);
+        updateProperties(tmpPrf, tmpPrf.status);
+        checkVersion(tmpPrf, tmpPrf.status);
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
             config.eventsCoIoT = true;
@@ -271,8 +273,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         // All initialization done, so keep the profile and set Thing to ONLINE
-        profile = tmpPrf;
-        fillDeviceStatus(status, false);
+        fillDeviceStatus(tmpPrf.status, false);
         postEvent(ALARM_TYPE_NONE, false);
         api.setActionURLs(); // register event urls
         if (config.eventsCoIoT) {
@@ -281,6 +282,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         logger.debug("{}: Thing successfully initialized.", thingName);
+        profile = tmpPrf;
         setThingOnline(); // if API call was successful the thing must be online
 
         return true; // success
@@ -370,6 +372,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 logger.trace("{}: Updating status", thingName);
                 ShellySettingsStatus status = api.getStatus();
+                profile.status = status;
                 profile.updateFromStatus(status);
 
                 // If status update was successful the thing must be online
@@ -379,6 +382,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_NAME, getStringType(profile.settings.name));
                 updated |= this.updateDeviceStatus(status);
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
+                fillDeviceStatus(status, updated);
                 updated |= updateInputs(status);
                 updated |= updateMeters(this, status);
                 updated |= updateSensors(this, status);
@@ -388,10 +392,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 // Restart watchdog when status update was successful (no exception)
                 restartWatchdog();
-
-                if (scheduledUpdates <= 1) {
-                    fillDeviceStatus(status, updated);
-                }
             }
         } catch (ShellyApiException e) {
             // http call failed: go offline except for battery devices, which might be in
@@ -402,7 +402,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 if (!isWatchdogExpired()) {
                     logger.debug("{}: Ignore API Timeout, retry later", thingName);
                 } else {
-                    logger.debug("{}: Watchdog expired after {}sec,", thingName, profile.updatePeriod);
                     if (isThingOnline()) {
                         status = "offline.status-error-watchdog";
                     }
@@ -473,17 +472,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     private boolean isWatchdogExpired() {
-        long timeout = profile.hasBattery ? profile.updatePeriod : profile.updatePeriod;
         long delta = now() - watchdog;
-        if ((watchdog > 0) && (delta > timeout)) {
-            logger.trace("{}: Watchdog expired after {}sec (started={}, now={}", thingName, delta, watchdog, now());
+        if ((watchdog > 0) && (delta > profile.updatePeriod)) {
+            stats.remainingWatchdog = delta;
             return true;
         }
         return false;
     }
 
     private boolean isWatchdogStarted() {
-        logger.trace("{}: Watchdog is {}", thingName, watchdog > 0 ? "started" : "inactive");
         return watchdog > 0;
     }
 
@@ -495,23 +492,26 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private void fillDeviceStatus(ShellySettingsStatus status, boolean updated) {
         String alarm = "";
         boolean force = false;
-        Map<String, String> propertyUpdates = new TreeMap<>();
 
         // Update uptime and WiFi, internal temp
         ShellyComponents.updateDeviceStatus(this, status);
 
-        if (api.isInitialized() && (lastTimeoutErros != api.getTimeoutErrors())) {
-            propertyUpdates.put(PROPERTY_STATS_TIMEOUTS, String.valueOf(api.getTimeoutErrors()));
-            propertyUpdates.put(PROPERTY_STATS_TRECOVERED, String.valueOf(api.getTimeoutsRecovered()));
-            lastTimeoutErros = api.getTimeoutErrors();
+        if (api.isInitialized()) {
+            stats.timeoutErrors = api.getTimeoutErrors();
+            stats.timeoutsRecorvered = api.getTimeoutsRecovered();
         }
+        stats.remainingWatchdog = watchdog > 0 ? now() - watchdog : 0;
 
         // Check various device indicators like overheating
-        if ((status.uptime < lastUptime) && (profile.isInitialized()) && !profile.hasBattery) {
+        logger.debug("{}: status.update={}, lastUpdate={}", thingName, status.uptime, stats.lastUptime);
+        if ((status.uptime < stats.lastUptime) && profile.isInitialized()) {
             alarm = ALARM_TYPE_RESTARTED;
             force = true;
+            stats.unexpectedRestarts++;
+            logger.debug("{}: Device restart #{} detected", thingName, stats.unexpectedRestarts);
+
             // Force re-initialization on next status update
-            if (!profile.hasBattery) {
+            if (!profile.hasBattery || profile.isMotion) {
                 reinitializeThing();
             }
         } else if (getBool(status.overtemperature)) {
@@ -521,14 +521,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         } else if (getBool(status.loaderror)) {
             alarm = ALARM_TYPE_LOADERR;
         }
-        lastUptime = getLong(status.uptime);
+        stats.lastUptime = getLong(status.uptime);
+        stats.coiotMessages = coap.getMessageCount();
+        stats.coiotErrors = coap.getErrorCount();
 
         if (!alarm.isEmpty()) {
             postEvent(alarm, force);
-        }
-
-        if (!propertyUpdates.isEmpty()) {
-            flushProperties(propertyUpdates);
         }
     }
 
@@ -542,14 +540,16 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         State value = cache.getValue(channelId);
         String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
 
-        if (force || !lastAlarm.equals(alarm) || (now() > (lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))) {
-            if (alarm.equals(ALARM_TYPE_NONE)) {
+        if (force || !lastAlarm.equals(alarm) || (now() > (stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))) {
+            if (alarm.isEmpty() || alarm.equals(ALARM_TYPE_NONE)) {
                 cache.updateChannel(channelId, getStringType(alarm));
             } else {
                 logger.info("{}: {}", thingName, messages.get("event.triggered", alarm));
                 triggerChannel(channelId, alarm);
                 cache.updateChannel(channelId, getStringType(alarm));
-                lastAlarmTs = now();
+                stats.lastAlarm = alarm;
+                stats.lastAlarmTs = now();
+                stats.alarms++;
             }
         }
     }
@@ -757,7 +757,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                             prf.fwId, SHELLY_API_MIN_FWVERSION));
                 }
             }
-            if (bindingConfig.autoCoIoT && (version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT) >= 0)) {
+            if (bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
+                    || (prf.fwVersion.equalsIgnoreCase("production_test"))) {
                 if (!config.eventsCoIoT) {
                     logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
                 }
@@ -1011,6 +1012,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             properties.put(PROPERTY_SERVICE_NAME, hostname);
             logger.trace("{}: Updated serrviceName to {}", thingName, hostname);
         }
+        String deviceName = getString(profile.settings.name);
+        if (!deviceName.isEmpty()) {
+            properties.put(PROPERTY_DEV_NAME, deviceName);
+        }
 
         // add status properties
         if (status.wifiSta != null) {
@@ -1178,5 +1183,18 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     public boolean updateDeviceStatus(ShellySettingsStatus status) throws ShellyApiException {
         return false;
+    }
+
+    public ShellyDeviceStats getStats() {
+        return stats;
+    }
+
+    public Map<String, String> getStatsProp() {
+        return stats.asProperties(getString(profile.settings.timezone));
+    }
+
+    public void resetStats() {
+        // reset statistics
+        stats = new ShellyDeviceStats();
     }
 }

@@ -129,6 +129,10 @@ public class ShellyThingCreator {
         if (name.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
             return mode.equals(SHELLY_MODE_COLOR) ? THING_TYPE_SHELLYRGBW2_COLOR_STR : THING_TYPE_SHELLYRGBW2_WHITE_STR;
         }
+        if (name.startsWith(THING_TYPE_SHELLYMOTION_STR)) {
+            // depending on firmware release the Motion advertises under shellymotion-xxx or shellymotionsensor-xxxx
+            return THING_TYPE_SHELLYMOTION_STR;
+        }
 
         // Check general mapping
         if (!deviceType.isEmpty()) {

@@ -410,9 +410,12 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
-        addChannel(thing, newChannels, sdata.charger != null, CHGR_DEVST, CHANNEL_DEVST_CHARGER);
-        addChannel(thing, newChannels, sdata.motion != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION);
-        if (sdata.sensor != null) { // DW2 or Motion
+        addChannel(thing, newChannels, (profile.settings.externalPower != null) || (sdata.charger != null), CHGR_DEVST,
+                CHANNEL_DEVST_CHARGER);
+        addChannel(thing, newChannels,
+                sdata.motion != null || ((sdata.sensor != null) && (sdata.sensor.motion != null)), CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_MOTION);
+        if (sdata.sensor != null) { // DW, Sense or Motion
             addChannel(thing, newChannels, sdata.sensor.state != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT); // DW/DW2
             addChannel(thing, newChannels, sdata.sensor.motionTimestamp != null, CHANNEL_GROUP_SENSOR, // Motion
                     CHANNEL_SENSOR_MOTION_TS);

@@ -159,7 +159,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     // create shellyunknown thing - will be changed during thing initialization with valid credentials
                     thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
                 } else {
-                    logger.info("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
+                    logger.debug("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
                 }
             } catch (IllegalArgumentException e) { // maybe some format description was buggy
                 logger.debug("{}: Discovery failed!", name, e);
