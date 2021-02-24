@@ -112,7 +112,6 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
             QbusCommunication qbusCommunication = getQbusCommunication();
 
             setBridgeCallBack();
-
             if (qbusCommunication != null) {
                 try {
                     qbusCommunication.startCommunication();

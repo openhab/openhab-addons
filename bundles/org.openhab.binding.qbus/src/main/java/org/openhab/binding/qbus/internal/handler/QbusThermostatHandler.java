@@ -211,6 +211,7 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      * @param qThermostat Qbus thermostat
      *
      */
+
     public void handleStateUpdate(QbusThermostat qThermostat) {
         updateState(CHANNEL_MEASURED, new QuantityType<>(qThermostat.getMeasured(), CELSIUS));
 

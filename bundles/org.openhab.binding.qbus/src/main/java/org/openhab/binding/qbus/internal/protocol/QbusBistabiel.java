@@ -102,7 +102,6 @@ public final class QbusBistabiel {
                 comm.sendMessage(qCmd);
             } catch (InterruptedException e) {
                 logger.warn("Could not send command for bistabiel {}, {}", this.id, e.getMessage());
-
             }
         }
     }

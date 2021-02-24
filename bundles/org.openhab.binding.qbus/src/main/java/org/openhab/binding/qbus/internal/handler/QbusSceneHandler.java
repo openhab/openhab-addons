@@ -170,7 +170,7 @@ public class QbusSceneHandler extends QbusGlobalHandler {
     /**
      * Executes the scene command
      */
-    private void handleSwitchCommand(QbusScene qScene, ChannelUID channelUID, Command command) {
+    void handleSwitchCommand(QbusScene qScene, ChannelUID channelUID, Command command) {
         String snr = getSN();
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;

@@ -67,8 +67,7 @@ public final class QbusCommunication {
     private Gson gsonIn;
 
     private @Nullable String ctd;
-
-    private boolean ctdConnected = false;
+    private boolean ctdConnected;
 
     private final Map<Integer, QbusBistabiel> bistabiel = new HashMap<>();
     private final Map<Integer, QbusScene> scene = new HashMap<>();
