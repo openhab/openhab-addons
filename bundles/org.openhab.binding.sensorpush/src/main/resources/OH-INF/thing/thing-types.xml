@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sensorpush"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cloudbridge">
+		<label>SensorPush Cloud Bridge</label>
+		<description>SensorPush gateway cloud access</description>
+		<properties>
+			<property name="vendor">SensorPush</property>
+		</properties>
+
+		<config-description>
+			<parameter name="user" type="text" required="true">
+				<label>Username</label>
+				<description>SensorPush gateway cloud username (email address)</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>SensorPush gateway cloud password</description>
+			</parameter>
+			<parameter name="poll" type="integer" min="2" max="60" unit="min">
+				<label>Poll Interval</label>
+				<description>The interval at which the handler will poll the cloud service for updates</description>
+				<unitLabel>minutes</unitLabel>
+				<default>5</default>
+			</parameter>
+			<parameter name="timeout" type="integer" min="1" max="120" unit="s">
+				<label>Response Timeout</label>
+				<description>The period in seconds that the handler will wait for a response before timing out.</description>
+				<unitLabel>seconds</unitLabel>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Thing Types -->
+	<thing-type id="sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloudbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>SensorPush Sensor</label>
+		<description>SensorPush Environmental Sensor</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="humidity" typeId="humidity-channel"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="dewpoint" typeId="dewpoint-channel"/>
+			<channel id="vpd" typeId="vpd-channel"/>
+			<channel id="time" typeId="time-channel"/>
+			<channel id="rssi" typeId="rssi-channel"/>
+			<channel id="voltage" typeId="voltage-channel"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">SensorPush</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>Sensor ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Humidity</label>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="vpd-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>VPD</label>
+		<category>Vapor pressure deficit</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dewpoint-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Dew Point</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="time-channel">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Time of reading</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rssi-channel">
+		<item-type>Number:Power</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indication (RSSI)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltage-channel">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>
