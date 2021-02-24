@@ -92,8 +92,9 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * Sets the Bridge call back
      */
     private void setBridgeCallBack() {
-        if (qbusComm != null) {
-            qbusComm.setBridgeCallBack(this);
+        QbusCommunication qbusCommunication = getQbusCommunication();
+        if (qbusCommunication != null) {
+            qbusCommunication.setBridgeCallBack(this);
         }
     }
 
@@ -106,30 +107,27 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     private void createCommunicationObject(InetAddress addr, int port) {
         scheduler.submit(() -> {
 
-            qbusComm = new QbusCommunication();
+            setQbusCommunication(new QbusCommunication());
+
+            QbusCommunication qbusCommunication = getQbusCommunication();
 
             setBridgeCallBack();
 
-            if (qbusComm != null) {
+            if (qbusCommunication != null) {
                 try {
-                    qbusComm.startCommunication();
+                    qbusCommunication.startCommunication();
                 } catch (InterruptedException | IOException e) {
-                    logger.warn("Error on restaring communication.");
+                    logger.warn("Error on restaring communication: {}", e.getMessage());
+                    bridgeOffline("Communication could not be established");
+                    return;
                 }
-            }
 
-            if (qbusComm != null) {
-                if (!qbusComm.communicationActive()) {
-                    qbusComm = null;
+                if (!qbusCommunication.communicationActive()) {
                     bridgeOffline("No communication with Qbus Server");
                     return;
                 }
-            }
 
-            if (qbusComm != null) {
-                if (!qbusComm.clientConnected()) {
-
-                    qbusComm = null;
+                if (!qbusCommunication.clientConnected()) {
                     bridgeOffline("No communication with Qbus Client");
                     return;
                 }
@@ -290,5 +288,27 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    /**
+     * Get state of bistabiel.
+     *
+     * @return bistabiel state
+     */
+    public @Nullable QbusCommunication getQbusCommunication() {
+        if (this.qbusComm != null) {
+            return this.qbusComm;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Sets state of bistabiel.
+     *
+     * @param bistabiel state
+     */
+    void setQbusCommunication(QbusCommunication comm) {
+        this.qbusComm = comm;
     }
 }

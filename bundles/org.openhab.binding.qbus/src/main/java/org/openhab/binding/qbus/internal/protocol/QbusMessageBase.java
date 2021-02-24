@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 abstract class QbusMessageBase {
 
-    private @Nullable String CTD;
+    private @Nullable String ctd;
     protected @Nullable String cmd;
     protected @Nullable String id;
     protected @Nullable Integer state;
@@ -38,11 +38,11 @@ abstract class QbusMessageBase {
 
     @Nullable
     String getSn() {
-        return this.CTD;
+        return this.ctd;
     }
 
-    void setSn(String CTD) {
-        this.CTD = CTD;
+    void setSn(String cTD) {
+        this.ctd = cTD;
     }
 
     @Nullable

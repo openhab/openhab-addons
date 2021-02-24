@@ -47,14 +47,14 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
 
         try {
             String cmd = null;
-            String CTD = null;
+            String ctd = null;
 
             if (jsonObject.has("cmd")) {
                 cmd = jsonObject.get("cmd").getAsString();
             }
 
             if (jsonObject.has("CTD")) {
-                CTD = jsonObject.get("CTD").getAsString();
+                ctd = jsonObject.get("CTD").getAsString();
             }
 
             JsonElement jsonOutputs = null;
@@ -94,17 +94,17 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
                 }
             }
 
-            if (message != null && cmd != null && CTD != null) {
+            if (message != null && cmd != null && ctd != null) {
                 message.setCmd(cmd);
-                message.setSn(CTD);
+                message.setSn(ctd);
             } else {
-                throw new JsonParseException("Unexpected Json type");
+                throw new JsonParseException("Unexpected Json type ");
             }
 
             return message;
 
         } catch (IllegalStateException e) {
-            throw new JsonParseException("Unexpected Json type");
+            throw new JsonParseException("Unexpected Json type {} ", e);
         }
     }
 }

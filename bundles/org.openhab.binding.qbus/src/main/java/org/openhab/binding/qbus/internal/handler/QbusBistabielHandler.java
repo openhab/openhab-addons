@@ -56,15 +56,15 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
         readConfig();
         bistabielId = getId();
 
-        QbusCommunication QComm = getCommunication("Bistabiel", bistabielId);
-        if (QComm == null) {
+        QbusCommunication qComm = getCommunication("Bistabiel", bistabielId);
+        if (qComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "No communication with Qbus Bridge!");
             return;
         }
 
-        QbusBridgeHandler QBridgeHandler = getBridgeHandler("Bistabiel", bistabielId);
-        if (QBridgeHandler == null) {
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Bistabiel", bistabielId);
+        if (qBridgeHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "No communication with Qbus Bridge!");
             return;
@@ -72,13 +72,13 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
 
         setSN();
 
-        Map<Integer, QbusBistabiel> bistabielComm = QComm.getBistabiel();
+        Map<Integer, QbusBistabiel> bistabielComm = qComm.getBistabiel();
 
         if (bistabielComm != null) {
-            QbusBistabiel QBistabiel = bistabielComm.get(bistabielId);
-            if (QBistabiel != null) {
-                QBistabiel.setThingHandler(this);
-                handleStateUpdate(QBistabiel);
+            QbusBistabiel qBistabiel = bistabielComm.get(bistabielId);
+            if (qBistabiel != null) {
+                qBistabiel.setThingHandler(this);
+                handleStateUpdate(qBistabiel);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Error while initializing the thing.");
@@ -102,14 +102,13 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      * Sets the serial number of the controller
      */
     public void setSN() {
-        QbusBridgeHandler QBridgeHandler = getBridgeHandler("Bistabiel", bistabielId);
-        if (QBridgeHandler == null) {
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Bistabiel", bistabielId);
+        if (qBridgeHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "No communication with Qbus Bridge!");
             return;
-        } else {
-            this.sn = QBridgeHandler.getSn();
         }
+        this.sn = qBridgeHandler.getSn();
     }
 
     /**
@@ -117,36 +116,36 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        QbusCommunication QComm = getCommunication("Bistabiel", bistabielId);
-        if (QComm == null) {
+        QbusCommunication qComm = getCommunication("Bistabiel", bistabielId);
+        if (qComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Bridge communication not initialized when trying to execute command for bistabiel " + bistabielId);
             return;
         }
 
-        Map<Integer, QbusBistabiel> bistabielComm = QComm.getBistabiel();
+        Map<Integer, QbusBistabiel> bistabielComm = qComm.getBistabiel();
 
         if (bistabielComm != null) {
-            QbusBistabiel QBistabiel = bistabielComm.get(bistabielId);
+            QbusBistabiel qBistabiel = bistabielComm.get(bistabielId);
 
-            if (QBistabiel == null) {
+            if (qBistabiel == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "bridge communication not initialized when trying to execute command for bistabiel "
                                 + bistabielId);
                 return;
             } else {
                 scheduler.submit(() -> {
-                    if (!QComm.communicationActive()) {
-                        restartCommunication(QComm, "Bistabiel", bistabielId);
+                    if (!qComm.communicationActive()) {
+                        restartCommunication(qComm, "Bistabiel", bistabielId);
                     }
 
-                    if (QComm.communicationActive()) {
+                    if (qComm.communicationActive()) {
                         if (command == REFRESH) {
-                            handleStateUpdate(QBistabiel);
+                            handleStateUpdate(qBistabiel);
                             return;
                         }
 
-                        handleSwitchCommand(QBistabiel, channelUID, command);
+                        handleSwitchCommand(qBistabiel, channelUID, command);
                     }
                 });
             }
@@ -161,15 +160,15 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      *
      * @throws InterruptedException
      */
-    private void handleSwitchCommand(QbusBistabiel QBistabiel, ChannelUID channelUID, Command command) {
+    private void handleSwitchCommand(QbusBistabiel qBistabiel, ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             String snr = getSN();
             if (snr != null) {
                 if (s == OnOffType.OFF) {
-                    QBistabiel.execute(0, snr);
+                    qBistabiel.execute(0, snr);
                 } else {
-                    QBistabiel.execute(100, snr);
+                    qBistabiel.execute(100, snr);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -181,8 +180,8 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
     /**
      * Method to update state of channel, called from Qbus Bistabiel.
      */
-    public void handleStateUpdate(QbusBistabiel QBistabiel) {
-        Integer bistabielState = QBistabiel.getState();
+    public void handleStateUpdate(QbusBistabiel qBistabiel) {
+        Integer bistabielState = qBistabiel.getState();
         if (bistabielState != null) {
             updateState(CHANNEL_SWITCH, (bistabielState == 0) ? OnOffType.OFF : OnOffType.ON);
             updateStatus(ThingStatus.ONLINE);
