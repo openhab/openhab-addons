@@ -353,7 +353,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             startStreamServer(true);
         }
         updateStatus(ThingStatus.ONLINE);
-        pollCameraGroupJob = pollCameraGroup.scheduleAtFixedRate(this::pollCameraGroup, 10000,
+        pollCameraGroupJob = pollCameraGroup.scheduleWithFixedDelay(this::pollCameraGroup, 10000,
                 groupConfig.getPollTime(), TimeUnit.MILLISECONDS);
     }
 
