@@ -17,6 +17,7 @@ import static org.openhab.core.library.types.UpDownType.DOWN;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,9 +45,11 @@ public class QbusRolHandler extends QbusGlobalHandler {
 
     protected @Nullable QbusThingsConfig config;
 
-    private int rolId;
+    private @Nullable Integer rolId;
 
     private @Nullable String sn;
+
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusRolHandler(Thing thing) {
         super(thing);
@@ -242,9 +245,8 @@ public class QbusRolHandler extends QbusGlobalHandler {
      */
     private void handleSlatsposCommand(QbusRol qRol, Command command) {
         String snr = getSN();
-        if (command instanceof org.openhab.core.library.types.UpDownType) {
-            org.openhab.core.library.types.UpDownType s = (org.openhab.core.library.types.UpDownType) command;
-            if (s == org.openhab.core.library.types.UpDownType.DOWN) {
+        if (command instanceof UpDownType) {
+            if (command == DOWN) {
                 if (snr != null) {
                     qRol.executeSlats(0, snr);
                 } else {
@@ -258,13 +260,12 @@ public class QbusRolHandler extends QbusGlobalHandler {
                 }
             }
         } else if (command instanceof IncreaseDecreaseType) {
-            IncreaseDecreaseType s = (IncreaseDecreaseType) command;
             int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
             Integer currentValue = qRol.getState();
             int newValue;
             int sendValue;
             if (currentValue != null) {
-                if (s == IncreaseDecreaseType.INCREASE) {
+                if (command == IncreaseDecreaseType.INCREASE) {
                     newValue = currentValue + stepValue;
                     // round down to step multiple
                     newValue = newValue - newValue % stepValue;
@@ -289,7 +290,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
         } else if (command instanceof PercentType) {
             PercentType p = (PercentType) command;
             int pp = p.intValue();
-            if (p == PercentType.ZERO) {
+            if (command == PercentType.ZERO) {
                 if (snr != null) {
                     qRol.executeSlats(0, snr);
                 } else {
@@ -326,6 +327,15 @@ public class QbusRolHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
+        final ScheduledFuture<?> localPollingJob = this.pollingJob;
+
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
+
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            this.config = getConfig().as(QbusThingsConfig.class);
+        }
         this.config = getConfig().as(QbusThingsConfig.class);
     }
 
@@ -334,9 +344,14 @@ public class QbusRolHandler extends QbusGlobalHandler {
      *
      * @return rolId
      */
-    public int getId() {
-        if (this.config != null) {
-            return this.config.rolId;
+    public @Nullable Integer getId() {
+        QbusThingsConfig rolConfig = this.config;
+        if (rolConfig != null) {
+            if (rolConfig.rolId != null) {
+                return rolConfig.rolId;
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }

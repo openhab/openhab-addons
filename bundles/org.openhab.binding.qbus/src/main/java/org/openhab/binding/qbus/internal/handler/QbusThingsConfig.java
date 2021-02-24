@@ -13,6 +13,7 @@
 package org.openhab.binding.qbus.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link QbusThingsConfig} is responible for handling configurations for all things
@@ -22,10 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class QbusThingsConfig {
-    public int bistabielId;
-    public int dimmerId;
-    public int co2Id;
-    public int rolId;
-    public int sceneId;
-    public int thermostatId;
+    public @Nullable Integer bistabielId;
+    public @Nullable Integer dimmerId;
+    public @Nullable Integer co2Id;
+    public @Nullable Integer rolId;
+    public @Nullable Integer sceneId;
+    public @Nullable Integer thermostatId;
 }

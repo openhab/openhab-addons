@@ -16,6 +16,7 @@ import static org.openhab.binding.qbus.internal.QbusBindingConstants.CHANNEL_CO2
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +41,7 @@ import org.openhab.core.types.Command;
 public class QbusCO2Handler extends QbusGlobalHandler {
     protected @Nullable QbusThingsConfig config;
 
-    private int co2Id;
+    private @Nullable Integer co2Id;
 
     private @Nullable String sn;
 
@@ -160,7 +161,15 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
-        this.config = getConfig().as(QbusThingsConfig.class);
+        final ScheduledFuture<?> localPollingJob = this.pollingJob;
+
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
+
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            this.config = getConfig().as(QbusThingsConfig.class);
+        }
     }
 
     /**
@@ -168,9 +177,14 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      *
      * @return co2Id
      */
-    public int getId() {
-        if (this.config != null) {
-            return this.config.co2Id;
+    public @Nullable Integer getId() {
+        QbusThingsConfig co2Config = this.config;
+        if (co2Config != null) {
+            if (co2Config.co2Id != null) {
+                return co2Config.co2Id;
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }

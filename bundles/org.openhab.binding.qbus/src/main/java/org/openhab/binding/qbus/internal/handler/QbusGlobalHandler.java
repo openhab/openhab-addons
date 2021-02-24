@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.qbus.internal.handler;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
@@ -42,8 +44,12 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
      * @param globalId
      * @return
      */
-    public @Nullable QbusCommunication getCommunication(String type, int globalId) {
-        QbusBridgeHandler qBridgeHandler = getBridgeHandler(type, globalId);
+    public @Nullable QbusCommunication getCommunication(String type, @Nullable Integer globalId) {
+        QbusBridgeHandler qBridgeHandler = null;
+        if (globalId != null) {
+            qBridgeHandler = getBridgeHandler(type, globalId);
+        }
+
         if (qBridgeHandler == null) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "No bridge handler initialized for " + type + " with id " + globalId + ".");
@@ -60,7 +66,7 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
      * @param globalId
      * @return
      */
-    public @Nullable QbusBridgeHandler getBridgeHandler(String type, int globalId) {
+    public @Nullable QbusBridgeHandler getBridgeHandler(String type, @Nullable Integer globalId) {
         Bridge qBridge = getBridge();
         if (qBridge == null) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
@@ -77,8 +83,14 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
      * @param type
      * @param globalId
      */
-    public void restartCommunication(QbusCommunication qComm, String type, int globalId) {
-        qComm.restartCommunication();
+    public void restartCommunication(QbusCommunication qComm, String type, @Nullable Integer globalId) {
+        try {
+            qComm.restartCommunication();
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+        }
 
         if (!qComm.communicationActive()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication socket error");

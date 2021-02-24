@@ -15,6 +15,7 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.CHANNEL_SCENE;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,9 +41,11 @@ public class QbusSceneHandler extends QbusGlobalHandler {
 
     protected @Nullable QbusThingsConfig config;
 
-    private int sceneId;
+    private @Nullable Integer sceneId;
 
     private @Nullable String sn;
+
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusSceneHandler(Thing thing) {
         super(thing);
@@ -194,6 +197,15 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
+        final ScheduledFuture<?> localPollingJob = this.pollingJob;
+
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
+
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            this.config = getConfig().as(QbusThingsConfig.class);
+        }
         this.config = getConfig().as(QbusThingsConfig.class);
     }
 
@@ -202,9 +214,14 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      *
      * @return sceneId
      */
-    public int getId() {
-        if (this.config != null) {
-            return this.config.sceneId;
+    public @Nullable Integer getId() {
+        QbusThingsConfig sceneConfig = this.config;
+        if (sceneConfig != null) {
+            if (sceneConfig.sceneId != null) {
+                return sceneConfig.sceneId;
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }

@@ -16,6 +16,7 @@ import static org.openhab.binding.qbus.internal.QbusBindingConstants.CHANNEL_SWI
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,9 +41,11 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
 
     protected @Nullable QbusThingsConfig config;
 
-    private int bistabielId;
+    private @Nullable Integer bistabielId;
 
     private @Nullable String sn;
+
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusBistabielHandler(Thing thing) {
         super(thing);
@@ -162,10 +165,9 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      */
     private void handleSwitchCommand(QbusBistabiel qBistabiel, ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
             String snr = getSN();
             if (snr != null) {
-                if (s == OnOffType.OFF) {
+                if (command == OnOffType.OFF) {
                     qBistabiel.execute(0, snr);
                 } else {
                     qBistabiel.execute(100, snr);
@@ -192,7 +194,15 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void readConfig() {
-        this.config = getConfig().as(QbusThingsConfig.class);
+        final ScheduledFuture<?> localPollingJob = this.pollingJob;
+
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
+
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            this.config = getConfig().as(QbusThingsConfig.class);
+        }
     }
 
     /**
@@ -200,9 +210,14 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
      *
      * @return
      */
-    public int getId() {
-        if (this.config != null) {
-            return this.config.bistabielId;
+    public @Nullable Integer getId() {
+        QbusThingsConfig bistabielConfig = this.config;
+        if (bistabielConfig != null) {
+            if (bistabielConfig.bistabielId != null) {
+                return bistabielConfig.bistabielId;
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }

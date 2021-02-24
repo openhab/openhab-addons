@@ -17,6 +17,7 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,9 +44,11 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
 
     protected @Nullable QbusThingsConfig config;
 
-    private int thermostatId;
+    private @Nullable Integer thermostatId;
 
     private @Nullable String sn;
+
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusThermostatHandler(Thing thing) {
         super(thing);
@@ -196,9 +199,14 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
         if (command instanceof QuantityType<?>) {
             QuantityType<?> s = (QuantityType<?>) command;
             double sp = s.doubleValue();
-            s.toUnit(CELSIUS);
+            QuantityType<?> spCelcius = s.toUnit(CELSIUS);
+
             if (snr != null) {
-                qThermostat.executeSetpoint(sp, snr);
+                if (spCelcius != null) {
+                    qThermostat.executeSetpoint(sp, snr);
+                } else {
+                    thingOffline("Could not set setpoint for thermostat (convertion failed)  " + thermostatId);
+                }
             } else {
                 thingOffline("No serial number configured for  " + thermostatId);
             }
@@ -225,17 +233,30 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
-        this.config = getConfig().as(QbusThingsConfig.class);
+        final ScheduledFuture<?> localPollingJob = this.pollingJob;
+
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
+
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            this.config = getConfig().as(QbusThingsConfig.class);
+        }
     }
 
     /**
      * Returns the Id from the configuration
      *
-     * @return dimmerId
+     * @return thermostatId
      */
-    public int getId() {
-        if (this.config != null) {
-            return this.config.thermostatId;
+    public @Nullable Integer getId() {
+        QbusThingsConfig thConfig = this.config;
+        if (thConfig != null) {
+            if (thConfig.thermostatId != null) {
+                return thConfig.thermostatId;
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }
