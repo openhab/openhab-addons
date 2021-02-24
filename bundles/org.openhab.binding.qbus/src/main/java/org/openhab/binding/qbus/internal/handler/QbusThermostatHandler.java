@@ -59,27 +59,27 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
         setConfig();
         thermostatId = getId();
 
-        QbusCommunication QComm = getCommunication("Thermostat", thermostatId);
-        if (QComm == null) {
+        QbusCommunication qComm = getCommunication("Thermostat", thermostatId);
+        if (qComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "No communication with Qbus Bridge!");
             return;
         }
 
-        QbusBridgeHandler QBridgeHandler = getBridgeHandler("Thermostat", thermostatId);
-        if (QBridgeHandler == null) {
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Thermostat", thermostatId);
+        if (qBridgeHandler == null) {
             return;
         }
 
         setSN();
 
-        Map<Integer, QbusThermostat> thermostatComm = QComm.getThermostat();
+        Map<Integer, QbusThermostat> thermostatComm = qComm.getThermostat();
 
         if (thermostatComm != null) {
-            QbusThermostat QThermostat = thermostatComm.get(thermostatId);
-            if (QThermostat != null) {
-                QThermostat.setThingHandler(this);
-                handleStateUpdate(QThermostat);
+            QbusThermostat qThermostat = thermostatComm.get(thermostatId);
+            if (qThermostat != null) {
+                qThermostat.setThingHandler(this);
+                handleStateUpdate(qThermostat);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Error while initializing the thing.");
@@ -103,14 +103,13 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      * Sets the serial number of the controller
      */
     public void setSN() {
-        QbusBridgeHandler QBridgeHandler = getBridgeHandler("Thermostat", thermostatId);
-        if (QBridgeHandler == null) {
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Thermostat", thermostatId);
+        if (qBridgeHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "No communication with Qbus Bridge!");
             return;
-        } else {
-            this.sn = QBridgeHandler.getSn();
         }
+        this.sn = qBridgeHandler.getSn();
     }
 
     /**
@@ -118,45 +117,44 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        QbusCommunication QComm = getCommunication("Thermostat", thermostatId);
+        QbusCommunication qComm = getCommunication("Thermostat", thermostatId);
 
-        if (QComm == null) {
+        if (qComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Bridge communication not initialized when trying to execute command for thermostat "
                             + thermostatId);
             return;
         }
 
-        Map<Integer, QbusThermostat> thermostatComm = QComm.getThermostat();
+        Map<Integer, QbusThermostat> thermostatComm = qComm.getThermostat();
 
         if (thermostatComm != null) {
+            QbusThermostat qThermostat = thermostatComm.get(thermostatId);
 
-            QbusThermostat QThermostat = thermostatComm.get(thermostatId);
-
-            if (QThermostat == null) {
+            if (qThermostat == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Bridge communication not initialized when trying to execute command for Scene "
                                 + thermostatId);
                 return;
             } else {
                 scheduler.submit(() -> {
-                    if (!QComm.communicationActive()) {
-                        restartCommunication(QComm, "Thermostat", thermostatId);
+                    if (!qComm.communicationActive()) {
+                        restartCommunication(qComm, "Thermostat", thermostatId);
                     }
 
-                    if (QComm.communicationActive()) {
+                    if (qComm.communicationActive()) {
                         if (command == REFRESH) {
-                            handleStateUpdate(QThermostat);
+                            handleStateUpdate(qThermostat);
                             return;
                         }
 
                         switch (channelUID.getId()) {
                             case CHANNEL_MODE:
-                                handleModeCommand(QThermostat, command);
+                                handleModeCommand(qThermostat, command);
                                 break;
 
                             case CHANNEL_SETPOINT:
-                                handleSetpointCommand(QThermostat, command);
+                                handleSetpointCommand(qThermostat, command);
                                 break;
 
                         }
@@ -178,12 +176,12 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
     /**
      * Executes the Mode command
      */
-    private void handleModeCommand(QbusThermostat QThermostat, Command command) {
+    private void handleModeCommand(QbusThermostat qThermostat, Command command) {
         String snr = getSN();
         if (command instanceof DecimalType) {
             int mode = ((DecimalType) command).intValue();
             if (snr != null) {
-                QThermostat.executeMode(mode, snr);
+                qThermostat.executeMode(mode, snr);
             } else {
                 thingOffline("No serial number configured for  " + thermostatId);
             }
@@ -193,13 +191,14 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
     /**
      * Executes the Setpoint command
      */
-    private void handleSetpointCommand(QbusThermostat QThermostat, Command command) {
+    private void handleSetpointCommand(QbusThermostat qThermostat, Command command) {
         String snr = getSN();
         if (command instanceof QuantityType<?>) {
             QuantityType<?> s = (QuantityType<?>) command;
             double sp = s.doubleValue();
+            s.toUnit(CELSIUS);
             if (snr != null) {
-                QThermostat.executeSetpoint(sp, snr);
+                qThermostat.executeSetpoint(sp, snr);
             } else {
                 thingOffline("No serial number configured for  " + thermostatId);
             }
@@ -209,15 +208,15 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
     /**
      * Method to update state of all channels, called from Qbus thermostat.
      *
-     * @param QThermostat Qbus thermostat
+     * @param qThermostat Qbus thermostat
      *
      */
-    public void handleStateUpdate(QbusThermostat QThermostat) {
-        updateState(CHANNEL_MEASURED, new QuantityType<>(QThermostat.getMeasured(), CELSIUS));
+    public void handleStateUpdate(QbusThermostat qThermostat) {
+        updateState(CHANNEL_MEASURED, new QuantityType<>(qThermostat.getMeasured(), CELSIUS));
 
-        updateState(CHANNEL_SETPOINT, new QuantityType<>(QThermostat.getSetpoint(), CELSIUS));
+        updateState(CHANNEL_SETPOINT, new QuantityType<>(qThermostat.getSetpoint(), CELSIUS));
 
-        updateState(CHANNEL_MODE, new DecimalType(QThermostat.getMode()));
+        updateState(CHANNEL_MODE, new DecimalType(qThermostat.getMode()));
 
         updateStatus(ThingStatus.ONLINE);
     }

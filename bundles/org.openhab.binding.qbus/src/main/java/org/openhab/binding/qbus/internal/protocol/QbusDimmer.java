@@ -29,7 +29,7 @@ public final class QbusDimmer {
 
     private final Logger logger = LoggerFactory.getLogger(QbusDimmer.class);
 
-    private @Nullable QbusCommunication QComm;
+    private @Nullable QbusCommunication qComm;
 
     private String id;
 
@@ -67,14 +67,14 @@ public final class QbusDimmer {
     }
 
     /**
-     * This method sets a pointer to the QComm Dimmer of class {@link QbusCommuncation}.
+     * This method sets a pointer to the qComm Dimmer of class {@link QbusCommuncation}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
      * Qbus IP-interface when..
      *
-     * @param QComm
+     * @param qComm
      */
-    public void setQComm(QbusCommunication QComm) {
-        this.QComm = QComm;
+    public void setQComm(QbusCommunication qComm) {
+        this.qComm = qComm;
     }
 
     /**
@@ -107,13 +107,13 @@ public final class QbusDimmer {
      * Sends Dimmer state to Qbus.
      */
     public void execute(int percent, String sn) {
-        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeDimmer").withId(this.id).withState(percent);
-        QbusCommunication comm = QComm;
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeDimmer").withId(this.id).withState(percent);
+        QbusCommunication comm = qComm;
         if (comm != null) {
             try {
-                comm.sendMessage(QCmd);
+                comm.sendMessage(qCmd);
             } catch (InterruptedException e) {
-                logger.warn("Could not send command for dimmer {}", this.id);
+                logger.warn("Could not send command for dimmer {}, {}", this.id, e.getMessage());
             }
         }
     }

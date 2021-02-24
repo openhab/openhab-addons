@@ -29,7 +29,7 @@ public final class QbusBistabiel {
 
     private final Logger logger = LoggerFactory.getLogger(QbusBistabiel.class);
 
-    private @Nullable QbusCommunication QComm;
+    private @Nullable QbusCommunication qComm;
 
     private String id;
 
@@ -53,14 +53,14 @@ public final class QbusBistabiel {
     }
 
     /**
-     * This method sets a pointer to the QComm BISTABIEL of class {@link QbusCommuncation}.
+     * This method sets a pointer to the qComm BISTABIEL of class {@link QbusCommuncation}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
      * Qbus IP-interface when..
      *
-     * @param QComm
+     * @param qComm
      */
-    public void setQComm(QbusCommunication QComm) {
-        this.QComm = QComm;
+    public void setQComm(QbusCommunication qComm) {
+        this.qComm = qComm;
     }
 
     /**
@@ -95,13 +95,14 @@ public final class QbusBistabiel {
      * @throws InterruptedException
      */
     public void execute(int value, String sn) {
-        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeBistabiel").withId(this.id).withState(value);
-        QbusCommunication comm = QComm;
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeBistabiel").withId(this.id).withState(value);
+        QbusCommunication comm = qComm;
         if (comm != null) {
             try {
-                comm.sendMessage(QCmd);
+                comm.sendMessage(qCmd);
             } catch (InterruptedException e) {
-                logger.warn("Could not send command for bistabiel {}", this.id);
+                logger.warn("Could not send command for bistabiel {}, {}", this.id, e.getMessage());
+
             }
         }
     }

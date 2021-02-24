@@ -151,7 +151,7 @@ public final class QbusThermostat {
             try {
                 comm.sendMessage(qCmd);
             } catch (InterruptedException e) {
-                logger.warn("Could not send command mode for thermostat {}", this.id);
+                logger.warn("Could not send command mode for thermostat {}, {}", this.id, e.getMessage());
             }
         }
     }
@@ -168,7 +168,7 @@ public final class QbusThermostat {
             try {
                 comm.sendMessage(qCmd);
             } catch (InterruptedException e) {
-                logger.warn("Could not send command setpoitn for thermostat {}", this.id);
+                logger.warn("Could not send command setpoitn for thermostat {}, {}", this.id, e.getMessage());
             }
         }
     }

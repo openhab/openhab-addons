@@ -43,14 +43,14 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
      * @return
      */
     public @Nullable QbusCommunication getCommunication(String type, int globalId) {
-        QbusBridgeHandler QBridgeHandler = getBridgeHandler(type, globalId);
-        if (QBridgeHandler == null) {
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler(type, globalId);
+        if (qBridgeHandler == null) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "No bridge handler initialized for " + type + " with id " + globalId + ".");
             return null;
         }
-        QbusCommunication QComm = QBridgeHandler.getCommunication();
-        return QComm;
+        QbusCommunication qComm = qBridgeHandler.getCommunication();
+        return qComm;
     }
 
     /**
@@ -61,33 +61,33 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
      * @return
      */
     public @Nullable QbusBridgeHandler getBridgeHandler(String type, int globalId) {
-        Bridge QBridge = getBridge();
-        if (QBridge == null) {
+        Bridge qBridge = getBridge();
+        if (qBridge == null) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "No bridge initialized for " + type + " with ID " + globalId);
             return null;
         }
-        QbusBridgeHandler QBridgeHandler = (QbusBridgeHandler) QBridge.getHandler();
-        return QBridgeHandler;
+        QbusBridgeHandler qBridgeHandler = (QbusBridgeHandler) qBridge.getHandler();
+        return qBridgeHandler;
     }
 
     /**
      *
-     * @param QComm
+     * @param qComm
      * @param type
      * @param globalId
      */
-    public void restartCommunication(QbusCommunication QComm, String type, int globalId) {
-        QComm.restartCommunication();
+    public void restartCommunication(QbusCommunication qComm, String type, int globalId) {
+        qComm.restartCommunication();
 
-        if (!QComm.communicationActive()) {
+        if (!qComm.communicationActive()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication socket error");
             return;
         }
 
-        QbusBridgeHandler QBridgeHandler = getBridgeHandler(type, globalId);
-        if (QBridgeHandler != null) {
-            QBridgeHandler.bridgeOnline();
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler(type, globalId);
+        if (qBridgeHandler != null) {
+            qBridgeHandler.bridgeOnline();
         }
     }
 }

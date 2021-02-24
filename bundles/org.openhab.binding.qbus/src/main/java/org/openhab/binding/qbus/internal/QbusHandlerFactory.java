@@ -38,7 +38,6 @@ import org.osgi.service.component.annotations.Component;
  */
 
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.qbus")
-
 @NonNullByDefault
 public class QbusHandlerFactory extends BaseThingHandlerFactory {
 

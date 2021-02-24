@@ -29,7 +29,7 @@ public final class QbusScene {
 
     private final Logger logger = LoggerFactory.getLogger(QbusScene.class);
 
-    private @Nullable QbusCommunication QComm;
+    private @Nullable QbusCommunication qComm;
 
     public @Nullable QbusSceneHandler thingHandler;
 
@@ -42,27 +42,27 @@ public final class QbusScene {
     }
 
     /**
-     * This method sets a pointer to the QComm Scene of class {@link QbusCommuncation}.
+     * This method sets a pointer to the qComm Scene of class {@link QbusCommuncation}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
      * Qbus IP-interface when..
      *
-     * @param QComm
+     * @param qComm
      */
-    public void setQComm(QbusCommunication QComm) {
-        this.QComm = QComm;
+    public void setQComm(QbusCommunication qComm) {
+        this.qComm = qComm;
     }
 
     /**
      * Sends action to Qbus.
      */
     public void execute(int value, String sn) {
-        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeScene").withId(this.id).withState(value);
-        QbusCommunication comm = QComm;
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeScene").withId(this.id).withState(value);
+        QbusCommunication comm = qComm;
         if (comm != null) {
             try {
-                comm.sendMessage(QCmd);
+                comm.sendMessage(qCmd);
             } catch (InterruptedException e) {
-                logger.warn("Could not send command for scene {}", this.id);
+                logger.warn("Could not send command for scene {}, {}", this.id, e.getMessage());
             }
         }
     }
