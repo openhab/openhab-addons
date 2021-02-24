@@ -231,11 +231,13 @@
       <artifactId>org.openhab.binding.digiplex</artifactId>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.digitalstrom</artifactId>
       <version>${project.version}</version>
     </dependency>
+-->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.dlinksmarthome</artifactId>
@@ -353,6 +355,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.freeathomesystem</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.freebox</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -406,11 +413,13 @@
       <artifactId>org.openhab.binding.groheondus</artifactId>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.harmonyhub</artifactId>
       <version>${project.version}</version>
     </dependency>
+-->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.hdanywhere</artifactId>
@@ -551,11 +560,13 @@
       <artifactId>org.openhab.binding.keba</artifactId>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.km200</artifactId>
       <version>${project.version}</version>
     </dependency>
+-->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.knx</artifactId>
@@ -771,16 +782,19 @@
       <artifactId>org.openhab.binding.mqtt.generic</artifactId>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt.homeassistant</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt.homie</artifactId>
       <version>${project.version}</version>
     </dependency>
+-->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mystrom</artifactId>
