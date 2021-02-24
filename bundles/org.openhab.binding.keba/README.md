@@ -59,7 +59,7 @@ Thing keba:kecontact:1 [ipAddress="192.168.0.64", refreshInterval=30]
 demo.items:
 
 ```
-Dimmer 						KebaCurrentRange  		"Maximum supply current [%.1f %%]"			{channel="keba:kecontact:1:maxpresetcurrentrange"} 
+Number:Dimensionless		KebaCurrentRange  		"Maximum supply current [%.1f %%]"			{channel="keba:kecontact:1:maxpresetcurrentrange"} 
 Number:ElectricCurrent  	KebaCurrent  			"Maximum supply current [%.3f A]"			{channel="keba:kecontact:1:maxpresetcurrent"}
 Number:ElectricCurrent  	KebaSystemCurrent  		"Maximum system supply current [%.3f A]"	{channel="keba:kecontact:1:maxsystemcurrent"} 
 Number:ElectricCurrent  	KebaFailSafeCurrent  	"Failsafe supply current [%.3f A]"			{channel="keba:kecontact:1:failsafecurrent"} 

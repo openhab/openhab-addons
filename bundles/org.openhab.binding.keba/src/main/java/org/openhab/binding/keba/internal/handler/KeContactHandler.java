@@ -40,7 +40,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -124,7 +123,8 @@ public class KeContactHandler extends BaseThingHandler {
                         "IP address or port number not set");
             }
         } catch (IOException e) {
-            logger.debug("Exception during initialization of binding", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Exception during initialization of binding: " + e.toString());
         }
     }
 
@@ -336,8 +336,8 @@ public class KeContactHandler extends BaseThingHandler {
                                 transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
                                 updateState(CHANNEL_MAX_PRESET_CURRENT,
                                         new QuantityType<ElectricCurrent>(maxSystemCurrent / 1000.0, Units.AMPERE));
-                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
-                                        new PercentType((maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000)));
+                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
+                                        (maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000), Units.PERCENT));
                             }
                         } else {
                             logger.debug("maxSystemCurrent is 0. Ignoring.");
@@ -350,8 +350,8 @@ public class KeContactHandler extends BaseThingHandler {
                         State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_PRESET_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
-                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
-                                    new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
+                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
+                                    Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000)), Units.PERCENT));
                         }
                         break;
                     }
@@ -530,8 +530,8 @@ public class KeContactHandler extends BaseThingHandler {
                 }
                 case CHANNEL_MAX_PRESET_CURRENT_RANGE: {
                     if (command instanceof OnOffType || command instanceof IncreaseDecreaseType
-                            || command instanceof PercentType) {
-                        int newValue = 6000;
+                            || command instanceof QuantityType<?>) {
+                        long newValue = 6000;
                         if (command == IncreaseDecreaseType.INCREASE) {
                             newValue = Math.min(Math.max(6000, maxPresetCurrent + 1), maxSystemCurrent);
                         } else if (command == IncreaseDecreaseType.DECREASE) {
@@ -540,12 +540,12 @@ public class KeContactHandler extends BaseThingHandler {
                             newValue = maxSystemCurrent;
                         } else if (command == OnOffType.OFF) {
                             newValue = 6000;
-                        } else if (command instanceof PercentType) {
-                            newValue = 6000 + (maxSystemCurrent - 6000) * ((PercentType) command).intValue() / 100;
+                        } else if (command instanceof QuantityType<?>) {
+                            QuantityType<?> value = ((QuantityType<?>) command).toUnit("%");
+                            newValue = Math.round(6000 + (maxSystemCurrent - 6000) * value.doubleValue() / 100.0);
                         } else {
                             return;
                         }
-
                         transceiver.send("curr " + String.valueOf(newValue), this);
                     }
                     break;
