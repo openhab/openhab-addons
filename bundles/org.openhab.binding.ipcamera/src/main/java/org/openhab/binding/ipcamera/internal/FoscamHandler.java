@@ -14,7 +14,7 @@ package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -212,7 +212,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
 
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
-    public ArrayList<String> getLowPriorityRequests() {
-        return new ArrayList<String>(0);
+    public List<String> getLowPriorityRequests() {
+        return List.of();
     }
 }
