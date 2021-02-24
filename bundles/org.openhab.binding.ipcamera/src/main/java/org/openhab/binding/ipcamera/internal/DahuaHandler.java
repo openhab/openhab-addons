@@ -355,7 +355,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
 
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
-    public ArrayList<String> getLowPriorityRequests() {
+    public List<String> getLowPriorityRequests() {
         return List.of();
     }
 }
