@@ -40,13 +40,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class QbusBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusBridgeHandler.class);
-
     private @Nullable QbusCommunication qbusComm;
 
     protected @Nullable QbusConfiguration config;
 
     private @Nullable ScheduledFuture<?> refreshTimer;
+
+    private @Nullable ScheduledFuture<?> pollingJob;
+
+    private final Logger logger = LoggerFactory.getLogger(QbusBridgeHandler.class);
 
     public QbusBridgeHandler(Bridge Bridge) {
         super(Bridge);
@@ -107,7 +109,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     private void createCommunicationObject(InetAddress addr, int port) {
         scheduler.submit(() -> {
 
-            setQbusCommunication(new QbusCommunication());
+            setQbusCommunication(new QbusCommunication(thing));
 
             QbusCommunication qbusCommunication = getQbusCommunication();
 
@@ -116,8 +118,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                 try {
                     qbusCommunication.startCommunication();
                 } catch (InterruptedException | IOException e) {
-                    logger.warn("Error on restaring communication: {}", e.getMessage());
-                    bridgeOffline("Communication could not be established");
+                    bridgeOffline("Communication could not be established {}" + e.getMessage());
                     return;
                 }
 
@@ -176,7 +177,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
             if (comm != null) {
                 if (!comm.communicationActive()) {
                     // Disconnected from Qbus Server, try to reconnect
-                    comm.restartCommunication();
+                    try {
+                        comm.restartCommunication();
+                    } catch (InterruptedException e) {
+                        bridgeOffline("No connection with Qbus Server" + e.toString());
+                    } catch (IOException e) {
+                        bridgeOffline("No connection with Qbus Server" + e.toString());
+                    }
                     if (!comm.communicationActive()) {
                         bridgeOffline("No connection with Qbus Server");
                         return;
@@ -184,7 +191,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                 } else {
                     // Controller disconnected from Qbus client, try to reconnect controller
                     if (!comm.clientConnected()) {
-                        comm.restartCommunication();
+                        try {
+                            comm.restartCommunication();
+                        } catch (InterruptedException e) {
+                            bridgeOffline("No connection with Qbus Server" + e.toString());
+                        } catch (IOException e) {
+                            bridgeOffline("No connection with Qbus Server" + e.toString());
+                        }
                         if (!comm.clientConnected()) {
                             bridgeOffline("No connection with Qbus Client");
                             return;
@@ -210,8 +223,14 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
         refreshTimer = null;
 
         QbusCommunication comm = getCommunication();
+
         if (comm != null) {
-            comm.stopCommunication();
+            try {
+                comm.stopCommunication();
+            } catch (IOException e) {
+                String message = e.toString();
+                logger.error("Error on stopping communication.{} ", message);
+            }
         }
 
         comm = null;
@@ -221,7 +240,15 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * Sets the configuration parameters
      */
     protected void readConfig() {
-        this.config = getConfig().as(QbusConfiguration.class);
+        final ScheduledFuture<?> localPollingJob = this.pollingJob;
+
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
+
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            this.config = getConfig().as(QbusConfiguration.class);
+        }
     }
 
     /**
@@ -239,8 +266,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the ip address
      */
     public @Nullable String getAddress() {
-        if (this.config != null) {
-            return this.config.addr;
+        QbusConfiguration bridgeConfig = this.config;
+        if (bridgeConfig != null) {
+            if (bridgeConfig.addr != null) {
+                return bridgeConfig.addr;
+            } else {
+                return "";
+            }
         } else {
             return null;
         }
@@ -252,8 +284,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public @Nullable Integer getPort() {
-        if (this.config != null) {
-            return this.config.port;
+        QbusConfiguration bridgeConfig = this.config;
+        if (bridgeConfig != null) {
+            if (bridgeConfig.port != null) {
+                return bridgeConfig.port;
+            } else {
+                return 0;
+            }
         } else {
             return null;
         }
@@ -265,8 +302,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the serial nr of the controller
      */
     public @Nullable String getSn() {
-        if (this.config != null) {
-            return this.config.sn;
+        QbusConfiguration bridgeConfig = this.config;
+        if (bridgeConfig != null) {
+            if (bridgeConfig.sn != null) {
+                return bridgeConfig.sn;
+            } else {
+                return "";
+            }
         } else {
             return null;
         }
@@ -278,8 +320,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the refresh interval
      */
     public @Nullable Integer getRefresh() {
-        if (this.config != null) {
-            return this.config.refresh;
+        QbusConfiguration bridgeConfig = this.config;
+        if (bridgeConfig != null) {
+            if (bridgeConfig.refresh != null) {
+                return bridgeConfig.refresh;
+            } else {
+                return 0;
+            }
         } else {
             return null;
         }

@@ -9,8 +9,8 @@
 		<description>This bridge represents a Qbus client</description>
 		<config-description>
 			<parameter name="addr" type="text" required="true">
-				<label>IP Address or Host Name</label>
-				<description>IP address of Qbus server, usually 'localhost'</description>
+				<label>Hostname</label>
+				<description>IP address or hostname of Qbus server, usually 'localhost'</description>
 				<default>localhost</default>
 				<context>network-address</context>
 			</parameter>

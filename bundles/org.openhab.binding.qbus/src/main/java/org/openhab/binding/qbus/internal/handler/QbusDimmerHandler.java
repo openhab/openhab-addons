@@ -16,6 +16,7 @@ import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,9 +43,11 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
 
     protected @Nullable QbusThingsConfig config;
 
-    private int dimmerId;
+    private @Nullable Integer dimmerId;
 
     private @Nullable String sn;
+
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusDimmerHandler(Thing thing) {
         super(thing);
@@ -274,6 +277,15 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      * Read the configuration
      */
     protected synchronized void setConfig() {
+        final ScheduledFuture<?> localPollingJob = this.pollingJob;
+
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
+
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            this.config = getConfig().as(QbusThingsConfig.class);
+        }
         this.config = getConfig().as(QbusThingsConfig.class);
     }
 
@@ -282,9 +294,14 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      *
      * @return dimmerId
      */
-    public int getId() {
-        if (this.config != null) {
-            return this.config.dimmerId;
+    public @Nullable Integer getId() {
+        QbusThingsConfig dimmerConfig = this.config;
+        if (dimmerConfig != null) {
+            if (dimmerConfig.dimmerId != null) {
+                return dimmerConfig.dimmerId;
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }
