@@ -16,6 +16,7 @@ import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -306,6 +307,16 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                     squeezeBoxServerHandler.rate(mac, likeCommand);
                 } else if (command.equals(OnOffType.OFF)) {
                     squeezeBoxServerHandler.rate(mac, unlikeCommand);
+                }
+                break;
+            case CHANNEL_SLEEP:
+                if (command instanceof DecimalType) {
+                    Duration sleepDuration = Duration.ofMinutes(((DecimalType) command).longValue());
+                    if (sleepDuration.isNegative() || sleepDuration.compareTo(Duration.ofDays(1)) > 0) {
+                        logger.debug("Sleep timer of {} minutes must be >= 0 and <= 1 day", sleepDuration.toMinutes());
+                        return;
+                    }
+                    squeezeBoxServerHandler.sleep(mac, sleepDuration);
                 }
                 break;
             default:

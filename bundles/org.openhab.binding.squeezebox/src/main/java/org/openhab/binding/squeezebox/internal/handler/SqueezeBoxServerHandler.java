@@ -301,6 +301,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
     }
 
+    public void sleep(String mac, Duration sleepDuration) {
+        sendCommand(mac + " sleep " + String.valueOf(sleepDuration.toSeconds()));
+    }
+
     /**
      * Send a generic command to a given player
      *
