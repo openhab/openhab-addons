@@ -77,8 +77,6 @@ public class OctopusEnergyBridgeHandler extends BaseBridgeHandler {
         OctopusEnergyConfiguration config = getConfigAs(OctopusEnergyConfiguration.class);
 
         if (config.accountNumber.equals("") || config.apiKey.equals("")) {
-            logger.warn("Setting thing '{}' to OFFLINE: Parameter 'accountNumber' and 'apiKey' must be configured.",
-                    getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-account-number-or-api-key");
             return;
@@ -89,7 +87,6 @@ public class OctopusEnergyBridgeHandler extends BaseBridgeHandler {
                 apiHelper.setAccountNumber(config.accountNumber);
                 apiHelper.setApiKey(config.apiKey);
                 refresh();
-                logger.debug("Accounts update successful, setting bridge status to ONLINE");
                 updateStatus(ThingStatus.ONLINE);
             } catch (AuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -112,8 +109,7 @@ public class OctopusEnergyBridgeHandler extends BaseBridgeHandler {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } catch (ApiException e) {
-                    logger.warn("Setting thing '{}' to OFFLINE: Exception from API - {}", getThing().getUID(),
-                            e.getMessage());
+                    logger.warn("Exception from API - {}, {}", getThing().getUID(), e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error-general");
                 }
@@ -152,8 +148,7 @@ public class OctopusEnergyBridgeHandler extends BaseBridgeHandler {
                                     "@text/offline.conf-error-authentication");
                             return;
                         } catch (ApiException e) {
-                            logger.warn("Setting thing '{}' to OFFLINE: Exception from API - {}", getThing().getUID(),
-                                    e.getMessage());
+                            logger.warn("Exception from API - {}, {}", getThing().getUID(), e.getMessage());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/offline.comm-error-general");
                         }

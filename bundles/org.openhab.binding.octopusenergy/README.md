@@ -1,16 +1,13 @@
 # Octopus Energy Binding
 
-This binding allows OpenHAB to communicate with the public API from Octopus Energy (https://octopus.energy), an energy provider in the UK.
+This binding allows openHAB to communicate with the public API from Octopus Energy (https://octopus.energy), an energy provider in the UK.
 The following features are provided by the binding:
 
-- retrieval of latest meter readings (consumption)
-- retrieval of tariff schedule / unit rates (if on an agile tariff, half-hourly future rates are provided based on availability)
-- calculation of forward looking least cost window based on given energy consumption. I.e. when is the cheapest time to run my dishwasher? This is available as a single pair of channels (cheapestSlotDuration, cheapestSlotStart) and also as an action for the use in scripts/rules.
+- Retrieval of latest meter readings (consumption)
+- Retrieval of tariff schedule / unit rates (if on an agile tariff, half-hourly future rates are provided based on availability)
+- Calculation of forward looking least cost window based on given energy consumption. I.e. when is the cheapest time to run my dishwasher? This is available as a single pair of channels (cheapestSlotDuration, cheapestSlotStart) and also as an action for the use in scripts/rules.
 
-#### Current Limitations / Work in Progress
-
-- only tested with Octopus "Agile" electricity tariff. I would welcome users of "Go" or "Go Faster" for testing.
-- doesn't do very much with historical data
+So far, this binding has only been tested with Octopus "Agile" electricity tariff. I would welcome users of "Go" or "Go Faster" for testing.
 
 ## Supported Things
 
@@ -18,9 +15,9 @@ This binding supports the following thing types
 
 | Thing                 | Thing Type | Discovery | Description                                    |
 |-----------------------|------------|-----------|------------------------------------------------|
-| Bridge                | Bridge     | Manual    |  A single connection to the Octopus Energy API |
-| ElectricityMeterPoint | Thing      | Automatic |  An electricity meter point                    |
-| GasMeterPoint         | Thing      | Automatic |  An gas meter point                            |
+| bridge                | Bridge     | Manual    |  A single connection to the Octopus Energy API |
+| electricityMeterPoint | Thing      | Automatic |  An electricity meter point                    |
+| gasMeterPoint         | Thing      | Automatic |  An gas meter point                            |
 
 
 ## Discovery
@@ -76,10 +73,11 @@ The following channels are defined. Except for the bridge refresh channel, all a
 ## Actions
 
 The key feature of this binding is a number of actions which can be invoked against an electricity meter point to calculate the optimal time and cost for running a certain appliance (e.g. Dishwasher). This can be used in a variety of ways, such as:
-- display the recommended Dishwasher or Washing machine start time on a wall panel
-- schedule a nightly EV charging session if your EVSE or car allows automated scheduling
-- switching of storage heaters overnight
-- schedule wake up time for a server to run nightly backups
+
+- Display the recommended Dishwasher or Washing machine start time on a wall panel
+- Schedule a nightly EV charging session if your EVSE or car allows automated scheduling
+- Switching of storage heaters overnight
+- Schedule wake up time for a server to run nightly backups
 
 ####  Electricity Meter Point
 
