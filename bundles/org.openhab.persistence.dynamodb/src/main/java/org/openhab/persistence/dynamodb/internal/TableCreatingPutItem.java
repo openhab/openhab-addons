@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -80,11 +81,13 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
     private DynamoDbAsyncTable<T> table;
     private CompletableFuture<Void> aggregateFuture = new CompletableFuture<Void>();
     private Instant start = Instant.now();
+    private ExecutorService executor;
 
     public TableCreatingPutItem(DynamoDBPersistenceService service, T dto, DynamoDbAsyncTable<T> table) {
         this.service = service;
         this.dto = dto;
         this.table = table;
+        this.executor = this.service.getExecutor();
     }
 
     public CompletableFuture<Void> putItemAsync() {
@@ -98,8 +101,8 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
             Instant tableCreationStart = Instant.now();
             table.createTable(CreateTableEnhancedRequest.builder()
                     .provisionedThroughput(ProvisionedThroughput.builder()
-                            .readCapacityUnits(this.service.dbConfig.getReadCapacityUnits())
-                            .writeCapacityUnits(this.service.dbConfig.getWriteCapacityUnits()).build())
+                            .readCapacityUnits(this.service.getDbConfig().getReadCapacityUnits())
+                            .writeCapacityUnits(this.service.getDbConfig().getWriteCapacityUnits()).build())
                     .build())//
                     .whenCompleteAsync((resultTableCreation, exceptionTableCreation) -> {
                         if (exceptionTableCreation == null) {
@@ -108,7 +111,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                             //
                             // Table creation OK. Configure TTL
                             //
-                            boolean legacy = this.service.tableNameResolver
+                            boolean legacy = this.service.getTableNameResolver()
                                     .getTableSchema() == ExpectedTableSchema.LEGACY;
                             waitForTableToBeActive().thenComposeAsync(_void -> {
                                 if (legacy) {
@@ -117,12 +120,12 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                                 } else {
                                     // We have the new table schema -> configure TTL
                                     // for the newly created table
-                                    return this.service.lowLevelClient.updateTimeToLive(req -> req
+                                    return this.service.getLowLevelClient().updateTimeToLive(req -> req
                                             .overrideConfiguration(this.service::overrideConfig)
                                             .tableName(table.tableName()).timeToLiveSpecification(spec -> spec
                                                     .attributeName(DynamoDBItem.ATTRIBUTE_NAME_EXPIRY).enabled(true)));
                                 }
-                            }, this.service.executor)
+                            }, executor)
                                     //
                                     // Table is ready and TTL configured (possibly with error)
                                     //
@@ -142,7 +145,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                                             aggregateFuture.completeExceptionally(
                                                     exceptionTTLCause == null ? exceptionTTL : exceptionTTLCause);
                                         }
-                                    }, this.service.executor);
+                                    }, executor);
                         } else {
                             // Table creation failed. We give up and complete the aggregate
                             // future -- unless the error was ResourceInUseException, in which case wait for
@@ -168,9 +171,9 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                                                 tableWaitExceptionCause == null ? tableWaitException
                                                         : tableWaitExceptionCause);
                                     }
-                                }, this.service.executor)
+                                }, executor)
                                         // table wait OK, retry PutItem
-                                        .thenRunAsync(() -> internalPutItemAsync(false, false), this.service.executor);
+                                        .thenRunAsync(() -> internalPutItemAsync(false, false), executor);
                             } else {
                                 logger.warn("PutItem: failed (final) with {} {}. Aborting.",
                                         cause == null ? exceptionTableCreation.getClass().getSimpleName()
@@ -179,7 +182,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                                 aggregateFuture.completeExceptionally(cause == null ? exceptionTableCreation : cause);
                             }
                         }
-                    }, this.service.executor);
+                    }, executor);
 
         } else {
             // First try, optimistically assuming that table exists
@@ -210,13 +213,13 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                         aggregateFuture.completeExceptionally(cause == null ? exception : cause);
                     }
                 }
-            }, this.service.executor);
+            }, executor);
         }
         return aggregateFuture;
     }
 
     private CompletableFuture<Void> waitForTableToBeActive() {
-        return this.service.lowLevelClient.waiter()
+        return this.service.getLowLevelClient().waiter()
                 .waitUntilTableExists(
                         req -> req.tableName(table.tableName()).overrideConfiguration(this.service::overrideConfig))
                 .thenAcceptAsync(tableWaitResponse -> {
@@ -224,7 +227,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                     ResponseOrException<DescribeTableResponse> responseOrException = tableWaitResponse.matched();
                     logger.trace("PutItem: Table wait completed sucessfully with {} attempts: {}",
                             tableWaitResponse.attemptsExecuted(), toString(responseOrException));
-                }, this.service.executor);
+                }, executor);
     }
 
     private String toString(ResponseOrException<?> responseOrException) {

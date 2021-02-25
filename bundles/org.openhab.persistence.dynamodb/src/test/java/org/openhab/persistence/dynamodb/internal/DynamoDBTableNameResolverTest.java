@@ -88,7 +88,7 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
         DynamoDBPersistenceService maybeLegacyService = null;
         final DynamoDBPersistenceService legacyService = newService(true, true, null, DynamoDBConfig.DEFAULT_TABLE_NAME,
                 DynamoDBConfig.DEFAULT_TABLE_PREFIX);
-        assertEquals(ExpectedTableSchema.LEGACY, legacyService.tableNameResolver.getTableSchema());
+        assertEquals(ExpectedTableSchema.LEGACY, legacyService.getTableNameResolver().getTableSchema());
 
         NumberItem item = (@NonNull NumberItem) ITEMS.get("number");
         final FilterCriteria criteria = new FilterCriteria();
@@ -110,18 +110,19 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
             });
 
             // Create 2 new services, with unknown schemas (MAYBE_LEGACY), pointing to same database
-            maybeLegacyService = newService(null, false, legacyService.endpointOverride, null, null);
-            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyService.tableNameResolver.getTableSchema());
-            assertEquals(legacyService.endpointOverride, maybeLegacyService.endpointOverride);
+            maybeLegacyService = newService(null, false, legacyService.getEndpointOverride(), null, null);
+            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyService.getTableNameResolver().getTableSchema());
+            assertEquals(legacyService.getEndpointOverride(), maybeLegacyService.getEndpointOverride());
 
             // maybeLegacyService2 still does not know the schema
-            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyService.tableNameResolver.getTableSchema());
+            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyService.getTableNameResolver().getTableSchema());
             // ... but it will be resolved automatically on query
             final DynamoDBPersistenceService maybeLegacyService2Final = maybeLegacyService;
             waitForAssert(() -> {
                 assertEquals(1, Lists.newArrayList(maybeLegacyService2Final.query(criteria)).size());
                 // also the schema gets resolved
-                assertEquals(ExpectedTableSchema.LEGACY, maybeLegacyService2Final.tableNameResolver.getTableSchema());
+                assertEquals(ExpectedTableSchema.LEGACY,
+                        maybeLegacyService2Final.getTableNameResolver().getTableSchema());
             });
 
         } finally {

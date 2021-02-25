@@ -118,14 +118,14 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private @NonNullByDefault({}) ItemRegistry itemRegistry;
     private @NonNullByDefault({}) DynamoDbEnhancedAsyncClient client;
     @NonNullByDefault({})
-    DynamoDbAsyncClient lowLevelClient;
+    private DynamoDbAsyncClient lowLevelClient;
     private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
     boolean isProperlyConfigured;
     @NonNullByDefault({})
-    DynamoDBConfig dbConfig;
+    private DynamoDBConfig dbConfig;
     @NonNullByDefault({})
-    DynamoDBTableNameResolver tableNameResolver;
-    final ExecutorService executor = ThreadPoolManager.getPool(DYNAMODB_THREADPOOL_NAME);
+    private DynamoDBTableNameResolver tableNameResolver;
+    private final ExecutorService executor = ThreadPoolManager.getPool(DYNAMODB_THREADPOOL_NAME);
     private static final Duration TIMEOUT_API_CALL = Duration.ofSeconds(60);
     private static final Duration TIMEOUT_API_CALL_ATTEMPT = Duration.ofSeconds(5);
     private Map<Class<? extends DynamoDBItem<?>>, DynamoDbAsyncTable<? extends DynamoDBItem<?>>> tableCache = new ConcurrentHashMap<>(
@@ -133,7 +133,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private AwsCredentialsProvider credentialsProvider = new CredentialsProvider();
 
     @Nullable
-    URI endpointOverride;
+    private URI endpointOverride;
 
     void overrideConfig(AwsRequestOverrideConfiguration.Builder config) {
         config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL)
@@ -159,19 +159,27 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     }
 
     /**
-     * For testing. Allows access to underlying DynamoDbEnhancedAsyncClient.
-     *
+     * For tests
      */
-    DynamoDbEnhancedAsyncClient getClient() {
-        return client;
+    @Nullable
+    URI getEndpointOverride() {
+        return endpointOverride;
     }
 
-    /**
-     * For testing. Allows access to underlying DynamoDbAsyncClient.
-     *
-     */
     DynamoDbAsyncClient getLowLevelClient() {
         return lowLevelClient;
+    }
+
+    ExecutorService getExecutor() {
+        return executor;
+    }
+
+    DynamoDBTableNameResolver getTableNameResolver() {
+        return tableNameResolver;
+    }
+
+    DynamoDBConfig getDbConfig() {
+        return dbConfig;
     }
 
     @Activate
