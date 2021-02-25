@@ -173,7 +173,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 260 different models.
+Currently the miio binding supports more than 270 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -463,6 +463,7 @@ Currently the miio binding supports more than 260 different models.
 | Smartmi Inverter Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
 | Smartmi Standing Fan 2       | miio:basic       | [zhimi.fan.za3](#zhimi-fan-za3) | Yes       |            |
 | Smartmi Standing Fan 2S      | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
+| Smartmi Standing Fan 3       | miio:basic       | [zhimi.fan.za5](#zhimi-fan-za5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Radiant Heater Smart Version | miio:basic       | [zhimi.heater.za1](#zhimi-heater-za1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.za2](#zhimi-heater-za2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2663,7 +2664,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | brightness           | Dimmer               | Brightness                               |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               |            |
@@ -2759,7 +2760,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | brightness           | Dimmer               | Brightness                               |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               |            |
@@ -4338,6 +4339,28 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | speed                | Number               | Speed                                    |            |
 | naturalLevel         | Number               | Natural Level                            |            |
 | move                 | String               | Move Direction                           |            |
+
+### Smartmi Standing Fan 3  (<a name="zhimi-fan-za5">zhimi.fan.za5</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Fan - Power                              |            |
+| fan_level            | Number               | Fan - Fan Level                          | Value mapping ["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"] |
+| horizontal_swing     | Switch               | Fan - Horizontal Swing                   |            |
+| horizontal_angle     | Number               | Fan - Horizontal Angle                   |            |
+| mode                 | Number               | Fan - Mode                               | Value mapping ["0"="Natural Wind","1"="Straight Wind"] |
+| off_delay            | Number               | Fan - Power Off Delay                    |            |
+| anion                | Switch               | Fan - Anion                              |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| button_press         | Number               | Custom Service - Button Press            | Value mapping ["1"="power","2"="swing","0"="No Button Pressed"] |
+| battery_state        | Switch               | Custom Service - Battery State           |            |
+| speed_now            | Number               | Custom Service - Speed Now               |            |
+| ac_state             | Switch               | Custom Service - Ac State                |            |
+| speed_level          | Number:Dimensionless | Custom Service - Speed Level             |            |
 
 ### Smartmi Radiant Heater Smart Version (<a name="zhimi-heater-za1">zhimi.heater.za1</a>) Channels
 
@@ -7155,7 +7178,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -7272,7 +7295,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight Crystal Pendant Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -9100,6 +9123,31 @@ Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
+```
+
+### Smartmi Standing Fan 3  (zhimi.fan.za5) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fan "Smartmi Standing Fan 3 " <status>
+Switch on "Fan - Power" (G_fan) {channel="miio:basic:fan:on"}
+Number fan_level "Fan - Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
+Switch horizontal_swing "Fan - Horizontal Swing" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
+Number horizontal_angle "Fan - Horizontal Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Number mode "Fan - Mode" (G_fan) {channel="miio:basic:fan:mode"}
+Number off_delay "Fan - Power Off Delay" (G_fan) {channel="miio:basic:fan:off_delay"}
+Switch anion "Fan - Anion" (G_fan) {channel="miio:basic:fan:anion"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_fan) {channel="miio:basic:fan:brightness"}
+Switch alarm "Alarm - Alarm" (G_fan) {channel="miio:basic:fan:alarm"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_fan) {channel="miio:basic:fan:relative_humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_fan) {channel="miio:basic:fan:temperature"}
+Number button_press "Custom Service - Button Press" (G_fan) {channel="miio:basic:fan:button_press"}
+Switch battery_state "Custom Service - Battery State" (G_fan) {channel="miio:basic:fan:battery_state"}
+Number speed_now "Custom Service - Speed Now" (G_fan) {channel="miio:basic:fan:speed_now"}
+Switch ac_state "Custom Service - Ac State" (G_fan) {channel="miio:basic:fan:ac_state"}
+Number:Dimensionless speed_level "Custom Service - Speed Level" (G_fan) {channel="miio:basic:fan:speed_level"}
 ```
 
 ### Smartmi Radiant Heater Smart Version (zhimi.heater.za1) item file lines

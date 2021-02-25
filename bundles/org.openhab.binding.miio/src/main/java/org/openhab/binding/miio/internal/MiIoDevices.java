@@ -347,6 +347,7 @@ public enum MiIoDevices {
     ZHIMI_FAN_ZA1("zhimi.fan.za1", "Smartmi Inverter Pedestal Fan", THING_TYPE_BASIC),
     ZHIMI_FAN_ZA3("zhimi.fan.za3", "Smartmi Standing Fan 2", THING_TYPE_BASIC),
     ZHIMI_FAN_ZA4("zhimi.fan.za4", "Smartmi Standing Fan 2S", THING_TYPE_BASIC),
+    ZHIMI_FAN_ZA5("zhimi.fan.za5", "Smartmi Standing Fan 3 ", THING_TYPE_BASIC),
     ZHIMI_HEATER_ZA1("zhimi.heater.za1", "Smartmi Radiant Heater Smart Version", THING_TYPE_BASIC),
     ZHIMI_HEATER_ZA2("zhimi.heater.za2", "Smartmi Smart Convector Heater 1S", THING_TYPE_BASIC),
     ZHIMI_HEATER_ZB1("zhimi.heater.zb1", "Smartmi Smart Convector Heater 1S", THING_TYPE_BASIC),
