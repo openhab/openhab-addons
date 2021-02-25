@@ -110,7 +110,7 @@
 				"piid": 1,
 				"friendlyName": "Countdown - Countdown Time",
 				"channel": "countdown-time",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
 					"minimum": 0,
@@ -228,7 +228,7 @@
 				"piid": 7,
 				"friendlyName": "Private-Service - Use Time",
 				"channel": "use-time",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,

@@ -229,7 +229,7 @@
 				"piid": 7,
 				"friendlyName": "Private-Service - Use Time",
 				"channel": "use-time",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
