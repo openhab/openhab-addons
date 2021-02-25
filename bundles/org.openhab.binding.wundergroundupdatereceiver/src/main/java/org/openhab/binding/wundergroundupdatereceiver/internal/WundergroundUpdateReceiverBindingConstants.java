@@ -57,6 +57,8 @@ public class WundergroundUpdateReceiverBindingConstants {
     // List of all Channel ids without groups
     public static final String DATEUTC = "dateutc";
     public static final String SOFTWARE_TYPE = "softwaretype";
+    public static final String LOW_BATTERY = "lowbatt";
+    public static final String REALTIME_FREQUENCY = "rtfreq";
     public static final String WIND_DIRECTION = "winddir";
     public static final String WIND_SPEED = "windspeedmph";
     public static final String GUST_SPEED = "windgustmph";
@@ -108,13 +110,13 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final Unit<Length> NAUTICAL_MILE = addUnit(
             new TransformedUnit<>("NM", METRE, new MultiplyConverter(1852.0)));
 
-    public static final Set<String> CHANNEL_KEYS = Set.of(DATEUTC, SOFTWARE_TYPE, WIND_DIRECTION, WIND_SPEED,
-            GUST_SPEED, GUST_DIRECTION, WIND_SPEED_AVG_2MIN, WIND_DIRECTION_AVG_2MIN, GUST_SPEED_AVG_10MIN,
-            GUST_DIRECTION_AVG_10MIN, TEMPERATURE, INDOOR_TEMPERATURE, SOIL_TEMPERATURE, WIND_CHILL, HUMIDITY,
-            INDOOR_HUMIDITY, DEWPOINT, SOIL_MOISTURE, LEAF_WETNESS, RAIN_IN, DAILY_RAIN_IN, WEEKLY_RAIN_IN,
-            MONTHLY_RAIN_IN, YEARLY_RAIN_IN, SOLAR_RADIATION, UV, VISIBILITY, WEATHER, CLOUDS, BAROM_IN, AQ_NO, AQ_NO2,
-            AQ_NO2T, AQ_NO2Y, AQ_NOX, AQ_NOY, AQ_NO3, AQ_SO2, AQ_SO2T, AQ_SO4, AQ_CO, AQ_COT, AQ_EC, AQ_OC, AQ_BC,
-            AQ_UV_AETH, AQ_PM2_5, AQ_PM10, AQ_OZONE);
+    public static final Set<String> CHANNEL_KEYS = Set.of(DATEUTC, SOFTWARE_TYPE, LOW_BATTERY, REALTIME_FREQUENCY,
+            WIND_DIRECTION, WIND_SPEED, GUST_SPEED, GUST_DIRECTION, WIND_SPEED_AVG_2MIN, WIND_DIRECTION_AVG_2MIN,
+            GUST_SPEED_AVG_10MIN, GUST_DIRECTION_AVG_10MIN, TEMPERATURE, INDOOR_TEMPERATURE, SOIL_TEMPERATURE,
+            WIND_CHILL, HUMIDITY, INDOOR_HUMIDITY, DEWPOINT, SOIL_MOISTURE, LEAF_WETNESS, RAIN_IN, DAILY_RAIN_IN,
+            WEEKLY_RAIN_IN, MONTHLY_RAIN_IN, YEARLY_RAIN_IN, SOLAR_RADIATION, UV, VISIBILITY, WEATHER, CLOUDS, BAROM_IN,
+            AQ_NO, AQ_NO2, AQ_NO2T, AQ_NO2Y, AQ_NOX, AQ_NOY, AQ_NO3, AQ_SO2, AQ_SO2T, AQ_SO4, AQ_CO, AQ_COT, AQ_EC,
+            AQ_OC, AQ_BC, AQ_UV_AETH, AQ_PM2_5, AQ_PM10, AQ_OZONE);
 
     public static final Map<String, Unit<? extends Quantity<?>>> CHANNEL_UNIT_MAPPING = Map.ofEntries(
             entry(TEMPERATURE, FAHRENHEIT), entry(DEWPOINT, FAHRENHEIT), entry(SOIL_TEMPERATURE, FAHRENHEIT),

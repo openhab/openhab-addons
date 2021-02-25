@@ -37,6 +37,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -164,12 +165,20 @@ class WundergroundUpdateReceiverServletTest {
         // Given
         ThingUID testThingUID = new ThingUID(WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER,
                 "test-receiver");
-        final String queryString = "ID=dfggger&PASSWORD=XXXXXX&tempf=26.1&humidity=74&dewptf=18.9&windchillf=26.1&winddir=14&windspeedmph=1.34&windgustmph=2.46&rainin=0.00&dailyrainin=0.00&weeklyrainin=0.00&monthlyrainin=0.08&yearlyrainin=3.06&solarradiation=42.24&UV=1&indoortempf=69.3&indoorhumidity=32&baromin=30.39&AqNOX=21&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
+        final String queryString = "ID=dfggger&PASSWORD=XXXXXX&tempf=26.1&humidity=74&dewptf=18.9&windchillf=26.1&winddir=14&windspeedmph=1.34&windgustmph=2.46&rainin=0.00&dailyrainin=0.00&weeklyrainin=0.00&monthlyrainin=0.08&yearlyrainin=3.06&solarradiation=42.24&UV=1&indoortempf=69.3&indoorhumidity=32&baromin=30.39&AqNOX=21&lowbatt=1&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService);
         List<Channel> channels = List.of(
                 ChannelBuilder
                         .create(new ChannelUID(testThingUID, "metadata",
                                 WundergroundUpdateReceiverBindingConstants.DATEUTC), "String")
+                        .withKind(ChannelKind.STATE).build(),
+                ChannelBuilder
+                        .create(new ChannelUID(testThingUID, "metadata",
+                                WundergroundUpdateReceiverBindingConstants.REALTIME_FREQUENCY), "Number")
+                        .withKind(ChannelKind.STATE).build(),
+                ChannelBuilder
+                        .create(new ChannelUID(testThingUID, "metadata",
+                                WundergroundUpdateReceiverBindingConstants.LOW_BATTERY), "Switch")
                         .withKind(ChannelKind.STATE).build(),
                 ChannelBuilder
                         .create(new ChannelUID(testThingUID, "wind",
@@ -243,6 +252,12 @@ class WundergroundUpdateReceiverServletTest {
         verify(callback).stateUpdated(
                 new ChannelUID(testThindUid, "metadata", WundergroundUpdateReceiverBindingConstants.DATEUTC),
                 StringType.valueOf("2021-02-07 14:04:03"));
+        verify(callback).stateUpdated(
+                new ChannelUID(testThindUid, "metadata", WundergroundUpdateReceiverBindingConstants.LOW_BATTERY),
+                OnOffType.ON);
+        verify(callback).stateUpdated(
+                new ChannelUID(testThindUid, "metadata", WundergroundUpdateReceiverBindingConstants.REALTIME_FREQUENCY),
+                new DecimalType(5));
         verify(callback).stateUpdated(
                 new ChannelUID(testThindUid, "wind", WundergroundUpdateReceiverBindingConstants.WIND_DIRECTION),
                 new QuantityType<>(14, Units.DEGREE_ANGLE));

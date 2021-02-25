@@ -12,6 +12,8 @@
 			<channel id="last-received" typeId="last-received-datetime"/>
 			<channel id="dateutc" typeId="datetime-utc"/>
 			<channel id="softwaretype" typeId="softwaretype"/>
+			<channel id="rtfreq" typeId="realtime-frequency"/>
+			<channel id="lowbatt" typeId="system.low-battery"/>
 			<channel id="last-query-state" typeId="last-query-state"/>
 			<channel id="last-query-trigger" typeId="last-query-trigger"/>
 		</channels>

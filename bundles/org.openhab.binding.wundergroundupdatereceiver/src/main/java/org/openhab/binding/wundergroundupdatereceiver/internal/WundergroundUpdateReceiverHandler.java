@@ -25,6 +25,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -139,6 +140,8 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
             Unit<? extends Quantity<?>> unit = CHANNEL_UNIT_MAPPING.get(channelId);
             if (unit != null) {
                 updateState(channelUID, new QuantityType<>(numberValue, unit));
+            } else if (LOW_BATTERY.equals(channelId)) {
+                updateState(channelUID, OnOffType.from(state));
             } else {
                 updateState(channelUID, new DecimalType(numberValue));
             }
