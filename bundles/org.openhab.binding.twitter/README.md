@@ -1,6 +1,6 @@
 # Twitter Binding
 
-The Twitter binding allows your home to Tweet it's status, 280 characters at a time.
+The Twitter binding allows your home to Tweet, 280 characters at a time. It also supports direct messages and tweeting with media.
 
 ## Supported Things
 
@@ -11,7 +11,7 @@ Account - Twitter Account.
 
 ## Thing Configuration
 
-The Twitter Account Thing requires you create a Twitter App in the Developer Page.
+The Twitter Account Thing requires you create a Twitter App in the Twitter Developer Page.
 
 |   Property        | Default | Required | Description                       |
 |-------------------|---------|:--------:|-----------------------------------|
@@ -26,6 +26,7 @@ The Twitter Account Thing requires you create a Twitter App in the Developer Pag
 
 ```
 Last Tweet - Latest Tweet.
+
 ```
 
 ## Full Example
@@ -33,7 +34,14 @@ Last Tweet - Latest Tweet.
 twitter.things:
 
 ```
-Thing twitter:account:sampleaccount [ consumerKey="11111", consumerSecret="22222", accessToken="33333", accessTokenSecret="444444"]
+Thing twitter:account:sampleaccount [ consumerKey="11111", consumerSecret="22222", accessToken="33333", accessTokenSecret="444444" ]
+
+```
+
+twitter.items:
+
+```
+String sample_tweet   "Latest Tweet: [%s]" { channel="twitter:account:sampleaccount:lasttweet" }
 
 ```
 
@@ -42,14 +50,17 @@ Thing twitter:account:sampleaccount [ consumerKey="11111", consumerSecret="22222
 This binding includes rule actions for sending tweets and direct messages.
 
 * `boolean success = sendTweet(String text)`
-* `boolean success = sendTweet(String text, String URL)`
-* `boolean success = sendDirectMessage(String recipient, String text)`
+* `boolean success = sendTweetWithAttachment(String text, String URL)`
+* `boolean success = sendDirectMessage(String recipientID, String text)`
 
 Examples:
 
 ```
 val tweetActions = getActions("twitter","twitter:account:sampleaccount")
-val success = tweetActions.sendTweet("This is A Tweet")
-val success = tweetActions.sendTweet("This is A Tweet with a Pic", file:///tmp/201601011031.jpg)
+val success  = tweetActions.sendTweet("This is A Tweet")
+val success2 = tweetActions.sendTweetWithAttachment("This is A Tweet with a Pic", file:///tmp/201601011031.jpg)
+val success3 = tweetActions.sendTweetWithAttachment("Windows Picture", "D:\\Test.png" )
+val success4 = tweetActions.sendTweetWithAttachment("HTTP Picture", "http://www.mywebsite.com/Test.png" )
+val success5 = tweetActions.sendDirectMessage("1234567", "Wake Up" )
 
 ```
