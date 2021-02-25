@@ -110,7 +110,6 @@
 				"piid": 1,
 				"friendlyName": "Countdown - Countdown Time",
 				"channel": "countdown-time",
-				"channelType": "time",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
