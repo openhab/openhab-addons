@@ -261,13 +261,11 @@
       <artifactId>org.openhab.binding.digiplex</artifactId>
       <version>${project.version}</version>
     </dependency>
-<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.digitalstrom</artifactId>
       <version>${project.version}</version>
     </dependency>
--->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.dlinksmarthome</artifactId>
@@ -458,13 +456,11 @@
       <artifactId>org.openhab.binding.groheondus</artifactId>
       <version>${project.version}</version>
     </dependency>
-<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.harmonyhub</artifactId>
       <version>${project.version}</version>
     </dependency>
--->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.haywardomnilogic</artifactId>
@@ -610,13 +606,11 @@
       <artifactId>org.openhab.binding.keba</artifactId>
       <version>${project.version}</version>
     </dependency>
-<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.km200</artifactId>
       <version>${project.version}</version>
     </dependency>
--->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.knx</artifactId>
@@ -842,7 +836,6 @@
       <artifactId>org.openhab.binding.mqtt.generic</artifactId>
       <version>${project.version}</version>
     </dependency>
-<!--
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt.homeassistant</artifactId>
@@ -854,7 +847,6 @@
       <artifactId>org.openhab.binding.mqtt.homie</artifactId>
       <version>${project.version}</version>
     </dependency>
--->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mystrom</artifactId>
