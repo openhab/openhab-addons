@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,13 +27,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.twitter.internal.action.TwitterActions;
 import org.openhab.binding.twitter.internal.config.TwitterConfig;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +45,7 @@ import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
@@ -50,7 +56,8 @@ import twitter4j.auth.AccessToken;
  *
  * @author Scott Hanson - Initial contribution
  */
-// @NonNullByDefault
+
+@NonNullByDefault
 public class TwitterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TwitterHandler.class);
@@ -61,7 +68,7 @@ public class TwitterHandler extends BaseThingHandler {
 
     private static final int CHARACTER_LIMIT = 280;
 
-    static twitter4j.Twitter client = null;
+    private static @Nullable Twitter client = null;
     boolean isProperlyConfigured = false;
 
     public TwitterHandler(Thing thing) {
@@ -72,35 +79,53 @@ public class TwitterHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    @SuppressWarnings("null")
+    // creates list of available Actions
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(TwitterActions.class);
+    }
+
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public void initialize() {
         config = getConfigAs(TwitterConfig.class);
 
         try {
+            // create a New Twitter Client
             client = createClient();
-            refresh();
-            isProperlyConfigured = true;
-            refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
-            updateStatus(ThingStatus.ONLINE);
+            // verify client is valid
+            if (client != null) {
+                refresh();// Get latest status
+                isProperlyConfigured = true;
+                refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
         } catch (UnhandledException e) {
             updateStatus(ThingStatus.OFFLINE);
         }
     }
 
+    /**
+     * Internal method for Getting Twitter Status
+     *
+     */
+    @SuppressWarnings("null")
     private void refresh() {
         try {
             if (!checkPrerequisites()) {
                 return;
             }
-            if (client != null) {
-                ResponseList<Status> statuses = client.getUserTimeline();
-                if (statuses.size() > 0) {
-                    updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
-                }
+
+            ResponseList<Status> statuses = client.getUserTimeline();
+            if (statuses.size() > 0) {
+                updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
+            } else {
+                logger.debug("No Statuses Found");
             }
         } catch (TwitterException e) {
-            logger.info("error when trying to refresh Twitter Account: {}", e.getMessage());
+            logger.info("Error when trying to refresh Twitter Account: {}", e.getMessage());
         }
     }
 
@@ -115,8 +140,12 @@ public class TwitterHandler extends BaseThingHandler {
      * @return <code>true</code>, if sending the tweet has been successful and
      *         <code>false</code> in all other cases.
      */
-    private boolean sendTweet(final String tweetTxt, final File fileToAttach) {
-        // abbreviate the Tweet to meet the 140 character limit ...
+    @SuppressWarnings("null")
+    private boolean sendTweet(final String tweetTxt, final @Nullable File fileToAttach) {
+        if (!checkPrerequisites()) {
+            return false;
+        }
+        // abbreviate the Tweet to meet the 280 character limit ...
         String abbreviatedTweetTxt = StringUtils.abbreviate(tweetTxt, CHARACTER_LIMIT);
         try {
             // send the Tweet
@@ -126,6 +155,7 @@ public class TwitterHandler extends BaseThingHandler {
             }
             Status updatedStatus = client.updateStatus(status);
             logger.debug("Successfully sent Tweet '{}'", updatedStatus.getText());
+            updateState(CHANNEL_LASTTWEET, StringType.valueOf(updatedStatus.getText()));
             return true;
         } catch (TwitterException e) {
             logger.warn("Failed to send Tweet '{}' because of : {}", abbreviatedTweetTxt, e.getLocalizedMessage());
@@ -204,7 +234,18 @@ public class TwitterHandler extends BaseThingHandler {
         return result;
     }
 
-    @SuppressWarnings("deprecation")
+    /**
+     * Sends a DirectMessage
+     *
+     * @param recipientId
+     *            recipient ID of the twitter user
+     * @param messageTxt
+     *            text string to be sent as a Direct Message
+     *
+     * @return <code>true</code>, if sending the direct message has been successful and
+     *         <code>false</code> in all other cases.
+     */
+    @SuppressWarnings("null")
     public boolean sendDirectMessage(String recipientId, String messageTxt) {
         if (!checkPrerequisites()) {
             return false;
@@ -215,8 +256,7 @@ public class TwitterHandler extends BaseThingHandler {
             String abbreviatedMessageTxt = StringUtils.abbreviate(messageTxt, CHARACTER_LIMIT);
             // send the direct message
             DirectMessage message = client.sendDirectMessage(recipientId, abbreviatedMessageTxt);
-            logger.debug("Successfully sent direct message '{}' to @'{}'", message.getText(),
-                    message.getRecipientScreenName());
+            logger.debug("Successfully sent direct message '{}' to @'{}'", message.getText(), message.getRecipientId());
             return true;
         } catch (TwitterException e) {
             logger.warn("Failed to send Direct Message '{}' because of :'{}'", messageTxt, e.getLocalizedMessage());
@@ -224,6 +264,13 @@ public class TwitterHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * check if twitter account was created with prerequisites
+     *
+     * @return <code>true</code>, if twitter account was initialized
+     *         <code>false</code> in all other cases.
+     */
+    @SuppressWarnings("null")
     private boolean checkPrerequisites() {
         if (client == null) {
             logger.debug("Twitter client is not yet configured > execution aborted!");

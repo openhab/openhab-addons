@@ -40,12 +40,32 @@ public class TwitterActions implements ThingActions {
     @RuleAction(label = "@text/sendTweetActionLabel", description = "@text/sendTweetActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendTweet(
             @ActionInput(name = "text") @Nullable String text) {
-        return sendTweet(text);
+        if (text == null) {
+            logger.warn("Cannot send Tweet as text is missing.");
+            return false;
+        }
+
+        final TwitterHandler handler = this.handler;
+        if (handler == null) {
+            logger.info("Handler is null, cannot tweet.");
+            return false;
+        } else {
+            return handler.sendTweet(text);
+        }
     }
 
     @RuleAction(label = "@text/sendAttachmentTweetActionLabel", description = "@text/sendAttachmentTweetActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendTweetWithAttachment(
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "url") @Nullable String urlString) {
+        if (text == null) {
+            logger.warn("Cannot send Tweet as text is missing.");
+            return false;
+        }
+        if (urlString == null) {
+            logger.warn("Cannot send Tweet as urlString is missing.");
+            return false;
+        }
+
         final TwitterHandler handler = this.handler;
         if (handler == null) {
             logger.info("Handler is null, cannot tweet.");
@@ -63,6 +83,10 @@ public class TwitterActions implements ThingActions {
             logger.warn("Cannot send Direct Message as recipient is missing.");
             return false;
         }
+        if (text == null) {
+            logger.warn("Cannot send Direct Message as text is missing.");
+            return false;
+        }
 
         final TwitterHandler handler = this.handler;
         if (handler == null) {
@@ -74,16 +98,16 @@ public class TwitterActions implements ThingActions {
     }
 
     public static boolean sendTweet(ThingActions actions, @Nullable String text) {
-        return TwitterActions.sendTweet(actions, text);
+        return ((TwitterActions) actions).sendTweet(text);
     }
 
     public static boolean sendTweetWithAttachment(ThingActions actions, @Nullable String text,
             @Nullable String urlString) {
-        return TwitterActions.sendTweetWithAttachment(actions, text, urlString);
+        return ((TwitterActions) actions).sendTweetWithAttachment(text, urlString);
     }
 
     public static boolean sendDirectMessage(ThingActions actions, @Nullable String recipient, @Nullable String text) {
-        return TwitterActions.sendDirectMessage(actions, recipient, text);
+        return ((TwitterActions) actions).sendDirectMessage(recipient, text);
     }
 
     @Override

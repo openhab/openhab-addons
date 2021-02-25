@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Twitter Binding</name>
 
   <properties>
-    <bnd.importpackage>!android.*,!com.android.org.*</bnd.importpackage>
+    <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*,!com.google.appengine.api.*</bnd.importpackage>
   </properties>
 
   <dependencies>
