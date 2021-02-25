@@ -1,17 +1,17 @@
 # ABB/Busch-free@home Smart Home binding
 
- OpenHAB ABB/Busch-free@home binding based on the offical free@home local api
+ openHAB ABB/Busch-free@home binding based on the offical free@home local api
 
 ![alt text](https://github.com/jannodeluxe/jannnnoooo/blob/main/free_at_home_logo_1.jpg)
 ![alt text](https://github.com/jannodeluxe/jannnnoooo/blob/main/abb_freeathome_2_0.png)
 # Description
 
-This openhab binding allows you to connect your free@home Smart Home system from ABB / Busch-Jaeger to OpenHAB and to control and observe most of the components.
+This openHAB binding allows you to connect your free@home Smart Home system from ABB / Busch-Jaeger to openHAB and to control and observe most of the components.
 It requires a System Access Point with version 2.6.1 or higher.
 
 # Features
 
-* Control your ABB/Busch-free@home system with its Lights, Outlets, Blinds, etc. from OpenHAB via local API.
+* Control your ABB/Busch-free@home system with its Lights, Outlets, Blinds, etc. from openHAB via local API.
 
 # Supported Devices
 
@@ -49,12 +49,12 @@ To make use of this Binding first the local free@home API has to be activated. T
 
 ## Installing the binding
 
-As this binding is not in the official release of openhab, you will not find it in the "bindings" section.
+As this binding is not in the official release of openHAB, you will not find it in the "bindings" section.
 To use this binding please do the following steps:
 
 1. Download the latest jar file [here](https://github.com/andrasU/openhab-free-home-binding/tree/main/org.openhab.binding.freeathomesystem/target)
-2. Upload the jar file to the user directory of your device running openhab
- 1. for openhabian e.g: /usr/share/openhab/addons
+2. Upload the jar file to the user directory of your device running openHAB
+ 1. for openHABian e.g: /usr/share/openhab/addons
  2. for others: /etc/openhab/addons/
 3. reboot the device with     `sudo reboot`
 
@@ -83,7 +83,7 @@ The devices with multiple channels are devided into multiple devices with a sing
 
 ![Login](https://github.com/andrasU/openhab-free-home-binding/blob/main/images/bridge1.png)
 
-5. Add the required data: SysAP IP adress, username and password
+5. Add the required data: SysAP IP address, username and password
 
 **ATTENTION:** The username here has to be from "Settings -> free@home settings -> local API, NOT the username from webfrontend or used in the app for login)
 
