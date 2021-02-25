@@ -195,7 +195,7 @@ public final class QbusCommunication extends BaseThingHandler {
             startCommunication();
         } catch (InterruptedException | IOException e) {
             String message = e.toString();
-            logger.error("Could not start the communication with the server. {}", message);
+            logger.debug("Could not start the communication with the server. {}", message);
         }
     }
 
@@ -281,10 +281,6 @@ public final class QbusCommunication extends BaseThingHandler {
             logger.warn("Error sending message, trying to restart communication");
             try {
                 restartCommunication();
-            } catch (InterruptedException e) {
-                if (handler != null) {
-                    handler.bridgeOffline("No communication with Qbus server. " + e.toString());
-                }
             } catch (IOException e) {
                 if (handler != null) {
                     handler.bridgeOffline("No communication with Qbus server. " + e.toString());
@@ -429,14 +425,14 @@ public final class QbusCommunication extends BaseThingHandler {
                     if (handler != null) {
                         handler.bridgeOffline("Could not request outputs from client. {}" + message);
                     } else {
-                        logger.error("Could not request outputs from client. {}", message);
+                        logger.debug("Could not request outputs from client. {}", message);
                     }
                 } catch (InterruptedException e) {
                     String message = e.toString();
                     if (handler != null) {
                         handler.bridgeOffline("Could not request outputs from client. {}" + message);
                     } else {
-                        logger.error("Could not request outputs from client. {}", message);
+                        logger.debug("Could not request outputs from client. {}", message);
                     }
                 }
 
@@ -449,9 +445,7 @@ public final class QbusCommunication extends BaseThingHandler {
 
                 return;
             }
-        } else
-
-        {
+        } else {
             logger.trace("Initialization error");
         }
     }

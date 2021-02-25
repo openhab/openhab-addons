@@ -118,7 +118,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                 try {
                     qbusCommunication.startCommunication();
                 } catch (InterruptedException | IOException e) {
-                    bridgeOffline("Communication could not be established {}" + e.getMessage());
+                    bridgeOffline("Communication could not be established " + e.getMessage());
                     return;
                 }
 
@@ -180,9 +180,9 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                     try {
                         comm.restartCommunication();
                     } catch (InterruptedException e) {
-                        bridgeOffline("No connection with Qbus Server" + e.toString());
+                        bridgeOffline("No connection with Qbus Server " + e.toString());
                     } catch (IOException e) {
-                        bridgeOffline("No connection with Qbus Server" + e.toString());
+                        bridgeOffline("No connection with Qbus Server " + e.toString());
                     }
                     if (!comm.communicationActive()) {
                         bridgeOffline("No connection with Qbus Server");
@@ -194,9 +194,9 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                         try {
                             comm.restartCommunication();
                         } catch (InterruptedException e) {
-                            bridgeOffline("No connection with Qbus Server" + e.toString());
+                            bridgeOffline("No connection with Qbus Server " + e.toString());
                         } catch (IOException e) {
-                            bridgeOffline("No connection with Qbus Server" + e.toString());
+                            bridgeOffline("No connection with Qbus Server " + e.toString());
                         }
                         if (!comm.clientConnected()) {
                             bridgeOffline("No connection with Qbus Client");
@@ -229,7 +229,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                 comm.stopCommunication();
             } catch (IOException e) {
                 String message = e.toString();
-                logger.error("Error on stopping communication.{} ", message);
+                logger.debug("Error on stopping communication.{} ", message);
             }
         }
 

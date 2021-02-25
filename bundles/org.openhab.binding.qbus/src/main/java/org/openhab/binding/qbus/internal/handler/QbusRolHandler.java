@@ -288,8 +288,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
                 }
             }
         } else if (command instanceof PercentType) {
-            PercentType p = (PercentType) command;
-            int pp = p.intValue();
+            int percentToInt = ((PercentType) command).intValue();
             if (command == PercentType.ZERO) {
                 if (snr != null) {
                     qRol.executeSlats(0, snr);
@@ -298,7 +297,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
                 }
             } else {
                 if (snr != null) {
-                    qRol.executeSlats(pp, snr);
+                    qRol.executeSlats(percentToInt, snr);
                 } else {
                     thingOffline("No serial number configured for  " + rolId);
                 }
