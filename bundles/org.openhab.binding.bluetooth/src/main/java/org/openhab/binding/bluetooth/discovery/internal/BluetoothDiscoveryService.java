@@ -301,11 +301,14 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             discoveryResults.put(adapter, results);
         }
 
+        /**
+         * Called when a new discovery is published and thus requires the old discovery to be removed first.
+         *
+         * @param adapter to get the results to be removed
+         * @param result unused
+         */
         private void retractDiscoveryResult(BluetoothAdapter adapter, DiscoveryResult result) {
             Set<DiscoveryResult> results = discoveryResults.remove(adapter);
-            // The method `thingRemoved()` removes the Thing from listeners like `Inbox`.
-            // We therefore need to reset `latestSnapshot` so that the Thing is notified again next time.
-            latestSnapshot.putValue(null);
             if (results != null) {
                 for (DiscoveryResult r : results) {
                     thingRemoved(r.getThingUID());
