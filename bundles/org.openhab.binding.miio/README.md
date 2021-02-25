@@ -502,7 +502,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  |            |
+| actions              | String               | Actions                                  | Value mapping ["settings-set-start-time"="Set Start Time","settings-set-end-time"="Set End Time","settings-set-frequency"="Set Frequency","settings-set-screen-off"="Set Screen Off","settings-set-device-off"="Set Device Off","settings-set-temp-unit"="Set Temp Unit"] |
 | relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
 | pm10_density         | Number               | Environment - PM10 Density               |            |

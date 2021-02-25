@@ -142,7 +142,8 @@
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping [\"settings-set-start-time\"\u003d\"Set Start Time\",\"settings-set-end-time\"\u003d\"Set End Time\",\"settings-set-frequency\"\u003d\"Set Frequency\",\"settings-set-screen-off\"\u003d\"Set Screen Off\",\"settings-set-device-off\"\u003d\"Set Device Off\",\"settings-set-temp-unit\"\u003d\"Set Temp Unit\"]"
 			},
 			{
 				"property": "relative-humidity",
