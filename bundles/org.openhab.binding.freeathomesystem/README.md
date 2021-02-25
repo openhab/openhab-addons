@@ -13,7 +13,7 @@ It requires a System Access Point with version 2.6.1 or higher.
 
 * Control your ABB/Busch-free@home system with its Lights, Outlets, Blinds, etc. from OpenHAB via local API.
 
-# Supported devices
+# Supported Devices
 
 - ABB / Busch-Jaeger System Access Point 2.0
 - free@home Switch Actuator Sensor 1/1, 2/1, 2/2 (wired and wireless)
