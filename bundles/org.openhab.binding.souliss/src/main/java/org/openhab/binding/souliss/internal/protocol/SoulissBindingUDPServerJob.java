@@ -41,6 +41,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
     SoulissBindingUDPDecoder decoder = null;
     @Nullable
     DiscoverResult discoverResult = null;
+
     @Nullable
     DatagramSocket soulissDatagramSocket;
     private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPServerJob.class);
@@ -48,35 +49,39 @@ public class SoulissBindingUDPServerJob implements Runnable {
     public SoulissBindingUDPServerJob(@Nullable DatagramSocket datagramSocket,
             @Nullable DiscoverResult pDiscoverResult) {
         super();
+        this.discoverResult = pDiscoverResult;
+        this.soulissDatagramSocket = datagramSocket;
         init(datagramSocket, pDiscoverResult);
     }
 
     private void init(@Nullable DatagramSocket datagramSocket, @Nullable DiscoverResult pDiscoverResult) {
-        this.discoverResult = pDiscoverResult;
-        this.soulissDatagramSocket = datagramSocket;
 
         // if (discoverResult != null) {
         decoder = new SoulissBindingUDPDecoder(discoverResult);
         logger.info("Starting UDP Server Job - Server on port {}", soulissDatagramSocket.getLocalPort());
     }
 
+    @SuppressWarnings("null")
     @Override
     public void run() {
-        if (!soulissDatagramSocket.isClosed()) {
-            try {
-                byte[] buf = new byte[256];
-                // receive request
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                soulissDatagramSocket.receive(packet);
-                buf = packet.getData();
+        if (soulissDatagramSocket != null) {
+            if (!soulissDatagramSocket.isClosed()) {
+                try {
+                    byte[] buf = new byte[256];
+                    // receive request
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                    soulissDatagramSocket.receive(packet);
+                    buf = packet.getData();
 
-                // **************** DECODER ********************
-                logger.debug("Packet received (port {}) {}", soulissDatagramSocket.getLocalPort(), macacoToString(buf));
-                decoder.decodeVNetDatagram(packet);
+                    // **************** DECODER ********************
+                    logger.debug("Packet received (port {}) {}", soulissDatagramSocket.getLocalPort(),
+                            macacoToString(buf));
+                    decoder.decodeVNetDatagram(packet);
 
-            } catch (IOException e) {
-                logger.debug("Error in Class SoulissBindingUDPServerThread");
-                logger.error("Error: ", e);
+                } catch (IOException e) {
+                    logger.debug("Error in Class SoulissBindingUDPServerThread");
+                    logger.error("Error: ", e);
+                }
             }
         } else {
             logger.info("Socket Closed (port {}) - Cannot receive data", soulissDatagramSocket.getLocalPort());
