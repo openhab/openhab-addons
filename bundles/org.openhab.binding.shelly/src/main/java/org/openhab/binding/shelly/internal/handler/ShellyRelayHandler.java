@@ -235,7 +235,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             }
 
-            if ((command == UpDownType.UP) || (command == OnOffType.ON)) {
+            if (command == UpDownType.UP || command == OnOffType.ON) {
                 logger.debug("{}: Open roller", thingName);
                 api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
                 int pos = profile.getRollerFav(config.favoriteUP - 1);
@@ -244,7 +244,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
                             pos);
                 }
-            } else if ((command == UpDownType.DOWN) || (command == OnOffType.OFF)) {
+            } else if (command == UpDownType.DOWN || command == OnOffType.OFF) {
                 logger.debug("{}: Closing roller", thingName);
                 int pos = profile.getRollerFav(config.favoriteDOWN - 1);
                 if (pos > 0) {

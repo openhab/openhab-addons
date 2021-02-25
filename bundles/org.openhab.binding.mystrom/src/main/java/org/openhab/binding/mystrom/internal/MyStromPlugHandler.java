@@ -19,15 +19,11 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.WATT;
 
 import java.time.Duration;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.OnOffType;
@@ -36,22 +32,20 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
- * The {@link MyStromHandler} is responsible for handling commands, which are
+ * The {@link MyStromPlugHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Paul Frank - Initial contribution
+ * @author Frederic Chastagnol - Extends from new abstract class
  */
 @NonNullByDefault
-public class MyStromHandler extends BaseThingHandler {
+public class MyStromPlugHandler extends AbstractMyStromHandler {
 
     private static class MyStromReport {
 
@@ -60,22 +54,12 @@ public class MyStromHandler extends BaseThingHandler {
         public float temperature;
     }
 
-    private static final int HTTP_OK_CODE = 200;
-    private static final String COMMUNICATION_ERROR = "Error while communicating to the myStrom plug: ";
-    private static final String HTTP_REQUEST_URL_PREFIX = "http://";
+    private final Logger logger = LoggerFactory.getLogger(MyStromPlugHandler.class);
 
-    private final Logger logger = LoggerFactory.getLogger(MyStromHandler.class);
+    private final ExpiringCache<MyStromReport> cache = new ExpiringCache<>(Duration.ofSeconds(3), this::getReport);
 
-    private HttpClient httpClient;
-    private String hostname = "";
-
-    private @Nullable ScheduledFuture<?> pollingJob;
-    private ExpiringCache<MyStromReport> cache = new ExpiringCache<>(Duration.ofSeconds(3), this::getReport);
-    private final Gson gson = new Gson();
-
-    public MyStromHandler(Thing thing, HttpClient httpClient) {
-        super(thing);
-        this.httpClient = httpClient;
+    public MyStromPlugHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     @Override
@@ -85,7 +69,7 @@ public class MyStromHandler extends BaseThingHandler {
                 pollDevice();
             } else {
                 if (command instanceof OnOffType && CHANNEL_SWITCH.equals(channelUID.getId())) {
-                    sendHttpGet("relay?state=" + (command == OnOffType.ON ? "1" : "0"));
+                    sendHttpRequest(HttpMethod.GET, "/relay?state=" + (command == OnOffType.ON ? "1" : "0"), null);
                     scheduler.schedule(this::pollDevice, 500, TimeUnit.MILLISECONDS);
                 }
             }
@@ -96,7 +80,7 @@ public class MyStromHandler extends BaseThingHandler {
 
     private @Nullable MyStromReport getReport() {
         try {
-            String returnContent = sendHttpGet("report");
+            String returnContent = sendHttpRequest(HttpMethod.GET, "/report", null);
             MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
             updateStatus(ThingStatus.ONLINE);
             return report;
@@ -106,54 +90,13 @@ public class MyStromHandler extends BaseThingHandler {
         }
     }
 
-    private void pollDevice() {
+    @Override
+    protected void pollDevice() {
         MyStromReport report = cache.getValue();
         if (report != null) {
             updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
             updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
         }
-    }
-
-    @Override
-    public void initialize() {
-        MyStromConfiguration config = getConfigAs(MyStromConfiguration.class);
-        this.hostname = HTTP_REQUEST_URL_PREFIX + config.hostname;
-
-        updateStatus(ThingStatus.UNKNOWN);
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.refresh, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
-        super.dispose();
-    }
-
-    /**
-     * Given a URL and a set parameters, send a HTTP GET request to the URL location
-     * created by the URL and parameters.
-     *
-     * @param url The URL to send a GET request to.
-     * @return String contents of the response for the GET request.
-     * @throws Exception
-     */
-    public String sendHttpGet(String action) throws MyStromException {
-        String url = hostname + "/" + action;
-        ContentResponse response = null;
-        try {
-            response = httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET).send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new MyStromException(COMMUNICATION_ERROR + e.getMessage());
-        }
-
-        if (response.getStatus() != HTTP_OK_CODE) {
-            throw new MyStromException(
-                    "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
-        }
-        return response.getContentAsString();
     }
 }

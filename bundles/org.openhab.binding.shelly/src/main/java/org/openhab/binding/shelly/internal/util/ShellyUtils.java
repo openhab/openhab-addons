@@ -134,13 +134,14 @@ public class ShellyUtils {
     }
 
     public static String substringAfterLast(@Nullable String string, String pattern) {
-        if (string != null) {
-            int pos = string.lastIndexOf(pattern);
-            if (pos != -1) {
-                return string.substring(pos + pattern.length());
-            }
+        if (string == null) {
+            return "";
         }
-        return "";
+        int pos = string.lastIndexOf(pattern);
+        if (pos != -1) {
+            return string.substring(pos + pattern.length());
+        }
+        return string;
     }
 
     public static String substringBetween(@Nullable String string, String begin, String end) {
@@ -236,12 +237,11 @@ public class ShellyUtils {
         }
     }
 
-    public static String urlEncode(String input) throws ShellyApiException {
+    public static String urlEncode(String input) {
         try {
             return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new ShellyApiException(
-                    "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input, e);
+            return input;
         }
     }
 

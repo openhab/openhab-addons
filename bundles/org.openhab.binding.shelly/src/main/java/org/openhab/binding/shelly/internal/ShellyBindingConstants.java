@@ -164,7 +164,7 @@ public class ShellyBindingConstants {
                     THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYRGBW2_COLOR,
                     THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYHT, THING_TYPE_SHELLYSENSE, THING_TYPE_SHELLYEYE,
                     THING_TYPE_SHELLYSMOKE, THING_TYPE_SHELLYGAS, THING_TYPE_SHELLYFLOOD, THING_TYPE_SHELLYDOORWIN,
-                    THING_TYPE_SHELLYDOORWIN2, THING_TYPE_SHELLYBUTTON1, /* THING_TYPE_SHELLMOTION, */
+                    THING_TYPE_SHELLYDOORWIN2, THING_TYPE_SHELLYBUTTON1, THING_TYPE_SHELLMOTION,
                     THING_TYPE_SHELLYPROTECTED, THING_TYPE_SHELLYUNKNOWN).collect(Collectors.toSet()));
 
     // Thing Configuration Properties
@@ -333,6 +333,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_OVERPOWER = "OVERPOWER";
     public static final String ALARM_TYPE_OVERLOAD = "OVERLOAD";
     public static final String ALARM_TYPE_LOADERR = "LOAD_ERROR";
+    public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
 
     // Event types
