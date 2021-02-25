@@ -31,6 +31,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusThermostatHandler} is responsible for handling commands, which are
@@ -41,6 +43,8 @@ import org.openhab.core.types.Command;
 
 @NonNullByDefault
 public class QbusThermostatHandler extends QbusGlobalHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(QbusThermostatHandler.class);
 
     protected @Nullable QbusThingsConfig config;
 
@@ -205,7 +209,7 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
                 if (spCelcius != null) {
                     qThermostat.executeSetpoint(sp, snr);
                 } else {
-                    thingOffline("Could not set setpoint for thermostat (convertion failed)  " + thermostatId);
+                    logger.debug("Could not set setpoint for thermostat (conversion failed)  {}", thermostatId);
                 }
             } else {
                 thingOffline("No serial number configured for  " + thermostatId);

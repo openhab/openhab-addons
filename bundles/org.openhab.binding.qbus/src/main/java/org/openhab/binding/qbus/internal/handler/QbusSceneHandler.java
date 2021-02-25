@@ -176,8 +176,7 @@ public class QbusSceneHandler extends QbusGlobalHandler {
     private void handleSwitchCommand(QbusScene qScene, ChannelUID channelUID, Command command) {
         String snr = getSN();
         if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
-            if (s == OnOffType.OFF) {
+            if (command == OnOffType.OFF) {
                 if (snr != null) {
                     qScene.execute(0, snr);
                 } else {

@@ -244,8 +244,7 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
                 }
             }
         } else if (command instanceof PercentType) {
-            PercentType p = (PercentType) command;
-            int pp = p.intValue();
+            int percentToInt = ((PercentType) command).intValue();
             if (command == PercentType.ZERO) {
                 if (snr != null) {
                     qDimmer.execute(0, snr);
@@ -254,7 +253,7 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
                 }
             } else {
                 if (snr != null) {
-                    qDimmer.execute(pp, snr);
+                    qDimmer.execute(percentToInt, snr);
                 } else {
                     thingOffline("No serial number configured for  " + dimmerId);
                 }
