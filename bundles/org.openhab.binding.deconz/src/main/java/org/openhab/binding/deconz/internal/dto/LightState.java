@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,8 @@ public class LightState {
     public @Nullable String alert;
     public @Nullable String colormode;
     public @Nullable String effect;
+    public @Nullable Integer effectSpeed;
+    public @Nullable Integer ontime;
 
     // depending on the type of light
     public @Nullable Integer hue;
@@ -66,6 +68,8 @@ public class LightState {
         alert = null;
         colormode = null;
         effect = null;
+        effectSpeed = null;
+        ontime = null;
 
         hue = null;
         sat = null;
@@ -81,8 +85,9 @@ public class LightState {
 
     @Override
     public String toString() {
-        return "LightState{reachable=" + reachable + ", on=" + on + ", bri=" + bri + ", alert='" + alert + '\''
-                + ", colormode='" + colormode + '\'' + ", effect='" + effect + '\'' + ", hue=" + hue + ", sat=" + sat
-                + ", ct=" + ct + ", xy=" + Arrays.toString(xy) + ", transitiontime=" + transitiontime + '}';
+        return "LightState{" + "reachable=" + reachable + ", on=" + on + ", bri=" + bri + ", alert='" + alert + '\''
+                + ", colormode='" + colormode + '\'' + ", effect='" + effect + '\'' + ", effectSpeed=" + effectSpeed
+                + ", ontime=" + ontime + ", hue=" + hue + ", sat=" + sat + ", ct=" + ct + ", xy=" + Arrays.toString(xy)
+                + ", transitiontime=" + transitiontime + '}';
     }
 }

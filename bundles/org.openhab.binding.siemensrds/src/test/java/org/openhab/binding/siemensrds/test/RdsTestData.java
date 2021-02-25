@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,9 +36,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
-
-import tec.uom.se.unit.Units;
 
 /**
  * test suite
@@ -377,7 +376,7 @@ public class RdsTestData {
                     @Nullable
                     String x = entry.getKey();
                     assertNotNull(x);
-                    String y = ((BasePoint) point).getPointClass();
+                    String y = point.getPointClass();
                     String z = dataPoints.pointClassToId(y);
                     assertEquals(x, z);
                 }
@@ -469,21 +468,21 @@ public class RdsTestData {
             // test temperature units code (C)
             BasePoint tempPoint = dataPoints.getPointByClass("'SpTR");
             assertTrue(tempPoint instanceof BasePoint);
-            assertEquals(SIUnits.CELSIUS, ((BasePoint) tempPoint).getUnit());
+            assertEquals(SIUnits.CELSIUS, tempPoint.getUnit());
 
             // test temperature units code (F)
             tempPoint = dataPoints.getPointByClass("'SpHPcf");
             assertTrue(tempPoint instanceof BasePoint);
-            assertEquals(ImperialUnits.FAHRENHEIT, ((BasePoint) tempPoint).getUnit());
+            assertEquals(ImperialUnits.FAHRENHEIT, tempPoint.getUnit());
 
             // test temperature units code (K)
             tempPoint = dataPoints.getPointByClass("'SpHPcf");
             assertTrue(tempPoint instanceof BasePoint);
-            assertEquals(ImperialUnits.FAHRENHEIT, ((BasePoint) tempPoint).getUnit());
+            assertEquals(ImperialUnits.FAHRENHEIT, tempPoint.getUnit());
 
             tempPoint = dataPoints.getPointByClass("'SpTRShft");
             assertTrue(tempPoint instanceof BasePoint);
-            assertEquals(Units.KELVIN, ((BasePoint) tempPoint).getUnit());
+            assertEquals(Units.KELVIN, tempPoint.getUnit());
         } catch (RdsCloudException e) {
             fail(e.getMessage());
         }
@@ -503,13 +502,13 @@ public class RdsTestData {
             PlantInfo plant;
             plant = plantList.get(0);
             assertTrue(plant instanceof PlantInfo);
-            assertEquals("Pd1774247-7de7-4896-ac76-b7e0dd943c40", ((PlantInfo) plant).getId());
+            assertEquals("Pd1774247-7de7-4896-ac76-b7e0dd943c40", plant.getId());
             assertTrue(plant.isOnline());
 
             plant = plantList.get(1);
             assertTrue(plant instanceof PlantInfo);
-            assertEquals("Pfaf770c8-abeb-4742-ad65-ead39030d369", ((PlantInfo) plant).getId());
-            assertTrue(((PlantInfo) plant).isOnline());
+            assertEquals("Pfaf770c8-abeb-4742-ad65-ead39030d369", plant.getId());
+            assertTrue(plant.isOnline());
         } catch (RdsCloudException e) {
             fail(e.getMessage());
         }

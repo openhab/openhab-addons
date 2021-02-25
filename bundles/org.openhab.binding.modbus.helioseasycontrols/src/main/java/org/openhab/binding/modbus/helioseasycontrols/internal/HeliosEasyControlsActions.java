@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,15 @@
  */
 package org.openhab.binding.modbus.helioseasycontrols.internal;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -47,116 +53,158 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     private void triggerSwitch(String variableName) {
         try {
-            if (this.handler != null) {
-                this.handler.writeValue(variableName, "1");
+            if (handler != null) {
+
+                handler.writeValue(variableName, "1");
             }
         } catch (HeliosException e) {
-            logger.warn("Error executing action 'resetFilterChangeTimer': {}", e.getMessage());
+            logger.warn("Error executing action triggering switch for variable {}: {}", variableName, e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug(
+                    "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
+                    HeliosEasyControlsActions.class.getSimpleName(), variableName, e.getMessage());
         }
     }
 
-    @RuleAction(label = "Reset filter change timer", description = "Sets the filter change timer back to the configured interval")
+    @RuleAction(label = "@text/action.resetFilterChangeTimer.label", description = "@text/action.resetFilterChangeTimer.description")
     public void resetFilterChangeTimer() {
-        this.triggerSwitch(HeliosEasyControlsBindingConstants.FILTER_CHANGE_RESET);
+        triggerSwitch(HeliosEasyControlsBindingConstants.FILTER_CHANGE_RESET);
     }
 
-    public static void resetFilterChangeTimer(@Nullable ThingActions actions) {
-        if (actions instanceof HeliosEasyControlsActions) {
-            ((HeliosEasyControlsActions) actions).resetFilterChangeTimer();
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeliosEasyControlsActions class.");
-        }
+    public static void resetFilterChangeTimer(ThingActions actions) {
+        ((HeliosEasyControlsActions) actions).resetFilterChangeTimer();
     }
 
-    @RuleAction(label = "Reset error messages", description = "Reset error/warning/info messages")
+    @RuleAction(label = "@text/action.resetErrors.label", description = "@text/action.resetErrors.description")
     public void resetErrors() {
-        this.triggerSwitch(HeliosEasyControlsBindingConstants.RESET_FLAG);
+        triggerSwitch(HeliosEasyControlsBindingConstants.RESET_FLAG);
     }
 
-    public static void resetErrors(@Nullable ThingActions actions) {
-        if (actions instanceof HeliosEasyControlsActions) {
-            ((HeliosEasyControlsActions) actions).resetErrors();
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeliosEasyControlsActions class.");
-        }
+    public static void resetErrors(ThingActions actions) {
+        ((HeliosEasyControlsActions) actions).resetErrors();
     }
 
-    @RuleAction(label = "Reset to factory defaults", description = "Reset device to factory defaults")
+    @RuleAction(label = "@text/action.resetToFactoryDefaults.label", description = "@text/action.resetToFactoryDefaults.description")
     public void resetToFactoryDefaults() {
-        this.triggerSwitch(HeliosEasyControlsBindingConstants.FACTORY_RESET);
+        triggerSwitch(HeliosEasyControlsBindingConstants.FACTORY_RESET);
     }
 
-    public static void resetToFactoryDefaults(@Nullable ThingActions actions) {
-        if (actions instanceof HeliosEasyControlsActions) {
-            ((HeliosEasyControlsActions) actions).resetToFactoryDefaults();
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeliosEasyControlsActions class.");
-        }
+    public static void resetToFactoryDefaults(ThingActions actions) {
+        ((HeliosEasyControlsActions) actions).resetToFactoryDefaults();
     }
 
-    @RuleAction(label = "Reset individual switching times", description = "Reset individual switching times")
+    @RuleAction(label = "@text/action.resetSwitchingTimes.label", description = "@text/action.resetSwitchingTimes.description")
     public void resetSwitchingTimes() {
-        this.triggerSwitch(HeliosEasyControlsBindingConstants.FACTORY_SETTING_WZU);
+        triggerSwitch(HeliosEasyControlsBindingConstants.FACTORY_SETTING_WZU);
     }
 
-    public static void resetSwitchingTimes(@Nullable ThingActions actions) {
-        if (actions instanceof HeliosEasyControlsActions) {
-            ((HeliosEasyControlsActions) actions).resetSwitchingTimes();
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeliosEasyControlsActions class.");
-        }
+    public static void resetSwitchingTimes(ThingActions actions) {
+        ((HeliosEasyControlsActions) actions).resetSwitchingTimes();
     }
 
-    @RuleAction(label = "Set system date and time", description = "Sets the device's system date and time based on OH's system date and time")
+    @RuleAction(label = "@text/action.setSysDateTime.label", description = "@text/action.setSysDateTime.description")
     public void setSysDateTime() {
         HeliosEasyControlsHandler handler = this.handler;
         if (handler != null) {
-            handler.setSysDateTime();
+            try {
+                handler.setSysDateTime();
+            } catch (InterruptedException e) {
+                logger.debug(
+                        "{} encountered Exception when trying to lock Semaphore for setting system date and time on the device: {}",
+                        HeliosEasyControlsActions.class.getSimpleName(), e.getMessage());
+            }
         }
     }
 
-    public static void setSysDateTime(@Nullable ThingActions actions) {
-        if (actions instanceof HeliosEasyControlsActions) {
-            ((HeliosEasyControlsActions) actions).setSysDateTime();
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeliosEasyControlsActions class.");
-        }
+    public static void setSysDateTime(ThingActions actions) {
+        ((HeliosEasyControlsActions) actions).setSysDateTime();
     }
 
     private void setBypass(boolean from, int day, int month) {
         HeliosEasyControlsHandler handler = this.handler;
         if (handler != null) {
-            handler.setBypass(from, day, month);
+            try {
+                handler.setBypass(from, day, month);
+            } catch (InterruptedException e) {
+                logger.debug(
+                        "{} encountered Exception when trying to lock Semaphore for setting bypass date on the device: {}",
+                        HeliosEasyControlsActions.class.getSimpleName(), e.getMessage());
+            }
         }
     }
 
-    @RuleAction(label = "Set the bypass from day and month", description = "Sets the day and month from when the bypass should be active")
+    @RuleAction(label = "@text/action.setBypassFrom.label", description = "@text/action.setBypassFrom.description")
     public void setBypassFrom(
-            @ActionInput(name = "day", label = "bypass from day", description = "The day from when the bypass should be active") int day,
-            @ActionInput(name = "month", label = "bypass from month", description = "The month from when the bypass should be active") int month) {
-        this.setBypass(true, day, month);
+            @ActionInput(name = "day", label = "@text/action.setBypassFrom.inputParams.day.label", description = "@text/action.setBypassFrom.inputParams.day.description") int day,
+            @ActionInput(name = "month", label = "@text/action.setBypassFrom.inputParams.month.label", description = "@text/action.setBypassFrom.inputParams.month.description") int month) {
+        setBypass(true, day, month);
     }
 
-    public static void setBypassFrom(@Nullable ThingActions actions, int day, int month) {
-        if (actions instanceof HeliosEasyControlsActions) {
-            ((HeliosEasyControlsActions) actions).setBypassFrom(day, month);
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeliosEasyControlsActions class.");
-        }
+    public static void setBypassFrom(ThingActions actions, int day, int month) {
+        ((HeliosEasyControlsActions) actions).setBypassFrom(day, month);
     }
 
-    @RuleAction(label = "Set the bypass to day and month", description = "Sets the day and month until when the bypass should be active")
+    @RuleAction(label = "@text/action.setBypassTo.label", description = "@text/action.setBypassTo.description")
     public void setBypassTo(
-            @ActionInput(name = "day", label = "bypass to day", description = "The day until when the bypass should be active") int day,
-            @ActionInput(name = "month", label = "bypass to month", description = "The month until when the bypass should be active") int month) {
-        this.setBypass(false, day, month);
+            @ActionInput(name = "day", label = "@text/action.setBypassTo.inputParams.day.label", description = "@text/action.setBypassTo.inputParams.day.description") int day,
+            @ActionInput(name = "month", label = "@text/action.setBypassTo.inputParams.day.label", description = "@text/action.setBypassTo.inputParams.day.description") int month) {
+        setBypass(false, day, month);
     }
 
-    public static void setBypassTo(@Nullable ThingActions actions, int day, int month) {
-        if (actions instanceof HeliosEasyControlsActions) {
-            ((HeliosEasyControlsActions) actions).setBypassTo(day, month);
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeliosEasyControlsActions class.");
+    public static void setBypassTo(ThingActions actions, int day, int month) {
+        ((HeliosEasyControlsActions) actions).setBypassTo(day, month);
+    }
+
+    @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
+    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") List<String> getErrorMessages() {
+        return (handler != null) ? handler.getErrorMessages() : new ArrayList<String>();
+    }
+
+    public static List<String> getErrorMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getErrorMessages();
+    }
+
+    @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
+    public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") List<String> getWarningMessages() {
+        return (handler != null) ? handler.getWarningMessages() : new ArrayList<String>();
+    }
+
+    public static List<String> getWarningMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getWarningMessages();
+    }
+
+    @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
+    public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") List<String> getInfoMessages() {
+        return (handler != null) ? handler.getInfoMessages() : new ArrayList<String>();
+    }
+
+    public static List<String> getInfoMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getInfoMessages();
+    }
+
+    @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
+    public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") List<String> getStatusMessages() {
+        return (handler != null) ? handler.getStatusMessages() : new ArrayList<String>();
+    }
+
+    public static List<String> getStatusMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getStatusMessages();
+    }
+
+    @RuleAction(label = "@text/action.getMessages.label", description = "@text/action.getMessages.description")
+    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") @ActionOutput(name = "warningMessages", type = "java.util.List<String>") @ActionOutput(name = "infoMessages", type = "java.util.List<String>") @ActionOutput(name = "statusMessages", type = "java.util.List<String>") Map<String, Object> getMessages() {
+        Map<String, Object> messages = new HashMap<>();
+        HeliosEasyControlsHandler handler = this.handler;
+        if (handler != null) {
+            messages.put("errorMessages", handler.getErrorMessages());
+            messages.put("warningMessages", handler.getWarningMessages());
+            messages.put("infoMessages", handler.getInfoMessages());
+            messages.put("statusMessages", handler.getStatusMessages());
         }
+        return messages;
+    }
+
+    public static Map<String, Object> getMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getMessages();
     }
 }

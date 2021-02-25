@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -218,7 +218,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public String getUser() {
-        return thing.getProperties().get(PROPERTY_SPOTIFY_USER);
+        return thing.getProperties().getOrDefault(PROPERTY_SPOTIFY_USER, "");
     }
 
     @Override

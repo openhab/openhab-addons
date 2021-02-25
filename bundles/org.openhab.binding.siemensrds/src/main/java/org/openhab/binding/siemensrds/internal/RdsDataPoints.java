@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class RdsDataPoints {
      * the Map, and b) by pointClass (which we do indirectly "double dereferenced"
      * via this index
      */
-    private final Map<String, @Nullable String> indexClassToId = new HashMap<>();
+    private final Map<String, String> indexClassToId = new HashMap<>();
 
     @SerializedName("totalCount")
     private @Nullable String totalCount;
@@ -299,7 +299,7 @@ public class RdsDataPoints {
             @Nullable
             RdsDataPoints newPoints = GSON.fromJson(json, RdsDataPoints.class);
 
-            Map<String, @Nullable BasePoint> newPointsMap = newPoints.points;
+            Map<String, @Nullable BasePoint> newPointsMap = newPoints != null ? newPoints.points : null;
 
             if (newPointsMap == null) {
                 throw new RdsCloudException("new points map empty");
@@ -323,11 +323,11 @@ public class RdsDataPoints {
                         throw new RdsCloudException("existing vs. new point class mismatch");
                     }
 
-                    myPoint.refreshValueFrom((BasePoint) newPoint);
+                    myPoint.refreshValueFrom(newPoint);
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("refresh {}.{}: {} << {}", getDescription(), myPoint.getPointClass(),
-                                myPoint.getState(), ((BasePoint) newPoint).getState());
+                                myPoint.getState(), newPoint.getState());
                     }
                 }
             }
@@ -349,9 +349,7 @@ public class RdsDataPoints {
         if (points != null) {
             indexClassToId.clear();
             for (Entry<String, @Nullable BasePoint> entry : points.entrySet()) {
-                @Nullable
                 String pointKey = entry.getKey();
-                @Nullable
                 BasePoint pointValue = entry.getValue();
                 if (pointValue != null) {
                     indexClassToId.put(pointValue.getPointClass(), pointKey);

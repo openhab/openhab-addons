@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
 
     @Override
     public boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, InterruptedException {
         if (channelId.equals(CHANNEL_NAME)) {
             if (command instanceof StringType) {
                 String commandValue = ((StringType) command).toFullString();

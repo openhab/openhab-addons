@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,7 +122,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     @Override
     @Activate
-    public void activate(@Nullable Map<String, @Nullable Object> config) {
+    public void activate(@Nullable Map<String, Object> config) {
         super.activate(config);
         if (config != null) {
             modified(config);

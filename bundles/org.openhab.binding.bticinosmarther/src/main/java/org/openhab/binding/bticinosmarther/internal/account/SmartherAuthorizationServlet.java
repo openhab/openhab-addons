@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -142,9 +142,10 @@ public class SmartherAuthorizationServlet extends HttpServlet {
         final StringBuffer requestURL = request.getRequestURL();
 
         // Try to infer the real protocol from request headers
-        final String realProtocol = StringUtil.defaultIfBlank(request.getHeader(X_FORWARDED_PROTO),
-                request.getScheme());
-
+        String realProtocol = request.getHeader(X_FORWARDED_PROTO);
+        if (realProtocol == null || realProtocol.isBlank()) {
+            realProtocol = request.getScheme();
+        }
         return requestURL.replace(0, requestURL.indexOf(":"), realProtocol).toString();
     }
 

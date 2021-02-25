@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,6 @@ class JCrunProductIdentification extends RunProductIdentification implements Jso
     /*
      * Message Objects
      */
-    @NonNullByDefault
     private static class ParamsIdentifyProduct {
         @SuppressWarnings("unused")
         private int id;
@@ -68,7 +67,6 @@ class JCrunProductIdentification extends RunProductIdentification implements Jso
      * {"action":"identify","params":{"id":23,"time":254}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
         @SuppressWarnings("unused")
         private String action;
@@ -98,7 +96,6 @@ class JCrunProductIdentification extends RunProductIdentification implements Jso
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

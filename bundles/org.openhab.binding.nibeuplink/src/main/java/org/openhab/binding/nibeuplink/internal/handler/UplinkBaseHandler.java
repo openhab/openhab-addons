@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,7 +169,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * @param values map containing the data updates
      */
     @Override
-    public void updateChannelStatus(Map<Channel, @Nullable State> values) {
+    public void updateChannelStatus(Map<Channel, State> values) {
         logger.debug("Handling channel update. ({} Channels)", values.size());
 
         for (Channel channel : values.keySet()) {

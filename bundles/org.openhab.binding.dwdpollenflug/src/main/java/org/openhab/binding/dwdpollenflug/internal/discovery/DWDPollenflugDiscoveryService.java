@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.dwdpollenflug")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.dwdpollenflug")
 public class DWDPollenflugDiscoveryService extends AbstractDiscoveryService {
     private static final ThingUID BRIDGE_THING_UID = new ThingUID(THING_TYPE_BRIDGE, DWD);
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;

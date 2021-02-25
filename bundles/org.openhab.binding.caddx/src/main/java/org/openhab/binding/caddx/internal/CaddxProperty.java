@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,6 @@ public class CaddxProperty {
     private final boolean external;
     private final String id;
 
-    // Constructor
     public CaddxProperty(String id, int byteFrom, int byteLength, int bitFrom, int bitLength, CaddxPropertyType type,
             String name, boolean external) {
         this.id = id;
@@ -83,7 +82,7 @@ public class CaddxProperty {
 
                 return Integer.toString(val);
             case STRING:
-                byte[] str = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength);
+                byte[] str = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength - 1);
                 return mapCaddxString(new String(str, StandardCharsets.US_ASCII));
             case BIT:
                 return (((message[byteFrom - 1] & (1 << bitFrom)) > 0) ? "true" : "false");

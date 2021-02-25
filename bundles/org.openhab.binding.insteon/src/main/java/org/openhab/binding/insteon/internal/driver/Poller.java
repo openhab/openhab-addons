@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class Poller {
     private static final long MIN_MSEC_BETWEEN_POLLS = 2000L;
 
@@ -107,9 +107,15 @@ public class Poller {
     public void start() {
         if (pollThread == null) {
             pollThread = new Thread(new PollQueueReader());
-            pollThread.setName("Insteon Poll Queue Reader");
-            pollThread.setDaemon(true);
-            pollThread.start();
+            setParamsAndStart(pollThread);
+        }
+    }
+
+    private void setParamsAndStart(@Nullable Thread thread) {
+        if (thread != null) {
+            thread.setName("OH-binding-" + InsteonBindingConstants.BINDING_ID + "-pollQueueReader");
+            thread.setDaemon(true);
+            thread.start();
         }
     }
 
@@ -124,9 +130,10 @@ public class Poller {
             pollQueue.notify();
         }
         try {
+            Thread pollThread = this.pollThread;
             if (pollThread != null) {
                 pollThread.join();
-                pollThread = null;
+                this.pollThread = null;
             }
             keepRunning = true;
         } catch (InterruptedException e) {
@@ -194,7 +201,6 @@ public class Poller {
         return expTime;
     }
 
-    @NonNullByDefault
     private class PollQueueReader implements Runnable {
         @Override
         public void run() {
@@ -246,9 +252,14 @@ public class Poller {
          * @param now the current time
          */
         private void processQueue(long now) {
-            PQEntry pqe = pollQueue.pollFirst();
-            pqe.getDevice().doPoll(0);
-            addToPollQueue(pqe.getDevice(), now + pqe.getDevice().getPollInterval());
+            processQueue(now, pollQueue.pollFirst());
+        }
+
+        private void processQueue(long now, @Nullable PQEntry pqe) {
+            if (pqe != null) {
+                pqe.getDevice().doPoll(0);
+                addToPollQueue(pqe.getDevice(), now + pqe.getDevice().getPollInterval());
+            }
         }
     }
 
@@ -259,7 +270,6 @@ public class Poller {
      * @author Bernd Pfrommer - Initial contribution
      *
      */
-    @NonNullByDefault
     private static class PQEntry implements Comparable<PQEntry> {
         private InsteonDevice dev;
         private long expirationTime;

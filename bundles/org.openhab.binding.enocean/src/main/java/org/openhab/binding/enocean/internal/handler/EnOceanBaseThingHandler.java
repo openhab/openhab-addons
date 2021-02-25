@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.handler;
+
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
@@ -63,18 +65,25 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
 
     private ItemChannelLinkRegistry itemChannelLinkRegistry;
 
+    protected @NonNull ChannelUID prepareAnswer;
+
     public EnOceanBaseThingHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        prepareAnswer = new ChannelUID(thing.getUID(), CHANNEL_STATUS_REQUEST_EVENT);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("Initializing enocean base thing handler.");
         this.gateway = null; // reset gateway in case we change the bridge
         this.config = null;
-        initializeThing((getBridge() == null) ? null : getBridge().getStatus());
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "A bridge is required");
+        } else {
+            initializeThing(bridge.getStatus());
+        }
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
@@ -142,6 +151,10 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
                 .forEach(entry -> {
                     String channelId = entry.getKey();
                     EnOceanChannelDescription cd = entry.getValue().GetSupportedChannels().get(channelId);
+
+                    if (cd == null) {
+                        return;
+                    }
 
                     // if we do not need to auto create channel => skip
                     if (!cd.autoCreate) {

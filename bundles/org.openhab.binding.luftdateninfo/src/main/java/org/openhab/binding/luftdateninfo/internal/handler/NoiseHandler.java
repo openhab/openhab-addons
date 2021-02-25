@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -35,9 +35,9 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class NoiseHandler extends BaseSensorHandler {
-    protected QuantityType<Dimensionless> noiseEQCache = QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL);
-    protected QuantityType<Dimensionless> noiseMinCache = QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL);
-    protected QuantityType<Dimensionless> noiseMaxCache = QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL);
+    protected QuantityType<Dimensionless> noiseEQCache = QuantityType.valueOf(-1, Units.DECIBEL);
+    protected QuantityType<Dimensionless> noiseMinCache = QuantityType.valueOf(-1, Units.DECIBEL);
+    protected QuantityType<Dimensionless> noiseMaxCache = QuantityType.valueOf(-1, Units.DECIBEL);
 
     public NoiseHandler(Thing thing) {
         super(thing);
@@ -51,16 +51,13 @@ public class NoiseHandler extends BaseSensorHandler {
                 if (HTTPHandler.getHandler().isNoise(valueList)) {
                     valueList.forEach(v -> {
                         if (v.getValueType().equals(NOISE_EQ)) {
-                            noiseEQCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.DECIBEL);
+                            noiseEQCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.DECIBEL);
                             updateState(NOISE_EQ_CHANNEL, noiseEQCache);
                         } else if (v.getValueType().equals(NOISE_MIN)) {
-                            noiseMinCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.DECIBEL);
+                            noiseMinCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.DECIBEL);
                             updateState(NOISE_MIN_CHANNEL, noiseMinCache);
                         } else if (v.getValueType().equals(NOISE_MAX)) {
-                            noiseMaxCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.DECIBEL);
+                            noiseMaxCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.DECIBEL);
                             updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
                         }
                     });

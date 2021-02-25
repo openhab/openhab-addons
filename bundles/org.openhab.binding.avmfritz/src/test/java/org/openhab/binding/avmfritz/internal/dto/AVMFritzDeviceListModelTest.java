@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public class AVMFritzDeviceListModelTest {
     @BeforeEach
     public void setUp() {
         //@formatter:off
-        String xml =
+        final String xml =
                 "<devicelist version=\"1\">" +
                     "<group identifier=\"F0:A3:7F-900\" id=\"20000\" functionbitmask=\"6784\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>17</masterdeviceid><members>17,18</members></groupinfo></group>" +
                     "<group identifier=\"F0:A3:7F-901\" id=\"20001\" functionbitmask=\"4160\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr><groupinfo><masterdeviceid>0</masterdeviceid><members>20,21,22</members></groupinfo></group>" +
@@ -58,9 +58,9 @@ public class AVMFritzDeviceListModelTest {
                     "<device identifier=\"11934 0059978-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>406</etsideviceid><unittype>514</unittype><interfaces>256</interfaces></etsiunitinfo><alert><state>1</state></alert></device>" +
                     "<device identifier=\"11934 0059979-1\" id=\"2001\" functionbitmask=\"8200\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>412</etsideviceid><unittype>273</unittype><interfaces>772</interfaces></etsiunitinfo><button><lastpressedtimestamp>1529590797</lastpressedtimestamp></button></device>" +
                     "<device identifier=\"13096 0007307\" id=\"29\" functionbitmask=\"32\" fwversion=\"04.90\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 400\"><present>1</present><name>FRITZ!DECT 400 #14</name><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007307-0\" id=\"5000\"><name>FRITZ!DECT 400 #14: kurz</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007307-9\" id=\"5001\"><name>FRITZ!DECT 400 #14: lang</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>" +
+                    "<device identifier=\"13096 0007308\" id=\"30\" functionbitmask=\"1048864\" fwversion=\"05.10\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 440\"><present>1</present><name>FRITZ!DECT 440 #15</name><temperature><celsius>230</celsius><offset>0</offset></temperature><humidity><rel_humidity>43</rel_humidity></humidity><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007308-1\" id=\"5000\"><name>FRITZ!DECT 440 #15: Oben rechts</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-3\" id=\"5001\"><name>FRITZ!DECT 440 #15: Unten rechts</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button><button identifier=\"13096 0007308-5\" id=\"5002\"><name>FRITZ!DECT 440 #15: Unten links</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-7\" id=\"5003\"><name>FRITZ!DECT 440 #15: Oben links</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>" +
                 "</devicelist>";
         //@formatter:off
-
         try {
             Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
             devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
@@ -72,7 +72,7 @@ public class AVMFritzDeviceListModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(12, devices.getDevicelist().size());
+        assertEquals(13, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -98,6 +98,7 @@ public class AVMFritzDeviceListModelTest {
         assertTrue(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
@@ -134,6 +135,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertTrue(device.isSwitchableOutlet());
         assertTrue(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertTrue(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
@@ -174,6 +176,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertTrue(device.isSwitchableOutlet());
         assertTrue(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertTrue(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
@@ -214,6 +217,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
 
@@ -250,6 +254,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
 
@@ -286,6 +291,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
 
@@ -322,6 +328,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
@@ -339,6 +346,73 @@ public class AVMFritzDeviceListModelTest {
         assertNull(device.getSwitch());
 
         assertNull(device.getTemperature());
+
+        assertNull(device.getPowermeter());
+
+        assertNull(device.getHkr());
+    }
+
+    @Test
+    public void validateDECT440Model() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModelByIdentifier("130960007308");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("FRITZ!DECT 440", device.getProductName());
+        assertEquals("130960007308", device.getIdentifier());
+        assertEquals("30", device.getDeviceId());
+        assertEquals("05.10", device.getFirmwareVersion());
+        assertEquals("AVM", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("FRITZ!DECT 440 #15", device.getName());
+
+        assertTrue(device.isButton());
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isHANFUNAlarmSensor());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.isSwitchableOutlet());
+        assertTrue(device.isTempSensor());
+        assertTrue(device.isHumiditySensor());
+        assertFalse(device.isPowermeter());
+        assertFalse(device.isHeatingThermostat());
+
+        assertEquals(new BigDecimal("100"), device.getBattery());
+        assertEquals(BatteryModel.BATTERY_OFF, device.getBatterylow());
+
+        assertEquals(4, device.getButtons().size());
+        final ButtonModel topRight = device.getButtons().get(0);
+        assertEquals("130960007308-1", topRight.getIdentifier());
+        assertEquals("5000", topRight.getButtonId());
+        assertEquals("FRITZ!DECT 440 #15: Oben rechts", topRight.getName());
+        assertEquals(1549195586, topRight.getLastpressedtimestamp());
+        final ButtonModel bottomRight = device.getButtons().get(1);
+        assertEquals("130960007308-3", bottomRight.getIdentifier());
+        assertEquals("5001", bottomRight.getButtonId());
+        assertEquals("FRITZ!DECT 440 #15: Unten rechts", bottomRight.getName());
+        assertEquals(1549195595, bottomRight.getLastpressedtimestamp());
+        final ButtonModel bottomLeft = device.getButtons().get(2);
+        assertEquals("130960007308-5", bottomLeft.getIdentifier());
+        assertEquals("5002", bottomLeft.getButtonId());
+        assertEquals("FRITZ!DECT 440 #15: Unten links", bottomLeft.getName());
+        assertEquals(1549195586, bottomLeft.getLastpressedtimestamp());
+        final ButtonModel topLeft = device.getButtons().get(3);
+        assertEquals("130960007308-7", topLeft.getIdentifier());
+        assertEquals("5003", topLeft.getButtonId());
+        assertEquals("FRITZ!DECT 440 #15: Oben links", topLeft.getName());
+        assertEquals(1549195595, topLeft.getLastpressedtimestamp());
+
+        assertNull(device.getAlert());
+
+        assertNull(device.getSwitch());
+
+        assertNotNull(device.getTemperature());
+        assertEquals(new BigDecimal("23.0"), device.getTemperature().getCelsius());
+        assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
+
+        assertNotNull(device.getHumidity());
+        assertEquals(new BigDecimal("43"), device.getHumidity().getRelativeHumidity());
 
         assertNull(device.getPowermeter());
 
@@ -367,6 +441,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertTrue(device.isSwitchableOutlet());
         assertFalse(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertTrue(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
@@ -405,6 +480,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
@@ -444,6 +520,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTempSensor());
+        assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
@@ -483,6 +560,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(group.isDectRepeater());
         assertFalse(group.isSwitchableOutlet());
         assertFalse(group.isTempSensor());
+        assertFalse(group.isHumiditySensor());
         assertFalse(group.isPowermeter());
         assertTrue(group.isHeatingThermostat());
 
@@ -519,6 +597,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(group.isDectRepeater());
         assertTrue(group.isSwitchableOutlet());
         assertFalse(group.isTempSensor());
+        assertFalse(group.isHumiditySensor());
         assertTrue(group.isPowermeter());
         assertFalse(group.isHeatingThermostat());
 

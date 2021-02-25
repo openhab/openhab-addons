@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,9 +64,9 @@ public class KLF200Response {
      */
     public static void errorLogging(Logger logger, short responseCommand) {
         logger.trace("setResponse(): cannot handle response {} ({}).", Command.get(responseCommand).toString(),
-                responseCommand);
-        logger.warn("Gateway response {} ({}) cannot be handled at this point of interaction.",
-                Command.get(responseCommand).toString(), responseCommand);
+                new CommandNumber(responseCommand).toString());
+        logger.debug("Gateway response {} ({}) cannot be handled at this point of interaction.",
+                Command.get(responseCommand).toString(), new CommandNumber(responseCommand).toString());
     }
 
     /**
@@ -122,10 +122,10 @@ public class KLF200Response {
      * @return <b>check4matchingAnyID</b> of type boolean which signals the equality.
      */
     private static boolean check4matchingAnyID(Logger logger, String idName, int requestID, int responseID) {
-        logger.trace("check4matchingAnyID() called for request{} {} and response{} {}.", idName, requestID, idName,
+        logger.trace("check4matchingAnyID() called for request {} {} and response {} {}.", idName, requestID, idName,
                 responseID);
         if (requestID != responseID) {
-            logger.warn("Gateway response with {} {} unexpected as query asked for {} {}.", idName, requestID, idName,
+            logger.debug("Gateway query for {} {} received unexpected response of {} {}.", idName, requestID, idName,
                     responseID);
             return false;
         }

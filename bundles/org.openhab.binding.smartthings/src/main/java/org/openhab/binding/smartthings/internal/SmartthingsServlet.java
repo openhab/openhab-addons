@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @SuppressWarnings("serial")
-@Component(immediate = true, service = HttpServlet.class)
+@Component(service = HttpServlet.class)
 public class SmartthingsServlet extends HttpServlet {
     private static final String PATH = "/smartthings";
     private final Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);

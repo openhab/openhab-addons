@@ -12,7 +12,8 @@ The binding currently supports weather data from these weather stations.
 | Account                  | bridge    |
 | WS-0900-IP               | ws0900ip  |
 | WS-1400-IP / WS-1401-IP  | ws1400ip  |
-| WS-2902A                 | ws2902a   |
+| WS-2902A / WS2902C       | ws2902a   |
+| WS-2902B                 | ws2902b   |
 | WS-8482                  | ws8482    |
 | WS-0265                  | ws0265    |
 
@@ -234,16 +235,20 @@ Adding support for a new weather station type involves changes to the source cod
 
 Define a new `ThingTypeUID` for the new station and add it to the `SUPPORTED_THING_TYPES_UIDS` Collection.
 
+Add a channel group for the new station.
+
 #### Create OH-INF/thing/\<station-model\>.xml
 
 Add thing type and channel group specific to the data elements supported by this weather station.
 Modeling this after an existing thing type that shares many of the channels is the easiest starting point.
 You can determine the weather data elements returned for the weather station by putting the binding into debug mode and reviewing the JSON object returned by the Ambient Weather API.
 
-#### Create Processor Class AmbientWeather<StationModel>Processor
+#### Create Processor Class <StationModel>Processor
 
 Add a class in `org.openhab.binding.ambientweather.internal.processor` that defines the channels supported by this station type.
+
 Add the following two methods.
+
 Again, the easiest approach is to model this class after a class for a similar weather station type.
 
 ##### Method: processInfoUpdate
@@ -254,6 +259,6 @@ Updates the channels for station name and location.
 
 Updates channels for weather data.
 
-#### Update AmbientWeatherProcessorFactory.java
+#### Update ProcessorFactory.java
 
-Add new Processor class definition to `AmbientWeatherProcessorFactory.java`, and add a new case to the switch statement to return the new processor.
+Add new Processor class definition to `ProcessorFactory.java`, and add a new case to the switch statement to return the new processor.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,12 @@ public class DeviceMapping {
     @SerializedName("channels")
     @Expose
     private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
+    @SerializedName("readmeComment")
+    @Expose
+    private @Nullable String readmeComment;
+    @SerializedName("experimental")
+    @Expose
+    private @Nullable Boolean experimental;
 
     public List<String> getId() {
         return id;
@@ -75,5 +81,22 @@ public class DeviceMapping {
 
     public void setChannels(List<MiIoBasicChannel> miIoBasicChannels) {
         this.miIoBasicChannels = miIoBasicChannels;
+    }
+
+    public String getReadmeComment() {
+        final String readmeComment = this.readmeComment;
+        return (readmeComment != null) ? readmeComment : "";
+    }
+
+    public void setReadmeComment(String readmeComment) {
+        this.readmeComment = readmeComment;
+    }
+
+    public @Nullable Boolean getExperimental() {
+        return experimental;
+    }
+
+    public void setExperimental(Boolean experimental) {
+        this.experimental = experimental;
     }
 }

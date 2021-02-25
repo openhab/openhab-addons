@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,8 +29,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.servlet.ServletException;
+import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
@@ -46,7 +46,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -72,6 +71,9 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
 
     /** The {@link NetworkAddressService} to use */
     private final NetworkAddressService networkAddressService;
+
+    /** The {@link ClientBuilder} to use */
+    private final ClientBuilder clientBuilder;
 
     /** GSON implementation - only used to deserialize {@link NeeoAction} */
     private final Gson gson = new Gson();
@@ -112,7 +114,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
      * @param networkAddressService the non-null {@link NetworkAddressService}
      */
     NeeoBrainHandler(Bridge bridge, int servicePort, HttpService httpService,
-            NetworkAddressService networkAddressService) {
+            NetworkAddressService networkAddressService, ClientBuilder clientBuilder) {
         super(bridge);
 
         Objects.requireNonNull(bridge, "bridge cannot be null");
@@ -122,10 +124,11 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
         this.servicePort = servicePort;
         this.httpService = httpService;
         this.networkAddressService = networkAddressService;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
-     * Handles any {@Commands} sent - this bridge has no commands and does nothing
+     * Handles any {@link Command} sent - this bridge has no commands and does nothing
      *
      * @see
      *      org.openhab.core.thing.binding.ThingHandler#handleCommand(org.openhab.core.thing.ChannelUID,
@@ -158,13 +161,15 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             NeeoUtil.checkInterrupt();
 
             final NeeoBrainConfig config = getBrainConfig();
+            logger.trace("Brain-UID {}: config is {}", thing.getUID(), config);
+
             final String ipAddress = config.getIpAddress();
-            if (ipAddress == null || StringUtils.isEmpty(ipAddress)) {
+            if (ipAddress == null || ipAddress.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Brain IP Address must be specified");
                 return;
             }
-            final NeeoBrainApi api = new NeeoBrainApi(ipAddress);
+            final NeeoBrainApi api = new NeeoBrainApi(ipAddress, clientBuilder);
             final NeeoBrain brain = api.getBrain();
             final String brainId = getNeeoBrainId();
 
@@ -184,22 +189,13 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             if (config.isEnableForwardActions()) {
                 NeeoUtil.checkInterrupt();
 
-                forwardActionServlet = new NeeoForwardActionsServlet(scheduler,
-                        new NeeoForwardActionsServlet.Callback() {
-                            @Override
-                            public void post(String json) {
-                                triggerChannel(NeeoConstants.CHANNEL_BRAIN_FOWARDACTIONS, json);
+                forwardActionServlet = new NeeoForwardActionsServlet(scheduler, json -> {
+                    triggerChannel(NeeoConstants.CHANNEL_BRAIN_FOWARDACTIONS, json);
 
-                                final NeeoAction action = gson.fromJson(json, NeeoAction.class);
-
-                                for (final Thing child : getThing().getThings()) {
-                                    final ThingHandler th = child.getHandler();
-                                    if (th instanceof NeeoRoomHandler) {
-                                        ((NeeoRoomHandler) th).processAction(action);
-                                    }
-                                }
-                            }
-                        }, config.getForwardChain());
+                    final NeeoAction action = Objects.requireNonNull(gson.fromJson(json, NeeoAction.class));
+                    getThing().getThings().stream().map(Thing::getHandler).filter(NeeoRoomHandler.class::isInstance)
+                            .forEach(h -> ((NeeoRoomHandler) h).processAction(action));
+                }, config.getForwardChain(), clientBuilder);
 
                 NeeoUtil.checkInterrupt();
                 try {
@@ -239,7 +235,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred connecting to brain: " + e.getMessage());
         } catch (InterruptedException e) {
-            logger.debug("Initializtion was interrupted", e);
+            logger.debug("Initialization was interrupted", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Initialization was interrupted");
         } finally {
@@ -255,9 +251,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
      * @param value a possibly null, possibly empty key
      */
     private void addProperty(Map<String, String> properties, String key, @Nullable String value) {
-        Objects.requireNonNull(properties, "properties cannot be null");
-        NeeoUtil.requireNotEmpty(key, "key cannot be empty");
-        if (value != null && StringUtils.isNotEmpty(value)) {
+        if (value != null && !value.isEmpty()) {
             properties.put(key, value);
         }
     }

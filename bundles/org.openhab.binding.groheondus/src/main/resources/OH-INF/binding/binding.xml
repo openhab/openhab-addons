@@ -5,6 +5,5 @@
 
 	<name>GROHE ONDUS Binding</name>
 	<description>Provides an integration for GROHE Appliances in openHAB</description>
-	<author>Florian Schmidt and Arne Wohlert</author>
 
 </binding:binding>

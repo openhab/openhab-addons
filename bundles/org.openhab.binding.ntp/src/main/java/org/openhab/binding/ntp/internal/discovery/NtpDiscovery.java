@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ntp")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.ntp")
 public class NtpDiscovery extends AbstractDiscoveryService {
 
     private final TimeZoneProvider timeZoneProvider;
@@ -48,7 +48,7 @@ public class NtpDiscovery extends AbstractDiscoveryService {
     @Activate
     public NtpDiscovery(final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18nProvider, final @Reference TimeZoneProvider timeZoneProvider,
-            @Nullable Map<String, @Nullable Object> configProperties) throws IllegalArgumentException {
+            @Nullable Map<String, Object> configProperties) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 2);
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;

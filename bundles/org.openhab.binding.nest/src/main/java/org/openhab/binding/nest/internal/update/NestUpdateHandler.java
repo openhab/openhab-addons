@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,8 +39,8 @@ public class NestUpdateHandler<T> {
      */
     private static final String ANY_ID = "*";
 
-    private final Map<String, @Nullable T> lastUpdates = new ConcurrentHashMap<>();
-    private final Map<String, @Nullable Set<NestThingDataListener<T>>> listenersMap = new ConcurrentHashMap<>();
+    private final Map<String, T> lastUpdates = new ConcurrentHashMap<>();
+    private final Map<String, Set<NestThingDataListener<T>>> listenersMap = new ConcurrentHashMap<>();
 
     public boolean addListener(NestThingDataListener<T> listener) {
         return addListener(ANY_ID, listener);
@@ -60,11 +60,13 @@ public class NestUpdateHandler<T> {
 
     private Set<NestThingDataListener<T>> getListeners(String nestId) {
         Set<NestThingDataListener<T>> listeners = new HashSet<>();
-        if (listenersMap.get(nestId) != null) {
-            listeners.addAll(listenersMap.get(nestId));
+        Set<NestThingDataListener<T>> idListeners = listenersMap.get(nestId);
+        if (idListeners != null) {
+            listeners.addAll(idListeners);
         }
-        if (listenersMap.get(ANY_ID) != null) {
-            listeners.addAll(listenersMap.get(ANY_ID));
+        Set<NestThingDataListener<T>> anyListeners = listenersMap.get(ANY_ID);
+        if (anyListeners != null) {
+            listeners.addAll(anyListeners);
         }
         return listeners;
     }

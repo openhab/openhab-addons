@@ -41,7 +41,7 @@
 		<description>A light that has continuous brightness control.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -58,8 +58,8 @@
 		<description>A dimmable light that supports different color temperature settings.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
-			<channel id="color_temperature" typeId="color_temperature"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -76,8 +76,8 @@
 		<description>A dimmable light that supports full colors and color temperature settings.</description>
 
 		<channels>
-			<channel id="color_temperature" typeId="color_temperature"/>
-			<channel id="color" typeId="color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color" typeId="system.color"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -176,35 +176,11 @@
 		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Control the brightness and switch the light on and off.</description>
-		<category>DimmableLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
 		<description>Control the position of the blind or curtain in percent from 0 (open) to 100 (closed).</description>
 		<category>Blinds</category>
-	</channel-type>
-
-	<channel-type id="color_temperature">
-		<item-type>Dimmer</item-type>
-		<label>Color Temperature</label>
-		<description>Control the color temperature of the light.</description>
-		<category>ColorLight</category>
-	</channel-type>
-
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<description>Control the color of the light.</description>
-		<category>ColorLight</category>
 	</channel-type>
 
 </thing:thing-descriptions>

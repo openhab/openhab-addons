@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class MessageUtil {
     public LocationMessage fromJson(String json) {
         for (String pattern : PATTERNS) {
             Class<? extends LocationMessage> c = MESSAGE_TYPES.get(pattern);
-            if (json.matches(pattern)) {
+            if (c != null && json.matches(pattern)) {
                 return gson.fromJson(json, c);
             }
         }

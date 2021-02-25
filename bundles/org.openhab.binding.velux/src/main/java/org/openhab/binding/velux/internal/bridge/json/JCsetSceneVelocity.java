@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.binding.velux.internal.bridge.common.SetSceneVelocity;
  *
  * @author Guenther Schreiner - Initial contribution.
  */
+@Deprecated
 @NonNullByDefault
 class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunicationProtocol {
 
@@ -45,7 +46,6 @@ class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunica
     /*
      * Message Objects
      */
-    @NonNullByDefault
     private static class ParamsRunScene {
         @SuppressWarnings("unused")
         private int id;
@@ -68,7 +68,6 @@ class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunica
      * {"action":"setSilentMode","params":{"id":9,"silent":false}}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
         @SuppressWarnings("unused")
         private String action;
@@ -97,7 +96,6 @@ class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunica
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,11 +50,7 @@ public class YIOremoteDockActions implements ThingActions {
         }
     }
 
-    public static void sendIRCode(@Nullable ThingActions actions, @Nullable String irCode) {
-        if (actions instanceof YIOremoteDockActions) {
-            ((YIOremoteDockActions) actions).sendIRCode(irCode);
-        } else {
-            throw new IllegalArgumentException("Instance is not an YIOremoteDockActions class.");
-        }
+    public static void sendIRCode(ThingActions actions, @Nullable String irCode) {
+        ((YIOremoteDockActions) actions).sendIRCode(irCode);
     }
 }

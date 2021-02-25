@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="androiddebugbridge"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="android">
+		<label>Android Device Thing</label>
+		<description>Android Device Thing for Android Debug Bridge Binding</description>
+		<channels>
+			<channel id="key-event" typeId="key-event-channel"/>
+			<channel id="text" typeId="text-channel"/>
+			<channel id="media-volume" typeId="system.volume"/>
+			<channel id="media-control" typeId="system.media-control"/>
+			<channel id="start-package" typeId="start-package-channel"/>
+			<channel id="stop-package" typeId="stop-package-channel"/>
+			<channel id="stop-current-package" typeId="stop-current-package-channel"/>
+			<channel id="current-package" typeId="current-package-channel"/>
+			<channel id="wake-lock" typeId="wake-lock-channel"/>
+			<channel id="screen-state" typeId="screen-state-channel"/>
+			<channel id="awake-state" typeId="awake-state-channel"/>
+		</channels>
+		<representation-property>serial</representation-property>
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Device ip address.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true" min="0" max="65535">
+				<label>Port</label>
+				<description>Device port listening to adb connections.</description>
+				<default>5555</default>
+			</parameter>
+			<parameter name="refreshTime" type="integer" min="10" max="120" unit="s" required="true">
+				<label>Refresh Time</label>
+				<description>Seconds between device status refreshes.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="timeout" type="integer" min="1" max="15" unit="s" required="true">
+				<label>Command Timeout</label>
+				<description>Command timeout seconds.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="mediaStateJSONConfig" type="text">
+				<label>Media State Config</label>
+				<description>JSON config that allows to modify the media state detection strategy for each app. Refer to the binding
+					documentation.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="key-event-channel">
+		<item-type>String</item-type>
+		<label>Send Key Event</label>
+		<description>Send key event to android device</description>
+		<state>
+			<options>
+				<option value="7">KEYCODE_0</option>
+				<option value="8">KEYCODE_1</option>
+				<option value="227">KEYCODE_11</option>
+				<option value="228">KEYCODE_12</option>
+				<option value="9">KEYCODE_2</option>
+				<option value="10">KEYCODE_3</option>
+				<option value="206">KEYCODE_3D_MODE</option>
+				<option value="11">KEYCODE_4</option>
+				<option value="12">KEYCODE_5</option>
+				<option value="13">KEYCODE_6</option>
+				<option value="14">KEYCODE_7</option>
+				<option value="15">KEYCODE_8</option>
+				<option value="16">KEYCODE_9</option>
+				<option value="29">KEYCODE_A</option>
+				<option value="284">KEYCODE_ALL_APPS</option>
+				<option value="57">KEYCODE_ALT_LEFT</option>
+				<option value="58">KEYCODE_ALT_RIGHT</option>
+				<option value="75">KEYCODE_APOSTROPHE</option>
+				<option value="187">KEYCODE_APP_SWITCH</option>
+				<option value="219">KEYCODE_ASSIST</option>
+				<option value="77">KEYCODE_AT</option>
+				<option value="182">KEYCODE_AVR_INPUT</option>
+				<option value="181">KEYCODE_AVR_POWER</option>
+				<option value="30">KEYCODE_B</option>
+				<option value="4">KEYCODE_BACK</option>
+				<option value="73">KEYCODE_BACKSLASH</option>
+				<option value="174">KEYCODE_BOOKMARK</option>
+				<option value="121">KEYCODE_BREAK</option>
+				<option value="220">KEYCODE_BRIGHTNESS_DOWN</option>
+				<option value="221">KEYCODE_BRIGHTNESS_UP</option>
+				<option value="188">KEYCODE_BUTTON_1</option>
+				<option value="197">KEYCODE_BUTTON_10</option>
+				<option value="198">KEYCODE_BUTTON_11</option>
+				<option value="199">KEYCODE_BUTTON_12</option>
+				<option value="200">KEYCODE_BUTTON_13</option>
+				<option value="201">KEYCODE_BUTTON_14</option>
+				<option value="202">KEYCODE_BUTTON_15</option>
+				<option value="203">KEYCODE_BUTTON_16</option>
+				<option value="189">KEYCODE_BUTTON_2</option>
+				<option value="190">KEYCODE_BUTTON_3</option>
+				<option value="191">KEYCODE_BUTTON_4</option>
+				<option value="192">KEYCODE_BUTTON_5</option>
+				<option value="193">KEYCODE_BUTTON_6</option>
+				<option value="194">KEYCODE_BUTTON_7</option>
+				<option value="195">KEYCODE_BUTTON_8</option>
+				<option value="196">KEYCODE_BUTTON_9</option>
+				<option value="96">KEYCODE_BUTTON_A</option>
+				<option value="97">KEYCODE_BUTTON_B</option>
+				<option value="98">KEYCODE_BUTTON_C</option>
+				<option value="102">KEYCODE_BUTTON_L1</option>
+				<option value="104">KEYCODE_BUTTON_L2</option>
+				<option value="110">KEYCODE_BUTTON_MODE</option>
+				<option value="103">KEYCODE_BUTTON_R1</option>
+				<option value="105">KEYCODE_BUTTON_R2</option>
+				<option value="109">KEYCODE_BUTTON_SELECT</option>
+				<option value="108">KEYCODE_BUTTON_START</option>
+				<option value="106">KEYCODE_BUTTON_THUMBL</option>
+				<option value="107">KEYCODE_BUTTON_THUMBR</option>
+				<option value="99">KEYCODE_BUTTON_X</option>
+				<option value="100">KEYCODE_BUTTON_Y</option>
+				<option value="101">KEYCODE_BUTTON_Z</option>
+				<option value="31">KEYCODE_C</option>
+				<option value="210">KEYCODE_CALCULATOR</option>
+				<option value="208">KEYCODE_CALENDAR</option>
+				<option value="5">KEYCODE_CALL</option>
+				<option value="27">KEYCODE_CAMERA</option>
+				<option value="115">KEYCODE_CAPS_LOCK</option>
+				<option value="175">KEYCODE_CAPTIONS</option>
+				<option value="167">KEYCODE_CHANNEL_DOWN</option>
+				<option value="166">KEYCODE_CHANNEL_UP</option>
+				<option value="28">KEYCODE_CLEAR</option>
+				<option value="55">KEYCODE_COMMA</option>
+				<option value="207">KEYCODE_CONTACTS</option>
+				<option value="278">KEYCODE_COPY</option>
+				<option value="113">KEYCODE_CTRL_LEFT</option>
+				<option value="114">KEYCODE_CTRL_RIGHT</option>
+				<option value="277">KEYCODE_CUT</option>
+				<option value="32">KEYCODE_D</option>
+				<option value="67">KEYCODE_DEL</option>
+				<option value="23">KEYCODE_DPAD_CENTER</option>
+				<option value="20">KEYCODE_DPAD_DOWN</option>
+				<option value="269">KEYCODE_DPAD_DOWN_LEFT</option>
+				<option value="271">KEYCODE_DPAD_DOWN_RIGHT</option>
+				<option value="21">KEYCODE_DPAD_LEFT</option>
+				<option value="22">KEYCODE_DPAD_RIGHT</option>
+				<option value="19">KEYCODE_DPAD_UP</option>
+				<option value="268">KEYCODE_DPAD_UP_LEFT</option>
+				<option value="270">KEYCODE_DPAD_UP_RIGHT</option>
+				<option value="173">KEYCODE_DVR</option>
+				<option value="33">KEYCODE_E</option>
+				<option value="212">KEYCODE_EISU</option>
+				<option value="6">KEYCODE_ENDCALL</option>
+				<option value="66">KEYCODE_ENTER</option>
+				<option value="65">KEYCODE_ENVELOPE</option>
+				<option value="70">KEYCODE_EQUALS</option>
+				<option value="111">KEYCODE_ESCAPE</option>
+				<option value="64">KEYCODE_EXPLORER</option>
+				<option value="34">KEYCODE_F</option>
+				<option value="131">KEYCODE_F1</option>
+				<option value="140">KEYCODE_F10</option>
+				<option value="141">KEYCODE_F11</option>
+				<option value="142">KEYCODE_F12</option>
+				<option value="132">KEYCODE_F2</option>
+				<option value="133">KEYCODE_F3</option>
+				<option value="134">KEYCODE_F4</option>
+				<option value="135">KEYCODE_F5</option>
+				<option value="136">KEYCODE_F6</option>
+				<option value="137">KEYCODE_F7</option>
+				<option value="138">KEYCODE_F8</option>
+				<option value="139">KEYCODE_F9</option>
+				<option value="80">KEYCODE_FOCUS</option>
+				<option value="125">KEYCODE_FORWARD</option>
+				<option value="112">KEYCODE_FORWARD_DEL</option>
+				<option value="119">KEYCODE_FUNCTION</option>
+				<option value="35">KEYCODE_G</option>
+				<option value="68">KEYCODE_GRAVE</option>
+				<option value="172">KEYCODE_GUIDE</option>
+				<option value="36">KEYCODE_H</option>
+				<option value="79">KEYCODE_HEADSETHOOK</option>
+				<option value="259">KEYCODE_HELP</option>
+				<option value="214">KEYCODE_HENKAN</option>
+				<option value="3">KEYCODE_HOME</option>
+				<option value="37">KEYCODE_I</option>
+				<option value="165">KEYCODE_INFO</option>
+				<option value="124">KEYCODE_INSERT</option>
+				<option value="38">KEYCODE_J</option>
+				<option value="39">KEYCODE_K</option>
+				<option value="218">KEYCODE_KANA</option>
+				<option value="215">KEYCODE_KATAKANA_HIRAGANA</option>
+				<option value="40">KEYCODE_L</option>
+				<option value="204">KEYCODE_LANGUAGE_SWITCH</option>
+				<option value="229">KEYCODE_LAST_CHANNEL</option>
+				<option value="71">KEYCODE_LEFT_BRACKET</option>
+				<option value="41">KEYCODE_M</option>
+				<option value="205">KEYCODE_MANNER_MODE</option>
+				<option value="222">KEYCODE_MEDIA_AUDIO_TRACK</option>
+				<option value="128">KEYCODE_MEDIA_CLOSE</option>
+				<option value="129">KEYCODE_MEDIA_EJECT</option>
+				<option value="90">KEYCODE_MEDIA_FAST_FORWARD</option>
+				<option value="87">KEYCODE_MEDIA_NEXT</option>
+				<option value="127">KEYCODE_MEDIA_PAUSE</option>
+				<option value="126">KEYCODE_MEDIA_PLAY</option>
+				<option value="85">KEYCODE_MEDIA_PLAY_PAUSE</option>
+				<option value="88">KEYCODE_MEDIA_PREVIOUS</option>
+				<option value="130">KEYCODE_MEDIA_RECORD</option>
+				<option value="89">KEYCODE_MEDIA_REWIND</option>
+				<option value="273">KEYCODE_MEDIA_SKIP_BACKWARD</option>
+				<option value="272">KEYCODE_MEDIA_SKIP_FORWARD</option>
+				<option value="275">KEYCODE_MEDIA_STEP_BACKWARD</option>
+				<option value="274">KEYCODE_MEDIA_STEP_FORWARD</option>
+				<option value="86">KEYCODE_MEDIA_STOP</option>
+				<option value="226">KEYCODE_MEDIA_TOP_MENU</option>
+				<option value="82">KEYCODE_MENU</option>
+				<option value="117">KEYCODE_META_LEFT</option>
+				<option value="118">KEYCODE_META_RIGHT</option>
+				<option value="69">KEYCODE_MINUS</option>
+				<option value="123">KEYCODE_MOVE_END</option>
+				<option value="122">KEYCODE_MOVE_HOME</option>
+				<option value="213">KEYCODE_MUHENKAN</option>
+				<option value="209">KEYCODE_MUSIC</option>
+				<option value="91">KEYCODE_MUTE</option>
+				<option value="42">KEYCODE_N</option>
+				<option value="262">KEYCODE_NAVIGATE_IN</option>
+				<option value="261">KEYCODE_NAVIGATE_NEXT</option>
+				<option value="263">KEYCODE_NAVIGATE_OUT</option>
+				<option value="260">KEYCODE_NAVIGATE_PREVIOUS</option>
+				<option value="83">KEYCODE_NOTIFICATION</option>
+				<option value="78">KEYCODE_NUM</option>
+				<option value="144">KEYCODE_NUMPAD_0</option>
+				<option value="145">KEYCODE_NUMPAD_1</option>
+				<option value="146">KEYCODE_NUMPAD_2</option>
+				<option value="147">KEYCODE_NUMPAD_3</option>
+				<option value="148">KEYCODE_NUMPAD_4</option>
+				<option value="149">KEYCODE_NUMPAD_5</option>
+				<option value="150">KEYCODE_NUMPAD_6</option>
+				<option value="151">KEYCODE_NUMPAD_7</option>
+				<option value="152">KEYCODE_NUMPAD_8</option>
+				<option value="153">KEYCODE_NUMPAD_9</option>
+				<option value="157">KEYCODE_NUMPAD_ADD</option>
+				<option value="159">KEYCODE_NUMPAD_COMMA</option>
+				<option value="154">KEYCODE_NUMPAD_DIVIDE</option>
+				<option value="158">KEYCODE_NUMPAD_DOT</option>
+				<option value="160">KEYCODE_NUMPAD_ENTER</option>
+				<option value="161">KEYCODE_NUMPAD_EQUALS</option>
+				<option value="162">KEYCODE_NUMPAD_LEFT_PAREN</option>
+				<option value="155">KEYCODE_NUMPAD_MULTIPLY</option>
+				<option value="163">KEYCODE_NUMPAD_RIGHT_PAREN</option>
+				<option value="156">KEYCODE_NUMPAD_SUBTRACT</option>
+				<option value="143">KEYCODE_NUM_LOCK</option>
+				<option value="43">KEYCODE_O</option>
+				<option value="44">KEYCODE_P</option>
+				<option value="93">KEYCODE_PAGE_DOWN</option>
+				<option value="92">KEYCODE_PAGE_UP</option>
+				<option value="225">KEYCODE_PAIRING</option>
+				<option value="279">KEYCODE_PASTE</option>
+				<option value="56">KEYCODE_PERIOD</option>
+				<option value="94">KEYCODE_PICTSYMBOLS</option>
+				<option value="81">KEYCODE_PLUS</option>
+				<option value="18">KEYCODE_POUND</option>
+				<option value="26">KEYCODE_POWER</option>
+				<option value="288">KEYCODE_PROFILE_SWITCH</option>
+				<option value="186">KEYCODE_PROG_BLUE</option>
+				<option value="184">KEYCODE_PROG_GREEN</option>
+				<option value="183">KEYCODE_PROG_RED</option>
+				<option value="185">KEYCODE_PROG_YELLOW</option>
+				<option value="45">KEYCODE_Q</option>
+				<option value="46">KEYCODE_R</option>
+				<option value="285">KEYCODE_REFRESH</option>
+				<option value="72">KEYCODE_RIGHT_BRACKET</option>
+				<option value="217">KEYCODE_RO</option>
+				<option value="47">KEYCODE_S</option>
+				<option value="116">KEYCODE_SCROLL_LOCK</option>
+				<option value="84">KEYCODE_SEARCH</option>
+				<option value="74">KEYCODE_SEMICOLON</option>
+				<option value="176">KEYCODE_SETTINGS</option>
+				<option value="59">KEYCODE_SHIFT_LEFT</option>
+				<option value="60">KEYCODE_SHIFT_RIGHT</option>
+				<option value="76">KEYCODE_SLASH</option>
+				<option value="223">KEYCODE_SLEEP</option>
+				<option value="1">KEYCODE_SOFT_LEFT</option>
+				<option value="2">KEYCODE_SOFT_RIGHT</option>
+				<option value="276">KEYCODE_SOFT_SLEEP</option>
+				<option value="62">KEYCODE_SPACE</option>
+				<option value="17">KEYCODE_STAR</option>
+				<option value="180">KEYCODE_STB_INPUT</option>
+				<option value="179">KEYCODE_STB_POWER</option>
+				<option value="265">KEYCODE_STEM_1</option>
+				<option value="266">KEYCODE_STEM_2</option>
+				<option value="267">KEYCODE_STEM_3</option>
+				<option value="264">KEYCODE_STEM_PRIMARY</option>
+				<option value="95">KEYCODE_SWITCH_CHARSET</option>
+				<option value="63">KEYCODE_SYM</option>
+				<option value="120">KEYCODE_SYSRQ</option>
+				<option value="281">KEYCODE_SYSTEM_NAVIGATION_DOWN</option>
+				<option value="282">KEYCODE_SYSTEM_NAVIGATION_LEFT</option>
+				<option value="283">KEYCODE_SYSTEM_NAVIGATION_RIGHT</option>
+				<option value="280">KEYCODE_SYSTEM_NAVIGATION_UP</option>
+				<option value="48">KEYCODE_T</option>
+				<option value="61">KEYCODE_TAB</option>
+				<option value="287">KEYCODE_THUMBS_DOWN</option>
+				<option value="286">KEYCODE_THUMBS_UP</option>
+				<option value="170">KEYCODE_TV</option>
+				<option value="242">KEYCODE_TV_ANTENNA_CABLE</option>
+				<option value="252">KEYCODE_TV_AUDIO_DESCRIPTION</option>
+				<option value="254">KEYCODE_TV_AUDIO_DESCRIPTION_MIX_DOWN</option>
+				<option value="253">KEYCODE_TV_AUDIO_DESCRIPTION_MIX_UP</option>
+				<option value="256">KEYCODE_TV_CONTENTS_MENU</option>
+				<option value="230">KEYCODE_TV_DATA_SERVICE</option>
+				<option value="178">KEYCODE_TV_INPUT</option>
+				<option value="249">KEYCODE_TV_INPUT_COMPONENT_1</option>
+				<option value="250">KEYCODE_TV_INPUT_COMPONENT_2</option>
+				<option value="247">KEYCODE_TV_INPUT_COMPOSITE_1</option>
+				<option value="248">KEYCODE_TV_INPUT_COMPOSITE_2</option>
+				<option value="243">KEYCODE_TV_INPUT_HDMI_1</option>
+				<option value="244">KEYCODE_TV_INPUT_HDMI_2</option>
+				<option value="245">KEYCODE_TV_INPUT_HDMI_3</option>
+				<option value="246">KEYCODE_TV_INPUT_HDMI_4</option>
+				<option value="251">KEYCODE_TV_INPUT_VGA_1</option>
+				<option value="257">KEYCODE_TV_MEDIA_CONTEXT_MENU</option>
+				<option value="241">KEYCODE_TV_NETWORK</option>
+				<option value="234">KEYCODE_TV_NUMBER_ENTRY</option>
+				<option value="177">KEYCODE_TV_POWER</option>
+				<option value="232">KEYCODE_TV_RADIO_SERVICE</option>
+				<option value="237">KEYCODE_TV_SATELLITE</option>
+				<option value="238">KEYCODE_TV_SATELLITE_BS</option>
+				<option value="239">KEYCODE_TV_SATELLITE_CS</option>
+				<option value="240">KEYCODE_TV_SATELLITE_SERVICE</option>
+				<option value="233">KEYCODE_TV_TELETEXT</option>
+				<option value="235">KEYCODE_TV_TERRESTRIAL_ANALOG</option>
+				<option value="236">KEYCODE_TV_TERRESTRIAL_DIGITAL</option>
+				<option value="258">KEYCODE_TV_TIMER_PROGRAMMING</option>
+				<option value="255">KEYCODE_TV_ZOOM_MODE</option>
+				<option value="49">KEYCODE_U</option>
+				<option value="0">KEYCODE_UNKNOWN</option>
+				<option value="50">KEYCODE_V</option>
+				<option value="231">KEYCODE_VOICE_ASSIST</option>
+				<option value="25">KEYCODE_VOLUME_DOWN</option>
+				<option value="164">KEYCODE_VOLUME_MUTE</option>
+				<option value="24">KEYCODE_VOLUME_UP</option>
+				<option value="51">KEYCODE_W</option>
+				<option value="224">KEYCODE_WAKEUP</option>
+				<option value="171">KEYCODE_WINDOW</option>
+				<option value="52">KEYCODE_X</option>
+				<option value="53">KEYCODE_Y</option>
+				<option value="216">KEYCODE_YEN</option>
+				<option value="54">KEYCODE_Z</option>
+				<option value="211">KEYCODE_ZENKAKU_HANKAKU</option>
+				<option value="168">KEYCODE_ZOOM_IN</option>
+				<option value="16">KEYCODE_ZOOM_OUT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="text-channel">
+		<item-type>String</item-type>
+		<label>Send Text</label>
+		<description>Send text to android device</description>
+	</channel-type>
+
+	<channel-type id="start-package-channel">
+		<item-type>String</item-type>
+		<label>Start Package</label>
+		<description>Run application by package name</description>
+	</channel-type>
+
+	<channel-type id="stop-package-channel">
+		<item-type>String</item-type>
+		<label>Stop Package</label>
+		<description>Stop application by package name</description>
+	</channel-type>
+
+	<channel-type id="stop-current-package-channel">
+		<item-type>Switch</item-type>
+		<label>Stop Current Package</label>
+		<description>Stops the top application in screen when receives an OFF command</description>
+	</channel-type>
+
+	<channel-type id="current-package-channel">
+		<item-type>String</item-type>
+		<label>Current Package</label>
+		<description>Package name of the top application in screen</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wake-lock-channel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Wake Lock</label>
+		<description>Power Wake Lock State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="awake-state-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Awake State</label>
+		<description>Awake State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="screen-state-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Screen State</label>
+		<description>Screen Power State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

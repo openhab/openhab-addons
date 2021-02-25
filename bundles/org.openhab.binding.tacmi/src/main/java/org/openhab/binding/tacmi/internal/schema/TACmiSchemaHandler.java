@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
     private final TACmiChannelTypeProvider channelTypeProvider;
-    private final Map<String, @Nullable ApiPageEntry> entries = new HashMap<>();
+    private final Map<String, ApiPageEntry> entries = new HashMap<>();
     private boolean online;
     private @Nullable String serverBase;
     private @Nullable URI schemaApiPage;
@@ -245,6 +245,17 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                                 channelUID, cx2sf.options.keySet());
                         return;
                     }
+                } else {
+                    logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
+                    return;
+                }
+                break;
+            case NUMERIC_FORM:
+                ChangerX2Entry cx2en = e.changerX2Entry;
+                if (cx2en != null) {
+                    reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2en.address
+                            + "&changetox2=" + command.format("%.2f")));
+                    reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
                 } else {
                     logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
                     return;

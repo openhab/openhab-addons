@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.A5_07;
 
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -29,6 +29,6 @@ public class A5_07_03 extends A5_07_02 {
 
     @Override
     protected State getIllumination() {
-        return new QuantityType<>((getDB_2Value() << 8) + ((getDB_1Value() & 0b11000000) >>> 6), SmartHomeUnits.LUX);
+        return new QuantityType<>((getDB_2Value() << 8) + ((getDB_1Value() & 0b11000000) >>> 6), Units.LUX);
     }
 }

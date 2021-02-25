@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,8 +108,14 @@ public class FullHueObject extends HueObject {
      *
      * @return the unique id, can be null for some virtual types like the daylight sensor
      */
-
     public @Nullable String getUniqueID() {
         return uniqueid;
+    }
+
+    /**
+     * Sets the unique id of the object.
+     */
+    protected void setUniqueID(final String uniqueid) {
+        this.uniqueid = uniqueid;
     }
 }

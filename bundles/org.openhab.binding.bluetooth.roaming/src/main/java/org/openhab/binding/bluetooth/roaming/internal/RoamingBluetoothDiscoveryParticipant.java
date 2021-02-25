@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = { BluetoothDiscoveryParticipant.class })
+@Component(service = { BluetoothDiscoveryParticipant.class })
 public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();

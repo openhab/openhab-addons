@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -512,16 +512,19 @@ public class PowermaxPanelSettings {
                 result = false;
             }
 
-            // Check if partitions are enabled
-            byte[] partitions = readSettings(PowermaxSendType.DL_PARTITIONS, 0, 0x10 + zoneCnt);
-            if (partitions != null) {
-                partitionsEnabled = (partitions[0] & 0x000000FF) == 1;
-            } else {
-                logger.debug("Cannot get partitions information");
-                result = false;
-            }
-            if (!partitionsEnabled) {
-                partitionCnt = 1;
+            // Check if partitions are enabled (only on panels that support partitions)
+            byte[] partitions = null;
+            if (partitionCnt > 1) {
+                partitions = readSettings(PowermaxSendType.DL_PARTITIONS, 0, 0x10 + zoneCnt);
+                if (partitions != null) {
+                    partitionsEnabled = (partitions[0] & 0x000000FF) == 1;
+                } else {
+                    logger.debug("Cannot get partitions information");
+                    result = false;
+                }
+                if (!partitionsEnabled) {
+                    partitionCnt = 1;
+                }
             }
 
             // Process zone settings

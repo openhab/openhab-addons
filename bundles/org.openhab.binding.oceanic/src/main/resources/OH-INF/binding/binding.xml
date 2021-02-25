@@ -5,6 +5,5 @@
 
 	<name>openHAB Oceanic Binding</name>
 	<description>This is the binding for Oceanic Water Softener.</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

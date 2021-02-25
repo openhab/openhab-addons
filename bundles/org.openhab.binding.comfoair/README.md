@@ -47,8 +47,6 @@ For the thing creation, the appropriate serial port has to be set.
 ## Channels
 
 The ComfoAir binding supports the following channels.
-Some channels are added dynamically based on installed device options.
-Available device options are shown in thing properties.
 
 | Channel ID                         | Item Type                | Label                           | Description                                                                                 | Read Only | Advanced |
 |------------------------------------|--------------------------|---------------------------------|---------------------------------------------------------------------------------------------|-----------|----------|
@@ -78,10 +76,10 @@ Available device options are shown in thing properties.
 | temperatures#isT2Sensor            | Switch                   | Sensor T2 Available             | Availability of temperature sensor T2 (indoor in)                                           | true      | yes      |
 | temperatures#isT3Sensor            | Switch                   | Sensor T3 Available             | Availability of temperature sensor T3 (indoor out)                                          | true      | yes      |
 | temperatures#isT4Sensor            | Switch                   | Sensor T4 Available             | Availability of temperature sensor T4 (outdoor out)                                         | true      | yes      |
-| temperatures#isEWTSensor           | Switch                   | EWT Sensor Available            | Availability of EWT temperature sensor                                                      | true      | yes      |
+| temperatures#isEWTSensor           | Switch                   | GHX Sensor Available            | Availability of geothermal heat exchanger temperature sensor                                | true      | yes      |
 | temperatures#isHeaterSensor        | Switch                   | Heater Sensor Available         | Availability of heater temperature sensor                                                   | true      | yes      |
 | temperatures#isCookerhoodSensor    | Switch                   | Cookerhood Sensor Available     | Availability of cookerhood temperature sensor                                               | true      | yes      |
-| temperatures#ewtTemperature        | Number:Temperature       | EWT Temperature                 | Temperature of geothermal heat exchanger sensor                                             | true      | yes      |
+| temperatures#ewtTemperature        | Number:Temperature       | GHX Temperature                 | Temperature of geothermal heat exchanger sensor                                             | true      | yes      |
 | temperatures#heaterTemperature     | Number:Temperature       | Heater Temperature              | Temperature of heater sensor                                                                | true      | yes      |
 | temperatures#cookerhoodTemperature | Number:Temperature       | Cookerhood Temperature          | Temperature of cookerhood sensor                                                            | true      | yes      |
 | **Uptimes**                        |                          |                                 |                                                                                             |           |          |
@@ -114,46 +112,57 @@ Available device options are shown in thing properties.
 | menuP2#RFLongDelay                 | Number                   | Menu P26                        | End delay (RF long actuation) for ventilation level 3 (min)                                 | false     | yes      |
 | menuP2#cookerhoodDelay             | Number                   | Menu P20                        | End delay for cooker hood control (min)                                                     | false     | yes      |
 | **Menu P9: Option States**         |                          |                                 |                                                                                             |           |          |
-| menuP9#chimneyState (dynamic)      | Switch                   | Chimney Control State           | State of the chimney control                                                                | true      | yes      |
-| menuP9#bypassState (dynamic)       | Switch                   | Bypass State                    | State of the bypass (ON = open / OFF = closed)                                              | true      | yes      |
-| menuP9#ewtState (dynamic)          | Switch                   | EWT State                       | State of the EWT valve (ON = open / OFF = closed)                                           | true      | yes      |
-| menuP9#heaterState (dynamic)       | Switch                   | Heater State                    | State of the heater                                                                         | true      | yes      |
+| menuP9#chimneyState                | Switch                   | Chimney Control State           | State of the chimney control                                                                | true      | yes      |
+| menuP9#bypassState                 | Switch                   | Bypass State                    | State of the bypass (ON = open / OFF = closed)                                              | true      | yes      |
+| menuP9#ewtState                    | Switch                   | GHX State                       | State of the geothermal heat exchanger valve (ON = open / OFF = closed)                     | true      | yes      |
+| menuP9#heaterState                 | Switch                   | Heater State                    | State of the heater                                                                         | true      | yes      |
 | menuP9#vControlState               | Switch                   | 0-10V Control State             | State of the 0-10V control                                                                  | true      | yes      |
-| menuP9#frostState (dynamic)        | Switch                   | Antifrost State                 | State of the antifrost control                                                              | true      | yes      |
-| menuP9#cookerhoodState (dynamic)   | Switch                   | Cookerhood State                | State of the cookerhood control                                                             | true      | yes      |
-| menuP9#enthalpyState (dynamic)     | Switch                   | Enthalpy State                  | State of the enthalpy module                                                                | true      | yes      |
+| menuP9#frostState                  | Switch                   | Antifrost State                 | State of the antifrost control                                                              | true      | yes      |
+| menuP9#cookerhoodState             | Switch                   | Cookerhood State                | State of the cookerhood control                                                             | true      | yes      |
+| menuP9#enthalpyState               | Switch                   | Enthalpy State                  | State of the enthalpy module                                                                | true      | yes      |
 | **Error States**                   |                          |                                 |                                                                                             |           |          |
 | errors#filterError                 | Switch                   | Filter Error                    | Filter full                                                                                 | true      | no       |
 | errors#errorsCurrent               | String                   | Errors Current                  | Current errors                                                                              | true      | no       |
 | errors#errorsLast                  | String                   | Errors Last                     | Last errors                                                                                 | true      | yes      |
 | errors#errorsPrelast               | String                   | Errors Prelast                  | Prelast errors                                                                              | true      | yes      |
 | errors#errorsPrePrelast            | String                   | Errors Pre-Prelast              | Pre-Prelast errors                                                                          | true      | yes      |
-| **Bypass Values (dynamic)**        |                          |                                 |                                                                                             |           |          |
+| **Bypass Values**                  |                          |                                 |                                                                                             |           |          |
 | bypass#bypassFactor                | Number                   | Bypass Factor                   | Bypass factor value                                                                         | true      | yes      |
 | bypass#bypassLevel                 | Number                   | Bypass Level                    | Bypass level state                                                                          | true      | yes      |
 | bypass#bypassCorrection            | Number                   | Bypass Correction               | Bypass correction state                                                                     | true      | yes      |
 | bypass#bypassSummer                | Switch                   | Bypass Summer Mode              | Bypass summer mode                                                                          | true      | yes      |
-| **Preheater Values (dynamic)**     |                          |                                 |                                                                                             |           |          |
+| **Preheater Values**               |                          |                                 |                                                                                             |           |          |
 | preheater#preheaterValve           | Number                   | Preheater Valve                 | State of the preheater valve                                                                | true      | yes      |
 | preheater#preheaterFrostProtect    | Switch                   | Frost Protection                | State of the frost protection                                                               | true      | yes      |
 | preheater#preheaterHeating         | Switch                   | Preheater                       | State of the preheater                                                                      | true      | yes      |
 | preheater#preheaterFrostTime       | Number                   | Preheater Frost Time            | Frost minutes                                                                               | true      | yes      |
 | preheater#preheaterSafety          | Number                   | Preheater Frost Safety          | Frost safety setting                                                                        | true      | yes      |
-| **EWT Values (dynamic)**           |                          |                                 |                                                                                             |           |          |
-| ewt#ewtTemperatureLow              | Number:Temperature       | EWT Temperature (low)           | Lower temperature of the geothermal heat exchanger                                          | true      | yes      |
-| ewt#ewtTemperatureHigh             | Number:Temperature       | EWT Temperature (high)          | Upper temperature of the geothermal heat exchanger                                          | true      | yes      |
-| ewt#ewtSpeed                       | Number                   | EWT Speed Up (%)                | Speed up of the geothermal heat exchanger                                                   | true      | yes      |
-| **Heater Values (dynamic)**        |                          |                                 |                                                                                             |           |          |
+| **GHX Values**                     |                          |                                 |                                                                                             |           |          |
+| ewt#ewtTemperatureLow              | Number:Temperature       | GHX Temperature (low)           | Lower temperature of the geothermal heat exchanger                                          | true      | yes      |
+| ewt#ewtTemperatureHigh             | Number:Temperature       | GHX Temperature (high)          | Upper temperature of the geothermal heat exchanger                                          | true      | yes      |
+| ewt#ewtSpeed                       | Number                   | GHX Speed Up (%)                | Speed up of the geothermal heat exchanger                                                   | true      | yes      |
+| **Heater Values**                  |                          |                                 |                                                                                             |           |          |
 | heater#heaterPower                 | Number                   | Heater Power                    | Heater power value                                                                          | true      | yes      |
 | heater#heaterPowerI                | Number                   | Heater Power I-parameter        | Heater power I-parameter value                                                              | true      | yes      |
 | heater#heaterTargetTemperature     | Number:Temperature       | Heater Target Temperature       | Target temperature of the heater                                                            | true      | yes      |
-| **Cookerhood Values (dynamic)**    |                          |                                 |                                                                                             |           |          |
+| **Cookerhood Values**              |                          |                                 |                                                                                             |           |          |
 | cookerhood#cookerhoodSpeed         | Number                   | Cookerhood Speed Up (%)         | Speed up of the cookerhood                                                                  | true      | yes      |
-| **Enthalpy Values (dynamic)**      |                          |                                 |                                                                                             |           |          |
+| **Enthalpy Values**                |                          |                                 |                                                                                             |           |          |
 | enthalpy#enthalpyTemperature       | Number:Temperature       | Enthalpy Sensor Temperature     | Temperature of the enthalpy sensor                                                          | true      | yes      |
 | enthalpy#enthalpyHumidity          | Number                   | Enthalpy Sensor Humidity        | Humidity of the enthalpy sensor                                                             | true      | yes      |
 | enthalpy#enthalpyLevel             | Number                   | Enthalpy Sensor Level           | Level of the enthalpy sensor                                                                | true      | yes      |
 | enthalpy#enthalpyTime              | Number                   | Enthalpy Sensor Timer           | Timer state of the enthalpy sensor                                                          | true      | yes      |
+| **Option Settings**                |                          |                                 |                                                                                             |           |          |
+| options#isPreheater                | Switch                   | Preheater                       | Preheater option installed                                                                  | true      | yes      |
+| options#isBypass                   | Switch                   | Bypass                          | Bypass option installed                                                                     | true      | yes      |
+| options#recuType                   | Number                   | ComfoAir Type                   | Type of the ComfoAir (1 = left / 2 = right)                                                 | true      | yes      |
+| options#recuSize                   | Number                   | ComfoAir Size                   | Size of the ComfoAir (1 = big / 2 = small)                                                  | true      | yes      |
+| options#isChimney                  | Switch                   | Chimney                         | Chimney option installed                                                                    | true      | yes      |
+| options#isCookerhood               | Switch                   | Cookerhood                      | Cookerhood option installed                                                                 | true      | yes      |
+| options#isHeater                   | Switch                   | Heater                          | Heater option installed                                                                     | true      | yes      |
+| options#isEnthalpy                 | Number                   | Enthalpy                        | Enthalpy option installed                                                                   | true      | yes      |
+| options#isEWT                      | Number                   | Geothermal Heat Exchanger       | Geothermal heat exchanger option installed                                                  | true      | yes      |
+| options#analogPriority             | Number                   | Analog Priority                 | Priority of analog inputs for highest fan level                                             | true      | yes      |
 | **Inputs**                         |                          |                                 |                                                                                             |           |          |
 | inputs#isL1Switch                  | Switch                   | L1 Switch                       | Availability of L1 step switch                                                              | true      | yes      |
 | inputs#isL2Switch                  | Switch                   | L2 Switch                       | Availability of L2 step switch                                                              | true      | yes      |
@@ -214,7 +223,7 @@ Number	comfoairOutgoingFan			"Exhaust capacity [%d %%]"			<fan_out>	(ComfoAir)		
 Number	comfoairFanIn0				"Supply capacity - level 0 [%d %%]"		<fan_in>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanIn0"}
 Number	comfoairFanOut0				"Exhaust capacity - level 0 [%d %%]"		<fan_out>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanOut0"}
 Switch	comfoairBypassMode			"Bypass [MAP(comfoair_bypass.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#bypassState"}
-Switch	comfoairEWTMode 			"EWT [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#ewtState"}
+Switch	comfoairGHXMode 			"GHX [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#ewtState"}
 Switch	comfoairChimneyMode			"Fire programme [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#chimneyState"}
 Switch	comfoairHeaterMode			"Heater [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#heaterState"}
 Switch	comfoairCookerHoodMode			"Extractor hood [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#cookerhoodState"}
@@ -228,7 +237,7 @@ Switch	comfoairFreezeMode			"Freeze [MAP(comfoair_freeze.map):%s]"		<climate>	(C
 sitemap comfoair label="ComfoAir" {
 	Frame label="Main" {
 		Text item=comfoairError labelcolor=[!="No Errors"="red"] valuecolor=[!="No Errors"="red"]
-		Switch item=comfoairControl mappings=[0="CCEase", 1="Computer"]
+		Switch item=comfoairControl mappings=[OFF="CCEase", ON="Computer"]
 		Switch item=comfoairErrorReset mappings=[1="Reset"]
 		Switch item=comfoairFilterReset mappings=[1="Reset"]
 	}
@@ -246,7 +255,7 @@ sitemap comfoair label="ComfoAir" {
 		Text item=comfoairIncomingFan valuecolor=["black"]
 		Text item=comfoairBypassMode valuecolor=["black"]
 		Text item=comfoairOutgoingFan valuecolor=["black"]
-		Text item=comfoairEWTMode valuecolor=[OFF="silver", ON="black"]
+		Text item=comfoairGHXMode valuecolor=[OFF="silver", ON="black"]
 		Text item=comfoairEfficiency valuecolor=["black"]
 		Text item=comfoairFreezeMode valuecolor=[OFF="black", ON="red"]
 		Text item=comfoairFilterRuntime_Message valuecolor=["black"]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,6 @@ public class TestUtils {
     }
 
     public static ThingUID randomThingUID() {
-        return new ThingUID("mock", RandomStringUtils.randomAlphabetic(6));
+        return new ThingUID(BluetoothBindingConstants.BINDING_ID, RandomStringUtils.randomAlphabetic(6));
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Ochel - initial contributer
  * @author Matthias Siegele - initial contributer
  */
-@Component(service = ThingTypeProvider.class, immediate = true)
+@Component(service = ThingTypeProvider.class)
 public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypeProvider {
 
     /**

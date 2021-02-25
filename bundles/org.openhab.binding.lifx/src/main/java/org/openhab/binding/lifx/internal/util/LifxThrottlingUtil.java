@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public final class LifxThrottlingUtil {
      */
     private static List<LifxLightCommunicationTracker> trackers = new CopyOnWriteArrayList<>();
 
-    private static Map<MACAddress, @Nullable LifxLightCommunicationTracker> macTrackerMapping = new ConcurrentHashMap<>();
+    private static Map<MACAddress, LifxLightCommunicationTracker> macTrackerMapping = new ConcurrentHashMap<>();
 
     public static void lock(@Nullable MACAddress mac) {
         if (mac != null) {

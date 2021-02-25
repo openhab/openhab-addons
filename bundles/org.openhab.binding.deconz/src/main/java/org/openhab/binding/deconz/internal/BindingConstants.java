@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,9 @@
 package org.openhab.binding.deconz.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link BindingConstants} class defines common constants, which are
@@ -23,7 +25,6 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class BindingConstants {
-
     public static final String BINDING_ID = "deconz";
 
     // List of all Thing Type UIDs
@@ -62,9 +63,14 @@ public class BindingConstants {
             "extendedcolorlight");
     public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
     public static final ThingTypeUID THING_TYPE_WARNING_DEVICE = new ThingTypeUID(BINDING_ID, "warningdevice");
+    public static final ThingTypeUID THING_TYPE_DOORLOCK = new ThingTypeUID(BINDING_ID, "doorlock");
 
-    // List of all Channel ids
+    // groups
+    public static final ThingTypeUID THING_TYPE_LIGHTGROUP = new ThingTypeUID(BINDING_ID, "lightgroup");
+
+    // sensor channel ids
     public static final String CHANNEL_PRESENCE = "presence";
+    public static final String CHANNEL_ENABLED = "enabled";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_LAST_SEEN = "last_seen";
     public static final String CHANNEL_POWER = "power";
@@ -97,19 +103,34 @@ public class BindingConstants {
     public static final String CHANNEL_THERMOSTAT_MODE = "mode";
     public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
     public static final String CHANNEL_VALVE_POSITION = "valve";
+    public static final String CHANNEL_WINDOWOPEN = "windowopen";
 
+    // group + light channel ids
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR_TEMPERATURE = "color_temperature";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_POSITION = "position";
     public static final String CHANNEL_ALERT = "alert";
+    public static final String CHANNEL_ALL_ON = "all_on";
+    public static final String CHANNEL_ANY_ON = "any_on";
+    public static final String CHANNEL_LOCK = "lock";
+    public static final String CHANNEL_EFFECT = "effect";
+    public static final String CHANNEL_EFFECT_SPEED = "effectSpeed";
+    public static final String CHANNEL_SCENE = "scene";
+    public static final String CHANNEL_ONTIME = "ontime";
+
+    // channel uids
+    public static final ChannelTypeUID CHANNEL_EFFECT_TYPE_UID = new ChannelTypeUID(BINDING_ID, CHANNEL_EFFECT);
+    public static final ChannelTypeUID CHANNEL_EFFECT_SPEED_TYPE_UID = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_EFFECT_SPEED);
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_HTTP_PORT = "httpPort";
     public static final String CONFIG_APIKEY = "apikey";
-
+    public static final String PROPERTY_UDN = "UDN";
+    public static final String CONFIG_ID = "id";
     public static final String UNIQUE_ID = "uid";
 
     public static final String PROPERTY_CT_MIN = "ctmin";
@@ -120,4 +141,9 @@ public class BindingConstants {
     public static final int ZCL_CT_MIN = 1;
     public static final int ZCL_CT_MAX = 65279; // 0xFEFF
     public static final int ZCL_CT_INVALID = 65535; // 0xFFFF
+
+    public static final double HUE_FACTOR = 65535 / 360.0;
+    public static final int BRIGHTNESS_MIN = 0;
+    public static final int BRIGHTNESS_MAX = 254;
+    public static final double BRIGHTNESS_FACTOR = BRIGHTNESS_MAX / PercentType.HUNDRED.doubleValue();
 }

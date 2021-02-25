@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.velux.internal;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
@@ -56,8 +53,9 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
         logger.trace("VeluxBinding(constructor) called.");
         if (logger.isTraceEnabled()) {
             for (Field field : VeluxBridgeConfiguration.class.getFields()) {
-                if (!StringUtils.capitalize(field.getName()).contentEquals(field.getName())) {
-                    logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", field.getName());
+                String fName = field.getName();
+                if ((fName.length() > 0) && Character.isUpperCase(fName.charAt(0))) {
+                    logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", fName);
                 }
             }
         }
@@ -65,11 +63,11 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
             logger.debug("No configuration found, using default values.");
         } else {
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_PROTOCOL);
-            if (isNotBlank(uncheckedConfiguration.protocol)) {
+            if (!uncheckedConfiguration.protocol.isBlank()) {
                 this.protocol = uncheckedConfiguration.protocol;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_IPADDRESS);
-            if (isNotBlank(uncheckedConfiguration.ipAddress)) {
+            if (!uncheckedConfiguration.ipAddress.isBlank()) {
                 this.ipAddress = uncheckedConfiguration.ipAddress;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_TCPPORT);
@@ -77,11 +75,11 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
                 this.tcpPort = uncheckedConfiguration.tcpPort;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_PASSWORD);
-            if (isNotBlank(uncheckedConfiguration.password)) {
+            if (!uncheckedConfiguration.password.isBlank()) {
                 this.password = uncheckedConfiguration.password;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS);
-            if ((uncheckedConfiguration.timeoutMsecs > 0) && (uncheckedConfiguration.timeoutMsecs <= 10000)) {
+            if ((uncheckedConfiguration.timeoutMsecs >= 500) && (uncheckedConfiguration.timeoutMsecs <= 5000)) {
                 this.timeoutMsecs = uncheckedConfiguration.timeoutMsecs;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_RETRIES);
@@ -89,7 +87,7 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
                 this.retries = uncheckedConfiguration.retries;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_REFRESH_MSECS);
-            if ((uncheckedConfiguration.refreshMSecs > 0) && (uncheckedConfiguration.refreshMSecs <= 10000)) {
+            if ((uncheckedConfiguration.refreshMSecs >= 1000) && (uncheckedConfiguration.refreshMSecs <= 60000)) {
                 this.refreshMSecs = uncheckedConfiguration.refreshMSecs;
             }
             this.isBulkRetrievalEnabled = uncheckedConfiguration.isBulkRetrievalEnabled;
@@ -108,15 +106,20 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
      */
     public VeluxBridgeConfiguration checked() {
         logger.trace("checked() called.");
+        // @formatter:off
         logger.debug("{}Config[{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={}]",
-                VeluxBindingConstants.BINDING_ID, VeluxBridgeConfiguration.BRIDGE_PROTOCOL, protocol,
-                VeluxBridgeConfiguration.BRIDGE_IPADDRESS, this.ipAddress, VeluxBridgeConfiguration.BRIDGE_TCPPORT,
-                tcpPort, VeluxBridgeConfiguration.BRIDGE_PASSWORD, password.replaceAll(".", "*"),
-                VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS, timeoutMsecs, VeluxBridgeConfiguration.BRIDGE_RETRIES,
-                retries, VeluxBridgeConfiguration.BRIDGE_REFRESH_MSECS, refreshMSecs,
+                VeluxBindingConstants.BINDING_ID,
+                VeluxBridgeConfiguration.BRIDGE_PROTOCOL, protocol,
+                VeluxBridgeConfiguration.BRIDGE_IPADDRESS, this.ipAddress,
+                VeluxBridgeConfiguration.BRIDGE_TCPPORT, tcpPort,
+                VeluxBridgeConfiguration.BRIDGE_PASSWORD, password.replaceAll(".", "*"),
+                VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS, timeoutMsecs,
+                VeluxBridgeConfiguration.BRIDGE_RETRIES, retries,
+                VeluxBridgeConfiguration.BRIDGE_REFRESH_MSECS, refreshMSecs,
                 VeluxBridgeConfiguration.BRIDGE_IS_BULK_RETRIEVAL_ENABLED, isBulkRetrievalEnabled,
                 VeluxBridgeConfiguration.BRIDGE_IS_SEQUENTIAL_ENFORCED, isSequentialEnforced,
                 VeluxBridgeConfiguration.BRIDGE_PROTOCOL_TRACE_ENABLED, isProtocolTraceEnabled);
+        // @formatter:off
         logger.trace("checked() done.");
         return this;
     }

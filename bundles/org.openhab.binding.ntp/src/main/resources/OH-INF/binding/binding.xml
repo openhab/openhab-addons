@@ -5,6 +5,5 @@
 
 	<name>NTP Binding</name>
 	<description>The NTP Binding polls the configured timeserver and post the current date and time.</description>
-	<author>Marcel Verpaalen</author>
 
 </binding:binding>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.astro.internal.model;
 
 import org.openhab.core.library.dimension.Intensity;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Holds the calculated direct, diffuse and total
@@ -62,20 +62,20 @@ public class Radiation {
      * Returns the total radiation.
      */
     public QuantityType<Intensity> getTotal() {
-        return new QuantityType<>(total, SmartHomeUnits.IRRADIANCE);
+        return new QuantityType<>(total, Units.IRRADIANCE);
     }
 
     /**
      * Returns the direct radiation.
      */
     public QuantityType<Intensity> getDirect() {
-        return new QuantityType<>(direct, SmartHomeUnits.IRRADIANCE);
+        return new QuantityType<>(direct, Units.IRRADIANCE);
     }
 
     /**
      * Returns the diffuse radiation.
      */
     public QuantityType<Intensity> getDiffuse() {
-        return new QuantityType<>(diffuse, SmartHomeUnits.IRRADIANCE);
+        return new QuantityType<>(diffuse, Units.IRRADIANCE);
     }
 }

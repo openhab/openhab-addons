@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthias Siegele - Initial contribution
  *
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class)
 public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeMDNSDiscoveryParticipant.class);
@@ -84,7 +83,7 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             if (dsidMap != null) {
                 dSID = dsidMap.get(JSONApiResponseKeysEnum.DSID.getKey());
             }
-            if (StringUtils.isNotBlank(dSID)) {
+            if (dSID != null && !dSID.isBlank()) {
                 return new ThingUID(DigitalSTROMBindingConstants.THING_TYPE_DSS_BRIDGE, dSID);
             } else {
                 logger.error("Can't get server dSID to generate thing UID. Please add the server manually.");

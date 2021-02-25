@@ -5,6 +5,5 @@
 
 	<name>Intesis Binding</name>
 	<description>This is the binding for Intesis WiFi adapters used in various AC devices.</description>
-	<author>Hans-Jörg Merk</author>
 
 </binding:binding>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osman Basha - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.wifiled")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.wifiled")
 public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DEFAULT_BROADCAST_PORT = 48899;

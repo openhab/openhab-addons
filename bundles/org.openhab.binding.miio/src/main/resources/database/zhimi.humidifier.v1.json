@@ -9,6 +9,7 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -16,12 +17,17 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "mode",
 				"friendlyName": "Mode",
 				"channel": "mode",
+				"channelType": "mode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -30,21 +36,31 @@
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "limit_hum",
 				"friendlyName": "Humidity Set",
 				"channel": "setHumidity",
+				"channelType": "setHumidity",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -59,15 +75,20 @@
 				"property": "aqi",
 				"friendlyName": "Air Quality Index",
 				"channel": "aqi",
+				"channelType": "aqi",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "trans_level",
 				"friendlyName": "Trans_level",
 				"channel": "translevel",
+				"channelType": "translevel",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -77,7 +98,7 @@
 				"property": "led_b",
 				"friendlyName": "LED Brightness",
 				"channel": "bright",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -91,6 +112,7 @@
 				"property": "buzzer",
 				"friendlyName": "Buzzer Status",
 				"channel": "buzzer",
+				"channelType": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -105,6 +127,7 @@
 				"property": "depth",
 				"friendlyName": "Depth",
 				"channel": "depth",
+				"channelType": "depth",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -114,6 +137,7 @@
 				"property": "dry",
 				"friendlyName": "Dry",
 				"channel": "dry",
+				"channelType": "dry",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -128,16 +152,20 @@
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"type": "Number",
+				"channelType": "usedhours",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "speed",
 				"friendlyName": "Motor Speed",
 				"channel": "motorspeed",
+				"channelType": "motorspeed",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -147,16 +175,27 @@
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "/10",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
 				"channel": "childlock",
+				"channelType": "childlock",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",

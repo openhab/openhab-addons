@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public abstract class KeypadConfig {
     private final Logger logger = LoggerFactory.getLogger(KeypadConfig.class);
 
-    protected final HashMap<String, @Nullable List<KeypadComponent>> modelData = new HashMap<>();
+    protected final Map<String, List<KeypadComponent>> modelData = new HashMap<>();
 
     public abstract boolean isCCI(int id);
 

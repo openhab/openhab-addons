@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ import com.google.gson.Gson;
  * @author Kai Kreuzer - refactored to use Tesla account thing
  */
 @NonNullByDefault
-@Component(service = ConsoleCommandExtension.class, immediate = true)
+@Component(service = ConsoleCommandExtension.class)
 public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String CMD_LOGIN = "login";

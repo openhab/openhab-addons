@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.io.hueemulation.internal.rest.mocks;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.net.NetworkAddressService;
@@ -27,6 +27,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class ConfigStoreWithoutMetadata extends ConfigStore {
 
     public ConfigStoreWithoutMetadata(NetworkAddressService networkAddressService, ConfigurationAdmin configAdmin,
@@ -39,7 +40,7 @@ public class ConfigStoreWithoutMetadata extends ConfigStore {
     }
 
     @Override
-    public @NonNull String mapItemUIDtoHueID(@Nullable Item item) {
+    public String mapItemUIDtoHueID(@Nullable Item item) {
         if (item == null) {
             throw new IllegalArgumentException();
         }

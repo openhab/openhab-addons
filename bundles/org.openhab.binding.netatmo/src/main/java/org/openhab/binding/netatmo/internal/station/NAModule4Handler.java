@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,7 +123,7 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
                 case CHANNEL_TEMP_TREND:
                     return toStringType(dashboardData.getTempTrend());
                 case CHANNEL_CO2:
-                    return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
+                    return toQuantityType(dashboardData.getCo2(), API_CO2_UNIT);
                 case CHANNEL_TEMPERATURE:
                     return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
                 case CHANNEL_DATE_MIN_TEMP:
@@ -204,7 +204,7 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
         boolean result = false;
         Optional<NAStationModule> module = getModule();
         if (module.isPresent()) {
-            Boolean reachable = module.get().getReachable();
+            Boolean reachable = module.get().isReachable();
             result = reachable != null ? reachable.booleanValue() : false;
         }
         return result;

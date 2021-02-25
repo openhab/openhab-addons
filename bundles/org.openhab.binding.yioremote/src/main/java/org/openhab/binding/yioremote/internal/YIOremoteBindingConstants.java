@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,8 +32,12 @@ public class YIOremoteBindingConstants {
         AUTHENTICATION_PROCESS,
         AUTHENTICATION_FAILED,
         AUTHENTICATION_COMPLETE,
+        SEND_PING,
+        CHECK_PONG,
         CONNECTION_FAILED,
-        CONNECTION_ESTABLISHED;
+        CONNECTION_ESTABLISHED,
+        COMMUNICATION_ERROR,
+        RECONNECTION_PROCESS;
     }
 
     public static enum YioRemoteMessages {
@@ -45,7 +49,7 @@ public class YIOremoteBindingConstants {
     }
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_YIOREMOTEDOCK = new ThingTypeUID(BINDING_ID, "yioremotedock");
+    public static final ThingTypeUID THING_TYPE_YIOREMOTEDOCK = new ThingTypeUID(BINDING_ID, "yioRemoteDock");
 
     // List of all Channel Groups Group Channel ids
     public static final String GROUP_INPUT = "input";

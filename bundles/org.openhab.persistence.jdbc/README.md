@@ -60,7 +60,7 @@ This service can be configured in the file `services/jdbc.cfg`.
 | tableUseRealItemNames     | `false`                                                      |    No     | table name prefix generation.  When set to `true`, real item names are used for table names and `tableNamePrefix` is ignored.  When set to `false`, the `tableNamePrefix` is used to generate table names with sequential numbers. |
 | tableIdDigitCount         | 4                                                            |    No     | when `tableUseRealItemNames` is `false` and thus table names are generated sequentially, this controls how many zero-padded digits are used in the table name.  With the default of 4, the first table name will end with `0001`. For migration from the MySQL persistence service, set this to 0. |
 | rebuildTableNames         | false                                                        |    No     | rename existing tables using `tableUseRealItemNames` and `tableIdDigitCount`. USE WITH CARE! Deactivate after Renaming is done! |
-| jdbc.maximumPoolSize      | configured per database in package `org.openhab.persistence.jdbc.db.*` |    No     | Some embeded databases can handle only one connection.  See [this link](https://github.com/brettwooldridge/HikariCP/issues/256) for more information |
+| jdbc.maximumPoolSize      | configured per database in package `org.openhab.persistence.jdbc.db.*` |    No     | Some embedded databases can handle only one connection. See [this link](https://github.com/brettwooldridge/HikariCP/issues/256) for more information |
 | jdbc.minimumIdle          | see above                                                    |    No     | see above                                                    |
 | enableLogTime             | `false`                                                      |    No     | timekeeping                                                  |
 
@@ -171,4 +171,3 @@ then
 	}
 end
 ```
-

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import static org.eclipse.jdt.annotation.Checks.requireNonNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +51,7 @@ import org.openhab.core.thing.ThingUID;
  */
 public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
 
-    private final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "bridge");
+    private static final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "bridge");
     private static final String TEST_USER_NAME = "eshTestUser";
     private static final String DUMMY_HOST = "1.2.3.4";
 
@@ -132,7 +133,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
         hueBridgeHandler.onNotAuthenticated();
 
         assertEquals("notAuthenticatedUser", bridge.getConfiguration().get(USER_NAME));
-        assertEquals(ThingStatus.OFFLINE, bridge.getStatus());
+        waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatus()));
         assertEquals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, bridge.getStatusInfo().getStatusDetail());
     }
 
@@ -156,7 +157,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
         hueBridgeHandler.onNotAuthenticated();
 
         assertNull(bridge.getConfiguration().get(USER_NAME));
-        assertEquals(ThingStatus.OFFLINE, bridge.getStatus());
+        waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatus()));
         assertEquals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, bridge.getStatusInfo().getStatusDetail());
     }
 
@@ -180,8 +181,9 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
         hueBridgeHandler.onNotAuthenticated();
 
         assertNull(bridge.getConfiguration().get(USER_NAME));
-        assertEquals(ThingStatus.OFFLINE, bridge.getStatus());
-        assertEquals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, bridge.getStatusInfo().getStatusDetail());
+        waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatus()));
+        waitForAssert(() -> assertEquals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                bridge.getStatusInfo().getStatusDetail()));
     }
 
     @Test
@@ -196,7 +198,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
 
         hueBridgeHandler.onConnectionLost();
 
-        assertEquals(ThingStatus.OFFLINE, bridge.getStatus());
+        waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatus()));
         assertNotEquals(ThingStatusDetail.BRIDGE_OFFLINE, bridge.getStatusInfo().getStatusDetail());
     }
 
@@ -236,7 +238,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
         Bridge bridge = (Bridge) thingRegistry.createThingOfType(BRIDGE_THING_TYPE_UID,
                 new ThingUID(BRIDGE_THING_TYPE_UID, "testBridge"), null, "Bridge", configuration);
 
-        assertNotNull(bridge);
+        bridge = requireNonNull(bridge, "Bridge is null");
         thingRegistry.add(bridge);
         return bridge;
     }

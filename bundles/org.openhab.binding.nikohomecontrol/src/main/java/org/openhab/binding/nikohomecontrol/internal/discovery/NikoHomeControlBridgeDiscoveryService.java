@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.nikohomecontrol")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.nikohomecontrol")
 @NonNullByDefault
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 

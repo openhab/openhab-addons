@@ -17,23 +17,25 @@ This should be the best choice for any Linux-based single board computers like e
 
 ## Supported Things
 
-Two thing types are supported by this binding:
+The base bluetooth binding only supports a single thing type.
+Additional thing types are available through bluetooth extensions.
 
 | Thing Type ID | Description                                                                                             |
 |---------------|---------------------------------------------------------------------------------------------------------|
-| beacon        | A Bluetooth device that is not connected, but only broadcasts announcements.                             |
-| connected     | A Bluetooth device that allows a direct connection and which provides specific services when connected. |
+| beacon        | A Bluetooth device that is not connected, but only broadcasts announcements.                            |
 
 
 ## Discovery
 
 Discovery is performed through the Bluetooth bridge.
 Normally, any broadcasting Bluetooth device can be uniquely identified and thus a bridge can create an inbox result for it.
-As this might lead to a huge list of devices, bridges usually also offer a way to deactivate this behavior.
+As this might lead to a huge list of devices, bridges usually disable this behavior by default.
 
 ## Thing Configuration
 
-Both thing types only require a single configuration parameter `address`, which corresponds to the Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX").
+All bluetooth thing types require a configuration parameter `address`, which corresponds to the Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX").
+Other configuration parameters may be required depending on the bluetooth thing type, look at the documentation for that thing type for details.
+
 
 ## Channels
 
@@ -42,13 +44,6 @@ Every Bluetooth thing has the following channel:
 | Channel ID | Item Type | Description                                                                                         |
 |------------|-----------|-----------------------------------------------------------------------------------------------------|
 | rssi       | Number    | The "Received Signal Strength Indicator", the [RSSI](https://blog.bluetooth.com/proximity-and-rssi) |
-
-`connected` Things are dynamically queried for their services and if they support certain standard GATT characteristics, the appropriate channels are automatically added as well:
-
-| Channel ID    | Item Type | Description                                                     |
-|---------------|-----------|-----------------------------------------------------------------|
-| battery_level | Number    | The device's battery level in percent                           |
-
 
 ## Full Example
 

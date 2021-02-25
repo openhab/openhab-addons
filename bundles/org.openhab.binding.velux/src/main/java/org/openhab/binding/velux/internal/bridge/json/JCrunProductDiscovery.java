@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,6 @@ class JCrunProductDiscovery extends RunProductDiscovery implements JsonBridgeCom
      * NOTE: the gateway software is extremely sensitive to this exact JSON structure.
      * Any modifications (like omitting empty params) will lead to an gateway error.
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -89,7 +88,6 @@ class JCrunProductDiscovery extends RunProductDiscovery implements JsonBridgeCom
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

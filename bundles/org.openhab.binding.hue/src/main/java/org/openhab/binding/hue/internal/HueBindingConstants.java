@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,7 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_CLIP_GENERIC_STATUS = new ThingTypeUID(BINDING_ID, "0840");
     public static final ThingTypeUID THING_TYPE_CLIP_GENERIC_FLAG = new ThingTypeUID(BINDING_ID, "0850");
     public static final ThingTypeUID THING_TYPE_PRESENCE_SENSOR = new ThingTypeUID(BINDING_ID, "0107");
+    public static final ThingTypeUID THING_TYPE_GEOFENCE_SENSOR = new ThingTypeUID(BINDING_ID, "geofencesensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "0302");
     public static final ThingTypeUID THING_TYPE_LIGHT_LEVEL_SENSOR = new ThingTypeUID(BINDING_ID, "0106");
 
@@ -57,6 +58,7 @@ public class HueBindingConstants {
 
     // List all channels
     public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
+    public static final String CHANNEL_COLORTEMPERATURE_ABS = "color_temperature_abs";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_ALERT = "alert";
@@ -65,6 +67,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_DIMMER_SWITCH = "dimmer_switch";
     public static final String CHANNEL_TAP_SWITCH = "tap_switch";
     public static final String CHANNEL_PRESENCE = "presence";
+    public static final String CHANNEL_ENABLED = "enabled";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
@@ -80,6 +83,9 @@ public class HueBindingConstants {
     // List all triggers
     public static final String EVENT_DIMMER_SWITCH = "dimmer_switch_event";
     public static final String EVENT_TAP_SWITCH = "tap_switch_event";
+
+    // Binding configuration properties
+    public static final String REMOVAL_GRACE_PERIOD = "removalGracePeriod";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Enumeration Cosem Object types
@@ -80,7 +80,7 @@ public enum CosemObjectType {
     EMETER_POWER_FAILURE_LOG(new OBISIdentifier(1, 0, 99, 97, 0, null), 2, new CosemDecimal("entries"),
             new CosemString("obisId"),
             /* Next 2 descriptors are repeating */
-            CosemDate.INSTANCE, new CosemQuantity<>(SmartHomeUnits.SECOND, "duration")),
+            CosemDate.INSTANCE, new CosemQuantity<>(Units.SECOND, "duration")),
     EMETER_VOLTAGE_SAGS_L1(new OBISIdentifier(1, 0, 32, 32, 0, null), CosemDecimal.INSTANCE),
     EMETER_VOLTAGE_SAGS_L2(new OBISIdentifier(1, 0, 52, 32, 0, null), CosemDecimal.INSTANCE),
     EMETER_VOLTAGE_SAGS_L3(new OBISIdentifier(1, 0, 72, 32, 0, null), CosemDecimal.INSTANCE),

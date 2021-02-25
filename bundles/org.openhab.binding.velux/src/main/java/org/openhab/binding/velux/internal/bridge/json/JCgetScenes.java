@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,6 @@ class JCgetScenes extends GetScenes implements JsonBridgeCommunicationProtocol {
      * "status": 0
      * </PRE>
      */
-    @NonNullByDefault
     private static class BCproductState {
         private int typeId;
         private String name = VeluxBindingConstants.UNKNOWN;
@@ -91,7 +90,6 @@ class JCgetScenes extends GetScenes implements JsonBridgeCommunicationProtocol {
      * },
      * </PRE>
      */
-    @NonNullByDefault
     private static class BCscene {
         private String name = VeluxBindingConstants.UNKNOWN;
         private int id;
@@ -110,7 +108,6 @@ class JCgetScenes extends GetScenes implements JsonBridgeCommunicationProtocol {
      * {"action":"get","params":{}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -150,7 +147,6 @@ class JCgetScenes extends GetScenes implements JsonBridgeCommunicationProtocol {
      * }
      * </PRE>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

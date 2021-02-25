@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -67,7 +68,7 @@ import com.google.gson.GsonBuilder;
  * The specification does not cover the case of disappearing Components. This handler doesn't as well therefore.<br>
  * <br>
  *
- * A Component Instance equals an ESH Channel Group and the Component parts equal ESH Channels.<br>
+ * A Component Instance equals a Channel Group and the Component parts equal Channels.<br>
  * <br>
  *
  * If a Components configuration changes, the known ChannelGroupType and ChannelTypes are replaced with the new ones.
@@ -152,8 +153,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             if (channelConfigurationJSON == null) {
                 logger.warn("Provided channel does not have a 'config' configuration key!");
             } else {
-                component = CFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this, gson,
-                        transformationServiceProvider);
+                component = CFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this, scheduler,
+                        gson, transformationServiceProvider);
             }
 
             if (component != null) {
@@ -296,8 +297,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     }
 
     @Override
-    protected void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen) {
-        if (!messageReceived || availabilityTopicsSeen) {
+    protected void updateThingStatus(boolean messageReceived, Optional<Boolean> availabilityTopicsSeen) {
+        if (availabilityTopicsSeen.orElse(messageReceived)) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);

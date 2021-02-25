@@ -5,6 +5,5 @@
 
 	<name>RFXCOM Binding</name>
 	<description>This is the binding for RFXCOM transceivers.</description>
-	<author>Pauli Anttila</author>
 
 </binding:binding>

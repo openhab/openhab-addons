@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,6 @@ public class HomematicBindingConstants {
     public static final String CATEGORY_ENERGY = "Energy";
     public static final String CATEGORY_BLINDS = "Blinds";
     public static final String CATEGORY_CONTACT = "Contact";
-    public static final String CATEGORY_DIMMABLE_LIGHT = "DimmableLight";
     public static final String CATEGORY_SWITCH = "Switch";
 
     public static final String PROPERTY_BATTERY_TYPE = "batteryType";

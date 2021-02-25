@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,18 +63,19 @@ public class VelbusNetworkBridgeHandler extends VelbusBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Bridge online on network address {}:{}", networkBridgeConfig.address,
                     networkBridgeConfig.port);
+
+            // Start Velbus packet listener. This listener will act on all packets coming from
+            // IP-interface.
+            Thread thread = new Thread(this::readPackets, "OH-binding-" + this.thing.getUID());
+            thread.setDaemon(true);
+            thread.start();
+
             return true;
         } catch (IOException ex) {
             onConnectionLost();
             logger.debug("Failed to connect to network address {}:{}", networkBridgeConfig.address,
                     networkBridgeConfig.port);
         }
-
-        // Start Velbus packet listener. This listener will act on all packets coming from
-        // IP-interface.
-        Thread thread = new Thread(this::readPackets, "OH-binding-" + this.thing.getUID());
-        thread.setDaemon(true);
-        thread.start();
 
         return false;
     }

@@ -258,7 +258,7 @@ In this example we will manually configure:
 ### things/loxone.things:
 
 ```
-loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.220", port=80
+loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.220", port=80 ]
 ```
 
 ### items/loxone.items:

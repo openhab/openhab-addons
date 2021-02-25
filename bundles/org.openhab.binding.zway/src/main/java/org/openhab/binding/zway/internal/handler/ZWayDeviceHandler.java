@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -319,9 +319,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             // Channel thermostat mode
             if (channel.getUID().equals(new ChannelUID(getThing().getUID(), THERMOSTAT_MODE_CC_CHANNEL))) {
                 // Load physical device
-                Integer nodeId = Integer.parseInt(channel.getProperties().get("nodeId"));
-                ZWaveDevice physicalDevice = zwayBridgeHandler.getZWayApi().getZWaveDevice(nodeId);
-
+                String nodeIdString = channel.getProperties().get("nodeId");
+                ZWaveDevice physicalDevice = nodeIdString == null ? null
+                        : zwayBridgeHandler.getZWayApi().getZWaveDevice(Integer.parseInt(nodeIdString));
                 if (physicalDevice != null) {
                     updateState(channel.getUID(), new DecimalType(physicalDevice.getInstances().get0()
                             .getCommandClasses().get64().getData().getMode().getValue()));
@@ -507,15 +507,15 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             }
         } else if (channel.getUID().equals(new ChannelUID(getThing().getUID(), THERMOSTAT_MODE_CC_CHANNEL))) {
             // Load physical device
-            Integer nodeId = Integer.parseInt(channel.getProperties().get("nodeId"));
             if (command instanceof DecimalType) {
+                String nodeIdString = channel.getProperties().get("nodeId");
                 logger.debug("Handle command: DecimalType");
-
-                zwayBridgeHandler.getZWayApi().getZWaveDeviceThermostatModeSet(nodeId,
-                        Integer.parseInt(command.toString()));
+                if (nodeIdString != null) {
+                    zwayBridgeHandler.getZWayApi().getZWaveDeviceThermostatModeSet(Integer.parseInt(nodeIdString),
+                            Integer.parseInt(command.toString()));
+                }
             } else if (command instanceof RefreshType) {
                 logger.debug("Handle command: RefreshType");
-
                 refreshChannel(channel);
             }
         }

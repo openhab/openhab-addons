@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.comfoair.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -57,6 +56,8 @@ public class ComfoAirHandler extends BaseThingHandler {
     private @Nullable ComfoAirSerialConnector comfoAirConnector;
 
     public static final int BAUDRATE = 9600;
+    public static final String ACTIVATE_CHANNEL_ID = ComfoAirBindingConstants.CG_CONTROL_PREFIX
+            + ComfoAirBindingConstants.CHANNEL_ACTIVATE;
 
     public ComfoAirHandler(Thing thing, final SerialPortManager serialPortManager) {
         super(thing);
@@ -66,30 +67,36 @@ public class ComfoAirHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
+        if (comfoAirConnector != null) {
+            boolean isActive = !comfoAirConnector.getIsSuspended();
 
-        if (command instanceof RefreshType) {
-            Channel channel = this.thing.getChannel(channelUID);
-            if (channel != null) {
-                updateChannelState(channel);
-            }
-        } else {
-            ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, command);
+            if (isActive || channelId.equals(ACTIVATE_CHANNEL_ID)) {
+                if (command instanceof RefreshType) {
+                    Channel channel = this.thing.getChannel(channelUID);
+                    if (channel != null) {
+                        updateChannelState(channel);
+                    }
+                } else {
+                    ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, command);
 
-            if (changeCommand != null) {
-                Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
-                        .map(ChannelUID::getId).collect(Collectors.toSet());
-                State state = sendCommand(changeCommand, channelId);
-                updateState(channelUID, state);
+                    if (changeCommand != null) {
+                        Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID)
+                                .filter(this::isLinked).map(ChannelUID::getId).collect(Collectors.toSet());
+                        sendCommand(changeCommand, channelId);
 
-                Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
-                        .getAffectedReadCommands(channelId, keysToUpdate);
+                        Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
+                                .getAffectedReadCommands(channelId, keysToUpdate);
 
-                if (affectedReadCommands.size() > 0) {
-                    Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
-                    affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        if (affectedReadCommands.size() > 0) {
+                            Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
+                            affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        }
+                    } else {
+                        logger.warn("Unhandled command type: {}, channelId: {}", command.toString(), channelId);
+                    }
                 }
             } else {
-                logger.warn("Unhandled command type: {}, channelId: {}", command.toString(), channelId);
+                logger.debug("Binding control is currently not active.");
             }
         }
     }
@@ -117,79 +124,8 @@ public class ComfoAirHandler extends BaseThingHandler {
                 if (comfoAirConnector != null) {
                     updateStatus(ThingStatus.ONLINE);
                     pullDeviceProperties();
-                    Map<String, String> properties = thing.getProperties();
 
-                    List<Channel> toBeRemovedChannels = new ArrayList<>();
-                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_PREHEATER)
-                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                        toBeRemovedChannels.addAll(getThing()
-                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_PREHEATER_PREFIX.replaceAll("#$", "")));
-                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                                + ComfoAirBindingConstants.CHANNEL_FROST_STATE);
-                        if (stateChannel != null) {
-                            toBeRemovedChannels.add(stateChannel);
-                        }
-                    }
-                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_BYPASS)
-                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                        toBeRemovedChannels.addAll(getThing()
-                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_BYPASS_PREFIX.replaceAll("#$", "")));
-                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                                + ComfoAirBindingConstants.CHANNEL_BYPASS_STATE);
-                        if (stateChannel != null) {
-                            toBeRemovedChannels.add(stateChannel);
-                        }
-                    }
-                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_CHIMNEY)
-                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                                + ComfoAirBindingConstants.CHANNEL_CHIMNEY_STATE);
-                        if (stateChannel != null) {
-                            toBeRemovedChannels.add(stateChannel);
-                        }
-                    }
-                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_COOKERHOOD)
-                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                        toBeRemovedChannels.addAll(getThing().getChannelsOfGroup(
-                                ComfoAirBindingConstants.CG_COOKERHOOD_PREFIX.replaceAll("#$", "")));
-                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                                + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_STATE);
-                        if (stateChannel != null) {
-                            toBeRemovedChannels.add(stateChannel);
-                        }
-                    }
-                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_HEATER)
-                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                        toBeRemovedChannels.addAll(getThing()
-                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_HEATER_PREFIX.replaceAll("#$", "")));
-                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                                + ComfoAirBindingConstants.CHANNEL_HEATER_STATE);
-                        if (stateChannel != null) {
-                            toBeRemovedChannels.add(stateChannel);
-                        }
-                    }
-                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_ENTHALPY)
-                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                        toBeRemovedChannels.addAll(getThing()
-                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_ENTHALPY_PREFIX.replaceAll("#$", "")));
-                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                                + ComfoAirBindingConstants.CHANNEL_ENTHALPY_STATE);
-                        if (stateChannel != null) {
-                            toBeRemovedChannels.add(stateChannel);
-                        }
-                    }
-                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_EWT)
-                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                        toBeRemovedChannels.addAll(getThing()
-                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_EWT_PREFIX.replaceAll("#$", "")));
-                        Channel stateChannel = getThing().getChannel(
-                                ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_STATE);
-                        if (stateChannel != null) {
-                            toBeRemovedChannels.add(stateChannel);
-                        }
-                    }
-                    ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
-                    updateThing(builder.build());
+                    updateState(ACTIVATE_CHANNEL_ID, OnOffType.ON);
 
                     List<Channel> channels = this.thing.getChannels();
 
@@ -235,14 +171,38 @@ public class ComfoAirHandler extends BaseThingHandler {
         if (!isLinked(channel.getUID())) {
             return;
         }
-        String commandKey = channel.getUID().getId();
 
-        ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
-        if (readCommand != null) {
-            scheduler.submit(() -> {
-                State state = sendCommand(readCommand, commandKey);
+        if (comfoAirConnector != null) {
+            boolean isActive = !comfoAirConnector.getIsSuspended();
+
+            String commandKey = channel.getUID().getId();
+            if (commandKey.equals(ACTIVATE_CHANNEL_ID)) {
+                State state = OnOffType.from(isActive);
                 updateState(channel.getUID(), state);
-            });
+                return;
+            }
+
+            if (!isActive) {
+                logger.debug("Binding control is currently not active.");
+                return;
+            }
+
+            ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
+            if (readCommand != null && readCommand.getRequestCmd() != null) {
+                scheduler.submit(() -> {
+                    State state = sendCommand(readCommand, commandKey);
+                    updateState(channel.getUID(), state);
+                });
+            }
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        Channel channel = this.thing.getChannel(channelUID);
+        if (channel != null) {
+            updateChannelState(channel);
         }
     }
 
@@ -276,9 +236,9 @@ public class ComfoAirHandler extends BaseThingHandler {
                         preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_STATES;
                         preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_STATES;
                         break;
-                    case ComfoAirCommandType.Constants.REQUEST_SET_EWT:
-                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_EWT;
-                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_EWT;
+                    case ComfoAirCommandType.Constants.REQUEST_SET_GHX:
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_GHX;
+                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_GHX;
                         break;
                     default:
                         preRequestCmd = requestCmd;
@@ -331,13 +291,6 @@ public class ComfoAirHandler extends BaseThingHandler {
             String[] namedProperties = new String[] { ComfoAirBindingConstants.PROPERTY_SOFTWARE_MAIN_VERSION,
                     ComfoAirBindingConstants.PROPERTY_SOFTWARE_MINOR_VERSION,
                     ComfoAirBindingConstants.PROPERTY_DEVICE_NAME };
-            String[] optionProperties = new String[] { ComfoAirBindingConstants.PROPERTY_OPTION_PREHEATER,
-                    ComfoAirBindingConstants.PROPERTY_OPTION_BYPASS, ComfoAirBindingConstants.PROPERTY_OPTION_RECU_TYPE,
-                    ComfoAirBindingConstants.PROPERTY_OPTION_RECU_SIZE,
-                    ComfoAirBindingConstants.PROPERTY_OPTION_CHIMNEY,
-                    ComfoAirBindingConstants.PROPERTY_OPTION_COOKERHOOD,
-                    ComfoAirBindingConstants.PROPERTY_OPTION_HEATER, ComfoAirBindingConstants.PROPERTY_OPTION_ENTHALPY,
-                    ComfoAirBindingConstants.PROPERTY_OPTION_EWT };
 
             for (String prop : namedProperties) {
                 ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(prop);
@@ -358,55 +311,6 @@ public class ComfoAirHandler extends BaseThingHandler {
                         }
                         properties.put(prop, value);
                     }
-                }
-            }
-
-            ComfoAirCommand optionsReadCommand = new ComfoAirCommand(ComfoAirBindingConstants.PROPERTY_OPTION_PREHEATER,
-                    ComfoAirCommandType.Constants.REQUEST_GET_STATES, ComfoAirCommandType.Constants.REPLY_GET_STATES,
-                    ComfoAirCommandType.Constants.EMPTY_INT_ARRAY, null, null);
-            int[] response = comfoAirConnector.sendCommand(optionsReadCommand,
-                    ComfoAirCommandType.Constants.EMPTY_INT_ARRAY);
-            if (response.length > 0) {
-                for (String prop : optionProperties) {
-                    ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(prop);
-                    String value = "";
-
-                    if (comfoAirCommandType != null) {
-                        ComfoAirDataType dataType = comfoAirCommandType.getDataType();
-                        int intValue = dataType.calculateNumberValue(response, comfoAirCommandType);
-
-                        switch (prop) {
-                            case ComfoAirBindingConstants.PROPERTY_OPTION_RECU_TYPE:
-                                value = intValue == 1 ? "LEFT" : "RIGHT";
-                                break;
-                            case ComfoAirBindingConstants.PROPERTY_OPTION_RECU_SIZE:
-                                value = intValue == 1 ? "BIG" : "SMALL";
-                                break;
-                            case ComfoAirBindingConstants.PROPERTY_OPTION_ENTHALPY:
-                                if (intValue == 1) {
-                                    value = ComfoAirBindingConstants.COMMON_OPTION_STATES[1];
-                                } else if (intValue == 2) {
-                                    value = "Installed w\\o sensor";
-                                } else {
-                                    value = ComfoAirBindingConstants.COMMON_OPTION_STATES[0];
-                                }
-                                break;
-                            case ComfoAirBindingConstants.PROPERTY_OPTION_EWT:
-                                if (intValue == 1) {
-                                    value = "Regulated";
-                                } else if (intValue == 2) {
-                                    value = "Unregulated";
-                                } else {
-                                    value = ComfoAirBindingConstants.COMMON_OPTION_STATES[0];
-                                }
-                                break;
-                            default:
-                                value = intValue > 0 ? ComfoAirBindingConstants.COMMON_OPTION_STATES[1]
-                                        : ComfoAirBindingConstants.COMMON_OPTION_STATES[0];
-                                break;
-                        }
-                    }
-                    properties.put(prop, value);
                 }
             }
             thing.setProperties(properties);

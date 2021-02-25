@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.feed.internal;
-
-import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -43,9 +41,14 @@ public class FeedBindingConstants {
     public static final String CHANNEL_LATEST_TITLE = "latest-title";
 
     /**
-     * Contains the description of last feed entry.
+     * Contains the description of the last feed entry.
      */
     public static final String CHANNEL_LATEST_DESCRIPTION = "latest-description";
+
+    /**
+     * Contains the link to the last feed entry.
+     */
+    public static final String CHANNEL_LATEST_LINK = "latest-link";
 
     /**
      * Description of the feed.
@@ -86,11 +89,11 @@ public class FeedBindingConstants {
     /**
      * The default auto refresh time in minutes.
      */
-    public static final BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
+    public static final long DEFAULT_REFRESH_TIME = 20;
 
     /**
      * The minimum refresh time in milliseconds. Any REFRESH command send to a Thing, before this time has expired, will
-     * not trigger an attempt to dowload new data form the server.
+     * not trigger an attempt to download new data from the server.
      **/
     public static final int MINIMUM_REFRESH_TIME = 3000;
 }

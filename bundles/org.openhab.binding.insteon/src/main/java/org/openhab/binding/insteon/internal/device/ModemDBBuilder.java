@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class ModemDBBuilder implements MsgListener {
     private static final int MESSAGE_TIMEOUT = 30000;
 
@@ -65,8 +64,11 @@ public class ModemDBBuilder implements MsgListener {
         job = scheduler.scheduleWithFixedDelay(() -> {
             if (isComplete()) {
                 logger.trace("modem db builder finished");
-                job.cancel(false);
-                job = null;
+                ScheduledFuture<?> job = this.job;
+                if (job != null) {
+                    job.cancel(false);
+                }
+                this.job = null;
             } else {
                 if (System.currentTimeMillis() - lastMessageTimestamp > MESSAGE_TIMEOUT) {
                     String s = "";
@@ -151,8 +153,8 @@ public class ModemDBBuilder implements MsgListener {
     private void logModemDB() {
         try {
             logger.debug("MDB ------- start of modem link records ------------------");
-            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
-            for (Entry<InsteonAddress, @Nullable ModemDBEntry> db : dbes.entrySet()) {
+            Map<InsteonAddress, ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            for (Entry<InsteonAddress, ModemDBEntry> db : dbes.entrySet()) {
                 List<Msg> lrs = db.getValue().getLinkRecords();
                 for (Msg m : lrs) {
                     int recordFlags = m.getByte("RecordFlags") & 0xff;
@@ -177,7 +179,7 @@ public class ModemDBBuilder implements MsgListener {
 
     public void updateModemDB(InsteonAddress linkAddr, Port port, @Nullable Msg m, boolean isModem) {
         try {
-            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            Map<InsteonAddress, ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             ModemDBEntry dbe = dbes.get(linkAddr);
             if (dbe == null) {
                 dbe = new ModemDBEntry(linkAddr, isModem);

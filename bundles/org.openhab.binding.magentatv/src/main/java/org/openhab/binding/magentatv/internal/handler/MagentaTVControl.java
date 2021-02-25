@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -391,10 +391,7 @@ public class MagentaTVControl {
             // direct key code
             return key;
         }
-        if (KEY_MAP.containsKey(key)) {
-            return KEY_MAP.get(key);
-        }
-        return "";
+        return KEY_MAP.getOrDefault(key, "");
     }
 
     /**

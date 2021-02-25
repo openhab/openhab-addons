@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ public class EventDispatcher {
     private final Set<SatelEventListener> eventListeners = new CopyOnWriteArraySet<>();
 
     @SuppressWarnings("unchecked")
-    private final Map<Class<? extends SatelEvent>, @Nullable Method> eventHandlers = Stream
+    private final Map<Class<? extends SatelEvent>, Method> eventHandlers = Stream
             .of(SatelEventListener.class.getDeclaredMethods())
             .filter(m -> m.getParameterCount() == 1 && SatelEvent.class.isAssignableFrom(m.getParameterTypes()[0]))
             .collect(Collectors.toMap(m -> (Class<SatelEvent>) m.getParameterTypes()[0], m -> m));

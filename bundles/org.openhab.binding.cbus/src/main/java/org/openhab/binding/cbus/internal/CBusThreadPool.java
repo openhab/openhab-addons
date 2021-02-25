@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,28 +28,22 @@ import com.daveoxley.cbus.CGateThreadPoolExecutor;
  *
  * @author John Harvey - Initial contribution
  */
-
 @NonNullByDefault
 public class CBusThreadPool extends CGateThreadPool {
 
-    private final Map<String, @Nullable CGateThreadPoolExecutor> executorMap = new HashMap<>();
+    private final Map<String, CGateThreadPoolExecutor> executorMap = new HashMap<>();
 
     @Override
     protected synchronized CGateThreadPoolExecutor CreateExecutor(@Nullable String name) {
-        if (name == null || name.isEmpty()) {
-            name = "_default";
+        String nullSafeName = name == null || name.isEmpty() ? "_default" : name;
+        CGateThreadPoolExecutor executor = executorMap.get(nullSafeName);
+        if (executor == null) {
+            executor = new CBusThreadPoolExecutor(nullSafeName);
+            executorMap.put(nullSafeName, executor);
         }
-        @Nullable
-        CGateThreadPoolExecutor executor = executorMap.get(name);
-        if (executor != null) {
-            return executor;
-        }
-        CGateThreadPoolExecutor newExecutor = new CBusThreadPoolExecutor(name);
-        executorMap.put(name, newExecutor);
-        return newExecutor;
+        return executor;
     }
 
-    @NonNullByDefault
     public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor {
         private final ThreadPoolExecutor threadPool;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -42,11 +43,10 @@ import org.xml.sax.SAXException;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class DeviceTypeLoader {
     private static final Logger logger = LoggerFactory.getLogger(DeviceTypeLoader.class);
-    private HashMap<String, DeviceType> deviceTypes = new HashMap<>();
-    private @Nullable static DeviceTypeLoader deviceTypeLoader = null;
+    private Map<String, DeviceType> deviceTypes = new HashMap<>();
+    private static DeviceTypeLoader deviceTypeLoader = new DeviceTypeLoader();
 
     private DeviceTypeLoader() {
     } // private so nobody can call it
@@ -66,7 +66,7 @@ public class DeviceTypeLoader {
      *
      * @return currently known device types
      */
-    public HashMap<String, DeviceType> getDeviceTypes() {
+    public Map<String, DeviceType> getDeviceTypes() {
         return (deviceTypes);
     }
 
@@ -74,10 +74,16 @@ public class DeviceTypeLoader {
      * Reads the device types from input stream and stores them in memory for
      * later access.
      *
-     * @param is the input stream from which to read
+     * @param in the input stream from which to read
      */
     public void loadDeviceTypesXML(InputStream in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        dbFactory.setXIncludeAware(false);
+        dbFactory.setExpandEntityReferences(false);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(in);
         doc.getDocumentElement().normalize();
@@ -202,11 +208,14 @@ public class DeviceTypeLoader {
      */
     @Nullable
     public static synchronized DeviceTypeLoader instance() {
-        if (deviceTypeLoader == null) {
-            deviceTypeLoader = new DeviceTypeLoader();
+        if (deviceTypeLoader.getDeviceTypes().isEmpty()) {
             InputStream input = DeviceTypeLoader.class.getResourceAsStream("/device_types.xml");
             try {
-                deviceTypeLoader.loadDeviceTypesXML(input);
+                if (input != null) {
+                    deviceTypeLoader.loadDeviceTypesXML(input);
+                } else {
+                    logger.warn("Resource stream is null, cannot read xml file.");
+                }
             } catch (ParserConfigurationException e) {
                 logger.warn("parser config error when reading device types xml file: ", e);
             } catch (SAXException e) {
@@ -214,8 +223,6 @@ public class DeviceTypeLoader {
             } catch (IOException e) {
                 logger.warn("I/O exception when reading device types xml file: ", e);
             }
-            logger.debug("loaded {} devices: ", deviceTypeLoader.getDeviceTypes().size());
-            deviceTypeLoader.logDeviceTypes();
         }
         return deviceTypeLoader;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import java.util.Arrays;
@@ -28,12 +27,11 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class IpCameraBindingConstants {
-
     private static final String BINDING_ID = "ipcamera";
-    public final static String AUTH_HANDLER = "authorizationHandler";
-    public final static String AMCREST_HANDLER = "amcrestHandler";
-    public final static String COMMON_HANDLER = "commonHandler";
-    public final static String INSTAR_HANDLER = "instarHandler";
+    public static final String AUTH_HANDLER = "authorizationHandler";
+    public static final String AMCREST_HANDLER = "amcrestHandler";
+    public static final String COMMON_HANDLER = "commonHandler";
+    public static final String INSTAR_HANDLER = "instarHandler";
 
     public static enum FFmpegFormat {
         HLS,
@@ -72,37 +70,7 @@ public class IpCameraBindingConstants {
 
     // List of all Thing Config items
     public static final String CONFIG_IPADDRESS = "ipAddress";
-    public static final String CONFIG_PORT = "port";
     public static final String CONFIG_ONVIF_PORT = "onvifPort";
-    public static final String CONFIG_SERVER_PORT = "serverPort";
-    public static final String CONFIG_USERNAME = "username";
-    public static final String CONFIG_PASSWORD = "password";
-    public static final String CONFIG_ONVIF_PROFILE_NUMBER = "onvifMediaProfile";
-    public static final String CONFIG_POLL_TIME = "pollTime";
-    public static final String CONFIG_FFMPEG_INPUT = "ffmpegInput";
-    public static final String CONFIG_SNAPSHOT_URL_OVERRIDE = "snapshotUrl";
-    public static final String CONFIG_MJPEG_URL = "mjpegUrl";
-    public static final String CONFIG_FFMPEG_MOTION_INPUT = "alarmInputUrl";
-    public static final String CONFIG_MOTION_URL_OVERRIDE = "customMotionAlarmUrl";
-    public static final String CONFIG_AUDIO_URL_OVERRIDE = "customAudioAlarmUrl";
-    public static final String CONFIG_IMAGE_UPDATE_WHEN = "updateImageWhen";
-    public static final String CONFIG_NVR_CHANNEL = "nvrChannel";
-    public static final String CONFIG_IP_WHITELIST = "ipWhitelist";
-    public static final String CONFIG_FFMPEG_LOCATION = "ffmpegLocation";
-    public static final String CONFIG_FFMPEG_OUTPUT = "ffmpegOutput";
-    public static final String CONFIG_FFMPEG_HLS_OUT_ARGUMENTS = "hlsOutOptions";
-    public static final String CONFIG_FFMPEG_GIF_OUT_ARGUMENTS = "gifOutOptions";
-    public static final String CONFIG_FFMPEG_MP4_OUT_ARGUMENTS = "mp4OutOptions";
-    public static final String CONFIG_FFMPEG_MJPEG_ARGUMENTS = "mjpegOptions";
-    public static final String CONFIG_FFMPEG_MOTION_ARGUMENTS = "motionOptions";
-    public static final String CONFIG_PTZ_CONTINUOUS = "ptzContinuous";
-    public static final String CONFIG_GIF_PREROLL = "gifPreroll";
-    // group thing configs
-    public static final String CONFIG_FIRST_CAM = "firstCamera";
-    public static final String CONFIG_SECOND_CAM = "secondCamera";
-    public static final String CONFIG_THIRD_CAM = "thirdCamera";
-    public static final String CONFIG_FORTH_CAM = "forthCamera";
-    public static final String CONFIG_MOTION_CHANGES_ORDER = "motionChangesOrder";
 
     // List of all Channel ids
     public static final String CHANNEL_POLL_IMAGE = "pollImage";
@@ -160,4 +128,7 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_LAST_MOTION_TYPE = "lastMotionType";
     public static final String CHANNEL_GOTO_PRESET = "gotoPreset";
     public static final String CHANNEL_START_STREAM = "startStream";
+    public static final String CHANNEL_ENABLE_PRIVACY_MODE = "enablePrivacyMode";
+    public static final String CHANNEL_CAR_ALARM = "carAlarm";
+    public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
 }

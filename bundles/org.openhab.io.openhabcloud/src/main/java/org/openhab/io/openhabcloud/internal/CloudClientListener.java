@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.io.openhabcloud.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This interface provides callbacks from CloudClient
  *
@@ -19,7 +21,7 @@ package org.openhab.io.openhabcloud.internal;
  * @author Kai Kreuzer - migrated code to ESH APIs
  *
  */
-
+@NonNullByDefault
 public interface CloudClientListener {
     /**
      * This method receives command for an item from the openHAB Cloud client and should post it

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
 
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryService = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
 
     @Activate
     public NestHandlerFactory(@Reference ClientBuilder clientBuilder,

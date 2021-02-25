@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -196,7 +196,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
     public CompletableFuture<DatagramSocket> start() {
         if (willbeclosed) {
             CompletableFuture<DatagramSocket> f = new CompletableFuture<>();
-            f.completeExceptionally(null);
+            f.completeExceptionally(new IllegalStateException("will be closed"));
             return f;
         }
         if (sessionThread.isAlive()) {

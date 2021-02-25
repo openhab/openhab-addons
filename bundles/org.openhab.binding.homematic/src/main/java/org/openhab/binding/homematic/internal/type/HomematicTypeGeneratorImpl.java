@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,11 +23,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -37,6 +36,7 @@ import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
+import org.openhab.core.config.core.ConfigDescriptionParameterGroupBuilder;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
@@ -170,7 +170,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     ChannelGroupType groupType = channelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
                     if (groupType == null || device.isGatewayExtras()) {
                         String groupLabel = String.format("%s",
-                                WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
+                                MiscUtils.capitalize(channel.getType().replace("_", " ")));
                         groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
                                 .withChannelDefinitions(channelDefinitions).build();
                         channelGroupTypeProvider.addChannelGroupType(groupType);
@@ -194,7 +194,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         "Multiple firmware versions for device type '{}' found ({}). "
                                 + "Make sure, all devices of the same type have the same firmware version, "
                                 + "otherwise you MAY have channel and/or datapoint errors in the logfile",
-                        deviceType, StringUtils.join(firmwares, ", "));
+                        deviceType, String.join(", ", firmwares));
             }
         }
     }
@@ -203,7 +203,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Adds the firmware version for validation.
      */
     private void addFirmware(HmDevice device) {
-        if (!StringUtils.equals(device.getFirmware(), "?") && !DEVICE_TYPE_VIRTUAL.equals(device.getType())
+        if (!"?".equals(device.getFirmware()) && !DEVICE_TYPE_VIRTUAL.equals(device.getType())
                 && !DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) {
             Set<String> firmwares = firmwaresByType.get(device.getType());
             if (firmwares == null) {
@@ -236,7 +236,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
         List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
         for (ChannelGroupType groupType : groupTypes) {
-            String id = StringUtils.substringAfterLast(groupType.getUID().getId(), "_");
+            int usPos = groupType.getUID().getId().lastIndexOf("_");
+            String id = usPos == -1 ? groupType.getUID().getId() : groupType.getUID().getId().substring(usPos + 1);
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
         }
 
@@ -277,10 +278,18 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-
                 BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
-                if (step == null) {
-                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L));
+                if (ITEM_TYPE_DIMMER.equals(itemType)
+                        && (max.compareTo(new BigDecimal("1.0")) == 0 || max.compareTo(new BigDecimal("1.01")) == 0)) {
+                    // For dimmers with a max value of 1.01 or 1.0 the values must be corrected
+                    min = MetadataUtils.createBigDecimal(0);
+                    max = MetadataUtils.createBigDecimal(100);
+                    step = MetadataUtils.createBigDecimal(1);
+                } else {
+                    if (step == null) {
+                        step = MetadataUtils
+                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L));
+                    }
                 }
                 stateFragment.withMinimum(min).withMaximum(max).withStep(step)
                         .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
@@ -305,7 +314,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         .withEventDescription(eventDescription);
             } else {
                 channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
-                        .withStateDescription(stateFragment.build().toStateDescription());
+                        .withStateDescriptionFragment(stateFragment.build());
             }
             channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp)).withDescription(description)
                     .withCategory(category).withConfigDescriptionURI(configDescriptionUriChannel).build();
@@ -320,7 +329,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         for (HmChannel channel : device.getChannels()) {
             String groupName = "HMG_" + channel.getNumber();
             String groupLabel = MetadataUtils.getDescription("CHANNEL_NAME") + " " + channel.getNumber();
-            groups.add(new ConfigDescriptionParameterGroup(groupName, null, false, groupLabel, null));
+            groups.add(ConfigDescriptionParameterGroupBuilder.create(groupName).withLabel(groupLabel).build());
 
             for (HmDatapoint dp : channel.getDatapoints()) {
                 if (dp.getParamsetType() == HmParamsetType.MASTER) {
@@ -328,7 +337,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                             MetadataUtils.getParameterName(dp), MetadataUtils.getConfigDescriptionParameterType(dp));
 
                     builder.withLabel(MetadataUtils.getLabel(dp));
-                    builder.withDefault(ObjectUtils.toString(dp.getDefaultValue()));
+                    builder.withDefault(Objects.toString(dp.getDefaultValue(), ""));
                     builder.withDescription(MetadataUtils.getDatapointDescription(dp));
 
                     if (dp.isEnumType()) {
@@ -346,8 +355,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     if (dp.isNumberType()) {
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
                         builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
-                        builder.withStepSize(
-                                MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L)));
+                        builder.withStepSize(MetadataUtils
+                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L)));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
@@ -374,6 +383,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Returns true, if the given datapoint can be ignored for metadata generation.
      */
     public static boolean isIgnoredDatapoint(HmDatapoint dp) {
-        return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1;
+        for (String testValue : IGNORE_DATAPOINT_NAMES) {
+            if (dp.getName().indexOf(testValue) > -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -35,13 +35,12 @@ Note: The mapping of things and channels to the heating system addresses must be
 
 ## Discovery
 
-The binding discovers the adapter with broadcast and put the found `vitotronic:bridge` into the inbox.
+The binding discovers the adapter with broadcast and puts any `vitotronic:bridge` found into the inbox.
 For automatic detection the adapter and **openHAB** must be on the same LAN.
-The discovery itself must be start in the Paper UI.
-If the bridge isn't on the same LAN the bridge can also add manually.
+If the bridge isn't on the same LAN, you will need to add manually.
 In this case the `IP-Address` and the `adapterID` is required.
-Íf the `vitotronic:bridge` added a second discovery will be start.
-It discovers all things, define in the adapter and put found things into the inbox.
+After the `vitotronic:bridge` is ONLINE, start a second discovery.
+It discovers all things, and places them in the inbox.
 
 ## Binding Configuration
 

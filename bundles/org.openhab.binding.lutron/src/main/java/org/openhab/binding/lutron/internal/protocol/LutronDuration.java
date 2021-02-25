@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.lutron.internal.protocol;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +76,7 @@ public class LutronDuration {
      * Constructor accepting duration in seconds as a Double
      */
     public LutronDuration(Double seconds) {
-        this(new BigDecimal(seconds).setScale(2, BigDecimal.ROUND_HALF_UP));
+        this(new BigDecimal(seconds).setScale(2, RoundingMode.HALF_UP));
     }
 
     /**
@@ -130,7 +131,15 @@ public class LutronDuration {
     }
 
     public String asLeapString() {
-        return ""; // TBD
+        Integer seconds = this.seconds;
+        if (seconds.equals(0) && hundredths > 0) {
+            // use 1 second if interval is > 0 and < 1
+            seconds = 1;
+        } else if (hundredths >= 50) {
+            // else apply normal rounding of hundredths
+            seconds++;
+        }
+        return String.format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, (seconds % 60));
     }
 
     @Override

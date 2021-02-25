@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -221,9 +222,12 @@ public class HueBridge {
         ArrayList<T> lightList = new ArrayList<>();
 
         for (String id : lightMap.keySet()) {
+            @Nullable
             T light = lightMap.get(id);
-            light.setId(id);
-            lightList.add(light);
+            if (light != null) {
+                light.setId(id);
+                lightList.add(light);
+            }
         }
 
         return lightList;
@@ -356,7 +360,11 @@ public class HueBridge {
         List<SuccessResponse> entries = safeFromJson(result.getBody(), SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
 
-        return (String) response.success.get("/lights/" + enc(light.getId()) + "/name");
+        String lightName = (String) response.success.get("/lights/" + enc(light.getId()) + "/name");
+        if (lightName == null) {
+            throw new ApiException("Response didn't contain light name.");
+        }
+        return lightName;
     }
 
     /**
@@ -418,8 +426,6 @@ public class HueBridge {
      * @return all lights pseudo group
      */
     public Group getAllGroup() {
-        requireAuthentication();
-
         return new Group();
     }
 
@@ -441,14 +447,21 @@ public class HueBridge {
 
         if (groupMap.get("0") == null) {
             // Group 0 is not returned, we create it as in fact it exists
-            groupList.add(getGroup(new Group()));
+            try {
+                groupList.add(getGroup(getAllGroup()));
+            } catch (FileNotFoundException e) {
+                // We need a special exception handling here to further support deCONZ REST API. On deCONZ group "0" may
+                // not exist and the APIs will return a different HTTP status code if requesting a non existing group
+                // (Hue: 200, deCONZ: 404).
+                // see https://github.com/openhab/openhab-addons/issues/9175
+                logger.debug("Cannot find AllGroup with id \"0\" on Hue Bridge. Skipping it.");
+            }
         }
 
-        for (String id : groupMap.keySet()) {
-            FullGroup group = groupMap.get(id);
+        groupMap.forEach((id, group) -> {
             group.setId(id);
             groupList.add(group);
-        }
+        });
 
         return groupList;
     }
@@ -557,7 +570,11 @@ public class HueBridge {
         List<SuccessResponse> entries = safeFromJson(result.getBody(), SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
 
-        return (String) response.success.get("/groups/" + enc(group.getId()) + "/name");
+        String groupName = (String) response.success.get("/groups/" + enc(group.getId()) + "/name");
+        if (groupName == null) {
+            throw new ApiException("Response didn't contain group name.");
+        }
+        return groupName;
     }
 
     /**
@@ -607,7 +624,11 @@ public class HueBridge {
         List<SuccessResponse> entries = safeFromJson(result.getBody(), SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
 
-        return (String) response.success.get("/groups/" + enc(group.getId()) + "/name");
+        String groupName = (String) response.success.get("/groups/" + enc(group.getId()) + "/name");
+        if (groupName == null) {
+            throw new ApiException("Response didn't contain group name.");
+        }
+        return groupName;
     }
 
     /**
@@ -952,7 +973,11 @@ public class HueBridge {
         List<SuccessResponse> entries = safeFromJson(result.getBody(), SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
 
-        return (String) response.success.get("username");
+        String username = (String) response.success.get("username");
+        if (username == null) {
+            throw new ApiException("Response didn't contain username");
+        }
+        return username;
     }
 
     /**
@@ -1016,7 +1041,8 @@ public class HueBridge {
 
         handleErrors(result);
 
-        return gson.fromJson(result.getBody(), FullConfig.class);
+        FullConfig fullConfig = gson.fromJson(result.getBody(), FullConfig.class);
+        return Objects.requireNonNull(fullConfig);
     }
 
     // Used as assert in requests that require authentication

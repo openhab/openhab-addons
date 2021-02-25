@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
@@ -75,7 +75,9 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
-            return new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
+                return new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+            }
         }
         return null;
     }

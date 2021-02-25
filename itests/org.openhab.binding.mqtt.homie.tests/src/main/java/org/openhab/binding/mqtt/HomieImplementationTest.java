@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,11 +30,16 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.generic.tools.WaitForTopicValue;
@@ -59,31 +62,34 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homie device tree.
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
+@NonNullByDefault
 public class HomieImplementationTest extends JavaOSGiTest {
     private static final String BASE_TOPIC = "homie";
     private static final String DEVICE_ID = ThingChannelConstants.testHomieThing.getId();
     private static final String DEVICE_TOPIC = BASE_TOPIC + "/" + DEVICE_ID;
 
-    private MqttService mqttService;
-    private MqttBrokerConnection embeddedConnection;
-    private MqttBrokerConnection connection;
+    private @NonNullByDefault({}) ConfigurationAdmin configurationAdmin;
+    private @NonNullByDefault({}) MqttService mqttService;
+    private @NonNullByDefault({}) MqttBrokerConnection embeddedConnection;
+    private @NonNullByDefault({}) MqttBrokerConnection connection;
     private int registeredTopics = 100;
 
-    private AutoCloseable mocksCloseable;
-
     // The handler is not tested here, so just mock the callback
-    private @Mock DeviceCallback callback;
+    private @Mock @NonNullByDefault({}) DeviceCallback callback;
 
     // A handler mock is required to verify that channel value changes have been received
-    private @Mock HomieThingHandler handler;
+    private @Mock @NonNullByDefault({}) HomieThingHandler handler;
 
-    private ScheduledExecutorService scheduler;
+    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
@@ -92,84 +98,86 @@ public class HomieImplementationTest extends JavaOSGiTest {
     private MqttConnectionObserver failIfChange = (state, error) -> assertThat(state,
             is(MqttConnectionState.CONNECTED));
 
-    private String propertyTestTopic;
+    private String propertyTestTopic = "";
 
     @BeforeEach
     public void beforeEach() throws Exception {
         registerVolatileStorageService();
-        mocksCloseable = openMocks(this);
+        configurationAdmin = getService(ConfigurationAdmin.class);
         mqttService = getService(MqttService.class);
 
-        embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
+        // Wait for the EmbeddedBrokerService internal connection to be connected
+        embeddedConnection = new EmbeddedBrokerTools(configurationAdmin, mqttService).waitForConnection();
         embeddedConnection.setQos(1);
-        embeddedConnection.setRetain(true);
 
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "homie");
         connection.setQos(1);
-        connection.setPersistencePath(Paths.get("subconn"));
-        connection.start().get(500, TimeUnit.MILLISECONDS);
+        connection.start().get(5, TimeUnit.SECONDS);
         assertThat(connection.connectionState(), is(MqttConnectionState.CONNECTED));
         // If the connection state changes in between -> fail
         connection.addConnectionObserver(failIfChange);
 
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$homie", "3.0".getBytes()));
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$name", "Name".getBytes()));
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$state", "ready".getBytes()));
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$nodes", "testnode".getBytes()));
+        futures.add(publish(DEVICE_TOPIC + "/$homie", "3.0"));
+        futures.add(publish(DEVICE_TOPIC + "/$name", "Name"));
+        futures.add(publish(DEVICE_TOPIC + "/$state", "ready"));
+        futures.add(publish(DEVICE_TOPIC + "/$nodes", "testnode"));
 
         // Add homie node topics
         final String testNode = DEVICE_TOPIC + "/testnode";
-        futures.add(embeddedConnection.publish(testNode + "/$name", "Testnode".getBytes()));
-        futures.add(embeddedConnection.publish(testNode + "/$type", "Type".getBytes()));
-        futures.add(
-                embeddedConnection.publish(testNode + "/$properties", "temperature,doorbell,testRetain".getBytes()));
+        futures.add(publish(testNode + "/$name", "Testnode"));
+        futures.add(publish(testNode + "/$type", "Type"));
+        futures.add(publish(testNode + "/$properties", "temperature,doorbell,testRetain"));
 
         // Add homie property topics
         final String property = testNode + "/temperature";
-        futures.add(embeddedConnection.publish(property, "10".getBytes()));
-        futures.add(embeddedConnection.publish(property + "/$name", "Testprop".getBytes()));
-        futures.add(embeddedConnection.publish(property + "/$settable", "true".getBytes()));
-        futures.add(embeddedConnection.publish(property + "/$unit", "°C".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(property + "/$datatype", "float".getBytes()));
-        futures.add(embeddedConnection.publish(property + "/$format", "-100:100".getBytes()));
+        futures.add(publish(property, "10"));
+        futures.add(publish(property + "/$name", "Testprop"));
+        futures.add(publish(property + "/$settable", "true"));
+        futures.add(publish(property + "/$unit", "°C"));
+        futures.add(publish(property + "/$datatype", "float"));
+        futures.add(publish(property + "/$format", "-100:100"));
 
         final String propertyBellTopic = testNode + "/doorbell";
-        futures.add(embeddedConnection.publish(propertyBellTopic + "/$name", "Doorbell".getBytes()));
-        futures.add(embeddedConnection.publish(propertyBellTopic + "/$settable", "false".getBytes()));
-        futures.add(embeddedConnection.publish(propertyBellTopic + "/$retained", "false".getBytes()));
-        futures.add(embeddedConnection.publish(propertyBellTopic + "/$datatype", "boolean".getBytes()));
+        futures.add(publish(propertyBellTopic + "/$name", "Doorbell"));
+        futures.add(publish(propertyBellTopic + "/$settable", "false"));
+        futures.add(publish(propertyBellTopic + "/$retained", "false"));
+        futures.add(publish(propertyBellTopic + "/$datatype", "boolean"));
 
         this.propertyTestTopic = testNode + "/testRetain";
-        futures.add(embeddedConnection.publish(propertyTestTopic + "/$name", "Test".getBytes()));
-        futures.add(embeddedConnection.publish(propertyTestTopic + "/$settable", "true".getBytes()));
-        futures.add(embeddedConnection.publish(propertyTestTopic + "/$retained", "false".getBytes()));
-        futures.add(embeddedConnection.publish(propertyTestTopic + "/$datatype", "boolean".getBytes()));
+        futures.add(publish(propertyTestTopic + "/$name", "Test"));
+        futures.add(publish(propertyTestTopic + "/$settable", "true"));
+        futures.add(publish(propertyTestTopic + "/$retained", "false"));
+        futures.add(publish(propertyTestTopic + "/$datatype", "boolean"));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(2, TimeUnit.SECONDS);
 
         scheduler = new ScheduledThreadPoolExecutor(6);
+    }
+
+    private CompletableFuture<Boolean> publish(String topic, String message) {
+        return embeddedConnection.publish(topic, message.getBytes(StandardCharsets.UTF_8), 0, true);
     }
 
     @AfterEach
     public void afterEach() throws Exception {
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
-            connection.stop().get(500, TimeUnit.MILLISECONDS);
+            connection.stop().get(2, TimeUnit.SECONDS);
         }
-        scheduler.shutdownNow();
-        mocksCloseable.close();
+        if (scheduler != null) {
+            scheduler.shutdownNow();
+        }
     }
 
     @Test
     public void retrieveAllTopics() throws InterruptedException, ExecutionException, TimeoutException {
         // four topics are not under /testnode !
         CountDownLatch c = new CountDownLatch(registeredTopics - 4);
-        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5000,
-                TimeUnit.MILLISECONDS);
-        assertTrue(c.await(5000, TimeUnit.MILLISECONDS),
+        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5, TimeUnit.SECONDS);
+        assertTrue(c.await(5, TimeUnit.SECONDS),
                 "Connection " + connection.getClientId() + " not retrieving all topics ");
     }
 

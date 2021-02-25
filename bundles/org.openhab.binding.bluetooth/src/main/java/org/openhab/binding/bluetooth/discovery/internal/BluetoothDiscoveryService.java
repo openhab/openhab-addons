@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.discovery.internal;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -54,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Connor Petty - Introduced connection based discovery and added roaming support
  */
 @NonNullByDefault
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
 public class BluetoothDiscoveryService extends AbstractDiscoveryService implements BluetoothDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryService.class);
@@ -75,14 +77,14 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     @Activate
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         logger.debug("Activating Bluetooth discovery service");
         super.activate(configProperties);
     }
 
     @Override
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -170,9 +172,10 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     private class DiscoveryCache {
 
         private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
-        private final Map<BluetoothAdapter, @Nullable Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
+        private final Map<BluetoothAdapter, Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
 
-        private @Nullable BluetoothDeviceSnapshot latestSnapshot;
+        private ExpiringCache<BluetoothDeviceSnapshot> latestSnapshot = new ExpiringCache<>(Duration.ofMinutes(1),
+                () -> null);
 
         /**
          * This is meant to be used as part of a Map.compute function
@@ -209,7 +212,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             CompletableFuture<DiscoveryResult> future = null;
 
             BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(device);
-            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot;
+            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot.getValue();
             if (latestSnapshot != null) {
                 snapshot.merge(latestSnapshot);
 
@@ -236,7 +239,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                     }
                 }
             }
-            this.latestSnapshot = snapshot;
+            this.latestSnapshot.putValue(snapshot);
 
             if (future == null) {
                 // we pass in the snapshot since it acts as a delegate for the device. It will also retain any new
@@ -267,6 +270,10 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             future = future.thenApply(result -> {
                 publishDiscoveryResult(adapter, result);
                 return result;
+            }).whenComplete((r, t) -> {
+                if (t != null) {
+                    logger.warn("Error occured during discovery of {}", device.getAddress(), t);
+                }
             });
 
             // now save this snapshot for later

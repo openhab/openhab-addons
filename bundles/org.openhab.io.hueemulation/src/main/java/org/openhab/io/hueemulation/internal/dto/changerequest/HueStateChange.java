@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.io.hueemulation.internal.dto.changerequest;
 import java.util.List;
 
 /**
- * A POST message on a light entpoint will contain this change message body.
+ * A POST message on a light endpoint will contain this change message body.
  * Not all fields will be set and always need to be checked.
  *
  * @author David Graeff - Initial contribution

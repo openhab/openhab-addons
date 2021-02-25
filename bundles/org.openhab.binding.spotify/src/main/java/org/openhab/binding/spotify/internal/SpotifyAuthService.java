@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Stenlund - Initial contribution
  * @author Hilbrand Bouwkamp - Made this the service class instead of only interface. Added templates
  */
-@Component(service = SpotifyAuthService.class, immediate = true, configurationPid = "binding.spotify.authService")
+@Component(service = SpotifyAuthService.class, configurationPid = "binding.spotify.authService")
 @NonNullByDefault
 public class SpotifyAuthService {
 

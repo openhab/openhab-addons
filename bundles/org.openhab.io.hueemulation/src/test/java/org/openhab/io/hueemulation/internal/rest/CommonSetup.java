@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,12 +34,9 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.logging.LoggingFeature.Verbosity;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.MockitoAnnotations;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.net.NetworkAddressService;
@@ -61,15 +58,19 @@ import org.osgi.service.cm.ConfigurationAdmin;
  *
  * @author David Graeff - Initial contribution
  */
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
 public class CommonSetup {
 
-    public UserManagement userManagement;
-
-    public @Mock EventPublisher eventPublisher;
-
+    public String basePath;
+    public Client client;
     public ConfigStore cs;
+    public HttpServer server;
+
+    UserManagement userManagement;
+
+    AutoCloseable mocksCloseable;
+
+    @Mock
+    EventPublisher eventPublisher;
 
     @Mock
     ConfigurationAdmin configAdmin;
@@ -101,11 +102,9 @@ public class CommonSetup {
         }
     };
 
-    public Client client;
-    public HttpServer server;
-    public String basePath;
-
     public CommonSetup(boolean withMetadata) throws IOException {
+        mocksCloseable = MockitoAnnotations.openMocks(this);
+
         when(configAdmin.getConfiguration(anyString())).thenReturn(configAdminConfig);
         when(configAdmin.getConfiguration(anyString(), any())).thenReturn(configAdminConfig);
         Dictionary<String, Object> mockProperties = new Hashtable<>();
@@ -154,12 +153,14 @@ public class CommonSetup {
         client = ClientBuilder.newClient();
     }
 
-    public void dispose() {
+    public void dispose() throws Exception {
         if (client != null) {
             client.close();
         }
         if (server != null) {
             server.shutdownNow();
         }
+
+        mocksCloseable.close();
     }
 }

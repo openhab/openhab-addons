@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,20 +22,38 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
+import org.openhab.binding.modbus.internal.CascadedValueTransformationImpl;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
-import org.openhab.binding.modbus.internal.Transformation;
+import org.openhab.binding.modbus.internal.SingleValueTransformation;
+import org.openhab.binding.modbus.internal.ValueTransformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
+import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.AsyncModbusWriteResult;
+import org.openhab.core.io.transport.modbus.BitArray;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusConstants;
+import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint;
+import org.openhab.core.io.transport.modbus.exception.ModbusConnectionException;
+import org.openhab.core.io.transport.modbus.exception.ModbusTransportException;
+import org.openhab.core.io.transport.modbus.json.WriteRequestJsonUtilities;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
@@ -60,23 +78,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.io.transport.modbus.AsyncModbusFailure;
-import org.openhab.io.transport.modbus.AsyncModbusReadResult;
-import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
-import org.openhab.io.transport.modbus.BitArray;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusConstants;
-import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
-import org.openhab.io.transport.modbus.exception.ModbusConnectionException;
-import org.openhab.io.transport.modbus.exception.ModbusTransportException;
-import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -128,8 +129,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private volatile @Nullable ModbusDataConfiguration config;
     private volatile @Nullable ValueType readValueType;
     private volatile @Nullable ValueType writeValueType;
-    private volatile @Nullable Transformation readTransformation;
-    private volatile @Nullable Transformation writeTransformation;
+    private volatile @Nullable CascadedValueTransformationImpl readTransformation;
+    private volatile @Nullable CascadedValueTransformationImpl writeTransformation;
     private volatile Optional<Integer> readIndex = Optional.empty();
     private volatile Optional<Integer> readSubIndex = Optional.empty();
     private volatile @Nullable Integer writeStart;
@@ -238,7 +239,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private @Nullable Optional<Command> transformCommandAndProcessJSON(ChannelUID channelUID, Command command) {
         String transformOutput;
         Optional<Command> transformedCommand;
-        Transformation writeTransformation = this.writeTransformation;
+        ValueTransformation writeTransformation = this.writeTransformation;
         if (writeTransformation == null || writeTransformation.isIdentityTransform()) {
             transformedCommand = Optional.of(command);
         } else {
@@ -252,7 +253,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         command, channelUID));
                 return null;
             } else {
-                transformedCommand = Transformation.tryConvertToCommand(transformOutput);
+                transformedCommand = SingleValueTransformation.tryConvertToCommand(transformOutput);
                 logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
                         transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
                         transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
@@ -296,7 +297,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             // Should not happen! This method is not called in case configuration errors and writeType is validated
             // already in initialization (validateAndParseWriteParameters).
             // We keep this here for future-proofing the code (new writeType values)
-            throw new NotImplementedException(String.format(
+            throw new IllegalStateException(String.format(
                     "writeType does not equal %s or %s and thus configuration is invalid. Should not end up this far with configuration error.",
                     WRITE_TYPE_COIL, WRITE_TYPE_HOLDING));
         }
@@ -438,8 +439,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         ModbusReadFunctionCode functionCode = this.functionCode;
         boolean readingDiscreteOrCoil = functionCode == ModbusReadFunctionCode.READ_COILS
                 || functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES;
-        boolean readStartMissing = StringUtils.isBlank(config.getReadStart());
-        boolean readValueTypeMissing = StringUtils.isBlank(config.getReadValueType());
+        boolean readStartMissing = config.getReadStart() == null || config.getReadStart().isBlank();
+        boolean readValueTypeMissing = config.getReadValueType() == null || config.getReadValueType().isBlank();
 
         if (childOfEndpoint && readRequest == null) {
             if (!readStartMissing || !readValueTypeMissing) {
@@ -503,16 +504,16 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 throw new ModbusConfigurationException(errmsg);
             }
         }
-        readTransformation = new Transformation(config.getReadTransform());
+        readTransformation = new CascadedValueTransformationImpl(config.getReadTransform());
         validateReadIndex();
     }
 
     private void validateAndParseWriteParameters(ModbusDataConfiguration config) throws ModbusConfigurationException {
-        boolean writeTypeMissing = StringUtils.isBlank(config.getWriteType());
-        boolean writeStartMissing = StringUtils.isBlank(config.getWriteStart());
-        boolean writeValueTypeMissing = StringUtils.isBlank(config.getWriteValueType());
-        boolean writeTransformationMissing = StringUtils.isBlank(config.getWriteTransform());
-        writeTransformation = new Transformation(config.getWriteTransform());
+        boolean writeTypeMissing = config.getWriteType() == null || config.getWriteType().isBlank();
+        boolean writeStartMissing = config.getWriteStart() == null || config.getWriteStart().isBlank();
+        boolean writeValueTypeMissing = config.getWriteValueType() == null || config.getWriteValueType().isBlank();
+        boolean writeTransformationMissing = config.getWriteTransform() == null || config.getWriteTransform().isBlank();
+        writeTransformation = new CascadedValueTransformationImpl(config.getWriteTransform());
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
         writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
                 && !writeTransformationMissing);
@@ -819,7 +820,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(State numericState, boolean boolValue) {
-        Transformation localReadTransformation = readTransformation;
+        ValueTransformation localReadTransformation = readTransformation;
         if (localReadTransformation == null) {
             // We should always have transformation available if thing is initalized properly
             logger.trace("No transformation available, aborting processUpdatedValue");
@@ -870,8 +871,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         localReadTransformation.isIdentityTransform() ? "<identity>" : localReadTransformation);
                 states.put(channelUID, transformedState);
             } else {
-                String types = StringUtils.join(acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(),
-                        ", ");
+                String types = String.join(", ",
+                        acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(String[]::new));
                 logger.warn(
                         "Channel {} will not be updated since transformation was unsuccessful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
                         channelId, types, numericState, readValueType, boolValue,
@@ -922,7 +923,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     }
 
     private ChannelUID getChannelUID(String channelID) {
-        return channelCache.computeIfAbsent(channelID, id -> new ChannelUID(getThing().getUID(), id));
+        return Objects
+                .requireNonNull(channelCache.computeIfAbsent(channelID, id -> new ChannelUID(getThing().getUID(), id)));
     }
 
     private void updateStatusIfChanged(ThingStatus status) {

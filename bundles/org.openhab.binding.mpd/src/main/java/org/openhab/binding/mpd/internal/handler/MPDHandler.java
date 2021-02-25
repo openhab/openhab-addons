@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(MPDHandler.class);
 
-    private Map<String, @Nullable State> stateMap = Collections.synchronizedMap(new HashMap<String, @Nullable State>());
+    private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private final MPDConnection connection;
     private int volume = 0;
@@ -254,7 +254,11 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
     @Override
     public void updateMPDStatus(MPDStatus status) {
         volume = status.getVolume();
-        updateChannel(CHANNEL_VOLUME, new PercentType(status.getVolume()));
+        if (volume < 0 || volume > 100) {
+            updateChannel(CHANNEL_VOLUME, UnDefType.UNDEF);
+        } else {
+            updateChannel(CHANNEL_VOLUME, new PercentType(volume));
+        }
 
         State newControlState = UnDefType.UNDEF;
         switch (status.getState()) {

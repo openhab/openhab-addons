@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.insteon.internal.device;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,7 +29,6 @@ import org.openhab.core.types.Command;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class FeatureTemplate {
     private String name;
     private String timeout;
@@ -37,8 +37,8 @@ public class FeatureTemplate {
     private @Nullable HandlerEntry pollHandler = null;
     private @Nullable HandlerEntry defaultMsgHandler = null;
     private @Nullable HandlerEntry defaultCmdHandler = null;
-    private HashMap<Integer, HandlerEntry> messageHandlers = new HashMap<>();
-    private HashMap<Class<? extends Command>, HandlerEntry> commandHandlers = new HashMap<>();
+    private Map<Integer, HandlerEntry> messageHandlers = new HashMap<>();
+    private Map<Class<? extends Command>, HandlerEntry> commandHandlers = new HashMap<>();
 
     public FeatureTemplate(String name, boolean isStatus, String timeout) {
         this.name = name;
@@ -80,7 +80,7 @@ public class FeatureTemplate {
      *
      * @return a Hashmap from Integer to String representing the command codes and the associated message handlers
      */
-    public HashMap<Integer, HandlerEntry> getMessageHandlers() {
+    public Map<Integer, HandlerEntry> getMessageHandlers() {
         return messageHandlers;
     }
 
@@ -91,7 +91,7 @@ public class FeatureTemplate {
      * @see #getMessageHandlers()
      * @return a HashMap from Command Classes to CommandHandler names
      */
-    public HashMap<Class<? extends Command>, HandlerEntry> getCommandHandlers() {
+    public Map<Class<? extends Command>, HandlerEntry> getCommandHandlers() {
         return commandHandlers;
     }
 
@@ -141,19 +141,29 @@ public class FeatureTemplate {
         DeviceFeature f = new DeviceFeature(name);
         f.setStatusFeature(isStatus);
         f.setTimeout(timeout);
+        HandlerEntry dispatcher = this.dispatcher;
         if (dispatcher != null) {
             f.setMessageDispatcher(MessageDispatcher.makeHandler(dispatcher.getName(), dispatcher.getParams(), f));
         }
+        HandlerEntry pollHandler = this.pollHandler;
         if (pollHandler != null) {
             f.setPollHandler(PollHandler.makeHandler(pollHandler, f));
         }
+        HandlerEntry defaultCmdHandler = this.defaultCmdHandler;
         if (defaultCmdHandler != null) {
-            f.setDefaultCommandHandler(
-                    CommandHandler.makeHandler(defaultCmdHandler.getName(), defaultCmdHandler.getParams(), f));
+            CommandHandler h = CommandHandler.makeHandler(defaultCmdHandler.getName(), defaultCmdHandler.getParams(),
+                    f);
+            if (h != null) {
+                f.setDefaultCommandHandler(h);
+            }
         }
+        HandlerEntry defaultMsgHandler = this.defaultMsgHandler;
         if (defaultMsgHandler != null) {
-            f.setDefaultMsgHandler(
-                    MessageHandler.makeHandler(defaultMsgHandler.getName(), defaultMsgHandler.getParams(), f));
+            MessageHandler h = MessageHandler.makeHandler(defaultMsgHandler.getName(), defaultMsgHandler.getParams(),
+                    f);
+            if (h != null) {
+                f.setDefaultMsgHandler(h);
+            }
         }
         for (Entry<Integer, HandlerEntry> mH : messageHandlers.entrySet()) {
             f.addMessageHandler(mH.getKey(),

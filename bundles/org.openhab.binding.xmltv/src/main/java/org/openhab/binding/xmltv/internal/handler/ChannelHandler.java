@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -223,7 +223,7 @@ public class ChannelHandler extends BaseThingHandler {
                         if (progress > 100 || progress < 0) {
                             logger.debug("Outstanding process");
                         }
-                        updateState(channelUID, new QuantityType<>(progress, SmartHomeUnits.PERCENT));
+                        updateState(channelUID, new QuantityType<>(progress, Units.PERCENT));
 
                         break;
                 }
@@ -236,7 +236,7 @@ public class ChannelHandler extends BaseThingHandler {
     private QuantityType<?> getDurationInSeconds(Instant from, Instant to) {
         Duration elapsed = Duration.between(from, to);
         long secondsElapsed = TimeUnit.MILLISECONDS.toSeconds(elapsed.toMillis());
-        return new QuantityType<>(secondsElapsed, SmartHomeUnits.SECOND);
+        return new QuantityType<>(secondsElapsed, Units.SECOND);
     }
 
     private @Nullable RawType downloadIcon(List<Icon> icons) {

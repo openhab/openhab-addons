@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:http:channel-config">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-color">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="onValue" type="text">
+			<label>On Value</label>
+			<description>The value that represents ON</description>
+		</parameter>
+		<parameter name="offValue" type="text">
+			<label>Off Value</label>
+			<description>The value that represents OFF</description>
+		</parameter>
+		<parameter name="increaseValue" type="text">
+			<label>Increase Value</label>
+			<description>The value that represents INCREASE</description>
+		</parameter>
+		<parameter name="decreaseValue" type="text">
+			<label>Decrease Value</label>
+			<description>The value that represents DECREASE</description>
+		</parameter>
+		<parameter name="step" type="text">
+			<label>Increase/Decrease Step</label>
+			<description>The value by which the current brightness is increased/decreased if the corresponding command is
+				received</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="colorMode" type="text">
+			<label>Color Mode</label>
+			<description>Color mode for parsing incoming and sending outgoing values</description>
+			<options>
+				<option value="HSB">HSB</option>
+				<option value="RGB">RGB</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<default>RGB</default>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-contact">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="openValue" type="text" required="true">
+			<label>Open Value</label>
+			<description>The value that represents OPEN</description>
+		</parameter>
+		<parameter name="closedValue" type="text" required="true">
+			<label>Closed Value</label>
+			<description>The value that represents CLOSED</description>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-dimmer">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="onValue" type="text">
+			<label>On Value</label>
+			<description>The value that represents ON</description>
+		</parameter>
+		<parameter name="offValue" type="text">
+			<label>Off Value</label>
+			<description>The value that represents OFF</description>
+		</parameter>
+		<parameter name="increaseValue" type="text">
+			<label>Increase Value</label>
+			<description>The value that represents INCREASE</description>
+		</parameter>
+		<parameter name="decreaseValue" type="text">
+			<label>Decrease Value</label>
+			<description>The value that represents DECREASE</description>
+		</parameter>
+		<parameter name="step" type="text">
+			<label>Increase/Decrease Step</label>
+			<description>The value by which the current brightness is increased/decreased if the corresponding command is
+				received</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-image">
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-number">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+		<parameter name="unit" type="text">
+			<label>Unit</label>
+			<description>Unit to append to the (transformed) value.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-player">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="playValue" type="text">
+			<label>Play Value</label>
+			<description>The value that represents PLAY</description>
+		</parameter>
+		<parameter name="pauseValue" type="text">
+			<label>Pause Value</label>
+			<description>The value that represents PAUSE</description>
+		</parameter>
+		<parameter name="nextValue" type="text">
+			<label>Next Value</label>
+			<description>The value that represents NEXT</description>
+		</parameter>
+		<parameter name="previousValue" type="text">
+			<label>Previous Value</label>
+			<description>The value that represents PREVIOUS</description>
+		</parameter>
+		<parameter name="rewindValue" type="text">
+			<label>Rewind Value</label>
+			<description>The value that represents REWIND</description>
+		</parameter>
+		<parameter name="fastforwardValue" type="text">
+			<label>Fast Forward Value</label>
+			<description>The value that represents FASTFORWARD</description>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-rollershutter">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="upValue" type="text">
+			<label>Up Value</label>
+			<description>The value that represents UP</description>
+		</parameter>
+		<parameter name="downValue" type="text">
+			<label>Down Value</label>
+			<description>The value that represents DOWN</description>
+		</parameter>
+		<parameter name="stopValue" type="text">
+			<label>Stop Value</label>
+			<description>The value that represents STOP</description>
+		</parameter>
+		<parameter name="moveValue" type="text">
+			<label>Move Value</label>
+			<description>The value that represents MOVE</description>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:http:channel-config-switch">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="onValue" type="text" required="true">
+			<label>On Value</label>
+			<description>The value that represents ON</description>
+		</parameter>
+		<parameter name="offValue" type="text" required="true">
+			<label>Off Value</label>
+			<description>The value that represents OFF</description>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

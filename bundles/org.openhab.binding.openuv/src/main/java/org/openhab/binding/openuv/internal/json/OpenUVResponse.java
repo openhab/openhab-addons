@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,21 +12,25 @@
  */
 package org.openhab.binding.openuv.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link OpenUVResponse} is the Java class used to map the JSON
  * response to the OpenUV request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class OpenUVResponse {
-    private String error;
-    private OpenUVResult result;
+    private @Nullable String error;
+    private @Nullable OpenUVResult result;
 
-    public OpenUVResult getResult() {
+    public @Nullable OpenUVResult getResult() {
         return result;
     }
 
-    public String getError() {
+    public @Nullable String getError() {
         return error;
     }
 }

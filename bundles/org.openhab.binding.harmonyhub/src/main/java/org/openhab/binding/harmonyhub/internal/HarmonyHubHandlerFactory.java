@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory
                     HarmonyDeviceHandler.SUPPORTED_THING_TYPES_UIDS.stream())
             .collect(Collectors.toSet());
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final HttpClient httpClient;
 
     private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();

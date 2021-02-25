@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,6 @@ public class VeluxBridgeDeviceStatus {
      * <li>{@link #gwStateDescription} containing the verbose gateway state.
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public boolean isRetrieved = false;
         public StringType gwState = new StringType(VeluxBindingConstants.UNKNOWN);

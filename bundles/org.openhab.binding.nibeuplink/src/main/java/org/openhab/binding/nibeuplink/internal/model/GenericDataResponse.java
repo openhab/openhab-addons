@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,6 @@ import com.google.gson.annotations.SerializedName;
 public class GenericDataResponse implements DataResponse {
     private final Logger logger = LoggerFactory.getLogger(GenericDataResponse.class);
 
-    @NonNullByDefault
     public static class Value {
         @SerializedName("VariableId")
         private @Nullable String variableId;

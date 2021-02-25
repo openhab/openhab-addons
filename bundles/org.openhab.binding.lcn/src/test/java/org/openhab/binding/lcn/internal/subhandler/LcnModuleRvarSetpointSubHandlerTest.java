@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT1)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(1100), LcnChannelGroup.RVARSETPOINT, 0);
-        verify(handler).sendPck("REASA+100");
+        verify(handler).sendPck("X2030032100");
     }
 
     @Test
@@ -82,7 +82,7 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT2)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(1100), LcnChannelGroup.RVARSETPOINT, 1);
-        verify(handler).sendPck("REBSA+100");
+        verify(handler).sendPck("X2030096100");
     }
 
     @Test
@@ -90,7 +90,7 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT1)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(900), LcnChannelGroup.RVARSETPOINT, 0);
-        verify(handler).sendPck("REASA-100");
+        verify(handler).sendPck("X2030040100");
     }
 
     @Test
@@ -98,7 +98,7 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT2)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(900), LcnChannelGroup.RVARSETPOINT, 1);
-        verify(handler).sendPck("REBSA-100");
+        verify(handler).sendPck("X2030104100");
     }
 
     @Test

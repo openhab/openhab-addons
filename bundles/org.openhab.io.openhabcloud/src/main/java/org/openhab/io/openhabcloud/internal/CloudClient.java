@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,14 +19,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Request.FailureListener;
@@ -63,14 +63,12 @@ import io.socket.engineio.client.Transport;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
- *
  */
-
 public class CloudClient {
     /*
      * Logger for this class
      */
-    private Logger logger = LoggerFactory.getLogger(CloudClient.class);
+    private final Logger logger = LoggerFactory.getLogger(CloudClient.class);
 
     /*
      * This variable holds base URL for the openHAB Cloud connections
@@ -98,9 +96,9 @@ public class CloudClient {
     private final HttpClient jettyClient;
 
     /*
-     * This hashmap holds HTTP requests to local openHAB which are currently running
+     * This map holds HTTP requests to local openHAB which are currently running
      */
-    private Map<Integer, Request> runningRequests;
+    private final Map<Integer, Request> runningRequests = new ConcurrentHashMap<>();
 
     /*
      * This variable indicates if connection to the openHAB Cloud is currently in an established state
@@ -147,7 +145,6 @@ public class CloudClient {
         this.localBaseUrl = localBaseUrl;
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
-        runningRequests = new HashMap<>();
         this.jettyClient = httpClient;
     }
 
@@ -176,11 +173,11 @@ public class CloudClient {
                         logger.trace("Transport.EVENT_REQUEST_HEADERS");
                         @SuppressWarnings("unchecked")
                         Map<String, List<String>> headers = (Map<String, List<String>>) args[0];
-                        headers.put("uuid", Arrays.asList(uuid));
-                        headers.put("secret", Arrays.asList(secret));
-                        headers.put("openhabversion", Arrays.asList(OpenHAB.getVersion()));
-                        headers.put("clientversion", Arrays.asList(CloudService.clientVersion));
-                        headers.put("remoteaccess", Arrays.asList(((Boolean) remoteAccessEnabled).toString()));
+                        headers.put("uuid", List.of(uuid));
+                        headers.put("secret", List.of(secret));
+                        headers.put("openhabversion", List.of(OpenHAB.getVersion()));
+                        headers.put("clientversion", List.of(CloudService.clientVersion));
+                        headers.put("remoteaccess", List.of(((Boolean) remoteAccessEnabled).toString()));
                     }
                 });
             }
@@ -202,7 +199,11 @@ public class CloudClient {
         }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                logger.error("Error connecting to the openHAB Cloud instance: {}", args[0]);
+                if (logger.isDebugEnabled()) {
+                    logger.error("Error connecting to the openHAB Cloud instance: {}", args[0]);
+                } else {
+                    logger.error("Error connecting to the openHAB Cloud instance");
+                }
             }
         }).on("request", new Emitter.Listener() {
             @Override
@@ -242,9 +243,7 @@ public class CloudClient {
                 this.localBaseUrl);
         isConnected = false;
         // And clean up the list of running requests
-        if (runningRequests != null) {
-            runningRequests.clear();
-        }
+        runningRequests.clear();
     }
 
     /**
@@ -294,7 +293,6 @@ public class CloudClient {
             JSONObject requestQueryJson = data.getJSONObject("query");
             // Create URI builder with base request URI of openHAB and path from request
             String newPath = URIUtil.addPaths(localBaseUrl, requestPath);
-            @SuppressWarnings("unchecked")
             Iterator<String> queryIterator = requestQueryJson.keys();
             // Add query parameters to URI builder, if any
             newPath += "?";
@@ -345,7 +343,6 @@ public class CloudClient {
     }
 
     private void setRequestHeaders(Request request, JSONObject requestHeadersJson) {
-        @SuppressWarnings("unchecked")
         Iterator<String> headersIterator = requestHeadersJson.keys();
         // Convert JSONObject of headers into Header ArrayList
         while (headersIterator.hasNext()) {
@@ -368,8 +365,8 @@ public class CloudClient {
             int requestId = data.getInt("id");
             logger.debug("Received cancel for request {}", requestId);
             // Find and abort running request
-            if (runningRequests.containsKey(requestId)) {
-                Request request = runningRequests.get(requestId);
+            Request request = runningRequests.get(requestId);
+            if (request != null) {
                 request.abort(new InterruptedException());
                 runningRequests.remove(requestId);
             }
@@ -401,9 +398,8 @@ public class CloudClient {
      * @param message notification message text
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
-     *
      */
-    public void sendNotification(String userId, String message, String icon, String severity) {
+    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
@@ -426,9 +422,8 @@ public class CloudClient {
      * @param message notification message text
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
-     *
      */
-    public void sendLogNotification(String message, String icon, String severity) {
+    public void sendLogNotification(String message, @Nullable String icon, @Nullable String severity) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
@@ -450,9 +445,8 @@ public class CloudClient {
      * @param message notification message text
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
-     *
      */
-    public void sendBroadcastNotification(String message, String icon, String severity) {
+    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
@@ -621,8 +615,6 @@ public class CloudClient {
                 } catch (JSONException e) {
                     logger.debug("{}", e.getMessage());
                 }
-            } else {
-                // We should not send headers for the second time...
             }
         }
     }

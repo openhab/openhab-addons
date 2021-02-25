@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="heater" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Heater</label>
+		<description>Heater</description>
+		<channels>
+			<channel id="heaterState" typeId="state"/>
+			<channel id="heaterEnable" typeId="enable"/>
+		</channels>
+
+		<properties>
+			<property name="Vendor">Hayward</property>
+		</properties>
+		<representation-property>systemID</representation-property>
+	</thing-type>
+
+	<channel-type id="state">
+		<item-type>Number</item-type>
+		<label>Heater State</label>
+		<description>Heater State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enable">
+		<item-type>system.power</item-type>
+		<label>Heater Enable</label>
+		<description>Heater Enable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

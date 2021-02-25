@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,8 +33,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
-import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
+import org.openhab.binding.nikohomecontrol.internal.protocol.*;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcProperty;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMessage2.NhcMessageParam;
@@ -309,7 +308,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         } else if ("devices.added".equals(method)) {
             deviceList.forEach(this::addDevice);
-        } else if ("devices.changed".contentEquals(method)) {
+        } else if ("devices.changed".equals(method)) {
             deviceList.forEach(this::removeDevice);
             deviceList.forEach(this::addDevice);
         }
@@ -444,12 +443,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         }
 
-        if (actions.containsKey(device.uuid)) {
-            updateActionState((NhcAction2) actions.get(device.uuid), deviceProperties);
-        } else if (thermostats.containsKey(device.uuid)) {
-            updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), deviceProperties);
-        } else if (energyMeters.containsKey(device.uuid)) {
-            updateEnergyMeterState((NhcEnergyMeter2) energyMeters.get(device.uuid), deviceProperties);
+        NhcAction action = actions.get(device.uuid);
+        NhcThermostat thermostat = thermostats.get(device.uuid);
+        NhcEnergyMeter energyMeter = energyMeters.get(device.uuid);
+
+        if (action != null) {
+            updateActionState((NhcAction2) action, deviceProperties);
+        } else if (thermostat != null) {
+            updateThermostatState((NhcThermostat2) thermostat, deviceProperties);
+        } else if (energyMeter != null) {
+            updateEnergyMeterState((NhcEnergyMeter2) energyMeter, deviceProperties);
         }
     }
 
@@ -486,9 +489,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         if (dimmerProperty.isPresent()) {
-            action.setState(Integer.parseInt(dimmerProperty.get().brightness));
-            logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
-                    dimmerProperty.get().brightness);
+            String brightness = dimmerProperty.get().brightness;
+            if (brightness != null) {
+                action.setState(Integer.parseInt(brightness));
+                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
+                        dimmerProperty.get().brightness);
+            }
         }
     }
 
@@ -507,15 +513,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         Optional<Boolean> overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive)
                 .filter(Objects::nonNull).map(t -> Boolean.parseBoolean(t)).findFirst();
         Optional<Integer> overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
-                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
+                .filter(Objects::nonNull).findFirst();
         Optional<Integer> overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
-                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t))).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                .filter(Objects::nonNull).findFirst();
         Optional<Integer> setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
-                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
-        Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave).filter(Objects::nonNull)
-                .map(t -> Boolean.parseBoolean(t)).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
+                .filter(Objects::nonNull).findFirst();
+        Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave)
+                .map(s -> s != null ? Boolean.parseBoolean(s) : null).filter(Objects::nonNull).findFirst();
         Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
-                .filter(s -> !(s == null || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
+                .filter(Objects::nonNull).findFirst();
         Optional<@Nullable String> demandProperty = deviceProperties.stream().map(p -> p.demand)
                 .filter(Objects::nonNull).findFirst();
         Optional<@Nullable String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)

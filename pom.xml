@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -68,18 +68,21 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <ohc.version>${project.version}</ohc.version>
-    <bnd.version>5.1.2</bnd.version>
+    <ohc.version>3.1.0-SNAPSHOT</ohc.version>
+    <bnd.version>5.2.0</bnd.version>
+    <commons.net.version>3.7.2</commons.net.version>
+    <eea.version>2.2.1</eea.version>
     <karaf.version>4.2.7</karaf.version>
     <sat.version>0.10.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
+    <spotless.version>2.0.3</spotless.version>
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
+    <bnd.fixupmessages/>
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
-    <spotless.version>2.0.3</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -150,9 +153,11 @@ Import-Package: \\
   !*.impl.*, \\
   org.openhab.*, \\
   ${bnd.exportpackage}
+-noimportjava: true
 -sources: false
 -contract: *
--includeresource: ${bnd.includeresource}]]></bnd>
+-includeresource: ${bnd.includeresource}
+-fixupmessages: ${bnd.fixupmessages}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
           </configuration>
@@ -281,12 +286,16 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.8.1</version>
           <configuration>
             <compilerId>eclipse</compilerId>
+            <compilerArguments>
+              <annotationpath>CLASSPATH</annotationpath>
+              <classpath>${project.build.directory}/dependency</classpath>
+            </compilerArguments>
             <compilerArgs>
-              <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,-nullUncheckedConversion</arg>
-              <arg>-warn:+null,+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
+              <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion</arg>
+              <arg>-warn:+null,+inheritNullAnnot,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
             </compilerArgs>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>
@@ -295,12 +304,12 @@ Import-Package: \\
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-compiler-eclipse</artifactId>
-              <version>2.8.5</version>
+              <version>2.8.8</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>ecj</artifactId>
-              <version>3.16.0</version>
+              <version>3.23.0</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -405,7 +414,7 @@ Import-Package: \\
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2020</year>
+              <year>2021</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>
@@ -711,62 +720,6 @@ Import-Package: \\
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>add-libraries-cli</id>
-      <activation>
-        <property>
-          <name>!m2e.version</name>
-        </property>
-        <file>
-          <exists>lib/</exists>
-        </file>
-      </activation>
-      <properties>
-        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/;filter:=*.jar;lib:=true</bnd.includeresource>
-        <feature.directory>../../src/main/feature/feature.xml</feature.directory>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.googlecode.addjars-maven-plugin</groupId>
-            <artifactId>addjars-maven-plugin</artifactId>
-            <version>1.0.5</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>add-jars</goal>
-                </goals>
-                <configuration>
-                  <resources>
-                    <resource>
-                      <directory>${project.basedir}/lib</directory>
-                      <includes>
-                        <include>**/*.jar</include>
-                      </includes>
-                      <scope>provided</scope>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>add-libraries-eclipse</id>
-      <activation>
-        <property>
-          <name>m2e.version</name>
-        </property>
-        <file>
-          <exists>lib/</exists>
-        </file>
-      </activation>
-      <properties>
-        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/;filter:=*.jar;lib:=true</bnd.includeresource>
-      </properties>
     </profile>
     <profile>
       <id>with-bnd-resolver-resolve</id>

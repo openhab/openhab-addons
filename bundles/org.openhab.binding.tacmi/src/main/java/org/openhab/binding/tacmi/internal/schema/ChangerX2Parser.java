@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -170,13 +170,15 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleAutoCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        logger.debug("Unexpected AutoCloseElement in {}:{}: {}", line, col, elementName);
+        logger.debug("Unexpected AutoCloseElement in {}:{}: {}", line, col,
+                elementName == null ? "<null>" : elementName);
     }
 
     @Override
     public void handleUnmatchedCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        logger.debug("Unexpected UnmatchedCloseElement in {}:{}: {}", line, col, elementName);
+        logger.debug("Unexpected UnmatchedCloseElement in {}:{}: {}", line, col,
+                elementName == null ? "<null>" : elementName);
     }
 
     @Override
@@ -190,13 +192,15 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleComment(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
-        logger.debug("Unexpected comment in {}:{}: {}", line, col, new String(buffer, offset, len));
+        logger.debug("Unexpected comment in {}:{}: {}", line, col,
+                buffer == null ? "<null>" : new String(buffer, offset, len));
     }
 
     @Override
     public void handleCDATASection(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
-        logger.debug("Unexpected CDATA in {}:{}: {}", line, col, new String(buffer, offset, len));
+        logger.debug("Unexpected CDATA in {}:{}: {}", line, col,
+                buffer == null ? "<null>" : new String(buffer, offset, len));
     }
 
     @Override

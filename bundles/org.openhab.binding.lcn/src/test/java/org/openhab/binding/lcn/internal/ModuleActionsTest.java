@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,10 @@ public class ModuleActionsTest {
     public void testSendDynamicText1ChunkRow1() throws LcnException {
         a.sendDynamicText(1, "abcdfghijklm");
 
-        verify(handler).sendPck(stringToByteBuffer("GTDT11abcdfghijklm"));
+        verify(handler, times(2)).sendPck(byteBufferCaptor.capture());
+
+        assertThat(byteBufferCaptor.getAllValues(), contains(stringToByteBuffer("GTDT11abcdfghijklm"),
+                stringToByteBuffer("GTDT12 \0\0\0\0\0\0\0\0\0\0\0")));
     }
 
     @Test

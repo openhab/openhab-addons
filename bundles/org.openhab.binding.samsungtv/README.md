@@ -49,7 +49,6 @@ Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress=
 ```
 
 Different ports are used in different models. It may be 55000, 8001 or 8002.
-Try to scan for new Things in Paper UI to find TV easily.
 
 ## Channels
 
@@ -101,7 +100,7 @@ Values are confirmed to work on UE50MU6179.
 | Browser       | `Internet`         | Built-in WWW browser              |
 | Netflix       | `Netflix`          | Netflix App                       |
 | Prime Video   | `Prime Video`      | Prime Video App                   |
-| YouTube       | `YouTube`          | Prime Video App                   |
+| YouTube       | `YouTube`          | YouTube App                       |
 | ZDF Mediathek | `ZDF mediathek`    | German public TV broadcasting app |
 
-As part of discovery, log file `/var/log/openhab2/openhab.log` will contain a debug line with installed apps.
+To discover all installed apps names, you can enable the DEBUG log output from the binding to see a list.

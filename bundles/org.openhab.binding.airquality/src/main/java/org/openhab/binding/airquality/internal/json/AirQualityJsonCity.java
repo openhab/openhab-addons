@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.airquality.internal.json;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,8 +41,6 @@ public class AirQualityJsonCity {
     }
 
     public String getGeo() {
-        List<String> list = new ArrayList<>();
-        geo.forEach(item -> list.add(item.toString()));
-        return String.join(",", list);
+        return geo.stream().map(Object::toString).collect(Collectors.joining(", "));
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import java.security.MessageDigest;
@@ -76,7 +75,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     // nonce is reused if authenticate is null so the NC needs to increment to allow this//
     public void processAuth(String authenticate, String httpMethod, String requestURI, boolean reSend) {
         if (authenticate.contains("Basic realm=\"")) {
-            if (ipCameraHandler.useDigestAuth == true) {
+            if (ipCameraHandler.useDigestAuth) {
                 // Possible downgrade authenticate attack avoided.
                 return;
             }
@@ -96,7 +95,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         nonce = Helper.searchString(authenticate, "nonce=\"");
         opaque = Helper.searchString(authenticate, "opaque=\"");
         qop = Helper.searchString(authenticate, "qop=\"");
-
         if (!qop.isEmpty() && !realm.isEmpty()) {
             ipCameraHandler.useDigestAuth = true;
         } else {
@@ -106,8 +104,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         String stale = Helper.searchString(authenticate, "stale=\"");
-        if (stale.isEmpty()) {
-        } else if (stale.equalsIgnoreCase("true")) {
+        if (stale.equalsIgnoreCase("true")) {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");
         }
 
@@ -130,8 +127,10 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
 
         String digestString = "username=\"" + username + "\", realm=\"" + realm + "\", nonce=\"" + nonce + "\", uri=\""
                 + requestURI + "\", cnonce=\"" + cnonce + "\", nc=" + nc + ", qop=\"" + qop + "\", response=\""
-                + response + "\", opaque=\"" + opaque + "\"";
-
+                + response + "\"";
+        if (!opaque.isEmpty()) {
+            digestString += ", opaque=\"" + opaque + "\"";
+        }
         if (reSend) {
             ipCameraHandler.sendHttpRequest(httpMethod, requestURI, digestString);
             return;

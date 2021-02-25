@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,15 @@
 package org.openhab.binding.neeo.internal.handler;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -46,57 +45,58 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(NeeoForwardActionsServlet.class);
 
     /** The event publisher */
-    private final Callback callback;
+    private final Consumer<String> callback;
 
     /** The forwarding chain */
-    @Nullable
-    private final String forwardChain;
+    private final @Nullable String forwardChain;
+
+    /** The {@link ClientBuilder} to use */
+    private final ClientBuilder clientBuilder;
 
     /** The scheduler to use to schedule recipe execution */
     private final ScheduledExecutorService scheduler;
 
     /**
-     * Creates the servlet the will process foward action events from the NEEO brain.
+     * Creates the servlet the will process forward action events from the NEEO brain.
      *
      * @param scheduler a non-null {@link ScheduledExecutorService} to schedule forward actions
-     * @param callback a non-null {@link Callback}
+     * @param callback a non-null String consumer
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
-    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, @Nullable String forwardChain) {
+    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Consumer<String> callback,
+            @Nullable String forwardChain, ClientBuilder clientBuilder) {
         super();
-
-        Objects.requireNonNull(scheduler, "scheduler cannot be null");
-        Objects.requireNonNull(callback, "callback cannot be null");
 
         this.scheduler = scheduler;
         this.callback = callback;
         this.forwardChain = forwardChain;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
-     * Processes the post action from the NEEO brain. Simply get's the specified json and then forwards it on (if
+     * Processes the post action from the NEEO brain. Simply gets the specified json and then forwards it on (if
      * needed)
      *
      * @param req the non-null request
      * @param resp the non-null response
      */
     @Override
-    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
-        Objects.requireNonNull(req, "req cannot be null");
-        Objects.requireNonNull(resp, "resp cannot be null");
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
+        if (req == null || resp == null) {
+            logger.warn("doPost called with req={}, resp={}, non-null required.", req, resp);
+            return;
+        }
 
-        final String json = IOUtils.toString(req.getReader());
+        final String json = req.getReader().lines().collect(Collectors.joining("\n"));
         logger.debug("handleForwardActions {}", json);
 
-        callback.post(json);
+        callback.accept(json);
 
-        final String fc = forwardChain;
-        if (fc != null && StringUtils.isNotEmpty(fc)) {
+        if (forwardChain != null && !forwardChain.isEmpty()) {
             scheduler.execute(() -> {
-                try (final HttpRequest request = new HttpRequest()) {
-                    for (final String forwardUrl : fc.split(",")) {
-                        if (StringUtils.isNotEmpty(forwardUrl)) {
+                try (final HttpRequest request = new HttpRequest(clientBuilder)) {
+                    for (final String forwardUrl : forwardChain.split(",")) {
+                        if (!forwardUrl.isEmpty()) {
                             final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
                             if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
                                 logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
@@ -107,9 +107,5 @@ public class NeeoForwardActionsServlet extends HttpServlet {
                 }
             });
         }
-    }
-
-    interface Callback {
-        void post(String json);
     }
 }

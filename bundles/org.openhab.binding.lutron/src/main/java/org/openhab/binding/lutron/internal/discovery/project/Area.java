@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,12 +24,17 @@ import java.util.List;
  */
 public class Area {
     private String name;
+    private Integer integrationId;
     private List<DeviceNode> deviceNodes;
     private List<Output> outputs;
     private List<Area> areas;
 
     public String getName() {
         return name;
+    }
+
+    public Integer getIntegrationId() {
+        return integrationId;
     }
 
     public List<DeviceNode> getDeviceNodes() {

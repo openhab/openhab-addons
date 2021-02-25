@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Use "discovery.kodi:background=false" to disable discovery service
  */
-@Component(immediate = true, configurationPid = "discovery.kodi")
+@Component(configurationPid = "discovery.kodi")
 @NonNullByDefault
 public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 

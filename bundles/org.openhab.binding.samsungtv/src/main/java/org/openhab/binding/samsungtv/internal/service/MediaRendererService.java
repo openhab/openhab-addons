@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -248,7 +248,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
         try {
             newValue = DataConverters.convertCommandToIntValue(command, 0, 100,
-                    Integer.valueOf(stateMap.get("CurrentVolume")));
+                    Integer.valueOf(stateMap.getOrDefault("CurrentVolume", "")));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
@@ -281,7 +281,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
         try {
             newValue = DataConverters.convertCommandToIntValue(command, 0, 100,
-                    Integer.valueOf(stateMap.get("CurrentBrightness")));
+                    Integer.valueOf(stateMap.getOrDefault("CurrentBrightness", "")));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
@@ -297,7 +297,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
         try {
             newValue = DataConverters.convertCommandToIntValue(command, 0, 100,
-                    Integer.valueOf(stateMap.get("CurrentContrast")));
+                    Integer.valueOf(stateMap.getOrDefault("CurrentContrast", "")));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
@@ -313,7 +313,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
         try {
             newValue = DataConverters.convertCommandToIntValue(command, 0, 100,
-                    Integer.valueOf(stateMap.get("CurrentSharpness")));
+                    Integer.valueOf(stateMap.getOrDefault("CurrentSharpness", "")));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
@@ -329,7 +329,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
         try {
             newValue = DataConverters.convertCommandToIntValue(command, 0, 4,
-                    Integer.valueOf(stateMap.get("CurrentColorTemperature")));
+                    Integer.valueOf(stateMap.getOrDefault("CurrentColorTemperature", "")));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }

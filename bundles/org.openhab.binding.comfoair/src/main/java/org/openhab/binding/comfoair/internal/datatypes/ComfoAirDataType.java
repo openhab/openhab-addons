@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,17 +46,23 @@ public interface ComfoAirDataType {
 
     default int calculateNumberValue(int[] data, ComfoAirCommandType commandType) {
         int[] readReplyDataPos = commandType.getReadReplyDataPos();
+        int readReplyDataBits = commandType.getReadReplyDataBits();
+
         int value = 0;
         if (readReplyDataPos != null) {
-            int base = 0;
+            if (readReplyDataBits == 0) {
+                int base = 0;
 
-            for (int i = readReplyDataPos.length - 1; i >= 0; i--) {
-                if (readReplyDataPos[i] < data.length) {
-                    value += data[readReplyDataPos[i]] << base;
-                    base += 8;
-                } else {
-                    return -1;
+                for (int i = readReplyDataPos.length - 1; i >= 0; i--) {
+                    if (readReplyDataPos[i] < data.length) {
+                        value += data[readReplyDataPos[i]] << base;
+                        base += 8;
+                    } else {
+                        return -1;
+                    }
                 }
+            } else {
+                value = (data[readReplyDataPos[0]] & readReplyDataBits) == readReplyDataBits ? 1 : 0;
             }
         } else {
             value = -1;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,6 +74,8 @@ public class AbstractDynamoDBItemSerializationTest {
         assertEquals("item1", dbItem.getName());
         assertEquals(date, dbItem.getTime());
         Object actualState = dbItem.getState();
+        assertNotNull(actualState);
+        Objects.requireNonNull(actualState);
         if (expectedState instanceof BigDecimal) {
             BigDecimal expectedRounded = DynamoDBBigDecimalItem.loseDigits(((BigDecimal) expectedState));
             assertEquals(0, expectedRounded.compareTo((BigDecimal) actualState),

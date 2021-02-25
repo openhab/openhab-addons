@@ -8,14 +8,18 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -40,12 +44,18 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
 				"property": "scene_num",
 				"friendlyName": "Scene",
 				"channel": "scene",
+				"channelType": "scene",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",

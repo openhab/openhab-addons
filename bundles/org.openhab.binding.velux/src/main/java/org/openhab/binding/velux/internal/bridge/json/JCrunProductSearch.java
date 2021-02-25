@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,6 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
      * NOTE: the gateway software is extremely sensitive to this exact JSON structure.
      * Any modifications (like omitting empty params) will lead to an gateway error.
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -91,7 +90,6 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

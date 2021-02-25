@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,6 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
      * {"action":"getFirmware","params":{}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -76,7 +75,6 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
      * <P>
      * Used within structure {@link JCgetFirmware} to describe the software of the Bridge.
      */
-    @NonNullByDefault
     private static class BCfirmwareVersion {
         /*
          * "version": "0.1.1.0.41.0"
@@ -100,7 +98,6 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

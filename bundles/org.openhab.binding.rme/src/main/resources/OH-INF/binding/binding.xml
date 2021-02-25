@@ -5,6 +5,5 @@
 
 	<name>openHAB RME Binding</name>
 	<description>This is the binding for RME Rain Manager.</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

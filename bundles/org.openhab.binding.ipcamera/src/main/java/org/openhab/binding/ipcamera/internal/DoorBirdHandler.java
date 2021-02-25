@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -19,9 +18,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -53,26 +50,19 @@ public class DoorBirdHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = msg.toString();
         try {
-            if (!content.isEmpty()) {
-                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-            } else {
-                return;
-            }
-            if (content.contains("doorbell:H")) {
-                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.ON);
-            }
+            String content = msg.toString();
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             if (content.contains("doorbell:L")) {
                 ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.OFF);
+            } else if (content.contains("doorbell:H")) {
+                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.ON);
             }
             if (content.contains("motionsensor:L")) {
                 ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-            }
-            if (content.contains("motionsensor:H")) {
+            } else if (content.contains("motionsensor:H")) {
                 ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
             }
-
         } finally {
             ReferenceCountUtil.release(msg);
         }
@@ -98,19 +88,6 @@ public class DoorBirdHandler extends ChannelDuplexHandler {
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/bha-api/light-on.cgi");
                 }
-                return;
-            case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = false;
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                } else {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                    ipCameraHandler.motionThreshold = Double.valueOf(command.toString());
-                    ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
-                }
-                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                 return;
         }
     }

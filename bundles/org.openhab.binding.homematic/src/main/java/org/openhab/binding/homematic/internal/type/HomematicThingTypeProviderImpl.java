@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Gerhard Riegler - Initial contribution
  * @author Michael Reitler - Added HomematicThingTypeExcluder
  */
-@Component(service = { HomematicThingTypeProvider.class, ThingTypeProvider.class }, immediate = true)
+@Component(service = { HomematicThingTypeProvider.class, ThingTypeProvider.class })
 public class HomematicThingTypeProviderImpl implements HomematicThingTypeProvider {
     private Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<>();
     protected List<HomematicThingTypeExcluder> homematicThingTypeExcluders = new CopyOnWriteArrayList<>();

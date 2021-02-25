@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.insteon.internal.device;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,13 +27,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class DeviceType {
     private String productKey;
     private String model = "";
     private String description = "";
-    private HashMap<String, String> features = new HashMap<>();
-    private HashMap<String, FeatureGroup> featureGroups = new HashMap<>();
+    private Map<String, String> features = new HashMap<>();
+    private Map<String, FeatureGroup> featureGroups = new HashMap<>();
 
     /**
      * Constructor
@@ -48,7 +48,7 @@ public class DeviceType {
      *
      * @return all features that this device type supports
      */
-    public HashMap<String, String> getFeatures() {
+    public Map<String, String> getFeatures() {
         return features;
     }
 
@@ -57,7 +57,7 @@ public class DeviceType {
      *
      * @return all feature groups of this device type
      */
-    public HashMap<String, FeatureGroup> getFeatureGroups() {
+    public Map<String, FeatureGroup> getFeatureGroups() {
         return featureGroups;
     }
 
@@ -127,7 +127,6 @@ public class DeviceType {
      *
      * @author Bernd Pfrommer - Initial contribution
      */
-    @NonNullByDefault
     public static class FeatureGroup {
         private String name;
         private String type;

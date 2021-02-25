@@ -8,7 +8,7 @@ Since this binding allows actual you to trigger IR send/receive actions on YIO D
 
 ## Supported Things
 
-* Thing Type ID: `yioremotedock`
+* Thing Type ID: `yioRemoteDock`
 
 The following are the configurations available to each of the bridges/things:
 
@@ -41,7 +41,7 @@ rule "yioremote Action Example"
 when
   ...
 then
-	val actions = getActions("yioremote", "yioremote:yioremotedock:livingroom")
+	val actions = getActions("yioremote", "yioremote:yioRemoteDock:livingroom")
 	if (actions === null)
 	{
 		......
@@ -58,22 +58,20 @@ end
 .things
 
 ```
-yioremote:yioremotedock:livingroom [ 	host="192.168.178.21",	accesstoken="0"  ]
+yioremote:yioRemoteDock:livingroom [ 	host="xxx.xxx.xxx.xxx",	accesstoken="0"  ]
 ```
 
 .items
 
 ```
-String 	sendircode		"IR CODE [%s]" 			{channel="yioremote:yioremotedock:livingroom:input#	sendircode"}
-Switch 	receiverswitch	"IR recieving switch"	{channel="yioremote:yioremotedock:livingroom:input#	receiverswitch"}
-String 	status			"YIO Dock status[%s]" 	{channel="yioremote:yioremotedock:livingroom:output#	status"}
+Switch 	receiverswitch	"IR recieving switch"	{channel="yioremote:yioRemoteDock:livingroom:input#	receiverswitch"}
+String 	status			"YIO Dock status[%s]" 	{channel="yioremote:yioRemoteDock:livingroom:output#	status"}
 ```
 
 .sitemap
 
 ```
 sitemap Basic label="YIO Dock" {
-        Text item=	sendircode
         Switch item=	receiverswitch
         Text item=	status
 }

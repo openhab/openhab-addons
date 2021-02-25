@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -35,7 +37,7 @@ public class JsonBluetoothStates {
             return null;
         }
         for (BluetoothState state : bluetoothStates) {
-            if (state != null && StringUtils.equals(state.deviceSerialNumber, device.serialNumber)) {
+            if (state != null && Objects.equals(state.deviceSerialNumber, device.serialNumber)) {
                 return state;
             }
         }
@@ -49,7 +51,7 @@ public class JsonBluetoothStates {
         public boolean connected;
         public @Nullable String deviceClass;
         public @Nullable String friendlyName;
-        public @Nullable String @Nullable [] profiles;
+        public @Nullable List<String> profiles;
     }
 
     public static class BluetoothState {
@@ -58,6 +60,10 @@ public class JsonBluetoothStates {
         public @Nullable String friendlyName;
         public boolean gadgetPaired;
         public boolean online;
-        public @Nullable PairedDevice @Nullable [] pairedDeviceList;
+        public @Nullable List<PairedDevice> pairedDeviceList;
+
+        public List<PairedDevice> getPairedDeviceList() {
+            return Objects.requireNonNullElse(pairedDeviceList, List.of());
+        }
     }
 }

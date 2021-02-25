@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,8 @@ package org.openhab.binding.freebox.internal.handler;
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,6 +34,7 @@ import org.openhab.binding.freebox.internal.api.model.FreeboxLcdConfig;
 import org.openhab.binding.freebox.internal.api.model.FreeboxSambaConfig;
 import org.openhab.binding.freebox.internal.api.model.FreeboxSystemConfig;
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
+import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -48,6 +50,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.osgi.framework.Bundle;
@@ -85,6 +88,11 @@ public class FreeboxHandler extends BaseBridgeHandler {
         String deviceName = bundle.getHeaders().get("Bundle-Vendor");
         this.apiManager = new FreeboxApiManager(appId, appName, appVersion, deviceName);
         uptime = -1;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(FreeboxDiscoveryService.class);
     }
 
     @Override
@@ -139,17 +147,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
         logger.debug("initializing Freebox Server handler for thing {}", getThing().getUID());
 
         configuration = getConfigAs(FreeboxServerConfiguration.class);
-
-        // Update the discovery configuration
-        Map<String, Object> configDiscovery = new HashMap<>();
-        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_PHONE, configuration.discoverPhone);
-        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
-        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);
-        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER,
-                configuration.discoverAirPlayReceiver);
-        for (FreeboxDataListener dataListener : dataListeners) {
-            dataListener.applyConfig(configDiscovery);
-        }
 
         if (configuration.fqdn != null && !configuration.fqdn.isEmpty()) {
             if (configuration.appToken == null || configuration.appToken.isEmpty()) {

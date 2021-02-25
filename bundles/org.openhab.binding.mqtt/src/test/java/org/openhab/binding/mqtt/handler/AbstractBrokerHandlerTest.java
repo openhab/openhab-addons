@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.mqtt.handler;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
@@ -30,7 +30,6 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.internal.MqttThingID;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.thing.Bridge;
@@ -56,7 +55,6 @@ public class AbstractBrokerHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        doReturn(MqttThingID.getThingUID(HOST, PORT)).when(thing).getUID();
         doReturn(new Configuration(Collections.singletonMap("brokerid", MqttThingID.getThingUID(HOST, PORT).getId())))
                 .when(thing).getConfiguration();
         handler = new SystemBrokerHandler(thing, service);
@@ -68,7 +66,6 @@ public class AbstractBrokerHandlerTest {
     @Test
     public void brokerAddedWrongID() throws ConfigurationException, MqttException {
         MqttBrokerConnection brokerConnection = mock(MqttBrokerConnection.class);
-        when(brokerConnection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
         handler.brokerAdded("nonsense_id", brokerConnection);
         assertNull(handler.connection);
         // We do not expect a status change, because brokerAdded will do nothing with invalid connections.
@@ -89,7 +86,6 @@ public class AbstractBrokerHandlerTest {
     public void brokerAdded() throws ConfigurationException, MqttException {
         MqttBrokerConnectionEx connection = spy(
                 new MqttBrokerConnectionEx("10.10.0.10", 80, false, "BrokerHandlerTest"));
-        doReturn(connection).when(service).getBrokerConnection(eq(handler.brokerID));
 
         verify(callback, times(0)).statusUpdated(any(), any());
         handler.brokerAdded(handler.brokerID, connection);

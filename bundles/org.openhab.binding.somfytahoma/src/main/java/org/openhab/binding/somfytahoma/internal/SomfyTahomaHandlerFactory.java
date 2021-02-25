@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,8 +108,10 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaExternalAlarmHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_POD)) {
             return new SomfyTahomaPodHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_HEATING_SYSTEM)) {
-            return new SomfyTahomaHeatingSystemHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_VALVE_HEATING_SYSTEM)) {
+            return new SomfyTahomaValveHeatingSystemHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ZWAVE_HEATING_SYSTEM)) {
+            return new SomfyTahomaZwaveHeatingSystemHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ONOFF_HEATING_SYSTEM)) {
             return new SomfyTahomaOnOffHeatingSystemHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_EXTERIOR_HEATING_SYSTEM)) {

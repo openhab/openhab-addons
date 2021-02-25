@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class InsteonDevice {
     private final Logger logger = LoggerFactory.getLogger(InsteonDevice.class);
 
@@ -63,7 +62,7 @@ public class InsteonDevice {
     private InsteonAddress address = new InsteonAddress();
     private long pollInterval = -1L; // in milliseconds
     private @Nullable Driver driver = null;
-    private HashMap<String, @Nullable DeviceFeature> features = new HashMap<>();
+    private Map<String, DeviceFeature> features = new HashMap<>();
     private @Nullable String productKey = null;
     private volatile long lastTimePolled = 0L;
     private volatile long lastMsgReceived = 0L;
@@ -73,8 +72,8 @@ public class InsteonDevice {
     private long lastQueryTime = 0L;
     private boolean hasModemDBEntry = false;
     private DeviceStatus status = DeviceStatus.INITIALIZED;
-    private Map<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
-    private Map<String, @Nullable Object> deviceConfigMap = new HashMap<String, @Nullable Object>();
+    private Map<Integer, GroupMessageStateMachine> groupState = new HashMap<>();
+    private Map<String, Object> deviceConfigMap = new HashMap<String, Object>();
 
     /**
      * Constructor
@@ -121,7 +120,7 @@ public class InsteonDevice {
         return features.get(f);
     }
 
-    public HashMap<String, @Nullable DeviceFeature> getFeatures() {
+    public Map<String, DeviceFeature> getFeatures() {
         return features;
     }
 
@@ -134,6 +133,7 @@ public class InsteonDevice {
     }
 
     public boolean hasProductKey(String key) {
+        String productKey = this.productKey;
         return productKey != null && productKey.equals(key);
     }
 
@@ -194,11 +194,11 @@ public class InsteonDevice {
         }
     }
 
-    public void setDeviceConfigMap(Map<String, @Nullable Object> deviceConfigMap) {
+    public void setDeviceConfigMap(Map<String, Object> deviceConfigMap) {
         this.deviceConfigMap = deviceConfigMap;
     }
 
-    public Map<String, @Nullable Object> getDeviceConfigMap() {
+    public Map<String, Object> getDeviceConfigMap() {
         return deviceConfigMap;
     }
 
@@ -217,7 +217,7 @@ public class InsteonDevice {
     public boolean removeFeatureListener(String aItemName) {
         boolean removedListener = false;
         synchronized (features) {
-            for (Iterator<Entry<String, @Nullable DeviceFeature>> it = features.entrySet().iterator(); it.hasNext();) {
+            for (Iterator<Entry<String, DeviceFeature>> it = features.entrySet().iterator(); it.hasNext();) {
                 DeviceFeature f = it.next().getValue();
                 if (f.removeListener(aItemName)) {
                     removedListener = true;
@@ -275,7 +275,12 @@ public class InsteonDevice {
                 mrequestQueue.add(e);
             }
         }
-        RequestQueueManager.instance().addQueue(this, now + delay);
+        RequestQueueManager instance = RequestQueueManager.instance();
+        if (instance != null) {
+            instance.addQueue(this, now + delay);
+        } else {
+            logger.warn("request queue manager is null");
+        }
 
         if (!l.isEmpty()) {
             lastTimePolled = now;
@@ -440,6 +445,7 @@ public class InsteonDevice {
             if (mrequestQueue.isEmpty()) {
                 return 0L;
             }
+            DeviceFeature featureQueried = this.featureQueried;
             if (featureQueried != null) {
                 // A feature has been queried, but
                 // the response has not been digested yet.
@@ -453,13 +459,16 @@ public class InsteonDevice {
                 }
             }
             QEntry qe = mrequestQueue.poll(); // take it off the queue!
+            if (qe == null) {
+                return 0L;
+            }
             if (!qe.getMsg().isBroadcast()) {
                 logger.debug("qe taken off direct: {} {}", qe.getFeature(), qe.getMsg());
                 lastQueryTime = timeNow;
                 // mark feature as pending
                 qe.getFeature().setQueryStatus(DeviceFeature.QueryStatus.QUERY_PENDING);
                 // also mark this queue as pending so there is no doubt
-                featureQueried = qe.getFeature();
+                this.featureQueried = qe.getFeature();
             } else {
                 logger.debug("qe taken off bcast: {} {}", qe.getFeature(), qe.getMsg());
             }
@@ -505,14 +514,22 @@ public class InsteonDevice {
             m.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         logger.trace("enqueing direct message with delay {}", delay);
-        RequestQueueManager.instance().addQueue(this, now + delay);
+        RequestQueueManager instance = RequestQueueManager.instance();
+        if (instance != null) {
+            instance.addQueue(this, now + delay);
+        } else {
+            logger.warn("request queue manger instance is null");
+        }
     }
 
     private void writeMessage(Msg m) throws IOException {
-        driver.writeMessage(m);
+        Driver driver = this.driver;
+        if (driver != null) {
+            driver.writeMessage(m);
+        }
     }
 
-    private void instantiateFeatures(@Nullable DeviceType dt) {
+    private void instantiateFeatures(DeviceType dt) {
         for (Entry<String, String> fe : dt.getFeatures().entrySet()) {
             DeviceFeature f = DeviceFeature.makeDeviceFeature(fe.getValue());
             if (f == null) {
@@ -584,7 +601,7 @@ public class InsteonDevice {
     @Override
     public String toString() {
         String s = address.toString();
-        for (Entry<String, @Nullable DeviceFeature> f : features.entrySet()) {
+        for (Entry<String, DeviceFeature> f : features.entrySet()) {
             s += "|" + f.getKey() + "->" + f.getValue().toString();
         }
         return s;
@@ -596,7 +613,7 @@ public class InsteonDevice {
      * @param dt device type after which to model the device
      * @return newly created device
      */
-    public static InsteonDevice makeDevice(@Nullable DeviceType dt) {
+    public static InsteonDevice makeDevice(DeviceType dt) {
         InsteonDevice dev = new InsteonDevice();
         dev.instantiateFeatures(dt);
         return dev;
@@ -607,7 +624,6 @@ public class InsteonDevice {
      *
      * @author Bernd Pfrommer - Initial contribution
      */
-    @NonNullByDefault
     public static class QEntry implements Comparable<QEntry> {
         private DeviceFeature feature;
         private Msg msg;

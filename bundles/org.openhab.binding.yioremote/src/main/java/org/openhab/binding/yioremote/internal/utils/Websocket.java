@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -61,7 +63,25 @@ public class Websocket {
     public void onError(Throwable cause) {
         logger.warn("WebSocketError {}", cause.getMessage());
         if (websocketHandler != null) {
-            websocketHandler.onError();
+            websocketHandler.onError(cause);
+        }
+    }
+
+    @OnWebSocketClose
+    public void onClose(int statusCode, String reason) {
+        if (statusCode != StatusCode.NORMAL) {
+            logger.debug("WebSocket Connection closed: {} - {}", statusCode, reason);
+        }
+        if (session != null) {
+            if (!session.isOpen()) {
+                if (session != null) {
+                    session.close();
+                }
+            }
+            session = null;
+        }
+        if (websocketHandler != null) {
+            websocketHandler.onClose();
         }
     }
 
@@ -72,6 +92,12 @@ public class Websocket {
             } catch (IOException e) {
                 logger.warn("Error during sendMessage function {}", e.getMessage());
             }
+        }
+    }
+
+    public void closeWebsocketSession() {
+        if (session != null) {
+            session.close();
         }
     }
 }

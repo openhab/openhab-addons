@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,9 +66,9 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
         OnOffValue value = new OnOffValue(state_on, state_off, channelConfiguration.payload_on,
                 channelConfiguration.payload_off);
 
-        buildChannel(switchChannelID, value, "state", componentConfiguration.getUpdateListener())//
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain, channelConfiguration.qos)//
+        buildChannel(switchChannelID, value, "state", componentConfiguration.getUpdateListener())
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)
+                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain, channelConfiguration.qos)
                 .build();
     }
 }

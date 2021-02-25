@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,17 +55,17 @@ import com.google.gson.Gson;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class,
-        EventHandler.class }, immediate = true, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
-public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory, EventHandler {
+@Component(service = { ThingHandlerFactory.class, SmartthingsHubCommand.class,
+        EventHandler.class }, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
+public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
+        implements ThingHandlerFactory, EventHandler, SmartthingsHubCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHandlerFactory.class);
 
     private @Nullable SmartthingsBridgeHandler bridgeHandler = null;
     private @Nullable ThingUID bridgeUID;
     private Gson gson;
-    private List<SmartthingsThingHandler> thingHandlers = Collections
-            .synchronizedList(new ArrayList<SmartthingsThingHandler>());
+    private List<SmartthingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
 
     private @NonNullByDefault({}) HttpClient httpClient;
 
@@ -153,6 +153,9 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
             String data = (String) event.getProperty("data");
             SmartthingsStateData stateData = new SmartthingsStateData();
             stateData = gson.fromJson(data, stateData.getClass());
+            if (stateData == null) {
+                return;
+            }
             SmartthingsThingHandler handler = findHandler(stateData);
             if (handler != null) {
                 handler.handleStateMessage(stateData);
@@ -192,5 +195,11 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
     @Nullable
     public SmartthingsBridgeHandler getBridgeHandler() {
         return bridgeHandler;
+    }
+
+    @Override
+    @Nullable
+    public ThingUID getBridgeUID() {
+        return bridgeHandler.getThing().getUID();
     }
 }

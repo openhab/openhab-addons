@@ -1,21 +1,26 @@
 {
 	"deviceMapping": {
 		"id": [
-			"philips.light.sread1"
+			"philips.light.sread1",
+			"philips.light.sread2"
 		],
 		"channels": [
 			{
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -40,12 +45,18 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
 				"property": "ambstatus",
 				"friendlyName": "Ambient Power",
 				"channel": "ambientPower",
+				"channelType": "ambientPower",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -60,6 +71,7 @@
 				"property": "ambvalue",
 				"friendlyName": "Ambient Brightness",
 				"channel": "ambientBrightness",
+				"channelType": "ambientBrightness",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -74,15 +86,16 @@
 				"property": "dvalue",
 				"friendlyName": "Ambient Illumination",
 				"channel": "illumination",
+				"channelType": "illumination",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": []
 			},
 			{
 				"property": "eyecare",
 				"friendlyName": "Eyecare",
 				"channel": "eyecare",
+				"channelType": "eyecare",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -90,6 +103,19 @@
 					{
 						"command": "set_eyecare",
 						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bl",
+				"friendlyName": "Night Light",
+				"channel": "bl",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "enable_bl",
+						"parameterType": "NUMBER"
 					}
 				]
 			}

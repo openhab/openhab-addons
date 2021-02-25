@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public enum RotelCommand {
     SOURCE_VIDEO8("Source Video 8", "video8", "video8"),
     SOURCE_PHONO("Source Phono", RotelConnector.PRIMARY_CMD, (byte) 0x35, "phono", "phono"),
     SOURCE_USB("Source Front USB", RotelConnector.PRIMARY_CMD, (byte) 0x8E, "usb", "usb"),
-    SOURCE_PCUSB("Source PC USB", "pc_usb", "pc_usb"),
+    SOURCE_PCUSB("Source PC USB", "pc_usb", "pcusb"),
     SOURCE_MULTI_INPUT("Source Multi Input", RotelConnector.PRIMARY_CMD, (byte) 0x15, "multi_input", "multi_input"),
     SOURCE_AUX("Source Aux", "aux", "aux"),
     SOURCE_AUX1("Source Aux 1", "aux1", "aux1"),
@@ -336,9 +336,9 @@ public enum RotelCommand {
      *
      * @throws RotelException - If no command is associated to the searched textual command
      */
-    public static RotelCommand getFromAsciiCommandV2(String text) throws RotelException {
+    public static RotelCommand getFromAsciiCommand(String text) throws RotelException {
         for (RotelCommand value : RotelCommand.values()) {
-            if (text.equals(value.getAsciiCommandV2())) {
+            if (text.equals(value.getAsciiCommandV1()) || text.equals(value.getAsciiCommandV2())) {
                 return value;
             }
         }

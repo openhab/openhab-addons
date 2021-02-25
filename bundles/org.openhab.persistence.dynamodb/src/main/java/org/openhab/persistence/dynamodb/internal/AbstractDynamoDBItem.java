@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -51,6 +50,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+
 /**
  * Base class for all DynamoDBItem. Represents openHAB Item serialized in a suitable format for the database
  *
@@ -60,8 +61,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
-    public static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
-            .withZone(ZoneId.of("UTC"));
+    private static final ZoneId UTC = ZoneId.of("UTC");
+    public static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT).withZone(UTC);
 
     private static final String UNDEFINED_PLACEHOLDER = "<org.openhab.core.types.UnDefType.UNDEF>";
 
@@ -91,6 +92,29 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         return dtoclass;
     }
 
+    /**
+     * Custom converter for serialization/deserialization of ZonedDateTime.
+     *
+     * Serialization: ZonedDateTime is first converted to UTC and then stored with format yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+     * This allows easy sorting of values since all timestamps are in UTC and string ordering can be used.
+     *
+     * @author Sami Salonen - Initial contribution
+     *
+     */
+    public static final class ZonedDateTimeConverter implements DynamoDBTypeConverter<String, ZonedDateTime> {
+
+        @Override
+        public String convert(ZonedDateTime time) {
+            return DATEFORMATTER.format(time.withZoneSameInstant(UTC));
+        }
+
+        @Override
+        public ZonedDateTime unconvert(String serialized) {
+            return ZonedDateTime.parse(serialized, DATEFORMATTER);
+        }
+    }
+
+    private static final ZonedDateTimeConverter zonedDateTimeConverter = new ZonedDateTimeConverter();
     private final Logger logger = LoggerFactory.getLogger(AbstractDynamoDBItem.class);
 
     protected String name;
@@ -117,7 +141,8 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             return new DynamoDBBigDecimalItem(name,
                     ((UpDownType) state) == UpDownType.UP ? BigDecimal.ONE : BigDecimal.ZERO, time);
         } else if (state instanceof DateTimeType) {
-            return new DynamoDBStringItem(name, ((DateTimeType) state).getZonedDateTime().format(DATEFORMATTER), time);
+            return new DynamoDBStringItem(name,
+                    zonedDateTimeConverter.convert(((DateTimeType) state).getZonedDateTime()), time);
         } else if (state instanceof UnDefType) {
             return new DynamoDBStringItem(name, UNDEFINED_PLACEHOLDER, time);
         } else if (state instanceof StringListType) {
@@ -151,7 +176,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                         // Parse ZoneDateTime from string. DATEFORMATTER assumes UTC in case it is not clear
                         // from the string (should be).
                         // We convert to default/local timezone for user convenience (e.g. display)
-                        state[0] = new DateTimeType(ZonedDateTime.parse(dynamoStringItem.getState(), DATEFORMATTER)
+                        state[0] = new DateTimeType(zonedDateTimeConverter.unconvert(dynamoStringItem.getState())
                                 .withZoneSameInstant(ZoneId.systemDefault()));
                     } catch (DateTimeParseException e) {
                         logger.warn("Failed to parse {} as date. Outputting UNDEF instead",
@@ -211,6 +236,6 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(time) + ": " + name + " -> " + state.toString();
+        return DATEFORMATTER.format(time) + ": " + name + " -> " + state.toString();
     }
 }

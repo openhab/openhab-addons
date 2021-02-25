@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,13 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.openhab.binding.enocean.internal.config.EnOceanChannelTariffInfoConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.HexUtils;
@@ -36,11 +37,11 @@ public abstract class A5_12 extends _4BSMessage {
     }
 
     protected State calcCumulativeValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.ONE);
+        return new QuantityType<>(value, Units.ONE);
     }
 
     protected State calcCurrentValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.ONE);
+        return new QuantityType<>(value, Units.ONE);
     }
 
     protected State getCumulativeValue() {
@@ -112,10 +113,19 @@ public abstract class A5_12 extends _4BSMessage {
         return UnDefType.UNDEF;
     }
 
+    protected int getTariffInfo() {
+        return ((getDB_0() >>> 4) & 0xff);
+    }
+
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        switch (channelId) {
+
+        EnOceanChannelTariffInfoConfig c = config.as(EnOceanChannelTariffInfoConfig.class);
+        if (c.tariff != getTariffInfo())
+            return UnDefType.UNDEF;
+
+        switch (channelTypeId) {
             case CHANNEL_INSTANTPOWER:
             case CHANNEL_CURRENTFLOW:
             case CHANNEL_CURRENTNUMBER:

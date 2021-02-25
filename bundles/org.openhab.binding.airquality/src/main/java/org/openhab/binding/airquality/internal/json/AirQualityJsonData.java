@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link AirQualityJsonData} is responsible for storing
@@ -35,7 +35,7 @@ public class AirQualityJsonData {
     private @NonNullByDefault({}) AirQualityJsonTime time;
     private @NonNullByDefault({}) AirQualityJsonCity city;
     private List<Attribute> attributions = new ArrayList<>();
-    private Map<String, @Nullable AirQualityValue> iaqi = new HashMap<>();
+    private Map<String, AirQualityValue> iaqi = new HashMap<>();
     private String dominentpol = "";
 
     /**
@@ -82,9 +82,8 @@ public class AirQualityJsonData {
      * @return {String}
      */
     public String getAttributions() {
-        List<String> list = new ArrayList<>();
-        attributions.forEach(item -> list.add(item.getName()));
-        return "Attributions : " + String.join(", ", list);
+        String attributionsString = attributions.stream().map(Attribute::getName).collect(Collectors.joining(", "));
+        return "Attributions : " + attributionsString;
     }
 
     public String getDominentPol() {

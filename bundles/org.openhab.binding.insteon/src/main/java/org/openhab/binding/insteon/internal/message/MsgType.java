@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.insteon.internal.message;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents insteon message type flags
@@ -47,7 +47,7 @@ public enum MsgType {
     ALL_LINK_CLEANUP_NACK(0xe0),
     INVALID(0xff); // should never happen
 
-    private static HashMap<Integer, @Nullable MsgType> hash = new HashMap<>();
+    private static Map<Integer, MsgType> hash = new HashMap<>();
 
     private byte byteValue = 0;
 
@@ -73,7 +73,6 @@ public enum MsgType {
 
     public static MsgType fromValue(byte b) throws IllegalArgumentException {
         int i = b & 0xe0;
-        @Nullable
         MsgType mt = hash.get(i);
         if (mt == null) {
             throw new IllegalArgumentException("msg type of byte value " + i + " not found");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ public enum Overcast {
     public static Overcast fromOcta(int octa) {
         if (octa == 0) {
             return Overcast.CLEAR_SKY;
-        } else if (octa > 0 && octa < 8) {
+        } else if (octa > 0 && octa < 9) {
             return Overcast.CLOUDY;
         } else if (octa == 9) {
             return Overcast.SKY_NOT_VISIBLE;

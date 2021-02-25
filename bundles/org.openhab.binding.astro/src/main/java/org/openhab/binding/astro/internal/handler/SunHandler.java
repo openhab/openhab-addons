@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,8 +105,12 @@ public class SunHandler extends AstroThingHandler {
 
     public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
         Range eventRange = getSunAt(date).getAllRanges().get(sunPhase);
-        Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();
-        return ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());
+        if (eventRange != null) {
+            Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();
+            return ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());
+        } else {
+            return null;
+        }
     }
 
     @Override

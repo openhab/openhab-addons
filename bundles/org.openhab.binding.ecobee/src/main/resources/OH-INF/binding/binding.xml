@@ -5,6 +5,5 @@
 
 	<name>Ecobee Binding</name>
 	<description>This is the binding for Ecobee smart thermostats.</description>
-	<author>Mark Hilbush</author>
 
 </binding:binding>

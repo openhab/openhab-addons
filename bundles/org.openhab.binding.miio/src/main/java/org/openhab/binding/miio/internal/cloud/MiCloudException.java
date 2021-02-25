@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.miio.internal.cloud;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Will be thrown for cloud errors
@@ -30,11 +31,11 @@ public class MiCloudException extends Exception {
         super();
     }
 
-    public MiCloudException(String message) {
+    public MiCloudException(@Nullable String message) {
         super(message);
     }
 
-    public MiCloudException(String message, Exception e) {
+    public MiCloudException(@Nullable String message, @Nullable Exception e) {
         super(message, e);
     }
 }

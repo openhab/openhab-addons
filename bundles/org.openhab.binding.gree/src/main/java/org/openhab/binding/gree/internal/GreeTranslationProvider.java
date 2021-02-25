@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = GreeTranslationProvider.class, immediate = true, configurationPid = "localization.gree")
+@Component(service = GreeTranslationProvider.class, configurationPid = "localization.gree")
 public class GreeTranslationProvider {
 
     private final Bundle bundle;

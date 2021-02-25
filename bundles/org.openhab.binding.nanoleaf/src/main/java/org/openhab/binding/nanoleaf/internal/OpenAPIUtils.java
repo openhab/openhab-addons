@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,7 @@ public class OpenAPIUtils {
 
     // Regular expression for firmware version
     private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
+    private static final Pattern FIRMWARE_VERSION_PATTERN_BETA = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)-(\\d+)");
 
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException {
@@ -145,7 +146,10 @@ public class OpenAPIUtils {
         }
     }
 
-    public static boolean checkRequiredFirmware(String modelId, String currentFirmwareVersion) {
+    public static boolean checkRequiredFirmware(@Nullable String modelId, @Nullable String currentFirmwareVersion) {
+        if (modelId == null || currentFirmwareVersion == null) {
+            return false;
+        }
         int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
 
         int[] requiredVer = getFirmwareVersionNumbers(
@@ -159,11 +163,21 @@ public class OpenAPIUtils {
         return true;
     }
 
-    private static int[] getFirmwareVersionNumbers(String firmwareVersion) throws IllegalArgumentException {
+    public static int[] getFirmwareVersionNumbers(String firmwareVersion) throws IllegalArgumentException {
+        LOGGER.debug("firmwareVersion: {}", firmwareVersion);
         Matcher m = FIRMWARE_VERSION_PATTERN.matcher(firmwareVersion);
-        if (!m.matches()) {
-            throw new IllegalArgumentException("Malformed controller firmware version");
+
+        if (m.matches()) {
+            return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
+                    Integer.parseInt(m.group(3)) };
+        } else {
+            m = FIRMWARE_VERSION_PATTERN_BETA.matcher(firmwareVersion);
+            if (m.matches()) {
+                return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
+                        Integer.parseInt(m.group(3)), Integer.parseInt(m.group(4)) };
+            } else {
+                throw new IllegalArgumentException("Malformed controller firmware version " + firmwareVersion);
+            }
         }
-        return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)) };
     }
 }

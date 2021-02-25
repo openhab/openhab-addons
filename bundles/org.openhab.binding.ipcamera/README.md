@@ -34,8 +34,21 @@ Some cameras allow the key frame to be created every second or a different amoun
 ### ESP32 Cameras
 
 These cameras do not have the ability to create H.264 streams and hence can not be used with HLS, however all other features should work.
-See the [Full Example](#full-example) section for how to setup these cameras.
 Due to many custom firmwares available, you may need to ask the firmware developer what the URLs are for snapshots and MJPEG streams if they have changed the defaults from what the Arduino IDE sample code uses.
+
+Example:
+
+```
+Thing ipcamera:generic:Esp32Cam
+[
+    ipAddress="192.168.1.181", serverPort=54322,
+    gifPreroll=1,
+    snapshotUrl="http://192.168.1.181/capture",
+    mjpegUrl="http://192.168.1.181:81/stream",
+    ffmpegInputOptions="-f mjpeg",
+    ffmpegOutput="/tmp/Esp32Camera/", ffmpegInput="http://192.168.1.181:81/stream"
+]
+```
 
 ### Amcrest
 
@@ -115,9 +128,11 @@ Thing ipcamera:hikvision:West "West Camera"
 ## Discovery
 
 The discovery feature of openHAB can be used to find and setup any ONVIF cameras. 
-This method should be preferred as it will discover the camera, ports and URLs for you, making the setup much easier.
+This method should be preferred as it will discover the cameras IP, ports and URLs for you, making the setup much easier.
+The binding needs to use UDP port 3702 to discover the cameras with, so this port needs to be unblocked by your firewall or add the camera manually if the camera is not auto found.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
-If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add via the UI your camera as a `generic` thing type and provide the URLs manually.
+If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add the camera via the UI.
+Cameras that are not ONVIF should be added as a `generic` thing type and you will need to provide the URLs manually.
 
 ## Supported Things
 
@@ -181,9 +196,9 @@ If you do not specify any of these, the binding will use the default which shoul
 | `hlsOutOptions`| This gives you direct access to specify your own FFmpeg options to be used. Default: `-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4` |
 | `gifOutOptions`| This gives you direct access to specify your own FFmpeg options to be used for animated GIF files. Default: `-r 2 -filter_complex scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse` |
 | `mjpegOptions` | Allows you to change the settings for creating a MJPEG stream from RTSP using FFmpeg. Possible reasons to change this would be to rotate or re-scale the picture from the camera, change the JPG compression for better quality or the FPS rate. |
+| `snapshotOptions` | Specify your own FFmpeg options to be used when creating snapshots from RTSP. Default: `-an -vsync vfr -q:v 2 -update 1` |
 | `motionOptions` | This gives access to the FFmpeg parameters for detecting motion alarms from a RTSP stream. One possible use for this is to use the CROP feature to ignore any trees that move in the wind or a timecode stamp. Crop will not remove the trees from your picture, it only ignores the movement of the tree. |
 | `gifPreroll`| Store this many snapshots from BEFORE you trigger a GIF creation. Default: `0` will not use snapshots and will instead use a realtime stream from the ffmpegInput URL |
-| `gifPostroll`| How long in seconds to create a GIF from a stream. Alternatively if `gifPreroll` is set to value greater than `0`, this is how many snapshots to use AFTER you trigger a GIF creation as snapshots occur at the poll rate. |
 | `ipWhitelist`| Enter any IPs inside brackets that you wish to allow to access the video stream. `DISABLE` the default value will turn this feature off.  Example: `ipWhitelist="(127.0.0.1)(192.168.0.99)"` |
 | `ptzContinuous`| If set to false (default) the camera will move using Relative commands, If set to true the camera will instead use continuous movements and will require an `OFF` command to stop the movement. |
 
@@ -198,6 +213,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `activateAlarmOutput2` | Switch | Toggles a cameras relay output 2. |
 | `audioAlarm` | Switch (read only) | When the camera detects noise above a threshold this switch will move to ON. |
 | `autoLED` | Switch | When ON this sets a cameras IR LED to automatically turn on or off. |
+| `carAlarm` | Switch | When a car is detected the switch will turn ON. |
 | `cellMotionAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `doorBell` | Switch (read only) | Doorbird only, will reflect the status of the doorbell button. |
 | `enableAudioAlarm` | Switch | Allows the audio alarm to be turned ON or OFF. |
@@ -219,6 +235,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `gifHistoryLength` | Number | How many filenames are in the `gifHistory`. |
 | `gotoPreset` | String | ONVIF cameras that can move only. Will cause the camera to move to a preset location. |
 | `hlsUrl` | String | The URL for the ipcamera.m3u8 file. |
+| `humanAlarm` | Switch | When a camera detects a human this switch will turn ON. |
 | `imageUrl` | String | The URL for the ipcamera.jpg file. |
 | `itemLeft` | Switch (read only) | Will turn ON if an API camera detects an item has been left behind. |
 | `itemTaken` | Switch (read only) | Will turn ON if an API camera detects an item has been stolen. |
@@ -231,6 +248,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `pan` | Dimmer | Works with ONVIF cameras that can be moved. |
 | `parkingAlarm` | Switch (read only) | When an API camera detects a car, this will turn ON. |
 | `pirAlarm` | Switch (read only) | When a camera with PIR ability detects motion, this turns ON. |
+| `privacyMode` | Switch | Enable or disable the Privacy Mode of newer Amcrest/Dahua cameras. The camera will move the lens way down and stop the stream. |
 | `recordingGif` | Number (read only) | How many seconds recording to GIF for. 0 when file ready. |
 | `recordingMp4` | Number (read only) | How many seconds recording to MP4 for. 0 when file ready. |
 | `rtspUrl` | String | The URL for the cameras auto detected RTSP stream. |
@@ -350,10 +368,9 @@ This is always the best option if it works.
 The IP is for your openHAB server not the camera, and 54321 is the `serverPort` number that you specified in the bindings setup. If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
 The ipcamera.jpg can also be cast, as most cameras can not directly cast their snapshots.
 + Use the `http://192.168.xxx.xxx:54321/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
-See the streaming section for more info.
-+ Use the `updateGif` feature and use a `gifPreroll` value > 0. 
++ Use the record GIF action and use a `gifPreroll` value > 0. 
 This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`. 
-This allows you to get a snapshot from an exact amount of time before, on, or after triggering the GIF to be created. 
+This allows you to get a snapshot from an exact amount of time before, on, or after starting the record to GIF action. 
 Handy for cameras which lag due to slow processors, or if you do not want a hand blocking the image when the door bell was pushed.
 These snapshots can be fetched either directly as they exist on disk, or via this URL format. 
 `http://192.168.xxx.xxx:54321/snapshot0.jpg`
@@ -363,6 +380,9 @@ See this forum thread for examples of how to use snapshots and streams in a site
 <https://community.openhab.org/t/ip-camera-how-to-clickable-thumbnail-overview-in-sitemaps-that-opens-up-to-a-larger-view/77990>
 
 ## Video Streams
+
+To get video streams working, this forum thread has working widget examples that you can use.
+<https://community.openhab.org/t/oh3-widget-building-a-camera-widget/110069>
 
 To get some of the video formats working, you need to install FFmpeg. 
 Visit their site here to learn how <https://ffmpeg.org/>
@@ -382,7 +402,7 @@ There are multiple ways to get a moving picture, to use them just enter the URL 
 
 + **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
 This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
-Please understand that this format due to the way it works will give you lag behind realtime, more on this below.
+Please understand that this format due to the way it works will give you lag behind real time, more on this below.
 + **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
 It is normally 1 second or less behind real-time.
 FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU. 
@@ -467,7 +487,7 @@ To use the HLS feature, you need to:
 + For `generic` cameras, you will need to use the config `ffmpegInput` to provide a HTTP or RTSP URL.
 + Supply a folder that the openhab user has write permissions for to the config `ffmpegOutput`.
 + Set a valid `serverPort` as the default value of -1 will turn this feature off.
-+ Consider using a SSD/HDD or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
++ Consider using a SSD/HDD, zram location, or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
 
 ### Ram Drive Setup
 
@@ -664,198 +684,48 @@ end
 
 This section is about how to get things working in HABpanel.
 
-I highly recommend you check out the easy to use WIDGETS of which there are now 3 that are discussed on the forum here.
+I highly recommend you check out the easy to use widgets of which there are now 3 that are discussed on the forum here.
 <https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
 
 The widgets in the link above are the easiest way to get an advanced stream working in openHAB and you are welcome to open them up, look at how they work and change them to something even better that suits your needs.
 
 ## Group Displays
 
-The [Full Example](#full-example) section shows how to setup a group of cameras to be displayed like they are a single camera. 
+The `group` thing allows up to 4 cameras to be displayed like they are a single camera that rotates from one to the next.
+The display order can be allowed to change if one or more of the cameras detects motion.
 
-Some additional things to check to get it working are:
+Some additional checks to get it working are:
 
 + If using the groups HLS feature, the poll time of the group must be the same or less than the total time contained in each cameras m3u8 file.
 If you have 3 seconds worth of video segments in each cameras HLS stream, this is the max you can set the poll time of the group to.
 + All cameras in a group should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
++ Mixing cameras with different aspect ratios may cause issues when cast.
 
-This is still a very new feature and if you have any issues, please send some TRACE level log output of when the problem occurs.
+## Sitemap Example
 
-## Full Example
-
-Use the following examples to base your setup on to save some time if you wish to use textual config.
-Textual config should only be used by advanced users as the [Discovery](#discovery) method should be preferred by new users.
-
-You can do a find and replace on the thing type from `dahua`, as all cameras use consistent naming of channels and configs so changing between them is easy.
-
-In the examples you will see the format is: `bindingID:thingType:UID` [param1="string",param2=x,param3=x]
-
-bindingID: is always ipcamera.
-thingType: is found listed above under [Supported Things](#supported-things).
-UID: Can be made up but it must be UNIQUE, hence why it is called uniqueID. 
-
-openHAB's discovery method will use the IP address with the dots removed as the UID.
-By using textual config, you can name it something useful like "DrivewayCamera" if you wish, or stick with the same convention.
-
-*.things
-
-```java
-
-Thing ipcamera:group:OutsideCameras
-[
-    pollTime=2000, serverPort=54320, 
-    ffmpegOutput="/tmpfs/OutsideGroup/",
-    firstCamera="001",
-    secondCamera="002",
-    thirdCamera="TestCam",
-    forthCamera="",
-    motionChangesOrder=true
-]
-
-Thing ipcamera:dahua:001
-[ 
-    ipAddress="192.168.0.5", password="suitcase123456",
-    username="admin",
-    serverPort=54321,
-    ffmpegOutput="/tmpfs/camera1/"
-]
-
-Thing ipcamera:hikvision:002
-[
-    ipAddress="192.168.0.6", password="suitcase123456",
-    username="admin",
-    serverPort=54322,
-    ffmpegOutput="/tmpfs/camera2/"
-]
-
-Thing ipcamera:generic:TestCam
-[
-    ipAddress="192.168.0.7", password="pass123", username="admin", serverPort=54323,
-    snapshotUrl="http://192.168.1.65/tmpfs/snap.jpg", //remove this line if your camera has none
-    mjpegUrl="ffmpeg",
-    ffmpegOutput="/tmpfs/HttpTest/", 
-    ffmpegInput="rtsp://192.168.1.65:554/11"
-]
-
-Thing ipcamera:generic:TTGoCamera "ESP32 TTGo Camera" @ "Cameras"
-[
-    ipAddress="192.168.1.181",
-    serverPort=51321,
-    port=80,
-    gifPreroll=1,
-    gifPostroll=6,
-    snapshotUrl="http://192.168.1.181/capture",
-    mjpegUrl="http://192.168.1.181:81/stream",
-    ffmpegOutput="/tmpfs/TTGoCamera/",
-    ffmpegInput="http://192.168.1.181:81/stream",
-    ffmpegInputOptions="-f mjpeg",
-    ipWhitelist="(192.168.2.8)(192.168.2.83)(192.168.2.99)"
-]
-
-```
-
-*.items
-
-```java
-
-Number BabyCamDirection "Camera Direction"
-Switch BabyCamEnableMotion "MotionAlarm on/off" { channel="ipcamera:dahua:001:enableMotionAlarm" }
-Switch BabyCamMotionAlarm "Motion detected" { channel="ipcamera:dahua:001:motionAlarm" }
-Switch BabyCamEnableAudioAlarm "AudioAlarm on/off" { channel="ipcamera:dahua:001:enableAudioAlarm" }
-Switch BabyCamAudioAlarm "Audio detected" { channel="ipcamera:dahua:001:audioAlarm" }
-Dimmer BabyCamAudioThreshold "Audio Threshold [%d]" { channel="ipcamera:dahua:001:thresholdAudioAlarm" }
-Dimmer BabyCamLED "IR LED [%d]" { channel="ipcamera:dahua:001:enableLED" }
-Switch BabyCamAutoLED "Auto IR LED" { channel="ipcamera:dahua:001:autoLED" }
-String BabyCamTextOverlay "Text to overlay" { channel="ipcamera:dahua:001:textOverlay" }
-String BabyCamHlsUrl "HLS Stream" { channel="ipcamera:dahua:BabyCamera:hlsUrl" }
-DateTime BabyCamLastMotionTime "Time motion was last detected [%1$ta %1$tR]"
-String BabyCamLastMotionType "Last Motion Type" { channel="ipcamera:dahua:BabyCamera:lastMotionType" }
-Switch BabyCamStartHLS { channel="ipcamera:dahua:BabyCamera:startStream" }
-
-Dimmer GenericMotionControl "Motion Threshold [%d]" { channel="ipcamera:generic:TestCam:ffmpegMotionControl" }
-Switch GenericMotionAlarm "Motion detected" { channel="ipcamera:generic:TestCam:motionAlarm" }
-Dimmer GenericAudioThreshold "Audio Threshold [%d]" { channel="ipcamera:generic:TestCam:thresholdAudioAlarm" }
-Switch GenericAudioAlarm "Audio detected" { channel="ipcamera:generic:TestCam:audioAlarm" }
-
-String OutsideCameraGroupHlsUrl "Outside Cameras" { channel="ipcamera:group:OutsideCameras:hlsUrl", ga="Camera" [ protocols="hls" ] }
-Switch OutsideCameraGroupStartHLS "Start outside HLS" { channel="ipcamera:group:OutsideCameras:startStream" }
-
-```
+Use the following example to base your sitemap on to save some time.
+If you use the `Create Equipment from Thing` feature to auto create your items, the following will need minimal editing to change the camera name from `BabyCam` to what you choose to name the camera.
 
 *.sitemap
 
 ```java
-Text label="Outside Camera Group" icon="camera"{Image url="http://192.168.0.2:54320/ipcamera.jpg" refresh=1000} 
 
     Text label="BabyMonitor" icon="camera"{
-        Default item=BabyCamMotionAlarm icon=siren
-        Default item=BabyCamAudioAlarm icon=siren
-        Text label="Advanced Controls" icon="settings"{
-            Switch item=BabyCamEnableMotion
-            Default item=BabyCamEnableAudioAlarm
-            Default item=BabyCamAudioThreshold icon=recorder
-            Slider item=BabyCamLED
-            Default item=BabyCamAutoLED
+        Switch item=BabyCam_GoToPreset icon=movecontrol label="Camera Direction" mappings=[1="Room", 2="Chair", 3="Cot"]            
+        Text label="Advanced Controls" icon="settings"{ 
+            Default item=BabyCam_AutoLED
+            Default item=BabyCam_AudioAlarmThreshold icon=recorder
+            Switch item=BabyCam_AudioAlarm
+            Default item=BabyCam_EnableMotionAlarm
+            Default item=BabyCam_MotionAlarm                                
+            Slider item=BabyCam_Pan icon=movecontrol
+            Slider item=BabyCam_Tilt icon=movecontrol
+            Slider item=BabyCam_Zoom icon=zoom
         }
-        Text label="Last Movement" icon="motion"{
-                    Webview url="http://192.168.0.2:54321/ipcamera.gif" height=9
-                    Default item=BabyCamMotionAlarm icon=siren
-                    Default item=BabyCamLastMotionTime
-                    Default item=BabyCamLastMotionType
-        }
-            Text label="Cameras MJPEG Stream" icon="camera"{Video url="http://192.168.0.2:54321/ipcamera.mjpeg" encoding="mjpeg"}
-            Text label="Snapshot 1FPS Stream" icon="camera"{Video url="http://192.168.0.2:54321/snapshots.mjpeg" encoding="mjpeg"}
-            Text label="autofps Stream" icon="camera"{Video url="http://192.168.0.2:54321/autofps.mjpeg" encoding="mjpeg"}
-            Text label="HLS Video Stream" icon="camera"{Video url="http://192.168.0.2:54321/ipcamera.m3u8" encoding="hls"}
-            Text label="HLS Webview Stream" icon="camera"{Webview url="http://192.168.0.2:54321/ipcamera.m3u8" height=15}
-            Text label="Image using JPG method" icon="camera"{Image url="http://192.168.0.2:54321/ipcamera.jpg" refresh=2000}        
-    }
-    
-    Text label="Generic Camera" icon="camera"{
-            Switch item=GenericMotionControl
-            Slider item=GenericMotionControl
-            Default item=GenericMotionAlarm
-            Switch item=GenericAudioThreshold
-            Slider item=GenericAudioThreshold          
-            Default item=GenericAudioAlarm
-            Text label="MJPEG Stream" icon="camera"{Video url="http://192.168.0.2:54323/ipcamera.mjpeg" encoding="mjpeg"}
-            Text label="snapshots 1FPS Stream" icon="camera"{Video url="http://192.168.0.2:54323/snapshots.mjpeg" encoding="mjpeg"}
-            Text label="autofps Stream" icon="camera"{Video url="http://192.168.0.2:54323/autofps.mjpeg" encoding="mjpeg"}
-            Text label="HLS Video Stream" icon="camera"{Video url="http://192.168.0.2:54323/ipcamera.m3u8" encoding="hls"}
-            Text label="HLS Stream" icon="camera"{Webview url="http://192.168.0.2:54323/ipcamera.m3u8" height=15}
-            Text label="Image JPG method" icon="camera"{Image url="http://192.168.0.2:54323/ipcamera.jpg" refresh=1000}                
-        }
-
-```
-
-*.rules
-
-```java
-rule "Camera detected crying"
-when
-    Item BabyCamAudioAlarm changed from OFF to ON
-then
-if(BabyMonitor.state==ON){
-
-    if(MumAlerts.state==ON){
-    sendNotification("mum@parentCo.com", "Mum, the baby is awake.")
-    }
-
-    if(DadAlerts.state==ON){
-    sendNotification("dad@parentCo.com", "Dad, the baby is awake.")
-    }
-
-    if(TvAlerts.state==ON){
-    myKodi_notification.sendCommand("Baby is crying.")
-    }
-}
-end
-
-rule "Create time of last movement"
-    when
-    Item BabyCamLastMotionType received update
-    then
-    BabyCamLastMotionTime.postUpdate( new DateTimeType() )
-end
+        Default item=BabyCam_StartHLSStream
+        Text label="Mjpeg Stream" icon="camera"{Video url="http://192.168.0.2:54321/ipcamera.mjpeg" encoding="mjpeg"}
+        Text label="HLS Stream" icon="camera"{Webview url="http://192.168.0.2:54321/ipcamera.m3u8" height=15}
+        Video url="http://192.168.0.2:54321/autofps.mjpeg" encoding="mjpeg"            
+    }  
 
 ```

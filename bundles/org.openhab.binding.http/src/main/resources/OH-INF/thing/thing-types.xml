@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="url"
+		extensible="color,contact,datetime,dimmer,image,location,number,player,rollershutter,string,switch">
+		<label>HTTP URL Thing</label>
+		<description>Represents a base URL and all associated requests.</description>
+
+		<config-description>
+			<parameter name="baseURL" type="text" required="true">
+				<label>Base URL</label>
+				<description>The URL set here can be extended in the channel configuration.</description>
+				<context>url</context>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="1">
+				<label>Refresh Time</label>
+				<description>Time between two refreshes of all channels</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="ms" min="0">
+				<label>Timeout</label>
+				<description>The timeout in ms for each request</description>
+				<default>3000</default>
+			</parameter>
+			<parameter name="delay" type="integer" unit="ms" min="0">
+				<label>Delay</label>
+				<description>Delay between to requests</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="bufferSize" type="integer" min="0">
+				<label>Buffer Size</label>
+				<description>Size of the response buffer (default 2048 kB)</description>
+				<default>2048</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Basic Authentication username</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Basic Authentication password</description>
+				<context>password</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="authMode" type="text">
+				<label>Authentication Mode</label>
+				<options>
+					<option value="BASIC">Basic Authentication</option>
+					<option value="BASIC_PREEMPTIVE">Preemptive Basic Authentication</option>
+					<option value="DIGEST">Digest Authentication</option>
+				</options>
+				<default>BASIC</default>
+				<limitToOptions>true</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="stateMethod" type="text">
+				<label>State Method</label>
+				<description>HTTP method (GET,POST, PUT) for retrieving a status.</description>
+				<options>
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>GET</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="commandMethod" type="text">
+				<label>Command Method</label>
+				<description>HTTP method (GET,POST, PUT) for sending commands.</description>
+				<options>
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>GET</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="contentType" type="text">
+				<label>Content Type</label>
+				<description>The MIME content type. Only used for `POST` and `PUT`.</description>
+				<options>
+					<option value="application/json">application/json</option>
+					<option value="application/xml">application/xml</option>
+					<option value="text/html">text/html</option>
+					<option value="text/plain">text/plain</option>
+					<option value="text/xml">text/xml</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="encoding" type="text">
+				<label>Fallback Encoding</label>
+				<description>Fallback Encoding text received by this thing's channels.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="headers" type="text" multiple="true">
+				<label>Headers</label>
+				<description>Additional headers send along with the request</description>
+				<limitToOptions>false</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ignoreSSLErrors" type="boolean">
+				<label>Ignore SSL Errors</label>
+				<description>If set to true ignores invalid SSL certificate errors. This is potentially dangerous.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-color"/>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-contact"/>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>DateTime Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config"/>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-dimmer"/>
+	</channel-type>
+
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-image"/>
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config"/>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-number"/>
+	</channel-type>
+
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-player"/>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-rollershutter"/>
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config"/>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch Channel</label>
+		<config-description-ref uri="channel-type:http:channel-config-switch"/>
+	</channel-type>
+
+</thing:thing-descriptions>

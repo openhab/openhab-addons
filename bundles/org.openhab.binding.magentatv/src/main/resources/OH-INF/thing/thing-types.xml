@@ -21,16 +21,13 @@
 		</channel-groups>
 
 
+		<representation-property>macAddress</representation-property>
 		<config-description uri="thing-type:magentatv:receiver">
 			<parameter name="ipAddress" type="text">
 				<label>Device IP Address</label>
 				<description>IP address of the receiver</description>
 				<required>true</required>
 				<context>network-address</context>
-			</parameter>
-			<parameter name="userId" type="text">
-				<label>User ID</label>
-				<description>Technical User ID required for pairing process</description>
 			</parameter>
 			<parameter name="accountName" type="text">
 				<label>Account Name</label>
@@ -40,6 +37,10 @@
 				<label>Account Password</label>
 				<description>Credentials: Account Password (same as for the Telekom Kundencenter)</description>
 				<context>password</context>
+			</parameter>
+			<parameter name="userId" type="text">
+				<label>User ID</label>
+				<description>Technical User ID required for pairing process, auto-filled when account credentials are given</description>
 			</parameter>
 			<parameter name="udn" type="text">
 				<label>Unique Device Name</label>

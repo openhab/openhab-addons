@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,9 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mpd.internal.action;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "mpd")
 @NonNullByDefault
-public class MPDActions implements ThingActions, IMPDActions {
+public class MPDActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(MPDActions.class);
 
@@ -51,8 +48,7 @@ public class MPDActions implements ThingActions, IMPDActions {
         return handler;
     }
 
-    @Override
-    @RuleAction(label = "MPD : Send command", description = "Send a command to the Music Player Daemon.")
+    @RuleAction(label = "send a command with a parameter", description = "Send a command to the Music Player Daemon.")
     public void sendCommand(@ActionInput(name = "command") @Nullable String command,
             @ActionInput(name = "parameter") @Nullable String parameter) {
         logger.debug("sendCommand called with {}", command);
@@ -65,8 +61,7 @@ public class MPDActions implements ThingActions, IMPDActions {
         }
     }
 
-    @Override
-    @RuleAction(label = "MPD : Send command", description = "Send a command to the Music Player Daemon.")
+    @RuleAction(label = "send a command", description = "Send a command to the Music Player Daemon.")
     public void sendCommand(@ActionInput(name = "command") @Nullable String command) {
         logger.debug("sendCommand called with {}", command);
 
@@ -78,31 +73,11 @@ public class MPDActions implements ThingActions, IMPDActions {
         }
     }
 
-    private static IMPDActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(MPDActions.class.getName())) {
-            if (actions instanceof IMPDActions) {
-                return (IMPDActions) actions;
-            } else {
-                return (IMPDActions) Proxy.newProxyInstance(IMPDActions.class.getClassLoader(),
-                        new Class[] { IMPDActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of MPDActions");
+    public static void sendCommand(ThingActions actions, @Nullable String command, @Nullable String parameter) {
+        ((MPDActions) actions).sendCommand(command, parameter);
     }
 
-    public static void sendCommand(@Nullable ThingActions actions, @Nullable String command,
-            @Nullable String parameter) {
-        invokeMethodOf(actions).sendCommand(command, parameter);
-    }
-
-    public static void sendCommand(@Nullable ThingActions actions, @Nullable String command) {
-        invokeMethodOf(actions).sendCommand(command);
+    public static void sendCommand(ThingActions actions, @Nullable String command) {
+        ((MPDActions) actions).sendCommand(command);
     }
 }

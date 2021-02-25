@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple cache for compiled JavaScript files.
  *
+ * @author Thomas Kordelle - Initial contribution
  * @author Thomas Kordelle - pre compiled scripts
- *
  */
 @NonNullByDefault
 @Component(service = JavaScriptEngineManager.class)
@@ -57,9 +57,10 @@ public class JavaScriptEngineManager {
      */
     protected CompiledScript getScript(final String filename) throws TransformationException {
         synchronized (compiledScriptMap) {
-            if (compiledScriptMap.containsKey(filename)) {
+            CompiledScript compiledScript = compiledScriptMap.get(filename);
+            if (compiledScript != null) {
                 logger.debug("Loading JavaScript {} from cache.", filename);
-                return compiledScriptMap.get(filename);
+                return compiledScript;
             } else {
                 final String path = TransformationScriptWatcher.TRANSFORM_FOLDER + File.separator + filename;
                 logger.debug("Loading script {} from storage ", path);

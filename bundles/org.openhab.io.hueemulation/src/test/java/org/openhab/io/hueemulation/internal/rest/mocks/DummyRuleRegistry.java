@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,6 @@ public class DummyRuleRegistry implements RuleRegistry {
         return items.values();
     }
 
-    @NonNullByDefault({})
     @Override
     public Stream<Rule> stream() {
         return items.values().stream();
@@ -66,14 +65,16 @@ public class DummyRuleRegistry implements RuleRegistry {
         for (RegistryChangeListener<Rule> l : listeners) {
             l.added(element);
         }
-        return put;
+        return element;
     }
 
     @Override
     public @Nullable Rule update(Rule element) {
         Rule put = items.put(element.getUID(), element);
-        for (RegistryChangeListener<Rule> l : listeners) {
-            l.updated(put, element);
+        if (put != null) {
+            for (RegistryChangeListener<Rule> l : listeners) {
+                l.updated(put, element);
+            }
         }
         return put;
     }
@@ -81,19 +82,19 @@ public class DummyRuleRegistry implements RuleRegistry {
     @Override
     public @Nullable Rule remove(String key) {
         Rule put = items.remove(key);
-        for (RegistryChangeListener<Rule> l : listeners) {
-            l.removed(put);
+        if (put != null) {
+            for (RegistryChangeListener<Rule> l : listeners) {
+                l.removed(put);
+            }
         }
         return put;
     }
 
-    @NonNullByDefault({})
     @Override
-    public Collection<Rule> getByTag(String tag) {
+    public Collection<Rule> getByTag(@Nullable String tag) {
         return Collections.emptyList();
     }
 
-    @NonNullByDefault({})
     @Override
     public Collection<Rule> getByTags(String... tags) {
         return Collections.emptyList();

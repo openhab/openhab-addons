@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -354,7 +354,7 @@ public class KM200SwitchProgramServiceHandler {
                                     firstVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
                                 } else {
                                     BigDecimal nextVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
-                                    if (null != nextVal) {
+                                    if (null != nextVal && null != firstVal) {
                                         if (nextVal.compareTo(firstVal) > 0) {
                                             positiveSwitch = key;
                                         } else {

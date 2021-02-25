@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,31 +32,39 @@ import org.openhab.core.thing.ThingUID;
 public class ShellyThingCreator {
     private static final Map<String, String> THING_TYPE_MAPPING = new LinkedHashMap<>();
     static {
-        // mapping by thing type
+        // mapping by device type id
         THING_TYPE_MAPPING.put(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_1L, THING_TYPE_SHELLY1L_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_1, THING_TYPE_SHELLY1_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_3EM, THING_TYPE_SHELLY3EM_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_SHPLG_S, THING_TYPE_SHELLYPLUGS_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_SHPLG_U1, THING_TYPE_SHELLYPLUGU1_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_DUO, THING_TYPE_SHELLYDUO_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_DUORGBW, THING_TYPE_SHELLYDUORGBW_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_BULB, THING_TYPE_SHELLYBULB_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_VINTAGE, THING_TYPE_SHELLYVINTAGE_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_IX3, THING_TYPE_SHELLYIX3_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_UNI, THING_TYPE_SHELLYUNI_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_HT, THING_TYPE_SHELLYHT_STR);
 
         // mapping by thing type
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1PM_STR, THING_TYPE_SHELLY1PM_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1L_STR, THING_TYPE_SHELLY1L_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLY4PRO_STR, THING_TYPE_SHELLY4PRO_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDIMMER2_STR, THING_TYPE_SHELLYDIMMER2_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDIMMER_STR, THING_TYPE_SHELLYDIMMER_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYIX3_STR, THING_TYPE_SHELLYIX3_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLY3EM_STR, THING_TYPE_SHELLY3EM_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYEM_STR, THING_TYPE_SHELLYEM_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDUORGBW_STR, THING_TYPE_SHELLYDUORGBW_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYVINTAGE_STR, THING_TYPE_SHELLYVINTAGE_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBULB_STR, THING_TYPE_SHELLYBULB_STR);
@@ -70,6 +78,7 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYSENSE_STR, THING_TYPE_SHELLYSENSE_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYEYE_STR, THING_TYPE_SHELLYEYE_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBUTTON1_STR, THING_TYPE_SHELLYBUTTON1_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYUNI_STR, THING_TYPE_SHELLYUNI_STR);
 
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR);
     }
@@ -95,7 +104,7 @@ public class ShellyThingCreator {
         String name = hostname.toLowerCase();
         String type = substringBefore(name, "-").toLowerCase();
         String devid = substringAfterLast(name, "-");
-        if ((devid == null) || (type == null)) {
+        if (devid.isEmpty() || type.isEmpty()) {
             throw new IllegalArgumentException("Invalid device name format: " + hostname);
         }
 
@@ -112,18 +121,29 @@ public class ShellyThingCreator {
             if (name.startsWith(THING_TYPE_SHELLYPLUGS_STR) || name.contains("-s")) {
                 return THING_TYPE_SHELLYPLUGS_STR;
             }
+            if (name.startsWith(THING_TYPE_SHELLYPLUGU1_STR)) {
+                return THING_TYPE_SHELLYPLUGU1_STR;
+            }
             return THING_TYPE_SHELLYPLUG_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
             return mode.equals(SHELLY_MODE_COLOR) ? THING_TYPE_SHELLYRGBW2_COLOR_STR : THING_TYPE_SHELLYRGBW2_WHITE_STR;
         }
+        if (name.startsWith(THING_TYPE_SHELLYMOTION_STR)) {
+            // depending on firmware release the Motion advertises under shellymotion-xxx or shellymotionsensor-xxxx
+            return THING_TYPE_SHELLYMOTION_STR;
+        }
 
         // Check general mapping
-        if (!deviceType.isEmpty() && THING_TYPE_MAPPING.containsKey(deviceType)) {
-            return THING_TYPE_MAPPING.get(deviceType);
+        if (!deviceType.isEmpty()) {
+            String res = THING_TYPE_MAPPING.get(deviceType);
+            if (res != null) {
+                return res;
+            }
         }
-        if (THING_TYPE_MAPPING.containsKey(type)) {
-            return THING_TYPE_MAPPING.get(type);
+        String res = THING_TYPE_MAPPING.get(type);
+        if (res != null) {
+            return res;
         }
         return THING_TYPE_SHELLYUNKNOWN_STR;
     }

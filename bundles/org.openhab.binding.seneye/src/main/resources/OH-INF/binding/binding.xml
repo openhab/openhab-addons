@@ -5,6 +5,5 @@
 
 	<name>Seneye Binding</name>
 	<description>The seneye binding polls the seneye API for your aquarium readings.</description>
-	<author>Niko Tanghe</author>
 
 </binding:binding>

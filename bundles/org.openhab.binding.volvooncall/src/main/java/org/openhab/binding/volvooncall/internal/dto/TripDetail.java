@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstan
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,8 +74,14 @@ public class TripDetail {
         return getPositionAsState(endPosition);
     }
 
-    public long getDurationInMinutes() {
-        return Duration.between(startTime, endTime).toMinutes();
+    public Optional<Long> getDurationInMinutes() {
+        Temporal start = startTime;
+        Temporal end = endTime;
+        if (start == null || end == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(Duration.between(start, end).toMinutes());
+        }
     }
 
     public Optional<Integer> getFuelConsumption() {

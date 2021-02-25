@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.automower.internal.rest.exceptions;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * An exception that occurred while communicating with an automower or an automower bridge
@@ -57,8 +58,9 @@ public class AutomowerCommunicationException extends IOException {
     }
 
     @Override
-    public String getMessage() {
-        return "Rest call failed: statusCode=" + statusCode + ", message=" + super.getMessage();
+    public @Nullable String getMessage() {
+        String message = super.getMessage();
+        return message == null ? null : "Rest call failed: statusCode=" + statusCode + ", message=" + message;
     }
 
     @Override

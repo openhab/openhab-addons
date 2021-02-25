@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
 @NonNullByDefault
-@Component(service = GreeDeviceFinder.class, immediate = true, configurationPid = "devicefinder.gree")
+@Component(service = GreeDeviceFinder.class, configurationPid = "devicefinder.gree")
 public class GreeDeviceFinder {
     private final Logger logger = LoggerFactory.getLogger(GreeDeviceFinder.class);
     private static final Gson gson = (new GsonBuilder()).create();
@@ -142,7 +142,7 @@ public class GreeDeviceFinder {
         deviceTable.put(newDevice.getId(), newDevice);
     }
 
-    public GreeAirDevice getDevice(String id) {
+    public @Nullable GreeAirDevice getDevice(String id) {
         return deviceTable.get(id);
     }
 

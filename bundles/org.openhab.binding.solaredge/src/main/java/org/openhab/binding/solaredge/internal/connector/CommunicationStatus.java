@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,8 +48,11 @@ public class CommunicationStatus {
     public final String getMessage() {
         Code httpCode = this.httpCode;
         Exception error = this.error;
-        if (error != null && error.getMessage() != null && !error.getMessage().isEmpty()) {
-            return error.getMessage();
+        if (error != null) {
+            String message = error.getMessage();
+            if (message != null && !message.isEmpty()) {
+                return message;
+            }
         } else if (httpCode != null && httpCode.getMessage() != null && !httpCode.getMessage().isEmpty()) {
             return httpCode.getMessage();
         }

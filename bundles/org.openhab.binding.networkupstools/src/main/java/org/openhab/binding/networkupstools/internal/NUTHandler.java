@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class NUTHandler extends BaseThingHandler {
      * Map to cache user configured channels with their configuration. Channels are dynamically created at
      * initialization phase of the thing.
      */
-    private final Map<ChannelUID, @Nullable NUTDynamicChannelConfiguration> userChannelToNutMap = new HashMap<>();
+    private final Map<ChannelUID, NUTDynamicChannelConfiguration> userChannelToNutMap = new HashMap<>();
     /**
      * Cache of the UPS status. When expired makes a call to the NUT server is done to get the actual status. Expires at
      * the
@@ -309,7 +309,7 @@ public class NUTHandler extends BaseThingHandler {
      * @param nutApiFunction function that will be called
      * @return the value returned by the api call or null in case of an error
      */
-    private <T> T wrappedNutApiCall(final NutFunction<String, T> nutApiFunction, String logging) {
+    private @Nullable <T> T wrappedNutApiCall(final NutFunction<String, T> nutApiFunction, String logging) {
         try {
             final NUTConfiguration localConfig = config;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
             return UnDefType.UNDEF;
         }
 
-        if ("Number".contentEquals(acceptedChannelType)) {
+        if (acceptedChannelType != null && "Number".contentEquals(acceptedChannelType)) {
             if (deviceValue instanceof String) {
                 double d = Double.parseDouble((String) deviceValue);
                 d *= 3.6;

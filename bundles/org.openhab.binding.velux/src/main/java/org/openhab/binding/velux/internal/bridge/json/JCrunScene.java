@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ class JCrunScene extends RunScene implements JsonBridgeCommunicationProtocol {
     /*
      * Message Objects
      */
-    @NonNullByDefault
     private static class ParamsRunScene {
         @SuppressWarnings("unused")
         private int id;
@@ -58,7 +57,6 @@ class JCrunScene extends RunScene implements JsonBridgeCommunicationProtocol {
      * {"action":"run","params":{"id":9}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
         @SuppressWarnings("unused")
         private String action;
@@ -86,7 +84,6 @@ class JCrunScene extends RunScene implements JsonBridgeCommunicationProtocol {
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

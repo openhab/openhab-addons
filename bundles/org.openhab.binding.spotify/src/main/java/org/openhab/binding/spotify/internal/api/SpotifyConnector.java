@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,7 +149,12 @@ class SpotifyConnector {
                     }
                 }
             } catch (ExecutionException e) {
-                future.completeExceptionally(e.getCause());
+                Throwable cause = e.getCause();
+                if (cause != null) {
+                    future.completeExceptionally(cause);
+                } else {
+                    future.completeExceptionally(e);
+                }
             } catch (RuntimeException | TimeoutException e) {
                 future.completeExceptionally(e);
             } catch (InterruptedException e) {

@@ -12,12 +12,15 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -26,7 +29,6 @@
 				"channel": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_bright",
@@ -42,19 +44,34 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
 				]
 			},
 			{
 				"property": "bg_bright",
 				"friendlyName": "Ambient Brightness",
 				"channel": "ambientBrightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_set_bright",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
 					}
 				]
 			},
@@ -62,9 +79,9 @@
 				"property": "delayoff",
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "seconds",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "cron_add",
@@ -74,6 +91,11 @@
 							"$value$"
 						]
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
@@ -81,8 +103,13 @@
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_ct_abx",
@@ -93,6 +120,11 @@
 							500
 						]
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Setpoint",
+					"Temperature"
 				]
 			},
 			{
@@ -100,8 +132,38 @@
 				"friendlyName": "Color Mode",
 				"channel": "colorMode",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 5,
+					"step": 1,
+					"options": [
+						{
+							"value": "0",
+							"label": "Default"
+						},
+						{
+							"value": "1",
+							"label": "CT mode"
+						},
+						{
+							"value": "2",
+							"label": "RGB mode"
+						},
+						{
+							"value": "3",
+							"label": "HSV mode"
+						},
+						{
+							"value": "4",
+							"label": "Color Flow mode"
+						},
+						{
+							"value": "5",
+							"label": "Night Light mode"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": []
 			},
 			{
@@ -116,12 +178,14 @@
 						"command": "set_name",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "text"
 			},
 			{
 				"property": "bg_power",
 				"friendlyName": "Ambient Power",
 				"channel": "ambientPower",
+				"channelType": "ambientPower",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -136,6 +200,7 @@
 				"property": "bg_rgb",
 				"friendlyName": "Ambient Color",
 				"channel": "ambientColor",
+				"channelType": "ambientColor",
 				"type": "Color",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -150,6 +215,7 @@
 				"property": "bg_ct",
 				"friendlyName": "Ambient Color Temperature",
 				"channel": "ambientColorTemperature",
+				"channelType": "ambientColorTemperature",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -157,8 +223,6 @@
 					{
 						"command": "bg_set_ct_abx",
 						"parameterType": "NUMBER",
-						"parameter1": "\"smooth\"",
-						"parameter2": "500",
 						"parameters": [
 							"$value$",
 							"smooth",
@@ -171,6 +235,7 @@
 				"property": "",
 				"friendlyName": "Set Scene",
 				"channel": "customScene",
+				"channelType": "customScene",
 				"type": "String",
 				"refresh": false,
 				"ChannelGroup": "actions",
@@ -185,19 +250,24 @@
 				"property": "bg_lmode",
 				"friendlyName": "Ambient Color Mode",
 				"channel": "ambientColorMode",
+				"channelType": "ambientColorMode",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": []
 			},
 			{
 				"property": "nl_br",
 				"friendlyName": "Nightlight Brightness",
 				"channel": "nightlightBrightness",
+				"channelType": "nightlightBrightness",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
-				"actions": []
+				"actions": [],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
+				]
 			}
 		]
 	}

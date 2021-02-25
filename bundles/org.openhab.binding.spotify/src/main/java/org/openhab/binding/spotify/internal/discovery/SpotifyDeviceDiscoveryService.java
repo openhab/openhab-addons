@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void activate() {
-        Map<String, @Nullable Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, Boolean.TRUE);
         super.activate(properties);
     }

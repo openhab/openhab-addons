@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link RdsDebouncer} determines if change events should be forwarded to a
@@ -30,10 +29,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class RdsDebouncer {
 
-    private final Map<String, @Nullable DebounceDelay> channels = new HashMap<>();
+    private final Map<String, DebounceDelay> channels = new HashMap<>();
 
-    @SuppressWarnings("null")
-    @NonNullByDefault
     static class DebounceDelay {
 
         private long expireTime;
@@ -58,10 +55,9 @@ public class RdsDebouncer {
 
     public Boolean timeExpired(String channelId) {
         if (channels.containsKey(channelId)) {
-            @Nullable
             DebounceDelay debounceDelay = channels.get(channelId);
             if (debounceDelay != null) {
-                return ((DebounceDelay) debounceDelay).timeExpired();
+                return debounceDelay.timeExpired();
             }
         }
         return true;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,7 @@
  */
 package org.openhab.io.hueemulation.internal.rest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -44,6 +40,7 @@ import org.openhab.core.automation.util.RuleBuilder;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.HueEmulationService;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.RuleUtils;
 import org.openhab.io.hueemulation.internal.dto.HueDataStore;
@@ -56,13 +53,15 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Enables the schedule part of the Hue REST API. Uses automation rules with GenericCronTrigger, TimerTrigger and
@@ -74,7 +73,9 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = false, service = { Schedules.class }, property = "com.eclipsesource.jaxrs.publish=false")
+@Component(immediate = false, service = Schedules.class)
+@JaxrsResource
+@JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + HueEmulationService.REST_APP_NAME + ")")
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
@@ -228,10 +229,9 @@ public class Schedules implements RegistryChangeListener<Rule> {
     @GET
     @Path("{username}/schedules")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Return all schedules")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return all schedules", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getSchedulesApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+            @PathParam("username") @Parameter(description = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -240,11 +240,10 @@ public class Schedules implements RegistryChangeListener<Rule> {
 
     @GET
     @Path("{username}/schedules/{id}")
-    @ApiOperation(value = "Return a schedule")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return a schedule", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getScheduleApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "schedule id") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "schedule id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -253,12 +252,12 @@ public class Schedules implements RegistryChangeListener<Rule> {
 
     @DELETE
     @Path("{username}/schedules/{id}")
-    @ApiOperation(value = "Deletes a schedule")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "The user got removed"),
-            @ApiResponse(code = 403, message = "Access denied") })
+    @Operation(summary = "Deletes a schedule", responses = {
+            @ApiResponse(responseCode = "200", description = "The user got removed"),
+            @ApiResponse(responseCode = "403", description = "Access denied") })
     public Response removeScheduleApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "Schedule to remove") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "Schedule to remove") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -273,16 +272,17 @@ public class Schedules implements RegistryChangeListener<Rule> {
 
     @PUT
     @Path("{username}/schedules/{id}")
-    @ApiOperation(value = "Set schedule attributes")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Set schedule attributes", responses = {
+            @ApiResponse(responseCode = "200", description = "OK") })
     public Response modifyScheduleApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "schedule id") String id, String body) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "schedule id") String id, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
 
-        final HueChangeScheduleEntry changeRequest = cs.gson.fromJson(body, HueChangeScheduleEntry.class);
+        final HueChangeScheduleEntry changeRequest = Objects
+                .requireNonNull(cs.gson.fromJson(body, HueChangeScheduleEntry.class));
 
         Rule rule = ruleRegistry.remove(id);
         if (rule == null) {
@@ -311,10 +311,10 @@ public class Schedules implements RegistryChangeListener<Rule> {
     @SuppressWarnings({ "null" })
     @POST
     @Path("{username}/schedules")
-    @ApiOperation(value = "Create a new schedule")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Create a new schedule", responses = {
+            @ApiResponse(responseCode = "200", description = "OK") })
     public Response postNewSchedule(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username, String body) {
+            @PathParam("username") @Parameter(description = "username") String username, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

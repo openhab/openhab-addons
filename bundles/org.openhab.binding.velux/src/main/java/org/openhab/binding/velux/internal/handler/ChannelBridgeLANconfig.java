@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,9 @@ package org.openhab.binding.velux.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeLANConfig;
 import org.openhab.binding.velux.internal.handler.utils.StateUtils;
-import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -71,25 +69,17 @@ final class ChannelBridgeLANconfig extends ChannelHandlerTemplate {
             VeluxItemType itemType = VeluxItemType.getByThingAndChannel(thisBridgeHandler.thingTypeUIDOf(channelUID),
                     channelUID.getId());
             switch (itemType) {
-                case BRIDGE_IPADDRESS:
+                case BRIDGE_ADDRESS:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABipAddress);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_IPADDRESS,
-                            thisBridgeHandler.bridgeParameters.lanConfig.openHABipAddress.toString());
                     break;
                 case BRIDGE_SUBNETMASK:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABsubnetMask);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_SUBNETMASK,
-                            thisBridgeHandler.bridgeParameters.lanConfig.openHABsubnetMask.toString());
                     break;
                 case BRIDGE_DEFAULTGW:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABdefaultGW);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_DEFAULTGW,
-                            thisBridgeHandler.bridgeParameters.lanConfig.openHABdefaultGW.toString());
                     break;
                 case BRIDGE_DHCP:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABenabledDHCP);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_DHCP,
-                            thisBridgeHandler.bridgeParameters.lanConfig.openHABenabledDHCP.toString());
                 default:
             }
         }

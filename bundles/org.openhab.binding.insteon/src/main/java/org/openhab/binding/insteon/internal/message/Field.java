@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,11 +28,10 @@ import org.openhab.binding.insteon.internal.utils.Utils;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public final class Field {
     private final String name;
     private final int offset;
-    private final @Nullable DataType type;
+    private final DataType type;
 
     public String getName() {
         return name;
@@ -42,11 +41,11 @@ public final class Field {
         return offset;
     }
 
-    public @Nullable DataType getType() {
+    public DataType getType() {
         return type;
     }
 
-    public Field(String name, @Nullable DataType type, int off) {
+    public Field(String name, DataType type, int off) {
         this.name = name;
         this.type = type;
         this.offset = off;
@@ -74,7 +73,7 @@ public final class Field {
         return getName() + " Type: " + getType() + " Offset " + getOffset();
     }
 
-    public String toString(byte @Nullable [] array) {
+    public String toString(byte[] array) {
         String s = name + ":";
         try {
             switch (type) {
@@ -96,7 +95,7 @@ public final class Field {
         return s;
     }
 
-    public void set(byte @Nullable [] array, Object o) throws FieldException {
+    public void set(byte[] array, Object o) throws FieldException {
         switch (getType()) {
             case BYTE:
                 setByte(array, (Byte) o);
@@ -121,7 +120,7 @@ public final class Field {
      * @param b the value you want to set the byte to
      * @throws FieldException
      */
-    public void setByte(byte @Nullable [] array, byte b) throws FieldException {
+    public void setByte(byte[] array, byte b) throws FieldException {
         check(array.length, DataType.BYTE);
         array[offset] = b;
     }
@@ -133,7 +132,7 @@ public final class Field {
      * @param array the destination array
      * @param i the integer value to set
      */
-    public void setInt(byte @Nullable [] array, int i) throws FieldException {
+    public void setInt(byte[] array, int i) throws FieldException {
         check(array.length, DataType.INT);
         array[offset] = (byte) ((i >>> 24) & 0xFF);
         array[offset + 1] = (byte) ((i >>> 16) & 0xFF);
@@ -149,7 +148,7 @@ public final class Field {
      * @param adr the insteon address value to set
      */
 
-    public void setAddress(byte @Nullable [] array, InsteonAddress adr) throws FieldException {
+    public void setAddress(byte[] array, InsteonAddress adr) throws FieldException {
         check(array.length, DataType.ADDRESS);
         adr.storeBytes(array, offset);
     }
@@ -160,7 +159,7 @@ public final class Field {
      * @param array the array to fetch from
      * @return the byte value of the field
      */
-    public byte getByte(byte @Nullable [] array) throws FieldException {
+    public byte getByte(byte[] array) throws FieldException {
         check(array.length, DataType.BYTE);
         return array[offset];
     }
@@ -171,7 +170,7 @@ public final class Field {
      * @param array the array to fetch from
      * @return the int value of the field
      */
-    public int getInt(byte @Nullable [] array) throws FieldException {
+    public int getInt(byte[] array) throws FieldException {
         check(array.length, DataType.INT);
         byte b1 = array[offset];
         byte b2 = array[offset + 1];
@@ -188,7 +187,7 @@ public final class Field {
      * @return the address
      */
 
-    public InsteonAddress getAddress(byte @Nullable [] array) throws FieldException {
+    public InsteonAddress getAddress(byte[] array) throws FieldException {
         check(array.length, DataType.ADDRESS);
         InsteonAddress adr = new InsteonAddress();
         adr.loadBytes(array, offset);

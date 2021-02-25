@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ class ExpiringMap<T> {
         values.put(now, newValue);
         Optional<Long> eldestKey = values.keySet().stream().filter(key -> key < now - eldestAge).findFirst();
         if (eldestKey.isPresent()) {
-            agedValue = Optional.of(values.get(eldestKey.get()));
+            agedValue = Optional.ofNullable(values.get(eldestKey.get()));
             values.entrySet().removeIf(map -> map.getKey() <= eldestKey.get());
         }
     }

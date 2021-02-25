@@ -5,6 +5,5 @@
 
 	<name>iCalendar Binding</name>
 	<description>Binding for using iCal calendars</description>
-	<author>Michael Wodniok</author>
 
 </binding:binding>

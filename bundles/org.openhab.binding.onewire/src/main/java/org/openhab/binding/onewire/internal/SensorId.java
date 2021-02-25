@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,10 @@ public class SensorId {
      * - characters are case-insensitive
      * - hubs ("1F.xxxxxxxxxxxx/aux/") may be repeated
      */
-    public SensorId(String fullPath) {
+    public SensorId(@Nullable String fullPath) {
+        if (fullPath == null) {
+            throw new IllegalArgumentException();
+        }
         Matcher matcher = SENSOR_ID_PATTERN.matcher(fullPath);
         if (matcher.matches() && matcher.groupCount() == 2) {
             path = matcher.group(1) == null ? "" : matcher.group(1);

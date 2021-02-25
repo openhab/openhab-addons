@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -284,54 +284,64 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
 
     @Override
     public void handleEvent(EventItem eventItem) {
-        logger.debug("detect event: {}", eventItem.toString());
-        if (eventItem.getName().equals(EventNames.ZONE_SENSOR_VALUE)) {
-            if (zoneTemperationControlListenerMap != null) {
-                if (SensorEnum.ROOM_TEMPERATURE_SET_POINT.getSensorType().toString()
-                        .equals(eventItem.getProperties().get(EventResponseEnum.SENSOR_TYPE))) {
-                    Integer zoneID = Integer.parseInt(eventItem.getSource().get(EventResponseEnum.ZONEID));
-                    if (zoneTemperationControlListenerMap.get(zoneID) != null) {
-                        Float newValue = Float
-                                .parseFloat(eventItem.getProperties().get(EventResponseEnum.SENSOR_VALUE_FLOAT));
-                        if (!isEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue)) {
-                            zoneTemperationControlListenerMap.get(zoneID).onTargetTemperatureChanged(newValue);
+        try {
+            logger.debug("detect event: {}", eventItem.toString());
+            if (eventItem.getName().equals(EventNames.ZONE_SENSOR_VALUE)) {
+                if (zoneTemperationControlListenerMap != null) {
+                    if (SensorEnum.ROOM_TEMPERATURE_SET_POINT.getSensorType().toString()
+                            .equals(eventItem.getProperties().get(EventResponseEnum.SENSOR_TYPE))) {
+                        Integer zoneID = Integer
+                                .parseInt(eventItem.getSource().getOrDefault(EventResponseEnum.ZONEID, ""));
+                        if (zoneTemperationControlListenerMap.get(zoneID) != null) {
+
+                            Float newValue = Float.parseFloat(
+                                    eventItem.getProperties().getOrDefault(EventResponseEnum.SENSOR_VALUE_FLOAT, ""));
+                            if (!isEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue)) {
+                                zoneTemperationControlListenerMap.get(zoneID).onTargetTemperatureChanged(newValue);
+                            }
+                        }
+                    }
+                    if (SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE.getSensorType().toString()
+                            .equals(eventItem.getProperties().get(EventResponseEnum.SENSOR_TYPE))) {
+                        Integer zoneID = Integer
+                                .parseInt(eventItem.getSource().getOrDefault(EventResponseEnum.ZONEID, ""));
+                        if (zoneTemperationControlListenerMap.get(zoneID) != null) {
+                            Float newValue = Float.parseFloat(
+                                    eventItem.getProperties().getOrDefault(EventResponseEnum.SENSOR_VALUE_FLOAT, ""));
+                            if (!isEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue)) {
+                                zoneTemperationControlListenerMap.get(zoneID)
+                                        .onControlValueChanged(newValue.intValue());
+                            }
                         }
                     }
                 }
-                if (SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE.getSensorType().toString()
-                        .equals(eventItem.getProperties().get(EventResponseEnum.SENSOR_TYPE))) {
-                    Integer zoneID = Integer.parseInt(eventItem.getSource().get(EventResponseEnum.ZONEID));
-                    if (zoneTemperationControlListenerMap.get(zoneID) != null) {
-                        Float newValue = Float
-                                .parseFloat(eventItem.getProperties().get(EventResponseEnum.SENSOR_VALUE_FLOAT));
-                        if (!isEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue)) {
-                            zoneTemperationControlListenerMap.get(zoneID).onControlValueChanged(newValue.intValue());
-                        }
+            }
+
+            if (eventItem.getName().equals(EventNames.HEATING_CONTROL_OPERATION_MODE)) {
+                if (EVALUATE_REAL_ACTIVE_MODE.equals(eventItem.getProperties().get(EventResponseEnum.ACTIONS))) {
+                    Integer zoneID = Integer
+                            .parseInt(eventItem.getProperties().getOrDefault(EventResponseEnum.ZONEID, ""));
+                    TemperatureControlStatus temperationControlStatus = dSapi
+                            .getZoneTemperatureControlStatus(connectionMananager.getSessionToken(), zoneID, null);
+                    if (temperationControlStatus != null) {
+                        addTemperatureControlStatus(temperationControlStatus);
                     }
                 }
             }
-        }
 
-        if (eventItem.getName().equals(EventNames.HEATING_CONTROL_OPERATION_MODE)) {
-            if (EVALUATE_REAL_ACTIVE_MODE.equals(eventItem.getProperties().get(EventResponseEnum.ACTIONS))) {
-                Integer zoneID = Integer.parseInt(eventItem.getProperties().get(EventResponseEnum.ZONEID));
-                TemperatureControlStatus temperationControlStatus = dSapi
-                        .getZoneTemperatureControlStatus(connectionMananager.getSessionToken(), zoneID, null);
-                if (temperationControlStatus != null) {
-                    addTemperatureControlStatus(temperationControlStatus);
+            if (eventItem.getName().equals(EventNames.STATE_CHANGED)) {
+                if (STATE_NAME_HEATING_WATER_SYSTEM
+                        .equals(eventItem.getProperties().get(EventResponseEnum.STATE_NAME))) {
+                    currentHeatingWaterSystemStage = eventItem.getProperties().get(EventResponseEnum.STATE);
+                    logger.debug("heating water system state changed to {}", currentHeatingWaterSystemStage);
+                    if (systemStateChangeListener != null) {
+                        systemStateChangeListener.onSystemStateChanged(STATE_NAME_HEATING_WATER_SYSTEM,
+                                currentHeatingWaterSystemStage);
+                    }
                 }
             }
-        }
-
-        if (eventItem.getName().equals(EventNames.STATE_CHANGED)) {
-            if (STATE_NAME_HEATING_WATER_SYSTEM.equals(eventItem.getProperties().get(EventResponseEnum.STATE_NAME))) {
-                currentHeatingWaterSystemStage = eventItem.getProperties().get(EventResponseEnum.STATE);
-                logger.debug("heating water system state changed to {}", currentHeatingWaterSystemStage);
-                if (systemStateChangeListener != null) {
-                    systemStateChangeListener.onSystemStateChanged(STATE_NAME_HEATING_WATER_SYSTEM,
-                            currentHeatingWaterSystemStage);
-                }
-            }
+        } catch (NumberFormatException e) {
+            logger.debug("Unexpected missing or invalid number while handling event", e);
         }
     }
 

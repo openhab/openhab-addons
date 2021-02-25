@@ -20,10 +20,9 @@
 		<representation-property>uniqueId</representation-property>
 
 		<config-description>
-			<parameter name="sensorId" type="text">
+			<parameter name="sensorId" type="text" required="true">
 				<label>Sensor ID</label>
 				<description>The identifier that is used within the hue bridge.</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="on" type="boolean">
 				<label>Sensor Status</label>

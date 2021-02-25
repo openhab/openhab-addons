@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ package org.openhab.binding.linky.internal;
  * @author Gaël L'hopital - Initial contribution
  */
 public class LinkyConfiguration {
+    public static final String INTERNAL_AUTH_ID = "internalAuthId";
     public String username;
     public String password;
+    public String internalAuthId;
 }

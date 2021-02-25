@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -98,7 +98,7 @@ public class NetworkHandler extends BaseThingHandler
             case CHANNEL_DEPRECATED_TIME:
                 presenceDetection.getValue(value -> {
                     updateState(CHANNEL_LATENCY,
-                            new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(SmartHomeUnits.SECOND)));
+                            new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(Units.SECOND)));
                     updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
                 });
                 break;
@@ -129,8 +129,7 @@ public class NetworkHandler extends BaseThingHandler
     @Override
     public void partialDetectionResult(PresenceDetectionValue value) {
         updateState(CHANNEL_ONLINE, OnOffType.ON);
-        updateState(CHANNEL_LATENCY,
-                new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(SmartHomeUnits.SECOND)));
+        updateState(CHANNEL_LATENCY, new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(Units.SECOND)));
         updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
     }
 

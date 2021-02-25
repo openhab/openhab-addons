@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.transform.exec.internal;
+
+import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - added command whitelist service
  */
 @NonNullByDefault
-@Component(immediate = true, property = { "smarthome.transform=EXEC" })
+@Component(property = { "openhab.transform=EXEC" })
 public class ExecTransformationService implements TransformationService {
     private final Logger logger = LoggerFactory.getLogger(ExecTransformationService.class);
     private final ExecTransformationWhitelistWatchService execTransformationWhitelistWatchService;
@@ -64,7 +66,8 @@ public class ExecTransformationService implements TransformationService {
         long startTime = System.currentTimeMillis();
 
         String formattedCommandLine = String.format(commandLine, source);
-        String result = ExecUtil.executeCommandLineAndWaitResponse(formattedCommandLine, 5000);
+        String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofSeconds(5),
+                formattedCommandLine.split(" "));
         logger.trace("command line execution elapsed {} ms", System.currentTimeMillis() - startTime);
 
         return result;

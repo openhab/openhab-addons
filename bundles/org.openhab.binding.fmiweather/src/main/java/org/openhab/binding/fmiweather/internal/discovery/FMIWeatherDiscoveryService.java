@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,11 +54,11 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.fmiweather")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.fmiweather")
 public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(FMIWeatherDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_OBSERVATION);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_OBSERVATION, THING_TYPE_FORECAST);
     private static final long STATIONS_CACHE_MILLIS = TimeUnit.HOURS.toMillis(12);
     private static final int STATIONS_TIMEOUT_MILLIS = (int) TimeUnit.SECONDS.toMillis(10);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;

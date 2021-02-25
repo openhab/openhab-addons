@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.luftdateninfo.internal.handler;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -82,7 +83,7 @@ public class HTTPHandler {
                         } else {
                             failure = result.getFailure().getMessage();
                         }
-                        callback.onError(failure);
+                        callback.onError(Objects.requireNonNullElse(failure, "Unknown error"));
                     } else {
                         callback.onResponse(getContentAsString());
                     }

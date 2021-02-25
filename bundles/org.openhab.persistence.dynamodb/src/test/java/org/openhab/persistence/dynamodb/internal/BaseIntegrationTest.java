@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -175,16 +175,19 @@ public class BaseIntegrationTest {
         });
 
         Map<String, Object> config = new HashMap<>();
-        config.put("region", System.getProperty("DYNAMODBTEST_REGION"));
-        config.put("accessKey", System.getProperty("DYNAMODBTEST_ACCESS"));
-        config.put("secretKey", System.getProperty("DYNAMODBTEST_SECRET"));
+        String value = System.getProperty("DYNAMODBTEST_REGION");
+        config.put("region", value != null ? value : "");
+        value = System.getProperty("DYNAMODBTEST_ACCESS");
+        config.put("accessKey", value != null ? value : "");
+        value = System.getProperty("DYNAMODBTEST_SECRET");
+        config.put("secretKey", value != null ? value : "");
         config.put("tablePrefix", "dynamodb-integration-tests-");
 
         // Disable buffering
         config.put("bufferSize", "0");
 
         for (Entry<String, Object> entry : config.entrySet()) {
-            if (entry.getValue() == null) {
+            if (((String) entry.getValue()).isEmpty()) {
                 LOGGER.warn(String.format(
                         "Expecting %s to have value for integration tests. Integration tests will be skipped",
                         entry.getKey()));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,6 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
      * {"action":"get","params":{}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -81,7 +80,6 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
      * {"ipAddress":"192.168.45.9","subnetMask":"255.255.255.0","defaultGateway":"192.168.45.129","dhcp":false}
      * </pre>
      */
-    @NonNullByDefault
     private static class BCLANConfig {
         private String ipAddress = VeluxBindingConstants.UNKNOWN;
         private String subnetMask = VeluxBindingConstants.UNKNOWN;
@@ -111,7 +109,6 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

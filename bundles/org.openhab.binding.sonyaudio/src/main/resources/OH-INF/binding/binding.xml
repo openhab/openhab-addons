@@ -5,6 +5,5 @@
 
 	<name>SonyAudio Binding</name>
 	<description>This is the binding for SonyAudio products (Receivers and wireless speakers).</description>
-	<author>David Åberg</author>
 
 </binding:binding>

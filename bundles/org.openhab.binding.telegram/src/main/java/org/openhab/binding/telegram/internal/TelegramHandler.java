@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.telegram.bot.TelegramActions;
+import org.openhab.binding.telegram.internal.action.TelegramActions;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -214,7 +214,7 @@ public class TelegramHandler extends BaseThingHandler {
         return new GetUpdates().timeout(longPollingTime * 1000);
     }
 
-    private void handleExceptions(TelegramException exception) {
+    private void handleExceptions(@Nullable TelegramException exception) {
         final TelegramBot localBot = bot;
         if (exception != null) {
             if (exception.response() != null) {
@@ -408,7 +408,7 @@ public class TelegramHandler extends BaseThingHandler {
         return replyIdToCallbackId.get(new ReplyKey(chatId, replyId));
     }
 
-    public Integer removeMessageId(Long chatId, String replyId) {
+    public @Nullable Integer removeMessageId(Long chatId, String replyId) {
         return replyIdToMessageId.remove(new ReplyKey(chatId, replyId));
     }
 

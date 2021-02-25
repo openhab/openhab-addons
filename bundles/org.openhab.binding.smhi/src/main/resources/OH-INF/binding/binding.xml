@@ -5,6 +5,5 @@
 
 	<name>SMHI Binding</name>
 	<description>Binding for getting weather forecasts from the Swedish Meteorological and Hydrological Institute (SMHI)</description>
-	<author>Anders Alfredsson</author>
 
 </binding:binding>

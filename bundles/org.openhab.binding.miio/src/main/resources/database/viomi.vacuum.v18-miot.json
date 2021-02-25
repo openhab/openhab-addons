@@ -1,0 +1,1538 @@
+{
+	"deviceMapping": {
+		"id": [
+			"viomi.vacuum.v18"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Vacuum Action",
+				"channel": "vacuumaction",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "start-sweep",
+							"label": "Sweep"
+						},
+						{
+							"value": "stop-sweeping",
+							"label": "Stop Sweep"
+						},
+						{
+							"value": "pause",
+							"label": "Pause"
+						},
+						{
+							"value": "start-charge",
+							"label": "Goto Dock"
+						},
+						{
+							"value": "stop-massage",
+							"label": "Stop Sweep"
+						},
+						{
+							"value": "start-mop",
+							"label": "Start Mop"
+						},
+						{
+							"value": "start-only-sweep",
+							"label": "Start Sweep Only"
+						},
+						{
+							"value": "start-sweep-mop",
+							"label": "Start Sweep Mop"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-charge"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop-massage"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 6,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-mop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 7,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-only-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 8,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-sweep-mop"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping [\"start-sweep\"\u003d\"Sweep\",\"stop-sweeping\"\u003d\"Stop Sweep\",\"pause\"\u003d\"Pause\",\"start-charge\"\u003d\"Goto Dock\",\"stop-massage\"\u003d\"Stop Sweep\",\"start-mop\"\u003d\"Start Mop\",\"start-only-sweep\"\u003d\"Start Sweep Only\",\"start-sweep-mop\"\u003d\"Start Sweep Mop\"]"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Sleep"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Go Charging"
+						},
+						{
+							"value": "4",
+							"label": "Charging"
+						},
+						{
+							"value": "5",
+							"label": "Sweeping"
+						},
+						{
+							"value": "6",
+							"label": "Sweeping and Mopping"
+						},
+						{
+							"value": "7",
+							"label": "Mopping"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\"]"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Error"
+						},
+						{
+							"value": "1",
+							"label": "Low Battery Find Charge"
+						},
+						{
+							"value": "2",
+							"label": "Low Bat Need Poweroff"
+						},
+						{
+							"value": "3",
+							"label": "Wheel Trap"
+						},
+						{
+							"value": "4",
+							"label": "Collision Error"
+						},
+						{
+							"value": "5",
+							"label": "Tile Do Task"
+						},
+						{
+							"value": "6",
+							"label": "Lidar Point Err"
+						},
+						{
+							"value": "7",
+							"label": "Front Wall Err"
+						},
+						{
+							"value": "8",
+							"label": "Along Wall Err"
+						},
+						{
+							"value": "9",
+							"label": "Mid Brush Err"
+						},
+						{
+							"value": "10",
+							"label": "Side Brush Err"
+						},
+						{
+							"value": "11",
+							"label": "Fan Err"
+						},
+						{
+							"value": "12",
+							"label": "Lidar Cover"
+						},
+						{
+							"value": "13",
+							"label": "Garbage Full"
+						},
+						{
+							"value": "14",
+							"label": "Garbage Out"
+						},
+						{
+							"value": "15",
+							"label": "Garbage Full Out"
+						},
+						{
+							"value": "16",
+							"label": "Trapped"
+						},
+						{
+							"value": "17",
+							"label": "Pick Up"
+						},
+						{
+							"value": "20",
+							"label": "Cannot Arrive"
+						},
+						{
+							"value": "21",
+							"label": "Start From Forbid"
+						},
+						{
+							"value": "22",
+							"label": "Drop"
+						},
+						{
+							"value": "23",
+							"label": "Kit Water Pump"
+						},
+						{
+							"value": "24",
+							"label": "Find Charge Failed"
+						},
+						{
+							"value": "18",
+							"label": "Garbage Out"
+						},
+						{
+							"value": "25",
+							"label": "No Mop Clean"
+						},
+						{
+							"value": "26",
+							"label": "Low Battery Cant Clean"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"No Error\",\"1\"\u003d\"Low Battery Find Charge\",\"2\"\u003d\"Low Bat Need Poweroff\",\"3\"\u003d\"Wheel Trap\",\"4\"\u003d\"Collision Error\",\"5\"\u003d\"Tile Do Task\",\"6\"\u003d\"Lidar Point Err\",\"7\"\u003d\"Front Wall Err\",\"8\"\u003d\"Along Wall Err\",\"9\"\u003d\"Mid Brush Err\",\"10\"\u003d\"Side Brush Err\",\"11\"\u003d\"Fan Err\",\"12\"\u003d\"Lidar Cover\",\"13\"\u003d\"Garbage Full\",\"14\"\u003d\"Garbage Out\",\"15\"\u003d\"Garbage Full Out\",\"16\"\u003d\"Trapped\",\"17\"\u003d\"Pick Up\",\"20\"\u003d\"Cannot Arrive\",\"21\"\u003d\"Start From Forbid\",\"22\"\u003d\"Drop\",\"23\"\u003d\"Kit Water Pump\",\"24\"\u003d\"Find Charge Failed\",\"18\"\u003d\"Garbage Out\",\"25\"\u003d\"No Mop Clean\",\"26\"\u003d\"Low Battery Cant Clean\"]"
+			},
+			{
+				"property": "wdr-mode",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Robot Cleaner - Wide Dynamic Range Mode",
+				"channel": "wdr-mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Mode 0"
+						},
+						{
+							"value": "1",
+							"label": "Mode 1"
+						},
+						{
+							"value": "2",
+							"label": "Mode 2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Mode 0\",\"1\"\u003d\"Mode 1\",\"2\"\u003d\"Mode 2\"]"
+			},
+			{
+				"property": "door-state",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Robot Cleaner - Door State",
+				"channel": "door-state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Door 0"
+						},
+						{
+							"value": "1",
+							"label": "Door 1"
+						},
+						{
+							"value": "2",
+							"label": "Door 2"
+						},
+						{
+							"value": "3",
+							"label": "Door 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Door 0\",\"1\"\u003d\"Door 1\",\"2\"\u003d\"Door 2\",\"3\"\u003d\"Door 3\"]"
+			},
+			{
+				"property": "contact-state",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Robot Cleaner - Contact State",
+				"channel": "contact-state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+			},
+			{
+				"property": "contact-state1",
+				"siid": 2,
+				"piid": 15,
+				"friendlyName": "Robot Cleaner - Contact State",
+				"channel": "contact-state1",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "contact-state2",
+				"siid": 2,
+				"piid": 16,
+				"friendlyName": "Robot Cleaner - Contact State",
+				"channel": "contact-state2",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1200,
+					"step": 1,
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "mute",
+				"siid": 2,
+				"piid": 17,
+				"friendlyName": "Robot Cleaner - Mute",
+				"channel": "mute",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "sweep-type",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Robot Cleaner - Sweep Type",
+				"channel": "sweep-type",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Total"
+						},
+						{
+							"value": "2",
+							"label": "Wall"
+						},
+						{
+							"value": "3",
+							"label": "Zone"
+						},
+						{
+							"value": "4",
+							"label": "Point"
+						},
+						{
+							"value": "5",
+							"label": "Control"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Total\",\"2\"\u003d\"Wall\",\"3\"\u003d\"Zone\",\"4\"\u003d\"Point\",\"5\"\u003d\"Control\"]"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 19,
+				"friendlyName": "Robot Cleaner - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Silent"
+						},
+						{
+							"value": "1",
+							"label": "Basic"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "Strong"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]"
+			},
+			{
+				"property": "battery-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Battery - Battery Level",
+				"channel": "battery-level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "repeat-state",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Viomi Vacuum - Repeat State",
+				"channel": "repeat-state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "remember-state",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Viomi Vacuum - Remember State",
+				"channel": "remember-state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"关\",\"1\"\u003d\"开\"]"
+			},
+			{
+				"property": "mop-route",
+				"siid": 4,
+				"piid": 6,
+				"friendlyName": "Viomi Vacuum - Mop Route",
+				"channel": "mop-route",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "C-Curved"
+						},
+						{
+							"value": "1",
+							"label": "Y-Route"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"C-Curved\",\"1\"\u003d\"Y-Route\"]"
+			},
+			{
+				"property": "side-brush-life",
+				"siid": 4,
+				"piid": 8,
+				"friendlyName": "Viomi Vacuum - Side Brush Life",
+				"channel": "side-brush-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "side-brush-hours",
+				"siid": 4,
+				"piid": 9,
+				"friendlyName": "Viomi Vacuum - Side Brush Hours",
+				"channel": "side-brush-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "main-brush-life",
+				"siid": 4,
+				"piid": 10,
+				"friendlyName": "Viomi Vacuum - Main Brush Life",
+				"channel": "main-brush-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "main-brush-hours",
+				"siid": 4,
+				"piid": 11,
+				"friendlyName": "Viomi Vacuum - Main Brush Hours",
+				"channel": "main-brush-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 360,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "hypa-life",
+				"siid": 4,
+				"piid": 12,
+				"friendlyName": "Viomi Vacuum - Hypa Life",
+				"channel": "hypa-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "hypa-hours",
+				"siid": 4,
+				"piid": 13,
+				"friendlyName": "Viomi Vacuum - Hypa Hours",
+				"channel": "hypa-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "mop-life",
+				"siid": 4,
+				"piid": 14,
+				"friendlyName": "Viomi Vacuum - Mop Life",
+				"channel": "mop-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "mop-hours",
+				"siid": 4,
+				"piid": 15,
+				"friendlyName": "Viomi Vacuum - Mop Hours",
+				"channel": "mop-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "suction-grade",
+				"siid": 4,
+				"piid": 17,
+				"friendlyName": "Viomi Vacuum - Suction Grade",
+				"channel": "suction-grade",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Silent"
+						},
+						{
+							"value": "1",
+							"label": "Standard"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "Strong"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]"
+			},
+			{
+				"property": "water-grade",
+				"siid": 4,
+				"piid": 18,
+				"friendlyName": "Viomi Vacuum - Water Grade",
+				"channel": "water-grade",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "1 Block"
+						},
+						{
+							"value": "1",
+							"label": "2 Blocks"
+						},
+						{
+							"value": "2",
+							"label": "3 Blocks"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"1 Block\",\"1\"\u003d\"2 Blocks\",\"2\"\u003d\"3 Blocks\"]"
+			},
+			{
+				"property": "map-num",
+				"siid": 4,
+				"piid": 23,
+				"friendlyName": "Viomi Vacuum - Map Num",
+				"channel": "map-num",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 5,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "time-zone",
+				"siid": 4,
+				"piid": 24,
+				"friendlyName": "Viomi Vacuum - Time Zone",
+				"channel": "time-zone",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": -99999,
+					"maximum": 99999,
+					"step": 1,
+					"pattern": "%.1f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "clean-start-time",
+				"siid": 4,
+				"piid": 25,
+				"friendlyName": "Viomi Vacuum - Clean Start Time",
+				"channel": "clean-start-time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1410065407,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "clean-use-time",
+				"siid": 4,
+				"piid": 26,
+				"friendlyName": "Viomi Vacuum - Clean Use Time",
+				"channel": "clean-use-time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 99999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "clean-area",
+				"siid": 4,
+				"piid": 27,
+				"friendlyName": "Viomi Vacuum - Clean Area",
+				"channel": "clean-area",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "clean-map-url",
+				"siid": 4,
+				"piid": 28,
+				"friendlyName": "Viomi Vacuum - Clean Map Url",
+				"channel": "clean-map-url",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "clean-mode",
+				"siid": 4,
+				"piid": 29,
+				"friendlyName": "Viomi Vacuum - Clean Mode",
+				"channel": "clean-mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Everywhere"
+						},
+						{
+							"value": "1",
+							"label": "Edges"
+						},
+						{
+							"value": "2",
+							"label": "Surface"
+						},
+						{
+							"value": "3",
+							"label": "Fixed Location"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Everywhere\",\"1\"\u003d\"Edges\",\"2\"\u003d\"Surface\",\"3\"\u003d\"Fixed Location\"]"
+			},
+			{
+				"property": "clean-way",
+				"siid": 4,
+				"piid": 30,
+				"friendlyName": "Viomi Vacuum - Clean Way",
+				"channel": "clean-way",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Sweep Floor"
+						},
+						{
+							"value": "1",
+							"label": "Sweep"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Sweep Floor\",\"1\"\u003d\"Sweep\",\"2\"\u003d\"Mop\"]"
+			},
+			{
+				"property": "cur-lang",
+				"siid": 4,
+				"piid": 31,
+				"friendlyName": "Viomi Vacuum - Cur Lang",
+				"channel": "cur-lang",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "cur-map-id",
+				"siid": 4,
+				"piid": 32,
+				"friendlyName": "Viomi Vacuum - Cur Map Id",
+				"channel": "cur-map-id",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "cur-map-url",
+				"siid": 4,
+				"piid": 33,
+				"friendlyName": "Viomi Vacuum - Cur Map Url",
+				"channel": "cur-map-url",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "last-update-time",
+				"siid": 4,
+				"piid": 34,
+				"friendlyName": "Viomi Vacuum - Last Update Time",
+				"channel": "last-update-time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1410065407,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "has-map",
+				"siid": 4,
+				"piid": 39,
+				"friendlyName": "Viomi Vacuum - Has Map",
+				"channel": "has-map",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No map in memory"
+						},
+						{
+							"value": "1",
+							"label": "Map in memory"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"No map in memory\",\"1\"\u003d\"Map in memory\"]"
+			},
+			{
+				"property": "has-newmap",
+				"siid": 4,
+				"piid": 40,
+				"friendlyName": "Viomi Vacuum - Has Newmap",
+				"channel": "has-newmap",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "New"
+						},
+						{
+							"value": "2",
+							"label": "Cover"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"None\",\"1\"\u003d\"New\",\"2\"\u003d\"Cover\"]"
+			},
+			{
+				"property": "dust-collection",
+				"siid": 4,
+				"piid": 41,
+				"friendlyName": "Viomi Vacuum - Dust Collection",
+				"channel": "dust-collection",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Close"
+						},
+						{
+							"value": "1",
+							"label": "Open"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Close\",\"1\"\u003d\"Open\"]"
+			},
+			{
+				"property": "dnd-enable",
+				"siid": 5,
+				"piid": 15,
+				"friendlyName": "Order - Dnd Enable",
+				"channel": "dnd-enable",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disabled"
+						},
+						{
+							"value": "1",
+							"label": "Enabled"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Disabled\",\"1\"\u003d\"Enabled\"]"
+			},
+			{
+				"property": "dnd-start-hour",
+				"siid": 5,
+				"piid": 16,
+				"friendlyName": "Order - Dnd Start Hour",
+				"channel": "dnd-start-hour",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dnd-start-minute",
+				"siid": 5,
+				"piid": 17,
+				"friendlyName": "Order - Dnd Start Minute",
+				"channel": "dnd-start-minute",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dnd-end-hour",
+				"siid": 5,
+				"piid": 18,
+				"friendlyName": "Order - Dnd End Hour",
+				"channel": "dnd-end-hour",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dnd-end-minute",
+				"siid": 5,
+				"piid": 19,
+				"friendlyName": "Order - Dnd End Minute",
+				"channel": "dnd-end-minute",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dnd-timezone",
+				"siid": 5,
+				"piid": 20,
+				"friendlyName": "Order - Dnd Timezone",
+				"channel": "dnd-timezone",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": -99999,
+					"maximum": 99999,
+					"step": 1,
+					"pattern": "%.1f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "timestamp",
+				"siid": 5,
+				"piid": 21,
+				"friendlyName": "Order - Timestamp",
+				"channel": "timestamp",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": -999999,
+					"maximum": 999999,
+					"step": 1,
+					"pattern": "%.1f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "orderdata",
+				"siid": 5,
+				"piid": 22,
+				"friendlyName": "Order - Orderdata",
+				"channel": "orderdata",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "target-point",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Point Zone - Target Point",
+				"channel": "target-point",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "map-type",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Map - Map Type",
+				"channel": "map-type",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Upload to url0"
+						},
+						{
+							"value": "1",
+							"label": "Upload to url1"
+						},
+						{
+							"value": "2",
+							"label": "Upload to url2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Upload to url0\",\"1\"\u003d\"Upload to url1\",\"2\"\u003d\"Upload to url2\"]"
+			},
+			{
+				"property": "map-id",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Map - Map Id",
+				"channel": "map-id",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1410065407,
+					"step": 1,
+					"pattern": "%.1f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "map-name",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Map - Map Name",
+				"channel": "map-name",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "cur-cleaning-path",
+				"siid": 7,
+				"piid": 10,
+				"friendlyName": "Map - Cur Cleaning Path",
+				"channel": "cur-cleaning-path",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "map-list",
+				"siid": 7,
+				"piid": 11,
+				"friendlyName": "Map - Map List",
+				"channel": "map-list",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "oper-result",
+				"siid": 7,
+				"piid": 13,
+				"friendlyName": "Map - Oper Result",
+				"channel": "oper-result",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "auto-area-id",
+				"siid": 7,
+				"piid": 14,
+				"friendlyName": "Map - Auto Area Id",
+				"channel": "auto-area-id",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1410065407,
+					"step": 1,
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "target-voice",
+				"siid": 8,
+				"piid": 3,
+				"friendlyName": "Voice - Target Voice",
+				"channel": "target-voice",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "cur-voice",
+				"siid": 8,
+				"piid": 4,
+				"friendlyName": "Voice - Cur Voice",
+				"channel": "cur-voice",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "download-status",
+				"siid": 8,
+				"piid": 5,
+				"friendlyName": "Voice - Download Status",
+				"channel": "download-status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Free"
+						},
+						{
+							"value": "1",
+							"label": "Downloading"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Free\",\"1\"\u003d\"Downloading\"]"
+			},
+			{
+				"property": "download-progress",
+				"siid": 8,
+				"piid": 6,
+				"friendlyName": "Voice - Download Progress",
+				"channel": "download-progress",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"vacuum-start-sweep\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":2,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-pause\",\"siid\":2,\"aiid\":3,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-charge\",\"siid\":2,\"aiid\":4,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-stop-massage\",\"siid\":2,\"aiid\":5,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-mop\",\"siid\":2,\"aiid\":6,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-only-sweep\",\"siid\":2,\"aiid\":7,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-sweep-mop\",\"siid\":2,\"aiid\":8,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"viomi-vacuum-reset-map\",\"siid\":4,\"aiid\":7,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"viomi-vacuum-set-calibration\",\"siid\":4,\"aiid\":10,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"viomi-vacuum-reset-consumable\",\"siid\":4,\"aiid\":11,\"in\":[35.0]}`\u003cbr /\u003e`action{\"did\":\"viomi-vacuum-set-room-clean\",\"siid\":4,\"aiid\":13,\"in\":[36.0, 37.0, 38.0]}`\u003cbr /\u003e`action{\"did\":\"order-del\",\"siid\":5,\"aiid\":2,\"in\":[1.0]}`\u003cbr /\u003e`action{\"did\":\"order-get\",\"siid\":5,\"aiid\":3,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"point-zone-start-point-clean\",\"siid\":6,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"point-zone-pause-point-clean\",\"siid\":6,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"point-zone-start-zone-clean\",\"siid\":6,\"aiid\":5,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"point-zone-pause-zone-clean\",\"siid\":6,\"aiid\":6,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-upload-by-maptype\",\"siid\":7,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-upload-by-mapid\",\"siid\":7,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-set-cur-map\",\"siid\":7,\"aiid\":3,\"in\":[2.0, 15.0]}`\u003cbr /\u003e`action{\"did\":\"map-del-map\",\"siid\":7,\"aiid\":5,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"map-rename-map\",\"siid\":7,\"aiid\":7,\"in\":[2.0, 4.0]}`\u003cbr /\u003e`action{\"did\":\"map-arrange-room\",\"siid\":7,\"aiid\":8,\"in\":[2.0, 5.0, 6.0, 14.0]}`\u003cbr /\u003e`action{\"did\":\"map-split-room\",\"siid\":7,\"aiid\":9,\"in\":[2.0, 5.0, 7.0, 8.0, 14.0]}`\u003cbr /\u003e`action{\"did\":\"map-rename-room\",\"siid\":7,\"aiid\":10,\"in\":[2.0, 7.0, 9.0, 14.0]}`\u003cbr /\u003e`action{\"did\":\"map-get-map-list\",\"siid\":7,\"aiid\":11,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-get-cleaning-path\",\"siid\":7,\"aiid\":12,\"in\":[12.0]}`\u003cbr /\u003e`action{\"did\":\"map-set-new-map\",\"siid\":7,\"aiid\":13,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-deal-new-map\",\"siid\":7,\"aiid\":14,\"in\":[16.0]}`\u003cbr /\u003e`action{\"did\":\"voice-find-device\",\"siid\":8,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"voice-download-voice\",\"siid\":8,\"aiid\":3,\"in\":[3.0, 7.0, 8.0]}`\u003cbr /\u003e`action{\"did\":\"voice-get-downloadstatus\",\"siid\":8,\"aiid\":4,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
+		"experimental": true
+	}
+}

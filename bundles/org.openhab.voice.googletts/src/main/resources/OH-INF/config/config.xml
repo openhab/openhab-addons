@@ -20,7 +20,7 @@
 			<description>Google Cloud Platform OAuth 2.0-Client Id.</description>
 		</parameter>
 		<parameter name="clientSecret" type="text" required="true" groupName="authentication">
-			<context>Password</context>
+			<context>password</context>
 			<label>Client Secret</label>
 			<description>Google Cloud Platform OAuth 2.0-Client Secret.</description>
 		</parameter>

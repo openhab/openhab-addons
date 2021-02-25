@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.config.PLCAnalogConfiguration;
 import org.openhab.core.config.core.Configuration;
@@ -59,18 +58,18 @@ public class PLCAnalogHandler extends PLCCommonHandler {
     private final Logger logger = LoggerFactory.getLogger(PLCAnalogHandler.class);
     private AtomicReference<PLCAnalogConfiguration> config = new AtomicReference<>();
 
-    private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA7;
+    private static final Map<String, Integer> LOGO_BLOCKS_0BA7;
     static {
-        Map<String, @Nullable Integer> buffer = new HashMap<>();
+        Map<String, Integer> buffer = new HashMap<>();
         buffer.put(I_ANALOG, 8); // 8 analog inputs
         buffer.put(Q_ANALOG, 2); // 2 analog outputs
         buffer.put(M_ANALOG, 16); // 16 analog markers
         LOGO_BLOCKS_0BA7 = Collections.unmodifiableMap(buffer);
     }
 
-    private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA8;
+    private static final Map<String, Integer> LOGO_BLOCKS_0BA8;
     static {
-        Map<String, @Nullable Integer> buffer = new HashMap<>();
+        Map<String, Integer> buffer = new HashMap<>();
         buffer.put(I_ANALOG, 8); // 8 analog inputs
         buffer.put(Q_ANALOG, 8); // 8 analog outputs
         buffer.put(M_ANALOG, 64); // 64 analog markers
@@ -79,9 +78,9 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         LOGO_BLOCKS_0BA8 = Collections.unmodifiableMap(buffer);
     }
 
-    private static final Map<String, @Nullable Map<String, @Nullable Integer>> LOGO_BLOCK_NUMBER;
+    private static final Map<String, Map<String, Integer>> LOGO_BLOCK_NUMBER;
     static {
-        Map<String, @Nullable Map<String, @Nullable Integer>> buffer = new HashMap<>();
+        Map<String, Map<String, Integer>> buffer = new HashMap<>();
         buffer.put(LOGO_0BA7, LOGO_BLOCKS_0BA7);
         buffer.put(LOGO_0BA8, LOGO_BLOCKS_0BA8);
         LOGO_BLOCK_NUMBER = Collections.unmodifiableMap(buffer);
@@ -217,7 +216,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         String family = getLogoFamily();
         logger.debug("Get block number of {} LOGO! for {} blocks.", family, kind);
 
-        Map<?, @Nullable Integer> blocks = LOGO_BLOCK_NUMBER.get(family);
+        Map<?, Integer> blocks = LOGO_BLOCK_NUMBER.get(family);
         Integer number = (blocks != null) ? blocks.get(kind) : null;
         return (number != null) ? number.intValue() : 0;
     }

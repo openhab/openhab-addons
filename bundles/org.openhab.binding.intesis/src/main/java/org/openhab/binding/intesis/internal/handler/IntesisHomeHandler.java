@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.intesis.internal.IntesisConfiguration;
 import org.openhab.binding.intesis.internal.IntesisDynamicStateDescriptionProvider;
-import org.openhab.binding.intesis.internal.IntesisHomeModeEnum;
 import org.openhab.binding.intesis.internal.api.IntesisHomeHttpApi;
+import org.openhab.binding.intesis.internal.config.IntesisHomeConfiguration;
+import org.openhab.binding.intesis.internal.enums.IntesisHomeModeEnum;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Data;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Datapoints;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Descr;
@@ -83,7 +83,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     private final Gson gson = new Gson();
 
-    private IntesisConfiguration config = new IntesisConfiguration();
+    private IntesisHomeConfiguration config = new IntesisHomeConfiguration();
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -97,7 +97,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        config = getConfigAs(IntesisConfiguration.class);
+        config = getConfigAs(IntesisHomeConfiguration.class);
         if (config.ipAddress.isEmpty() && config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address and password not set");
             return;
@@ -262,14 +262,14 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     .withType(channelTypeUID).withKind(ChannelKind.STATE).build();
             thingBuilder.withChannel(channel);
             updateThing(thingBuilder.build());
-
-            if (options != null) {
-                final List<StateOption> stateOptions = options.stream()
-                        .map(e -> new StateOption(e, e.substring(0, 1) + e.substring(1).toLowerCase()))
-                        .collect(Collectors.toList());
-                logger.trace("StateOptions : '{}'", stateOptions);
-                intesisStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
-            }
+        }
+        if (options != null) {
+            final List<StateOption> stateOptions = options.stream()
+                    .map(e -> new StateOption(e, e.substring(0, 1) + e.substring(1).toLowerCase()))
+                    .collect(Collectors.toList());
+            logger.trace("StateOptions : '{}'", stateOptions);
+            intesisStateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId),
+                    stateOptions);
         }
     }
 
@@ -336,7 +336,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                     break;
                             }
                         }
-                        properties.put("Supported modes", opModes.toString());
+                        properties.put("supported modes", opModes.toString());
                         channelId = CHANNEL_TYPE_MODE;
                         addChannel(channelId, itemType, opModes);
                         break;
@@ -349,7 +349,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 fanLevels.add(fanString);
                             }
                         }
-                        properties.put("Supported fan levels", fanLevels.toString());
+                        properties.put("supported fan levels", fanLevels.toString());
                         channelId = CHANNEL_TYPE_FANSPEED;
                         addChannel(channelId, itemType, fanLevels);
                         break;
@@ -372,12 +372,12 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         switch (datapoint.uid) {
                             case 5:
                                 channelId = CHANNEL_TYPE_VANESUD;
-                                properties.put("Supported vane up/down modes", swingModes.toString());
+                                properties.put("supported vane up/down modes", swingModes.toString());
                                 addChannel(channelId, itemType, swingModes);
                                 break;
                             case 6:
                                 channelId = CHANNEL_TYPE_VANESLR;
-                                properties.put("Supported vane left/right modes", swingModes.toString());
+                                properties.put("supported vane left/right modes", swingModes.toString());
                                 addChannel(channelId, itemType, swingModes);
                                 break;
                         }
@@ -390,6 +390,16 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     case 10:
                         channelId = CHANNEL_TYPE_AMBIENTTEMP;
                         itemType = "Number:Temperature";
+                        addChannel(channelId, itemType, null);
+                        break;
+                    case 14:
+                        channelId = CHANNEL_TYPE_ERRORSTATUS;
+                        itemType = "Switch";
+                        addChannel(channelId, itemType, null);
+                        break;
+                    case 15:
+                        channelId = CHANNEL_TYPE_ERRORCODE;
+                        itemType = "String";
                         addChannel(channelId, itemType, null);
                         break;
                     case 37:
@@ -484,6 +494,13 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         unit = Math.round((element.value) / 10);
                         stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
                         updateState(CHANNEL_TYPE_AMBIENTTEMP, stateValue);
+                        break;
+                    case 14:
+                        updateState(CHANNEL_TYPE_ERRORSTATUS,
+                                String.valueOf(element.value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                        break;
+                    case 15:
+                        updateState(CHANNEL_TYPE_ERRORCODE, StringType.valueOf(String.valueOf(element.value)));
                         break;
                     case 37:
                         unit = Math.round((element.value) / 10);

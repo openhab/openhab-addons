@@ -23,6 +23,7 @@
 			<channel id="health" typeId="health"/>
 		</channels>
 
+		<representation-property>macAddress</representation-property>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>

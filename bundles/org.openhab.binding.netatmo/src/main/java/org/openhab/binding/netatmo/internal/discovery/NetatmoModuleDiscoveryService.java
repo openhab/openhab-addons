@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,7 +58,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     }
 
     @Override
-    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
         netatmoBridgeHandler.registerDataListener(this);
     }
@@ -71,28 +73,28 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     public void startScan() {
         if (netatmoBridgeHandler.configuration.readStation) {
             netatmoBridgeHandler.getStationsDataBody(null).ifPresent(dataBody -> {
-                dataBody.getDevices().forEach(station -> {
+                nonNullList(dataBody.getDevices()).forEach(station -> {
                     discoverWeatherStation(station);
                 });
             });
         }
         if (netatmoBridgeHandler.configuration.readHealthyHomeCoach) {
             netatmoBridgeHandler.getHomecoachDataBody(null).ifPresent(dataBody -> {
-                dataBody.getDevices().forEach(homecoach -> {
+                nonNullList(dataBody.getDevices()).forEach(homecoach -> {
                     discoverHomeCoach(homecoach);
                 });
             });
         }
         if (netatmoBridgeHandler.configuration.readThermostat) {
             netatmoBridgeHandler.getThermostatsDataBody(null).ifPresent(dataBody -> {
-                dataBody.getDevices().forEach(plug -> {
+                nonNullList(dataBody.getDevices()).forEach(plug -> {
                     discoverThermostat(plug);
                 });
             });
         }
         if (netatmoBridgeHandler.configuration.readWelcome || netatmoBridgeHandler.configuration.readPresence) {
             netatmoBridgeHandler.getWelcomeDataBody(null).ifPresent(dataBody -> {
-                dataBody.getHomes().forEach(home -> {
+                nonNullList(dataBody.getHomes()).forEach(home -> {
                     discoverWelcomeHome(home);
                 });
             });
@@ -123,7 +125,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
 
     private void discoverThermostat(NAPlug plug) {
         onDeviceAddedInternal(plug.getId(), null, plug.getType(), plug.getStationName(), plug.getFirmware());
-        plug.getModules().forEach(thermostat -> {
+        nonNullList(plug.getModules()).forEach(thermostat -> {
             onDeviceAddedInternal(thermostat.getId(), plug.getId(), thermostat.getType(), thermostat.getModuleName(),
                     thermostat.getFirmware());
         });
@@ -135,11 +137,11 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void discoverWeatherStation(NAMain station) {
-        final boolean isFavorite = station.getFavorite() != null && station.getFavorite();
+        final boolean isFavorite = station.isFavorite() != null && station.isFavorite();
         final String weatherStationName = createWeatherStationName(station, isFavorite);
 
         onDeviceAddedInternal(station.getId(), null, station.getType(), weatherStationName, station.getFirmware());
-        station.getModules().forEach(module -> {
+        nonNullList(station.getModules()).forEach(module -> {
             onDeviceAddedInternal(module.getId(), station.getId(), module.getType(),
                     createWeatherModuleName(station, module, isFavorite), module.getFirmware());
         });
@@ -148,15 +150,16 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     private void discoverWelcomeHome(NAWelcomeHome home) {
         // I observed that Thermostat homes are also reported here by Netatmo API
         // So I ignore homes that have an empty list of cameras
-        if (!home.getCameras().isEmpty()) {
+        List<NAWelcomeCamera> cameras = nonNullList(home.getCameras());
+        if (!cameras.isEmpty()) {
             onDeviceAddedInternal(home.getId(), null, WELCOME_HOME_THING_TYPE.getId(), home.getName(), null);
             // Discover Cameras
-            home.getCameras().forEach(camera -> {
+            cameras.forEach(camera -> {
                 onDeviceAddedInternal(camera.getId(), home.getId(), camera.getType(), camera.getName(), null);
             });
 
             // Discover Known Persons
-            home.getPersons().stream().filter(person -> person.getPseudo() != null).forEach(person -> {
+            nonNullStream(home.getPersons()).filter(person -> person.getPseudo() != null).forEach(person -> {
                 onDeviceAddedInternal(person.getId(), home.getId(), WELCOME_PERSON_THING_TYPE.getId(),
                         person.getPseudo(), null);
             });

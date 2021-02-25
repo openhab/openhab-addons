@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,12 +68,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
+    private static final int FIRMWARE_VERSION_LENGTH = 6;
     private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
     private static final InversionConverter INVERSION_CONVERTER = new InversionConverter();
     private @Nullable LcnAddrMod moduleAddress;
-    private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
+    private final Map<LcnChannelGroup, AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
     private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
-    private final Map<ChannelUID, @Nullable Converter> converters = new HashMap<>();
+    private final Map<ChannelUID, Converter> converters = new HashMap<>();
 
     static {
         VALUE_CONVERTERS.put("temperature", Converters.TEMPERATURE);
@@ -95,11 +96,11 @@ public class LcnModuleHandler extends BaseThingHandler {
         LcnAddrMod localModuleAddress = moduleAddress = new LcnAddrMod(localConfig.segmentId, localConfig.moduleId);
 
         try {
-            // Determine serial number of manually added modules
+            ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
+            readFirmwareVersionFromProperty().ifPresent(info::setFirmwareVersion);
             requestFirmwareVersionAndSerialNumberIfNotSet();
 
             // create sub handlers
-            ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
             for (LcnChannelGroup type : LcnChannelGroup.values()) {
                 subHandlers.put(type, type.createSubHandler(this, info));
             }
@@ -112,7 +113,8 @@ public class LcnModuleHandler extends BaseThingHandler {
             for (Channel channel : thing.getChannels()) {
                 Object unitObject = channel.getConfiguration().get("unit");
                 Object parameterObject = channel.getConfiguration().get("parameter");
-                Object invertConfig = channel.getConfiguration().get("invertState");
+                Object invertState = channel.getConfiguration().get("invertState");
+                Object invertUpDown = channel.getConfiguration().get("invertUpDown");
 
                 // Initialize value converters
                 if (unitObject instanceof String) {
@@ -122,15 +124,16 @@ public class LcnModuleHandler extends BaseThingHandler {
                             converters.put(channel.getUID(), new S0Converter(parameterObject));
                             break;
                         default:
-                            if (VALUE_CONVERTERS.containsKey(unitObject)) {
-                                converters.put(channel.getUID(), VALUE_CONVERTERS.get(unitObject));
+                            Converter converter = VALUE_CONVERTERS.get(unitObject);
+                            if (converter != null) {
+                                converters.put(channel.getUID(), converter);
                             }
                             break;
                     }
                 }
 
                 // Initialize inversion converter
-                if (invertConfig instanceof Boolean && invertConfig.equals(true)) {
+                if (Boolean.TRUE.equals(invertState) || Boolean.TRUE.equals(invertUpDown)) {
                     converters.put(channel.getUID(), INVERSION_CONVERTER);
                 }
 
@@ -138,6 +141,13 @@ public class LcnModuleHandler extends BaseThingHandler {
 
             // module is assumed as online, when the corresponding Bridge (PckGatewayHandler) is online.
             updateStatus(ThingStatus.ONLINE);
+
+            // trigger REFRESH commands for all linked Channels to start polling
+            getThing().getChannels().forEach(channel -> {
+                if (isLinked(channel.getUID())) {
+                    channelLinked(channel.getUID());
+                }
+            });
         } catch (LcnException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
@@ -148,14 +158,27 @@ public class LcnModuleHandler extends BaseThingHandler {
      *
      * @throws LcnException when the handler is not initialized
      */
-    @SuppressWarnings("null")
     protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
-        String serialNumber = getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
-        if (serialNumber == null || serialNumber.isEmpty()) {
+        if (readFirmwareVersionFromProperty().isEmpty()) {
             LcnAddrMod localModuleAddress = moduleAddress;
             if (localModuleAddress != null) {
                 getPckGatewayHandler().getModInfo(localModuleAddress).requestFirmwareVersion();
             }
+        }
+    }
+
+    private Optional<Integer> readFirmwareVersionFromProperty() {
+        String prop = getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
+
+        if (prop == null || prop.length() != FIRMWARE_VERSION_LENGTH) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(Integer.parseInt(prop, 16));
+        } catch (NumberFormatException e) {
+            logger.warn("{}: Serial number property invalid", moduleAddress);
+            return Optional.empty();
         }
     }
 
@@ -232,13 +255,8 @@ public class LcnModuleHandler extends BaseThingHandler {
      *
      * @param pck the message without line termination
      */
-    @SuppressWarnings("null")
     public void handleStatusMessage(String pck) {
-        for (AbstractLcnModuleSubHandler handler : subHandlers.values()) {
-            if (handler.tryParse(pck)) {
-                break;
-            }
-        }
+        subHandlers.values().forEach(h -> h.tryParse(pck));
 
         metadataSubHandlers.forEach(h -> h.tryParse(pck));
     }
@@ -333,6 +351,15 @@ public class LcnModuleHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates the LCN module's serial number property.
+     *
+     * @param serialNumber the new serial number
+     */
+    public void updateFirmwareVersionProperty(String firmwareVersion) {
+        updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+    }
+
+    /**
      * Invoked when an trigger for this LCN module should be fired to openHAB.
      *
      * @param channelGroup the Channel to update
@@ -377,7 +404,7 @@ public class LcnModuleHandler extends BaseThingHandler {
             LcnAddrMod localModuleAddress = moduleAddress;
             if (connection != null && localModuleAddress != null) {
                 getPckGatewayHandler().getModInfo(localModuleAddress).onAck(LcnBindingConstants.CODE_ACK, connection,
-                        getPckGatewayHandler().getTimeoutMs(), System.nanoTime());
+                        getPckGatewayHandler().getTimeoutMs(), System.currentTimeMillis());
             }
         } catch (LcnException e) {
             logger.warn("Connection or module address not set");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
     private final NetworkAddressService networkAddressService;
     private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
 
-    private final Map<String, @Nullable ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+    private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     // optional OPML URL that can be configured through configuration admin
     private @Nullable String opmlUrl;

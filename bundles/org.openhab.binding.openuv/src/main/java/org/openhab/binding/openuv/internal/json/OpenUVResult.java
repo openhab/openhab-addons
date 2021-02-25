@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,21 @@
  */
 package org.openhab.binding.openuv.internal.json;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OpenUVResult} is responsible for storing
@@ -30,43 +36,68 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class OpenUVResult {
-    private final ZonedDateTime DEFAULT_ZDT = ZonedDateTime.of(LocalDateTime.MIN, ZoneId.systemDefault());
-    private DecimalType uv = new DecimalType(0);
-    private ZonedDateTime uvTime = DEFAULT_ZDT;
-    private DecimalType uvMax = new DecimalType(0);
-    private ZonedDateTime uvMaxTime = DEFAULT_ZDT;
-    private DecimalType ozone = new DecimalType(0);
-    private ZonedDateTime ozoneTime = DEFAULT_ZDT;
-    private SafeExposureTime safeExposureTime = new SafeExposureTime();
+    private final Logger logger = LoggerFactory.getLogger(OpenUVResult.class);
 
-    public DecimalType getUv() {
+    public enum FitzpatrickType {
+        @SerializedName("st1")
+        I, // Fitzpatrick Skin Type I
+        @SerializedName("st2")
+        II, // Fitzpatrick Skin Type II
+        @SerializedName("st3")
+        III, // Fitzpatrick Skin Type III
+        @SerializedName("st4")
+        IV, // Fitzpatrick Skin Type IV
+        @SerializedName("st5")
+        V, // Fitzpatrick Skin Type V
+        @SerializedName("st6")
+        VI;// Fitzpatrick Skin Type VI
+    }
+
+    private double uv;
+    private @Nullable ZonedDateTime uvTime;
+    private double uvMax;
+    private @Nullable ZonedDateTime uvMaxTime;
+    private double ozone;
+    private @Nullable ZonedDateTime ozoneTime;
+    private Map<FitzpatrickType, @Nullable Integer> safeExposureTime = new HashMap<>();
+
+    public double getUv() {
         return uv;
     }
 
-    public DecimalType getUvMax() {
+    public double getUvMax() {
         return uvMax;
     }
 
-    public DecimalType getOzone() {
+    public double getOzone() {
         return ozone;
     }
 
     public State getUVTime() {
-        return uvTime != DEFAULT_ZDT ? new DateTimeType(uvTime.withZoneSameInstant(ZoneId.systemDefault()))
-                : UnDefType.NULL;
+        ZonedDateTime value = uvTime;
+        return value != null ? new DateTimeType(value) : UnDefType.NULL;
     }
 
     public State getUVMaxTime() {
-        return uvMaxTime != DEFAULT_ZDT ? new DateTimeType(uvMaxTime.withZoneSameInstant(ZoneId.systemDefault()))
-                : UnDefType.NULL;
+        ZonedDateTime value = uvMaxTime;
+        return value != null ? new DateTimeType(value) : UnDefType.NULL;
     }
 
     public State getOzoneTime() {
-        return ozoneTime != DEFAULT_ZDT ? new DateTimeType(ozoneTime.withZoneSameInstant(ZoneId.systemDefault()))
-                : UnDefType.NULL;
+        ZonedDateTime value = ozoneTime;
+        return value != null ? new DateTimeType(value) : UnDefType.NULL;
     }
 
-    public SafeExposureTime getSafeExposureTime() {
-        return safeExposureTime;
+    public State getSafeExposureTime(String index) {
+        try {
+            FitzpatrickType value = FitzpatrickType.valueOf(index);
+            Integer duration = safeExposureTime.get(value);
+            if (duration != null) {
+                return new QuantityType<>(duration, Units.MINUTE);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.warn("Unexpected Fitzpatrick index value '{}' : {}", index, e.getMessage());
+        }
+        return UnDefType.NULL;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,7 +151,12 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
         Collections.reverse(newEventList);
         ArrayList<Event> events = new ArrayList<>();
         for (PagedList newEvent : newEventList) {
-            long eventTime = ZonedDateTime.parse(newEvent.getEventTime()).toEpochSecond();
+            String eventTimeString = newEvent.getEventTime();
+            if (eventTimeString == null) {
+                logger.debug("Event-Time is null: {}", newEvent);
+                continue;
+            }
+            long eventTime = ZonedDateTime.parse(eventTimeString).toEpochSecond();
             logger.trace("Event time: {} Last Event time: {}", eventTime, lastEventTime);
             if (eventTime > lastEventTime) {
                 logger.debug("Create event {} for event time {}", newEvent.getEventType(), eventTime);

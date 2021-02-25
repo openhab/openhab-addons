@@ -8,6 +8,7 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -15,12 +16,17 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "mode",
 				"friendlyName": "Mode",
 				"channel": "mode",
+				"channelType": "mode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -29,31 +35,44 @@
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "aqi",
 				"friendlyName": "Air Quality Index",
 				"channel": "aqi",
+				"channelType": "aqi",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -61,12 +80,18 @@
 						"command": "set_led_b",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
 				"property": "led",
 				"friendlyName": "LED Status",
 				"channel": "led",
+				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -81,6 +106,7 @@
 				"property": "act_det",
 				"friendlyName": "Air AutoDetect",
 				"channel": "act_det",
+				"channelType": "act_det",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -90,6 +116,7 @@
 				"property": "buzzer",
 				"friendlyName": "Buzzer Status",
 				"channel": "buzzer",
+				"channelType": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -104,6 +131,7 @@
 				"property": "f1_hour",
 				"friendlyName": "Filter Max Life",
 				"channel": "filtermaxlife",
+				"channelType": "filtermaxlife",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -113,6 +141,7 @@
 				"property": "filter1_life",
 				"friendlyName": "Filter Life",
 				"channel": "filterlive",
+				"channelType": "filterlive",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",

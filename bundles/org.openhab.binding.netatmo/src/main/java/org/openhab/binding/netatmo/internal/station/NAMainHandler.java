@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.station;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
@@ -51,10 +52,10 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     @Override
     protected Optional<NAMain> updateReadings() {
         Optional<NAMain> result = getBridgeHandler().flatMap(handler -> handler.getStationsDataBody(getId()))
-                .map(dataBody -> dataBody.getDevices().stream()
+                .map(dataBody -> nonNullStream(dataBody.getDevices())
                         .filter(device -> device.getId().equalsIgnoreCase(getId())).findFirst().orElse(null));
         result.ifPresent(device -> {
-            device.getModules().forEach(child -> childs.put(child.getId(), child));
+            nonNullList(device.getModules()).forEach(child -> childs.put(child.getId(), child));
         });
 
         updateMeasurements();
@@ -166,7 +167,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         if (dashboardData != null) {
             switch (channelId) {
                 case CHANNEL_CO2:
-                    return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
+                    return toQuantityType(dashboardData.getCo2(), API_CO2_UNIT);
                 case CHANNEL_TEMPERATURE:
                     return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
                 case CHANNEL_MIN_TEMP:
@@ -288,7 +289,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         boolean result = false;
         Optional<NAMain> device = getDevice();
         if (device.isPresent()) {
-            Boolean reachable = device.get().getReachable();
+            Boolean reachable = device.get().isReachable();
             result = reachable != null ? reachable.booleanValue() : false;
         }
         return result;

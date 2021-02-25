@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -984,7 +984,7 @@ public abstract class RotelConnector {
             } else {
                 for (RotelSource src : sourcesLabels.keySet()) {
                     String label = sourcesLabels.get(src);
-                    if (value.startsWith(label)) {
+                    if (label != null && value.startsWith(label)) {
                         if (source == null || sourcesLabels.get(source).length() < label.length()) {
                             source = src;
                         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.bticinosmarther.internal.api.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Signals that a generic OAuth2 authorization issue with API gateway has occurred.
@@ -30,7 +31,7 @@ public class SmartherAuthorizationException extends SmartherGatewayException {
      * @param message
      *            the error message returned from the API gateway
      */
-    public SmartherAuthorizationException(String message) {
+    public SmartherAuthorizationException(@Nullable String message) {
         super(message);
     }
 
@@ -42,7 +43,7 @@ public class SmartherAuthorizationException extends SmartherGatewayException {
      * @param cause
      *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
      */
-    public SmartherAuthorizationException(String message, Throwable cause) {
+    public SmartherAuthorizationException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,6 @@ class JCgetWLANConfig extends GetWLANConfig implements JsonBridgeCommunicationPr
      * {"action":"wifi","params":{}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -81,7 +80,6 @@ class JCgetWLANConfig extends GetWLANConfig implements JsonBridgeCommunicationPr
      * {"password":"Esf56mxqFY","name":"VELUX_KLF_847C"}
      * </PRE>
      */
-    @NonNullByDefault
     private static class BCWLANConfig {
 
         private String password = VeluxBindingConstants.UNKNOWN;
@@ -110,7 +108,6 @@ class JCgetWLANConfig extends GetWLANConfig implements JsonBridgeCommunicationPr
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

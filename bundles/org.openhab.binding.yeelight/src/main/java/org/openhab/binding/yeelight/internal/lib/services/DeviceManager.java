@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -304,14 +304,26 @@ public class DeviceManager {
         device.setAddress(addressInfo[1].substring(2));
         device.setPort(Integer.parseInt(addressInfo[2]));
         device.setOnline(true);
-        Color color = new Color(Integer.parseInt(bulbInfo.get("rgb")));
         DeviceStatus status = device.getDeviceStatus();
-        status.setR(color.getRed());
-        status.setG(color.getGreen());
-        status.setB(color.getBlue());
-        status.setCt(Integer.parseInt(bulbInfo.get("ct")));
-        status.setHue(Integer.parseInt(bulbInfo.get("hue")));
-        status.setSat(Integer.parseInt(bulbInfo.get("sat")));
+        String rgb = bulbInfo.get("rgb");
+        if (rgb != null) {
+            Color color = new Color(Integer.parseInt(rgb));
+            status.setR(color.getRed());
+            status.setG(color.getGreen());
+            status.setB(color.getBlue());
+        }
+        String ct = bulbInfo.get("ct");
+        if (ct != null) {
+            status.setCt(Integer.parseInt(ct));
+        }
+        String hue = bulbInfo.get("hue");
+        if (hue != null) {
+            status.setHue(Integer.parseInt(hue));
+        }
+        String sat = bulbInfo.get("sat");
+        if (sat != null) {
+            status.setSat(Integer.parseInt(sat));
+        }
     }
 
     public static String getDefaultName(DeviceBase device) {

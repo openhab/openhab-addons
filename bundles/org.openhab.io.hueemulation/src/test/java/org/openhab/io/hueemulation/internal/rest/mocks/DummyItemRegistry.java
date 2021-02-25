@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.RegistryHook;
 
@@ -65,14 +66,16 @@ public class DummyItemRegistry implements ItemRegistry {
         for (RegistryChangeListener<Item> l : listeners) {
             l.added(element);
         }
-        return put;
+        return element;
     }
 
     @Override
     public @Nullable Item update(Item element) {
         Item put = items.put(element.getUID(), element);
-        for (RegistryChangeListener<Item> l : listeners) {
-            l.updated(put, element);
+        if (put != null) {
+            for (RegistryChangeListener<Item> l : listeners) {
+                l.updated(put, element);
+            }
         }
         return put;
     }
@@ -80,20 +83,30 @@ public class DummyItemRegistry implements ItemRegistry {
     @Override
     public @Nullable Item remove(String key) {
         Item put = items.remove(key);
-        for (RegistryChangeListener<Item> l : listeners) {
-            l.removed(put);
+        if (put != null) {
+            for (RegistryChangeListener<Item> l : listeners) {
+                l.removed(put);
+            }
         }
         return put;
     }
 
     @Override
-    public Item getItem(String name) {
-        return items.get(name);
+    public Item getItem(String name) throws ItemNotFoundException {
+        Item item = items.get(name);
+        if (item == null) {
+            throw new ItemNotFoundException(name);
+        }
+        return item;
     }
 
     @Override
-    public Item getItemByPattern(String name) {
-        return items.get(name);
+    public Item getItemByPattern(String name) throws ItemNotFoundException {
+        Item item = items.get(name);
+        if (item == null) {
+            throw new ItemNotFoundException(name);
+        }
+        return item;
     }
 
     @Override
@@ -130,8 +143,10 @@ public class DummyItemRegistry implements ItemRegistry {
     @Override
     public @Nullable Item remove(String itemName, boolean recursive) {
         Item put = items.remove(itemName);
-        for (RegistryChangeListener<Item> l : listeners) {
-            l.removed(put);
+        if (put != null) {
+            for (RegistryChangeListener<Item> l : listeners) {
+                l.removed(put);
+            }
         }
         return put;
     }

@@ -16,13 +16,44 @@
 
 		<channels>
 			<channel id="press" typeId="system.button">
-				<label>Button press</label>
-				<description>Triggered SHORT_PRESSED or LONG_PRESSED when a button was pressed.</description>
+				<label>Button Press</label>
+				<description>Triggeres SHORT_PRESSED or LONG_PRESSED when a button was pressed.</description>
 			</channel>
 			<channel id="last_change" typeId="last_change"/>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="FRITZ_DECT_440">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 440</label>
+		<description>FRITZ!DECT440 switch.</description>
+
+		<channel-groups>
+			<channel-group id="top-left" typeId="button">
+				<label>Top Left Button</label>
+			</channel-group>
+			<channel-group id="top-right" typeId="button">
+				<label>Top Right Button</label>
+			</channel-group>
+			<channel-group id="bottom-left" typeId="button">
+				<label>Bottom Left Button</label>
+			</channel-group>
+			<channel-group id="bottom-right" typeId="button">
+				<label>Bottom Right Button</label>
+			</channel-group>
+			<channel-group id="device" typeId="device"/>
+			<channel-group id="sensors" typeId="sensors"/>
+		</channel-groups>
 
 		<representation-property>ain</representation-property>
 
@@ -236,7 +267,7 @@
 		<channels>
 			<channel id="press" typeId="system.rawbutton">
 				<label>Button Press</label>
-				<description>Triggered when a button was pressed.</description>
+				<description>Triggeres PRESSED when a button was pressed.</description>
 			</channel>
 			<channel typeId="last_change" id="last_change"/>
 		</channels>
