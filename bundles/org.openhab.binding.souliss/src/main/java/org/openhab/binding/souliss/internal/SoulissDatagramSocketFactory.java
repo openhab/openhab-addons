@@ -34,13 +34,11 @@ public class SoulissDatagramSocketFactory {
     // public static Integer serverPort;
     // private final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
 
-    @Nullable
-    public static DatagramSocket getSocketDatagram(Logger logger) {
+    public static @Nullable DatagramSocket getSocketDatagram(Logger logger) {
         return getSocketDatagram(0, logger);
     }
 
-    @Nullable
-    public static DatagramSocket getSocketDatagram(int socketPortNumber, Logger logger) {
+    public static @Nullable DatagramSocket getSocketDatagram(int socketPortNumber, Logger logger) {
         // return DatagramSocket for packet trasmission
         DatagramSocket soulissDatagramSocket = null;
         logger.debug("Setup socket");
