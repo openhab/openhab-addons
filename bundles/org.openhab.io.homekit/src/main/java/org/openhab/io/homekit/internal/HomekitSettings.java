@@ -31,8 +31,6 @@ public class HomekitSettings {
     public String qrCode;
     public int startDelay = 30;
     public boolean useFahrenheitTemperature = false;
-    public double minimumTemperature = -100;
-    public double maximumTemperature = 100;
     public String thermostatTargetModeHeat = "HeatOn";
     public String thermostatTargetModeCool = "CoolOn";
     public String thermostatTargetModeAuto = "Auto";
@@ -53,11 +51,6 @@ public class HomekitSettings {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        long temp;
-        temp = Double.doubleToLongBits(maximumTemperature);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(minimumTemperature);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((pin == null) ? 0 : pin.hashCode());
         result = prime * result + ((setupId == null) ? 0 : setupId.hashCode());
         result = prime * result + port;
@@ -81,12 +74,6 @@ public class HomekitSettings {
             return false;
         }
         HomekitSettings other = (HomekitSettings) obj;
-        if (Double.doubleToLongBits(maximumTemperature) != Double.doubleToLongBits(other.maximumTemperature)) {
-            return false;
-        }
-        if (Double.doubleToLongBits(minimumTemperature) != Double.doubleToLongBits(other.minimumTemperature)) {
-            return false;
-        }
         if (pin == null) {
             if (other.pin != null) {
                 return false;
