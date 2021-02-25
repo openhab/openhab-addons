@@ -173,7 +173,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 260 different models.
+Currently the miio binding supports more than 270 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -197,6 +197,8 @@ Currently the miio binding supports more than 260 different models.
 | Mi IH Pressure Rice Cooker   | miio:unsupported | chunmi.cooker.press1   | No        |            |
 | Mi IH Pressure Rice Cooker   | miio:unsupported | chunmi.cooker.press2   | No        |            |
 | Gosund Smart Plug            | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
+| Mi Smart Antibacterial Humidifier | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes       |            |
+| Mi S Smart humidifer         | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes       |            |
 | Mi Smart Humidifier          | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes       |            |
 | Mi Fresh Air Ventilator A1-150 | miio:basic       | [dmaker.airfresh.a1](#dmaker-airfresh-a1) | Yes       |            |
 | Mi Fresh Air Ventilator      | miio:basic       | [dmaker.airfresh.t2017](#dmaker-airfresh-t2017) | Yes       |            |
@@ -609,6 +611,43 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Model                | String               | Device Information-Device Model          |            |
 | SerialNumber         | String               | Device Information-Device Serial Number  |            |
 | On                   | Switch               | Switch-Switch Status                     |            |
+
+### Mi Smart Antibacterial Humidifier (<a name="deerma-humidifier-jsq">deerma.humidifier.jsq</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| mode                 | Number               | Mode                                     |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
+| led                  | Switch               | LED indicator Light                      |            |
+| sound                | Switch               | Notification Sounds                      |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
+
+### Mi S Smart humidifer  (<a name="deerma-humidifier-jsq1">deerma.humidifier.jsq1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| mode                 | Number               | Mode                                     |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
+| led                  | Switch               | LED indicator Light                      |            |
+| sound                | Switch               | Notification Sounds                      |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
+| wet_and_protect      | Switch               | Wet and Protect                          |            |
+
+### Mi Smart Humidifier (<a name="deerma-humidifier-mjjsq">deerma.humidifier.mjjsq</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| mode                 | Number               | Mode                                     |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
+| led                  | Switch               | LED indicator Light                      |            |
+| sound                | Switch               | Notification Sounds                      |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
 
 ### Mi Fresh Air Ventilator A1-150 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
 
@@ -4720,6 +4759,52 @@ String Manufacturer "Device Information-Device Manufacturer" (G_plug) {channel="
 String Model "Device Information-Device Model" (G_plug) {channel="miio:basic:plug:Model"}
 String SerialNumber "Device Information-Device Serial Number" (G_plug) {channel="miio:basic:plug:SerialNumber"}
 Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
+```
+
+### Mi Smart Antibacterial Humidifier (deerma.humidifier.jsq) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Mi Smart Antibacterial Humidifier" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
+Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+```
+
+### Mi S Smart humidifer  (deerma.humidifier.jsq1) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Mi S Smart humidifer " <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
+Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+Switch wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
+```
+
+### Mi Smart Humidifier (deerma.humidifier.mjjsq) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Mi Smart Humidifier" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
+Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
 
 ### Mi Fresh Air Ventilator A1-150 (dmaker.airfresh.a1) item file lines
