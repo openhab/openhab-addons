@@ -167,7 +167,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
         }
 
         @Override
@@ -206,7 +206,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
         }
 
         @Override
@@ -455,9 +455,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                 return null;
             }
             return new DynamoDBHistoricItem(getName(), deserializedState[0], getTime());
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             logger.trace("Failed to convert state '{}' to item {} {}: {} {}. Data persisted with incompatible item.",
                     this.state, item.getClass().getSimpleName(), item.getName(), e.getClass().getSimpleName(),
                     e.getMessage());

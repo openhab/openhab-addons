@@ -345,11 +345,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         DynamoDbEnhancedAsyncClient localClient = client;
         if (!isProperlyConfigured) {
             logger.debug("Configuration for dynamodb not yet loaded or broken. Returning empty query results.");
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
         if (!ensureClient() || localClient == null) {
             logger.warn("DynamoDB not connected. Returning empty query results.");
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
 
         //
@@ -359,17 +359,17 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             Boolean resolved = resolveTableSchema().get();
             if (!resolved) {
                 logger.warn("Table schema not resolved, cannot query data.");
-                return Collections.<HistoricItem>emptyList();
+                return Collections.<HistoricItem> emptyList();
             }
         } catch (InterruptedException e) {
             logger.warn("Table schema resolution interrupted, cannot query data");
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             logger.warn("Table schema resolution errored, cannot query data: {} {}",
                     cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
                     cause == null ? e.getMessage() : cause.getMessage());
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
         try {
             //
@@ -379,7 +379,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             Item item = getItemFromRegistry(itemName);
             if (item == null) {
                 logger.warn("Could not get item {} from registry! Returning empty query results.", itemName);
-                return Collections.<HistoricItem>emptyList();
+                return Collections.<HistoricItem> emptyList();
             }
             if (item instanceof GroupItem) {
                 item = ((GroupItem) item).getBaseItem();
@@ -432,7 +432,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                 return results;
             } catch (InterruptedException e) {
                 logger.warn("Query interrupted. Filter was {}", filterDescription);
-                return Collections.<HistoricItem>emptyList();
+                return Collections.<HistoricItem> emptyList();
             } catch (ExecutionException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof ResourceNotFoundException) {
@@ -445,12 +445,12 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                             cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
                             cause == null ? e.getMessage() : cause.getMessage(), filterDescription);
                 }
-                return Collections.<HistoricItem>emptyList();
+                return Collections.<HistoricItem> emptyList();
             }
         } catch (Exception e) {
             logger.error("Unexpected error with query having filter {}: {} {}. Returning empty query results.",
                     filterDescription, e.getClass().getSimpleName(), e.getMessage());
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
     }
 
