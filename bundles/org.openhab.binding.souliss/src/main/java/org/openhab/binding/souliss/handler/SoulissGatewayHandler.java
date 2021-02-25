@@ -305,7 +305,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void pingSent() {
         if (++countPingKo > 3) {
-
             if (bridge.getHandler() != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Gateway "
                         + bridge.getHandler().getThing().getUID() + " do not respond to " + countPingKo + " ping");

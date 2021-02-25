@@ -18,6 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Helper class to conver half precision float to int int are used on analogue
  * typicals (2 bytes) and should be reversed because of endianess
  *
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
+ *
  * @author http://stackoverflow.com/users/237321/x4u
  *
  * @since 1.7.0
