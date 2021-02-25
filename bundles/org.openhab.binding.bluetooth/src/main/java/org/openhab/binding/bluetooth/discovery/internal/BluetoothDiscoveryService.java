@@ -155,10 +155,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private static DiscoveryResult copyWithNewBridge(DiscoveryResult result, BluetoothAdapter adapter) {
         String label = result.getLabel();
-        String adapterLabel = adapter.getLabel();
-        if (adapterLabel != null) {
-            label = adapterLabel + " - " + label;
-        }
 
         return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter))//
                 .withBridge(adapter.getUID())//
