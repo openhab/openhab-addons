@@ -107,8 +107,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         @Override
         public AwsCredentials resolveCredentials() {
             if (dbConfig == null) {
-                logger.error("Dynamodb config is not ready, should not happen!");
-                throw new IllegalStateException();
+                throw new IllegalStateException("Dynamodb config is not ready, should not happen!");
             }
             return dbConfig.getCredentials();
         }
