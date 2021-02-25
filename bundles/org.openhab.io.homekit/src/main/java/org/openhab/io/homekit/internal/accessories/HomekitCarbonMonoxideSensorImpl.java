@@ -17,8 +17,6 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CARBON_M
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
@@ -40,8 +38,7 @@ public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImp
             List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
             throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        carbonMonoxideDetectedReader = createBooleanReader(CARBON_MONOXIDE_DETECTED_STATE, OnOffType.ON,
-                OpenClosedType.OPEN);
+        carbonMonoxideDetectedReader = createBooleanReader(CARBON_MONOXIDE_DETECTED_STATE);
         getServices().add(new CarbonMonoxideSensorService(this));
     }
 
