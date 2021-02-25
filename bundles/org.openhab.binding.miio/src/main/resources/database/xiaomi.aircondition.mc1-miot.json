@@ -405,7 +405,7 @@
 				"piid": 5,
 				"friendlyName": "Maintenance - Running Duration",
 				"channel": "running-duration",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
