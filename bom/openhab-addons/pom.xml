@@ -388,6 +388,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.freeathomesystem</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.freebox</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -836,6 +841,7 @@
       <artifactId>org.openhab.binding.mqtt.homeassistant</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt.homie</artifactId>
