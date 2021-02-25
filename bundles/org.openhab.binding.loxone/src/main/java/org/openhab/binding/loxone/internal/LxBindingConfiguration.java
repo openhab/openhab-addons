@@ -24,9 +24,13 @@ public class LxBindingConfiguration {
      */
     public String host;
     /**
-     * Port of web service of the Miniserver
+     * Port of HTTP web service of the Miniserver
      */
     public int port;
+    /**
+     * Port of HTTPS web service of the Miniserver
+     */
+    public int httpsPort;
     /**
      * User name used to log into the Miniserver
      */
@@ -76,4 +80,8 @@ public class LxBindingConfiguration {
      * Authentication method (0-auto, 1-hash, 2-token)
      */
     public int authMethod;
+    /**
+     * WebSocket connection type (0-auto, 1-HTTPS, 2-HTTP)
+     */
+    public int webSocketType;
 }
