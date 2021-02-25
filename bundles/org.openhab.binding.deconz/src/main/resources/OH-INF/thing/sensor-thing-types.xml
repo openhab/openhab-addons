@@ -97,6 +97,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Consumption</label>
 		<description>Current consumption</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -242,6 +243,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
@@ -265,6 +267,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity</description>
+		<category>Humidity</category>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
@@ -288,6 +291,7 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<description>Current pressure</description>
+		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -507,14 +511,16 @@
 
 	<channel-type id="heatsetpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Target temperature</label>
+		<label>Target Temperature</label>
 		<description>Target temperature</description>
+		<category>Heating</category>
 		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"></state>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current mode</description>
+		<category>Heating</category>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
