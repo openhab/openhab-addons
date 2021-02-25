@@ -115,7 +115,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
     private static final String DYNAMODB_THREADPOOL_NAME = "dynamodbPersistenceService";
 
-    private @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private ItemRegistry itemRegistry;
     private @NonNullByDefault({}) DynamoDbEnhancedAsyncClient client;
     @NonNullByDefault({})
     private DynamoDbAsyncClient lowLevelClient;
