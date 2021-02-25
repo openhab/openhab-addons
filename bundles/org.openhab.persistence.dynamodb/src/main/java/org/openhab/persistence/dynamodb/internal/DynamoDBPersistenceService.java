@@ -106,24 +106,26 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
         @Override
         public AwsCredentials resolveCredentials() {
-            if (dbConfig == null) {
+            DynamoDBConfig localDbConfig = dbConfig;
+            if (localDbConfig == null) {
                 throw new IllegalStateException("Dynamodb config is not ready, should not happen!");
             }
-            return dbConfig.getCredentials();
+            return localDbConfig.getCredentials();
         }
     }
 
     private static final String DYNAMODB_THREADPOOL_NAME = "dynamodbPersistenceService";
 
     private ItemRegistry itemRegistry;
-    private @NonNullByDefault({}) DynamoDbEnhancedAsyncClient client;
-    @NonNullByDefault({})
+    @Nullable
+    private DynamoDbEnhancedAsyncClient client;
+    @Nullable
     private DynamoDbAsyncClient lowLevelClient;
     private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
-    boolean isProperlyConfigured;
-    @NonNullByDefault({})
+    private boolean isProperlyConfigured;
+    @Nullable
     private DynamoDBConfig dbConfig;
-    @NonNullByDefault({})
+    @Nullable
     private DynamoDBTableNameResolver tableNameResolver;
     private final ExecutorService executor = ThreadPoolManager.getPool(DYNAMODB_THREADPOOL_NAME);
     private static final Duration TIMEOUT_API_CALL = Duration.ofSeconds(60);
@@ -141,8 +143,12 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     }
 
     void overrideConfig(ClientOverrideConfiguration.Builder config) {
+        DynamoDBConfig localDbConfig = dbConfig;
+        if (localDbConfig == null) {
+            return;
+        }
         config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL)
-                .retryPolicy(dbConfig.getRetryPolicy());
+                .retryPolicy(localDbConfig.getRetryPolicy());
     }
 
     @Activate
@@ -166,6 +172,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         return endpointOverride;
     }
 
+    @Nullable
     DynamoDbAsyncClient getLowLevelClient() {
         return lowLevelClient;
     }
@@ -174,10 +181,12 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         return executor;
     }
 
+    @Nullable
     DynamoDBTableNameResolver getTableNameResolver() {
         return tableNameResolver;
     }
 
+    @Nullable
     DynamoDBConfig getDbConfig() {
         return dbConfig;
     }
@@ -185,14 +194,14 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     @Activate
     public void activate(final @Nullable BundleContext bundleContext, final Map<String, Object> config) {
         disconnect();
-        dbConfig = DynamoDBConfig.fromConfig(config);
-        if (dbConfig == null) {
+        DynamoDBConfig localDbConfig = dbConfig = DynamoDBConfig.fromConfig(config);
+        if (localDbConfig == null) {
             // Configuration was invalid. Abort service activation.
             // Error is already logger in fromConfig.
             return;
         }
-        tableNameResolver = new DynamoDBTableNameResolver(dbConfig.getTableRevision(), dbConfig.getTable(),
-                dbConfig.getTablePrefixLegacy());
+        tableNameResolver = new DynamoDBTableNameResolver(localDbConfig.getTableRevision(), localDbConfig.getTable(),
+                localDbConfig.getTablePrefixLegacy());
         try {
             if (!ensureClient()) {
                 logger.error("Error creating dynamodb database client. Aborting service activation.");
@@ -222,7 +231,8 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
      * @return whether initialization was successful.
      */
     private boolean ensureClient() {
-        if (dbConfig == null) {
+        DynamoDBConfig localDbConfig = dbConfig;
+        if (localDbConfig == null) {
             return false;
         }
         if (client == null) {
@@ -232,12 +242,14 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                         return true;
                     }
                     DynamoDbAsyncClientBuilder lowlevelClientBuilder = DynamoDbAsyncClient.builder()
-                            .credentialsProvider(StaticCredentialsProvider.create(dbConfig.getCredentials()))
+                            .credentialsProvider(StaticCredentialsProvider.create(localDbConfig.getCredentials()))
                             .httpClient(NettyNioAsyncHttpClient.builder().maxConcurrency(MAX_CONCURRENCY).build())
-                            .asyncConfiguration(ClientAsyncConfiguration.builder()
-                                    .advancedOption(SdkAdvancedAsyncClientOption.FUTURE_COMPLETION_EXECUTOR, executor)
-                                    .build())
-                            .overrideConfiguration(this::overrideConfig).region(dbConfig.getRegion());
+                            .asyncConfiguration(
+                                    ClientAsyncConfiguration.builder()
+                                            .advancedOption(SdkAdvancedAsyncClientOption.FUTURE_COMPLETION_EXECUTOR,
+                                                    executor)
+                                            .build())
+                            .overrideConfiguration(this::overrideConfig).region(localDbConfig.getRegion());
                     if (endpointOverride != null) {
                         logger.info("DynamoDB has been overriden to {}", endpointOverride);
                         lowlevelClientBuilder.endpointOverride(endpointOverride);
@@ -255,17 +267,21 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     }
 
     private CompletableFuture<Boolean> resolveTableSchema() {
-        if (tableNameResolver.isFullyResolved()) {
+        DynamoDBTableNameResolver localTableNameResolver = tableNameResolver;
+        DynamoDbAsyncClient localLowLevelClient = lowLevelClient;
+        if (localTableNameResolver == null || localLowLevelClient == null) {
+            throw new IllegalStateException("tableNameResolver or localLowLevelClient not available");
+        }
+        if (localTableNameResolver.isFullyResolved()) {
             return CompletableFuture.completedFuture(true);
         } else {
-            synchronized (tableNameResolver) {
-                if (tableNameResolver.isFullyResolved()) {
+            synchronized (localTableNameResolver) {
+                if (localTableNameResolver.isFullyResolved()) {
                     return CompletableFuture.completedFuture(true);
                 }
-                return tableNameResolver
-                        .resolveSchema(lowLevelClient, b -> b.overrideConfiguration(this::overrideConfig), executor)
-                        .thenApplyAsync(resolved -> {
-                            if (resolved && tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY) {
+                return localTableNameResolver.resolveSchema(localLowLevelClient,
+                        b -> b.overrideConfiguration(this::overrideConfig), executor).thenApplyAsync(resolved -> {
+                            if (resolved && localTableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY) {
                                 logger.warn(
                                         "Using legacy table format. Is it recommended to migrate to the new table format: specify the 'table' parameter and unset the old 'tablePrefix' parameter.");
                             }
@@ -277,11 +293,12 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
     private <T extends DynamoDBItem<?>> DynamoDbAsyncTable<T> getTable(Class<T> dtoClass) {
         DynamoDbEnhancedAsyncClient localClient = client;
-        if (!ensureClient() || localClient == null) {
+        DynamoDBTableNameResolver localTableNameResolver = tableNameResolver;
+        if (!ensureClient() || localClient == null || localTableNameResolver == null) {
             throw new IllegalStateException();
         }
-        ExpectedTableSchema expectedTableSchemaRevision = tableNameResolver.getTableSchema();
-        String tableName = tableNameResolver.fromClass(dtoClass);
+        ExpectedTableSchema expectedTableSchemaRevision = localTableNameResolver.getTableSchema();
+        String tableName = localTableNameResolver.fromClass(dtoClass);
         final TableSchema<? extends DynamoDBItem<?>> schema = getDynamoDBTableSchema(dtoClass,
                 expectedTableSchemaRevision);
         DynamoDbAsyncTable<? extends DynamoDBItem<?>> table = tableCache.computeIfAbsent(dtoClass, clz -> {
@@ -312,10 +329,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     }
 
     private void disconnect() {
-        if (client == null || lowLevelClient == null) {
+        DynamoDbAsyncClient localLowLevelClient = lowLevelClient;
+        if (client == null || localLowLevelClient == null) {
             return;
         }
-        lowLevelClient.close();
+        localLowLevelClient.close();
         lowLevelClient = null;
         client = null;
         dbConfig = null;
@@ -350,11 +368,12 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         String filterDescription = filterToString(filter);
         logger.trace("Got a query with filter {}", filterDescription);
         DynamoDbEnhancedAsyncClient localClient = client;
+        DynamoDBTableNameResolver localTableNameResolver = tableNameResolver;
         if (!isProperlyConfigured) {
             logger.debug("Configuration for dynamodb not yet loaded or broken. Returning empty query results.");
             return Collections.<HistoricItem> emptyList();
         }
-        if (!ensureClient() || localClient == null) {
+        if (!ensureClient() || localClient == null || localTableNameResolver == null) {
             logger.warn("DynamoDB not connected. Returning empty query results.");
             return Collections.<HistoricItem> emptyList();
         }
@@ -400,16 +419,16 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                     return List.of();
                 }
             }
-            boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
+            boolean legacy = localTableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
             Class<? extends DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(),
                     legacy);
-            String tableName = tableNameResolver.fromClass(dtoClass);
+            String tableName = localTableNameResolver.fromClass(dtoClass);
             DynamoDbAsyncTable<? extends DynamoDBItem<?>> table = getTable(dtoClass);
             logger.debug("Item {} (of type {}) will be tried to query using DTO class {} from table {}", itemName,
                     item.getClass().getSimpleName(), dtoClass.getSimpleName(), tableName);
 
             QueryEnhancedRequest queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
-                    tableNameResolver.getTableSchema(), item, filter);
+                    localTableNameResolver.getTableSchema(), item, filter);
 
             CompletableFuture<List<DynamoDBItem<?>>> itemsFuture = new CompletableFuture<>();
             final SdkPublisher<? extends DynamoDBItem<?>> itemPublisher = table.query(queryExpression).items();
@@ -468,9 +487,6 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
      * @return item with the given name, or null if no such item exists in item registry.
      */
     private @Nullable Item getItemFromRegistry(String itemName) {
-        if (itemRegistry == null) {
-            return null;
-        }
         try {
             return itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
@@ -532,14 +548,17 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             DynamoDbEnhancedAsyncClient localClient = client;
             DynamoDbAsyncClient localLowlevelClient = lowLevelClient;
             DynamoDBConfig localConfig = dbConfig;
-            if (!isProperlyConfigured || localClient == null || localLowlevelClient == null) {
+            DynamoDBTableNameResolver localTableNameResolver = tableNameResolver;
+            if (!isProperlyConfigured || localClient == null || localLowlevelClient == null || localConfig == null
+                    || localTableNameResolver == null) {
+                logger.warn("Not ready to store (config error?), not storing item {}.", item.getName());
                 return;
             }
 
             Integer expireDays = localConfig.getExpireDays();
 
             final DynamoDBItem<?> dto;
-            switch (tableNameResolver.getTableSchema()) {
+            switch (localTableNameResolver.getTableSchema()) {
                 case NEW:
                     dto = AbstractDynamoDBItem.fromStateNew(copiedItem, time, expireDays);
                     break;

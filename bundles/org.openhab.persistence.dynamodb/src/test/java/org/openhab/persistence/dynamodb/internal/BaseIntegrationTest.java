@@ -112,8 +112,8 @@ public class BaseIntegrationTest extends JavaTest {
      * @return
      */
     protected static boolean isRunningInCI() {
-        return "true".equals(System.getenv("CI"))
-                || (System.getenv("JENKINS_HOME") != null && !System.getenv("JENKINS_HOME").isBlank());
+        String jenkinsHome = System.getenv("JENKINS_HOME");
+        return "true".equals(System.getenv("CI")) || (jenkinsHome != null && !jenkinsHome.isBlank());
     }
 
     private static boolean credentialsSet() {
@@ -412,6 +412,7 @@ public class BaseIntegrationTest extends JavaTest {
         assert localService != null;
         DynamoDbAsyncClient lowLevelClient = localService.getLowLevelClient();
         assertNotNull(lowLevelClient);
+        assert lowLevelClient != null;// To get rid of null exception
         // Clear data
         for (String table : new String[] { "dynamodb-integration-tests-bigdecimal", "dynamodb-integration-tests-string",
                 TABLE }) {

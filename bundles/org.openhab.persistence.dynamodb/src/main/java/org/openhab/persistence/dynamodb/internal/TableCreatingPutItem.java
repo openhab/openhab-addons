@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.internal.waiters.ResponseOrException;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.model.CreateTableEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
@@ -82,12 +83,24 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
     private CompletableFuture<Void> aggregateFuture = new CompletableFuture<Void>();
     private Instant start = Instant.now();
     private ExecutorService executor;
+    private DynamoDbAsyncClient lowLevelClient;
+    private DynamoDBConfig dbConfig;
+    private DynamoDBTableNameResolver tableNameResolver;
 
     public TableCreatingPutItem(DynamoDBPersistenceService service, T dto, DynamoDbAsyncTable<T> table) {
         this.service = service;
         this.dto = dto;
         this.table = table;
         this.executor = this.service.getExecutor();
+        DynamoDbAsyncClient localLowLevelClient = this.service.getLowLevelClient();
+        DynamoDBConfig localDbConfig = this.service.getDbConfig();
+        DynamoDBTableNameResolver localTableNameResolver = this.service.getTableNameResolver();
+        if (localLowLevelClient == null || localDbConfig == null || localTableNameResolver == null) {
+            throw new IllegalStateException("Service is not ready");
+        }
+        lowLevelClient = localLowLevelClient;
+        dbConfig = localDbConfig;
+        tableNameResolver = localTableNameResolver;
     }
 
     public CompletableFuture<Void> putItemAsync() {
@@ -100,9 +113,9 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
             // Try again, first creating the table
             Instant tableCreationStart = Instant.now();
             table.createTable(CreateTableEnhancedRequest.builder()
-                    .provisionedThroughput(ProvisionedThroughput.builder()
-                            .readCapacityUnits(this.service.getDbConfig().getReadCapacityUnits())
-                            .writeCapacityUnits(this.service.getDbConfig().getWriteCapacityUnits()).build())
+                    .provisionedThroughput(
+                            ProvisionedThroughput.builder().readCapacityUnits(dbConfig.getReadCapacityUnits())
+                                    .writeCapacityUnits(dbConfig.getWriteCapacityUnits()).build())
                     .build())//
                     .whenCompleteAsync((resultTableCreation, exceptionTableCreation) -> {
                         if (exceptionTableCreation == null) {
@@ -111,8 +124,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                             //
                             // Table creation OK. Configure TTL
                             //
-                            boolean legacy = this.service.getTableNameResolver()
-                                    .getTableSchema() == ExpectedTableSchema.LEGACY;
+                            boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
                             waitForTableToBeActive().thenComposeAsync(_void -> {
                                 if (legacy) {
                                     // We have legacy table schema. TTL configuration is skipped
@@ -120,7 +132,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                                 } else {
                                     // We have the new table schema -> configure TTL
                                     // for the newly created table
-                                    return this.service.getLowLevelClient().updateTimeToLive(req -> req
+                                    return lowLevelClient.updateTimeToLive(req -> req
                                             .overrideConfiguration(this.service::overrideConfig)
                                             .tableName(table.tableName()).timeToLiveSpecification(spec -> spec
                                                     .attributeName(DynamoDBItem.ATTRIBUTE_NAME_EXPIRY).enabled(true)));
@@ -219,7 +231,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
     }
 
     private CompletableFuture<Void> waitForTableToBeActive() {
-        return this.service.getLowLevelClient().waiter()
+        return lowLevelClient.waiter()
                 .waitUntilTableExists(
                         req -> req.tableName(table.tableName()).overrideConfiguration(this.service::overrideConfig))
                 .thenAcceptAsync(tableWaitResponse -> {

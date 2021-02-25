@@ -28,6 +28,8 @@ import org.openhab.core.persistence.FilterCriteria;
 
 import com.google.common.collect.Lists;
 
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+
 /**
  *
  * @author Sami Salonen - Initial contribution
@@ -88,7 +90,10 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
         DynamoDBPersistenceService maybeLegacyService = null;
         final DynamoDBPersistenceService legacyService = newService(true, true, null, DynamoDBConfig.DEFAULT_TABLE_NAME,
                 DynamoDBConfig.DEFAULT_TABLE_PREFIX);
-        assertEquals(ExpectedTableSchema.LEGACY, legacyService.getTableNameResolver().getTableSchema());
+        DynamoDBTableNameResolver tableNameResolver = legacyService.getTableNameResolver();
+        assertNotNull(tableNameResolver);
+        assert tableNameResolver != null; // to get rid of null warning...
+        assertEquals(ExpectedTableSchema.LEGACY, tableNameResolver.getTableSchema());
 
         NumberItem item = (@NonNull NumberItem) ITEMS.get("number");
         final FilterCriteria criteria = new FilterCriteria();
@@ -111,18 +116,20 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
 
             // Create 2 new services, with unknown schemas (MAYBE_LEGACY), pointing to same database
             maybeLegacyService = newService(null, false, legacyService.getEndpointOverride(), null, null);
-            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyService.getTableNameResolver().getTableSchema());
+            DynamoDBTableNameResolver maybeLegacyServiceTableNameResolver = maybeLegacyService.getTableNameResolver();
+            assertNotNull(maybeLegacyServiceTableNameResolver);
+            assert maybeLegacyServiceTableNameResolver != null; // to get rid of null warning...
+            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyServiceTableNameResolver.getTableSchema());
             assertEquals(legacyService.getEndpointOverride(), maybeLegacyService.getEndpointOverride());
 
             // maybeLegacyService2 still does not know the schema
-            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyService.getTableNameResolver().getTableSchema());
+            assertEquals(ExpectedTableSchema.MAYBE_LEGACY, maybeLegacyServiceTableNameResolver.getTableSchema());
             // ... but it will be resolved automatically on query
-            final DynamoDBPersistenceService maybeLegacyService2Final = maybeLegacyService;
+            final DynamoDBPersistenceService maybeLegacyServiceFinal = maybeLegacyService;
             waitForAssert(() -> {
-                assertEquals(1, Lists.newArrayList(maybeLegacyService2Final.query(criteria)).size());
+                assertEquals(1, Lists.newArrayList(maybeLegacyServiceFinal.query(criteria)).size());
                 // also the schema gets resolved
-                assertEquals(ExpectedTableSchema.LEGACY,
-                        maybeLegacyService2Final.getTableNameResolver().getTableSchema());
+                assertEquals(ExpectedTableSchema.LEGACY, maybeLegacyServiceTableNameResolver.getTableSchema());
             });
 
         } finally {
@@ -145,8 +152,14 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
                 DynamoDBConfig.DEFAULT_TABLE_NAME, DynamoDBConfig.DEFAULT_TABLE_PREFIX);
         assertFalse(resolver.isFullyResolved());
         try {
-            boolean resolved = resolver.resolveSchema(legacyService.getLowLevelClient(),
-                    b -> b.overrideConfiguration(legacyService::overrideConfig), executor).get();
+            DynamoDbAsyncClient localClient = legacyService.getLowLevelClient();
+            if (localClient == null) {
+                fail("local client is null");
+                throw new RuntimeException();
+            }
+            boolean resolved = resolver
+                    .resolveSchema(localClient, b -> b.overrideConfiguration(legacyService::overrideConfig), executor)
+                    .get();
             assertTrue(resolved);
             return resolver.getTableSchema();
         } catch (InterruptedException | ExecutionException e) {
