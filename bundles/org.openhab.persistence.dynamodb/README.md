@@ -43,7 +43,7 @@ Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 
 ## Configuration
 
-This service can be configured using the MainUI or using persistence configuration file  `services/dynamodb.cfg`.
+This service can be configured using the MainUI or using persistence configuration file `services/dynamodb.cfg`.
 
 In order to configure the persistence service, you need to configure two things:
 
