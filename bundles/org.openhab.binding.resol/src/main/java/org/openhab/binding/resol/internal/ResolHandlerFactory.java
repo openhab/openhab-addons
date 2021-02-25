@@ -69,8 +69,7 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_BRIDGE)) {
-            ResolBridgeHandler handler = new ResolBridgeHandler((Bridge) thing, localeProvider);
-            return handler;
+            return new ResolBridgeHandler((Bridge) thing, localeProvider);
         }
 
         return null;

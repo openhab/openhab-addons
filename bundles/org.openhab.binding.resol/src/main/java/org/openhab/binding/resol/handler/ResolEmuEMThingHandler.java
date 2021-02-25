@@ -65,7 +65,7 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
 
     private @Nullable ResolBridgeHandler bridgeHandler;
 
-    private class BasSetting {
+    private static class BasSetting {
         float temperatureOffset = 0.0f;
         int mode = 4;
     }

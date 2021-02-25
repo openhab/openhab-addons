@@ -72,7 +72,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private @Nullable Connection tcpConnection;
-    private Specification spec;
+    private final Specification spec;
 
     // Managing Thing Discovery Service
     private @Nullable ResolDeviceDiscoveryService discoveryService = null;
