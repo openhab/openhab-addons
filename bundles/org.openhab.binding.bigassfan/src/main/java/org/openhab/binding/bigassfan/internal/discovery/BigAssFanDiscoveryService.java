@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -238,8 +238,8 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
 
         ThingUID uid = new ThingUID(thingTypeUid, serialNumber);
         logger.debug("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
-        thingDiscovered(
-                DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(device.getLabel()).build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withRepresentationProperty(THING_PROPERTY_MAC).withLabel(device.getLabel()).build());
     }
 
     private void schedulePollJob() {

@@ -36,23 +36,19 @@
 				<label>Binding Settings</label>
 				<description>Binding settings for this device</description>
 			</parameter-group>
-			<!-- Trigger actions from habmin -->
+			<!-- Trigger actions -->
 			<parameter-group name="actions">
 				<label>Actions</label>
 				<description>Action Buttons</description>
 			</parameter-group>
-			<!-- Experimental - Enable when also removing rooms is implemented <parameter
-				name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
-				<description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
+
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="comfortTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
 				groupName="device">
@@ -162,24 +158,19 @@
 				<label>Binding Settings</label>
 				<description>Binding settings for this device</description>
 			</parameter-group>
-			<!-- Trigger actions from habmin -->
+			<!-- Trigger actions -->
 			<parameter-group name="actions">
-				<context></context>
 				<label>Actions</label>
 				<description>Action Buttons</description>
 			</parameter-group>
-			<!-- Experimental - Enable when also removing rooms is implemented <parameter
-				name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
-				<description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
+
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="comfortTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
 				groupName="device">
@@ -284,7 +275,7 @@
 				<label>Device Settings</label>
 				<description>Device parameter settings</description>
 			</parameter-group>
-			<!-- Trigger actions from habmin -->
+			<!-- Trigger actions -->
 			<parameter-group name="actions">
 				<label>Actions</label>
 				<description>Action Buttons</description>
@@ -389,7 +380,7 @@
 				<label>Device Settings</label>
 				<description>Device parameter settings</description>
 			</parameter-group>
-			<!-- Trigger actions from habmin -->
+			<!-- Trigger actions -->
 			<parameter-group name="actions">
 				<label>Actions</label>
 				<description>Action Buttons</description>

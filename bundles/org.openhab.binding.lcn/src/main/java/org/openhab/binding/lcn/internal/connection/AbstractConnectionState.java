@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.nio.channels.Channel;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 
@@ -81,6 +82,23 @@ public abstract class AbstractConnectionState extends AbstractState<ConnectionSt
         if (pck.equals(LcnDefs.LCNCONNSTATE_DISCONNECTED)) {
             connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
             nextState(ConnectionStateWaitForLcnBusConnectedAfterDisconnected::new);
+        }
+    }
+
+    /**
+     * Invoked by any state, if the connection fails.
+     *
+     * @param e the cause
+     */
+    public void handleConnectionFailed(@Nullable Throwable e) {
+        synchronized (context) {
+            if (e != null) {
+                String message = e.getMessage();
+                connection.getCallback().onOffline(message != null ? message : "");
+            } else {
+                connection.getCallback().onOffline("");
+            }
+            context.setState(ConnectionStateGracePeriodBeforeReconnect::new);
         }
     }
 

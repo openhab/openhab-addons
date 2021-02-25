@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,13 @@ import java.nio.channels.Channel;
 import java.nio.channels.CompletionHandler;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -133,7 +139,10 @@ public class Connection {
     public void onAck(LcnAddrMod addr, int code) {
         synchronized (modData) {
             if (modData.containsKey(addr)) {
-                modData.get(addr).onAck(code, this, this.settings.getTimeout(), System.nanoTime());
+                ModInfo modInfo = modData.get(addr);
+                if (modInfo != null) {
+                    modInfo.onAck(code, this, this.settings.getTimeout(), System.currentTimeMillis());
+                }
             }
         }
     }
@@ -235,7 +244,8 @@ public class Connection {
                                         logger.warn("Data loss while writing to channel: {}", settings.getAddress());
                                     } else {
                                         if (logger.isTraceEnabled()) {
-                                            logger.trace("Sent: {}", new String(data, 0, data.length));
+                                            logger.trace("Sent: {}",
+                                                    new String(data, 0, data.length, LcnDefs.LCN_ENCODING).trim());
                                         }
                                     }
 
@@ -304,7 +314,7 @@ public class Connection {
     void queueDirectly(LcnAddr addr, boolean wantsAck, byte[] data) {
         if (!addr.isGroup() && wantsAck) {
             this.updateModuleData((LcnAddrMod) addr).queuePckCommandWithAck(data, this, this.settings.getTimeout(),
-                    System.nanoTime());
+                    System.currentTimeMillis());
         } else {
             this.queueAndSend(new SendDataPck(addr, false, data));
         }
@@ -418,7 +428,7 @@ public class Connection {
      */
     public void updateModInfos() {
         synchronized (modData) {
-            modData.values().forEach(i -> i.update(this, settings.getTimeout(), System.nanoTime()));
+            modData.values().forEach(i -> i.update(this, settings.getTimeout(), System.currentTimeMillis()));
         }
     }
 

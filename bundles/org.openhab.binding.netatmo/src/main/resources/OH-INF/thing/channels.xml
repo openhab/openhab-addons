@@ -8,6 +8,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Status Store</label>
 		<description>Last Status Store</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -130,6 +131,7 @@
 		<item-type>DateTime</item-type>
 		<label>Measurement Time</label>
 		<description>Timestamp when data was measured</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -137,6 +139,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Plug Seen</label>
 		<description>Last Plug Seen</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -144,6 +147,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min CO2</label>
 		<description>Date when minimum CO2 was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -151,6 +155,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min CO2 This Week</label>
 		<description>Date when minimum CO2 was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -158,6 +163,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min CO2 This Month</label>
 		<description>Date when minimum CO2 was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -165,6 +171,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max CO2</label>
 		<description>Date when maximum CO2 was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -172,6 +179,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max CO2 This Week</label>
 		<description>Date when maximum CO2 was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -179,6 +187,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max CO2 This Month</label>
 		<description>Date when maximum CO2 was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -186,6 +195,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Temp</label>
 		<description>Date when minimum temperature was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -193,6 +203,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Temp This Week</label>
 		<description>Date when minimum temperature was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -200,6 +211,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Temp This Month</label>
 		<description>Date when minimum temperature was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -207,6 +219,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Temp</label>
 		<description>Date when maximum temperature was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -214,6 +227,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Temp This Week</label>
 		<description>Date when maximum temperature was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -221,6 +235,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Temp This Month</label>
 		<description>Date when maximum temperature was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -228,6 +243,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Humidity</label>
 		<description>Date when minimum humidity was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -235,6 +251,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Humidity This Week</label>
 		<description>Date when minimum humidity was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -242,6 +259,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Humidity This Month</label>
 		<description>Date when minimum humidity was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -249,6 +267,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Humidity</label>
 		<description>Date when maximum humidity was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -256,6 +275,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Humidity This Week</label>
 		<description>Date when maximum humidity was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -263,6 +283,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Humidity This Month</label>
 		<description>Date when maximum humidity was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -270,6 +291,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Noise</label>
 		<description>Date when minimum noise was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -277,6 +299,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Noise This Week</label>
 		<description>Date when minimum noise was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -284,6 +307,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Noise This Month</label>
 		<description>Date when minimum noise was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -291,6 +315,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Noise</label>
 		<description>Date when maximum noise was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -298,6 +323,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Noise This Week</label>
 		<description>Date when maximum noise was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -305,6 +331,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Noise This Month</label>
 		<description>Date when maximum noise was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -312,6 +339,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Pressure</label>
 		<description>Date when minimum pressure was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -319,6 +347,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Pressure This Week</label>
 		<description>Date when minimum pressure was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -326,6 +355,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Min Pressure This Month</label>
 		<description>Date when minimum pressure was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -333,6 +363,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Pressure</label>
 		<description>Date when maximum pressure was reached on current day</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -340,6 +371,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Pressure This Week</label>
 		<description>Date when maximum pressure was reached this week</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -347,6 +379,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Pressure This Month</label>
 		<description>Date when maximum pressure was reached this month</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -354,6 +387,7 @@
 		<item-type>DateTime</item-type>
 		<label>Available Bilan</label>
 		<description>Month of the last available thermostat bilan</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY"/>
 	</channel-type>
 
@@ -367,6 +401,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Message</label>
 		<description>Last Message emitted by the module</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -374,6 +409,7 @@
 		<item-type>DateTime</item-type>
 		<label>Setpoint End</label>
 		<description>Thermostat goes back to schedule after that timestamp.</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
 	</channel-type>
 
@@ -381,6 +417,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Therm Seen</label>
 		<description>Last Them Seen</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -388,6 +425,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>Air Quality</description>
+		<category>Carbondioxide</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -395,6 +433,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Min Co2</label>
 		<description>Minimum CO2 on current day</description>
+		<category>Carbondioxide</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -402,6 +441,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Min Co2 This Week</label>
 		<description>Minimum CO2 this week</description>
+		<category>Carbondioxide</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -409,6 +449,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Min Co2 This Month</label>
 		<description>Minimum CO2 this month</description>
+		<category>Carbondioxide</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -416,6 +457,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Co2</label>
 		<description>Maximum CO2 on current day</description>
+		<category>Carbondioxide</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -423,6 +465,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Co2 This Week</label>
 		<description>Maximum CO2 this week</description>
+		<category>Carbondioxide</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -430,6 +473,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Co2 This Month</label>
 		<description>Maximum CO2 this month</description>
+		<category>Carbondioxide</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -744,6 +788,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Max Wind Strength</label>
 		<description>Timestamp when MaxWindStrength was recorded.</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
 	</channel-type>
 

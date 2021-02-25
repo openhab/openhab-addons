@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,11 @@
 package org.openhab.persistence.mapdb.internal;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -60,8 +65,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     private static final String SERVICE_ID = "mapdb";
     private static final String SERVICE_LABEL = "MapDB";
-    private static final String DB_FOLDER_NAME = OpenHAB.getUserDataFolder() + File.separator + "persistence"
-            + File.separator + "mapdb";
+    private static final Path DB_DIR = new File(OpenHAB.getUserDataFolder(), "persistence").toPath().resolve("mapdb");
+    private static final Path BACKUP_DIR = DB_DIR.resolve("backup");
     private static final String DB_FILE_NAME = "storage.mapdb";
 
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceService.class);
@@ -80,18 +85,56 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     public void activate() {
         logger.debug("MapDB persistence service is being activated");
 
-        File folder = new File(DB_FOLDER_NAME);
-        if (!folder.exists()) {
-            if (!folder.mkdirs()) {
-                logger.warn("Failed to create one or more directories in the path '{}'", DB_FOLDER_NAME);
-                logger.warn("MapDB persistence service activation has failed.");
-                return;
-            }
+        try {
+            Files.createDirectories(DB_DIR);
+        } catch (IOException e) {
+            logger.warn("Failed to create one or more directories in the path '{}'", DB_DIR);
+            logger.warn("MapDB persistence service activation has failed.");
+            return;
         }
 
-        File dbFile = new File(DB_FOLDER_NAME, DB_FILE_NAME);
-        db = DBMaker.newFileDB(dbFile).closeOnJvmShutdown().make();
-        map = db.createTreeMap("itemStore").makeOrGet();
+        File dbFile = DB_DIR.resolve(DB_FILE_NAME).toFile();
+        try {
+            db = DBMaker.newFileDB(dbFile).closeOnJvmShutdown().make();
+            map = db.createTreeMap("itemStore").makeOrGet();
+        } catch (RuntimeException re) {
+            Throwable cause = re.getCause();
+            if (cause instanceof ClassNotFoundException) {
+                ClassNotFoundException cnf = (ClassNotFoundException) cause;
+                logger.warn(
+                        "The MapDB in {} is incompatible with openHAB {}: {}. A new and empty MapDB will be used instead.",
+                        dbFile, OpenHAB.getVersion(), cnf.getMessage());
+
+                try {
+                    Files.createDirectories(BACKUP_DIR);
+                } catch (IOException ioe) {
+                    logger.warn("Failed to create one or more directories in the path '{}'", BACKUP_DIR);
+                    logger.warn("MapDB persistence service activation has failed.");
+                    return;
+                }
+
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(DB_DIR)) {
+                    long epochMilli = Instant.now().toEpochMilli();
+                    for (Path path : stream) {
+                        if (!Files.isDirectory(path)) {
+                            Path newPath = BACKUP_DIR.resolve(epochMilli + "--" + path.getFileName());
+                            Files.move(path, newPath);
+                            logger.info("Moved incompatible MapDB file '{}' to '{}'", path, newPath);
+                        }
+                    }
+                } catch (IOException ioe) {
+                    logger.warn("Failed to read files from '{}': {}", DB_DIR, ioe.getMessage());
+                    logger.warn("MapDB persistence service activation has failed.");
+                    return;
+                }
+
+                db = DBMaker.newFileDB(dbFile).closeOnJvmShutdown().make();
+                map = db.createTreeMap("itemStore").makeOrGet();
+            } else {
+                logger.warn("Failed to create or open the MapDB: {}", re.getMessage());
+                logger.warn("MapDB persistence service activation has failed.");
+            }
+        }
         logger.debug("MapDB persistence service is now activated");
     }
 

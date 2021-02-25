@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return OpenWebNetDeviceDiscoveryService.SUPPORTED_THING_TYPES;
+        return SUPPORTED_THING_TYPES;
     }
 
     @Override

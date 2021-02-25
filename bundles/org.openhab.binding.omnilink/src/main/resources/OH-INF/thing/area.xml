@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Omni Area Thing -->
+	<thing-type id="area">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Omni Area</label>
+		<description>An Omni area configured in the controller.</description>
+		<channels>
+			<channel id="activate_keypad_emergency" typeId="omni_activate_keypad_emergency"/>
+			<channel id="alarm_burglary" typeId="area_alarm"/>
+			<channel id="alarm_fire" typeId="area_alarm"/>
+			<channel id="alarm_gas" typeId="area_alarm"/>
+			<channel id="alarm_auxiliary" typeId="area_alarm"/>
+			<channel id="alarm_freeze" typeId="area_alarm"/>
+			<channel id="alarm_water" typeId="area_alarm"/>
+			<channel id="alarm_duress" typeId="area_alarm"/>
+			<channel id="alarm_temperature" typeId="area_alarm"/>
+			<channel id="mode" typeId="omni_area_mode"/>
+			<channel id="disarm" typeId="area_command"/>
+			<channel id="day" typeId="area_command"/>
+			<channel id="night" typeId="area_command"/>
+			<channel id="away" typeId="area_command"/>
+			<channel id="vacation" typeId="area_command"/>
+			<channel id="day_instant" typeId="area_command"/>
+			<channel id="night_delayed" typeId="area_command"/>
+			<channel id="all_on_off_event" typeId="all_on_off_event"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Area Number</label>
+				<description>The area number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Lumina Area Thing -->
+	<thing-type id="lumina_area">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Lumina Area</label>
+		<description>An Lumina area configured in the controller.</description>
+		<channels>
+			<channel id="mode" typeId="lumina_area_mode"/>
+			<channel id="home" typeId="area_command"/>
+			<channel id="sleep" typeId="area_command"/>
+			<channel id="away" typeId="area_command"/>
+			<channel id="vacation" typeId="area_command"/>
+			<channel id="party" typeId="area_command"/>
+			<channel id="special" typeId="area_command"/>
+			<channel id="all_on_off_event" typeId="all_on_off_event"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+		</properties>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Area Number</label>
+				<description>The area number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Area channels -->
+	<channel-type id="area_alarm">
+		<item-type>Switch</item-type>
+		<label>Area Alarm</label>
+		<description>Indicates if an alarm is active.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="omni_area_mode">
+		<item-type>Number</item-type>
+		<label>Security Mode</label>
+		<description>Represents the area security mode.</description>
+		<category>Alarm</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Day</option>
+				<option value="2">Night</option>
+				<option value="3">Away</option>
+				<option value="4">Vacation</option>
+				<option value="5">Day instant</option>
+				<option value="6">Night delayed</option>
+				<option value="9">Arming day</option>
+				<option value="10">Arming night</option>
+				<option value="11">Arming away</option>
+				<option value="12">Arming vacation</option>
+				<option value="13">Arming day instant</option>
+				<option value="14">Arming night delayed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="area_command">
+		<item-type>String</item-type>
+		<label>Security Command</label>
+		<description>Sends a 4 digit user code to activate the area command.</description>
+		<category>Alarm</category>
+	</channel-type>
+
+	<channel-type id="omni_activate_keypad_emergency">
+		<item-type>Number</item-type>
+		<label>Activate Keypad Emergency</label>
+		<description>Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models.</description>
+		<category>Alarm</category>
+		<state>
+			<options>
+				<option value="1">Burglary</option>
+				<option value="2">Fire</option>
+				<option value="3">Auxiliary</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lumina_area_mode">
+		<item-type>Number</item-type>
+		<label>Security Mode</label>
+		<description>Represents the area security mode.</description>
+		<category>Alarm</category>
+		<state readOnly="true">
+			<options>
+				<option value="1">Home</option>
+				<option value="2">Sleep</option>
+				<option value="3">Away</option>
+				<option value="4">Vacation</option>
+				<option value="5">Party</option>
+				<option value="6">Special</option>
+				<option value="9">Setting home</option>
+				<option value="10">Setting sleep</option>
+				<option value="11">Setting away</option>
+				<option value="12">Setting vacation</option>
+				<option value="13">Setting party</option>
+				<option value="14">Setting special</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="all_on_off_event">
+		<kind>trigger</kind>
+		<label>All On/Off Event</label>
+		<description>Event sent when an all on/off event occurs.</description>
+		<event>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
+			</options>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>

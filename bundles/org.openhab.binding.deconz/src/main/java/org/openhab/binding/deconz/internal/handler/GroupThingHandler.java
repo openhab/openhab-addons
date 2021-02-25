@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,26 +14,26 @@ package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.CommandDescriptionProvider;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.GroupAction;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.GroupState;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandDescriptionBuilder;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,31 +41,25 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * This light thing doesn't establish any connections, that is done by the bridge Thing.
+ * This group thing doesn't establish any connections, that is done by the bridge Thing.
  *
  * It waits for the bridge to come online, grab the websocket connection and bridge configuration
  * and registers to the websocket connection as a listener.
  *
- * A REST API call is made to get the initial light/rollershutter state.
- *
- * Every light and rollershutter is supported by this Thing, because a unified state is kept
- * in {@link #groupStateCache}. Every field that got received by the REST API for this specific
- * sensor is published to the framework.
- *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
+public class GroupThingHandler extends DeconzBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_LIGHTGROUP);
     private final Logger logger = LoggerFactory.getLogger(GroupThingHandler.class);
+    private final CommandDescriptionProvider commandDescriptionProvider;
 
-    /**
-     * The group state.
-     */
+    private Map<String, String> scenes = Map.of();
     private GroupState groupStateCache = new GroupState();
 
-    public GroupThingHandler(Thing thing, Gson gson) {
+    public GroupThingHandler(Thing thing, Gson gson, CommandDescriptionProvider commandDescriptionProvider) {
         super(thing, gson, ResourceType.GROUPS);
+        this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
     @Override
@@ -82,8 +76,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
                 }
                 break;
             case CHANNEL_ALERT:
-                if (command instanceof OnOffType) {
-                    newGroupAction.alert = command == OnOffType.ON ? "alert" : "none";
+                if (command instanceof StringType) {
+                    newGroupAction.alert = command.toString();
                 } else {
                     return;
                 }
@@ -115,6 +109,17 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
                     return;
                 }
                 break;
+            case CHANNEL_SCENE:
+                if (command instanceof StringType) {
+                    String sceneId = scenes.get(command.toString());
+                    if (sceneId != null) {
+                        sendCommand(null, command, channelUID, "scenes/" + sceneId + "/recall", null);
+                    } else {
+                        logger.debug("Ignoring command {} for {}, scene is not found in available scenes: {}", command,
+                                channelUID, scenes);
+                    }
+                }
+                return;
             default:
                 return;
         }
@@ -128,20 +133,16 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
     }
 
     @Override
-    protected @Nullable GroupMessage parseStateResponse(AsyncHttpClient.Result r) {
-        if (r.getResponseCode() == 403) {
-            return null;
-        } else if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), GroupMessage.class);
-        } else {
-            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
-        }
-    }
+    protected void processStateResponse(DeconzBaseMessage stateResponse) {
+        if (stateResponse instanceof GroupMessage) {
+            GroupMessage groupMessage = (GroupMessage) stateResponse;
+            scenes = groupMessage.scenes.stream().collect(Collectors.toMap(scene -> scene.name, scene -> scene.id));
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_SCENE);
+            commandDescriptionProvider.setDescription(channelUID,
+                    CommandDescriptionBuilder.create().withCommandOptions(groupMessage.scenes.stream()
+                            .map(scene -> new CommandOption(scene.name, scene.name)).collect(Collectors.toList()))
+                            .build());
 
-    @Override
-    protected void processStateResponse(@Nullable GroupMessage stateResponse) {
-        if (stateResponse == null) {
-            return;
         }
         messageReceived(config.id, stateResponse);
     }

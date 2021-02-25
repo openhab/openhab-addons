@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,8 +80,6 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
         if (effectiveUID == null) {
             if (DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
                 effectiveUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            } else if (VIRTUAL_THING_TYPES_UIDS.contains(thingTypeUID) && bridgeUID != null) {
-                effectiveUID = new ThingUID(thingTypeUID, bridgeUID.getId());
             }
         }
         return super.createThing(thingTypeUID, configuration, effectiveUID, bridgeUID);

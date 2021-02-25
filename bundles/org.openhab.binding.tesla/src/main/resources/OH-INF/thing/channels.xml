@@ -253,7 +253,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Estimated Battery Range</label>
 		<description>Estimated battery range</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="estimatedrange" advanced="true">
 		<item-type>Number</item-type>

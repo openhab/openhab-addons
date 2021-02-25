@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Lock Thing -->
+	<thing-type id="lock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Lock</label>
+		<description>An access control reader lock configured in the controller.</description>
+		<channels>
+			<channel id="switch" typeId="lock_switch"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Lock Number</label>
+				<description>The lock number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Lock Channels -->
+	<channel-type id="lock_switch">
+		<item-type>Switch</item-type>
+		<label>Lock/Unlock</label>
+		<description>Lock or unlock this lock.</description>
+		<category>Switch</category>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -379,14 +379,8 @@ public class RobonectHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
-        try {
-            if (httpClient != null) {
-                httpClient.stop();
-                httpClient = null;
-            }
-        } catch (Exception e) {
-            logger.debug("Could not stop http client", e);
-        }
+
+        httpClient = null;
     }
 
     /**

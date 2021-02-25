@@ -45,5 +45,17 @@
 			<description>Specifies the timeout in seconds after which the status is got from Tahoma cloud</description>
 			<default>300</default>
 		</parameter>
+
+		<parameter name="retries" type="integer" required="false">
+			<label>Retries</label>
+			<description>Specifies the number of retries when command execution</description>
+			<default>10</default>
+		</parameter>
+
+		<parameter name="retryDelay" type="integer" required="false" min="100">
+			<label>Retry delay</label>
+			<description>Specifies the delay in milliseconds between subsequent retries after a command failure</description>
+			<default>1000</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

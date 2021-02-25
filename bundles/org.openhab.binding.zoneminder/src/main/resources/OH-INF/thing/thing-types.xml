@@ -73,6 +73,9 @@
 			<channel id="eventAlarmFrames" typeId="eventAlarmFrames"/>
 			<channel id="eventLength" typeId="eventLength"/>
 		</channels>
+
+		<representation-property>monitorId</representation-property>
+
 		<config-description-ref uri="thing-type:zoneminder:monitor"/>
 	</thing-type>
 

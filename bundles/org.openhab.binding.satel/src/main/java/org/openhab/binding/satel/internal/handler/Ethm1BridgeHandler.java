@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,11 +19,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.config.Ethm1Config;
 import org.openhab.binding.satel.internal.protocol.Ethm1Module;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
+import org.openhab.binding.satel.internal.util.StringUtils;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;

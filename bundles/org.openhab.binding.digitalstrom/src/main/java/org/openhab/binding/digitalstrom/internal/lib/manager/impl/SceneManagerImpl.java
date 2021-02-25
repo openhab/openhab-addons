@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -286,13 +286,16 @@ public class SceneManagerImpl implements SceneManager {
             }
         } else {
             InternalScene oldScene = this.internalSceneMap.get(intScene.getID());
-            String oldSceneName = this.internalSceneMap.get(intScene.getID()).getSceneName();
-            String newSceneName = intScene.getSceneName();
-            if ((oldSceneName.contains("Zone:") && oldSceneName.contains("Group:") && oldSceneName.contains("Scene:"))
-                    && !(newSceneName.contains("Zone:") && newSceneName.contains("Group:")
-                            && newSceneName.contains("Scene:"))) {
-                oldScene.setSceneName(newSceneName);
-                this.discovery.sceneDiscoverd(oldScene);
+            if (oldScene != null) {
+                String oldSceneName = oldScene.getSceneName();
+                String newSceneName = intScene.getSceneName();
+                if ((oldSceneName.contains("Zone:") && oldSceneName.contains("Group:")
+                        && oldSceneName.contains("Scene:"))
+                        && !(newSceneName.contains("Zone:") && newSceneName.contains("Group:")
+                                && newSceneName.contains("Scene:"))) {
+                    oldScene.setSceneName(newSceneName);
+                    this.discovery.sceneDiscoverd(oldScene);
+                }
             }
         }
     }

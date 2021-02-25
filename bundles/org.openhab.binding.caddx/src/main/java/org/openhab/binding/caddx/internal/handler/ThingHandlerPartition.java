@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,22 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
+import org.openhab.binding.caddx.internal.action.CaddxPartitionActions;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -110,5 +115,136 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(CaddxPartitionActions.class);
+    }
+
+    private void sendPrimaryCommand(String pin, String function) {
+        String cmd = CaddxBindingConstants.PARTITION_PRIMARY_COMMAND_WITH_PIN;
+
+        // Build the data
+        StringBuilder sb = new StringBuilder();
+        sb.append("0x").append(pin.charAt(1)).append(pin.charAt(0)).append(",0x").append(pin.charAt(3))
+                .append(pin.charAt(2)).append(",0x").append(pin.charAt(5)).append(pin.charAt(4)).append(",")
+                .append(function).append(",").append(Integer.toString(1 << getPartitionNumber() - 1));
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        bridgeHandler.sendCommand(cmd, sb.toString());
+    }
+
+    private void sendSecondaryCommand(String function) {
+        String cmd = CaddxBindingConstants.PARTITION_SECONDARY_COMMAND;
+
+        // Build the data
+        StringBuilder sb = new StringBuilder();
+        sb.append(function).append(",").append(Integer.toString(1 << getPartitionNumber() - 1));
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        bridgeHandler.sendCommand(cmd, sb.toString());
+    }
+
+    public void turnOffAnySounderOrAlarm(String pin) {
+        sendPrimaryCommand(pin, "0");
+    }
+
+    public void disarm(String pin) {
+        sendPrimaryCommand(pin, "1");
+    }
+
+    public void armInAwayMode(String pin) {
+        sendPrimaryCommand(pin, "2");
+    }
+
+    public void armInStayMode(String pin) {
+        sendPrimaryCommand(pin, "3");
+    }
+
+    public void cancel(String pin) {
+        sendPrimaryCommand(pin, "4");
+    }
+
+    public void initiateAutoArm(String pin) {
+        sendPrimaryCommand(pin, "5");
+    }
+
+    public void startWalkTestMode(String pin) {
+        sendPrimaryCommand(pin, "6");
+    }
+
+    public void stopWalkTestMode(String pin) {
+        sendPrimaryCommand(pin, "7");
+    }
+
+    public void stay() {
+        sendSecondaryCommand("0");
+    }
+
+    public void chime() {
+        sendSecondaryCommand("1");
+    }
+
+    public void exit() {
+        sendSecondaryCommand("2");
+    }
+
+    public void bypassInteriors() {
+        sendSecondaryCommand("3");
+    }
+
+    public void firePanic() {
+        sendSecondaryCommand("4");
+    }
+
+    public void medicalPanic() {
+        sendSecondaryCommand("5");
+    }
+
+    public void policePanic() {
+        sendSecondaryCommand("6");
+    }
+
+    public void smokeDetectorReset() {
+        sendSecondaryCommand("7");
+    }
+
+    public void autoCallbackDownload() {
+        sendSecondaryCommand("8");
+    }
+
+    public void manualPickupDownload() {
+        sendSecondaryCommand("9");
+    }
+
+    public void enableSilentExit() {
+        sendSecondaryCommand("10");
+    }
+
+    public void performTest() {
+        sendSecondaryCommand("11");
+    }
+
+    public void groupBypass() {
+        sendSecondaryCommand("12");
+    }
+
+    public void auxiliaryFunction1() {
+        sendSecondaryCommand("13");
+    }
+
+    public void auxiliaryFunction2() {
+        sendSecondaryCommand("14");
+    }
+
+    public void startKeypadSounder() {
+        sendSecondaryCommand("15");
     }
 }

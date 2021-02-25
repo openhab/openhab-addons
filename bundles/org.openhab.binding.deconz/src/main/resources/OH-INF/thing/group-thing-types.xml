@@ -14,20 +14,15 @@
 			<channel typeId="all_on" id="all_on"/>
 			<channel typeId="any_on" id="any_on"/>
 			<channel typeId="alert" id="alert"/>
-			<channel typeId="color" id="color"/>
+			<channel typeId="system.color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="scene" id="scene"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
-
-	<channel-type id="alert">
-		<item-type>Switch</item-type>
-		<label>Alert</label>
-		<category>Alarm</category>
-	</channel-type>
 
 	<channel-type id="all_on">
 		<item-type>Switch</item-type>
@@ -49,22 +44,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<category>Colorpicker</category>
+	<channel-type id="scene">
+		<item-type>String</item-type>
+		<label>Recall Scene</label>
 		<tags>
 			<tag>Lighting</tag>
 		</tags>
-	</channel-type>
-
-	<channel-type id="ct">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-		<state pattern="%d K" min="15" max="100000" step="100"/>
 	</channel-type>
 
 </thing:thing-descriptions>

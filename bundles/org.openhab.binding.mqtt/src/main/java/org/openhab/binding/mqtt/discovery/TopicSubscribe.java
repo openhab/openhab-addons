@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,8 +53,9 @@ public class TopicSubscribe implements MqttMessageSubscriber {
     @Override
     public void processMessage(String topic, byte[] payload) {
         final MqttBrokerConnection connection = this.connection;
-        if (connection == null)
+        if (connection == null) {
             return;
+        }
         if (payload.length > 0) {
             topicDiscoveredListener.receivedMessage(thing, connection, topic, payload);
         } else {
@@ -80,7 +81,8 @@ public class TopicSubscribe implements MqttMessageSubscriber {
      * @return Completes with true if successful. Exceptionally otherwise.
      */
     public CompletableFuture<Boolean> stop() {
-        CompletableFuture<Boolean> stopFuture = connection == null ? CompletableFuture.completedFuture(true)
+        CompletableFuture<Boolean> stopFuture = connection == null || !isStarted
+                ? CompletableFuture.completedFuture(true)
                 : connection.unsubscribe(topic, this);
         isStarted = false;
         return stopFuture;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PercentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Util} class defines common utility methods
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Util {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
 
     public static String buildUrl(String host, int port, String... urlParts) {
         StringBuilder url = new StringBuilder();

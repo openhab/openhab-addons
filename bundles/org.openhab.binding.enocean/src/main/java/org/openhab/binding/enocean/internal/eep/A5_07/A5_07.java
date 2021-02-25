@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,9 +53,6 @@ public abstract class A5_07 extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (!isValid()) {
-            return UnDefType.UNDEF;
-        }
 
         if (channelId.equals(CHANNEL_ILLUMINATION)) {
             return getIllumination();

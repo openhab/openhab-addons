@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonMusicProvider {
     public @Nullable String displayName;
-    public @Nullable List<Object> @Nullable [] supportedTriggers;
+    public List<Object> @Nullable [] supportedTriggers;
     public @Nullable String icon;
     public @Nullable List<String> supportedProperties;
     public @Nullable String id;

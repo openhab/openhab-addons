@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,8 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 
 /**
@@ -64,12 +65,12 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider,
         return channelTypeUID;
     }
 
-    private void createChannelType(StateDescription state) {
+    private void createChannelType(StateDescriptionFragment state) {
         channelType = ChannelTypeBuilder.state(channelTypeUID, "Input source", "String")
-                .withDescription("Select the input source of the AVR").withStateDescription(state).build();
+                .withDescription("Select the input source of the AVR").withStateDescriptionFragment(state).build();
     }
 
-    private StateDescription getDefaultStateDescription() {
+    private StateDescriptionFragment getDefaultStateDescription() {
         List<StateOption> options = new ArrayList<>();
         options.add(new StateOption(INPUT_NET_RADIO, "Net Radio"));
         options.add(new StateOption(INPUT_PC, "PC"));
@@ -110,8 +111,8 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider,
         options.add(new StateOption(INPUT_PANDORA, "Pandora"));
         options.add(new StateOption(INPUT_NAPSTER, "Napster"));
         options.add(new StateOption(INPUT_SPOTIFY, "Spotify"));
-        StateDescription state = new StateDescription(null, null, null, "%s", false, options);
-        return state;
+        return StateDescriptionFragmentBuilder.create().withPattern("%s").withReadOnly(false).withOptions(options)
+                .build();
     }
 
     public void changeAvailableInputs(Map<String, String> availableInputs) {
@@ -119,7 +120,8 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider,
         for (Entry<String, String> inputEntry : availableInputs.entrySet()) {
             options.add(new StateOption(inputEntry.getKey(), inputEntry.getValue()));
         }
-        createChannelType(new StateDescription(null, null, null, "%s", false, options));
+        createChannelType(StateDescriptionFragmentBuilder.create().withPattern("%s").withReadOnly(false)
+                .withOptions(options).build());
     }
 
     @NonNullByDefault({})

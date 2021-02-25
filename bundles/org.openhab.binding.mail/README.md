@@ -25,9 +25,9 @@ If one or both are empty, no authentication data is provided to the SMTP server 
 
 ### IMAP Server (`imap`) / POP3 Server (`pop3`)
 
-There is one mandatory parameter: `hostname`, `username`, `password`.
+There is one mandatory parameter: `hostname`.
 The `hostname` may contain an IP address or a FQDN like `mail.gmail.com`.
-For authentication `username` and `password` need to be supplied.
+For authentication `username` and `password` also need to be supplied.
 
 The `refresh`, `security`, `port`, `username` and `password` parameters are optional.
 

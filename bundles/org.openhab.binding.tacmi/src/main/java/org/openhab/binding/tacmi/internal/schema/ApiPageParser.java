@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -469,8 +469,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     }
                     ChannelType ct = ChannelTypeBuilder
                             .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)
-                            .withDescription("Auto-created for " + shortName)
-                            .withStateDescription(sdb.build().toStateDescription()).build();
+                            .withDescription("Auto-created for " + shortName).withStateDescriptionFragment(sdb.build())
+                            .build();
                     channelTypeProvider.addChannelType(ct);
                     channelBuilder.withType(ct.getUID());
                 } else {

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Unit Thing -->
+	<thing-type id="unit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Unit</label>
+		<description>A basic unit configured in the controller.</description>
+		<channels>
+			<channel id="level" typeId="unit_level"/>
+			<channel id="switch" typeId="unit_switch"/>
+			<channel id="on_for_seconds" typeId="on_for_seconds"/>
+			<channel id="off_for_seconds" typeId="off_for_seconds"/>
+			<channel id="on_for_minutes" typeId="on_for_minutes"/>
+			<channel id="off_for_minutes" typeId="off_for_minutes"/>
+			<channel id="on_for_hours" typeId="on_for_hours"/>
+			<channel id="off_for_hours" typeId="off_for_hours"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Unit Number</label>
+				<description>The unit number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Dimmable Thing -->
+	<thing-type id="dimmable">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Dimmable Unit</label>
+		<description>A dimmable unit configured in the controller.</description>
+		<channels>
+			<channel id="level" typeId="unit_level"/>
+			<channel id="switch" typeId="unit_switch"/>
+			<channel id="on_for_seconds" typeId="on_for_seconds"/>
+			<channel id="off_for_seconds" typeId="off_for_seconds"/>
+			<channel id="on_for_minutes" typeId="on_for_minutes"/>
+			<channel id="off_for_minutes" typeId="off_for_minutes"/>
+			<channel id="on_for_hours" typeId="on_for_hours"/>
+			<channel id="off_for_hours" typeId="off_for_hours"/>
+			<channel id="switch_press_event" typeId="switch_press_event"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Dimmable Unit Number</label>
+				<description>The dimmable unit number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- UPB Thing -->
+	<thing-type id="upb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>UPB Unit</label>
+		<description>A UPB unit configured in the controller.</description>
+		<channels>
+			<channel id="level" typeId="unit_level"/>
+			<channel id="switch" typeId="unit_switch"/>
+			<channel id="on_for_seconds" typeId="on_for_seconds"/>
+			<channel id="off_for_seconds" typeId="off_for_seconds"/>
+			<channel id="on_for_minutes" typeId="on_for_minutes"/>
+			<channel id="off_for_minutes" typeId="off_for_minutes"/>
+			<channel id="on_for_hours" typeId="on_for_hours"/>
+			<channel id="off_for_hours" typeId="off_for_hours"/>
+			<channel id="upb_status" typeId="upb_status"/>
+			<channel id="switch_press_event" typeId="switch_press_event"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>UPB Unit Number</label>
+				<description>The UPB unit number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Flag Thing -->
+	<thing-type id="flag">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Flag</label>
+		<description>A flag configured in the controller.</description>
+		<channels>
+			<channel id="value" typeId="flag_value"/>
+			<channel id="switch" typeId="flag_switch"/>
+			<channel id="on_for_seconds" typeId="on_for_seconds"/>
+			<channel id="off_for_seconds" typeId="off_for_seconds"/>
+			<channel id="on_for_minutes" typeId="on_for_minutes"/>
+			<channel id="off_for_minutes" typeId="off_for_minutes"/>
+			<channel id="on_for_hours" typeId="on_for_hours"/>
+			<channel id="off_for_hours" typeId="off_for_hours"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Flag Number</label>
+				<description>The flag number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Output Thing -->
+	<thing-type id="output">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Voltage Output</label>
+		<description>A voltage output configured in the controller.</description>
+		<channels>
+			<channel id="switch" typeId="unit_switch"/>
+			<channel id="on_for_seconds" typeId="on_for_seconds"/>
+			<channel id="off_for_seconds" typeId="off_for_seconds"/>
+			<channel id="on_for_minutes" typeId="on_for_minutes"/>
+			<channel id="off_for_minutes" typeId="off_for_minutes"/>
+			<channel id="on_for_hours" typeId="on_for_hours"/>
+			<channel id="off_for_hours" typeId="off_for_hours"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Voltage Output Number</label>
+				<description>The voltage output number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Room Thing -->
+	<thing-type id="room">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Room</label>
+		<description>A room configured in the controller.</description>
+		<channels>
+			<channel id="switch" typeId="room_switch"/>
+			<channel id="scene_a" typeId="scene_toggle">
+				<label>Scene A</label>
+			</channel>
+			<channel id="scene_b" typeId="scene_toggle">
+				<label>Scene B</label>
+			</channel>
+			<channel id="scene_c" typeId="scene_toggle">
+				<label>Scene C</label>
+			</channel>
+			<channel id="scene_d" typeId="scene_toggle">
+				<label>Scene D</label>
+			</channel>
+			<channel id="state" typeId="room_state"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Room Number</label>
+				<description>The room number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Unit channels -->
+	<channel-type id="unit_level">
+		<item-type>Dimmer</item-type>
+		<label>Unit Level</label>
+		<description>Increase/Decrease the level of this unit.</description>
+		<category>Slider</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="unit_switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Turn this unit on/off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="on_for_seconds">
+		<item-type>Number</item-type>
+		<label>On for Seconds</label>
+		<description>Turn on this unit for a specified number of seconds.</description>
+		<category>Switch</category>
+		<state min="1" max="99"/>
+	</channel-type>
+
+	<channel-type id="off_for_seconds">
+		<item-type>Number</item-type>
+		<label>Off for Seconds</label>
+		<description>Turn off this unit for a specified number of seconds.</description>
+		<category>Switch</category>
+		<state min="1" max="99"/>
+	</channel-type>
+
+	<channel-type id="on_for_minutes">
+		<item-type>Number</item-type>
+		<label>On for Minutes</label>
+		<description>Turn on this unit for a specified number of minutes.</description>
+		<category>Switch</category>
+		<state min="1" max="99"/>
+	</channel-type>
+
+	<channel-type id="off_for_minutes">
+		<item-type>Number</item-type>
+		<label>Off for Minutes</label>
+		<description>Turn off this unit for a specified number of minutes.</description>
+		<category>Switch</category>
+		<state min="1" max="99"/>
+	</channel-type>
+
+	<channel-type id="on_for_hours">
+		<item-type>Number</item-type>
+		<label>On for Hours</label>
+		<description>Turn on this unit for a specified number of hours.</description>
+		<category>Switch</category>
+		<state min="1" max="18"/>
+	</channel-type>
+
+	<channel-type id="off_for_hours">
+		<item-type>Number</item-type>
+		<label>Off for Hours</label>
+		<description>Turn off this unit for a specified number of hours.</description>
+		<category>Switch</category>
+		<state min="1" max="18"/>
+	</channel-type>
+
+	<channel-type id="upb_status">
+		<item-type>String</item-type>
+		<label>UPB Status</label>
+		<description>Send a UPB status request message for this unit to the controller.</description>
+		<category>Status</category>
+		<command>
+			<options>
+				<option value="GET STATUS">Get Status</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="room_switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Turn this room on/off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="scene_toggle">
+		<item-type>Switch</item-type>
+		<label>Scene Toggle</label>
+		<description>Turn this scene on/off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="room_state">
+		<item-type>Number</item-type>
+		<label>State</label>
+		<description>The current state of this room.</description>
+		<category>Switch</category>
+		<state pattern="%d">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+				<option value="2">Scene A</option>
+				<option value="3">Scene B</option>
+				<option value="4">Scene C</option>
+				<option value="5">Scene D</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="flag_value">
+		<item-type>Number</item-type>
+		<label>Flag Value</label>
+		<description>Numeric value of this flag.</description>
+		<category>Number</category>
+		<state min="0" max="255" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="flag_switch">
+		<item-type>Switch</item-type>
+		<label>Flag Switch</label>
+		<description>Turn this flag on/off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="switch_press_event">
+		<kind>trigger</kind>
+		<label>Switch Press Event</label>
+		<description>Event sent when an ALC, UPB, Radio RA, or Starlite switch is pressed.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

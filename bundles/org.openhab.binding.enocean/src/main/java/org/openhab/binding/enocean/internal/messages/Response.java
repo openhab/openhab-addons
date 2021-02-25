@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class Response extends BasePacket {
     protected ResponseType responseType;
     protected boolean _isValid = false;
 
-    protected Response(int dataLength, int optionalDataLength, byte[] payload) {
+    public Response(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, ESPPacketType.RESPONSE, payload);
 
         try {

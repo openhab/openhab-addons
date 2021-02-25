@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal.handler;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -592,8 +591,8 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             logger.trace("Sending camera: {}: http://{}:{}{}", httpMethod, cameraConfig.getIp(), port,
                                     httpRequestURL);
-                            channelTrackingMap.put(httpRequestURL, new ChannelTracking(ch, httpRequestURL));
 
+                            openChannel(ch, httpRequestURL);
                             CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get(COMMON_HANDLER);
                             commonHandler.setURL(httpRequestURLFull);
                             MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(AUTH_HANDLER);
@@ -693,6 +692,13 @@ public class IpCameraHandler extends BaseThingHandler {
             } catch (Exception e) {
                 cameraConfigError("Exception when starting server. Try changing the Server Port to another number.");
             }
+            if (thing.getThingTypeUID().getId().equals(INSTAR_THING)) {
+                logger.debug("Setting up the Alarm Server settings in the camera now");
+                sendHttpGET(
+                        "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
+                                + hostIp + "&-as_port=" + cameraConfig.getServerPort()
+                                + "&-as_path=/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
+            }
         }
     }
 
@@ -774,6 +780,15 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    void openChannel(Channel channel, String httpRequestURL) {
+        ChannelTracking tracker = channelTrackingMap.get(httpRequestURL);
+        if (tracker != null && !tracker.getReply().isEmpty()) {// We need to keep the stored reply
+            tracker.setChannel(channel);
+            return;
+        }
+        channelTrackingMap.put(httpRequestURL, new ChannelTracking(channel, httpRequestURL));
     }
 
     void closeChannel(String url) {
@@ -1406,9 +1421,22 @@ public class IpCameraHandler extends BaseThingHandler {
             localFuture.cancel(false);
         }
 
+        switch (thing.getThingTypeUID().getId()) {
+            case HIKVISION_THING:
+                sendHttpGET("/ISAPI/Smart/AudioDetection/channels/" + cameraConfig.getNvrChannel() + "01");
+                sendHttpGET("/ISAPI/Smart/LineDetection/" + cameraConfig.getNvrChannel() + "01");
+                sendHttpGET("/ISAPI/Smart/FieldDetection/" + cameraConfig.getNvrChannel() + "01");
+                sendHttpGET(
+                        "/ISAPI/System/Video/inputs/channels/" + cameraConfig.getNvrChannel() + "01/motionDetection");
+                sendHttpGET("/ISAPI/System/Video/inputs/channels/" + cameraConfig.getNvrChannel() + "/overlays/text/1");
+                sendHttpGET("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel());
+                sendHttpGET("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel());
+                break;
+        }
+
         if (cameraConfig.getGifPreroll() > 0 || cameraConfig.getUpdateImageWhen().contains("1")) {
             snapshotPolling = true;
-            snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 1000, cameraConfig.getPollTime(),
+            snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 1000, cameraConfig.getPollTime(),
                     TimeUnit.MILLISECONDS);
         }
 
@@ -1531,11 +1559,11 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         if (streamingSnapshotMjpeg || streamingAutoFps) {
             snapshotPolling = true;
-            snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
+            snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
                     TimeUnit.MILLISECONDS);
         } else if (cameraConfig.getUpdateImageWhen().contains("4")) { // During Motion Alarms
             snapshotPolling = true;
-            snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
+            snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
                     TimeUnit.MILLISECONDS);
         }
     }
@@ -1603,6 +1631,10 @@ public class IpCameraHandler extends BaseThingHandler {
                             cameraConfig.getIp());
                     sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
                 }
+                break;
+            case FOSCAM_THING:
+                sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=getDevState&usr=" + cameraConfig.getUser() + "&pwd="
+                        + cameraConfig.getPassword());
                 break;
         }
         Ffmpeg localHLS = ffmpegHLS;
@@ -1741,6 +1773,7 @@ public class IpCameraHandler extends BaseThingHandler {
         Ffmpeg localFfmpeg = ffmpegHLS;
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
+            localFfmpeg = null;
         }
         localFfmpeg = ffmpegRecord;
         if (localFfmpeg != null) {

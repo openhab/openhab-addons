@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,16 +105,11 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
         }
 
-        try {
-            for (Channel channel : thing.getChannels()) {
-                TriggerProcessor processor = createTriggerProcessor(channel);
-                if (processor != null) {
-                    triggerProcessors.add(processor);
-                }
+        for (Channel channel : thing.getChannels()) {
+            TriggerProcessor processor = createTriggerProcessor(channel);
+            if (processor != null) {
+                triggerProcessors.add(processor);
             }
-        } catch (RuntimeException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
         }
 
         logger.debug("Trigger channels for {} = {}", thing.getUID(), triggerProcessors);
@@ -153,6 +148,7 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             if (pcLink != null) {
                 pcLink.sendCommand(new NikobusCommand(getAddress() + END_OF_TRANSMISSION));
             }
+            processImpactedModules();
         }
     }
 
@@ -168,6 +164,10 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             triggerProcessors.forEach(processor -> processor.process(currentTimeMillis));
         }
 
+        processImpactedModules();
+    }
+
+    private void processImpactedModules() {
         if (!impactedModules.isEmpty()) {
             Utils.cancel(requestUpdateFuture);
             requestUpdateFuture = scheduler.schedule(this::update, 400, TimeUnit.MILLISECONDS);

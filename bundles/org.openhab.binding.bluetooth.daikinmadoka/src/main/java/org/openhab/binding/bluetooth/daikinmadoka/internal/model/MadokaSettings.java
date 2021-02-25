@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 
 /**
  * This class contains the current state of the controllerw
@@ -30,10 +34,10 @@ public class MadokaSettings {
 
     private @Nullable OnOffType onOffState;
 
-    private @Nullable DecimalType setpoint;
+    private @Nullable QuantityType<Temperature> setpoint;
 
-    private @Nullable DecimalType indoorTemperature;
-    private @Nullable DecimalType outdoorTemperature;
+    private @Nullable QuantityType<Temperature> indoorTemperature;
+    private @Nullable QuantityType<Temperature> outdoorTemperature;
 
     private @Nullable FanSpeed fanspeed;
 
@@ -45,6 +49,21 @@ public class MadokaSettings {
     private @Nullable String communicationControllerVersion;
     private @Nullable String remoteControllerVersion;
 
+    private @Nullable PercentType eyeBrightness;
+    private @Nullable QuantityType<Time> indoorPowerHours;
+    private @Nullable QuantityType<Time> indoorOperationHours;
+    private @Nullable QuantityType<Time> indoorFanHours;
+
+    private @Nullable Boolean cleanFilterIndicator;
+
+    public @Nullable Boolean getCleanFilterIndicator() {
+        return cleanFilterIndicator;
+    }
+
+    public void setCleanFilterIndicator(Boolean cleanFilterIndicator) {
+        this.cleanFilterIndicator = cleanFilterIndicator;
+    }
+
     public @Nullable OnOffType getOnOffState() {
         return onOffState;
     }
@@ -53,27 +72,27 @@ public class MadokaSettings {
         this.onOffState = onOffState;
     }
 
-    public @Nullable DecimalType getSetpoint() {
+    public @Nullable QuantityType<Temperature> getSetpoint() {
         return setpoint;
     }
 
-    public void setSetpoint(DecimalType setpoint) {
+    public void setSetpoint(QuantityType<Temperature> setpoint) {
         this.setpoint = setpoint;
     }
 
-    public @Nullable DecimalType getIndoorTemperature() {
+    public @Nullable QuantityType<Temperature> getIndoorTemperature() {
         return indoorTemperature;
     }
 
-    public void setIndoorTemperature(DecimalType indoorTemperature) {
+    public void setIndoorTemperature(QuantityType<Temperature> indoorTemperature) {
         this.indoorTemperature = indoorTemperature;
     }
 
-    public @Nullable DecimalType getOutdoorTemperature() {
+    public @Nullable QuantityType<Temperature> getOutdoorTemperature() {
         return outdoorTemperature;
     }
 
-    public void setOutdoorTemperature(DecimalType outdoorTemperature) {
+    public void setOutdoorTemperature(QuantityType<Temperature> outdoorTemperature) {
         this.outdoorTemperature = outdoorTemperature;
     }
 
@@ -123,5 +142,37 @@ public class MadokaSettings {
 
     public void setRemoteControllerVersion(String remoteControllerVersion) {
         this.remoteControllerVersion = remoteControllerVersion;
+    }
+
+    public @Nullable PercentType getEyeBrightness() {
+        return eyeBrightness;
+    }
+
+    public void setEyeBrightness(PercentType eyeBrightness) {
+        this.eyeBrightness = eyeBrightness;
+    }
+
+    public @Nullable QuantityType<Time> getIndoorPowerHours() {
+        return indoorPowerHours;
+    }
+
+    public void setIndoorPowerHours(QuantityType<Time> indoorPowerHours) {
+        this.indoorPowerHours = indoorPowerHours;
+    }
+
+    public @Nullable QuantityType<Time> getIndoorOperationHours() {
+        return indoorOperationHours;
+    }
+
+    public void setIndoorOperationHours(QuantityType<Time> indoorOperationHours) {
+        this.indoorOperationHours = indoorOperationHours;
+    }
+
+    public @Nullable QuantityType<Time> getIndoorFanHours() {
+        return indoorFanHours;
+    }
+
+    public void setIndoorFanHours(QuantityType<Time> indoorFanHours) {
+        this.indoorFanHours = indoorFanHours;
     }
 }

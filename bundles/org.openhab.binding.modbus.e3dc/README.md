@@ -2,12 +2,12 @@
 
 <img align="right" src="./doc/E3DC_logo.png"/>
 
-Integrates the Home Power Plants from E3/DC GmbH into openHAB. See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
+Integrates the Home Power Plants from E3/DC GmbH into openHAB. 
+See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
 The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
 E3DC devices are integrated into the Modbus Binding. 
 
 See chapter [Thing Configuration](#thing-configuration) how to set them up or check the [full example Things](#things) for manual setup. 
-
 
 ## Supported Things
 
@@ -21,12 +21,12 @@ First you need a Bridge which establishes the basic connection towards your E3DC
 
 ## Discovery
 
-There's no discovery. Modbus registers are available for all devices. 
-
+There's no discovery. 
+Modbus registers are available for all devices. 
 
 ## Thing Configuration
 
-As mentioned earlier in the [Binding Description](#e3dc-binding) the needed Things can be found in the **Modbus Binding** and have to be added manually without Discovery
+The needed Things can be found in the **Modbus Binding** and have to be added manually without Discovery
 
 <img align="right" src="./doc/E3DC_Modbus_Settings.png"/>
 
@@ -151,7 +151,8 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 
 ## Full Example
 
-Following example provides the full configuration. If you enter the correct Connection Data, IP Address, Device ID and Port number in the thing configuration you should be fine.
+Following example provides the full configuration. 
+If you enter the correct Connection Data, IP Address, Device ID and Port number in the thing configuration you should be fine.
 
 ### Things
 
@@ -306,8 +307,9 @@ Setup and configured everything the right way? Congratulations, you've now the r
 
 ### Persistence
 
-You can see in the example item configuration, that I added some items to the "persist". Feel free to choose your own group name but this opens the possibility 
-to store the items in a database. See following *.persist file configuration how this can be established.
+You can see in the example item configuration, that I added some items to the "persist". 
+Feel free to choose your own group name but this opens the possibility to store the items in a database. 
+See following *.persist file configuration how this can be established.
 
 ```
 Strategies {
@@ -325,8 +327,8 @@ Items {
 
 ### Visualization 
 
-After the timeline is available in your database you can continue with Visualization. I like the Grafana approach and I used the
-[InfluxDB & Grafana Tutorial](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
+After the timeline is available in your database you can continue with Visualization. 
+I like the Grafana approach and I used the [InfluxDB & Grafana Tutorial](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
 from the Community to set this up.
 I prepared my machine and I'm quite pleased with the results.
 
@@ -343,10 +345,11 @@ In the above picture there are two graphs
 
 ### Cross Connections 
 
-With the above setup you have now a great visualization and overview regarding your electric production and consumption. Now use the Power of openHAB and cross
-connect your data. For example you can use the 
-[OpenweatherMap API Binding](https://www.openhab.org/addons/bindings/openweathermap/)
-the cloudiness in Percent. With a modified *.persist file I store the cloudiness forecast also in the database
+With the above setup you have now a great visualization and overview regarding your electric production and consumption. 
+Now use the Power of openHAB and cross connect your data. 
+For example you can use the [OpenweatherMap API Binding](https://www.openhab.org/addons/bindings/openweathermap/)
+the cloudiness in Percent. 
+With a modified *.persist file I store the cloudiness forecast also in the database
 
 ```
 Strategies {
@@ -367,5 +370,4 @@ Having these values in the timeline you're able to cross check how the forecast 
 
 <img style="float: right;" src="doc/GrafanaCloudiness.png">
 
-I personally would like to have
-more steering control of the E3DC to react on such forecast e.g. "stop charging the car if it gets too cloudy"
+I personally would like to have more steering control of the E3DC to react on such forecast e.g. "stop charging the car if it gets too cloudy"

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,8 @@ public class ShellyApiException extends Exception {
     public boolean isTimeout() {
         Class<?> extype = !isEmpty() ? getCauseClass() : null;
         return (extype != null) && ((extype == TimeoutException.class) || (extype == ExecutionException.class)
-                || (extype == InterruptedException.class) || getMessage().toLowerCase().contains("timeout"));
+                || (extype == InterruptedException.class)
+                || nonNullString(getMessage()).toLowerCase().contains("timeout"));
     }
 
     public boolean isHttpAccessUnauthorized() {
@@ -125,7 +126,7 @@ public class ShellyApiException extends Exception {
 
     private Class<?> getCauseClass() {
         Throwable cause = getCause();
-        if (getCause() != null) {
+        if (cause != null) {
             return cause.getClass();
         }
         return ShellyApiException.class;

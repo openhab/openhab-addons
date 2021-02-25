@@ -113,6 +113,7 @@
 			<property name="vendor">Siemens</property>
 			<property name="modelId">RDS</property>
 		</properties>
+		<representation-property>plantId</representation-property>
 
 		<config-description>
 			<parameter name="plantId" type="text" required="true">

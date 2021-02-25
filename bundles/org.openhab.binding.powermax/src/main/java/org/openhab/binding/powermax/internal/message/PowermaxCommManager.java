@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.binding.powermax.internal.state.PowermaxStateEvent;
 import org.openhab.binding.powermax.internal.state.PowermaxStateEventListener;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
@@ -68,6 +69,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
     private boolean forceStandardMode;
     private boolean autoSyncTime;
+    private final TimeZoneProvider timeZoneProvider;
 
     private List<PowermaxStateEventListener> listeners = new ArrayList<>();
 
@@ -100,10 +102,12 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param threadName the prefix name of threads to be created
      */
     public PowermaxCommManager(String sPort, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime, SerialPortManager serialPortManager, String threadName) {
+            boolean autoSyncTime, SerialPortManager serialPortManager, String threadName,
+            TimeZoneProvider timeZoneProvider) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
+        this.timeZoneProvider = timeZoneProvider;
         this.panelSettings = new PowermaxPanelSettings(panelType);
         this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
         String serialPort = (sPort != null && !sPort.trim().isEmpty()) ? sPort.trim() : null;
@@ -127,10 +131,11 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param threadName the prefix name of threads to be created
      */
     public PowermaxCommManager(String ip, int port, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime, String threadName) {
+            boolean autoSyncTime, String threadName, TimeZoneProvider timeZoneProvider) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
+        this.timeZoneProvider = timeZoneProvider;
         this.panelSettings = new PowermaxPanelSettings(panelType);
         this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
         String ipAddress = (ip != null && !ip.trim().isEmpty()) ? ip.trim() : null;
@@ -171,13 +176,12 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      *
      * @return true if connected or false if not
      */
-    public boolean open() {
+    public void open() throws Exception {
         if (connector != null) {
             connector.open();
         }
         lastSendMsg = null;
         msgQueue = new ConcurrentLinkedQueue<>();
-        return isConnected();
     }
 
     /**
@@ -223,7 +227,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @return a new instance of PowermaxState
      */
     public PowermaxState createNewState() {
-        return new PowermaxState(panelSettings);
+        return new PowermaxState(panelSettings, timeZoneProvider);
     }
 
     /**
@@ -239,7 +243,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         PowermaxBaseMessage message = messageEvent.getMessage();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("onNewMessageReceived(): received message {}",
+            logger.debug("onNewMessageReceived(): received message 0x{} ({})",
+                    HexUtils.bytesToHex(message.getRawData()),
                     (message.getReceiveType() != null) ? message.getReceiveType()
                             : String.format("%02X", message.getCode()));
         }
@@ -249,28 +254,37 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         }
 
         PowermaxState updateState = message.handleMessage(this);
-        if (updateState != null) {
-            if (updateState.getUpdateSettings() != null) {
-                panelSettings.updateRawSettings(updateState.getUpdateSettings());
-            }
-            if (!updateState.getUpdatedZoneNames().isEmpty()) {
-                for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
-                    panelSettings.updateZoneName(zoneIdx, updateState.getUpdatedZoneNames().get(zoneIdx));
-                }
-            }
-            if (!updateState.getUpdatedZoneInfos().isEmpty()) {
-                for (Integer zoneIdx : updateState.getUpdatedZoneInfos().keySet()) {
-                    panelSettings.updateZoneInfo(zoneIdx, updateState.getUpdatedZoneInfos().get(zoneIdx));
-                }
-            }
 
-            PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
+        if (updateState == null) {
+            updateState = createNewState();
+        }
 
-            // send message to event listeners
-            for (int i = 0; i < listeners.size(); i++) {
-                listeners.get(i).onNewStateEvent(newEvent);
+        updateState.lastMessageReceived.setValue(System.currentTimeMillis());
+
+        if (updateState.getUpdateSettings() != null) {
+            panelSettings.updateRawSettings(updateState.getUpdateSettings());
+        }
+        if (!updateState.getUpdatedZoneNames().isEmpty()) {
+            for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
+                panelSettings.updateZoneName(zoneIdx, updateState.getUpdatedZoneNames().get(zoneIdx));
             }
         }
+        if (!updateState.getUpdatedZoneInfos().isEmpty()) {
+            for (Integer zoneIdx : updateState.getUpdatedZoneInfos().keySet()) {
+                panelSettings.updateZoneInfo(zoneIdx, updateState.getUpdatedZoneInfos().get(zoneIdx));
+            }
+        }
+
+        PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
+
+        // send message to event listeners
+        listeners.forEach(listener -> listener.onNewStateEvent(newEvent));
+    }
+
+    @Override
+    public void onCommunicationFailure(String message) {
+        close();
+        listeners.forEach(listener -> listener.onCommunicationFailure(message));
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,9 +36,7 @@ public class PowermaxDeniedMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
@@ -52,7 +50,7 @@ public class PowermaxDeniedMessage extends PowermaxBaseMessage {
         } else if (lastSendType == PowermaxSendType.DOWNLOAD) {
             logger.debug("Powermax alarm binding: openHAB Powerlink not enrolled");
             updatedState = commManager.createNewState();
-            updatedState.setPowerlinkMode(false);
+            updatedState.powerlinkMode.setValue(false);
         }
 
         return updatedState;

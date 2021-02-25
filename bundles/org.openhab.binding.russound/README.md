@@ -22,7 +22,7 @@ Although it seems to work a majority of the times, there have been instances whe
 
 ## Device Discovery
 
-The Russound binding does support devices discovery via the Paper UI.
+The Russound binding does support discovery.
 When you start device discovery, the system will scan all network interfaces and **all IP Addresses in the subnet on each interface** looking for a Russound system device.
 If found, the device will be added to the inbox.
 Adding the device will then start a scan of the device to discover all the controllers, sources, and zones attached defined on the device.

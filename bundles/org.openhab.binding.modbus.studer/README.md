@@ -114,6 +114,11 @@ All channels read for a VarioString device
 
 ```
 Bridge modbus:serial:bridge [port="/dev/ttyUSB0",baud=9600,dataBits=8,parity="even",stopBits="1.0",encoding="rtu"]
+..or..
+Bridge modbus:tcp:bridge [host="192.168.178.56", port=502, rtuEncoded=true]
+
+...
+
 Thing modbus:xtender:bridge:xtenderdevice "Xtender" (modbus:serial:modbusbridge) [ slaveAddress=10, refresh=5 ]
 ```
 

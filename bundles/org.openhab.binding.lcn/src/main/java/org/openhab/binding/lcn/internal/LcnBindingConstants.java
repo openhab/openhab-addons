@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.lcn.internal;
+
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -38,6 +40,8 @@ public class LcnBindingConstants {
     public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
     /** Regex for address in PCK protocol */
     public static final String ADDRESS_REGEX = "[:=%]M(?<segId>\\d{3})(?<modId>\\d{3})";
+    public static final Pattern MEASUREMENT_PATTERN_BEFORE_2013 = Pattern
+            .compile(LcnBindingConstants.ADDRESS_REGEX + "\\.(?<value>\\d{5})");
     /** LCN coding for ACK */
     public static final int CODE_ACK = -1;
 }

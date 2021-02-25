@@ -40,6 +40,7 @@
 		<item-type>Rollershutter</item-type>
 		<label>Output</label>
 		<description>Rollershutter Module's Output</description>
+		<config-description-ref uri="rollershutter-module:rollershutter-output:config"/>
 	</channel-type>
 
 </thing:thing-descriptions>

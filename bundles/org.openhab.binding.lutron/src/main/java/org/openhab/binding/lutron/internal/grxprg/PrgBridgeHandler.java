@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         }
 
         final PrgBridgeConfig config = getPrgBridgeConfig();
-        session = new SocketSession(config.getIpAddress(), 23);
+        session = new SocketSession(getThing().getUID().getAsString(), config.getIpAddress(), 23);
 
         protocolHandler = new PrgProtocolHandler(session, new PrgHandlerCallback() {
             @Override

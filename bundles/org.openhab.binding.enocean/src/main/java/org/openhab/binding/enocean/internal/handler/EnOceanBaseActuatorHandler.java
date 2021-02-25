@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,8 @@ package org.openhab.binding.enocean.internal.handler;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +28,7 @@ import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -50,8 +49,9 @@ import org.openhab.core.util.HexUtils;
 public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     // List of thing types which support sending of eep messages
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_CENTRALCOMMAND,
-            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CENTRALCOMMAND,
+            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT,
+            THING_TYPE_HEATRECOVERYVENTILATION);
 
     protected byte[] senderId; // base id of bridge + senderIdOffset, used for sending msg
     protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise the enocean id of the device
@@ -69,8 +69,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
      * @param senderIdOffset to be validated
      * @return true if senderIdOffset is between ]0;128[ and is not used yet
      */
-    private boolean validateSenderIdOffset(int senderIdOffset) {
-        if (senderIdOffset == -1) {
+    private boolean validateSenderIdOffset(Integer senderIdOffset) {
+        if (senderIdOffset == null) {
             return true;
         }
 
@@ -158,26 +158,24 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     }
 
     private boolean initializeIdForSending() {
-        // Generic things are treated as actuator things, however to support also generic sensors one can define a
-        // senderIdOffset of -1
-        // TODO: seperate generic actuators from generic sensors?
-        String thingTypeId = this.getThing().getThingTypeUID().getId();
-        String genericThingTypeId = THING_TYPE_GENERICTHING.getId();
-
-        if (getConfiguration().senderIdOffset == -1 && thingTypeId.equals(genericThingTypeId)) {
-            return true;
-        }
-
         EnOceanBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return false;
         }
 
-        // if senderIdOffset is not set (=> defaults to -1) or set to -1, the next free senderIdOffset is determined
-        if (getConfiguration().senderIdOffset == -1) {
+        // Generic things are treated as actuator things, however to support also generic sensors one can omit
+        // senderIdOffset
+        // TODO: seperate generic actuators from generic sensors?
+        if ((getConfiguration().senderIdOffset == null
+                && THING_TYPE_GENERICTHING.equals(this.getThing().getThingTypeUID()))) {
+            return true;
+        }
+
+        // if senderIdOffset is not set, the next free senderIdOffset is determined
+        if (getConfiguration().senderIdOffset == null) {
             Configuration updateConfig = editConfiguration();
             getConfiguration().senderIdOffset = bridgeHandler.getNextSenderId(thing);
-            if (getConfiguration().senderIdOffset == -1) {
+            if (getConfiguration().senderIdOffset == null) {
                 configurationErrorDescription = "Could not get a free sender Id from Bridge";
                 return false;
             }
@@ -186,12 +184,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         }
 
         byte[] baseId = bridgeHandler.getBaseId();
-        baseId[3] = (byte) ((baseId[3] & 0xFF) + getConfiguration().senderIdOffset);
+        baseId[3] = (byte) ((baseId[3] + getConfiguration().senderIdOffset) & 0xFF);
         this.senderId = baseId;
-
-        this.updateProperty(PROPERTY_ENOCEAN_ID, HexUtils.bytesToHex(this.senderId));
+        this.updateProperty(PROPERTY_SENDINGENOCEAN_ID, HexUtils.bytesToHex(this.senderId));
         bridgeHandler.addSender(getConfiguration().senderIdOffset, thing);
-
         return true;
     }
 
@@ -201,6 +197,22 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             for (Channel channel : this.getThing().getChannels()) {
                 handleCommand(channel.getUID(), RefreshType.REFRESH);
             }
+        }
+    }
+
+    @Override
+    protected void sendRequestResponse() {
+        sendMessage(VIRTUALCHANNEL_SEND_COMMAND, VIRTUALCHANNEL_SEND_COMMAND, OnOffType.ON, null);
+    }
+
+    protected void sendMessage(String channelId, String channelTypeId, Command command, Configuration channelConfig) {
+        EEP eep = EEPFactory.createEEP(sendingEEPType);
+        if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
+                .hasData()) {
+            BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
+                    .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+
+            getBridgeHandler().sendMessage(msg, null);
         }
     }
 
@@ -238,16 +250,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         try {
             Configuration channelConfig = channel.getConfiguration();
-
-            EEP eep = EEPFactory.createEEP(sendingEEPType);
-            if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
-                    .hasData()) {
-                BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
-                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
-
-                getBridgeHandler().sendMessage(msg, null);
-            }
-
+            sendMessage(channelId, channelTypeId, command, channelConfig);
         } catch (IllegalArgumentException e) {
             logger.warn("Exception while sending telegram!", e);
         }
@@ -255,10 +258,15 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     public void handleRemoval() {
-        if (getConfiguration().senderIdOffset > 0) {
-            EnOceanBridgeHandler bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null) {
+
+        EnOceanBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null) {
+            if (getConfiguration().senderIdOffset != null && getConfiguration().senderIdOffset > 0) {
                 bridgeHandler.removeSender(getConfiguration().senderIdOffset);
+            }
+
+            if (bridgeHandler.isSmackClient(this.thing)) {
+                logger.warn("Removing smack client (ThingId: {}) without teach out!", this.thing.getUID().getId());
             }
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConst
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.discovery.DiscoveryServiceManager;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
 public class DigitalSTROMHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DigitalSTROMHandlerFactory.class);
-    private final Map<String, DiscoveryServiceManager> discoveryServiceManagers = new HashMap<>();
+    private final Map<String, DiscoveryServiceManager> discoveryServiceManagers = new ConcurrentHashMap<>();
 
     private Map<ThingUID, BridgeHandler> bridgeHandlers;
 
@@ -256,9 +257,9 @@ public class DigitalSTROMHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BridgeHandler) {
             String uid = thingHandler.getThing().getUID().getAsString();
-            if (discoveryServiceManagers.get(uid) != null) {
-                discoveryServiceManagers.get(uid).unregisterDiscoveryServices(bundleContext);
-                discoveryServiceManagers.remove(uid);
+            DiscoveryServiceManager discoveryServiceManager = discoveryServiceManagers.remove(uid);
+            if (discoveryServiceManager != null) {
+                discoveryServiceManager.unregisterDiscoveryServices(bundleContext);
             }
         }
     }

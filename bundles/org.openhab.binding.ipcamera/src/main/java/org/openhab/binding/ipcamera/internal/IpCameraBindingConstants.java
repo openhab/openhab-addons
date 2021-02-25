@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import java.util.Arrays;
@@ -130,4 +129,6 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_GOTO_PRESET = "gotoPreset";
     public static final String CHANNEL_START_STREAM = "startStream";
     public static final String CHANNEL_ENABLE_PRIVACY_MODE = "enablePrivacyMode";
+    public static final String CHANNEL_CAR_ALARM = "carAlarm";
+    public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
     protected void startMsgReader() {
         synchronized (msgReaderThreadLock) {
-            Thread mrt = new Thread(this::readerThread, "AD Reader");
+            Thread mrt = new Thread(this::readerThread, "OH-binding-" + getThing().getUID() + "-ADReader");
             mrt.setDaemon(true);
             mrt.start();
             msgReaderThread = mrt;

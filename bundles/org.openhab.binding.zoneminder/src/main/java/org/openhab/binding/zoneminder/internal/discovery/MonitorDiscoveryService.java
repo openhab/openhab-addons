@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,17 +46,32 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
 
     private final Logger logger = LoggerFactory.getLogger(MonitorDiscoveryService.class);
 
-    private @Nullable ZmBridgeHandler bridgeHandler;
+    private static final int DISCOVERY_INTERVAL_SECONDS = 300;
+    private static final int DISCOVERY_INITIAL_DELAY_SECONDS = 10;
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 6;
+
+    private @NonNullByDefault({}) ZmBridgeHandler bridgeHandler;
+
+    private @Nullable Future<?> discoveryJob;
 
     public MonitorDiscoveryService() {
-        super(30);
+        super(SUPPORTED_MONITOR_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, true);
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof ZmBridgeHandler) {
-            ((ZmBridgeHandler) handler).setDiscoveryService(this);
-            this.bridgeHandler = (ZmBridgeHandler) handler;
+            bridgeHandler = (ZmBridgeHandler) handler;
         }
     }
 
@@ -64,65 +81,68 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void activate() {
-    }
-
-    @Override
-    public void deactivate() {
-    }
-
-    @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_MONITOR_THING_TYPES_UIDS;
     }
 
     @Override
-    public void startBackgroundDiscovery() {
-        logger.trace("Discovery: Performing background discovery scan for {}", getBridgeUID());
-        discoverMonitors();
+    protected void startBackgroundDiscovery() {
+        Future<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
+            logger.debug("ZoneminderDiscovery: Starting background discovery job");
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundDiscoverMonitors,
+                    DISCOVERY_INITIAL_DELAY_SECONDS, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        Future<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob != null) {
+            logger.debug("ZoneminderDiscovery: Stopping background discovery job");
+            localDiscoveryJob.cancel(true);
+            discoveryJob = null;
+        }
     }
 
     @Override
     public void startScan() {
-        logger.debug("Discovery: Starting monitor discovery scan for {}", getBridgeUID());
+        logger.debug("ZoneminderDiscovery: Running discovery scan");
         discoverMonitors();
     }
 
-    private @Nullable ThingUID getBridgeUID() {
-        ZmBridgeHandler localBridgeHandler = bridgeHandler;
-        return localBridgeHandler != null ? localBridgeHandler.getThing().getUID() : null;
+    private void backgroundDiscoverMonitors() {
+        if (!bridgeHandler.isBackgroundDiscoveryEnabled()) {
+            return;
+        }
+        logger.debug("ZoneminderDiscovery: Running background discovery scan");
+        discoverMonitors();
     }
 
     private synchronized void discoverMonitors() {
-        ZmBridgeHandler localBridgeHandler = bridgeHandler;
-        ThingUID bridgeUID = getBridgeUID();
-        if (localBridgeHandler != null && bridgeUID != null) {
-            Integer alarmDuration = localBridgeHandler.getDefaultAlarmDuration();
-            Integer imageRefreshInterval = localBridgeHandler.getDefaultImageRefreshInterval();
-            for (Monitor monitor : localBridgeHandler.getSavedMonitors()) {
-                String id = monitor.getId();
-                String name = monitor.getName();
-                ThingUID thingUID = new ThingUID(UID_MONITOR, bridgeUID, monitor.getId());
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(CONFIG_MONITOR_ID, id);
-                properties.put(CONFIG_ALARM_DURATION, alarmDuration);
-                if (imageRefreshInterval != null) {
-                    properties.put(CONFIG_IMAGE_REFRESH_INTERVAL, imageRefreshInterval);
-                }
-                thingDiscovered(createDiscoveryResult(thingUID, bridgeUID, id, name, properties));
-                logger.trace("Discovery: Monitor with id '{}' and name '{}' added to Inbox with UID '{}'",
-                        monitor.getId(), monitor.getName(), thingUID);
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        Integer alarmDuration = bridgeHandler.getDefaultAlarmDuration();
+        Integer imageRefreshInterval = bridgeHandler.getDefaultImageRefreshInterval();
+        for (Monitor monitor : bridgeHandler.getSavedMonitors()) {
+            String id = monitor.getId();
+            String name = monitor.getName();
+            ThingUID thingUID = new ThingUID(UID_MONITOR, bridgeUID, monitor.getId());
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(CONFIG_MONITOR_ID, id);
+            properties.put(CONFIG_ALARM_DURATION, alarmDuration);
+            if (imageRefreshInterval != null) {
+                properties.put(CONFIG_IMAGE_REFRESH_INTERVAL, imageRefreshInterval);
             }
+            thingDiscovered(createDiscoveryResult(thingUID, bridgeUID, id, name, properties));
+            logger.debug("ZoneminderDiscovery: Monitor with id '{}' and name '{}' added to Inbox with UID '{}'",
+                    monitor.getId(), monitor.getName(), thingUID);
         }
     }
 
     private DiscoveryResult createDiscoveryResult(ThingUID monitorUID, ThingUID bridgeUID, String id, String name,
             Map<String, Object> properties) {
         return DiscoveryResultBuilder.create(monitorUID).withProperties(properties).withBridge(bridgeUID)
-                .withLabel(buildLabel(name)).withRepresentationProperty(CONFIG_MONITOR_ID).build();
-    }
-
-    private String buildLabel(String name) {
-        return String.format("Zoneminder Monitor %s", name);
+                .withLabel(String.format("Zoneminder Monitor %s", name)).withRepresentationProperty(CONFIG_MONITOR_ID)
+                .build();
     }
 }

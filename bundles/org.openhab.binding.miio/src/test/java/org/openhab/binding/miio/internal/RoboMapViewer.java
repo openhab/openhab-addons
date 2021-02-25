@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -170,7 +170,7 @@ public class RoboMapViewer extends JFrame {
                         double minY = Math.min(fromLocation.getY(), endLocation.getY());
                         double maxY = Math.max(fromLocation.getY(), endLocation.getY());
                         textArea.append(String.format(
-                                "Zone coordinates:\t%s, %s\t\tZone clean command:  app_zone_clean[[ %.0f,%.0f,%.0f,%.0f,1 ]]\r\n",
+                                "Zone coordinates:\t%s, %s\t\tZone clean command:  app_zoned_clean[[ %.0f,%.0f,%.0f,%.0f,1 ]]\r\n",
                                 endLocation, fromLocation, minX, minY, maxX, maxY));
                     } else {
                         final MapPoint pointLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));

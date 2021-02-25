@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -196,7 +197,8 @@ public class RRMapDraw {
     private void drawPath(Graphics2D g2d, float scale) {
         Stroke stroke = new BasicStroke(0.5f * scale);
         g2d.setStroke(stroke);
-        for (Integer pathType : rmfp.getPaths().keySet()) {
+        for (Entry<Integer, ArrayList<float[]>> path : rmfp.getPaths().entrySet()) {
+            Integer pathType = path.getKey();
             switch (pathType) {
                 case RRMapFileParser.PATH:
                     if (!multicolor) {
@@ -216,7 +218,7 @@ public class RRMapDraw {
             }
             float prvX = 0;
             float prvY = 0;
-            for (float[] point : rmfp.getPaths().get(pathType)) {
+            for (float[] point : path.getValue()) {
                 float x = toXCoord(point[0]) * scale;
                 float y = toYCoord(point[1]) * scale;
                 if (prvX > 1) {
@@ -244,8 +246,8 @@ public class RRMapDraw {
     }
 
     private void drawNoGo(Graphics2D g2d, float scale) {
-        for (Integer area : rmfp.getAreas().keySet()) {
-            for (float[] point : rmfp.getAreas().get(area)) {
+        for (Map.Entry<Integer, ArrayList<float[]>> area : rmfp.getAreas().entrySet()) {
+            for (float[] point : area.getValue()) {
                 float x = toXCoord(point[0]) * scale;
                 float y = toYCoord(point[1]) * scale;
                 float x1 = toXCoord(point[2]) * scale;
@@ -262,10 +264,11 @@ public class RRMapDraw {
                 noGo.lineTo(x, y);
                 g2d.setColor(COLOR_NO_GO_ZONES);
                 g2d.fill(noGo);
-                g2d.setColor(area == 9 ? Color.RED : Color.WHITE);
+                g2d.setColor(area.getKey() == 9 ? Color.RED : Color.WHITE);
                 g2d.draw(noGo);
             }
         }
+        ;
     }
 
     private void drawWalls(Graphics2D g2d, float scale) {
@@ -419,6 +422,7 @@ public class RRMapDraw {
     }
 
     private @Nullable URL getImageUrl(String image) {
+        final Bundle bundle = this.bundle;
         if (bundle != null) {
             return bundle.getEntry("images/" + image);
         }

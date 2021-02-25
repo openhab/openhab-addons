@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
                 device = new DimmerDevice();
                 break;
             case PLUG:
-                if (HS110.is(thingTypeUID)) {
+                if (HS110.is(thingTypeUID) || KP115.is(thingTypeUID)) {
                     device = new EnergySwitchDevice();
                 } else {
                     device = new SwitchDevice();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,6 +134,7 @@ public class SonosXMLParser {
      */
     public static @Nullable SonosResourceMetaData getResourceMetaData(String xml) throws SAXException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
+        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         ResourceMetaDataHandler handler = new ResourceMetaDataHandler();
         reader.setContentHandler(handler);
         try {
@@ -868,6 +869,14 @@ public class SonosXMLParser {
                 case "Bass":
                 case "Treble":
                 case "OutputFixed":
+                case "NightMode":
+                case "DialogLevel":
+                case "SubEnabled":
+                case "SubGain":
+                case "SurroundEnabled":
+                case "SurroundMode":
+                case "SurroundLevel":
+                case "MusicSurroundLevel":
                     val = attributes == null ? null : attributes.getValue("val");
                     if (val != null) {
                         changes.put(qName, val);

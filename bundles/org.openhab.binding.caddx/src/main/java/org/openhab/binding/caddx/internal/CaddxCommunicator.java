@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,8 @@ public class CaddxCommunicator implements SerialPortEventListener {
     private boolean unStuff = false;
     private int tempAsciiByte = 0;
 
-    public CaddxCommunicator(SerialPortManager portManager, CaddxProtocol protocol, String serialPortName, int baudRate)
+    public CaddxCommunicator(String uid, SerialPortManager portManager, CaddxProtocol protocol, String serialPortName,
+            int baudRate)
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
         this.portManager = portManager;
         this.protocol = protocol;
@@ -101,7 +102,7 @@ public class CaddxCommunicator implements SerialPortEventListener {
         serialPort.notifyOnDataAvailable(true);
         serialPort.addEventListener(this);
 
-        communicator = new Thread(this::messageDispatchLoop, "Caddx Communicator");
+        communicator = new Thread(this::messageDispatchLoop, "OH-binding-" + uid + "-caddxCommunicator");
         communicator.setDaemon(true);
         communicator.start();
 

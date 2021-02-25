@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,9 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.homematic.internal.model;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Configuration object for sending a datapoint.
@@ -54,7 +51,6 @@ public class HmDatapointConfig {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("delay", delay)
-                .append("receiveDelay", receiveDelay).toString();
+        return String.format("%s[delay=%f,receiveDelay=%f]", getClass().getSimpleName(), delay, receiveDelay);
     }
 }

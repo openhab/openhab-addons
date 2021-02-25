@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.OpenMessage;
 import org.openwebnet4j.message.Where;
-import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereZigBee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +76,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     Where w;
                     try {
                         if (brH.isBusGateway()) {
-                            w = new WhereLightAutom(deviceWhereStr);
+                            w = buildBusWhere(deviceWhereStr);
                         } else {
                             w = new WhereZigBee(deviceWhereStr);
                         }
@@ -191,6 +190,14 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      * @param channel the channel to request the state for
      */
     protected abstract void requestChannelState(ChannelUID channel);
+
+    /**
+     * Abstract builder for device Where address, to be implemented by each subclass to choose the right Where subclass
+     * (the method is used only if the Thing is associated to a BUS gateway).
+     *
+     * @param wStr the WHERE string
+     */
+    protected abstract Where buildBusWhere(String wStr) throws IllegalArgumentException;
 
     @Override
     public void dispose() {

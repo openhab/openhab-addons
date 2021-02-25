@@ -92,7 +92,7 @@
 		</config-description>
 	</channel-type>
 	<!-- Absolute Humidity Channel -->
-	<channel-type id="absolutehumidity">
+	<channel-type id="abshumidity">
 		<item-type>Number:Density</item-type>
 		<label>Abs. Humidity</label>
 		<description>absolute humidity (calculated from temperature and relative humidity)</description>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,6 +76,7 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID = "amazonMusicPlayListId";
     public static final String CHANNEL_TEXT_TO_SPEECH = "textToSpeech";
     public static final String CHANNEL_TEXT_TO_SPEECH_VOLUME = "textToSpeechVolume";
+    public static final String CHANNEL_TEXT_COMMAND = "textCommand";
     public static final String CHANNEL_REMIND = "remind";
     public static final String CHANNEL_PLAY_ALARM_SOUND = "playAlarmSound";
     public static final String CHANNEL_START_ROUTINE = "startRoutine";

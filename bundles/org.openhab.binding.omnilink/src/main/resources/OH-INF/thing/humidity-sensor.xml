@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Humidity Thing -->
+	<thing-type id="humidity_sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Humidity Sensor</label>
+		<description>A humidity sensor configured in the controller.</description>
+		<channels>
+			<channel id="humidity" typeId="sensor_humidity"/>
+			<channel id="low_setpoint" typeId="sensor_humidity_low_setpoint"/>
+			<channel id="high_setpoint" typeId="sensor_humidity_high_setpoint"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Humidity Sensor Number</label>
+				<description>The humidity sensor number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Humidity Channels -->
+	<channel-type id="sensor_humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>The current relative humidity at this humidity sensor.</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="sensor_humidity_low_setpoint">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Low SetPoint</label>
+		<description>The current low setpoint for this humidity sensor.</description>
+		<category>Humidity</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="sensor_humidity_high_setpoint">
+		<item-type>Number:Dimensionless</item-type>
+		<label>High SetPoint</label>
+		<description>The current high setpoint for this humidity sensor.</description>
+		<category>Humidity</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,7 @@ public class UniFiBindingConstants {
     public static final String PARAMETER_PORT = "port";
     public static final String PARAMETER_USERNAME = "username";
     public static final String PARAMETER_PASSWORD = "password";
+    public static final String PARAMETER_UNIFIOS = "unifios";
     public static final String PARAMETER_SITE = "site";
     public static final String PARAMETER_CID = "cid";
 }

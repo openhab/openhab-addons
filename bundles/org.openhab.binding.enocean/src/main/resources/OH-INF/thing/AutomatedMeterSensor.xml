@@ -4,7 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="automatedMeterSensor">
+	<thing-type id="automatedMeterSensor"
+		extensible="currentFlow, cumulativeValue, counter, currentNumber, instantpower, totalusage">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>

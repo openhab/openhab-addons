@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,7 @@ public enum TPLinkSmartHomeThingType {
     HS110("hs110", DeviceType.PLUG),
     KP100("kp100", DeviceType.PLUG),
     KP105("kp105", DeviceType.PLUG),
+    KP115("kp115", DeviceType.PLUG),
 
     // Switch Thing Type UIDs
     HS200("hs200", DeviceType.SWITCH),

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class SetFanspeedCommand extends BRC1HCommand {
     }
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         MadokaValue paramCoolingFanSpeed = new MadokaValue(0x20, 1, new byte[] { (byte) coolingFanSpeed.value() });
         MadokaValue paramHeatingFanSpeed = new MadokaValue(0x21, 1, new byte[] { (byte) heatingFanSpeed.value() });
 

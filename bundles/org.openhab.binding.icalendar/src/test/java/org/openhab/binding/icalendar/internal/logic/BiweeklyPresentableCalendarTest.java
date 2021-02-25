@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -44,12 +47,15 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar;
     private AbstractPresentableCalendar calendar2;
     private AbstractPresentableCalendar calendar3;
+    private AbstractPresentableCalendar calendar_issue9647;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
         calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"));
         calendar2 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test2.ics"));
         calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"));
+        calendar_issue9647 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue9647.ics"));
     }
 
     /**
@@ -151,6 +157,7 @@ public class BiweeklyPresentableCalendarTest {
      * This test checks for Events that have just begun or ended, and if so it checks for Command Tags
      * and checks if these tags are valid
      */
+    @SuppressWarnings("null")
     @Test
     public void testCommandTagCode() {
         List<Event> events = null;
@@ -284,7 +291,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:12.3:abc
         Command cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:12.3°C:abc
         Command cmd4 = cmdTags.get(4).getCommand();
@@ -347,7 +354,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:-12.3:abc
         cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:-12.3°C:abc
         cmd4 = cmdTags.get(4).getCommand();
@@ -410,7 +417,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:-0:abc
         cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:0K:abc
         cmd4 = cmdTags.get(4).getCommand();
@@ -535,12 +542,12 @@ public class BiweeklyPresentableCalendarTest {
         // </p><p>BEGIN:Calendar_Test_Number:12.3:abc</p>
         cmd6 = cmdTags.get(6).getCommand();
         assertNotNull(cmd6);
-        assertEquals(QuantityType.class, cmd6.getClass());
+        assertEquals(DecimalType.class, cmd6.getClass());
 
         // <p>END:Calendar_Test_Number:23.4:abc</p>
         cmd7 = cmdTags.get(7).getCommand();
         assertNotNull(cmd7);
-        assertEquals(QuantityType.class, cmd7.getClass());
+        assertEquals(DecimalType.class, cmd7.getClass());
     }
 
     @SuppressWarnings("null")
@@ -584,5 +591,20 @@ public class BiweeklyPresentableCalendarTest {
         List<Event> realFilteredEvents6 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-15T06:00:00Z"),
                 Instant.parse("2019-12-31T00:00:00Z"), null, 3);
         assertEquals(0, realFilteredEvents6.size());
+
+        List<Event> realFilteredEvents7 = calendar_issue9647.getFilteredEventsBetween(
+                LocalDate.parse("2021-01-01").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-02").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
+        assertEquals(0, realFilteredEvents7.size());
+
+        Event[] expectedFilteredEvents8 = new Event[] {
+                new Event("Restabfall", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), ""),
+                new Event("Gelbe Tonne", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "") };
+        List<Event> realFilteredEvents8 = calendar_issue9647.getFilteredEventsBetween(
+                LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
+        assertArrayEquals(expectedFilteredEvents8, realFilteredEvents8.toArray(new Event[] {}));
     }
 }

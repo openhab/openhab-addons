@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,7 +169,7 @@ public class A5_20_04 extends A5_20 {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (CHANNEL_SEND_COMMAND.equals(channelId) && (command.equals(OnOffType.ON))) {
+        if (VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)) {
             byte db3 = getPos(getCurrentStateFunc);
             byte db2 = getTsp(getCurrentStateFunc);
             byte db1 = (byte) (0x00 | getMc(getCurrentStateFunc) | getWuc(getCurrentStateFunc));

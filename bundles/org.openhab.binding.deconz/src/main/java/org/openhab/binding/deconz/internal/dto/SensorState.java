@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,6 +76,8 @@ public class SensorState {
     public @Nullable Integer gesture;
     /** Thermostat may provide this value. */
     public @Nullable Integer valve;
+    /** Thermostats may provide this value */
+    public @Nullable String windowopen;
     /** deCONZ sends a last update string with every event. */
     public @Nullable String lastupdated;
     /** color controllers send xy values */
@@ -89,7 +91,7 @@ public class SensorState {
                 + ", carbonmonoxide=" + carbonmonoxide + ", pressure=" + pressure + ", presence=" + presence
                 + ", power=" + power + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage
                 + ", current=" + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture="
-                + gesture + ", valve=" + valve + ", lastupdated='" + lastupdated + '\'' + ", xy=" + Arrays.toString(xy)
-                + '}';
+                + gesture + ", valve=" + valve + ", windowopen='" + windowopen + '\'' + ", lastupdated='" + lastupdated
+                + '\'' + ", xy=" + Arrays.toString(xy) + '}';
     }
 }

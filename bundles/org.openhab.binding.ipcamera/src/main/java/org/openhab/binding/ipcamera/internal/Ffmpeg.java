@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -52,7 +51,6 @@ public class Ffmpeg {
     private List<String> commandArrayList = new ArrayList<String>();
     private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
-    private boolean running = false;
     private String password;
 
     public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
@@ -86,10 +84,14 @@ public class Ffmpeg {
     }
 
     public void checkKeepAlive() {
-        if (keepAlive <= -1) {
-            return;
-        } else if (--keepAlive == 0) {
+        if (keepAlive == 1) {
             stopConverting();
+        } else if (keepAlive <= -1 && !getIsAlive()) {
+            logger.warn("HLS stream was not running, restarting it now.");
+            startConverting();
+        }
+        if (keepAlive > 0) {
+            keepAlive--;
         }
     }
 
@@ -173,7 +175,6 @@ public class Ffmpeg {
             ipCameraFfmpegThread = new IpCameraFfmpegThread();
             logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand.replaceAll(password, "********"));
             ipCameraFfmpegThread.start();
-            running = true;
             if (format.equals(FFmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
             }
@@ -184,7 +185,11 @@ public class Ffmpeg {
     }
 
     public boolean getIsAlive() {
-        return running;
+        Process localProcess = process;
+        if (localProcess != null) {
+            return localProcess.isAlive();
+        }
+        return false;
     }
 
     public void stopConverting() {
@@ -193,18 +198,10 @@ public class Ffmpeg {
             Process localProcess = process;
             if (localProcess != null) {
                 localProcess.destroyForcibly();
-                running = false;
             }
             if (format.equals(FFmpegFormat.HLS)) {
-                if (keepAlive == -1) {
-                    logger.warn("HLS stopped when Stream should be running non stop, restarting HLS now.");
-                    startConverting();
-                    return;
-                } else {
-                    ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.OFF);
-                }
+                ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.OFF);
             }
-            keepAlive = 8;
         }
     }
 }

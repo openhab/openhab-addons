@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,14 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +36,11 @@ public class GetSetpointCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetSetpointCommand.class);
 
-    private @Nullable DecimalType heatingSetpoint;
-    private @Nullable DecimalType coolingSetpoint;
+    private @Nullable QuantityType<Temperature> heatingSetpoint;
+    private @Nullable QuantityType<Temperature> coolingSetpoint;
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         return MadokaMessage.createRequest(this);
     }
 
@@ -48,8 +51,8 @@ public class GetSetpointCommand extends BRC1HCommand {
             Integer iHeatingSetpoint = (int) (mm.getValues().get(0x21).getComputedValue() / 128.);
             Integer iCoolingSetpoint = (int) (mm.getValues().get(0x20).getComputedValue() / 128.);
 
-            this.heatingSetpoint = new DecimalType(iHeatingSetpoint);
-            this.coolingSetpoint = new DecimalType(iCoolingSetpoint);
+            this.heatingSetpoint = new QuantityType<Temperature>(iHeatingSetpoint, SIUnits.CELSIUS);
+            this.coolingSetpoint = new QuantityType<Temperature>(iCoolingSetpoint, SIUnits.CELSIUS);
 
             logger.debug("heatingSetpoint: {}", heatingSetpoint);
             logger.debug("coolingSetpoint: {}", coolingSetpoint);
@@ -67,11 +70,11 @@ public class GetSetpointCommand extends BRC1HCommand {
         return 64;
     }
 
-    public @Nullable DecimalType getHeatingSetpoint() {
+    public @Nullable QuantityType<Temperature> getHeatingSetpoint() {
         return heatingSetpoint;
     }
 
-    public @Nullable DecimalType getCoolingSetpoint() {
+    public @Nullable QuantityType<Temperature> getCoolingSetpoint() {
         return coolingSetpoint;
     }
 }

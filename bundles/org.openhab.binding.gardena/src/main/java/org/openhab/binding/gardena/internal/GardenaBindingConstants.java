@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,32 +16,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link GardenaBinding} class defines common constants, which are used across the whole binding.
+ * The {@link GardenaBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
 public class GardenaBindingConstants {
-
     public static final String BINDING_ID = "gardena";
 
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
-    public static final String PROPERTY_MANUFACTURER = "manufacturer";
-    public static final String PROPERTY_PRODUCT = "product";
-    public static final String PROPERTY_SERIALNUMBER = "serial_number";
-    public static final String PROPERTY_SGTIN = "sgtin";
-    public static final String PROPERTY_VERSION = "version";
-    public static final String PROPERTY_CATEGORY = "category";
+    public static final String PROPERTY_SERIALNUMBER = "serial";
+    public static final String PROPERTY_MODELTYPE = "modelType";
 
-    public static final String PROPERTY_CONNECTION_STATUS = "connection_status";
-    public static final String PROPERTY_CONNECTION_STATUS_UNREACH_VALUE = "status_device_unreachable";
-    public static final String PROPERTY_STATE = "state";
+    public static final String CONNECTION_STATUS_ONLINE = "ONLINE";
 
-    public static final String ABILITY_DEVICE_INFO = "device_info";
-    public static final String ABILITY_RADIO = "radio";
-
-    public static final String SETTING_LEAKAGE_DETECTION = "leakage_detection";
-    public static final String SETTING_OPERATION_MODE = "operating_mode";
-    public static final String SETTING_TURN_ON_PRESSURE = "turn_on_pressure";
+    public static final String DEVICE_TYPE_MOWER = "mower";
+    public static final String DEVICE_TYPE_PUMP = "pump";
+    public static final String DEVICE_TYPE_IRRIGATION_CONTROL = "irrigation_control";
+    public static final String DEVICE_TYPE_WATER_CONTROL = "water_control";
+    public static final String DEVICE_TYPE_SENSOR = "sensor";
+    public static final String DEVICE_TYPE_POWER = "power";
 }

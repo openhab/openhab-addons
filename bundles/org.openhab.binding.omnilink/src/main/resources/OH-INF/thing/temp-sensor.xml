@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Temperature Sensor Thing -->
+	<thing-type id="temp_sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Temperature Sensor</label>
+		<description>A temperature sensor configured in the controller.</description>
+		<channels>
+			<channel id="temperature" typeId="sensor_temperature"/>
+			<channel id="low_setpoint" typeId="sensor_temp_low_setpoint"/>
+			<channel id="high_setpoint" typeId="sensor_temp_high_setpoint"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Temperature Sensor Number</label>
+				<description>The temperature sensor number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Temperature Sensor Channels -->
+	<channel-type id="sensor_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The current temperature at this temperature sensor.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sensor_temp_low_setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Low SetPoint</label>
+		<description>The current low setpoint of this temperature sensor.</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sensor_temp_high_setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>High SetPoint</label>
+		<description>The current high setpoint of this temperature sensor.</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

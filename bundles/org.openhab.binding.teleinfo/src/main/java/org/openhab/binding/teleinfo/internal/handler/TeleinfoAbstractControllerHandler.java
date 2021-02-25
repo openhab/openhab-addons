@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.teleinfo.internal.handler;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.TeleinfoDiscoveryService;
@@ -32,7 +32,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 @NonNullByDefault
 public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandler {
 
-    private List<TeleinfoControllerHandlerListener> listeners = Collections.synchronizedList(new ArrayList<>());
+    private Set<TeleinfoControllerHandlerListener> listeners = new CopyOnWriteArraySet<>();
 
     public TeleinfoAbstractControllerHandler(Bridge bridge) {
         super(bridge);

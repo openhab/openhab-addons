@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,9 @@ public class Thing2VeluxActuator {
     // Private
 
     private void mapThing2Velux() {
-        if (channelUID.toString().startsWith(VeluxBindingConstants.BRIDGE_THING_TYPE_UID)) {
-            logger.trace("mapThing2Velux(): channel {} is on a Bridge Thing, exiting.", channelUID);
+        // only process real actuator things
+        if (!VeluxBindingConstants.ACTUATOR_THINGS.contains(bridgeHandler.thingTypeUIDOf(channelUID))) {
+            logger.trace("mapThing2Velux(): channel {} is not an Actuator Thing, exiting.", channelUID);
             return;
         }
 

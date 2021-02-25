@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,12 +36,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -88,7 +92,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     protected List<ApplianceStatusListener> applianceStatusListeners = new CopyOnWriteArrayList<>();
     protected ScheduledFuture<?> pollingJob;
-    protected ScheduledFuture<?> eventListenerJob;
+    protected ExecutorService executor;
+    protected Future<?> eventListenerJob;
 
     protected List<HomeDevice> previousHomeDevices = new CopyOnWriteArrayList<>();
 
@@ -572,7 +577,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         logger.debug("Scheduling the Miele event listener job");
 
         if (eventListenerJob == null || eventListenerJob.isCancelled()) {
-            eventListenerJob = scheduler.schedule(eventListenerRunnable, 0, TimeUnit.SECONDS);
+            executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("binding-miele"));
+            eventListenerJob = executor.submit(eventListenerRunnable);
         }
     }
 
@@ -641,6 +647,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         if (eventListenerJob != null) {
             eventListenerJob.cancel(true);
             eventListenerJob = null;
+        }
+        if (executor != null) {
+            executor.shutdownNow();
+            executor = null;
         }
     }
 }

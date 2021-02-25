@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -189,7 +189,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                     .withDescription(description) //
                     .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
                     .withTags(checkTags(unitOfMeasure, state.isReadOnly())) //
-                    .withStateDescription(state.toStateDescription()) //
+                    .withStateDescriptionFragment(state) //
                     .withConfigDescriptionURI(configDescriptionUriChannel).build();
         } catch (URISyntaxException ex) {
             logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",

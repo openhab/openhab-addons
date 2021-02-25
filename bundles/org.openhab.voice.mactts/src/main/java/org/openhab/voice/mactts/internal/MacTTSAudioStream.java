@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FixedLengthAudioStream;
 import org.openhab.core.voice.Voice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the {@link AudioStream} interface for the {@link MacTTSService}
@@ -31,6 +33,8 @@ import org.openhab.core.voice.Voice;
  * @author Kai Kreuzer - Refactored to use AudioStream and fixed audio format to produce
  */
 class MacTTSAudioStream extends FixedLengthAudioStream {
+
+    private final Logger logger = LoggerFactory.getLogger(MacTTSAudioStream.class);
 
     /**
      * {@link Voice} this {@link AudioStream} speaks in
@@ -80,12 +84,19 @@ class MacTTSAudioStream extends FixedLengthAudioStream {
     private InputStream createInputStream() throws AudioException {
         String outputFile = generateOutputFilename();
         String command = getCommand(outputFile);
+        logger.debug("Executing on command line: {}", command);
 
         try {
             Process process = Runtime.getRuntime().exec(command);
             process.waitFor();
             file = new File(outputFile);
+            if (!file.exists()) {
+                throw new AudioException("Generated file '" + outputFile + "' does not exist.'");
+            }
             this.length = file.length();
+            if (this.length == 0) {
+                throw new AudioException("Generated file '" + outputFile + "' has no content.'");
+            }
             return getFileInputStream(file);
         } catch (IOException e) {
             throw new AudioException("Error while executing '" + command + "'", e);
@@ -136,7 +147,7 @@ class MacTTSAudioStream extends FixedLengthAudioStream {
 
         stringBuffer.append("say");
 
-        stringBuffer.append(" --voice=\"" + this.voice.getLabel() + "\"");
+        stringBuffer.append(" --voice=" + this.voice.getLabel());
         stringBuffer.append(" --output-file=" + outputFile);
         stringBuffer.append(" --file-format=" + this.audioFormat.getContainer());
         stringBuffer.append(" --data-format=LEI" + audioFormat.getBitDepth() + "@" + audioFormat.getFrequency());

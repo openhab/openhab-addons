@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,5 +60,11 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
     protected boolean validateData(byte[] bytes) {
         // FPE just sends 0b00010000 or 0b00000000 value, so we apply mask 0b11101111
         return super.validateData(bytes) && ((bytes[0] & (byte) 0xEF) == (byte) 0x00);
+    }
+
+    @Override
+    public boolean isValidForTeachIn() {
+        // just treat CLOSED as teach in
+        return bytes[0] == CLOSED;
     }
 }

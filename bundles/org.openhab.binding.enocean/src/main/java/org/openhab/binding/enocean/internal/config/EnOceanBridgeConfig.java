@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,10 +46,16 @@ public class EnOceanBridgeConfig {
     public boolean rs485;
     public String rs485BaseId;
 
-    public int nextSenderId = 0;
+    public Integer nextSenderId;
+
+    public boolean enableSmack;
+    public boolean sendTeachOuts;
 
     public EnOceanBridgeConfig() {
         espVersion = "ESP3";
+        sendTeachOuts = false;
+        enableSmack = true;
+        nextSenderId = null;
     }
 
     public ESPVersion getESPVersion() {

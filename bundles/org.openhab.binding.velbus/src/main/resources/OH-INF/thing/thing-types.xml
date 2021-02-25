@@ -801,6 +801,23 @@
 		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
 	</thing-type>
 
+	<thing-type id="vmbvp1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMPVP1</label>
+		<description>Doorbird interface module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
 	<channel-type id="heatingOperatingMode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>

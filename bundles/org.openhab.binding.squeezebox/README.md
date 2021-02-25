@@ -26,6 +26,10 @@ Squeeze players may be official Logitech products or other players like [Squeeze
 
 A Squeeze Server is discovered through UPnP in the local network.
 Once it is added as a Thing the Squeeze Server bridge will discover Squeeze Players automatically.
+If your Squeeze Server is not discovered automatically, you can add it manually by creating a .thing file containing something like this (more example [below](https://www.openhab.org/addons/bindings/squeezebox/#thing-configuration)):
+```
+Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090 ]
+````
 
 ## Binding Configuration
 

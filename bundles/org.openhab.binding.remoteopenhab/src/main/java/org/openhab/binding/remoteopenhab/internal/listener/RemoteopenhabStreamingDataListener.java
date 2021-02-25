@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,9 +24,14 @@ import org.openhab.binding.remoteopenhab.internal.rest.RemoteopenhabRestClient;
 public interface RemoteopenhabStreamingDataListener {
 
     /**
-     * The client successfully established a connection.
+     * The client successfully established a connection and received a first event.
      */
     void onConnected();
+
+    /**
+     * The client was disconnected.
+     */
+    void onDisconnected();
 
     /**
      * An error message was published.

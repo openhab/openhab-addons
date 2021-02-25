@@ -16,6 +16,10 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -31,17 +35,25 @@
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "aqi",
@@ -51,14 +63,16 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"channelType": "brightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -66,6 +80,11 @@
 						"command": "set_led_b",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{

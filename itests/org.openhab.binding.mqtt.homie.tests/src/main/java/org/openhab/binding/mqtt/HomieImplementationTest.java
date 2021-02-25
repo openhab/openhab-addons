@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,8 +34,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.generic.tools.WaitForTopicValue;
@@ -66,6 +69,8 @@ import org.osgi.service.cm.ConfigurationAdmin;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public class HomieImplementationTest extends JavaOSGiTest {
     private static final String BASE_TOPIC = "homie";
@@ -77,8 +82,6 @@ public class HomieImplementationTest extends JavaOSGiTest {
     private @NonNullByDefault({}) MqttBrokerConnection embeddedConnection;
     private @NonNullByDefault({}) MqttBrokerConnection connection;
     private int registeredTopics = 100;
-
-    private @NonNullByDefault({}) AutoCloseable mocksCloseable;
 
     // The handler is not tested here, so just mock the callback
     private @Mock @NonNullByDefault({}) DeviceCallback callback;
@@ -100,7 +103,6 @@ public class HomieImplementationTest extends JavaOSGiTest {
     @BeforeEach
     public void beforeEach() throws Exception {
         registerVolatileStorageService();
-        mocksCloseable = openMocks(this);
         configurationAdmin = getService(ConfigurationAdmin.class);
         mqttService = getService(MqttService.class);
 
@@ -168,7 +170,6 @@ public class HomieImplementationTest extends JavaOSGiTest {
         if (scheduler != null) {
             scheduler.shutdownNow();
         }
-        mocksCloseable.close();
     }
 
     @Test

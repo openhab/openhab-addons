@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,9 +80,9 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_BRIDGE_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PowermaxBridgeHandler((Bridge) thing, serialPortManager);
+            return new PowermaxBridgeHandler((Bridge) thing, serialPortManager, timeZoneProvider);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PowermaxThingHandler(thing, timeZoneProvider);
+            return new PowermaxThingHandler(thing);
         }
 
         return null;

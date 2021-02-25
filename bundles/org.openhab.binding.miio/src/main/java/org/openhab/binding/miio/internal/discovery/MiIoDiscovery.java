@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,11 +95,16 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         if (miioConfig != null) {
             try {
                 Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
-                String cloudDiscoveryModeConfig = (String) properties.get("cloudDiscoveryMode");
-                if (cloudDiscoveryModeConfig == null) {
+                String cloudDiscoveryModeConfig;
+                if (properties == null) {
                     cloudDiscoveryModeConfig = DISABLED;
                 } else {
-                    cloudDiscoveryModeConfig = cloudDiscoveryModeConfig.toLowerCase();
+                    cloudDiscoveryModeConfig = (String) properties.get("cloudDiscoveryMode");
+                    if (cloudDiscoveryModeConfig == null) {
+                        cloudDiscoveryModeConfig = DISABLED;
+                    } else {
+                        cloudDiscoveryModeConfig = cloudDiscoveryModeConfig.toLowerCase();
+                    }
                 }
                 return Set.of(SUPPORTED, ALL).contains(cloudDiscoveryModeConfig) ? cloudDiscoveryModeConfig : DISABLED;
             } catch (ClassCastException | SecurityException e) {

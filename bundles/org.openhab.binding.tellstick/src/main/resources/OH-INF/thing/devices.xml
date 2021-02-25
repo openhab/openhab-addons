@@ -9,6 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="telldus-core"/>
 			<bridge-type-ref id="telldus-live"/>
+			<bridge-type-ref id="telldus-local"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmable Device</label>

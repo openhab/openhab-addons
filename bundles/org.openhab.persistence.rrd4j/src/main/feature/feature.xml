@@ -5,7 +5,7 @@
 	<feature name="openhab-persistence-rrd4j" description="RRD4j Persistence" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.rrd4j/${project.version}</bundle>
-		<configfile finalname="${openhab.conf}/services/rrd4j.cfg" override="false">mvn:${project.groupId}/openhab-addons-external/${project.version}/cfg/rrd4j</configfile>
+		<configfile finalname="${openhab.conf}/services/rrd4j.cfg" override="false">mvn:${project.groupId}/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/rrd4j</configfile>
 	</feature>
 
 </features>

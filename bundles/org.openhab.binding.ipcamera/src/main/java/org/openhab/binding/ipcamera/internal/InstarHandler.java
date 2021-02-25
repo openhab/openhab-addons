@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -124,18 +123,6 @@ public class InstarHandler extends ChannelDuplexHandler {
     // This handles the commands that come from the Openhab event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            switch (channelUID.getId()) {
-                case CHANNEL_MOTION_ALARM:
-                    if (ipCameraHandler.cameraConfig.getServerPort() > 0) {
-                        ipCameraHandler.logger.info("Setting up the Alarm Server settings in the camera now");
-                        ipCameraHandler.sendHttpGET(
-                                "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
-                                        + ipCameraHandler.hostIp + "&-as_port="
-                                        + ipCameraHandler.cameraConfig.getServerPort()
-                                        + "&-as_path=/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
-                        return;
-                    }
-            }
             return;
         } // end of "REFRESH"
         switch (channelUID.getId()) {

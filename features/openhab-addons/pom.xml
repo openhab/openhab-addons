@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.features.karaf.openhab-addons</artifactId>
@@ -52,7 +52,8 @@
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
-                      <regexp pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)"/>
+                      <regexp
+                        pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)|(configfile&gt;)|(configfile\s)"/>
                     </linecontainsRegExp>
                   </filterchain>
                   <footer file="src/main/resources/footer.xml" filtering="no"/>

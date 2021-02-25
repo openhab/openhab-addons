@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +29,6 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -63,7 +63,7 @@ import com.google.gson.Gson;
  * @author Lukas Agethen - Refactored to provide better extensibility
  */
 @NonNullByDefault
-public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<SensorMessage> {
+public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SensorBaseThingHandler.class);
     /**
      * The sensor state. Contains all possible fields for all supported sensors and switches
@@ -106,26 +106,14 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     }
 
     @Override
-    protected @Nullable SensorMessage parseStateResponse(AsyncHttpClient.Result r) {
-        if (r.getResponseCode() == 403) {
-            return null;
-        } else if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), SensorMessage.class);
-        } else {
-            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
-        }
-    }
-
-    @Override
-    protected void processStateResponse(@Nullable SensorMessage stateResponse) {
-        logger.trace("{} received {}", thing.getUID(), stateResponse);
-        if (stateResponse == null) {
+    protected void processStateResponse(DeconzBaseMessage stateResponse) {
+        if (!(stateResponse instanceof SensorMessage)) {
             return;
         }
-        SensorConfig newSensorConfig = stateResponse.config;
-        sensorConfig = newSensorConfig != null ? newSensorConfig : new SensorConfig();
-        SensorState newSensorState = stateResponse.state;
-        sensorState = newSensorState != null ? newSensorState : new SensorState();
+
+        SensorMessage sensorMessage = (SensorMessage) stateResponse;
+        sensorConfig = Objects.requireNonNullElse(sensorMessage.config, new SensorConfig());
+        sensorState = Objects.requireNonNullElse(sensorMessage.state, new SensorState());
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
@@ -133,16 +121,14 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
             return;
         }
 
-        if (!sensorConfig.on) {
-            updateStatus(ThingStatus.OFFLINE);
-            return;
-        }
-
         Map<String, String> editProperties = editProperties();
-        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, stateResponse.swversion);
-        editProperties.put(Thing.PROPERTY_MODEL_ID, stateResponse.modelid);
-        editProperties.put(UNIQUE_ID, stateResponse.uniqueid);
+        editProperties.put(UNIQUE_ID, sensorMessage.uniqueid);
+        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
+        editProperties.put(Thing.PROPERTY_VENDOR, sensorMessage.manufacturername);
+        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
+
         ignoreConfigurationUpdate = true;
+
         updateProperties(editProperties);
 
         // Some sensors support optional channels
@@ -157,16 +143,12 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
 
         ignoreConfigurationUpdate = false;
 
-        // Initial data
-        updateChannels(sensorConfig);
-        updateChannels(sensorState, true);
-
         // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
         // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
         // So to monitor a sensor is still alive, the "last seen" is necessary.
         // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
         // manually poll it after the defined time
-        String lastSeen = stateResponse.lastseen;
+        String lastSeen = sensorMessage.lastseen;
         if (lastSeen != null && config.lastSeenPolling > 0) {
             createChannel(CHANNEL_LAST_SEEN, ChannelKind.STATE);
             updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
@@ -176,13 +158,14 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
                     config.lastSeenPolling);
         }
 
+        // Initial data
+        updateChannels(sensorConfig);
+        updateChannels(sensorState, true);
+
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private void processLastSeen(@Nullable SensorMessage stateResponse) {
-        if (stateResponse == null) {
-            return;
-        }
+    private void processLastSeen(DeconzBaseMessage stateResponse) {
         String lastSeen = stateResponse.lastseen;
         if (lastSeen != null) {
             updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
@@ -190,6 +173,11 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     }
 
     protected void createChannel(String channelId, ChannelKind kind) {
+        if (thing.getChannel(channelId) != null) {
+            // channel already exists, no update necessary
+            return;
+        }
+
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
@@ -206,7 +194,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
                     break;
             }
             Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
-            updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
+            updateThing(editThing().withChannel(channel).build());
         }
     }
 
@@ -237,16 +225,16 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     /**
      * Update channel value from {@link SensorState} object - override to include further channels
      *
-     * @param channelID
+     * @param channelUID
      * @param newState
      * @param initializing
      */
-    protected void valueUpdated(String channelID, SensorState newState, boolean initializing) {
-        switch (channelID) {
+    protected void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
+        switch (channelUID.getId()) {
             case CHANNEL_LAST_UPDATED:
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
-                    updateState(channelID, Util.convertTimestampToDateTime(lastUpdated));
+                    updateState(channelUID, Util.convertTimestampToDateTime(lastUpdated));
                 }
                 break;
             default:
@@ -280,31 +268,32 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
 
     protected void updateChannels(SensorState newState, boolean initializing) {
         sensorState = newState;
-        thing.getChannels().forEach(channel -> valueUpdated(channel.getUID().getId(), newState, initializing));
+        thing.getChannels().forEach(channel -> valueUpdated(channel.getUID(), newState, initializing));
     }
 
-    protected void updateSwitchChannel(String channelID, @Nullable Boolean value) {
+    protected void updateSwitchChannel(ChannelUID channelUID, @Nullable Boolean value) {
         if (value == null) {
             return;
         }
-        updateState(channelID, OnOffType.from(value));
+        updateState(channelUID, OnOffType.from(value));
     }
 
-    protected void updateDecimalTypeChannel(String channelID, @Nullable Number value) {
+    protected void updateDecimalTypeChannel(ChannelUID channelUID, @Nullable Number value) {
         if (value == null) {
             return;
         }
-        updateState(channelID, new DecimalType(value.longValue()));
+        updateState(channelUID, new DecimalType(value.longValue()));
     }
 
-    protected void updateQuantityTypeChannel(String channelID, @Nullable Number value, Unit<?> unit) {
-        updateQuantityTypeChannel(channelID, value, unit, 1.0);
+    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit) {
+        updateQuantityTypeChannel(channelUID, value, unit, 1.0);
     }
 
-    protected void updateQuantityTypeChannel(String channelID, @Nullable Number value, Unit<?> unit, double scaling) {
+    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit,
+            double scaling) {
         if (value == null) {
             return;
         }
-        updateState(channelID, new QuantityType<>(value.doubleValue() * scaling, unit));
+        updateState(channelUID, new QuantityType<>(value.doubleValue() * scaling, unit));
     }
 }

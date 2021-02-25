@@ -16,6 +16,7 @@
 			<channel id="next_title" typeId="event_next_title"/>
 			<channel id="next_start" typeId="event_next_start"/>
 			<channel id="next_end" typeId="event_next_end"/>
+			<channel id="last_update" typeId="last_update"/>
 		</channels>
 
 		<config-description>
@@ -116,6 +117,12 @@
 		<item-type>String</item-type>
 		<label>Title of Result</label>
 		<description>Title of the found result in calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>The time the calendar was updated successfully last time</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-group-type id="result">

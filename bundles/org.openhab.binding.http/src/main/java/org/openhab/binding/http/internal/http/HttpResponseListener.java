@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,11 +38,16 @@ public class HttpResponseListener extends BufferingResponseListener {
     private final CompletableFuture<@Nullable Content> future;
     private final String fallbackEncoding;
 
-    public HttpResponseListener(CompletableFuture<@Nullable Content> future) {
-        this(future, null);
-    }
-
-    public HttpResponseListener(CompletableFuture<@Nullable Content> future, @Nullable String fallbackEncoding) {
+    /**
+     * the HttpResponseListener is responsible
+     *
+     * @param future Content future to complete with the result of the request
+     * @param fallbackEncoding a fallback encoding for the content (UTF-8 if null)
+     * @param bufferSize the buffer size for the content in kB (default 2048 kB)
+     */
+    public HttpResponseListener(CompletableFuture<@Nullable Content> future, @Nullable String fallbackEncoding,
+            int bufferSize) {
+        super(bufferSize * 1024);
         this.future = future;
         this.fallbackEncoding = fallbackEncoding != null ? fallbackEncoding : StandardCharsets.UTF_8.name();
     }

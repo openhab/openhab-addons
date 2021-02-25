@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,9 +32,7 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
@@ -44,17 +42,18 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
         byte[] message = getRawData();
         int msgCnt = message[2] & 0x000000FF;
 
+        debug("Event count", msgCnt);
+
         for (int i = 1; i <= msgCnt; i++) {
             byte eventZone = message[2 + 2 * i];
             byte logEvent = message[3 + 2 * i];
             int eventType = logEvent & 0x0000007F;
-            String logEventStr = (eventType < PowermaxEventLogMessage.LOG_EVENT_TABLE.length)
-                    ? PowermaxEventLogMessage.LOG_EVENT_TABLE[eventType]
-                    : "UNKNOWN";
-            String logUserStr = ((eventZone & 0x000000FF) < PowermaxEventLogMessage.LOG_USER_TABLE.length)
-                    ? PowermaxEventLogMessage.LOG_USER_TABLE[eventZone & 0x000000FF]
-                    : "UNKNOWN";
-            updatedState.setPanelStatus(logEventStr + " (" + logUserStr + ")");
+            String logEventStr = PowermaxMessageConstants.getSystemEventString(eventType);
+            String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
+            updatedState.panelStatus.setValue(logEventStr + " (" + logUserStr + ")");
+
+            debug("Event " + i + " zone code", eventZone, logUserStr);
+            debug("Event " + i + " event code", eventType, logEventStr);
 
             String alarmStatus;
             try {
@@ -63,7 +62,7 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             } catch (IllegalArgumentException e) {
                 alarmStatus = "None";
             }
-            updatedState.setAlarmType(alarmStatus);
+            updatedState.alarmType.setValue(alarmStatus);
 
             String troubleStatus;
             try {
@@ -72,33 +71,14 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             } catch (IllegalArgumentException e) {
                 troubleStatus = "None";
             }
-            updatedState.setTroubleType(troubleStatus);
+            updatedState.troubleType.setValue(troubleStatus);
 
             if (eventType == 0x60) {
                 // System reset
-                updatedState.setDownloadSetupRequired(true);
+                updatedState.downloadSetupRequired.setValue(true);
             }
         }
 
         return updatedState;
-    }
-
-    @Override
-    public String toString() {
-        String str = super.toString();
-
-        byte[] message = getRawData();
-        int msgCnt = message[2] & 0x000000FF;
-
-        str += "\n - event count = " + msgCnt;
-        for (int i = 1; i <= msgCnt; i++) {
-            byte eventZone = message[2 + 2 * i];
-            byte logEvent = message[3 + 2 * i];
-
-            str += "\n - event " + i + " zone code = " + String.format("%08X", eventZone);
-            str += "\n - event " + i + " event code = " + String.format("%08X", logEvent);
-        }
-
-        return str;
     }
 }

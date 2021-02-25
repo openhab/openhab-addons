@@ -143,7 +143,7 @@
 	</channel-type>
 	<channel-type id="datetime-control">
 		<item-type>DateTime Control</item-type>
-		<label>DateTime</label>
+		<label>DateTime Control</label>
 		<description>Control a date/time item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>

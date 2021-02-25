@@ -49,10 +49,16 @@ _Note that it is planned to generate some part of this based on the XML files wi
 | commCtrlVersion  | String | R | Communication Controller Firmware Version
 | remoteCtrlVersion  | String | R | Remote Controller Firmware Version
 | operationMode  | String | R/W | The operation mode of the AC unit. Currently supported values: HEAT, COOL.  
-| fanSpeed  | Number | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the fan speed, whatever the current mode is. Fan speed are from 1 to 5. On BRC1H, the device supports 3 speeds: LOW (1), MEDIUM (2-4), MAX (5).
+| fanSpeed  | Number | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the fan speed, whatever the current mode is. Fan speed are from 1 to 5. On BRC1H, the device supports 3 speeds: LOW (1), MEDIUM (2-4), MAX (5). Some BRC1H also support an AUTO (0) mode - but not all of them support it (depending on internal unit).
 | setpoint  | Number:Temperature | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the setpoint, whatever the current mode is.
 | homekitCurrentHeatingCoolingMode  | String | R | This channel is a "virtual channel" to be used with the HomeKit add-on to implement Thermostat thing. Values supported are the HomeKit addon ones: Off, CoolOn, HeatOn, Auto.
 | homekitTargetHeatingCoolingMode  | String | R/W | This channel is a "virtual channel" to be used with the HomeKit add-on to implement Thermostat thing. Values supported are the HomeKit addon ones: Off, CoolOn, HeatOn, Auto.
+| homebridgeMode | String | R/W | This channel is a "virtual channel" to be used with external HomeBridge. Values are: Off, Heating, Cooling, Auto.
+| eyeBrightness | Dimmer | R/W | This channel allows to manipulate the Blue "Eye" indicator Brightness. Values are between 0 and 100.
+| indoorPowerHours | Number:Time | R | This channel indicates the number of hours the indoor unit has been powered (operating or not).
+| indoorOperationHours | Number:Time | R | This channel indicates the number of hours the indoor unit has been operating.
+| indoorFanHours | Number:Time | R | This channel indicates the number of hours the fan has been blowing.
+| cleanFilterIndicator | Switch | R/W | This channel indicates if the filter needs cleaning. The indicator can be reset by writing "OFF" to the channel.
 
 ## Full Example
 

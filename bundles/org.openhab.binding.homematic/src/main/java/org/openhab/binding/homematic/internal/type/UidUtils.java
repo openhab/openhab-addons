@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.type;
 
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.BINDING_ID;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -83,8 +82,15 @@ public class UidUtils {
      * Generates the HmDatapointInfo for the given thing and channelUID.
      */
     public static HmDatapointInfo createHmDatapointInfo(ChannelUID channelUID) {
-        return new HmDatapointInfo(channelUID.getThingUID().getId(), HmParamsetType.VALUES,
-                NumberUtils.toInt(channelUID.getGroupId()), channelUID.getIdWithoutGroup());
+        int value;
+        try {
+            String groupID = channelUID.getGroupId();
+            value = groupID == null ? 0 : Integer.parseInt(groupID);
+        } catch (NumberFormatException e) {
+            value = 0;
+        }
+        return new HmDatapointInfo(channelUID.getThingUID().getId(), HmParamsetType.VALUES, value,
+                channelUID.getIdWithoutGroup());
     }
 
     /**

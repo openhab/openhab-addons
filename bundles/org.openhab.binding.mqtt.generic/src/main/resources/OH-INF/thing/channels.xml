@@ -84,7 +84,7 @@
 	</channel-type>
 
 	<channel-type id="trigger">
-		<item-type>Trigger</item-type>
+		<kind>trigger</kind>
 		<label>Trigger</label>
 		<description></description>
 		<config-description-ref uri="thing-type:mqtt:trigger_channel"></config-description-ref>

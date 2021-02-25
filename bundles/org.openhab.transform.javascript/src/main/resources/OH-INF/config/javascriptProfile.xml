@@ -9,8 +9,9 @@
 			<label>JavaScript Filename</label>
 			<description>Filename of the JavaScript in the transform folder. The state will be available in the variable
 				\"input\".</description>
+			<limitToOptions>false</limitToOptions>
 		</parameter>
-		<parameter name="sourceFormat" type="text" required="false">
+		<parameter name="sourceFormat" type="text">
 			<label>State Formatter</label>
 			<description>How to format the state on the channel before transforming it, i.e. %s or %.1f °C (default is %s)</description>
 			<advanced>true</advanced>

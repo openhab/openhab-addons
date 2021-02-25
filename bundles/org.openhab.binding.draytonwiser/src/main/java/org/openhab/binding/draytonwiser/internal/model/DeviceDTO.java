@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,8 @@ public class DeviceDTO {
         return displayedSignalStrength;
     }
 
-    public int getBatteryVoltage() {
-        return batteryVoltage == null ? Integer.MIN_VALUE : batteryVoltage;
+    public Integer getBatteryVoltage() {
+        return batteryVoltage;
     }
 
     public String getBatteryLevel() {

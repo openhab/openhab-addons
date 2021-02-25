@@ -32,7 +32,7 @@
 	<channel-type id="device-local-ownconsumption">
 		<item-type>Number:Power</item-type>
 		<label>Own Consumption</label>
-		<description>Current own comsumption</description>
+		<description>Current own consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -46,7 +46,7 @@
 	<channel-type id="device-local-homeconsumption-total">
 		<item-type>Number:Power</item-type>
 		<label>Home Consumption</label>
-		<description>Current total homeconsumption</description>
+		<description>Current total home consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -483,5 +483,439 @@
 		<description>Yield of the photovoltaic plant this year</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-output-power">
+		<item-type>Number:Power</item-type>
+		<label>Grid Output Power</label>
+		<description>Current output power to the grid</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-yield-day-second-gen">
+		<item-type>Number:Energy</item-type>
+		<label>Yield Day</label>
+		<description>Total produced power day</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-yield-total-second-gen">
+		<item-type>Number:Energy</item-type>
+		<label>Yield Total</label>
+		<description>Total produced power</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-operating-status">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Operating Status</label>
+		<description>Operating status</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-grid-voltage-l1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Grid Voltage L1</label>
+		<description>Current output voltage to the grid, L1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-current-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Grid Amperage L1</label>
+		<description>Current output amperage to the grid, L1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f  %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power L1</label>
+		<description>Current output power to the grid, L1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-voltage-l2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Grid Voltage L2</label>
+		<description>Current output voltage to the grid, L2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-current-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Grid Amperage L2</label>
+		<description>Current output amperage to the grid, L2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power L2</label>
+		<description>Current output power to the grid, L2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-voltage-l3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Grid Voltage L3</label>
+		<description>Current output voltage to the grid, L3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-current-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Grid Amperage L3</label>
+		<description>Current output amperage to the grid, L3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power L3</label>
+		<description>Current output power to the grid, L3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc-power-pv">
+		<item-type>Number:Power</item-type>
+		<label>DC Power PV</label>
+		<description>Current power from solar panels</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc1-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC1 Voltage</label>
+		<description>Current voltage from solar panels, DC1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc1-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC1 Amperage</label>
+		<description>Current amperage from solar panels, DC1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc1-power">
+		<item-type>Number:Power</item-type>
+		<label>DC1 Power</label>
+		<description>Current power from solar panels, DC1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc2-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC2 Voltage</label>
+		<description>Current voltage from solar panels, DC2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc2-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC2 Amperage</label>
+		<description>Current amperage from solar panels, DC2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc2-power">
+		<item-type>Number:Power</item-type>
+		<label>DC2 Power</label>
+		<description>Current power from solar panels, DC2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc3-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC3 Voltage</label>
+		<description>Current voltage from solar panels, DC3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc3-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC3 Amperage</label>
+		<description>Current amperage from solar panels, DC3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-dc3-power">
+		<item-type>Number:Power</item-type>
+		<label>DC3 Power</label>
+		<description>Current power from solar panels, DC3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-akt-home-consumption-solar">
+		<item-type>Number:Power</item-type>
+		<label>Home Consumption PV</label>
+		<description>Current consumption from solar panels</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-akt-home-consumption-bat">
+		<item-type>Number:Power</item-type>
+		<label>Home Consumption Bat</label>
+		<description>Current consumption from battery</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-akt-home-consumption-grid">
+		<item-type>Number:Power</item-type>
+		<label>Home Consumption Grid</label>
+		<description>Current consumption from grid</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-phase-sel-home-consump-l1">
+		<item-type>Number:Power</item-type>
+		<label>Home Consumption L1</label>
+		<description>Current home consumption, L1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-phase-sel-home-consump-l2">
+		<item-type>Number:Power</item-type>
+		<label>Home Consumption L2</label>
+		<description>Current home consumption, L2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-phase-sel-home-consump-l3">
+		<item-type>Number:Power</item-type>
+		<label>Home Consumption L3</label>
+		<description>Current home consumption, L3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-freq">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Freq</label>
+		<description>Current frequency on grid</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-grid-cos-phi">
+		<item-type>Number:Angle</item-type>
+		<label>Grid Cos Phi</label>
+		<description>Current power factor on grid</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-home-consumption-day">
+		<item-type>Number:Energy</item-type>
+		<label>Home Consumption Day</label>
+		<description>Total home consumption day</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-own-consumption-day">
+		<item-type>Number:Energy</item-type>
+		<label>Own Consumption Day</label>
+		<description>Total own consumption day</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-own-cons-rate-day">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Own Cons Rate Day</label>
+		<description>Total own consumption rate day</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-autonomy-degree-day">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autonomy Degree Day</label>
+		<description>Total autonomy degree day</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-home-consumption-total">
+		<item-type>Number:Energy</item-type>
+		<label>Home Consumption Total</label>
+		<description>Total home consumption</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-own-consumption-total">
+		<item-type>Number:Energy</item-type>
+		<label>Own Consumption Total</label>
+		<description>Total own consumptionl</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-operating-time-total">
+		<item-type>Number:Time</item-type>
+		<label>Operating Time Total</label>
+		<description>Total operating time</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-current-dir">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Current Dir</label>
+		<description>Current direction</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-charge-cycles">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Charge Cycles</label>
+		<description>Total number of charge cycles</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-battery-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<description>Current battery temperature</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-loginterval">
+		<item-type>Number:Time</item-type>
+		<label>Loginterval</label>
+		<description>Value for log interval</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-s0-inpulse-cnt">
+		<item-type>Number:Dimensionless</item-type>
+		<label>S0 Inpulse Cnt</label>
+		<description>S0-pulse counter</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="statistic-own-cons-rate-total">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Own Cons Rate Total</label>
+		<description>Total own consumption rate</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="statistic-autonomy-degree-total">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autonomy Degree Total</label>
+		<description>Total autonomy degree</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-battery-voltage">
+		<item-type>Number:ElectricalPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Current battery voltage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-bat-state-of-charge">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Bat State of Charge</label>
+		<description>Current battery charge state</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-self-consumption">
+		<item-type>Number:Power</item-type>
+		<label>Self Consumption</label>
+		<description>Current self consumption</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-battery-usage-consumption">
+		<item-type>Number:Power</item-type>
+		<label>Battery Usage Consumption</label>
+		<description>Battery usage consumption</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="device-local-smart-battery-control">
+		<item-type>Switch</item-type>
+		<label>Smart Battery Control</label>
+		<description>Smart battery control</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="device-local-max-depth-of-discharge">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Max Depth of Discharge</label>
+		<description>Max depth of discharge</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-shadow-management">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Shadow Management</label>
+		<description>Shadow management</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-external-module-control">
+		<item-type>Number:Dimensionless</item-type>
+		<label>External Module Control</label>
+		<description>External Module Control</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-battery-usage-consumption-set">
+		<item-type>String</item-type>
+		<label>Battery Usage Consumption Set</label>
+		<description>Set battery usage consumption</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-battery-usage-strategy-set">
+		<item-type>String</item-type>
+		<label>Battery Usage Strategy Set</label>
+		<description>Set battery usage strategy</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-smart-battery-control-set">
+		<item-type>Switch</item-type>
+		<label>Smart Battery Control Set</label>
+		<description>Set smart battery control</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-battery-charge-time-from-set">
+		<item-type>String</item-type>
+		<label>Battery Charge Time from Set</label>
+		<description>Set battery charge time from</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-battery-charge-time-to-set">
+		<item-type>String</item-type>
+		<label>Battery Charge Time to Set</label>
+		<description>Set battery charge time to</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-max-depth-of-discharge-set">
+		<item-type>String</item-type>
+		<label>Max Depth of Discharge Set</label>
+		<description>Set max depth of discharge</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-shadow-management-set">
+		<item-type>String</item-type>
+		<label>Shadow Management Set</label>
+		<description>Set shadow management</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-external-module-control-set">
+		<item-type>String</item-type>
+		<label>External Module Control Set</label>
+		<description>Set External Module Control</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

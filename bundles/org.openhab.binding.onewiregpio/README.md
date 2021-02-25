@@ -2,12 +2,10 @@
 
 This binding reads temperature values from OneWire bus sensors connected to the GPIO bus on Raspberry Pi.
 
-
 ## Supported Things
 
 Temperature sensors. 
 Tested successfully with DS18B20 sensor on Raspberry Pi 3.
-
 
 ## Binding Configuration
 
@@ -33,7 +31,6 @@ Thing onewiregpio:sensor:livingRoom "Living room" [gpio_bus_file="/sys/bus/w1/de
 ## Channels
 
 The devices supports currently one channel - "temperature" which allows to read temperature from OneWire temperature sensor.
-
 
 ## Full Example
 

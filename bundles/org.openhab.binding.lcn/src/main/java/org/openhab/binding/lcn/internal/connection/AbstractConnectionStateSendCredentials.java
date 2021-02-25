@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public abstract class AbstractConnectionStateSendCredentials extends AbstractCon
      */
     protected void startTimeoutTimer() {
         addTimer(getScheduler().schedule(
-                () -> context.handleConnectionFailed(
+                () -> handleConnectionFailed(
                         new LcnException("Network timeout in state " + getClass().getSimpleName())),
                 connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS));
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
@@ -27,31 +28,34 @@ import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramSt
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class P1TelegramParserTest {
 
     // @formatter:off
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "ace4000", 59, },
-            { "dsmr_40", 39, },
-            { "dsmr_42", 39, },
-            { "dsmr_50", 41, },
-            { "flu5", 21, },
-            { "Iskra_AM550", 41, },
-            { "Landis_Gyr_E350", 10, },
-            { "Landis_Gyr_ZCF110", 25, },
-            { "Sagemcom_XS210", 41, },
-            { "smarty", 28, },
-            { "smarty_with_units", 23, },
+            { "ace4000", 59, 0},
+            { "dsmr_40", 39, 0},
+            { "dsmr_42", 39, 0},
+            { "dsmr_50", 41, 0},
+            { "flu5_invalid_gasmeter", 19, 1},
+            { "flu5", 21, 0},
+            { "Iskra_AM550", 41, 0},
+            { "Landis_Gyr_E350", 10, 0},
+            { "Landis_Gyr_ZCF110", 25, 0},
+            { "Sagemcom_XS210", 41, 0},
+            { "smarty", 28, 0},
+            { "smarty_with_units", 23, 0},
         });
     }
     // @formatter:on
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testParsing(final String telegramName, final int numberOfCosemObjects) {
+    public void testParsing(final String telegramName, final int numberOfCosemObjects, final int unknownObjects) {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
-        assertEquals(0, telegram.getUnknownCosemObjects().size(), "Should not have any unknown cosem objects");
+        assertEquals(unknownObjects, telegram.getUnknownCosemObjects().size(),
+                "Should not have other than " + unknownObjects + " unknown cosem objects");
         assertEquals(numberOfCosemObjects,
                 telegram.getCosemObjects().stream().mapToInt(co -> co.getCosemValues().size()).sum(),
                 "Expected number of objects");

@@ -13,15 +13,9 @@ This binding has been tested with myLink firmware 5.23.
 
 ## Discovery
 
-To start a discovery:
- 
-- install this binding
-- open Paper UI
-- add a new thing in menu Configuration/Things
-- choose SomfyMyLink Binding and select Somfy MyLink Bridge
-- enter it's IP Address and system id. The system id This can be found in the integration settings -> Control4 section of your My Link app
- 
-If the supplied ip address and system id are correct, the automatic discovery starts immediately and detected roller shades appear in Paper UI inbox.
+To use auto discovery first setup a Somfy MyLink bridge, then supply its IP address and system id.
+The system id can be found in the integration settings -> Control4 section of your My Link app.
+Once the Somfy MyLink bridge is ONLINE you can start a scan that will detect and add to your Inbox any discovered roller shades.
 
 ## Thing Configuration
 

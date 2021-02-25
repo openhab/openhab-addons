@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,8 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -322,7 +323,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
         return null;
     }
 
-    private StateDescription getSensorStateDescription(SensorEnum sensorType) {
+    private StateDescriptionFragment getSensorStateDescription(SensorEnum sensorType) {
         // the digitalSTROM resolution for temperature in kelvin is not correct but sensor-events and cached values are
         // shown in °C so we will use this unit for temperature sensors
         String unitShortCut = sensorType.getUnitShortcut();
@@ -332,14 +333,15 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
         if (sensorType.toString().contains("TEMPERATURE")) {
             unitShortCut = "°C";
         }
-        return new StateDescription(null, null, null, sensorType.getPattern() + " " + unitShortCut, true, null);
+        return StateDescriptionFragmentBuilder.create().withPattern(sensorType.getPattern() + " " + unitShortCut)
+                .withReadOnly(true).build();
     }
 
     private String getStageChannelOption(String type, String option) {
         return buildIdentifier(type, STAGE, OPTION, option);
     }
 
-    private StateDescription getStageDescription(String channelID, Locale locale) {
+    private StateDescriptionFragment getStageDescription(String channelID, Locale locale) {
         if (channelID.contains(STAGE.toLowerCase())) {
             List<StateOption> stateOptions = new ArrayList<>();
             if (channelID.contains(LIGHT)) {
@@ -369,11 +371,12 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
                             locale)));
                 }
             }
-            return new StateDescription(null, null, null, null, false, stateOptions);
+            return StateDescriptionFragmentBuilder.create().withReadOnly(false).withOptions(stateOptions).build();
         }
         if (channelID.contains(TEMPERATURE_CONTROLLED)) {
-            return new StateDescription(new BigDecimal(0), new BigDecimal(50), new BigDecimal(0.1), "%.1f °C", false,
-                    null);
+            return StateDescriptionFragmentBuilder.create().withMinimum(new BigDecimal(0))
+                    .withMaximum(new BigDecimal(50)).withStep(new BigDecimal(0.1)).withPattern("%.1f °C")
+                    .withReadOnly(false).build();
         }
         return null;
     }
@@ -485,14 +488,14 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
                 return ChannelTypeBuilder.state(channelTypeUID, getLabelText(channelID, locale), NUMBER)
                         .withDescription(getDescText(channelID, locale)).withCategory(getSensorCategory(sensorType))
                         .withTags(getSimpleTags(channelID, locale))
-                        .withStateDescription(getSensorStateDescription(sensorType)).build();
+                        .withStateDescriptionFragment(getSensorStateDescription(sensorType)).build();
             } catch (IllegalArgumentException e) {
                 if (SUPPORTED_OUTPUT_CHANNEL_TYPES.contains(channelID)) {
                     return ChannelTypeBuilder
                             .state(channelTypeUID, getLabelText(channelID, locale), getItemType(channelID))
                             .withDescription(getDescText(channelID, locale)).withCategory(getCategory(channelID))
                             .withTags(getTags(channelID, locale))
-                            .withStateDescription(getStageDescription(channelID, locale)).build();
+                            .withStateDescriptionFragment(getStageDescription(channelID, locale)).build();
                 }
                 MeteringTypeEnum meteringType = getMeteringType(channelID);
                 if (meteringType != null) {
@@ -501,11 +504,14 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
                     if (MeteringTypeEnum.CONSUMPTION.equals(meteringType)) {
                         pattern = "%d W";
                     }
+
                     return ChannelTypeBuilder.state(channelTypeUID, getLabelText(channelID, locale), NUMBER)
                             .withDescription(getDescText(channelID, locale)).withCategory(CATEGORY_ENERGY)
                             .withTags(
                                     new HashSet<>(Arrays.asList(getLabelText(channelID, locale), getText(DS, locale))))
-                            .withStateDescription(new StateDescription(null, null, null, pattern, true, null)).build();
+                            .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withPattern(pattern)
+                                    .withReadOnly(true).build())
+                            .build();
                 }
                 try {
                     DeviceBinarayInputEnum binarayInputType = DeviceBinarayInputEnum
@@ -514,8 +520,9 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
                             .state(channelTypeUID, getLabelText(channelID, locale), getItemType(channelID))
                             .withDescription(getDescText(channelID, locale))
                             .withCategory(getBinaryInputCategory(binarayInputType))
-                            .withTags(getSimpleTags(channelTypeUID.getId(), locale))
-                            .withStateDescription(new StateDescription(null, null, null, null, true, null)).build();
+                            .withTags(getSimpleTags(channelTypeUID.getId(), locale)).withStateDescriptionFragment(
+                                    StateDescriptionFragmentBuilder.create().withReadOnly(true).build())
+                            .build();
                 } catch (IllegalArgumentException e1) {
                     // ignore
                 }

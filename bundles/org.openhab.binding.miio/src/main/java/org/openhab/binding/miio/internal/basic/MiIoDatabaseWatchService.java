@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.miio.internal.basic;
 
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -18,6 +17,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_DAT
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,9 +43,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link MiIoDatabaseWatchService} creates a registry of database file per ModelId
@@ -118,7 +117,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
                 for (String id : devdb.getDevice().getId()) {
                     workingDatabaseList.put(id, db);
                 }
-            } catch (JsonIOException | JsonSyntaxException | IOException e) {
+            } catch (JsonParseException | IOException | URISyntaxException e) {
                 logger.debug("Error while processing database '{}': {}", db, e.getMessage());
             }
             databaseList = workingDatabaseList;

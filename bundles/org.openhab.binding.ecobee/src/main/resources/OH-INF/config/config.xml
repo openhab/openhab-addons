@@ -29,10 +29,6 @@
 			<description>Enable/disable automatic discovery</description>
 			<default>true</default>
 		</parameter>
-		<parameter name="discoveryInterval" type="integer" min="60" required="false" unit="s">
-			<label>Thermostat Discovery Interval</label>
-			<description>Specifies time in seconds in which the binding will attempt to discover thermostats</description>
-		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:ecobee:thermostat">

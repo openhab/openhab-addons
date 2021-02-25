@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -142,8 +142,8 @@ public class Property implements AttributeChanged {
         if (attributes.retained) {
             return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
                     .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
-                    .withStateDescription(channelState.getCache().createStateDescription(!attributes.settable).build()
-                            .toStateDescription())
+                    .withStateDescriptionFragment(
+                            channelState.getCache().createStateDescription(!attributes.settable).build())
                     .build();
         } else {
             // Non-retained and settable property -> State channel

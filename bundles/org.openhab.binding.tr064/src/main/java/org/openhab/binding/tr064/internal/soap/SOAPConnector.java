@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,11 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -57,11 +59,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SOAPConnector {
-    private static final int SOAP_TIMEOUT = 2000; // in ms
+    private static final int SOAP_TIMEOUT = 5; // in
     private final Logger logger = LoggerFactory.getLogger(SOAPConnector.class);
     private final HttpClient httpClient;
     private final String endpointBaseURL;
     private final SOAPValueConverter soapValueConverter;
+
+    private final ExpiringCacheMap<SOAPRequest, SOAPMessage> soapMessageCache = new ExpiringCacheMap<>(
+            Duration.ofMillis(2000));
 
     public SOAPConnector(HttpClient httpClient, String endpointBaseURL) {
         this.httpClient = httpClient;
@@ -72,15 +77,12 @@ public class SOAPConnector {
     /**
      * prepare a SOAP request for an action request to a service
      *
-     * @param service the service
-     * @param soapAction the action to send
-     * @param arguments arguments to send along with the request
+     * @param soapRequest the request to be generated
      * @return a jetty Request containing the full SOAP message
      * @throws IOException if a problem while writing the SOAP message to the Request occurs
      * @throws SOAPException if a problem with creating the SOAP message occurs
      */
-    private Request prepareSOAPRequest(SCPDServiceType service, String soapAction, Map<String, String> arguments)
-            throws IOException, SOAPException {
+    private Request prepareSOAPRequest(SOAPRequest soapRequest) throws IOException, SOAPException {
         MessageFactory messageFactory = MessageFactory.newInstance();
         SOAPMessage soapMessage = messageFactory.createMessage();
         SOAPPart soapPart = soapMessage.getSOAPPart();
@@ -89,8 +91,9 @@ public class SOAPConnector {
 
         // SOAP body
         SOAPBody soapBody = envelope.getBody();
-        SOAPElement soapBodyElem = soapBody.addChildElement(soapAction, "u", service.getServiceType());
-        arguments.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(argument -> {
+        SOAPElement soapBodyElem = soapBody.addChildElement(soapRequest.soapAction, "u",
+                soapRequest.service.getServiceType());
+        soapRequest.arguments.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(argument -> {
             try {
                 soapBodyElem.addChildElement(argument.getKey()).setTextContent(argument.getValue());
             } catch (SOAPException e) {
@@ -101,11 +104,12 @@ public class SOAPConnector {
 
         // SOAP headers
         MimeHeaders headers = soapMessage.getMimeHeaders();
-        headers.addHeader("SOAPAction", service.getServiceType() + "#" + soapAction);
+        headers.addHeader("SOAPAction", soapRequest.service.getServiceType() + "#" + soapRequest.soapAction);
         soapMessage.saveChanges();
 
         // create Request and add headers and content
-        Request request = httpClient.newRequest(endpointBaseURL + service.getControlURL()).method(HttpMethod.POST);
+        Request request = httpClient.newRequest(endpointBaseURL + soapRequest.service.getControlURL())
+                .method(HttpMethod.POST);
         ((Iterator<MimeHeader>) soapMessage.getMimeHeaders().getAllHeaders())
                 .forEachRemaining(header -> request.header(header.getName(), header.getValue()));
         try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
@@ -118,19 +122,46 @@ public class SOAPConnector {
     }
 
     /**
-     * execute a SOAP request
+     * execute a SOAP request with cache
      *
-     * @param service the service to send the action to
-     * @param soapAction the action itself
-     * @param arguments arguments to send along with the request
+     * @param soapRequest the request itself
      * @return the SOAPMessage answer from the remote host
      * @throws Tr064CommunicationException if an error occurs during the request
      */
-    public synchronized SOAPMessage doSOAPRequest(SCPDServiceType service, String soapAction,
-            Map<String, String> arguments) throws Tr064CommunicationException {
+    public SOAPMessage doSOAPRequest(SOAPRequest soapRequest) throws Tr064CommunicationException {
         try {
-            Request request = prepareSOAPRequest(service, soapAction, arguments).timeout(SOAP_TIMEOUT,
-                    TimeUnit.MILLISECONDS);
+            SOAPMessage soapMessage = Objects.requireNonNull(soapMessageCache.putIfAbsentAndGet(soapRequest, () -> {
+                try {
+                    SOAPMessage newValue = doSOAPRequestUncached(soapRequest);
+                    logger.trace("Storing in cache: {}", newValue);
+                    return newValue;
+                } catch (Tr064CommunicationException e) {
+                    // wrap exception
+                    throw new IllegalArgumentException(e);
+                }
+            }));
+            logger.trace("Returning from cache: {}", soapMessage);
+            return soapMessage;
+        } catch (IllegalArgumentException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof Tr064CommunicationException) {
+                throw (Tr064CommunicationException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * execute a SOAP request without cache
+     *
+     * @param soapRequest the request itself
+     * @return the SOAPMessage answer from the remote host
+     * @throws Tr064CommunicationException if an error occurs during the request
+     */
+    public synchronized SOAPMessage doSOAPRequestUncached(SOAPRequest soapRequest) throws Tr064CommunicationException {
+        try {
+            Request request = prepareSOAPRequest(soapRequest).timeout(SOAP_TIMEOUT, TimeUnit.SECONDS);
             if (logger.isTraceEnabled()) {
                 request.getContent().forEach(buffer -> logger.trace("Request: {}", new String(buffer.array())));
             }
@@ -140,8 +171,7 @@ public class SOAPConnector {
                 // retry once if authentication expired
                 logger.trace("Re-Auth needed.");
                 httpClient.getAuthenticationStore().clearAuthenticationResults();
-                request = prepareSOAPRequest(service, soapAction, arguments).timeout(SOAP_TIMEOUT,
-                        TimeUnit.MILLISECONDS);
+                request = prepareSOAPRequest(soapRequest).timeout(SOAP_TIMEOUT, TimeUnit.SECONDS);
                 response = request.send();
             }
             try (final ByteArrayInputStream is = new ByteArrayInputStream(response.getContent())) {
@@ -153,7 +183,7 @@ public class SOAPConnector {
                     String soapReason = getSOAPElement(soapMessage, "errorDescription").orElse("unknown");
                     String error = String.format("HTTP-Response-Code %d (%s), SOAP-Fault: %s (%s)",
                             response.getStatus(), response.getReason(), soapError, soapReason);
-                    throw new Tr064CommunicationException(error);
+                    throw new Tr064CommunicationException(error, response.getStatus(), soapError);
                 }
                 return soapMessage;
             }
@@ -186,7 +216,9 @@ public class SOAPConnector {
                                     channelConfig.getChannelTypeDescription().getGetAction().getParameter().getName(),
                                     parameter);
                         }
-                        doSOAPRequest(service, channelTypeDescription.getSetAction().getName(), arguments);
+                        SOAPRequest soapRequest = new SOAPRequest(service,
+                                channelTypeDescription.getSetAction().getName(), arguments);
+                        doSOAPRequestUncached(soapRequest);
                     } catch (Tr064CommunicationException e) {
                         logger.warn("Could not send command {}: {}", command, e.getMessage());
                     }
@@ -224,8 +256,8 @@ public class SOAPConnector {
             if (parameter != null && !action.getParameter().isInternalOnly()) {
                 arguments.put(action.getParameter().getName(), parameter);
             }
-            SOAPMessage soapResponse = doSOAPRequest(channelConfig.getService(), getAction.getName(), arguments);
-
+            SOAPMessage soapResponse = doSOAPRequest(
+                    new SOAPRequest(channelConfig.getService(), getAction.getName(), arguments));
             String argumentName = channelConfig.getChannelTypeDescription().getGetAction().getArgument();
             // find all other channels with the same action that are already in cache, so we can update them
             Map<ChannelUID, Tr064ChannelConfig> channelsInRequest = channelConfigMap.entrySet().stream()
@@ -248,7 +280,17 @@ public class SOAPConnector {
                     .orElseThrow(() -> new Tr064CommunicationException("failed to transform '"
                             + channelConfig.getChannelTypeDescription().getGetAction().getArgument() + "'"));
         } catch (Tr064CommunicationException e) {
-            logger.info("Failed to get {}: {}", channelConfig, e.getMessage());
+            if (e.getHttpError() == 500) {
+                switch (e.getSoapError()) {
+                    case "714":
+                        // NoSuchEntryInArray usually is an unknown entry in the MAC list
+                        logger.debug("Failed to get {}: {}", channelConfig, e.getMessage());
+                        return UnDefType.UNDEF;
+                    default:
+                }
+            }
+            // all other cases are an error
+            logger.warn("Failed to get {}: {}", channelConfig, e.getMessage());
             return UnDefType.UNDEF;
         }
     }

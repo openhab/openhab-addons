@@ -14,6 +14,8 @@
 			<channel-group id="ir-m1" typeId="ir-m1"/>
 		</channel-groups>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>

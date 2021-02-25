@@ -1,5 +1,5 @@
 ---
-name: "Documentation issue"
+name: "📖 Documentation issue"
 about: Some information within the add-on documentation is wrong or missing
 labels: documentation
 

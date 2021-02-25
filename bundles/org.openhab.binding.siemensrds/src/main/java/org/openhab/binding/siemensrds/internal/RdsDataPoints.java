@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -299,7 +299,7 @@ public class RdsDataPoints {
             @Nullable
             RdsDataPoints newPoints = GSON.fromJson(json, RdsDataPoints.class);
 
-            Map<String, @Nullable BasePoint> newPointsMap = newPoints.points;
+            Map<String, @Nullable BasePoint> newPointsMap = newPoints != null ? newPoints.points : null;
 
             if (newPointsMap == null) {
                 throw new RdsCloudException("new points map empty");

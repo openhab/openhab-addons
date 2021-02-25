@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -54,16 +53,14 @@ public class DoorBirdHandler extends ChannelDuplexHandler {
         try {
             String content = msg.toString();
             ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-            if (content.contains("doorbell:H")) {
-                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.ON);
-            }
             if (content.contains("doorbell:L")) {
                 ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.OFF);
+            } else if (content.contains("doorbell:H")) {
+                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.ON);
             }
             if (content.contains("motionsensor:L")) {
                 ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-            }
-            if (content.contains("motionsensor:H")) {
+            } else if (content.contains("motionsensor:H")) {
                 ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
             }
         } finally {

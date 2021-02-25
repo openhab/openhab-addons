@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,6 +83,11 @@ public class CaddxBindingConstants {
     public static final String ZONE_BYPASSED = "zone_bypassed";
 
     // Keypad
+    // Commands
+    public static final String KEYPAD_TERMINAL_MODE_REQUEST = "keypad_terminal_mode_request";
+    public static final String KEYPAD_SEND_KEYPAD_TEXT_MESSAGE = "keypad_send_keypad_text_message";
+    // Channels
+    public static final String KEYPAD_KEY_PRESSED = "keypad_key_pressed";
 
     // Set of all supported Thing Type UIDs
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,22 +18,21 @@ import java.io.OutputStream;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.novafinedust.internal.SDS011Handler;
 import org.openhab.binding.novafinedust.internal.sds011protocol.messages.CommandMessage;
 import org.openhab.binding.novafinedust.internal.sds011protocol.messages.Constants;
-import org.openhab.binding.novafinedust.internal.sds011protocol.messages.ModeReply;
-import org.openhab.binding.novafinedust.internal.sds011protocol.messages.SensorFirmwareReply;
 import org.openhab.binding.novafinedust.internal.sds011protocol.messages.SensorMeasuredDataReply;
 import org.openhab.binding.novafinedust.internal.sds011protocol.messages.SensorReply;
-import org.openhab.binding.novafinedust.internal.sds011protocol.messages.SleepReply;
-import org.openhab.binding.novafinedust.internal.sds011protocol.messages.WorkingPeriodReply;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
-import org.openhab.core.io.transport.serial.SerialPortEvent;
-import org.openhab.core.io.transport.serial.SerialPortEventListener;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.core.util.HexUtils;
@@ -47,7 +46,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class SDS011Communicator implements SerialPortEventListener {
+public class SDS011Communicator {
+
+    private static final int MAX_READ_UNTIL_SENSOR_DATA = 6; // at least 6 because we send 5 configuration commands
 
     private final Logger logger = LoggerFactory.getLogger(SDS011Communicator.class);
 
@@ -57,10 +58,13 @@ public class SDS011Communicator implements SerialPortEventListener {
 
     private @Nullable OutputStream outputStream;
     private @Nullable InputStream inputStream;
+    private @Nullable ScheduledExecutorService scheduler;
 
-    public SDS011Communicator(SDS011Handler thingHandler, SerialPortIdentifier portId) {
+    public SDS011Communicator(SDS011Handler thingHandler, SerialPortIdentifier portId,
+            ScheduledExecutorService scheduler) {
         this.thingHandler = thingHandler;
         this.portId = portId;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -74,12 +78,15 @@ public class SDS011Communicator implements SerialPortEventListener {
      * @throws IOException
      * @throws UnsupportedCommOperationException
      */
-    public boolean initialize(WorkMode mode, Duration interval)
+    public void initialize(WorkMode mode, Duration interval)
             throws PortInUseException, TooManyListenersException, IOException, UnsupportedCommOperationException {
-        boolean initSuccessful = true;
+
+        logger.trace("Initializing with mode={}, interval={}", mode, interval);
 
         SerialPort localSerialPort = portId.open(thingHandler.getThing().getUID().toString(), 2000);
+        logger.trace("Port opened, object is={}", localSerialPort);
         localSerialPort.setSerialPortParams(9600, 8, 1, 0);
+        logger.trace("Serial parameters set on port");
 
         outputStream = localSerialPort.getOutputStream();
         inputStream = localSerialPort.getInputStream();
@@ -87,51 +94,50 @@ public class SDS011Communicator implements SerialPortEventListener {
         if (inputStream == null || outputStream == null) {
             throw new IOException("Could not create input or outputstream for the port");
         }
+        logger.trace("Input and Outputstream opened for the port");
 
         // wake up the device
-        initSuccessful &= sendSleep(false);
-        initSuccessful &= getFirmware();
+        sendSleep(false);
+        logger.trace("Wake up call done");
+        getFirmware();
+        logger.trace("Firmware requested");
 
         if (mode == WorkMode.POLLING) {
-            initSuccessful &= setMode(WorkMode.POLLING);
-            initSuccessful &= setWorkingPeriod((byte) 0);
+            setMode(WorkMode.POLLING);
+            logger.trace("Polling mode set");
+            setWorkingPeriod((byte) 0);
+            logger.trace("Working period for polling set");
         } else {
             // reporting
-            initSuccessful &= setWorkingPeriod((byte) interval.toMinutes());
-            initSuccessful &= setMode(WorkMode.REPORTING);
+            setWorkingPeriod((byte) interval.toMinutes());
+            logger.trace("Working period for reporting set");
+            setMode(WorkMode.REPORTING);
+            logger.trace("Reporting mode set");
         }
 
-        // enable listeners only after we have configured the sensor above because for configuring we send and read data
-        // sequentially
-        localSerialPort.notifyOnDataAvailable(true);
-        localSerialPort.addEventListener(this);
         this.serialPort = localSerialPort;
-
-        return initSuccessful;
     }
 
-    private @Nullable SensorReply sendCommand(CommandMessage message) throws IOException {
+    private void sendCommand(CommandMessage message) throws IOException {
         byte[] commandData = message.getBytes();
         if (logger.isDebugEnabled()) {
             logger.debug("Will send command: {} ({})", HexUtils.bytesToHex(commandData), Arrays.toString(commandData));
         }
 
-        write(commandData);
+        try {
+            write(commandData);
+        } catch (IOException ioex) {
+            logger.debug("Got an exception while writing a command, will not try to fetch a reply for it.", ioex);
+            throw ioex;
+        }
 
         try {
-            // Give the sensor some time to handle the command
+            // Give the sensor some time to handle the command before doing something else with it
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            logger.warn("Problem while waiting for reading a reply to our command.");
+            logger.warn("Interrupted while waiting after sending command={}", message);
             Thread.currentThread().interrupt();
         }
-        SensorReply reply = readReply();
-        // in case there is still another reporting active, we want to discard the sensor data and read the reply to our
-        // command again
-        if (reply instanceof SensorMeasuredDataReply) {
-            reply = readReply();
-        }
-        return reply;
     }
 
     private void write(byte[] commandData) throws IOException {
@@ -142,21 +148,13 @@ public class SDS011Communicator implements SerialPortEventListener {
         }
     }
 
-    private boolean setWorkingPeriod(byte period) throws IOException {
+    private void setWorkingPeriod(byte period) throws IOException {
         CommandMessage m = new CommandMessage(Command.WORKING_PERIOD, new byte[] { Constants.SET_ACTION, period });
         logger.debug("Sending work period: {}", period);
-        SensorReply reply = sendCommand(m);
-        logger.debug("Got reply to setWorkingPeriod command: {}", reply);
-        if (reply instanceof WorkingPeriodReply) {
-            WorkingPeriodReply wpReply = (WorkingPeriodReply) reply;
-            if (wpReply.getPeriod() == period && wpReply.getActionType() == Constants.SET_ACTION) {
-                return true;
-            }
-        }
-        return false;
+        sendCommand(m);
     }
 
-    private boolean setMode(WorkMode workMode) throws IOException {
+    private void setMode(WorkMode workMode) throws IOException {
         byte haveToRequestData = 0;
         if (workMode == WorkMode.POLLING) {
             haveToRequestData = 1;
@@ -164,18 +162,10 @@ public class SDS011Communicator implements SerialPortEventListener {
 
         CommandMessage m = new CommandMessage(Command.MODE, new byte[] { Constants.SET_ACTION, haveToRequestData });
         logger.debug("Sending mode: {}", workMode);
-        SensorReply reply = sendCommand(m);
-        logger.debug("Got reply to setMode command: {}", reply);
-        if (reply instanceof ModeReply) {
-            ModeReply mr = (ModeReply) reply;
-            if (mr.getActionType() == Constants.SET_ACTION && mr.getMode() == workMode) {
-                return true;
-            }
-        }
-        return false;
+        sendCommand(m);
     }
 
-    private boolean sendSleep(boolean doSleep) throws IOException {
+    private void sendSleep(boolean doSleep) throws IOException {
         byte payload = (byte) 1;
         if (doSleep) {
             payload = (byte) 0;
@@ -183,42 +173,25 @@ public class SDS011Communicator implements SerialPortEventListener {
 
         CommandMessage m = new CommandMessage(Command.SLEEP, new byte[] { Constants.SET_ACTION, payload });
         logger.debug("Sending doSleep: {}", doSleep);
-        SensorReply reply = sendCommand(m);
-        logger.debug("Got reply to sendSleep command: {}", reply);
+        sendCommand(m);
 
+        // as it turns out, the protocol doesn't work as described: sometimes the device just wakes up without replying
+        // to us. Hence we should not wait for a reply, but just force to wake it up to then send out our configuration
+        // commands
         if (!doSleep) {
             // sometimes the sensor does not wakeup on the first attempt, thus we try again
-            for (int i = 0; reply == null && i < 3; i++) {
-                reply = sendCommand(m);
-                logger.debug("Got reply to sendSleep command after retry#{}: {}", i + 1, reply);
-            }
+            sendCommand(m);
         }
-
-        if (reply instanceof SleepReply) {
-            SleepReply sr = (SleepReply) reply;
-            if (sr.getActionType() == Constants.SET_ACTION && sr.getSleep() == payload) {
-                return true;
-            }
-        }
-        return false;
     }
 
-    private boolean getFirmware() throws IOException {
+    private void getFirmware() throws IOException {
         CommandMessage m = new CommandMessage(Command.FIRMWARE, new byte[] {});
         logger.debug("Sending get firmware request");
-        SensorReply reply = sendCommand(m);
-        logger.debug("Got reply to getFirmware command: {}", reply);
-
-        if (reply instanceof SensorFirmwareReply) {
-            SensorFirmwareReply fwReply = (SensorFirmwareReply) reply;
-            thingHandler.setFirmware(fwReply.getFirmware());
-            return true;
-        }
-        return false;
+        sendCommand(m);
     }
 
     /**
-     * Request data from the device, they will be returned via the serialEvent callback
+     * Request data from the device
      *
      * @throws IOException
      */
@@ -229,6 +202,13 @@ public class SDS011Communicator implements SerialPortEventListener {
             logger.debug("Requesting sensor data, will send: {}", HexUtils.bytesToHex(data));
         }
         write(data);
+        try {
+            Thread.sleep(200); // give the device some time to handle the command
+        } catch (InterruptedException e) {
+            logger.warn("Interrupted while waiting before reading a reply to our request data command.");
+            Thread.currentThread().interrupt();
+        }
+        readSensorData();
     }
 
     private @Nullable SensorReply readReply() throws IOException {
@@ -237,9 +217,10 @@ public class SDS011Communicator implements SerialPortEventListener {
         InputStream localInpuStream = inputStream;
 
         int b = -1;
-        if (localInpuStream != null && localInpuStream.available() > 0) {
+        if (localInpuStream != null) {
+            logger.trace("Reading for reply until first byte is found");
             while ((b = localInpuStream.read()) != Constants.MESSAGE_START_AS_INT) {
-                logger.debug("Trying to find first reply byte now...");
+                // logger.trace("Trying to find first reply byte now...");
             }
             readBuffer[0] = (byte) b;
             int remainingBytesRead = localInpuStream.read(readBuffer, 1, Constants.REPLY_LENGTH - 1);
@@ -252,64 +233,73 @@ public class SDS011Communicator implements SerialPortEventListener {
         return null;
     }
 
-    /**
-     * Data from the device is arriving and will be parsed accordingly
-     */
-    @Override
-    public void serialEvent(SerialPortEvent event) {
-        if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-            // we get here if data has been received
-            SensorReply reply = null;
-            try {
-                reply = readReply();
-                logger.debug("Got data from sensor: {}", reply);
-            } catch (IOException e) {
-                logger.warn("Could not read available data from the serial port: {}", e.getMessage());
-            }
-            if (reply instanceof SensorMeasuredDataReply) {
-                SensorMeasuredDataReply sensorData = (SensorMeasuredDataReply) reply;
-                if (sensorData.isValidData()) {
-                    thingHandler.updateChannels(sensorData);
-                }
+    public void readSensorData() throws IOException {
+        logger.trace("readSensorData() called");
+
+        boolean foundSensorData = doRead();
+        for (int i = 0; !foundSensorData && i < MAX_READ_UNTIL_SENSOR_DATA; i++) {
+            foundSensorData = doRead();
+        }
+    }
+
+    private boolean doRead() throws IOException {
+        SensorReply reply = readReply();
+        logger.trace("doRead(): Read reply={}", reply);
+        if (reply instanceof SensorMeasuredDataReply) {
+            SensorMeasuredDataReply sensorData = (SensorMeasuredDataReply) reply;
+            logger.trace("We received sensor data");
+            if (sensorData.isValidData()) {
+                logger.trace("Sensor data is valid => updating channels");
+                thingHandler.updateChannels(sensorData);
+                return true;
             }
         }
+        return false;
     }
 
     /**
      * Shutdown the communication, i.e. send the device to sleep and close the serial port
      */
-    public void dispose() {
+    public void dispose(boolean sendtoSleep) {
         SerialPort localSerialPort = serialPort;
         if (localSerialPort != null) {
+            if (sendtoSleep) {
+                sendDeviceToSleepOnDispose();
+            }
+
+            logger.debug("Closing the port now");
+            localSerialPort.close();
+
+            serialPort = null;
+        }
+        this.scheduler = null;
+    }
+
+    private void sendDeviceToSleepOnDispose() {
+        @Nullable
+        ScheduledExecutorService localScheduler = scheduler;
+        if (localScheduler != null) {
+            Future<?> sleepJob = null;
             try {
-                // send the device to sleep to preserve power and extend the lifetime of the sensor
-                sendSleep(true);
-            } catch (IOException e) {
-                // ignore because we are shutting down anyway
-                logger.debug("Exception while disposing communicator (will ignore it)", e);
-            } finally {
-                localSerialPort.removeEventListener();
-                localSerialPort.close();
-                serialPort = null;
+                sleepJob = localScheduler.submit(() -> {
+                    try {
+                        sendSleep(true);
+                    } catch (IOException e) {
+                        logger.debug("Exception while sending sleep on disposing the communicator (will ignore it)", e);
+                    }
+                });
+                sleepJob.get(5, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                logger.warn("Could not send device to sleep, because command takes longer than 5 seconds.");
+                sleepJob.cancel(true);
+            } catch (ExecutionException e) {
+                logger.debug("Could not execute sleep command.", e);
+            } catch (InterruptedException e) {
+                logger.debug("Sending device to sleep was interrupted.");
+                Thread.currentThread().interrupt();
             }
-        }
-
-        try {
-            InputStream localInputStream = inputStream;
-            if (localInputStream != null) {
-                localInputStream.close();
-            }
-        } catch (IOException e) {
-            logger.debug("Error while closing the input stream: {}", e.getMessage());
-        }
-
-        try {
-            OutputStream localOutputStream = outputStream;
-            if (localOutputStream != null) {
-                localOutputStream.close();
-            }
-        } catch (IOException e) {
-            logger.debug("Error while closing the output stream: {}", e.getMessage());
+        } else {
+            logger.debug("Scheduler was null, could not send device to sleep.");
         }
     }
 }

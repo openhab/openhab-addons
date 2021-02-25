@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,23 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
+import org.openhab.binding.caddx.internal.action.CaddxZoneActions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -122,5 +127,21 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(CaddxZoneActions.class);
+    }
+
+    public void bypass() {
+        String cmd = CaddxBindingConstants.ZONE_BYPASSED;
+        String data = String.format("%d", getZoneNumber() - 1);
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        bridgeHandler.sendCommand(cmd, data);
     }
 }

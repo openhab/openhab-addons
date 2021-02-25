@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,10 +75,10 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
                 console.println("Bad thing id '" + args[0] + "'");
                 printUsage(console);
             } else if (thingHandler == null) {
-                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                console.println("No handler initialized for the thingUID '" + args[0] + "'");
                 printUsage(console);
             } else if (bridgeHandler == null && groupHandler == null) {
-                console.println("'" + args[0] + "' is neither a hue bridge id nor a hue group thing id");
+                console.println("'" + args[0] + "' is neither a Hue bridgeUID nor a Hue groupThingUID");
                 printUsage(console);
             } else {
                 switch (args[1]) {
@@ -87,7 +87,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
                             String userName = bridgeHandler.getUserName();
                             console.println("Your user name is " + (userName != null ? userName : "undefined"));
                         } else {
-                            console.println("'" + args[0] + "' is not a hue bridge id");
+                            console.println("'" + args[0] + "' is not a Hue bridgeUID");
                             printUsage(console);
                         }
                         break;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Tr064CommunicationException extends Exception {
     private static final long serialVersionUID = 1L;
+    private String soapError = "";
+    private int httpError = 0;
 
     public Tr064CommunicationException(Exception e) {
         super(e);
@@ -29,5 +31,19 @@ public class Tr064CommunicationException extends Exception {
 
     public Tr064CommunicationException(String s) {
         super(s);
+    }
+
+    public Tr064CommunicationException(String s, Integer httpError, String soapError) {
+        super(s);
+        this.httpError = httpError;
+        this.soapError = soapError;
+    };
+
+    public String getSoapError() {
+        return soapError;
+    }
+
+    public int getHttpError() {
+        return httpError;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,12 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -213,9 +212,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
 
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
-    public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(1);
-        lowPriorityRequests.add("/cgi-bin/CGIProxy.fcgi?cmd=getDevState&usr=" + username + "&pwd=" + password);
-        return lowPriorityRequests;
+    public List<String> getLowPriorityRequests() {
+        return List.of();
     }
 }

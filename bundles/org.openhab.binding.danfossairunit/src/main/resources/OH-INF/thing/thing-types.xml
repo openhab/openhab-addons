@@ -40,7 +40,6 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<!--Cannel Group Definitions -->
@@ -88,7 +87,7 @@
 			<channel id="humidity" typeId="humidity"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="recuperator" advanced="true">
+	<channel-group-type id="recuperator">
 		<label>Recuperator</label>
 		<description>Heat exchaning device in the Air Unit</description>
 		<channels>
@@ -111,7 +110,7 @@
 			</channel>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="service" advanced="true">
+	<channel-group-type id="service">
 		<label>Service</label>
 		<channels>
 			<channel id="battery_life" typeId="percentage">

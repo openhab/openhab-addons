@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -143,10 +147,9 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
                 .map(Thing::getHandler)
                 .filter(DSMRMeterHandler.class::isInstance)
                 .map(DSMRMeterHandler.class::cast)
-                .map(h -> h == null ? null : h.getMeterDescriptor())
-                .map(d -> Optional.ofNullable(d == null ? null : d.getMeterType()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .map(DSMRMeterHandler::getMeterDescriptor)
+                .filter(Objects::nonNull)
+                .map(d -> d.getMeterType())
                 .collect(Collectors.toSet());
         // @formatter:on
         // Create list of all configured meters that are not in the detected list. If not empty meters might not be

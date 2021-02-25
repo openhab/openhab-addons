@@ -79,7 +79,7 @@
 		<config-description-ref uri="thing-type:lcn:group"/>
 	</thing-type>
 
-	<channel-type id="output" advanced="true">
+	<channel-type id="output">
 		<item-type>Dimmer</item-type>
 		<label>Output</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -112,7 +112,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="relay" advanced="true">
+	<channel-type id="relay">
 		<item-type>Switch</item-type>
 		<label>Relay</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -148,7 +148,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="rollershutter" advanced="true">
+	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -189,7 +189,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="led" advanced="true">
+	<channel-type id="led">
 		<item-type>String</item-type>
 		<label>LED</label>
 		<state>
@@ -244,7 +244,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="logic" advanced="true">
+	<channel-type id="logic">
 		<item-type>String</item-type>
 		<label>Logic Operation</label>
 		<state readOnly="true">
@@ -274,7 +274,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="binarysensor" advanced="true">
+	<channel-type id="binarysensor">
 		<item-type>Contact</item-type>
 		<label>Binary Sensor</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -318,7 +318,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="variable" advanced="true">
+	<channel-type id="variable">
 		<item-type>Number</item-type>
 		<label>Variable</label>
 		<config-description-ref uri="channel-type:lcn:variable"/>
@@ -626,31 +626,31 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="transponders" advanced="true">
+	<channel-type id="transponders">
 		<kind>trigger</kind>
 		<label>Transponder Codes</label>
 		<event/>
 	</channel-type>
 
-	<channel-type id="fingerprints" advanced="true">
+	<channel-type id="fingerprints">
 		<kind>trigger</kind>
 		<label>Fingerprint Codes</label>
 		<event/>
 	</channel-type>
 
-	<channel-type id="remotecontrolkeys" advanced="true">
+	<channel-type id="remotecontrolkeys">
 		<kind>trigger</kind>
 		<label>Remote Control Keys</label>
 		<event/>
 	</channel-type>
 
-	<channel-type id="remotecontrolcodes" advanced="true">
+	<channel-type id="remotecontrolcodes">
 		<kind>trigger</kind>
 		<label>Remote Control with Access Control Code</label>
 		<event/>
 	</channel-type>
 
-	<channel-type id="remotecontrolsbatterylow" advanced="true">
+	<channel-type id="remotecontrolsbatterylow">
 		<kind>trigger</kind>
 		<label>Remote Control Low Battery</label>
 		<event/>

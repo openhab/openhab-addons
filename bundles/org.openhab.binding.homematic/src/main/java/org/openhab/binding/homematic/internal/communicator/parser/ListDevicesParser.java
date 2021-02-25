@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -48,9 +47,7 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
 
         for (int i = 0; i < message.length; i++) {
             Map<String, ?> data = (Map<String, ?>) message[i];
-            boolean isDevice = !StringUtils.contains(toString(data.get("ADDRESS")), ":");
-
-            if (isDevice) {
+            if (MiscUtils.isDevice(toString(data.get("ADDRESS")), true)) {
                 String address = getSanitizedAddress(data.get("ADDRESS"));
                 String type = MiscUtils.validateCharacters(toString(data.get("TYPE")), "Device type", "-");
                 String id = toString(data.get("ID"));

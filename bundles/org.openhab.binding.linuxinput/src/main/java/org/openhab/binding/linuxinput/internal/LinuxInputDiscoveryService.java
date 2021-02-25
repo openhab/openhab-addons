@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -152,7 +152,7 @@ public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
                     waitForNewDevices(watcher);
                     return null;
                 });
-                Thread t = Utils.backgroundThread(job, getClass(), null);
+                Thread t = Utils.backgroundThread(job, "discovery", null);
                 t.start();
                 discoveryJob = job;
             } else {

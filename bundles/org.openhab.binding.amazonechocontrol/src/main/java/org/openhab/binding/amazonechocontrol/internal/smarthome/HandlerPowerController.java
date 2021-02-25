@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.OnOffType;
@@ -56,6 +57,10 @@ public class HandlerPowerController extends HandlerBase {
             "powerState" /* ChannelId */, CHANNEL_TYPE_POWER_STATE /* Channel Type */ ,
             ITEM_TYPE_SWITCH /* Item Type */);
 
+    public HandlerPowerController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        super(smartHomeDeviceHandler);
+    }
+
     @Override
     public String[] getSupportedInterface() {
         return new String[] { INTERFACE };
@@ -77,12 +82,7 @@ public class HandlerPowerController extends HandlerBase {
             if (POWER_STATE.propertyName.equals(state.get("name").getAsString())) {
                 String value = state.get("value").getAsString();
                 // For groups take true if all true
-                if ("ON".equals(value)) {
-                    powerStateValue = true;
-                } else {
-                    powerStateValue = false;
-                }
-
+                powerStateValue = "ON".equals(value);
             }
         }
         logger.trace("{} final state {}", this.smartHomeDeviceHandler.getId(), powerStateValue);
@@ -91,7 +91,7 @@ public class HandlerPowerController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilities, String channelId, Command command)
+            List<SmartHomeCapability> capabilities, String channelId, Command command)
             throws IOException, InterruptedException {
         if (channelId.equals(POWER_STATE.channelId)) {
             if (containsCapabilityProperty(capabilities, POWER_STATE.propertyName)) {

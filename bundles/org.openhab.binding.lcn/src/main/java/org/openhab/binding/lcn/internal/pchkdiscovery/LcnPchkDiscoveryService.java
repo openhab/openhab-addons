@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.LcnBindingConstants;
@@ -63,8 +61,8 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
     private static final String PCHK_DISCOVERY_MULTICAST_ADDRESS = "234.5.6.7";
     private static final int PCHK_DISCOVERY_PORT = 4220;
     private static final int INTERFACE_TIMEOUT_SEC = 2;
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(LcnBindingConstants.THING_TYPE_PCK_GATEWAY).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(LcnBindingConstants.THING_TYPE_PCK_GATEWAY);
     private static final String DISCOVER_REQUEST = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ServicesRequest xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"servicesrequest.xsd\"><Version major=\"1\" minor=\"0\" /><Requester requestId=\"1\" type=\"openHAB\" major=\"1\" minor=\"0\">openHAB</Requester><Requests><Request xsi:type=\"EnumServices\" major=\"1\" minor=\"0\" name=\"LcnPchkBus\" /></Requests></ServicesRequest>";
 
     public LcnPchkDiscoveryService() throws IllegalArgumentException {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,10 +25,16 @@ public class CaddxKeypadConfiguration {
 
     // Keypad Thing constants
     public static final String KEYPAD_ADDRESS = "keypadAddress";
+    public static final String TERMINAL_MODE_SECONDS = "terminalModeSeconds";
 
     private int keypadAddress;
+    private int terminalModeSeconds;
 
     public int getKeypadAddress() {
         return keypadAddress;
+    }
+
+    public int getTerminalModeSeconds() {
+        return terminalModeSeconds;
     }
 }

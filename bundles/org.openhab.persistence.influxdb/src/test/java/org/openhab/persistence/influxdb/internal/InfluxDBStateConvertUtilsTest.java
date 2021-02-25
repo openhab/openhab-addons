@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,12 +78,15 @@ public class InfluxDBStateConvertUtilsTest {
     public void convertOnOffToState() {
         boolean val1 = true;
         int val2 = 1;
+        double val3 = 1.0;
         SwitchItem onOffItem = new SwitchItem("name");
         ContactItem contactItem = new ContactItem("name");
         assertThat(InfluxDBStateConvertUtils.objectToState(val1, onOffItem), equalTo(OnOffType.ON));
         assertThat(InfluxDBStateConvertUtils.objectToState(val2, onOffItem), equalTo(OnOffType.ON));
+        assertThat(InfluxDBStateConvertUtils.objectToState(val3, onOffItem), equalTo(OnOffType.ON));
         assertThat(InfluxDBStateConvertUtils.objectToState(val1, contactItem), equalTo(OpenClosedType.OPEN));
         assertThat(InfluxDBStateConvertUtils.objectToState(val2, contactItem), equalTo(OpenClosedType.OPEN));
+        assertThat(InfluxDBStateConvertUtils.objectToState(val3, contactItem), equalTo(OpenClosedType.OPEN));
     }
 
     @Test

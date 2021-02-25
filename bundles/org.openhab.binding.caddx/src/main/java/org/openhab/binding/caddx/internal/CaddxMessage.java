@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,12 +41,6 @@ public class CaddxMessage {
     private final byte checksum1Calc;
     private final byte checksum2Calc;
 
-    /**
-     * Constructor.
-     *
-     * @param message
-     *            - the message received
-     */
     public CaddxMessage(byte[] message, boolean withChecksum) {
         if (withChecksum && message.length < 3) {
             logger.debug("CaddxMessage: The message should be at least 3 bytes long.");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.satel.internal.command.IntegraStateCommand;
@@ -26,6 +25,7 @@ import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
 import org.openhab.binding.satel.internal.event.IntegraStateEvent;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
 import org.openhab.binding.satel.internal.types.StateType;
+import org.openhab.binding.satel.internal.util.StringUtils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     protected volatile @Nullable C config;
     protected volatile @Nullable E endpoint;
     protected ModbusManager modbusManager;
-    protected volatile @Nullable EndpointPoolConfiguration poolConfiguration;
+    protected volatile @NonNullByDefault({}) EndpointPoolConfiguration poolConfiguration;
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
     private @NonNullByDefault({}) ModbusCommunicationInterface comms;
 

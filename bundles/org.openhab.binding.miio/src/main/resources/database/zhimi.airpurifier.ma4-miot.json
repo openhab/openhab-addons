@@ -10,20 +10,48 @@
 				"property": "fault",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Air Purifier-Device Fault",
-				"channel": "Fault",
-				"channelType": "miot_uint8",
+				"friendlyName": "Air Purifier - Device Fault",
+				"channel": "fault",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						},
+						{
+							"value": "1",
+							"label": "m1_run"
+						},
+						{
+							"value": "2",
+							"label": "m1_stuck"
+						},
+						{
+							"value": "3",
+							"label": "no_sensor"
+						},
+						{
+							"value": "4",
+							"label": "error_hum"
+						},
+						{
+							"value": "5",
+							"label": "error_temp"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\"]"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Air Purifier-Switch Status",
-				"channel": "On",
-				"channelType": "miot_bool",
+				"friendlyName": "Air Purifier - Switch Status",
+				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -31,92 +59,97 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "fan-level",
 				"siid": 2,
 				"piid": 4,
-				"friendlyName": "Air Purifier-Fan Level",
-				"channel": "FanLevel",
-				"channelType": "miot_uint8",
+				"friendlyName": "Air Purifier - Fan Level",
+				"channel": "fan-level",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Level1"
+						},
+						{
+							"value": "2",
+							"label": "Level2"
+						},
+						{
+							"value": "3",
+							"label": "Level3"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
 			},
 			{
 				"property": "mode",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Air Purifier-Mode",
-				"channel": "Mode",
-				"channelType": "miot_uint8",
+				"friendlyName": "Air Purifier - Mode",
+				"channel": "mode",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						},
+						{
+							"value": "2",
+							"label": "Favorite"
+						},
+						{
+							"value": "3",
+							"label": "None"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
-			},
-			{
-				"property": "firmware-revision",
-				"siid": 1,
-				"piid": 4,
-				"friendlyName": "Device Information-Current Firmware Version",
-				"channel": "FirmwareRevision",
-				"channelType": "miot_string",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "manufacturer",
-				"siid": 1,
-				"piid": 1,
-				"friendlyName": "Device Information-Device Manufacturer",
-				"channel": "Manufacturer",
-				"channelType": "miot_string",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "model",
-				"siid": 1,
-				"piid": 2,
-				"friendlyName": "Device Information-Device Model",
-				"channel": "Model",
-				"channelType": "miot_string",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "serial-number",
-				"siid": 1,
-				"piid": 3,
-				"friendlyName": "Device Information-Device Serial Number",
-				"channel": "SerialNumber",
-				"channelType": "miot_string",
-				"type": "String",
-				"refresh": true,
-				"actions": []
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\",\"3\"\u003d\"None\"]"
 			},
 			{
 				"property": "pm2.5-density",
 				"siid": 3,
 				"piid": 6,
-				"friendlyName": "Environment-PM2.5 Density",
-				"channel": "Pm25Density",
-				"channelType": "miot_float",
+				"friendlyName": "Environment - Pm2.5 Density",
+				"channel": "pm2_5-density",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 600.0,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -124,10 +157,17 @@
 				"property": "relative-humidity",
 				"siid": 3,
 				"piid": 7,
-				"friendlyName": "Environment-Relative Humidity",
-				"channel": "RelativeHumidity",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"friendlyName": "Environment - Relative Humidity",
+				"channel": "relative-humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 100.0,
+					"step": 1.0,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -135,10 +175,16 @@
 				"property": "temperature",
 				"siid": 3,
 				"piid": 8,
-				"friendlyName": "Environment-Temperature",
-				"channel": "Temperature",
-				"channelType": "miot_float",
-				"type": "Number",
+				"friendlyName": "Environment - Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -40.0,
+					"maximum": 125.0,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -146,10 +192,17 @@
 				"property": "filter-life-level",
 				"siid": 4,
 				"piid": 3,
-				"friendlyName": "Filter-Filter Life Level",
-				"channel": "FilterLifeLevel",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "filter-life-level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 100.0,
+					"step": 1.0,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -157,10 +210,17 @@
 				"property": "filter-used-time",
 				"siid": 4,
 				"piid": 5,
-				"friendlyName": "Filter-Filter Used Time",
-				"channel": "FilterUsedTime",
-				"channelType": "miot_uint16",
-				"type": "String",
+				"friendlyName": "Filter - Filter Used Time",
+				"channel": "filter-used-time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 10000.0,
+					"step": 1.0,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -168,9 +228,8 @@
 				"property": "alarm",
 				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Alarm-Alarm",
-				"channel": "Alarm",
-				"channelType": "miot_bool",
+				"friendlyName": "Alarm - Alarm",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -178,31 +237,53 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "alarm"
 			},
 			{
 				"property": "brightness",
 				"siid": 6,
 				"piid": 1,
-				"friendlyName": "Indicator Light-Brightness",
-				"channel": "Brightness",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"friendlyName": "Indicator Light - Brightness",
+				"channel": "brightness",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "brightest"
+						},
+						{
+							"value": "1",
+							"label": "glimmer"
+						},
+						{
+							"value": "2",
+							"label": "led_closed"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"brightest\",\"1\"\u003d\"glimmer\",\"2\"\u003d\"led_closed\"]"
 			},
 			{
 				"property": "on1",
 				"siid": 6,
 				"piid": 6,
-				"friendlyName": "Indicator Light-Switch Status",
-				"channel": "On1",
-				"channelType": "miot_bool",
+				"friendlyName": "Indicator Light - Switch Status",
+				"channel": "on1",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -216,9 +297,8 @@
 				"property": "physical-controls-locked",
 				"siid": 7,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked-Physical Control Locked",
-				"channel": "PhysicalControlsLocked",
-				"channelType": "miot_bool",
+				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"channel": "physical-controls-locked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -232,10 +312,12 @@
 				"property": "button-pressed",
 				"siid": 8,
 				"piid": 1,
-				"friendlyName": "button-button_pressed",
-				"channel": "ButtonPressed",
-				"channelType": "miot_string",
+				"friendlyName": "Button - Button_pressed",
+				"channel": "button-pressed",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -243,10 +325,16 @@
 				"property": "filter-max-time",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "filter-time-filter-max-time",
-				"channel": "FilterMaxTime",
-				"channelType": "miot_int32",
-				"type": "Number",
+				"friendlyName": "Filter Time - Filter Max Time",
+				"channel": "filter-max-time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 2000.0,
+					"maximum": 6000.0,
+					"step": 1.0,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -259,10 +347,15 @@
 				"property": "filter-hour-used-debug",
 				"siid": 9,
 				"piid": 2,
-				"friendlyName": "filter-time-filter-hour-used-debug",
-				"channel": "FilterHourUsedDebug",
-				"channelType": "miot_int32",
+				"friendlyName": "Filter Time - Filter Hour Used Debug",
+				"channel": "filter-hour-used-debug",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 5000.0,
+					"step": 1.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -275,10 +368,15 @@
 				"property": "m1-strong",
 				"siid": 10,
 				"piid": 1,
-				"friendlyName": "motor-speed-m1-strong",
-				"channel": "M1Strong",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - M1 Strong",
+				"channel": "m1-strong",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -291,10 +389,15 @@
 				"property": "m1-high",
 				"siid": 10,
 				"piid": 2,
-				"friendlyName": "motor-speed-m1-high",
-				"channel": "M1High",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - M1 High",
+				"channel": "m1-high",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -307,10 +410,15 @@
 				"property": "m1-med",
 				"siid": 10,
 				"piid": 3,
-				"friendlyName": "motor-speed-m1-med",
-				"channel": "M1Med",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - M1 Med",
+				"channel": "m1-med",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -323,10 +431,15 @@
 				"property": "m1-med-l",
 				"siid": 10,
 				"piid": 4,
-				"friendlyName": "motor-speed-m1-med-l",
-				"channel": "M1MedL",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - M1 Med L",
+				"channel": "m1-med-l",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -339,10 +452,15 @@
 				"property": "m1-low",
 				"siid": 10,
 				"piid": 5,
-				"friendlyName": "motor-speed-m1-low",
-				"channel": "M1Low",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - M1 Low",
+				"channel": "m1-low",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 300.0,
+					"maximum": 2300.0,
+					"step": 10.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -355,10 +473,15 @@
 				"property": "m1-silent",
 				"siid": 10,
 				"piid": 6,
-				"friendlyName": "motor-speed-m1-silent",
-				"channel": "M1Silent",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - M1 Silent",
+				"channel": "m1-silent",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 300.0,
+					"maximum": 2300.0,
+					"step": 10.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -371,10 +494,15 @@
 				"property": "m1-favorite",
 				"siid": 10,
 				"piid": 7,
-				"friendlyName": "motor-speed-m1-favorite",
-				"channel": "M1Favorite",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - M1 Favorite",
+				"channel": "m1-favorite",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 300.0,
+					"maximum": 2300.0,
+					"step": 10.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -387,10 +515,16 @@
 				"property": "motor1-speed",
 				"siid": 10,
 				"piid": 8,
-				"friendlyName": "motor-speed-motor1-speed",
-				"channel": "Motor1Speed",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - Motor1 Speed",
+				"channel": "motor1-speed",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 3000.0,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -398,10 +532,15 @@
 				"property": "motor1-set-speed",
 				"siid": 10,
 				"piid": 9,
-				"friendlyName": "motor-speed-motor1-set-speed",
-				"channel": "Motor1SetSpeed",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - Motor1 Set Speed",
+				"channel": "motor1-set-speed",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 3000.0,
+					"step": 1.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -414,10 +553,15 @@
 				"property": "favorite-fan-level",
 				"siid": 10,
 				"piid": 10,
-				"friendlyName": "motor-speed-favorite fan level",
-				"channel": "FavoriteFanLevel",
-				"channelType": "miot_int32",
+				"friendlyName": "Motor Speed - Favorite Fan Level",
+				"channel": "favorite-fan-level",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 14.0,
+					"step": 1.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -430,21 +574,36 @@
 				"property": "use-time",
 				"siid": 12,
 				"piid": 1,
-				"friendlyName": "use-time-use-time",
-				"channel": "UseTime",
-				"channelType": "miot_int32",
-				"type": "Number",
+				"friendlyName": "Use Time - Use Time",
+				"channel": "use-time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 2.1474836E+9,
+					"step": 1.0,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "purify-volume",
 				"siid": 13,
 				"piid": 1,
-				"friendlyName": "aqi-purify-volume",
-				"channel": "PurifyVolume",
-				"channelType": "miot_int32",
-				"type": "Number",
+				"friendlyName": "Aqi - Purify Volume",
+				"channel": "purify-volume",
+				"type": "Number:Volume",
+				"unit": "liter",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 2.1474836E+9,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -452,10 +611,16 @@
 				"property": "average-aqi",
 				"siid": 13,
 				"piid": 2,
-				"friendlyName": "aqi-average-aqi",
-				"channel": "AverageAqi",
-				"channelType": "miot_int32",
+				"friendlyName": "Aqi - Average Aqi",
+				"channel": "average-aqi",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 600.0,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -463,10 +628,16 @@
 				"property": "average-aqi-cnt",
 				"siid": 13,
 				"piid": 3,
-				"friendlyName": "aqi-average-aqi-cnt",
-				"channel": "AverageAqiCnt",
-				"channelType": "miot_int32",
+				"friendlyName": "Aqi - Average Aqi Cnt",
+				"channel": "average-aqi-cnt",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 2.1474836E+9,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -474,10 +645,12 @@
 				"property": "aqi-zone",
 				"siid": 13,
 				"piid": 4,
-				"friendlyName": "aqi-aqi-zone",
-				"channel": "AqiZone",
-				"channelType": "miot_string",
+				"friendlyName": "Aqi - Aqi Zone",
+				"channel": "aqi-zone",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -485,10 +658,12 @@
 				"property": "sensor-state",
 				"siid": 13,
 				"piid": 5,
-				"friendlyName": "aqi-sensor-state",
-				"channel": "SensorState",
-				"channelType": "miot_string",
+				"friendlyName": "Aqi - Sensor State",
+				"channel": "sensor-state",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -496,10 +671,15 @@
 				"property": "aqi-goodh",
 				"siid": 13,
 				"piid": 6,
-				"friendlyName": "aqi-aqi-goodh",
-				"channel": "AqiGoodh",
-				"channelType": "miot_int32",
+				"friendlyName": "Aqi - Aqi Goodh",
+				"channel": "aqi-goodh",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 115.0,
+					"step": 1.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -512,32 +692,83 @@
 				"property": "aqi-runstate",
 				"siid": 13,
 				"piid": 7,
-				"friendlyName": "aqi-aqi-runstate",
-				"channel": "AqiRunstate",
-				"channelType": "miot_int32",
+				"friendlyName": "Aqi - Aqi Runstate",
+				"channel": "aqi-runstate",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "continue"
+						},
+						{
+							"value": "1",
+							"label": "hold"
+						},
+						{
+							"value": "2",
+							"label": "sleep"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"continue\",\"1\"\u003d\"hold\",\"2\"\u003d\"sleep\"]"
 			},
 			{
 				"property": "aqi-state",
 				"siid": 13,
 				"piid": 8,
-				"friendlyName": "aqi-aqi-state",
-				"channel": "AqiState",
-				"channelType": "miot_int32",
+				"friendlyName": "Aqi - Aqi State",
+				"channel": "aqi-state",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "AQI_GOOD_L"
+						},
+						{
+							"value": "1",
+							"label": "AQI_GOOD_H"
+						},
+						{
+							"value": "2",
+							"label": "AQI_MID_L"
+						},
+						{
+							"value": "3",
+							"label": "AQI_MID_H"
+						},
+						{
+							"value": "4",
+							"label": "AQI_BAD_L"
+						},
+						{
+							"value": "5",
+							"label": "AQI_BAD_H"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"AQI_GOOD_L\",\"1\"\u003d\"AQI_GOOD_H\",\"2\"\u003d\"AQI_MID_L\",\"3\"\u003d\"AQI_MID_H\",\"4\"\u003d\"AQI_BAD_L\",\"5\"\u003d\"AQI_BAD_H\"]"
 			},
 			{
 				"property": "aqi-updata-heartbeat",
 				"siid": 13,
 				"piid": 9,
-				"friendlyName": "aqi-aqi-updata-heartbeat",
-				"channel": "AqiUpdataHeartbeat",
-				"channelType": "miot_int32",
+				"friendlyName": "Aqi - Aqi Updata Heartbeat",
+				"channel": "aqi-updata-heartbeat",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 65534.0,
+					"step": 1.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -550,10 +781,12 @@
 				"property": "rfid-tag",
 				"siid": 14,
 				"piid": 1,
-				"friendlyName": "rfid-rfid-tag",
-				"channel": "RfidTag",
-				"channelType": "miot_string",
+				"friendlyName": "Rfid - Rfid Tag",
+				"channel": "rfid-tag",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -561,10 +794,12 @@
 				"property": "rfid-factory-id",
 				"siid": 14,
 				"piid": 2,
-				"friendlyName": "rfid-rfid-factory-id",
-				"channel": "RfidFactoryId",
-				"channelType": "miot_string",
+				"friendlyName": "Rfid - Rfid Factory Id",
+				"channel": "rfid-factory-id",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -572,10 +807,12 @@
 				"property": "rfid-product-id",
 				"siid": 14,
 				"piid": 3,
-				"friendlyName": "rfid-rfid-product-id",
-				"channel": "RfidProductId",
-				"channelType": "miot_string",
+				"friendlyName": "Rfid - Rfid Product Id",
+				"channel": "rfid-product-id",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -583,10 +820,12 @@
 				"property": "rfid-time",
 				"siid": 14,
 				"piid": 4,
-				"friendlyName": "rfid-rfid-time",
-				"channel": "RfidTime",
-				"channelType": "miot_string",
+				"friendlyName": "Rfid - Rfid Time",
+				"channel": "rfid-time",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -594,10 +833,12 @@
 				"property": "rfid-serial-num",
 				"siid": 14,
 				"piid": 5,
-				"friendlyName": "rfid-rfid-serial-num",
-				"channel": "RfidSerialNum",
-				"channelType": "miot_string",
+				"friendlyName": "Rfid - Rfid Serial Num",
+				"channel": "rfid-serial-num",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -605,10 +846,15 @@
 				"property": "app-extra",
 				"siid": 15,
 				"piid": 1,
-				"friendlyName": "others-app-extra",
-				"channel": "AppExtra",
-				"channelType": "miot_int32",
+				"friendlyName": "Others - App Extra",
+				"channel": "app-extra",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 10000.0,
+					"step": 1.0,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -621,10 +867,16 @@
 				"property": "main-channel",
 				"siid": 15,
 				"piid": 2,
-				"friendlyName": "others-main-channel",
-				"channel": "MainChannel",
-				"channelType": "miot_int32",
+				"friendlyName": "Others - Main Channel",
+				"channel": "main-channel",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 10000.0,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -632,10 +884,16 @@
 				"property": "slave-channel",
 				"siid": 15,
 				"piid": 3,
-				"friendlyName": "others-slave-channel",
-				"channel": "SlaveChannel",
-				"channelType": "miot_int32",
+				"friendlyName": "Others - Slave Channel",
+				"channel": "slave-channel",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 10000.0,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -643,9 +901,8 @@
 				"property": "cola",
 				"siid": 15,
 				"piid": 4,
-				"friendlyName": "others-cola",
-				"channel": "Cola",
-				"channelType": "miot_string",
+				"friendlyName": "Others - Cola",
+				"channel": "cola",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -659,10 +916,12 @@
 				"property": "buttom-door",
 				"siid": 15,
 				"piid": 5,
-				"friendlyName": "others-buttom-door",
-				"channel": "ButtomDoor",
-				"channelType": "miot_bool",
+				"friendlyName": "Others - Buttom Door",
+				"channel": "buttom-door",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -670,21 +929,48 @@
 				"property": "reboot-cause",
 				"siid": 15,
 				"piid": 6,
-				"friendlyName": "others-reboot_cause",
-				"channel": "RebootCause",
-				"channelType": "miot_int32",
+				"friendlyName": "Others - Reboot_cause",
+				"channel": "reboot-cause",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "REASON_HW_BOOT"
+						},
+						{
+							"value": "1",
+							"label": "REASON_USER_REBOOT"
+						},
+						{
+							"value": "2",
+							"label": "REASON_UPDATE"
+						},
+						{
+							"value": "3",
+							"label": "REASON_WDT"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"REASON_HW_BOOT\",\"1\"\u003d\"REASON_USER_REBOOT\",\"2\"\u003d\"REASON_UPDATE\",\"3\"\u003d\"REASON_WDT\"]"
 			},
 			{
 				"property": "hw-version",
 				"siid": 15,
 				"piid": 8,
-				"friendlyName": "others-hw-version",
-				"channel": "HwVersion",
-				"channelType": "miot_int32",
+				"friendlyName": "Others - Hw Version",
+				"channel": "hw-version",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 66535.0,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -692,10 +978,16 @@
 				"property": "i2c-error-count",
 				"siid": 15,
 				"piid": 9,
-				"friendlyName": "others-i2c-error-count",
-				"channel": "I2cErrorCount",
-				"channelType": "miot_int32",
+				"friendlyName": "Others - I2c Error Count",
+				"channel": "i2c-error-count",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 66535.0,
+					"step": 1.0,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -703,13 +995,32 @@
 				"property": "manual-level",
 				"siid": 15,
 				"piid": 10,
-				"friendlyName": "others-manual-level",
-				"channel": "ManualLevel",
-				"channelType": "miot_int32",
+				"friendlyName": "Others - Manual Level",
+				"channel": "manual-level",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Level1"
+						},
+						{
+							"value": "2",
+							"label": "Level2"
+						},
+						{
+							"value": "3",
+							"label": "Level3"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
 			}
-		]
+		],
+		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":4,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle\",\"siid\":8,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle-mode\",\"siid\":8,\"aiid\":2,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
+		"experimental": true
 	}
 }

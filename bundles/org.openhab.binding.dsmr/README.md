@@ -336,7 +336,7 @@ Number:Energy MeterDeliveryTariff1 "Total electricity delivered to the resident 
 
 ## Determine M-Bus channel
 
-By manually trigger the discovery process, e.g. via PaperUI, you can use the logging to find out a M-Bus channel. Look for the following logfile line:
+By manually trigger the discovery process, you can use the logging to find out a M-Bus channel. Look for the following logfile line:
 `<Timestamp> [INFO ] [<class>] - New compatible meter: [Meter type: M3_V5_0, channel: 1, Meter type: ELECTRICITY_V5, channel: 0]`
 
 Here you find the ThingTypeID (it is stated only in capitals) and the M-Bus channel. The above example would lead to the following Thing definition

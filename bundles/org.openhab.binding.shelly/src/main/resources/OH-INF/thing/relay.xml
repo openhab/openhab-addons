@@ -6,9 +6,23 @@
 
 	<thing-type id="shelly1">
 		<label>Shelly1 (SHSW-1)</label>
-		<description>Shelly1 device with single relay</description>
+		<description>Shelly1 device with a single relay</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>deviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shelly1l">
+		<label>Shelly 1L (SHSW-L)</label>
+		<description>Shelly 1L device with a single relay</description>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -218,6 +232,25 @@
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
+	<thing-type id="shellyuni">
+		<label>Shelly UNI (SHUNI-2)</label>
+		<description>Embedded Shelly device</description>
+
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>deviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
 	<thing-type id="shellydimmer">
 		<label>Shelly Dimmer (SHDM-1)</label>
 		<description>Shelly Dimmer</description>
@@ -260,62 +293,38 @@
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
+	<thing-type id="shellyuni">
+		<label>Shelly UNI (SHUNI-1)</label>
+		<description>Shelly UNI device</description>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel"/>
+			<channel-group id="relay2" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>deviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
 	<channel-group-type id="relayChannel">
 		<label>Relay</label>
 		<description>A Shelly relay channel</description>
-		<channels>
-			<channel id="output" typeId="system.power"/>
-			<channel id="input" typeId="inputState"/>
-			<channel id="button" typeId="system.button"/>
-			<channel id="autoOn" typeId="timerAutoOn"/>
-			<channel id="autoOff" typeId="timerAutoOff"/>
-			<channel id="timerActive" typeId="timerActive"/>
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="relayChannelPlug">
 		<label>Relay</label>
 		<description>A Shelly relay channel</description>
-		<channels>
-			<channel id="output" typeId="system.power"/>
-			<channel id="autoOn" typeId="timerAutoOn"/>
-			<channel id="autoOff" typeId="timerAutoOff"/>
-			<channel id="timerActive" typeId="timerActive"/>
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="dimmerChannel">
 		<label>Dimmer</label>
 		<description>A Shelly Dimmer channel</description>
-		<channels>
-			<channel id="brightness" typeId="dimmerBrightness"/>
-			<channel id="input1" typeId="inputState1"/>
-			<channel id="input2" typeId="inputState2"/>
-			<channel id="button" typeId="system.button"/>
-			<channel id="autoOn" typeId="timerAutoOn"/>
-			<channel id="autoOff" typeId="timerAutoOff"/>
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="ix3Channel">
 		<label>Input</label>
 		<description>Input Status</description>
-		<channels>
-			<channel id="input" typeId="inputState"/>
-			<channel id="button" typeId="system.button"/>
-			<channel id="lastEvent" typeId="lastEvent"/>
-			<channel id="eventCount" typeId="eventCount"/>
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="rollerControl">
 		<label>Roller Control</label>
 		<description>Controlling the roller mode</description>
-		<channels>
-			<channel id="control" typeId="rollerShutter"/>
-			<channel id="rollerpos" typeId="rollerPosition"/>
-			<channel id="state" typeId="rollerState"/>
-			<channel id="stopReason" typeId="rollerStop"/>
-			<channel id="input1" typeId="inputState1"/>
-			<channel id="input2" typeId="inputState2"/>
-			<channel id="event" typeId="eventTrigger"/>
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="meter">
 		<label>Power Meter</label>
@@ -337,13 +346,13 @@
 		<item-type>Number:Time</item-type>
 		<label>Auto-ON Timer</label>
 		<description>ON: After the output was turned off it turns on automatically after xx seconds; 0 disables the timer</description>
-		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="timerAutoOff" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Auto-OFF Timer</label>
 		<description>ON: After the output was turned on it turns off automatically after xx seconds; 0 disables the timer</description>
-		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="timerActive" advanced="true">
 		<item-type>Switch</item-type>
@@ -362,7 +371,13 @@
 		<item-type>Dimmer</item-type>
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
-		<state readOnly="false" min="0" max="100"/>
+		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+	<channel-type id="rollerFavorite">
+		<item-type>Number</item-type>
+		<label>Position Favorite</label>
+		<description>Set roller position by selecting favorite 1-4 (needs to be defined in the Shelly App, 0=n/a)</description>
+		<state readOnly="false" min="0" max="4"/>
 	</channel-type>
 	<channel-type id="rollerState">
 		<item-type>String</item-type>
@@ -400,6 +415,13 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="rollerSafety" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Safety Switch</label>
+		<description>Status of the safety switch</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="inputState">
 		<item-type>Switch</item-type>
 		<label>Input</label>
@@ -431,91 +453,77 @@
 		<item-type>Number:Power</item-type>
 		<label>Watt</label>
 		<description>Current power consumption in Watt</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterAccuWatts" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Watt</label>
 		<description>Accumulated current power consumption in Watt from all meters</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterAccuTotal" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Total</label>
-		<description>Accumulated total power consumption in kw/h from all meters</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<description>Accumulated total power consumption from all meters</description>
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterAccuReturned" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Returned</label>
-		<description>Accumulated returned power consumption in kw/h from all meters</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<description>Accumulated returned power consumption from all meters</description>
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterReactive">
 		<item-type>Number:Power</item-type>
 		<label>Reactive Watt</label>
 		<description>Instantaneous reactive power in Watts (W)</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="lastPower1" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #1</label>
 		<description>Last power consumption #1 - one rounded minute</description>
-		<state readOnly="true" pattern="%f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="lastPower2" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Last Power #2</label>
-		<description>Last power consumption #2 - one rounded minute</description>
-		<state readOnly="true" pattern="%f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="lastPower3" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Last Power #3</label>
-		<description>Last power consumption #3 - one rounded minute</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
-		<description>Total power consumption in kw/h</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<description>Total power consumption</description>
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterReturned">
 		<item-type>Number:Energy</item-type>
-		<label>Total Returned Energy (kw/h)</label>
-		<description>Total returned energy in kw/h</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<label>Total Returned Energy</label>
+		<description>Total returned energy</description>
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>RMS voltage, Volts </description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterCurrent">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Current</label>
 		<description>Current in A </description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
 		<description></description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="timestamp">

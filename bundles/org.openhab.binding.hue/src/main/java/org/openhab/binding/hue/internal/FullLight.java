@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import java.time.Duration;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.dto.Capabilities;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -33,6 +35,7 @@ public class FullLight extends FullHueObject {
     public static final Type GSON_TYPE = new TypeToken<Map<String, FullLight>>() {
     }.getType();
 
+    public @Nullable Capabilities capabilities;
     private @NonNullByDefault({}) State state;
     private final long fadetime = 400; // milliseconds
 

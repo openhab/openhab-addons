@@ -12,7 +12,7 @@ This binding requires an adapter to interface to the Pentair system bus.
 This bus/wire runs between the Pentair control system, indoor control panels, IntelliFlo pumps, etc.
 It is a standard RS-485 bus running at 9600,8N1 so any RS-485 adapter should work and you should be able to buy one for under $30.
 Pentair does not publish any information on the protocol so this binding was developed using the great reverse-engineering efforts of others made available on the internet.
-I have cited sevearl of those in the References section below.
+I have cited several of those in the References section below.
 
 ### Connecting adapter to your system
 
@@ -24,7 +24,7 @@ An example setup would run the following command: "ser2sock -p 10000 -s /dev/tty
 Note: This is the setup utlized for the majority of my testing of this binding.
 
 Note: If you are on a Linux system, the framework may not see a symbolically linked device (i.e. /dev/ttyRS485).
-To use a symbolically linked device, add the following line to /etc/default/openhab2, `EXTRA_JAVA_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyRS485"`
+To use a symbolically linked device, add the following line to */etc/default/openhab* `EXTRA_JAVA_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyRS485"`
 
 Once you have the interface connected to your system, it is best to test basic connectivity.
 Note the protocol is a binary protocol (not ASCII text based) and in order to view the communication packets, one must use a program capable of a binary/HEX mode.
@@ -56,14 +56,12 @@ This binding supports the following thing types:
 | Intelliflo Pump |   Thing    | Pentair Intelliflo variable speed pump. |
 | Intellichlor    |   Thing    | Pentair Intellichlor chlorinator.       |
 
-
 ## Binding Configuration
 
 There are no overall binding configurations that need to be set up as all configuration is done at the "Thing" level.
 
 ## Thing Configuration
 
-Pentair things can be configured either through the online Paper UI configuration, or manually through a 'pentair.thing' configuration file.
 The following table shows the available configuration parameters for each thing.
 
 | Thing         | Configuration Parameters                                     |
@@ -76,7 +74,7 @@ The following table shows the available configuration parameters for each thing.
 |               | pollPeriod - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1. |
 |               | id - ID to use when communciating on Pentair control bus - default = 34. |
 
-Currently automatic discovery is not supported and the binding requires configuration via the Paper UI or a file in the conf/things folder.
+Currently automatic discovery is not supported.
 Here is an example of a thing configuration file called 'pentair.things':
 
 ```

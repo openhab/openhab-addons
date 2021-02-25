@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.tr064.internal.config;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +26,7 @@ public class Tr064SubConfiguration extends Tr064BaseThingConfiguration {
     public String uuid = "";
 
     // Lan Device
-    public List<String> macOnline = Collections.emptyList();
+    public List<String> macOnline = List.of();
 
     public boolean isValid() {
         return !uuid.isEmpty();

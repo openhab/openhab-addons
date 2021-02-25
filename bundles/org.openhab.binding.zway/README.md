@@ -78,7 +78,7 @@ Only the Z-Way server can be configured textual:
 
 ```
 Bridge zway:zwayServer:192_168_2_42 [ zwayServerIpAddress="localhost", zwayServerPort=8083, zwayServerProtocol="http", zwayServerUsername="admin", zwayServerPassword="admin", pollingInterval=3600 ] {
-    // associated things have to be created with the Paper UI
+    // associated things have to be created with the UI
 }
 ```
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dsmr.internal.device;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Class describing the DSMR bridge user configuration
@@ -60,7 +58,8 @@ public class DSMRDeviceConfiguration {
      * @return true if serial port settings are all set.
      */
     public boolean isSerialFixedSettings() {
-        return baudrate > 0 && databits > 0 && !StringUtils.isBlank(parity) && !StringUtils.isBlank(stopbits);
+        return baudrate > 0 && databits > 0 && !(parity != null && parity.isBlank())
+                && !(stopbits != null && stopbits.isBlank());
     }
 
     @Override
