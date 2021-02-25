@@ -251,7 +251,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                                             .build())
                             .overrideConfiguration(this::overrideConfig).region(localDbConfig.getRegion());
                     if (endpointOverride != null) {
-                        logger.info("DynamoDB has been overriden to {}", endpointOverride);
+                        logger.debug("DynamoDB has been overriden to {}", endpointOverride);
                         lowlevelClientBuilder.endpointOverride(endpointOverride);
                     }
                     DynamoDbAsyncClient lowlevelClient = lowlevelClientBuilder.build();
