@@ -129,8 +129,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     final ExecutorService executor = ThreadPoolManager.getPool(DYNAMODB_THREADPOOL_NAME);
     private static final Duration TIMEOUT_API_CALL = Duration.ofSeconds(60);
     private static final Duration TIMEOUT_API_CALL_ATTEMPT = Duration.ofSeconds(5);
-    @SuppressWarnings("rawtypes")
-    private Map<Class<? extends DynamoDBItem>, DynamoDbAsyncTable<DynamoDBItem>> tableCache = new ConcurrentHashMap<>(
+    private Map<Class<? extends DynamoDBItem<?>>, DynamoDbAsyncTable<? extends DynamoDBItem<?>>> tableCache = new ConcurrentHashMap<>(
             2);
     private AwsCredentialsProvider credentialsProvider = new CredentialsProvider();
 
@@ -269,30 +268,30 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private DynamoDbAsyncTable<DynamoDBItem> getTable(Class<? extends DynamoDBItem> dtoClass) {
+    private <T extends DynamoDBItem<?>> DynamoDbAsyncTable<T> getTable(Class<T> dtoClass) {
         DynamoDbEnhancedAsyncClient localClient = client;
         if (!ensureClient() || localClient == null) {
             throw new IllegalStateException();
         }
         ExpectedTableSchema expectedTableSchemaRevision = tableNameResolver.getTableSchema();
         String tableName = tableNameResolver.fromClass(dtoClass);
-        final TableSchema<? extends DynamoDBItem> schema = getDynamoDBTableSchema(dtoClass,
+        final TableSchema<? extends DynamoDBItem<?>> schema = getDynamoDBTableSchema(dtoClass,
                 expectedTableSchemaRevision);
-        DynamoDbAsyncTable<DynamoDBItem> table = tableCache.computeIfAbsent(dtoClass, clz -> {
-            return (DynamoDbAsyncTable<DynamoDBItem>) localClient.table(tableName, schema);
+        DynamoDbAsyncTable<? extends DynamoDBItem<?>> table = tableCache.computeIfAbsent(dtoClass, clz -> {
+            return localClient.table(tableName, schema);
         });
         if (table == null) {
             // Invariant. To make null checker happy
             throw new IllegalStateException();
         }
-        return table;
+        @SuppressWarnings("unchecked")
+        DynamoDbAsyncTable<T> tableCasted = (DynamoDbAsyncTable<T>) table;
+        return tableCasted;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    static TableSchema<DynamoDBItem> getDynamoDBTableSchema(Class<? extends DynamoDBItem> dtoClass,
+    static TableSchema<? extends DynamoDBItem<?>> getDynamoDBTableSchema(Class<? extends DynamoDBItem<?>> dtoClass,
             ExpectedTableSchema expectedTableSchemaRevision) {
-        final TableSchema<? extends DynamoDBItem> schema;
+        final TableSchema<? extends DynamoDBItem<?>> schema;
         if (dtoClass.equals(DynamoDBBigDecimalItem.class)) {
             schema = expectedTableSchemaRevision == ExpectedTableSchema.NEW ? DynamoDBBigDecimalItem.TABLE_SCHEMA_NEW
                     : DynamoDBBigDecimalItem.TABLE_SCHEMA_LEGACY;
@@ -302,7 +301,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         } else {
             throw new IllegalStateException("Unknown DTO class. Bug");
         }
-        return (TableSchema<DynamoDBItem>) schema;
+        return schema;
     }
 
     private void disconnect() {
@@ -337,7 +336,6 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         return Collections.emptySet();
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         logIfManyQueuedTasks();
@@ -347,11 +345,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         DynamoDbEnhancedAsyncClient localClient = client;
         if (!isProperlyConfigured) {
             logger.debug("Configuration for dynamodb not yet loaded or broken. Returning empty query results.");
-            return Collections.<HistoricItem> emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
         if (!ensureClient() || localClient == null) {
             logger.warn("DynamoDB not connected. Returning empty query results.");
-            return Collections.<HistoricItem> emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
 
         //
@@ -361,17 +359,17 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             Boolean resolved = resolveTableSchema().get();
             if (!resolved) {
                 logger.warn("Table schema not resolved, cannot query data.");
-                return Collections.<HistoricItem> emptyList();
+                return Collections.<HistoricItem>emptyList();
             }
         } catch (InterruptedException e) {
             logger.warn("Table schema resolution interrupted, cannot query data");
-            return Collections.<HistoricItem> emptyList();
+            return Collections.<HistoricItem>emptyList();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             logger.warn("Table schema resolution errored, cannot query data: {} {}",
                     cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
                     cause == null ? e.getMessage() : cause.getMessage());
-            return Collections.<HistoricItem> emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
         try {
             //
@@ -381,7 +379,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             Item item = getItemFromRegistry(itemName);
             if (item == null) {
                 logger.warn("Could not get item {} from registry! Returning empty query results.", itemName);
-                return Collections.<HistoricItem> emptyList();
+                return Collections.<HistoricItem>emptyList();
             }
             if (item instanceof GroupItem) {
                 item = ((GroupItem) item).getBaseItem();
@@ -396,18 +394,19 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                 }
             }
             boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
-            Class<DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(), legacy);
+            Class<? extends DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(),
+                    legacy);
             String tableName = tableNameResolver.fromClass(dtoClass);
-            DynamoDbAsyncTable<DynamoDBItem> table = getTable(dtoClass);
+            DynamoDbAsyncTable<? extends DynamoDBItem<?>> table = getTable(dtoClass);
             logger.debug("Item {} (of type {}) will be tried to query using DTO class {} from table {}", itemName,
                     item.getClass().getSimpleName(), dtoClass.getSimpleName(), tableName);
 
             QueryEnhancedRequest queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
                     tableNameResolver.getTableSchema(), item, filter);
 
-            CompletableFuture<List<DynamoDBItem>> itemsFuture = new CompletableFuture<>();
-            final SdkPublisher<DynamoDBItem> itemPublisher = table.query(queryExpression).items();
-            Subscriber<DynamoDBItem> pageSubscriber = new PageOfInterestSubscriber<DynamoDBItem>(itemsFuture,
+            CompletableFuture<List<DynamoDBItem<?>>> itemsFuture = new CompletableFuture<>();
+            final SdkPublisher<? extends DynamoDBItem<?>> itemPublisher = table.query(queryExpression).items();
+            Subscriber<DynamoDBItem<?>> pageSubscriber = new PageOfInterestSubscriber<DynamoDBItem<?>>(itemsFuture,
                     filter.getPageNumber(), filter.getPageSize());
             itemPublisher.subscribe(pageSubscriber);
             // NumberItem.getUnit() is expensive, we avoid calling it in the loop
@@ -417,7 +416,6 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             try {
                 @SuppressWarnings("null")
                 List<HistoricItem> results = itemsFuture.get().stream().map(dynamoItem -> {
-                    @SuppressWarnings("unchecked")
                     HistoricItem historicItem = dynamoItem.asHistoricItem(localItem, itemUnit);
                     if (historicItem == null) {
                         logger.warn(
@@ -434,7 +432,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                 return results;
             } catch (InterruptedException e) {
                 logger.warn("Query interrupted. Filter was {}", filterDescription);
-                return Collections.<HistoricItem> emptyList();
+                return Collections.<HistoricItem>emptyList();
             } catch (ExecutionException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof ResourceNotFoundException) {
@@ -447,12 +445,12 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                             cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
                             cause == null ? e.getMessage() : cause.getMessage(), filterDescription);
                 }
-                return Collections.<HistoricItem> emptyList();
+                return Collections.<HistoricItem>emptyList();
             }
         } catch (Exception e) {
             logger.error("Unexpected error with query having filter {}: {} {}. Returning empty query results.",
                     filterDescription, e.getClass().getSimpleName(), e.getMessage());
-            return Collections.<HistoricItem> emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
     }
 
@@ -546,12 +544,13 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             }
             logger.trace("store() called with item {} {} '{}', which was converted to DTO {}",
                     copiedItem.getClass().getSimpleName(), effectiveName, copiedItem.getState(), dto);
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            Class<DynamoDBItem> dtoClass = (Class<DynamoDBItem>) dto.getClass();
+            @SuppressWarnings("unchecked")
+            Class<? extends DynamoDBItem<?>> dtoClass = (Class<? extends DynamoDBItem<?>>) dto.getClass();
 
-            @SuppressWarnings("rawtypes")
-            DynamoDbAsyncTable<DynamoDBItem> table = getTable(dtoClass);
-            new TableCreatingPutItem(this, dto, table).putItemAsync();
+            DynamoDbAsyncTable<? extends DynamoDBItem<?>> table = getTable(dtoClass);
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            TableCreatingPutItem<? extends DynamoDBItem<?>> putItem = new TableCreatingPutItem(this, dto, table);
+            putItem.putItemAsync();
         }, executor).exceptionally(e -> {
             logger.error("Unexcepted error", e);
             return null;

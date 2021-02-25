@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -64,7 +63,7 @@ import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
 import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema.Builder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
@@ -86,16 +85,14 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
     public static final ZonedDateTimeStringConverter ZONED_DATE_TIME_CONVERTER_STRING = new ZonedDateTimeStringConverter();
     public static final ZonedDateTimeMilliEpochConverter ZONED_DATE_TIME_CONVERTER_MILLIEPOCH = new ZonedDateTimeMilliEpochConverter();
     public static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT).withZone(UTC);
-    protected static Class<@Nullable Long> NULLABLE_LONG = (Class<@Nullable Long>) Long.class;
+    protected static final Class<@Nullable Long> NULLABLE_LONG = (Class<@Nullable Long>) Long.class;
 
     public static AttributeConverter<ZonedDateTime> getTimestampConverter(boolean legacy) {
         return legacy ? ZONED_DATE_TIME_CONVERTER_STRING : ZONED_DATE_TIME_CONVERTER_MILLIEPOCH;
     }
 
-    @SuppressWarnings({ "rawtypes" })
-    private static Supplier<StaticTableSchema.Builder<? extends AbstractDynamoDBItem>> getBaseSchemaBuilder(
-            boolean legacy) {
-        return () -> TableSchema.builder(AbstractDynamoDBItem.class).addAttribute(String.class,
+    protected static <C extends AbstractDynamoDBItem<?>> Builder<C> getBaseSchemaBuilder(Class<C> clz, boolean legacy) {
+        return TableSchema.builder(clz).addAttribute(String.class,
                 a -> a.name(legacy ? DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME_LEGACY : DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME)
                         .getter(AbstractDynamoDBItem::getName).setter(AbstractDynamoDBItem::setName)
                         .tags(StaticAttributeTags.primaryPartitionKey()))
@@ -104,13 +101,6 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                         .getter(AbstractDynamoDBItem::getTime).setter(AbstractDynamoDBItem::setTime)
                         .tags(StaticAttributeTags.primarySortKey()).attributeConverter(getTimestampConverter(legacy)));
     }
-
-    @SuppressWarnings({ "rawtypes" })
-    protected static Supplier<StaticTableSchema.Builder<? extends AbstractDynamoDBItem>> TABLE_SCHEMA_BUILDER_BASE_LEGACY = getBaseSchemaBuilder(
-            true);
-    @SuppressWarnings({ "rawtypes" })
-    protected static Supplier<StaticTableSchema.Builder<? extends AbstractDynamoDBItem>> TABLE_SCHEMA_BUILDER_BASE_NEW = getBaseSchemaBuilder(
-            false);
 
     private static final Map<Class<? extends Item>, Class<? extends DynamoDBItem<?>>> ITEM_CLASS_MAP_LEGACY = new HashMap<>();
 
@@ -144,10 +134,9 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         ITEM_CLASS_MAP_NEW.put(PlayerItem.class, DynamoDBBigDecimalItem.class); // Different from LEGACY
     }
 
-    public static final Class<DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass, boolean legacy)
-            throws NullPointerException {
-        @SuppressWarnings("unchecked")
-        Class<DynamoDBItem<?>> dtoclass = (Class<DynamoDBItem<?>>) (legacy ? ITEM_CLASS_MAP_LEGACY : ITEM_CLASS_MAP_NEW)
+    public static final Class<? extends DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass,
+            boolean legacy) throws NullPointerException {
+        Class<? extends DynamoDBItem<?>> dtoclass = (legacy ? ITEM_CLASS_MAP_LEGACY : ITEM_CLASS_MAP_NEW)
                 .get(itemClass);
         if (dtoclass == null) {
             throw new IllegalArgumentException(String.format("Unknown item class %s", itemClass));
@@ -178,7 +167,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
         }
 
         @Override
@@ -217,7 +206,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
         }
 
         @Override

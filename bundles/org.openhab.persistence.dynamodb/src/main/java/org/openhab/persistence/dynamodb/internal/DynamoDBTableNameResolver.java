@@ -128,7 +128,7 @@ public class DynamoDBTableNameResolver {
      * @param clazz
      * @return
      */
-    public String fromClass(@SuppressWarnings("rawtypes") Class<? extends DynamoDBItem> clazz) {
+    public String fromClass(Class<? extends DynamoDBItem<?>> clazz) {
         DynamoDBItem<?> dummy;
         try {
             // Construct new instance of this class (assuming presense no-argument constructor)
@@ -149,7 +149,6 @@ public class DynamoDBTableNameResolver {
         return tableRevision.isFullyResolved();
     }
 
-    @SuppressWarnings("null")
     public CompletableFuture<Boolean> resolveSchema(DynamoDbAsyncClient lowLevelClient,
             Consumer<DescribeTableRequest.Builder> describeTableRequestMutator, ExecutorService executor) {
         CompletableFuture<Boolean> resolved = new CompletableFuture<>();
@@ -168,8 +167,12 @@ public class DynamoDBTableNameResolver {
             logger.trace("number & string present? {} {}", r1, r2);
             boolean fullyResolved = r1 != null && r2 != null;
             if (fullyResolved) {
+                @SuppressWarnings("null")
+                boolean br1 = r1;
+                @SuppressWarnings("null")
+                boolean br2 = r2;
                 // If old tables did not exist, we consider schema to be new
-                tableRevision = (r1 == false && r2 == false) ? ExpectedTableSchema.NEW : ExpectedTableSchema.LEGACY;
+                tableRevision = (br1 == false && br2 == false) ? ExpectedTableSchema.NEW : ExpectedTableSchema.LEGACY;
             }
             resolved.complete(fullyResolved);
         }, executor).exceptionally(e -> {

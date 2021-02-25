@@ -46,7 +46,7 @@ public class DynamoDBQueryUtils {
      * @return DynamoDBQueryExpression corresponding to the given FilterCriteria
      * @throws IllegalArgumentException when schema is not fully resolved
      */
-    public static QueryEnhancedRequest createQueryExpression(Class<DynamoDBItem<?>> dtoClass,
+    public static QueryEnhancedRequest createQueryExpression(Class<? extends DynamoDBItem<?>> dtoClass,
             ExpectedTableSchema expectedTableSchema, Item item, FilterCriteria filter) {
         if (!expectedTableSchema.isFullyResolved()) {
             throw new IllegalArgumentException("Schema not resolved");
@@ -62,8 +62,8 @@ public class DynamoDBQueryUtils {
     /**
      * Add projection for key parameters only, not expire date
      */
-    private static void addProjection(Class<DynamoDBItem<?>> dtoClass, ExpectedTableSchema expectedTableSchema,
-            QueryEnhancedRequest.Builder queryBuilder) {
+    private static void addProjection(Class<? extends DynamoDBItem<?>> dtoClass,
+            ExpectedTableSchema expectedTableSchema, QueryEnhancedRequest.Builder queryBuilder) {
         boolean legacy = expectedTableSchema == ExpectedTableSchema.LEGACY;
         if (legacy) {
             queryBuilder.attributesToProject(DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME_LEGACY,
@@ -86,7 +86,7 @@ public class DynamoDBQueryUtils {
     }
 
     private static void addStateFilter(QueryEnhancedRequest.Builder queryBuilder,
-            ExpectedTableSchema expectedTableSchema, Item item, Class<DynamoDBItem<?>> dtoClass,
+            ExpectedTableSchema expectedTableSchema, Item item, Class<? extends DynamoDBItem<?>> dtoClass,
             FilterCriteria filter) {
         final Expression expression;
         Builder itemStateTypeExpressionBuilder = Expression.builder()
@@ -203,7 +203,7 @@ public class DynamoDBQueryUtils {
         }
     }
 
-    private static void acceptAsEmptyDTO(Class<DynamoDBItem<?>> dtoClass, DynamoDBItemVisitor visitor) {
+    private static void acceptAsEmptyDTO(Class<? extends DynamoDBItem<?>> dtoClass, DynamoDBItemVisitor visitor) {
         try {
             dtoClass.getDeclaredConstructor().newInstance().accept(visitor);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

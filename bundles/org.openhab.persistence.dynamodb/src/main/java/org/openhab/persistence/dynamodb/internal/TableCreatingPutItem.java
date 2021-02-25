@@ -72,18 +72,16 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
  *
  */
 @NonNullByDefault
-class TableCreatingPutItem {
+public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
     private final Logger logger = LoggerFactory.getLogger(TableCreatingPutItem.class);
 
     private final DynamoDBPersistenceService service;
-    private DynamoDBItem<?> dto;
-    @SuppressWarnings("rawtypes")
-    private DynamoDbAsyncTable<DynamoDBItem> table;
+    private T dto;
+    private DynamoDbAsyncTable<T> table;
     private CompletableFuture<Void> aggregateFuture = new CompletableFuture<Void>();
     private Instant start = Instant.now();
 
-    public TableCreatingPutItem(DynamoDBPersistenceService service, DynamoDBItem<?> dto,
-            @SuppressWarnings("rawtypes") DynamoDbAsyncTable<DynamoDBItem> table) {
+    public TableCreatingPutItem(DynamoDBPersistenceService service, T dto, DynamoDbAsyncTable<T> table) {
         this.service = service;
         this.dto = dto;
         this.table = table;

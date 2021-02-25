@@ -31,16 +31,15 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
 
     private static Class<@Nullable BigDecimal> NULLABLE_BIGDECIMAL = (Class<@Nullable BigDecimal>) BigDecimal.class;
 
-    @SuppressWarnings("unchecked")
-    public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_LEGACY = ((StaticTableSchema.Builder<DynamoDBBigDecimalItem>) TABLE_SCHEMA_BUILDER_BASE_LEGACY
-            .get()).newItemSupplier(DynamoDBBigDecimalItem::new)
+    public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_LEGACY = getBaseSchemaBuilder(
+            DynamoDBBigDecimalItem.class, true).newItemSupplier(DynamoDBBigDecimalItem::new)
                     .addAttribute(NULLABLE_BIGDECIMAL, a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
                             .getter(DynamoDBBigDecimalItem::getState).setter(DynamoDBBigDecimalItem::setState))
                     .build();
 
-    @SuppressWarnings("unchecked")
-    public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_NEW = ((StaticTableSchema.Builder<DynamoDBBigDecimalItem>) TABLE_SCHEMA_BUILDER_BASE_NEW
-            .get()).newItemSupplier(DynamoDBBigDecimalItem::new)
+    public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_NEW = getBaseSchemaBuilder(
+            DynamoDBBigDecimalItem.class, false)
+                    .newItemSupplier(DynamoDBBigDecimalItem::new)
                     .addAttribute(NULLABLE_BIGDECIMAL,
                             a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_NUMBER).getter(DynamoDBBigDecimalItem::getState)
                                     .setter(DynamoDBBigDecimalItem::setState))

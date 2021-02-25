@@ -29,16 +29,17 @@ public class DynamoDBStringItem extends AbstractDynamoDBItem<String> {
 
     private static Class<@Nullable String> NULLABLE_STRING = (Class<@Nullable String>) String.class;
 
-    @SuppressWarnings("unchecked")
-    public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_LEGACY = ((StaticTableSchema.Builder<DynamoDBStringItem>) TABLE_SCHEMA_BUILDER_BASE_LEGACY
-            .get()).newItemSupplier(DynamoDBStringItem::new)
+    public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_LEGACY = getBaseSchemaBuilder(
+            DynamoDBStringItem.class, true)
+                    .newItemSupplier(
+                            DynamoDBStringItem::new)
                     .addAttribute(NULLABLE_STRING, a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
                             .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
                     .build();
 
-    @SuppressWarnings("unchecked")
-    public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_NEW = ((StaticTableSchema.Builder<DynamoDBStringItem>) TABLE_SCHEMA_BUILDER_BASE_NEW
-            .get()).newItemSupplier(DynamoDBStringItem::new)
+    public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_NEW = getBaseSchemaBuilder(
+            DynamoDBStringItem.class, false)
+                    .newItemSupplier(DynamoDBStringItem::new)
                     .addAttribute(NULLABLE_STRING,
                             a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING)
                                     .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
