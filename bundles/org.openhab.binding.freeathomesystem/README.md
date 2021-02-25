@@ -1,4 +1,4 @@
-# OpenHAB 3 ABB/Busch-free@home Smart Home binding
+# ABB/Busch-free@home Smart Home binding
 
  OpenHAB ABB/Busch-free@home binding based on the offical free@home local api
 
