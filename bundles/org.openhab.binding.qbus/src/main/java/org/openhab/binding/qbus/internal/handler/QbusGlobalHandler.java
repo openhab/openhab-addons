@@ -23,6 +23,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusGlobalHandler} is used in other handlers, to share the functions.
@@ -32,6 +34,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 
 @NonNullByDefault
 public abstract class QbusGlobalHandler extends BaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(QbusGlobalHandler.class);
 
     public QbusGlobalHandler(Thing thing) {
         super(thing);
