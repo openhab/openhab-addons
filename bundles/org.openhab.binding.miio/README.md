@@ -173,7 +173,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 260 different models.
+Currently the miio binding supports more than 270 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -463,6 +463,11 @@ Currently the miio binding supports more than 260 different models.
 | Smartmi Inverter Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
 | Smartmi Standing Fan 2       | miio:basic       | [zhimi.fan.za3](#zhimi-fan-za3) | Yes       |            |
 | Smartmi Standing Fan 2S      | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
+| Mi Smart Space Heater S      | miio:basic       | [zhimi.heater.ma2](#zhimi-heater-ma2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Baseboard Heater E  | miio:basic       | [zhimi.heater.ma3](#zhimi-heater-ma3) | Yes       | Identified manual actions for execution<br />`action{"did":"private-service-toggle-switch","siid":8,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Space Heater S      | miio:basic       | [zhimi.heater.mc2](#zhimi-heater-mc2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Smart Fan            | miio:basic       | [zhimi.heater.na1](#zhimi-heater-na1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Smart Fan Heater     | miio:basic       | [zhimi.heater.nb1](#zhimi-heater-nb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Radiant Heater Smart Version | miio:basic       | [zhimi.heater.za1](#zhimi-heater-za1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.za2](#zhimi-heater-za2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2663,7 +2668,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | brightness           | Dimmer               | Brightness                               |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               |            |
@@ -2759,7 +2764,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | brightness           | Dimmer               | Brightness                               |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               |            |
@@ -4339,6 +4344,85 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | naturalLevel         | Number               | Natural Level                            |            |
 | move                 | String               | Move Direction                           |            |
 
+### Mi Smart Space Heater S (<a name="zhimi-heater-ma2">zhimi.heater.ma2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Switch Status                   |            |
+| fault                | Number               | Heater - Fault                           | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| hw_enable            | Switch               | Private Service - Hw Enable              |            |
+| use_time             | Number:Time          | Private Service - Use Time               |            |
+
+### Mi Smart Baseboard Heater E (<a name="zhimi-heater-ma3">zhimi.heater.ma3</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  |            |
+| on                   | Switch               | Heater - Switch Status                   |            |
+| fault                | Number               | Heater - Fault                           | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Auto","1"="LL Mode","2"="HH Mode"] |
+| countdown_time       | Number:Duration      | Countdown - Countdown Time               |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| use_time             | Number:Duration      | Private Service - Use Time               |            |
+
+### Mi Smart Space Heater S (<a name="zhimi-heater-mc2">zhimi.heater.mc2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| hw_enable            | Switch               | Private Service - Hw Enable              |            |
+| use_time             | Number:Duration      | Private Service - Use Time               |            |
+| country_code         | Number               | Private Service - Country Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
+
+### Smartmi Smart Fan (<a name="zhimi-heater-na1">zhimi.heater.na1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| heat_level           | Number               | Heater - Heat Level                      | Value mapping ["1"="High","2"="Low"] |
+| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Fan not swing","1"="Fan swing"] |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| return_to_middle     | Switch               | Private Service - Return To Middle       |            |
+
+### Smartmi Smart Fan Heater (<a name="zhimi-heater-nb1">zhimi.heater.nb1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| heat_level           | Number               | Heater - Heat Level                      | Value mapping ["1"="High","2"="Low"] |
+| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Fan not swing","1"="Fan swing"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| return_to_middle     | Switch               | Private Service - Return To Middle       |            |
+| country_code         | Number               | Private Service - Country Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
+| hw_en                | Switch               | Private Service - Hw En                  |            |
+
 ### Smartmi Radiant Heater Smart Version (<a name="zhimi-heater-za1">zhimi.heater.za1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -4361,27 +4445,27 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | on                   | Switch               | Heater - Power                           |            |
 | target-temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| countdown-time       | Number:Time          | Countdown - Countdown Time               |            |
+| countdown-time       | Number:Duration      | Countdown - Countdown Time               |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
-| brightness           | Dimmer               | Indicator Light - Brightness             |            |
+| brightness           | Number               | Indicator Light - Brightness             |            |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Controls Locked |            |
-| use-time             | Number:Time          | Private-Service - Use Time               |            |
+| use-time             | Number:Duration      | Private-Service - Use Time               |            |
 
 ### Smartmi Smart Convector Heater 1S (<a name="zhimi-heater-zb1">zhimi.heater.zb1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Heater - Device Fault                    |            |
 | on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    |            |
 | target-temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | countdown-time       | Number:Time          | Countdown - Countdown Time               |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
-| brightness           | Dimmer               | Indicator Light - Brightness             |            |
+| brightness           | Number               | Indicator Light - Brightness             |            |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Controls Locked |            |
-| use-time             | Number:Time          | Private-Service - Use Time               |            |
+| use-time             | Number:Duration      | Private-Service - Use Time               |            |
 | country-code         | Number               | Private-Service - Country-Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
 
 ### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
@@ -7155,7 +7239,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -7272,7 +7356,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight Crystal Pendant Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -9102,6 +9186,100 @@ Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLeve
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
+### Mi Smart Space Heater S (zhimi.heater.ma2) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Mi Smart Space Heater S" <status>
+Switch on "Heater - Switch Status" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch hw_enable "Private Service - Hw Enable" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+```
+
+### Mi Smart Baseboard Heater E (zhimi.heater.ma3) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Mi Smart Baseboard Heater E" <status>
+String actions "Actions" (G_heater) {channel="miio:basic:heater:actions"}
+Switch on "Heater - Switch Status" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Duration countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number:Duration use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+```
+
+### Mi Smart Space Heater S (zhimi.heater.mc2) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Mi Smart Space Heater S" <status>
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch hw_enable "Private Service - Hw Enable" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Duration use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+Number country_code "Private Service - Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+```
+
+### Smartmi Smart Fan (zhimi.heater.na1) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Smartmi Smart Fan" <status>
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number heat_level "Heater - Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch return_to_middle "Private Service - Return To Middle" (G_heater) {channel="miio:basic:heater:return_to_middle"}
+```
+
+### Smartmi Smart Fan Heater (zhimi.heater.nb1) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Smartmi Smart Fan Heater" <status>
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number heat_level "Heater - Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch return_to_middle "Private Service - Return To Middle" (G_heater) {channel="miio:basic:heater:return_to_middle"}
+Number country_code "Private Service - Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+Switch hw_en "Private Service - Hw En" (G_heater) {channel="miio:basic:heater:hw_en"}
+```
+
 ### Smartmi Radiant Heater Smart Version (zhimi.heater.za1) item file lines
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -9129,12 +9307,12 @@ Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:faul
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
 Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
 Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
+Number:Duration countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
 Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Number:Duration use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
 ```
 
 ### Smartmi Smart Convector Heater 1S (zhimi.heater.zb1) item file lines
@@ -9143,16 +9321,16 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
-Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
 Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
 Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
 Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Number:Duration use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
 Number country_code "Private-Service - Country-Code" (G_heater) {channel="miio:basic:heater:country-code"}
 ```
 
