@@ -300,6 +300,15 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 ImperialUnits.FAHRENHEIT);
     }
 
+    /**
+     * create boolean reader with ON state mapped to trueOnOffValue or trueOpenClosedValue depending of item type
+     * 
+     * @param characteristicType characteristic id
+     * @param trueOnOffValue ON value for switch
+     * @param trueOpenClosedValue ON value for contact
+     * @return boolean readed
+     * @throws IncompleteAccessoryException
+     */
     @NonNullByDefault
     protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType,
             OnOffType trueOnOffValue, OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
@@ -307,5 +316,21 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 getItem(characteristicType, GenericItem.class)
                         .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
                 trueOnOffValue, trueOpenClosedValue);
+    }
+
+    /**
+     * create boolean reader with default ON/OFF mapping considering inverted flag
+     * 
+     * @param characteristicType characteristic id
+     * @return boolean reader
+     * @throws IncompleteAccessoryException
+     */
+    @NonNullByDefault
+    protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType)
+            throws IncompleteAccessoryException {
+        final HomekitTaggedItem taggedItem = getCharacteristic(characteristicType)
+                .orElseThrow(() -> new IncompleteAccessoryException(characteristicType));
+        return new BooleanItemReader(taggedItem.getItem(), taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
     }
 }
