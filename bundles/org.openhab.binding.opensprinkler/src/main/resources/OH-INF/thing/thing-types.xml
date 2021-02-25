@@ -155,7 +155,7 @@
 	<channel-type id="enablePrograms">
 		<item-type>Switch</item-type>
 		<label>Enable Programs</label>
-		<description>Allow programs to auto run, when OFF manually started stations will still work.</description>
+		<description>Allow programs to auto run, when OFF, manually started stations still work.</description>
 		<category>Switch</category>
 	</channel-type>
 
@@ -167,7 +167,7 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="signalStrength">
+	<channel-type id="signalStrength" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Signal Strength</label>
 		<description>Wi-Fi Received Signal Strength Indicator.</description>
@@ -194,7 +194,7 @@
 	<channel-type id="rainDelay">
 		<item-type>Number:Time</item-type>
 		<label>Rain Delay</label>
-		<description>The amount of time in hours to delay the running of any programs.</description>
+		<description>The amount of time in hours to delay the running of any program.</description>
 		<category>Time</category>
 		<state readOnly="false" pattern="%.0f h"/>
 	</channel-type>
