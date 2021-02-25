@@ -541,6 +541,14 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="realtime-frequency" advanced="true">
+		<item-type>Number</item-type>
+		<label>Realtime Frequency</label>
+		<description>How often does the weather station submit measurements</description>
+		<category>Number</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
 	<channel-type id="last-query-state" advanced="true">
 		<item-type>String</item-type>
 		<kind>state</kind>
