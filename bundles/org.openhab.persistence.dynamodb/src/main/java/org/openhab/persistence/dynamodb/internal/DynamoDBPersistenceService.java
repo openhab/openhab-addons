@@ -412,11 +412,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                 logger.debug("Item is instanceof GroupItem '{}'", itemName);
                 if (item == null) {
                     logger.debug("BaseItem of GroupItem is null. Ignore and give up!");
-                    return List.of();
+                    return Collections.<HistoricItem> emptyList();
                 }
                 if (item instanceof GroupItem) {
                     logger.debug("BaseItem of GroupItem is a GroupItem too. Ignore and give up!");
-                    return List.of();
+                    return Collections.<HistoricItem> emptyList();
                 }
             }
             boolean legacy = localTableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
