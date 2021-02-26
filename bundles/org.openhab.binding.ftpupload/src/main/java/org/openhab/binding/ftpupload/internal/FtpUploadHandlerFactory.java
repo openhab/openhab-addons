@@ -19,6 +19,7 @@ import java.util.Dictionary;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ftpserver.DataConnectionConfigurationFactory;
 import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.openhab.binding.ftpupload.internal.ftp.FtpServer;
@@ -90,6 +91,7 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void modified(ComponentContext componentContext) {
         stopFtpServer();
         Dictionary<String, Object> properties = componentContext.getProperties();
+        DataConnectionConfigurationFactory dataConnectionConfigurationFactory = new DataConnectionConfigurationFactory();
 
         int port = DEFAULT_PORT;
         int idleTimeout = DEFAULT_IDLE_TIMEOUT;
@@ -116,9 +118,21 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
             }
         }
 
+        if (properties.get("passivePorts") != null) {
+            String strPassivePorts = properties.get("passivePorts").toString();
+            if (!strPassivePorts.isEmpty()) {
+                try {
+                    dataConnectionConfigurationFactory.setPassivePorts(strPassivePorts);
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Invalid passive ports '{}' ({})", strPassivePorts, e.getMessage());
+                }
+            }
+        }
+
         try {
             logger.debug("Starting FTP server, port={}, idleTimeout={}", port, idleTimeout);
-            ftpServer.startServer(port, idleTimeout);
+            ftpServer.startServer(port, idleTimeout,
+                    dataConnectionConfigurationFactory.createDataConnectionConfiguration());
         } catch (FtpException | FtpServerConfigurationException e) {
             logger.warn("FTP server starting failed, reason: {}", e.getMessage());
         }
