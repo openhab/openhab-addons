@@ -159,7 +159,7 @@
 	</channel-type>
 
 	<channel-type id="remote_temp" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Remote Temperature</label>
 		<description>The remote temperature takes the place of the ambient temperature as read by the local thermostat
 			temperature sensor</description>
