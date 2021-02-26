@@ -197,6 +197,8 @@ Currently the miio binding supports more than 270 different models.
 | Mi IH Pressure Rice Cooker   | miio:unsupported | chunmi.cooker.press1   | No        |            |
 | Mi IH Pressure Rice Cooker   | miio:unsupported | chunmi.cooker.press2   | No        |            |
 | Gosund Smart Plug            | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
+| Mi Smart Antibacterial Humidifier | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes       |            |
+| Mi S Smart humidifer         | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes       |            |
 | Mi Smart Humidifier          | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes       |            |
 | Mi Fresh Air Ventilator A1-150 | miio:basic       | [dmaker.airfresh.a1](#dmaker-airfresh-a1) | Yes       |            |
 | Mi Fresh Air Ventilator      | miio:basic       | [dmaker.airfresh.t2017](#dmaker-airfresh-t2017) | Yes       |            |
@@ -464,6 +466,12 @@ Currently the miio binding supports more than 270 different models.
 | Smartmi Inverter Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
 | Smartmi Standing Fan 2       | miio:basic       | [zhimi.fan.za3](#zhimi-fan-za3) | Yes       |            |
 | Smartmi Standing Fan 2S      | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
+| Smartmi Standing Fan 3       | miio:basic       | [zhimi.fan.za5](#zhimi-fan-za5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Space Heater S      | miio:basic       | [zhimi.heater.ma2](#zhimi-heater-ma2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Baseboard Heater E  | miio:basic       | [zhimi.heater.ma3](#zhimi-heater-ma3) | Yes       | Identified manual actions for execution<br />`action{"did":"private-service-toggle-switch","siid":8,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Space Heater S      | miio:basic       | [zhimi.heater.mc2](#zhimi-heater-mc2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Smart Fan            | miio:basic       | [zhimi.heater.na1](#zhimi-heater-na1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Smart Fan Heater     | miio:basic       | [zhimi.heater.nb1](#zhimi-heater-nb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Radiant Heater Smart Version | miio:basic       | [zhimi.heater.za1](#zhimi-heater-za1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.za2](#zhimi-heater-za2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -523,14 +531,14 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
-| working-time         | Number:Duration      | Working Time                             |            |
+| working-time         | Number:Time          | Working Time                             |            |
 | on1                  | Switch               | Indicator Light - Switch Status          |            |
 | power-consumption    | Number:Energy        | Daily Power Consumption                  |            |
 | electric-current     | Number:Current       | Power Consumption - Electric Current     |            |
 | voltage              | Number:ElectricPotential | Power Consumption - Voltage              |            |
 | electric-power       | Number:Power         | Current Power Consumption - Electric Power |            |
-| on-duration          | Number:Duration      | Imilab Timer - On Duration               |            |
-| off-duration         | Number:Duration      | Imilab Timer - Off Duration              |            |
+| on-duration          | Number:Time          | Imilab Timer - On Duration               |            |
+| off-duration         | Number:Time          | Imilab Timer - Off Duration              |            |
 | countdown            | Number:Time          | Imilab Timer - Countdown                 |            |
 | task-switch          | Switch               | Imilab Timer - Task Switch               |            |
 | countdown-info       | Switch               | Imilab Timer - Countdown Info            |            |
@@ -610,6 +618,43 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Model                | String               | Device Information-Device Model          |            |
 | SerialNumber         | String               | Device Information-Device Serial Number  |            |
 | On                   | Switch               | Switch-Switch Status                     |            |
+
+### Mi Smart Antibacterial Humidifier (<a name="deerma-humidifier-jsq">deerma.humidifier.jsq</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| mode                 | Number               | Mode                                     |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
+| led                  | Switch               | LED indicator Light                      |            |
+| sound                | Switch               | Notification Sounds                      |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
+
+### Mi S Smart humidifer  (<a name="deerma-humidifier-jsq1">deerma.humidifier.jsq1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| mode                 | Number               | Mode                                     |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
+| led                  | Switch               | LED indicator Light                      |            |
+| sound                | Switch               | Notification Sounds                      |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
+| wet_and_protect      | Switch               | Wet and Protect                          |            |
+
+### Mi Smart Humidifier (<a name="deerma-humidifier-mjjsq">deerma.humidifier.mjjsq</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| mode                 | Number               | Mode                                     |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
+| led                  | Switch               | LED indicator Light                      |            |
+| sound                | Switch               | Notification Sounds                      |            |
+| watertankstatus      | Number               | Watertank Status                         |            |
 
 ### Mi Fresh Air Ventilator A1-150 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
 
@@ -2061,7 +2106,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2085,7 +2130,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2109,7 +2154,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2133,7 +2178,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2157,7 +2202,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2181,7 +2226,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2205,7 +2250,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2229,7 +2274,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2253,7 +2298,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2277,7 +2322,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2301,7 +2346,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2325,7 +2370,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2349,7 +2394,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2373,7 +2418,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2397,7 +2442,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2421,7 +2466,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2445,7 +2490,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2469,7 +2514,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2493,7 +2538,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -2517,7 +2562,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | elec-count           | Number               | Electricity - Count                      |            |
 | clean                | String               | Maintenance - Clean                      |            |
 | examine              | String               | Maintenance - Examine                    |            |
-| running-duration     | Number:Duration      | Maintenance - Running Duration           |            |
+| running-duration     | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent          | Number:Dimentionless | Fan Speed %                              |            |
 | timer                | String               | Enhance - Timer                          |            |
 
@@ -4396,6 +4441,107 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | naturalLevel         | Number               | Natural Level                            |            |
 | move                 | String               | Move Direction                           |            |
 
+### Smartmi Standing Fan 3  (<a name="zhimi-fan-za5">zhimi.fan.za5</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Fan - Power                              |            |
+| fan_level            | Number               | Fan - Fan Level                          | Value mapping ["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"] |
+| horizontal_swing     | Switch               | Fan - Horizontal Swing                   |            |
+| horizontal_angle     | Number               | Fan - Horizontal Angle                   |            |
+| mode                 | Number               | Fan - Mode                               | Value mapping ["0"="Natural Wind","1"="Straight Wind"] |
+| off_delay            | Number               | Fan - Power Off Delay                    |            |
+| anion                | Switch               | Fan - Anion                              |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| button_press         | Number               | Custom Service - Button Press            | Value mapping ["1"="power","2"="swing","0"="No Button Pressed"] |
+| battery_state        | Switch               | Custom Service - Battery State           |            |
+| speed_now            | Number               | Custom Service - Speed Now               |            |
+| ac_state             | Switch               | Custom Service - Ac State                |            |
+| speed_level          | Number:Dimensionless | Custom Service - Speed Level             |            |
+
+### Mi Smart Space Heater S (<a name="zhimi-heater-ma2">zhimi.heater.ma2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Switch Status                   |            |
+| fault                | Number               | Heater - Fault                           | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| hw_enable            | Switch               | Private Service - Hw Enable              |            |
+| use_time             | Number:Time          | Private Service - Use Time               |            |
+
+### Mi Smart Baseboard Heater E (<a name="zhimi-heater-ma3">zhimi.heater.ma3</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  |            |
+| on                   | Switch               | Heater - Switch Status                   |            |
+| fault                | Number               | Heater - Fault                           | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Auto","1"="LL Mode","2"="HH Mode"] |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| use_time             | Number:Time          | Private Service - Use Time               |            |
+
+### Mi Smart Space Heater S (<a name="zhimi-heater-mc2">zhimi.heater.mc2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| hw_enable            | Switch               | Private Service - Hw Enable              |            |
+| use_time             | Number:Time          | Private Service - Use Time               |            |
+| country_code         | Number               | Private Service - Country Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
+
+### Smartmi Smart Fan (<a name="zhimi-heater-na1">zhimi.heater.na1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| heat_level           | Number               | Heater - Heat Level                      | Value mapping ["1"="High","2"="Low"] |
+| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Fan not swing","1"="Fan swing"] |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| return_to_middle     | Switch               | Private Service - Return To Middle       |            |
+
+### Smartmi Smart Fan Heater (<a name="zhimi-heater-nb1">zhimi.heater.nb1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| heat_level           | Number               | Heater - Heat Level                      | Value mapping ["1"="High","2"="Low"] |
+| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Fan not swing","1"="Fan swing"] |
+| target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| return_to_middle     | Switch               | Private Service - Return To Middle       |            |
+| country_code         | Number               | Private Service - Country Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
+| hw_en                | Switch               | Private Service - Hw En                  |            |
+
 ### Smartmi Radiant Heater Smart Version (<a name="zhimi-heater-za1">zhimi.heater.za1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -4414,14 +4560,14 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Heater - Device Fault                    |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
 | on                   | Switch               | Heater - Power                           |            |
 | target-temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | countdown-time       | Number:Time          | Countdown - Countdown Time               |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
-| brightness           | Dimmer               | Indicator Light - Brightness             |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Controls Locked |            |
 | use-time             | Number:Time          | Private-Service - Use Time               |            |
 
@@ -4429,14 +4575,14 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Heater - Device Fault                    |            |
 | on                   | Switch               | Heater - Power                           |            |
+| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
 | target-temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | countdown-time       | Number:Time          | Countdown - Countdown Time               |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
-| brightness           | Dimmer               | Indicator Light - Brightness             |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Controls Locked |            |
 | use-time             | Number:Time          | Private-Service - Use Time               |            |
 | country-code         | Number               | Private-Service - Country-Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
@@ -4600,8 +4746,20 @@ Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"
 
 Note: cleaning map is only available with cloud access.
 
-Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+There are several advanced channels, which may be useful in rules (e.g. for individual room cleaning etc)
+In case your vacuum does not support one of these commands, it will show "unsupported_method" for string channels or no value for numeric channels.
 
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Number  | status#segment_status             | Segment Status             |
+| Number  | status#map_status                 | Map Box Status             |
+| Number  | status#led_status                 | Led Box Status             |
+| String  | info#carpet_mode                  | Carpet Mode details        |
+| String  | info#fw_features                  | Firmware Features          |
+| String  | info#room_mapping                 | Room Mapping details       |
+| String  | info#multi_maps_list              | Maps Listing details       |
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|
@@ -4651,14 +4809,14 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)" <status>
 Switch on "Power" (G_plug) {channel="miio:basic:plug:on"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Number:Duration working_time "Working Time" (G_plug) {channel="miio:basic:plug:working-time"}
+Number:Time working_time "Working Time" (G_plug) {channel="miio:basic:plug:working-time"}
 Switch on1 "Indicator Light - Switch Status" (G_plug) {channel="miio:basic:plug:on1"}
 Number:Energy power_consumption "Daily Power Consumption" (G_plug) {channel="miio:basic:plug:power-consumption"}
 Number:Current electric_current "Power Consumption - Electric Current" (G_plug) {channel="miio:basic:plug:electric-current"}
 Number:ElectricPotential voltage "Power Consumption - Voltage" (G_plug) {channel="miio:basic:plug:voltage"}
 Number:Power electric_power "Current Power Consumption - Electric Power" (G_plug) {channel="miio:basic:plug:electric-power"}
-Number:Duration on_duration "Imilab Timer - On Duration" (G_plug) {channel="miio:basic:plug:on-duration"}
-Number:Duration off_duration "Imilab Timer - Off Duration" (G_plug) {channel="miio:basic:plug:off-duration"}
+Number:Time on_duration "Imilab Timer - On Duration" (G_plug) {channel="miio:basic:plug:on-duration"}
+Number:Time off_duration "Imilab Timer - Off Duration" (G_plug) {channel="miio:basic:plug:off-duration"}
 Number:Time countdown "Imilab Timer - Countdown" (G_plug) {channel="miio:basic:plug:countdown"}
 Switch task_switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
 Switch countdown_info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
@@ -4765,6 +4923,52 @@ String Manufacturer "Device Information-Device Manufacturer" (G_plug) {channel="
 String Model "Device Information-Device Model" (G_plug) {channel="miio:basic:plug:Model"}
 String SerialNumber "Device Information-Device Serial Number" (G_plug) {channel="miio:basic:plug:SerialNumber"}
 Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
+```
+
+### Mi Smart Antibacterial Humidifier (deerma.humidifier.jsq) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Mi Smart Antibacterial Humidifier" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
+Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+```
+
+### Mi S Smart humidifer  (deerma.humidifier.jsq1) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Mi S Smart humidifer " <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
+Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+Switch wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
+```
+
+### Mi Smart Humidifier (deerma.humidifier.mjjsq) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Mi Smart Humidifier" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
+Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
+Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
 
 ### Mi Fresh Air Ventilator A1-150 (dmaker.airfresh.a1) item file lines
@@ -6513,7 +6717,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6540,7 +6744,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6567,7 +6771,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6594,7 +6798,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6621,7 +6825,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6648,7 +6852,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6675,7 +6879,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6702,7 +6906,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6729,7 +6933,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6756,7 +6960,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6783,7 +6987,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6810,7 +7014,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6837,7 +7041,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6864,7 +7068,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6891,7 +7095,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6918,7 +7122,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6945,7 +7149,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6972,7 +7176,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -6999,7 +7203,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -7026,7 +7230,7 @@ Number:Energy electricity "Power consumption accumulation in kWh" (G_airconditio
 Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
@@ -9218,6 +9422,125 @@ Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLeve
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
+### Smartmi Standing Fan 3  (zhimi.fan.za5) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fan "Smartmi Standing Fan 3 " <status>
+Switch on "Fan - Power" (G_fan) {channel="miio:basic:fan:on"}
+Number fan_level "Fan - Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
+Switch horizontal_swing "Fan - Horizontal Swing" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
+Number horizontal_angle "Fan - Horizontal Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Number mode "Fan - Mode" (G_fan) {channel="miio:basic:fan:mode"}
+Number off_delay "Fan - Power Off Delay" (G_fan) {channel="miio:basic:fan:off_delay"}
+Switch anion "Fan - Anion" (G_fan) {channel="miio:basic:fan:anion"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_fan) {channel="miio:basic:fan:brightness"}
+Switch alarm "Alarm - Alarm" (G_fan) {channel="miio:basic:fan:alarm"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_fan) {channel="miio:basic:fan:relative_humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_fan) {channel="miio:basic:fan:temperature"}
+Number button_press "Custom Service - Button Press" (G_fan) {channel="miio:basic:fan:button_press"}
+Switch battery_state "Custom Service - Battery State" (G_fan) {channel="miio:basic:fan:battery_state"}
+Number speed_now "Custom Service - Speed Now" (G_fan) {channel="miio:basic:fan:speed_now"}
+Switch ac_state "Custom Service - Ac State" (G_fan) {channel="miio:basic:fan:ac_state"}
+Number:Dimensionless speed_level "Custom Service - Speed Level" (G_fan) {channel="miio:basic:fan:speed_level"}
+```
+
+### Mi Smart Space Heater S (zhimi.heater.ma2) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Mi Smart Space Heater S" <status>
+Switch on "Heater - Switch Status" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch hw_enable "Private Service - Hw Enable" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+```
+
+### Mi Smart Baseboard Heater E (zhimi.heater.ma3) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Mi Smart Baseboard Heater E" <status>
+String actions "Actions" (G_heater) {channel="miio:basic:heater:actions"}
+Switch on "Heater - Switch Status" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+```
+
+### Mi Smart Space Heater S (zhimi.heater.mc2) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Mi Smart Space Heater S" <status>
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch hw_enable "Private Service - Hw Enable" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+Number country_code "Private Service - Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+```
+
+### Smartmi Smart Fan (zhimi.heater.na1) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Smartmi Smart Fan" <status>
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number heat_level "Heater - Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch return_to_middle "Private Service - Return To Middle" (G_heater) {channel="miio:basic:heater:return_to_middle"}
+```
+
+### Smartmi Smart Fan Heater (zhimi.heater.nb1) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_heater "Smartmi Smart Fan Heater" <status>
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number heat_level "Heater - Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch return_to_middle "Private Service - Return To Middle" (G_heater) {channel="miio:basic:heater:return_to_middle"}
+Number country_code "Private Service - Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+Switch hw_en "Private Service - Hw En" (G_heater) {channel="miio:basic:heater:hw_en"}
+```
+
 ### Smartmi Radiant Heater Smart Version (zhimi.heater.za1) item file lines
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -9248,7 +9571,7 @@ Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
 Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
 Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
 Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
 ```
@@ -9259,14 +9582,14 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
-Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
 Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
 Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
 Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
 Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
 Number country_code "Private-Service - Country-Code" (G_heater) {channel="miio:basic:heater:country-code"}

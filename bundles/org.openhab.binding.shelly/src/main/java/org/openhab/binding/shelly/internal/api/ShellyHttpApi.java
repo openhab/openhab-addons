@@ -36,7 +36,9 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySendKeyLis
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySenseKeyCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLight;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
@@ -226,6 +228,27 @@ public class ShellyHttpApi {
 
     public void setLightSetting(String parm, String value) throws ShellyApiException {
         request(SHELLY_URL_SETTINGS + "?" + parm + "=" + value);
+    }
+
+    public ShellySettingsLogin getLoginSettings() throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "/login", ShellySettingsLogin.class);
+    }
+
+    public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + user + "&password=" + password,
+                ShellySettingsLogin.class);
+    }
+
+    public String deviceReboot() throws ShellyApiException {
+        return callApi(SHELLY_URL_RESTART, String.class);
+    }
+
+    public String factoryReset() throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "?reset=true", String.class);
+    }
+
+    public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException {
+        return callApi("/ota?" + uri, ShellySettingsUpdate.class);
     }
 
     /**

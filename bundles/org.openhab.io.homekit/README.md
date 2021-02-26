@@ -103,7 +103,7 @@ org.openhab.homekit:maximumTemperature=100
 
 | Setting                  | Description                                                                                                                                                                                                                             | Default value |
 |:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address.                                                                                  | (none)        |
+| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address configured for openHAB.                                                                                  | (none)        |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
@@ -127,6 +127,9 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
+
+If the first word of the item name match the room name in home app, home app will hide it. 
+E.g. item with the name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items and rooms.
 
 ### UI based Configuration
 
@@ -421,6 +424,9 @@ Following table summarizes the optional characteristics supported by sensors.
 | TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                  |
 | BatteryLowStatus             | Switch, Contact          | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.                 |
 
+Switch and Contact items support inversion of the state mapping, e.g. by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed". 
+The configuration "inverted='true'" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".  
+
 Examples of sensor definitions.
 Sensors without optional characteristics:
 
@@ -429,6 +435,8 @@ Switch  leaksensor_single    "Leak Sensor"                   {homekit="LeakSenso
 Number  light_sensor 	     "Light Sensor"                  {homekit="LightSensor"}
 Number  temperature_sensor 	 "Temperature Sensor [%.1f C]"   {homekit="TemperatureSensor"}
 Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor"}
+Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor" [inverted="true"]}
+
 Switch  occupancy_sensor     "Occupancy Sensor"              {homekit="OccupancyDetectedState"}
 Switch  motion_sensor        "Motion Sensor"                 {homekit="MotionSensor"}
 Number  humidity_sensor 	 "Humidity Sensor"			     {homekit="HumiditySensor"}
@@ -439,18 +447,23 @@ Sensors with optional characteristics:
 ```xtend
 Group           gLeakSensor                "Leak Sensor"                                             {homekit="LeakSensor"}
 Switch          leaksensor                 "Leak Sensor State"                  (gLeakSensor)        {homekit="LeakDetectedState"}
-Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus"}
-Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus"}
+Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus" }
+Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus" [inverted="true"]}
 Switch          leaksensor_fault           "Leak Sensor Fault"                  (gLeakSensor)        {homekit="FaultStatus"}
 Switch          leaksensor_tampered        "Leak Sensor Tampered"               (gLeakSensor)        {homekit="TamperedStatus"}
 
 Group           gMotionSensor              "Motion Sensor"                                           {homekit="MotionSensor"}
 Switch          motionsensor               "Motion Sensor State"                (gMotionSensor)      {homekit="MotionDetectedState"}
-Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus"}
+Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus" [inverted="true"]}
 Switch          motionsensor_active        "Motion Sensor Active"               (gMotionSensor)      {homekit="ActiveStatus"}
 Switch          motionsensor_fault         "Motion Sensor Fault"                (gMotionSensor)      {homekit="FaultStatus"}
 Switch          motionsensor_tampered      "Motion Sensor Tampered"             (gMotionSensor)      {homekit="TamperedStatus"}
 ```
+
+or using UI
+
+![sensor_ui_config.png](doc/sensor_ui_config.png)
+
 
 ## Supported accessory type
 
@@ -490,7 +503,7 @@ Switch          motionsensor_tampered      "Motion Sensor Tampered"             
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| ContactSensor        |                             |                              |                          | Contact Sensor,An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                                                                 |
+| ContactSensor        |                             |                              |                          | Contact Sensor, An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                                                                 |
 |                      | ContactSensorState          |                              | Switch, Contact          | Contact sensor state (ON=open, OFF=closed)                                                                                                                                                                                                                                                                |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
@@ -581,7 +594,7 @@ Switch          motionsensor_tampered      "Motion Sensor Tampered"             
 |                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
 |                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
 |                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
-|                      |                             | ColorTemperature             | Number                   | Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
+|                      |                             | ColorTemperature             | Number                   | NOT WORKING on iOS 14.x. Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
 | Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      |                             | CurrentFanState              | Number                   | current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                             |
@@ -609,7 +622,7 @@ Switch          motionsensor_tampered      "Motion Sensor Tampered"             
 |                      |                             | LockControl                  | Number, Switch           | status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED                                                                                                                                                                                                          |
 |                      |                             | CoolingThresholdTemperature  | Number                   | maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                    |
 |                      |                             | HeatingThresholdTemperature  | Number                   | minimum temperature that must be reached before heating is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]            |
-| Lock                 |                             |                              |                          | A Lock Mechanism                                                                                                                                                                                                                                                                                          |
+| Lock                 |                             |                              |                          | A Lock Mechanism. with flag [inverted="true"] the default mapping to switch ON/OFF can be inverted.                                                                                                                                                                                                                                                                                         |
 |                      | LockCurrentState            |                              | Switch, Number           | current state of lock mechanism (1/ON=SECURED, 0/OFF=UNSECURED, 2=JAMMED, 3=UNKNOWN)                                                                                                                                                                                                                                              |
 |                      | LockTargetState             |                              | Switch                   | target state of lock mechanism (ON=SECURED, OFF=UNSECURED)                                                                                                                                                                                                                                               |
 |                      |                             | Name                         | String                   | Name of the lock                                                                                                                                                                                                                                                                                          |
@@ -714,16 +727,6 @@ String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           
 Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
-
-
-## Common Problems
-
-**openHAB HomeKit hub shows up when I manually scan for devices, but Home app reports "can't connect to device"**
-
-If you see this error in the Home app, and don't see any log messages, it could be because your IP address in the `networkInterface` setting is misconfigured.
-The openHAB HomeKit hub is advertised via mDNS.
-If you register an IP address that isn't reachable from your phone (such as `localhost`, `0.0.0.0`, `127.0.0.1`, etc.), then Home will be unable to reach openHAB.
-
 ## Additional Notes
 
 HomeKit allows only a single pairing to be established with the bridge.
@@ -755,3 +758,29 @@ openhab> log:tail io.github.hapjava
 `openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.
 
 `openhab:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
+
+## Troubleshooting 
+
+### openHAB is not listed in home app
+if you don't see openHAB in the home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to home app device or openHAB is already in paired state. 
+You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow: 
+
+- install discovery dns app from app store 
+- start discovery app
+- find `_hap._tcp`  in the list of service types
+- if you don't find _hap._tcp on the list, probably the traffic is blocked. 
+  - to confirm this, check whether you can find _openhab-server._tcp. if you don't see it as well, traffic is blocked. check your network router/firewall settings.
+- if you found _hap._tcp, open it. you should see the name of your openHAB HomeKit bridge (default name is openHAB)
+
+![discovery_hap_list.png](doc/discovery_hap_list.png)  
+
+- if you don't see openHAB bridge name, the traffic is blocked
+- if you see openHAB HomeKit bridge, open it
+
+![discovery_openhab_details.png](doc/discovery_openhab_details.png)
+
+- verify the IP address. it must be the IP address of your openHAB server, if not, set the correct IP address using `networkInterface` settings
+- verify the flag "sf". 
+  - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
+  - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
+- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device. 

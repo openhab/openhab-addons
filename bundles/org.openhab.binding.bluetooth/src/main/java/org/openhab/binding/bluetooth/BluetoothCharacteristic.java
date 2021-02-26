@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Cleaned up code
+ * @author Peter Rosenberg - Improve properties support
  */
 public class BluetoothCharacteristic {
     public static final int FORMAT_UINT8 = 0x11;
@@ -143,6 +144,16 @@ public class BluetoothCharacteristic {
     }
 
     /**
+     * Set the raw properties. The individual properties are represented as bits inside
+     * of this int value.
+     *
+     * @param properties of this Characteristic
+     */
+    public void setProperties(int properties) {
+        this.properties = properties;
+    }
+
+    /**
      * Returns the properties of this characteristic.
      *
      * The properties contain a bit mask of property flags indicating the features of this characteristic.
@@ -150,6 +161,46 @@ public class BluetoothCharacteristic {
      */
     public int getProperties() {
         return properties;
+    }
+
+    /**
+     * Returns if the given characteristics property is enabled or not.
+     *
+     * @param property one of the Constants BluetoothCharacteristic.PROPERTY_XX
+     * @return true if this characteristic has the given property enabled, false if properties not set or
+     *         the given property is not enabled.
+     */
+    public boolean hasPropertyEnabled(int property) {
+        return (properties & property) != 0;
+    }
+
+    /**
+     * Returns if notifications can be enabled on this characteristic.
+     *
+     * @return true if notifications can be enabled, false if notifications are not supported, characteristic is missing
+     *         on device or notifications are not supported.
+     */
+    public boolean canNotify() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_NOTIFY);
+    }
+
+    /**
+     * Returns if the value can be read on this characteristic.
+     *
+     * @return true if the value can be read, false otherwise.
+     */
+    public boolean canRead() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_READ);
+    }
+
+    /**
+     * Returns if the value can be written on this characteristic.
+     *
+     * @return true if the value can be written with of without a response, false otherwise.
+     */
+    public boolean canWrite() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_WRITE)
+                || hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_WRITE_NO_RESPONSE);
     }
 
     /**
