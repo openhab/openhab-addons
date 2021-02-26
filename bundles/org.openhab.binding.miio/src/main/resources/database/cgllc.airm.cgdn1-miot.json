@@ -42,7 +42,7 @@
 				"actions": [
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
+						"parameterType": "NUMBER",
 						"parameters": [
 							2.0
 						],
@@ -59,7 +59,7 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
+						"parameterType": "NUMBER",
 						"parameters": [
 							3.0
 						],
@@ -76,7 +76,7 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
+						"parameterType": "NUMBER",
 						"parameters": [
 							4.0
 						],
@@ -93,7 +93,7 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
+						"parameterType": "NUMBER",
 						"parameters": [
 							5.0
 						],
@@ -110,7 +110,7 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
+						"parameterType": "NUMBER",
 						"parameters": [
 							6.0
 						],
@@ -127,7 +127,7 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
+						"parameterType": "NUMBER",
 						"parameters": [
 							7.0
 						],
@@ -169,13 +169,13 @@
 				"piid": 4,
 				"friendlyName": "Environment - PM2 5 Density",
 				"channel": "pm2_5_density",
-				"type": "Number",
+				"type": "Number:Density",
 				"unit": "μg/m3",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 1000,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -187,13 +187,13 @@
 				"piid": 5,
 				"friendlyName": "Environment - PM10 Density",
 				"channel": "pm10_density",
-				"type": "Number",
+				"type": "Number:Density",
 				"unit": "μg/m3",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 1000,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -222,7 +222,7 @@
 				"piid": 8,
 				"friendlyName": "Environment - CO2 Density",
 				"channel": "co2_density",
-				"type": "Number:Dimensionless",
+				"type": "Number:Density",
 				"unit": "ppm",
 				"stateDescription": {
 					"minimum": 0,
@@ -286,12 +286,13 @@
 				"piid": 3,
 				"friendlyName": "Battery - Voltage",
 				"channel": "voltage",
-				"type": "Number",
+				"type": "Number:ElectricPotential",
+				"unit": "mV",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 65535,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.2f",
 					"readOnly": true
 				},
 				"refresh": true,
