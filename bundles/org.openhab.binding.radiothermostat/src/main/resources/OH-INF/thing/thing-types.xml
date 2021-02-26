@@ -163,7 +163,7 @@
 		<label>Remote Temperature</label>
 		<description>The remote temperature takes the place of the ambient temperature as read by the local thermostat
 			temperature sensor</description>
-		<state pattern="%d"/>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="t_day" advanced="true">
