@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
@@ -44,14 +45,15 @@ public class ShellyTranslationProvider {
         this.localeProvider = localeProvider;
     }
 
-    public @Nullable String get(String key, @Nullable Object... arguments) {
+    public String get(String key, @Nullable Object... arguments) {
         return getText(key.contains("@text/") || key.contains(".shelly.") ? key : "message." + key, arguments);
     }
 
-    public @Nullable String getText(String key, @Nullable Object... arguments) {
+    public String getText(String key, @Nullable Object... arguments) {
         try {
             Locale locale = localeProvider.getLocale();
-            return i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments);
+            String message = i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments);
+            return ShellyUtils.getString(message);
         } catch (IllegalArgumentException e) {
             return "Unable to load message for key " + key;
         }

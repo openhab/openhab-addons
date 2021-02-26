@@ -100,7 +100,7 @@ public class ShellyChannelDefinitions {
     public ShellyChannelDefinitions(@Reference ShellyTranslationProvider translationProvider) {
         ShellyTranslationProvider m = translationProvider;
 
-        // Device: Internal Temp
+        // Device
         CHANNEL_DEFINITIONS
                 // Device
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_NAME, "deviceName", ITEMT_STRING))
@@ -116,6 +116,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPTIME, "uptime", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -179,6 +180,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION_TS, "motionTimestamp", ITEMT_DATETIME))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION_ACT, "motionActive", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_FLOOD, "sensorFlood", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SMOKE, "sensorSmoke", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PPM, "sensorPPM", ITEMT_NUMBER))
@@ -259,13 +261,11 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPTIME);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT);
+        addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
+        addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
+                                                                                                                  // LED
+        addChannel(thing, add, profile.settings.sleepTime != null, CHGR_DEVST, CHANNEL_DEVST_SENSOR_SLEEPTIME);
 
-        if (profile.settings.ledPowerDisable != null) {
-            addChannel(thing, add, true, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
-        }
-        if (profile.settings.ledStatusDisable != null) {
-            addChannel(thing, add, true, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi status LED
-        }
         return add;
     }
 
@@ -417,6 +417,8 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_MOTION);
         if (sdata.sensor != null) { // DW, Sense or Motion
             addChannel(thing, newChannels, sdata.sensor.state != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT); // DW/DW2
+            addChannel(thing, newChannels, sdata.sensor.motionActive != null, CHANNEL_GROUP_SENSOR, // Motion
+                    CHANNEL_SENSOR_MOTION_ACT);
             addChannel(thing, newChannels, sdata.sensor.motionTimestamp != null, CHANNEL_GROUP_SENSOR, // Motion
                     CHANNEL_SENSOR_MOTION_TS);
             addChannel(thing, newChannels, sdata.sensor.vibration != null, CHANNEL_GROUP_SENSOR,

@@ -249,6 +249,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
+    public static final String CHANNEL_SENSOR_MOTION_ACT = "motionActive";
     public static final String CHANNEL_SENSOR_MOTION = "motion";
     public static final String CHANNEL_SENSOR_MOTION_TS = "motionTimestamp";
     public static final String CHANNEL_SENSOR_ERROR = "lastError";
@@ -302,6 +303,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
+    public static final String CHANNEL_DEVST_SENSOR_SLEEPTIME = "sensorSleepTime";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";

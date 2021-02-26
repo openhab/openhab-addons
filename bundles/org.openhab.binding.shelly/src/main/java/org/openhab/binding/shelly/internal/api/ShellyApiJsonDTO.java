@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.core.thing.CommonTriggerEvents;
 
 import com.google.gson.annotations.SerializedName;
@@ -226,6 +227,12 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_TEMP_CELSIUS = "C";
     public static final String SHELLY_TEMP_FAHRENHEIT = "F";
 
+    // Motion
+    public static final int SHELLY_MOTION_SLEEPTIME_OFFSET = 3; // we need to substract and offset
+
+    // CoIoT Multicast setting
+    public static final String SHELLY_COIOT_MCAST = "mcast";
+
     public static class ShellySettingsDevice {
         public String type;
         public String mac;
@@ -292,6 +299,8 @@ public class ShellyApiJsonDTO {
     public static class ShellySettingsCoiot { // FW 1.6+
         @SerializedName("update_period")
         public Integer updatePeriod;
+        public Boolean enabled; // Motion 1.0.7: Coap can be disabled
+        public String peer; // if set the device uses singlecast CoAP, mcast=set back to Multicast
     }
 
     public static class ShellyStatusMqtt {
@@ -630,6 +639,18 @@ public class ShellyApiJsonDTO {
         @SerializedName("favorites_enabled")
         public Boolean favoritesEnabled;
         public ArrayList<ShellyFavPos> favorites;
+
+        // Motion
+        public ShellyMotionSettings motion;
+        @SerializedName("tamper_sensitivity")
+        public Integer tamperSensitivity;
+        @SerializedName("dark_threshold")
+        public Integer darkThreshold;
+        @SerializedName("twilight_threshold")
+        public Integer twilightThreshold;
+
+        @SerializedName("sleep_time") // Shelly Motion
+        public Integer sleepTime;
     }
 
     public static class ShellySettingsAttributes {
@@ -701,6 +722,9 @@ public class ShellyApiJsonDTO {
         @SerializedName("fs_free")
         public Long fsFree;
         public Long uptime;
+
+        @SerializedName("sleep_time") // Shelly Motion
+        public Integer sleepTime;
 
         public String json;
     }
@@ -918,6 +942,17 @@ public class ShellyApiJsonDTO {
         public static class ShellySensorAccel {
             public Integer tilt; // Tilt in °
             public Integer vibration; // Whether vibration is detected
+        }
+
+        public static class ShellyMotionSettings {
+            public Integer sensitivity;
+            @SerializedName("blind_time_minutes")
+            public Integer blindTimeMinutes;
+            @SerializedName("pulse_count")
+            public Integer pulseCount;
+            @SerializedName("operating_mode")
+            public Integer operatingMode;
+            public Boolean enabled;
         }
 
         public static class ShellyExtTemperature {

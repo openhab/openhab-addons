@@ -262,6 +262,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         tmpPrf.updateFromStatus(tmpPrf.status);
         updateProperties(tmpPrf, tmpPrf.status);
         checkVersion(tmpPrf, tmpPrf.status);
+        if ((tmpPrf.settings.coiot.enabled != null) && !tmpPrf.settings.coiot.enabled) {
+            logger.info("{}: CoIoT is disabled in device settings", thingName);
+            config.eventsCoIoT = autoCoIoT = false;
+        }
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
             config.eventsCoIoT = true;
@@ -326,6 +330,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 case CHANNEL_LED_POWER_DISABLE:
                     logger.debug("{}: Set POWER LED disabled to {}", thingName, command);
                     api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
+                    break;
+
+                case CHANNEL_DEVST_SENSOR_SLEEPTIME:
+                    logger.debug("{}: Set sensor sleep time to {}", thingName, command);
+                    int value = ((DecimalType) command).intValue();
+                    value = value > 0 ? Math.max(SHELLY_MOTION_SLEEPTIME_OFFSET, value - SHELLY_MOTION_SLEEPTIME_OFFSET)
+                            : 0;
+                    api.setSleepTime(value);
                     break;
 
                 default:
@@ -1221,6 +1233,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         return thingName;
     }
 
+    @Override
     public void resetStats() {
         // reset statistics
         stats = new ShellyDeviceStats();

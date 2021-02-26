@@ -201,16 +201,19 @@ public class ShellyHttpApi {
         return status;
     }
 
-    public void setTimer(Integer index, String timerName, Double value) throws ShellyApiException {
+    public void setTimer(int index, String timerName, int value) throws ShellyApiException {
         String type = SHELLY_CLASS_RELAY;
         if (profile.isRoller) {
             type = SHELLY_CLASS_ROLLER;
         } else if (profile.isLight) {
             type = SHELLY_CLASS_LIGHT;
         }
-        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "="
-                + ((Integer) value.intValue()).toString();
+        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + value;
         request(uri);
+    }
+
+    public void setSleepTime(int value) throws ShellyApiException {
+        request(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
     }
 
     public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
@@ -236,6 +239,10 @@ public class ShellyHttpApi {
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + user + "&password=" + password,
                 ShellySettingsLogin.class);
+    }
+
+    public ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "?coiot_enable=true&coiot_peer=" + peer, ShellySettingsLogin.class);
     }
 
     public String deviceReboot() throws ShellyApiException {

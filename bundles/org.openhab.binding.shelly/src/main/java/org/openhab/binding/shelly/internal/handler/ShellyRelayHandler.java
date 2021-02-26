@@ -134,11 +134,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
             case CHANNEL_TIMER_AUTOON:
                 logger.debug("{}: Set Auto-ON timer to {}", thingName, command);
-                api.setTimer(rIndex, SHELLY_TIMER_AUTOON, getNumber(command));
+                api.setTimer(rIndex, SHELLY_TIMER_AUTOON, getNumber(command).intValue());
                 break;
             case CHANNEL_TIMER_AUTOOFF:
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
-                api.setTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command));
+                api.setTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).intValue());
                 break;
         }
         return true;
@@ -219,7 +219,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     private void handleRoller(Command command, String groupName, Integer index, boolean isControl)
             throws ShellyApiException {
-        Integer position = -1;
+        int position = -1;
 
         if ((command instanceof UpDownType) || (command instanceof OnOffType)) {
             ShellyControlRoller rstatus = api.getRollerStatus(index);
@@ -237,27 +237,29 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
             if (command == UpDownType.UP || command == OnOffType.ON) {
                 logger.debug("{}: Open roller", thingName);
-                api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
-                int pos = profile.getRollerFav(config.favoriteUP - 1);
-                position = pos > 0 ? pos : SHELLY_MAX_ROLLER_POS;
-                if (pos > 0) {
+                int shpos = profile.getRollerFav(config.favoriteUP - 1);
+                if (shpos > 0) {
                     logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
-                            pos);
+                            shpos);
+                    api.setRollerPos(index, shpos);
+                    position = shpos;
+                } else {
+                    api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
+                    position = SHELLY_MIN_ROLLER_POS;
                 }
             } else if (command == UpDownType.DOWN || command == OnOffType.OFF) {
                 logger.debug("{}: Closing roller", thingName);
-                int pos = profile.getRollerFav(config.favoriteDOWN - 1);
-                if (pos > 0) {
+                int shpos = profile.getRollerFav(config.favoriteDOWN - 1);
+                if (shpos > 0) {
                     // use favorite position
-                    if (pos > 0) {
-                        logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
-                                config.favoriteDOWN, pos);
-                    }
-                    api.setRollerPos(index, pos);
+                    logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
+                            config.favoriteDOWN, shpos);
+                    api.setRollerPos(index, shpos);
+                    position = shpos;
                 } else {
                     api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_CLOSE);
+                    position = SHELLY_MAX_ROLLER_POS;
                 }
-                position = SHELLY_MAX_ROLLER_POS - pos;
             }
         } else if (command == StopMoveType.STOP) {
             logger.debug("{}: Stop roller", thingName);
@@ -275,8 +277,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         "Invalid value type for roller control/position" + command.getClass().toString());
             }
 
-            // take position from RollerShutter control and map to Shelly positon (OH:
-            // 0=closed, 100=open; Shelly 0=open, 100=closed)
+            // take position from RollerShutter control and map to Shelly positon
+            // OH: 0=closed, 100=open; Shelly 0=open, 100=closed)
             // take position 1:1 from position channel
             position = isControl ? SHELLY_MAX_ROLLER_POS - position : position;
             validateRange("roller position", position, SHELLY_MIN_ROLLER_POS, SHELLY_MAX_ROLLER_POS);
@@ -284,6 +286,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             logger.debug("{}: Changing roller position to {}", thingName, position);
             api.setRollerPos(index, position);
         }
+
         if (position != -1) {
             // make sure both are in sync
             if (isControl) {

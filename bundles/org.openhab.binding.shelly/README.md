@@ -805,9 +805,16 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |illumination   |String   |yes      |Current illumination: dark/twilight/bright                           |
 |          |vibration      |Switch   |yes      |ON: Vibration detected                                               |
 |          |charger        |Switch   |yes      |ON: USB charging cable is connected external power supply activated. |
+|          |notionActive   |Switch   |yes      |ON: Motion detection is currently active                             |
 |          |lastUpdate     |DateTime |yes      |Timestamp of the last update (any sensor value changed)              |
 |battery   |batteryLevel   |Number   |yes      |Battery Level in %                                                   |
 |          |lowBattery     |Switch   |yes      |Low battery alert (< 20%)                                            |
+|device    |sensorSleepTime|Number   |no       |Specifies the number of sec the sensor should not report events      ]
+
+Use case for the 'sensorSleepTime': 
+You have a Motion controlling your light. 
+You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
+Using 'sensorSleepTime' you could suspress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on. 
 
 ### Shelly Button 1 (thing-type: shellybutton1)
 

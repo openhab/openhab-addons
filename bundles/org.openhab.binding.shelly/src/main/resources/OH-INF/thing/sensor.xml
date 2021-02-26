@@ -293,6 +293,13 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="motionActive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.motionActive.label</label>
+		<description>channel-type.shelly.motionActive.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="sensorMotion">
 		<item-type>Switch</item-type>
 		<label>Motion</label>

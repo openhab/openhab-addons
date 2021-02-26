@@ -1,3 +1,0 @@
-            <script type="text/JavaScript">
-                setTimeout("location.href = '${forwardLink}';",${forwardTimer});
-            </script>
