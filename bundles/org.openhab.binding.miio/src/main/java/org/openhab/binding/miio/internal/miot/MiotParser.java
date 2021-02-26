@@ -180,25 +180,20 @@ public class MiotParser {
                             case "int64":
                             case "float":
                                 StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
+                                int decimals = -1;
+                                String unit = "";
                                 if (stateDescription == null) {
                                     stateDescription = new StateDescriptionDTO();
                                 }
                                 String type = MiIoQuantiyTypesConversion.getType(property.unit);
                                 if (type != null) {
-                                    // hack as time related items can both be duration as well as time
-                                    if (type.contentEquals("Time")) {
-                                        if (miIoBasicChannel.getFriendlyName().toLowerCase().contains("duration")
-                                                || miIoBasicChannel.getChannel().toLowerCase().contains("duration")) {
-                                            type = "Duration";
-                                        }
-                                    }
                                     miIoBasicChannel.setType("Number" + ":" + type);
-                                    stateDescription.setPattern(
-                                            "%." + (property.format.contentEquals("float") ? "1" : "0") + "f %unit%");
+                                    unit = " %unit%";
+                                    decimals = property.format.contentEquals("float") ? 1 : 0;
+
                                 } else {
                                     miIoBasicChannel.setType("Number");
-                                    stateDescription.setPattern(
-                                            "%." + (property.format.contentEquals("uint8") ? "0" : "1") + "f");
+                                    decimals = property.format.contentEquals("uint8") ? 0 : 1;
                                     if (property.unit != null) {
                                         unknownUnits.add(property.unit);
                                     }
@@ -208,10 +203,17 @@ public class MiotParser {
                                             .setMinimum(BigDecimal.valueOf(property.valueRange.get(0).doubleValue()));
                                     stateDescription
                                             .setMaximum(BigDecimal.valueOf(property.valueRange.get(1).doubleValue()));
-                                    if (property.valueRange.get(2).doubleValue() != 0) {
-                                        stateDescription
-                                                .setStep(BigDecimal.valueOf(property.valueRange.get(2).doubleValue()));
+
+                                    double step = property.valueRange.get(2).doubleValue();
+                                    if (step != 0) {
+                                        stateDescription.setStep(BigDecimal.valueOf(step));
+                                        if (step >= 1) {
+                                            decimals = 0;
+                                        }
                                     }
+                                }
+                                if (decimals > -1) {
+                                    stateDescription.setPattern("%." + Integer.toString(decimals) + "f" + unit);
                                 }
                                 miIoBasicChannel.setStateDescription(stateDescription);
                                 break;
@@ -352,7 +354,7 @@ public class MiotParser {
                 String serviceId = service.type.substring(service.type.indexOf("service:")).split(":")[1];
                 String description = String.format("%s-%s", serviceId, actionId);
                 OptionsValueListDTO option = new OptionsValueListDTO();
-                option.label = description;
+                option.label = captializedName(description);
                 option.value = description;
                 options.add(option);
                 MiIoDeviceAction miIoDeviceAction = new MiIoDeviceAction();

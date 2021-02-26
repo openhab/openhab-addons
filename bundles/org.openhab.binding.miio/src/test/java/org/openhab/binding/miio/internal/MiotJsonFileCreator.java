@@ -60,7 +60,7 @@ public class MiotJsonFileCreator {
 
         LinkedHashMap<String, String> checksums = new LinkedHashMap<>();
         LinkedHashSet<String> models = new LinkedHashSet<>();
-        models.add("lumi.gateway.mieu01");
+        models.add("dreame.vacuum.mc1808");
         if (args.length > 0) {
             models.add(args[0]);
         }
