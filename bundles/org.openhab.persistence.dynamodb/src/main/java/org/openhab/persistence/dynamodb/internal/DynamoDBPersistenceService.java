@@ -299,33 +299,35 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         }
         ExpectedTableSchema expectedTableSchemaRevision = localTableNameResolver.getTableSchema();
         String tableName = localTableNameResolver.fromClass(dtoClass);
-        final TableSchema<? extends DynamoDBItem<?>> schema = getDynamoDBTableSchema(dtoClass,
-                expectedTableSchemaRevision);
-        DynamoDbAsyncTable<? extends DynamoDBItem<?>> table = tableCache.computeIfAbsent(dtoClass, clz -> {
+        final TableSchema<T> schema = getDynamoDBTableSchema(dtoClass, expectedTableSchemaRevision);
+        @SuppressWarnings("unchecked")
+        DynamoDbAsyncTable<T> table = (DynamoDbAsyncTable<T>) tableCache.computeIfAbsent(dtoClass, clz -> {
             return localClient.table(tableName, schema);
         });
         if (table == null) {
             // Invariant. To make null checker happy
             throw new IllegalStateException();
         }
-        @SuppressWarnings("unchecked")
-        DynamoDbAsyncTable<T> tableCasted = (DynamoDbAsyncTable<T>) table;
-        return tableCasted;
+        return table;
     }
 
-    static TableSchema<? extends DynamoDBItem<?>> getDynamoDBTableSchema(Class<? extends DynamoDBItem<?>> dtoClass,
+    private static <T extends DynamoDBItem<?>> TableSchema<T> getDynamoDBTableSchema(Class<T> dtoClass,
             ExpectedTableSchema expectedTableSchemaRevision) {
-        final TableSchema<? extends DynamoDBItem<?>> schema;
         if (dtoClass.equals(DynamoDBBigDecimalItem.class)) {
-            schema = expectedTableSchemaRevision == ExpectedTableSchema.NEW ? DynamoDBBigDecimalItem.TABLE_SCHEMA_NEW
-                    : DynamoDBBigDecimalItem.TABLE_SCHEMA_LEGACY;
+            @SuppressWarnings("unchecked")
+            TableSchema<T> schema = (TableSchema<T>) (expectedTableSchemaRevision == ExpectedTableSchema.NEW
+                    ? DynamoDBBigDecimalItem.TABLE_SCHEMA_NEW
+                    : DynamoDBBigDecimalItem.TABLE_SCHEMA_LEGACY);
+            return schema;
         } else if (dtoClass.equals(DynamoDBStringItem.class)) {
-            schema = expectedTableSchemaRevision == ExpectedTableSchema.NEW ? DynamoDBStringItem.TABLE_SCHEMA_NEW
-                    : DynamoDBStringItem.TABLE_SCHEMA_LEGACY;
+            @SuppressWarnings("unchecked")
+            TableSchema<T> schema = (TableSchema<T>) (expectedTableSchemaRevision == ExpectedTableSchema.NEW
+                    ? DynamoDBStringItem.TABLE_SCHEMA_NEW
+                    : DynamoDBStringItem.TABLE_SCHEMA_LEGACY);
+            return schema;
         } else {
             throw new IllegalStateException("Unknown DTO class. Bug");
         }
-        return schema;
     }
 
     private void disconnect() {
@@ -570,13 +572,21 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             }
             logger.trace("store() called with item {} {} '{}', which was converted to DTO {}",
                     copiedItem.getClass().getSimpleName(), effectiveName, copiedItem.getState(), dto);
-            @SuppressWarnings("unchecked")
-            Class<? extends DynamoDBItem<?>> dtoClass = (Class<? extends DynamoDBItem<?>>) dto.getClass();
+            dto.accept(new DynamoDBItemVisitor<TableCreatingPutItem<? extends DynamoDBItem<?>>>() {
 
-            DynamoDbAsyncTable<? extends DynamoDBItem<?>> table = getTable(dtoClass);
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            TableCreatingPutItem<? extends DynamoDBItem<?>> putItem = new TableCreatingPutItem(this, dto, table);
-            putItem.putItemAsync();
+                @Override
+                public TableCreatingPutItem<? extends DynamoDBItem<?>> visit(
+                        DynamoDBBigDecimalItem dynamoBigDecimalItem) {
+                    return new TableCreatingPutItem<DynamoDBBigDecimalItem>(DynamoDBPersistenceService.this,
+                            dynamoBigDecimalItem, getTable(DynamoDBBigDecimalItem.class));
+                }
+
+                @Override
+                public TableCreatingPutItem<? extends DynamoDBItem<?>> visit(DynamoDBStringItem dynamoStringItem) {
+                    return new TableCreatingPutItem<DynamoDBStringItem>(DynamoDBPersistenceService.this,
+                            dynamoStringItem, getTable(DynamoDBStringItem.class));
+                }
+            }).putItemAsync();
         }, executor).exceptionally(e -> {
             logger.error("Unexcepted error", e);
             return null;

@@ -359,87 +359,86 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
     @Override
     public @Nullable HistoricItem asHistoricItem(final Item item, @Nullable Unit<?> targetUnit) {
-        final State[] deserializedState = new State[1];
+        final State deserializedState;
         if (this.getState() == null) {
             return null;
         }
         try {
-            accept(new DynamoDBItemVisitor() {
+            deserializedState = accept(new DynamoDBItemVisitor<@Nullable State>() {
 
                 @Override
-                public void visit(DynamoDBStringItem dynamoStringItem) {
+                public @Nullable State visit(DynamoDBStringItem dynamoStringItem) {
                     String stringState = dynamoStringItem.getState();
                     if (stringState == null) {
-                        return;
+                        return null;
                     }
                     if (item instanceof ColorItem) {
-                        deserializedState[0] = new HSBType(stringState);
+                        return new HSBType(stringState);
                     } else if (item instanceof LocationItem) {
-                        deserializedState[0] = new PointType(stringState);
+                        return new PointType(stringState);
                     } else if (item instanceof PlayerItem) {
                         // Backwards-compatibility with legacy schema. New schema uses DynamoDBBigDecimalItem
                         try {
-                            deserializedState[0] = PlayPauseType.valueOf(stringState);
+                            return PlayPauseType.valueOf(stringState);
                         } catch (IllegalArgumentException e) {
-                            deserializedState[0] = RewindFastforwardType.valueOf(stringState);
+                            return RewindFastforwardType.valueOf(stringState);
                         }
                     } else if (item instanceof DateTimeItem) {
                         try {
                             // Parse ZoneDateTime from string. DATEFORMATTER assumes UTC in case it is not clear
                             // from the string (should be).
                             // We convert to default/local timezone for user convenience (e.g. display)
-                            deserializedState[0] = new DateTimeType(ZONED_DATE_TIME_CONVERTER_STRING
-                                    .transformTo(stringState).withZoneSameInstant(ZoneId.systemDefault()));
+                            return new DateTimeType(ZONED_DATE_TIME_CONVERTER_STRING.transformTo(stringState)
+                                    .withZoneSameInstant(ZoneId.systemDefault()));
                         } catch (DateTimeParseException e) {
                             logger.warn("Failed to parse {} as date. Outputting UNDEF instead", stringState);
-                            deserializedState[0] = UnDefType.UNDEF;
+                            return UnDefType.UNDEF;
                         }
                     } else if (item instanceof CallItem) {
                         String parts = stringState;
                         String[] strings = parts.split(",");
                         String orig = strings[0];
                         String dest = strings[1];
-                        deserializedState[0] = new StringListType(orig, dest);
+                        return new StringListType(orig, dest);
                     } else {
-                        deserializedState[0] = new StringType(dynamoStringItem.getState());
+                        return new StringType(dynamoStringItem.getState());
                     }
                 }
 
                 @Override
-                public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
+                public @Nullable State visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
                     BigDecimal numberState = dynamoBigDecimalItem.getState();
                     if (numberState == null) {
-                        return;
+                        return null;
                     }
                     if (item instanceof NumberItem) {
                         NumberItem numberItem = ((NumberItem) item);
                         Unit<? extends Quantity<?>> unit = targetUnit == null ? numberItem.getUnit() : targetUnit;
                         if (unit != null) {
-                            deserializedState[0] = new QuantityType<>(numberState, unit);
+                            return new QuantityType<>(numberState, unit);
                         } else {
-                            deserializedState[0] = new DecimalType(numberState);
+                            return new DecimalType(numberState);
                         }
                     } else if (item instanceof DimmerItem) {
                         // % values have been stored as-is
-                        deserializedState[0] = new PercentType(numberState);
+                        return new PercentType(numberState);
                     } else if (item instanceof SwitchItem) {
-                        deserializedState[0] = numberState.compareTo(BigDecimal.ZERO) != 0 ? OnOffType.ON
-                                : OnOffType.OFF;
+                        return numberState.compareTo(BigDecimal.ZERO) != 0 ? OnOffType.ON : OnOffType.OFF;
                     } else if (item instanceof ContactItem) {
-                        deserializedState[0] = numberState.compareTo(BigDecimal.ZERO) != 0 ? OpenClosedType.OPEN
+                        return numberState.compareTo(BigDecimal.ZERO) != 0 ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED;
                     } else if (item instanceof RollershutterItem) {
                         // Percents and UP/DOWN have been stored % values (not fractional)
-                        deserializedState[0] = new PercentType(numberState);
+                        return new PercentType(numberState);
                     } else if (item instanceof PlayerItem) {
                         if (numberState.equals(PLAY_BIGDECIMAL)) {
-                            deserializedState[0] = PlayPauseType.PLAY;
+                            return PlayPauseType.PLAY;
                         } else if (numberState.equals(PAUSE_BIGDECIMAL)) {
-                            deserializedState[0] = PlayPauseType.PAUSE;
+                            return PlayPauseType.PAUSE;
                         } else if (numberState.equals(FAST_FORWARD_BIGDECIMAL)) {
-                            deserializedState[0] = RewindFastforwardType.FASTFORWARD;
+                            return RewindFastforwardType.FASTFORWARD;
                         } else if (numberState.equals(REWIND_BIGDECIMAL)) {
-                            deserializedState[0] = RewindFastforwardType.REWIND;
+                            return RewindFastforwardType.REWIND;
                         } else {
                             throw new IllegalArgumentException("Unknown serialized value");
                         }
@@ -447,14 +446,14 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                         logger.warn(
                                 "Not sure how to convert big decimal item {} to type {}. Using StringType as fallback",
                                 dynamoBigDecimalItem.getName(), item.getClass());
-                        deserializedState[0] = new StringType(numberState.toString());
+                        return new StringType(numberState.toString());
                     }
                 }
             });
-            if (deserializedState[0] == null) {
+            if (deserializedState == null) {
                 return null;
             }
-            return new DynamoDBHistoricItem(getName(), deserializedState[0], getTime());
+            return new DynamoDBHistoricItem(getName(), deserializedState, getTime());
         } catch (Exception e) {
             logger.trace("Failed to convert state '{}' to item {} {}: {} {}. Data persisted with incompatible item.",
                     this.state, item.getClass().getSimpleName(), item.getName(), e.getClass().getSimpleName(),
@@ -475,7 +474,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
      * DynamoItemVisitor)
      */
     @Override
-    public abstract void accept(DynamoDBItemVisitor visitor);
+    public abstract <R> R accept(DynamoDBItemVisitor<R> visitor);
 
     @Override
     public String toString() {

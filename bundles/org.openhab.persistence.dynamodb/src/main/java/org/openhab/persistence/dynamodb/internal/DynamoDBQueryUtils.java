@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
@@ -69,17 +70,19 @@ public class DynamoDBQueryUtils {
             queryBuilder.attributesToProject(DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME_LEGACY,
                     DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC_LEGACY, DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY);
         } else {
-            acceptAsEmptyDTO(dtoClass, new DynamoDBItemVisitor() {
+            acceptAsEmptyDTO(dtoClass, new DynamoDBItemVisitor<@Nullable Void>() {
                 @Override
-                public void visit(DynamoDBStringItem dynamoStringItem) {
+                public @Nullable Void visit(DynamoDBStringItem dynamoStringItem) {
                     queryBuilder.attributesToProject(DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME,
                             DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC, DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING);
+                    return null;
                 }
 
                 @Override
-                public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
+                public @Nullable Void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
                     queryBuilder.attributesToProject(DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME,
                             DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC, DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_NUMBER);
+                    return null;
                 }
             });
         }
@@ -92,19 +95,21 @@ public class DynamoDBQueryUtils {
         Builder itemStateTypeExpressionBuilder = Expression.builder()
                 .expression(String.format("attribute_exists(#attr)"));
         boolean legacy = expectedTableSchema == ExpectedTableSchema.LEGACY;
-        acceptAsEmptyDTO(dtoClass, new DynamoDBItemVisitor() {
+        acceptAsEmptyDTO(dtoClass, new DynamoDBItemVisitor<@Nullable Void>() {
             @Override
-            public void visit(DynamoDBStringItem dynamoStringItem) {
+            public @Nullable Void visit(DynamoDBStringItem dynamoStringItem) {
                 itemStateTypeExpressionBuilder.putExpressionName("#attr",
                         legacy ? DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY
                                 : DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING);
+                return null;
             }
 
             @Override
-            public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
+            public @Nullable Void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
                 itemStateTypeExpressionBuilder.putExpressionName("#attr",
                         legacy ? DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY
                                 : DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_NUMBER);
+                return null;
             }
         });
         if (filter.getOperator() != null && filter.getState() != null) {
@@ -113,24 +118,26 @@ public class DynamoDBQueryUtils {
                     .expression(String.format("#attr %s :value", operatorAsString(filter.getOperator())));
             GenericItem stateToFind = DynamoDBPersistenceService.copyItem(item, item, filter.getItemName(),
                     filter.getState());
-            acceptAsDTO(stateToFind, legacy, new DynamoDBItemVisitor() {
+            acceptAsDTO(stateToFind, legacy, new DynamoDBItemVisitor<@Nullable Void>() {
                 @Override
-                public void visit(DynamoDBStringItem serialized) {
+                public @Nullable Void visit(DynamoDBStringItem serialized) {
                     stateFilterExpressionBuilder.putExpressionName("#attr",
                             legacy ? DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY
                                     : DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING);
                     stateFilterExpressionBuilder.putExpressionValue(":value",
                             AttributeValue.builder().s(serialized.getState()).build());
+                    return null;
                 }
 
                 @SuppressWarnings("null")
                 @Override
-                public void visit(DynamoDBBigDecimalItem serialized) {
+                public @Nullable Void visit(DynamoDBBigDecimalItem serialized) {
                     stateFilterExpressionBuilder.putExpressionName("#attr",
                             legacy ? DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY
                                     : DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_NUMBER);
                     stateFilterExpressionBuilder.putExpressionValue(":value",
                             AttributeValue.builder().n(serialized.getState().toPlainString()).build());
+                    return null;
                 }
             });
             expression = Expression.join(stateFilterExpressionBuilder.build(), itemStateTypeExpressionBuilder.build(),
@@ -194,7 +201,7 @@ public class DynamoDBQueryUtils {
         }
     }
 
-    private static void acceptAsDTO(Item item, boolean legacy, DynamoDBItemVisitor visitor) {
+    private static <T> void acceptAsDTO(Item item, boolean legacy, DynamoDBItemVisitor<T> visitor) {
         ZonedDateTime dummyTimestamp = ZonedDateTime.now();
         if (legacy) {
             AbstractDynamoDBItem.fromStateLegacy(item, dummyTimestamp).accept(visitor);
@@ -203,7 +210,8 @@ public class DynamoDBQueryUtils {
         }
     }
 
-    private static void acceptAsEmptyDTO(Class<? extends DynamoDBItem<?>> dtoClass, DynamoDBItemVisitor visitor) {
+    private static <T> void acceptAsEmptyDTO(Class<? extends DynamoDBItem<?>> dtoClass,
+            DynamoDBItemVisitor<T> visitor) {
         try {
             dtoClass.getDeclaredConstructor().newInstance().accept(visitor);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

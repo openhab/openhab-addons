@@ -82,8 +82,8 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
     }
 
     @Override
-    public void accept(org.openhab.persistence.dynamodb.internal.DynamoDBItemVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(org.openhab.persistence.dynamodb.internal.DynamoDBItemVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     static BigDecimal loseDigits(BigDecimal number) {

@@ -104,22 +104,19 @@ public class DynamoDBTableNameResolver {
      * @return table name
      */
     private String getTableNameAccordingToLegacySchema(DynamoDBItem<?> item) {
-        final String[] tableName = new String[1];
-
         // Use the visitor pattern to deduce the table name
-        item.accept(new DynamoDBItemVisitor() {
+        return item.accept(new DynamoDBItemVisitor<String>() {
 
             @Override
-            public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
-                tableName[0] = tablePrefix + "bigdecimal";
+            public String visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
+                return tablePrefix + "bigdecimal";
             }
 
             @Override
-            public void visit(DynamoDBStringItem dynamoStringItem) {
-                tableName[0] = tablePrefix + "string";
+            public String visit(DynamoDBStringItem dynamoStringItem) {
+                return tablePrefix + "string";
             }
         });
-        return tableName[0];
     }
 
     /**

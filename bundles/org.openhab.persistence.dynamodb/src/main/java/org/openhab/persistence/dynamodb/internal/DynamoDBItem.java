@@ -150,5 +150,5 @@ public interface DynamoDBItem<T> {
      */
     void setExpireDays(@Nullable Integer expireDays);
 
-    void accept(DynamoDBItemVisitor visitor);
+    <R> R accept(DynamoDBItemVisitor<R> visitor);
 }
