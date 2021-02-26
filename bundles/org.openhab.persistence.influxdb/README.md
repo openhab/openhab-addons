@@ -28,7 +28,7 @@ Some example entries for an item with the name "speedtest" without any further c
 
 ## Prerequisites
 
-First of all you have to setup and run an InfluxDB 1.X or 2.X server.
+First of all, you have to setup and run an InfluxDB 1.X or 2.X server.
 This is very easy and you will find good documentation on it on the
 [InfluxDB web site for 2.X version](https://v2.docs.influxdata.com/v2.0/get-started/) and [InfluxDB web site for 1.X version](https://docs.influxdata.com/influxdb/v1.7/).
 
@@ -51,15 +51,15 @@ that if you use all default values at minimum you must provide a password or a t
 
 All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.
 
-### Additional configuration for better filtering options in InfluxDB
+### Additional configuration for customized storage options in InfluxDB
 
-By default persistence writes the data to a `measurement` name equals to the `item's name` and adds a tag with key item and value `item's name` as well.
+By default, the plugin writes the data to a `measurement` name equals to the `item's name` and adds a tag with key item and value `item's name` as well.
+You can customize that behavior and use a single measurement for several items using item metadata.
 
-For more options to filter data in InfluxDB you can configure service and single items with more data.
+#### Measurement name by Item Metadata
 
-#### Item Metadata
-
-By setting the `influxdb` metadata key you can change the name of the measurement by setting the desired name as metadata value and at additional tags for structuring your data. For example you can add a floor tag to all sensors to filter all sensors from first floor or combine all temperature sensors into one measurement.
+By setting the `influxdb` metadata key you can change the name of the measurement by setting the desired name as metadata value.
+You can also add additional tags for structuring your data. For example, you can add a floor tag to all sensors to filter all sensors from the first floor or combine all temperature sensors into one measurement.
 
 The item configuration will look like this:
 
@@ -75,8 +75,15 @@ Number:Temperature tempBath (gTempSensors) { influxdb="temperature" [floor="firs
 
 ```
 
-This will end up with one measurement named temperature and four different series inside:
+You can also set the `inflxdb` metadata using the UI. From each item configuration screen do:
 
+`Metadata` →  `Add Metadata` →  `Enter Custom Namespace` →  Enter `influxdb` as namespace name →  And enter your desired item name in value field. i.e.:
+
+    value: temperature
+    config: {}
+
+
+This will end up with one measurement named temperature and four different series inside:
 ```
 temperature,item=tempLivingRoom,floor=groundfloor
 temperature,item=tempKitchen,floor=groundfloor
@@ -84,11 +91,11 @@ temperature,item=tempBedRoom,floor=firstfloor
 temperature,item=tempBath,floor=firstfloor
 ```
 
-You can now easily select all temperatures of firstfloor or average temperature of groundfloor.
+You can now easily select all temperatures of the firstfloor or the average temperature of the groundfloor.
 
 #### Extended automatic tagging
 
-Beside the metadata tags there are additional configuration parameters of the service to activate different automatic tags generation.
+Besides the metadata tags, there are additional configuration parameters to activate different automatic tags generation.
 
 | Property       | Default | Required | Description                                                                                          |
 | -------------- | ------- | -------- | ---------------------------------------------------------------------------------------------------- |

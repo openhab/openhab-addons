@@ -14,7 +14,7 @@
 
 		<parameter-group name="tags">
 			<label>Additional Tags</label>
-			<description>This group defines additional tags which can be added.</description>
+			<description>This group defines additional tags which can be added to your measurements.</description>
 			<advanced>false</advanced>
 		</parameter-group>
 
@@ -84,7 +84,7 @@
 		<parameter name="useMetadataMeasurementName" type="boolean" required="true" groupName="misc">
 			<label>Use metadata name</label>
 			<description>If true uses metadata from item influxdb metadata value as name for measurement instead of item name. If
-				metadata value is not set item name is used again.
+				metadata value is not set item name is used.
 			</description>
 			<default>false</default>
 		</parameter>
