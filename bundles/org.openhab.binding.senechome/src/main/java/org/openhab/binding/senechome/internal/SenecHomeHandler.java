@@ -17,7 +17,6 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -51,8 +50,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.stream.MalformedJsonException;
 
 /**
  * The {@link SenecHomeHandler} is responsible for handling commands, which are
@@ -279,8 +276,7 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateGridPowerValues(getSenecValue(response.grid.currentGridValue));
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException | InterruptedException | TimeoutException | ExecutionException | SocketTimeoutException
-                | MalformedJsonException e) {
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to Senec web interface:" + e.getMessage());
