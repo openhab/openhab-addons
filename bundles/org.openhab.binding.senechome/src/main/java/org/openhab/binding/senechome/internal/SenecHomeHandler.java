@@ -71,6 +71,8 @@ public class SenecHomeHandler extends BaseThingHandler {
     private SenecHomeConfigurationDTO config = new SenecHomeConfigurationDTO();
     private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(5), this::refreshState);
 
+    private Integer errorCounter = 0;
+
     public SenecHomeHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.senecHomeApi = new SenecHomeApi(httpClient);
@@ -275,11 +277,16 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             updateGridPowerValues(getSenecValue(response.grid.currentGridValue));
 
+            errorCounter = 0;
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to Senec web interface:" + e.getMessage());
+            if (errorCounter < 3)
+                errorCounter++;
+            if (errorCounter > 2) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not connect to Senec web interface:" + e.getMessage());
+            }
         }
 
         return Boolean.TRUE;
