@@ -396,6 +396,8 @@
 
     <module>org.openhab.binding.mqtt.homie</module>
 
+    <module>org.openhab.binding.myq</module>
+
     <module>org.openhab.binding.mystrom</module>
 
     <module>org.openhab.binding.nanoleaf</module>
