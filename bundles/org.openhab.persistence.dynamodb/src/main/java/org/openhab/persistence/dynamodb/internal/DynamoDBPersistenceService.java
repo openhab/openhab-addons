@@ -300,7 +300,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         ExpectedTableSchema expectedTableSchemaRevision = localTableNameResolver.getTableSchema();
         String tableName = localTableNameResolver.fromClass(dtoClass);
         final TableSchema<T> schema = getDynamoDBTableSchema(dtoClass, expectedTableSchemaRevision);
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") // OK since this is the only place tableCache is populated
         DynamoDbAsyncTable<T> table = (DynamoDbAsyncTable<T>) tableCache.computeIfAbsent(dtoClass, clz -> {
             return localClient.table(tableName, schema);
         });
@@ -314,13 +314,13 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private static <T extends DynamoDBItem<?>> TableSchema<T> getDynamoDBTableSchema(Class<T> dtoClass,
             ExpectedTableSchema expectedTableSchemaRevision) {
         if (dtoClass.equals(DynamoDBBigDecimalItem.class)) {
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked") // OK thanks to above conditional
             TableSchema<T> schema = (TableSchema<T>) (expectedTableSchemaRevision == ExpectedTableSchema.NEW
                     ? DynamoDBBigDecimalItem.TABLE_SCHEMA_NEW
                     : DynamoDBBigDecimalItem.TABLE_SCHEMA_LEGACY);
             return schema;
         } else if (dtoClass.equals(DynamoDBStringItem.class)) {
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked") // OK thanks to above conditional
             TableSchema<T> schema = (TableSchema<T>) (expectedTableSchemaRevision == ExpectedTableSchema.NEW
                     ? DynamoDBStringItem.TABLE_SCHEMA_NEW
                     : DynamoDBStringItem.TABLE_SCHEMA_LEGACY);
