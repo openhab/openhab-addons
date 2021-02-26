@@ -15,7 +15,6 @@ package org.openhab.binding.ventaair.internal;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link VentaAirDeviceConfiguration} class contains fields mapping thing configuration parameters.
@@ -24,9 +23,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class VentaAirDeviceConfiguration {
-    public @Nullable String ipAddress;
-    public @Nullable String macAddress;
-    public @Nullable BigDecimal deviceType;
-    public @Nullable BigDecimal hash;
-    public @Nullable BigDecimal pollingTime;
+    public String ipAddress = "";
+    public String macAddress = "";
+    public BigDecimal deviceType = BigDecimal.ZERO;
+    // we all know that 42 is the answer to everything, so let's pick this one ;)
+    public BigDecimal hash = new BigDecimal("-42");
+    public BigDecimal pollingTime = new BigDecimal(10);
 }

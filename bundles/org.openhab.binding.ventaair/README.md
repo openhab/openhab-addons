@@ -16,17 +16,25 @@ This binding supports an automatic discovery for humidifiers that are connected 
 To do so, the binding listens to UDP port 48000 for data and creates `DiscoveryResult`s based on the received data from the device.
 This comes in handy for getting the MAC address for the device for example.
 Once the `DiscoveryResult` is added as a `Thing`, a connection to the device will be created and it will beep, showing a confirmation screen that the device "openHAB" would like to get access.
-After confirming this request, the use can link its `Item`s to receive data or control the device.
+After confirming this request, the user can link its items to receive data or control the device.
 
 ## Thing Configuration
 
 There are three mandatory configuration parameters for a thing: `ipAddress`, `macAddress` and `deviceType`.
-Whereas the first two are self-exploring, the later one defines the type of the device. It is an integer value and its best to use the automatic discovery to obtain it from the device.
-The optional parameter `pollingTime` is the time interval in seconds in which the data should be polled from the device, default is 10 seconds.
-The `hash` parameter is also optional. It is a negative integer value and it is used by the device to identify a connection to a client, like the App from the vendor for example.
-I do not know whether there devices that are restricted to only one client, so I added this parameter to allow the user to set the same value as his App on the phone (can be obtained via sniffing the network).
+
+| parameter  | mandatory/optional description |
+|----------|------------|-------------------------------------------|
+| ipAddress | mandatory | The IP Address or hostname of the device. |
+| macAddress | mandatory | The MAC address of the device. |
+| deviceType | mandatory | Defines the type of device. It is an integer value and its best to use the automatic discovery to obtain it from the device. |
+| pollingTime | optional | The time interval in seconds in which the data should be polled from the device, default is 10 seconds. |
+| hash | optional | It is a negative integer value and it is used by the device to identify a connection to a client, like the App from the vendor for example. (*) |
+
+(*) I do not know whether there are devices which are restricted to only one client, so I added this parameter to allow the user to set the same value as his App on the phone (can be obtained via sniffing the network).
 However, the LW60-T allows for multiple connections to different clients, identified by different `hash` values at the same time without issues.
 By default the binding uses "-42", so a new ID that is not known to the device and hence it asks for confirmation, see the Discovery section.
+
+Example Thing configuration:
 
 ```
 Thing ventaair:lw60t:humidifier [ ipAddress="192.168.42.69", macAddress="f8:f0:05:a6:4e:03", deviceType=4, pollingTime=10, hash=-42]
