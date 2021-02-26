@@ -961,12 +961,14 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             List<Favorite> favorites = new ArrayList<>();
             Favorite f = null;
+            boolean isTypePlaylist = false;
             for (String part : messageParts) {
                 // Favorite ID (in form xxxxxxxxx.n)
                 if (part.startsWith("id%3A")) {
                     String id = part.substring("id%3A".length());
                     f = new Favorite(id);
                     favorites.add(f);
+                    isTypePlaylist = false;
                 }
                 // Favorite name
                 else if (part.startsWith("name%3A")) {
@@ -974,12 +976,15 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     if (f != null) {
                         f.name = name;
                     }
+                } else if (part.equals("type%3Aplaylist")) {
+                    isTypePlaylist = true;
                 }
                 // When "1", favorite is a submenu with additional favorites
                 else if (part.startsWith("hasitems%3A")) {
                     boolean hasitems = "1".matches(part.substring("hasitems%3A".length()));
                     if (f != null) {
-                        if (hasitems) {
+                        // Except for some favorites (e.g. Spotify) use hasitems:1 and type:playlist
+                        if (hasitems && isTypePlaylist == false) {
                             // Skip subfolders
                             favorites.remove(f);
                             f = null;
