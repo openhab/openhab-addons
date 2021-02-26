@@ -15,11 +15,11 @@
 					"options": [
 						{
 							"value": "button-toggle",
-							"label": "button-toggle"
+							"label": "Toggle"
 						},
 						{
 							"value": "button-toggle-mode",
-							"label": "button-toggle-mode"
+							"label": "Toggle Mode"
 						}
 					]
 				},
@@ -52,7 +52,8 @@
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping [\"button-toggle\"\u003d\"Toggle\",\"button-toggle-mode\"\u003d\"Toggle Mode\"]"
 			},
 			{
 				"property": "fault",
@@ -265,7 +266,7 @@
 				"piid": 5,
 				"friendlyName": "Filter - Filter Used Time",
 				"channel": "filter_used_time",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
 					"minimum": 0,
@@ -637,7 +638,7 @@
 				"piid": 1,
 				"friendlyName": "Use Time - Use Time",
 				"channel": "use_time",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
