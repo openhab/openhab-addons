@@ -41,7 +41,7 @@
 				<label>Next EPG Event Begin</label>
 			</channel>
 			<channel id="nextEventEnd" typeId="vdrEventEnd">
-				<label>Next EPG Event Begin</label>
+				<label>Next EPG Event End</label>
 			</channel>
 			<channel id="nextEventDuration" typeId="vdrEventDuration">
 				<label>Next EPG Event Duration in Minutes</label>
