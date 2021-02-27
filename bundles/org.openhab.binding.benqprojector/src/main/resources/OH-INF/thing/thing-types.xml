@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="benqprojector"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="projector-serial">
+		<label>BenQ Projector - Serial</label>
+		<description>A BenQ projector connected via a serial port</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="picturemode" typeId="picturemode"/>
+			<channel id="aspectratio" typeId="aspectratio"/>
+			<channel id="freeze" typeId="freeze"/>
+			<channel id="blank" typeId="blank"/>
+			<channel id="directcmd" typeId="directcmd"/>
+		</channels>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<description>Serial Port to Use for Connecting to the BenQ Projector</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
+				<label>Polling interval</label>
+				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="projector-tcp">
+		<label>BenQ Projector - TCP/IP</label>
+		<description>A BenQ projector connected via the built-in ethernet port or a serial over
+			IP device</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="picturemode" typeId="picturemode"/>
+			<channel id="aspectratio" typeId="aspectratio"/>
+			<channel id="freeze" typeId="freeze"/>
+			<channel id="blank" typeId="blank"/>
+			<channel id="directcmd" typeId="directcmd"/>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<context>network-address</context>
+				<description>IP address for the projector or serial over IP device</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Port</label>
+				<description>Port for the projector or serial over IP device</description>
+				<default>8000</default>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
+				<label>Polling interval</label>
+				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Powers the Projector On or Off</description>
+	</channel-type>
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>Retrieve or Set the Input Source</description>
+		<state>
+			<options>
+				<option value="hdmi">HDMI</option>
+				<option value="hdmi2">HDMI2</option>
+				<option value="ypbr">Component</option>
+				<option value="ypbr2">Component2</option>
+				<option value="RGB">Computer/YPbPr</option>
+				<option value="RGB2">Computer/YPbPr2</option>
+				<option value="RGB3">Computer/YPbPr3</option>
+				<option value="dviA">DVI-A</option>
+				<option value="dvid">DVI-D</option>
+				<option value="vid">Video</option>
+				<option value="svid">S-Video</option>
+				<option value="network">Network</option>
+				<option value="usbdisplay">USB Display</option>
+				<option value="usbreader">USB Reader</option>
+				<option value="hdbaset">HDBaseT</option>
+				<option value="dp">DisplayPort</option>
+				<option value="sdi">3G-SDI</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="picturemode">
+		<item-type>String</item-type>
+		<label>Picture Mode</label>
+		<description>Retrieve or Set the Picture Mode</description>
+		<state>
+			<options>
+				<option value="dynamic">Dynamic</option>
+				<option value="preset">Presentation</option>
+				<option value="srgb">sRGB</option>
+				<option value="bright">Bright</option>
+				<option value="livingroom">Living Room</option>
+				<option value="game">Game</option>
+				<option value="cine">Cinema</option>
+				<option value="std">Standard/Vivid</option>
+				<option value="football">Football</option>
+				<option value="footballbt">Football Bright</option>
+				<option value="dicom">DICOM</option>
+				<option value="thx">THX</option>
+				<option value="silence">Silence mode</option>
+				<option value="dci-p3#">DCI-P3 mode</option>
+				<option value="user1">User 1</option>
+				<option value="user2">User 2</option>
+				<option value="user3">User 3</option>
+				<option value="isfday">ISF Day</option>
+				<option value="isfnight">ISF Night</option>
+				<option value="threed">3-D</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="aspectratio">
+		<item-type>String</item-type>
+		<label>Aspect Ratio</label>
+		<description>Retrieve or Set the Aspect Ratio</description>
+		<state>
+			<options>
+				<option value="4:3">4:3</option>
+				<option value="16:6">16:6</option>
+				<option value="16:9">16:9</option>
+				<option value="16:10">16:10</option>
+				<option value="AUTO">Auto</option>
+				<option value="REAL">Real</option>
+				<option value="LBOX">Letterbox</option>
+				<option value="WIDE">Wide</option>
+				<option value="ANAM">Anamorphic</option>
+				<option value="ANAM2.35:1">Anamorphic 2.35:1</option>
+				<option value="ANAM16:9">Anamorphic 16:9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="freeze">
+		<item-type>Switch</item-type>
+		<label>Freeze Image</label>
+		<description>Turn the Freeze Image Mode On or Off</description>
+	</channel-type>
+	<channel-type id="blank">
+		<item-type>Switch</item-type>
+		<label>Screen Blank</label>
+		<description>Turn the Screen Blank On or Off</description>
+	</channel-type>
+	<channel-type id="directcmd" advanced="true">
+		<item-type>String</item-type>
+		<label>Direct Command</label>
+		<description>Send a Command Directly to the Projector</description>
+		<state>
+			<options>
+				<option value="mute=on">Mute On</option>
+				<option value="mute=off">Mute Off</option>
+				<option value="vol=+">Volume +</option>
+				<option value="vol=-">Volume -</option>
+				<option value="zoomI">Zoom In</option>
+				<option value="zoomO">Zoom Out</option>
+				<option value="auto">Zoom Auto</option>
+				<option value="menu=on">Menu On</option>
+				<option value="menu=off">Menu Off</option>
+				<option value="up">Up</option>
+				<option value="down">Down</option>
+				<option value="left">Left</option>
+				<option value="right">Right</option>
+				<option value="enter">Enter</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
