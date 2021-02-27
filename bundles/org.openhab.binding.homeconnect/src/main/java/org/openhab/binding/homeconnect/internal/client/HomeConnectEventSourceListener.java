@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.sse.InboundSseEvent;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -137,6 +138,18 @@ public class HomeConnectEventSourceListener {
                         haId);
                 eventListener.onRateLimitReached();
             } else {
+                // The SSE connection is closed by the server every 24 hours.
+                // When you try to reconnect, it often fails with a NotAuthorizedException (401) for the next few
+                // seconds. So we wait few seconds before trying again.
+                if (error instanceof NotAuthorizedException) {
+                    logger.debug(
+                            "Event source listener connection failure due to unauthorized exception : wait 5 seconds... haId={}",
+                            haId);
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e1) {
+                    }
+                }
                 eventListener.onClosed();
             }
         } catch (Exception e) {
