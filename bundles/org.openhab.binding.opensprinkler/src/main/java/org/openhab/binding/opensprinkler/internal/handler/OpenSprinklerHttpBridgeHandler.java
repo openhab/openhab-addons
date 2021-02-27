@@ -128,7 +128,7 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
         if (localApi != null) {
             try {
                 localApi.leaveManualMode();
-            } catch (CommunicationApiException e) {
+            } catch (CommunicationApiException | UnauthorizedApiException e) {
                 logger.warn("Could not close connection on teardown.");
             }
             openSprinklerDevice = null;

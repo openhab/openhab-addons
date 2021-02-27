@@ -129,35 +129,20 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public void enterManualMode() throws CommunicationApiException, UnauthorizedApiException {
-        try {
-            http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_ENABLE_MANUAL_MODE);
-        } catch (Exception exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
+        http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_ENABLE_MANUAL_MODE);
         numberOfStations = getNumberOfStations();
         isInManualMode = true;
     }
 
     @Override
-    public void leaveManualMode() throws CommunicationApiException {
-        try {
-            http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_DISABLE_MANUAL_MODE);
-        } catch (Exception exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
+    public void leaveManualMode() throws CommunicationApiException, UnauthorizedApiException {
+        http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_DISABLE_MANUAL_MODE);
         isInManualMode = false;
     }
 
     @Override
     public void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException {
-        try {
-            http.sendHttpGet(getBaseUrl() + "sn" + station + "=1&t=" + duration, null);
-        } catch (Exception exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
+        http.sendHttpGet(getBaseUrl() + "sn" + station + "=1&t=" + duration, null);
     }
 
     @Override
@@ -167,13 +152,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public boolean isStationOpen(int station) throws CommunicationApiException, GeneralApiException {
-        String returnContent;
-        try {
-            returnContent = http.sendHttpGet(getBaseUrl() + "sn" + station, null);
-        } catch (Exception exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
+        String returnContent = http.sendHttpGet(getBaseUrl() + "sn" + station, null);
         return returnContent.equals("1");
     }
 
@@ -303,9 +282,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 throw new CommunicationApiException(
                         "There was a problem in the HTTP communication: jcReply was empty.");
             }
-        } catch (CommunicationApiException | JsonSyntaxException exp) {
+        } catch (JsonSyntaxException exp) {
             throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+                    "There was a JSON syntax problem in the HTTP communication with the OpenSprinkler API: "
+                            + exp.getMessage());
         }
         return resp;
     }
@@ -320,9 +300,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 throw new CommunicationApiException(
                         "There was a problem in the HTTP communication: joReply was empty.");
             }
-        } catch (CommunicationApiException | JsonSyntaxException exp) {
+        } catch (JsonSyntaxException exp) {
             throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+                    "There was a JSON syntax problem in the HTTP communication with the OpenSprinkler API: "
+                            + exp.getMessage());
         }
         return resp;
     }
@@ -337,9 +318,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 throw new CommunicationApiException(
                         "There was a problem in the HTTP communication: jsReply was empty.");
             }
-        } catch (CommunicationApiException | JsonSyntaxException exp) {
+        } catch (JsonSyntaxException exp) {
             throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+                    "There was a JSON syntax problem in the HTTP communication with the OpenSprinkler API: "
+                            + exp.getMessage());
         }
         return resp;
     }
@@ -359,9 +341,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 throw new CommunicationApiException(
                         "There was a problem in the HTTP communication: jnReply was empty.");
             }
-        } catch (CommunicationApiException | JsonSyntaxException exp) {
+        } catch (JsonSyntaxException exp) {
             throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+                    "There was a JSON syntax problem in the HTTP communication with the OpenSprinkler API: "
+                            + exp.getMessage());
         }
         jnReply = resp;
         return resp;
@@ -380,11 +363,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     private static class JoResponse {
         public int wl;
         public int fwv = -1;
-    }
-
-    protected static class JnResponse {
-        public List<String> snames = new ArrayList<>();
-        public byte[] ignore_rain = { 0 };
     }
 
     protected static class JcResponse {
