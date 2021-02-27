@@ -52,7 +52,7 @@ import io.github.bucket4j.Bucket4j;
 @NonNullByDefault
 public class HttpHelper {
     private static final String BEARER = "Bearer ";
-    private static final int OAUTH_EXPIRE_BUFFER = 30;
+    private static final int OAUTH_EXPIRE_BUFFER = 10;
     private static final JsonParser JSON_PARSER = new JsonParser();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Bucket BUCKET = Bucket4j.builder()
