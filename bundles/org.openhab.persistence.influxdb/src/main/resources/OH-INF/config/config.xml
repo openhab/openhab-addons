@@ -81,14 +81,6 @@
 			<default>false</default>
 		</parameter>
 
-		<parameter name="useMetadataMeasurementName" type="boolean" required="true" groupName="misc">
-			<label>Use metadata name</label>
-			<description>If true uses metadata from item influxdb metadata value as name for measurement instead of item name. If
-				metadata value is not set item name is used.
-			</description>
-			<default>false</default>
-		</parameter>
-
 		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
 			<label>Add Category Tag</label>
 			<description>Should the category of the item be included as tag "category"? If no category is set, "n/a" is
