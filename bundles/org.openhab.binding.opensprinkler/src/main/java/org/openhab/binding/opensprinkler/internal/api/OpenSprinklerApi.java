@@ -13,12 +13,12 @@
 package org.openhab.binding.opensprinkler.internal.api;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerState.JnResponse;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
@@ -36,15 +36,6 @@ import org.openhab.core.types.StateOption;
  */
 @NonNullByDefault
 public interface OpenSprinklerApi {
-
-    /**
-     * Holds the Json data returned when calling "/jn"
-     *
-     */
-    public static class JnResponse {
-        public List<String> snames = new ArrayList<>();
-        public byte[] ignore_rain = { 0 };
-    }
 
     /**
      * Whether the device entered manual mode and accepts API requests to control the stations.

@@ -16,7 +16,6 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +32,11 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerState;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerState.JcResponse;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerState.JnResponse;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerState.JoResponse;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerState.JsResponse;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
@@ -48,7 +52,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OpenSprinklerHttpApiV100} class is used for communicating with the
@@ -61,21 +64,13 @@ import com.google.gson.annotations.SerializedName;
 class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final String hostname;
-    protected final int port;
+    protected final OpenSprinklerHttpInterfaceConfig config;
     protected String password;
-    protected final String basicUsername;
-    protected final String basicPassword;
-    protected JcResponse jcReply = new JcResponse();
-    protected JoResponse joReply = new JoResponse();
-    protected JsResponse jsReply = new JsResponse();
-    protected JpResponse jpReply = new JpResponse();
-    protected JnResponse jnReply = new JnResponse();
+    protected OpenSprinklerState state = new OpenSprinklerState();
     protected int numberOfStations = DEFAULT_STATION_COUNT;
     protected boolean isInManualMode = false;
     protected final Gson gson = new Gson();
     protected HttpRequestSender http;
-    protected List<StateOption> programs = new ArrayList<>();
-    protected List<StateOption> stations = new ArrayList<>();
 
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the
@@ -97,10 +92,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         } else {
             this.hostname = HTTP_REQUEST_URL_PREFIX + config.hostname;
         }
-        this.port = config.port;
+        this.config = config;
         this.password = config.password;
-        this.basicUsername = config.basicUsername;
-        this.basicPassword = config.basicPassword;
         this.http = new HttpRequestSender(httpClient);
     }
 
@@ -111,20 +104,20 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public List<StateOption> getPrograms() {
-        return programs;
+        return state.programs;
     }
 
     @Override
     public List<StateOption> getStations() {
-        return stations;
+        return state.stations;
     }
 
     @Override
     public void refresh() throws CommunicationApiException, UnauthorizedApiException {
-        joReply = getOptions();
-        jsReply = getStationStatus();
-        jcReply = statusInfo();
-        jnReply = getStationNames();
+        state.joReply = getOptions();
+        state.jsReply = getStationStatus();
+        state.jcReply = statusInfo();
+        state.jnReply = getStationNames();
     }
 
     @Override
@@ -167,49 +160,49 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public boolean isRainDetected() {
-        return jcReply.rs == 1;
+        return state.jcReply.rs == 1;
     }
 
     @Override
     public int getSensor2State() {
-        return jcReply.sn2;
+        return state.jcReply.sn2;
     }
 
     @Override
     public int currentDraw() {
-        return jcReply.curr;
+        return state.jcReply.curr;
     }
 
     @Override
     public int flowSensorCount() {
-        return jcReply.flcrt;
+        return state.jcReply.flcrt;
     }
 
     @Override
     public int signalStrength() {
-        return jcReply.RSSI;
+        return state.jcReply.RSSI;
     }
 
     @Override
     public boolean getIsEnabled() {
-        return jcReply.en == 1;
+        return state.jcReply.en == 1;
     }
 
     @Override
     public int waterLevel() {
-        return joReply.wl;
+        return state.joReply.wl;
     }
 
     @Override
     public int getNumberOfStations() {
-        numberOfStations = jsReply.nstations;
+        numberOfStations = state.jsReply.nstations;
         return numberOfStations;
     }
 
     @Override
     public int getFirmwareVersion() throws CommunicationApiException, UnauthorizedApiException {
-        joReply = getOptions();
-        return joReply.fwv;
+        state.joReply = getOptions();
+        return state.joReply.fwv;
     }
 
     @Override
@@ -238,10 +231,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public QuantityType<Time> getRainDelay() {
-        if (jcReply.rdst == 0) {
+        if (state.jcReply.rdst == 0) {
             return new QuantityType<Time>(0, Units.SECOND);
         }
-        long remainingTime = jcReply.rdst - jcReply.devt;
+        long remainingTime = state.jcReply.rdst - state.jcReply.devt;
         return new QuantityType<Time>(remainingTime, Units.SECOND);
     }
 
@@ -251,7 +244,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * @return String representation of the OpenSprinkler API URL.
      */
     protected String getBaseUrl() {
-        return hostname + ":" + port + "/";
+        return hostname + ":" + config.port + "/";
     }
 
     /**
@@ -265,9 +258,9 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public StationProgram retrieveProgram(int station) throws CommunicationApiException {
-        if (jcReply.ps != null) {
-            return jcReply.ps.stream().map(values -> new StationProgram(values.get(1))).collect(Collectors.toList())
-                    .get(station);
+        if (state.jcReply.ps != null) {
+            return state.jcReply.ps.stream().map(values -> new StationProgram(values.get(1)))
+                    .collect(Collectors.toList()).get(station);
         }
         return new StationProgram(0);
     }
@@ -346,36 +339,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                     "There was a JSON syntax problem in the HTTP communication with the OpenSprinkler API: "
                             + exp.getMessage());
         }
-        jnReply = resp;
+        state.jnReply = resp;
         return resp;
-    }
-
-    protected static class JsResponse {
-        public int sn[] = new int[8];
-        public int nstations = 8;
-    }
-
-    protected static class JpResponse {
-        public int nprogs = 0;
-        public Object[] pd = {};
-    }
-
-    private static class JoResponse {
-        public int wl;
-        public int fwv = -1;
-    }
-
-    protected static class JcResponse {
-        public @Nullable List<List<Integer>> ps;
-        @SerializedName(value = "sn1", alternate = "rs")
-        public int rs;
-        public long devt = 0;
-        public long rdst = 0;
-        public int en = 1;
-        public int sn2 = -1;
-        public int RSSI = 1; // json reply uses all uppercase
-        public int flcrt = -1;
-        public int curr = -1;
     }
 
     /**
@@ -432,9 +397,9 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
         private Request withGeneralProperties(Request request) {
             request.header(HttpHeader.USER_AGENT, USER_AGENT);
-            if (!basicUsername.isEmpty() && !basicPassword.isEmpty()) {
-                String encoded = Base64.getEncoder()
-                        .encodeToString((basicUsername + ":" + basicPassword).getBytes(StandardCharsets.UTF_8));
+            if (!config.basicUsername.isEmpty() && !config.basicPassword.isEmpty()) {
+                String encoded = Base64.getEncoder().encodeToString(
+                        (config.basicUsername + ":" + config.basicPassword).getBytes(StandardCharsets.UTF_8));
                 request.header(HttpHeader.AUTHORIZATION, "Basic " + encoded);
             }
             return request;

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerState.JpResponse;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.DataFormatErrorApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.DataMissingApiException;
@@ -71,12 +72,12 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         }
         JpResponse resp = gson.fromJson(returnContent, JpResponse.class);
         if (resp != null && resp.pd.length > 0) {
-            programs = new ArrayList<>();
+            state.programs = new ArrayList<>();
             int counter = 0;
             for (Object x : resp.pd) {
                 String temp = x.toString();
                 temp = temp.substring(temp.lastIndexOf(',') + 2, temp.length() - 1);
-                programs.add(new StateOption(Integer.toString(counter++), temp));
+                state.programs.add(new StateOption(Integer.toString(counter++), temp));
             }
         }
     }
@@ -84,16 +85,16 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     @Override
     public List<StateOption> getStations() {
         int counter = 0;
-        for (String x : jnReply.snames) {
-            stations.add(new StateOption(Integer.toString(counter++), x));
+        for (String x : state.jnReply.snames) {
+            state.stations.add(new StateOption(Integer.toString(counter++), x));
         }
-        return stations;
+        return state.stations;
     }
 
     @Override
     public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
-        if (jsReply.sn.length > 0) {
-            if (jsReply.sn[station] == 1) {
+        if (state.jsReply.sn.length > 0) {
+            if (state.jsReply.sn[station] == 1) {
                 return true;
             } else {
                 return false;

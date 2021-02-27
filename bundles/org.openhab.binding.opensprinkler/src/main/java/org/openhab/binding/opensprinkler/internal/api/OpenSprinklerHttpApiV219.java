@@ -38,7 +38,7 @@ public class OpenSprinklerHttpApiV219 extends OpenSprinklerHttpApiV217 {
         int arrayIndex = station / 8;
         int bit = station % 8;
         logger.debug("Ignore Rain for Station:{} is being looked in index: {} and bit:{}", station, arrayIndex, bit);
-        byte status = jnReply.ignore_rain[arrayIndex];
+        byte status = state.jnReply.ignore_rain[arrayIndex];
         if (command) {
             status |= 1 << bit;
         } else {
@@ -51,7 +51,7 @@ public class OpenSprinklerHttpApiV219 extends OpenSprinklerHttpApiV217 {
     public boolean isIgnoringRain(int station) {
         int arrayIndex = station / 8;
         int bit = station % 8;
-        byte status = jnReply.ignore_rain[arrayIndex];
+        byte status = state.jnReply.ignore_rain[arrayIndex];
         return (status & (1 << bit)) != 0;
     }
 }
