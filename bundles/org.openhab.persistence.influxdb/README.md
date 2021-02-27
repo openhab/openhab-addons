@@ -75,15 +75,15 @@ Number:Temperature tempBath (gTempSensors) { influxdb="temperature" [floor="firs
 
 ```
 
-You can also set the `inflxdb` metadata using the UI. From each item configuration screen do:
+You can also set the `influxdb` metadata using the UI. From each item configuration screen do:
 
-`Metadata` →  `Add Metadata` →  `Enter Custom Namespace` →  Enter `influxdb` as namespace name →  And enter your desired item name in value field. i.e.:
+`Metadata` → `Add Metadata` → `Enter Custom Namespace` → Enter `influxdb` as namespace name → And enter your desired item name in value field. i.e.:
 
     value: temperature
     config: {}
 
-
 This will end up with one measurement named temperature and four different series inside:
+
 ```
 temperature,item=tempLivingRoom,floor=groundfloor
 temperature,item=tempKitchen,floor=groundfloor
