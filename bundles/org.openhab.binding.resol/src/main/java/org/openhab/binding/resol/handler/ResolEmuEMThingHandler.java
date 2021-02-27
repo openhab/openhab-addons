@@ -94,6 +94,10 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
     @Override
     public void dispose() {
         EmDeviceEmulator dev = device;
+        ScheduledFuture<?> job = updateJob;
+        if (job != null) {
+            job.cancel(true);
+        }
         if (dev != null) {
             dev.stop();
             dev.removePropertyChangeListener(this);
@@ -182,7 +186,6 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String chID = channelUID.getId();
-        boolean update = false;
         int channel = chID.charAt(chID.length() - 1) - '0';
         float value = 0;
         int intValue = 0;
@@ -190,50 +193,46 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
         if (command instanceof QuantityType<?>) {
             value = Objects.requireNonNullElse(((QuantityType<?>) command).toUnit(SIUnits.CELSIUS),
                     new QuantityType<>(888.8, SIUnits.CELSIUS)).floatValue();
-            update = true;
         } else if (command instanceof OnOffType) {
             intValue = ((OnOffType) command).equals(OnOffType.ON) ? 1 : 0;
-            update = true;
         } else if (command instanceof DecimalType) {
             intValue = ((DecimalType) command).intValue();
             value = intValue;
-            update = true;
         } else {
-            update = false;
+            /* nothing to do */
+            return;
         }
 
-        if (update) {
-            EmDeviceEmulator dev = device;
-            if (dev != null) {
-                if (chID.startsWith(CHANNEL_TEMP)) {
-                    dev.setResistorValueByNrAndPt1000Temperatur(channel, value);
-                    updateState(channelUID, new DecimalType(value));
-                } else if (chID.startsWith(CHANNEL_SWITCH)) {
-                    if (intValue == 0) {
-                        /* switch is open => 1 megaohm */
-                        dev.setResistorValueByNr(channel, 1000000000);
-                        updateState(channelUID, OnOffType.OFF);
-                    } else {
-                        /* switch is closed */
-                        dev.setResistorValueByNr(channel, 0);
-                        updateState(channelUID, OnOffType.ON);
-                    }
-                } else if (chID.startsWith(CHANNEL_RESIST)) {
-                    dev.setResistorValueByNr(channel, (int) (value * 1000.0));
-                    updateState(channelUID, new QuantityType<>(intValue, Units.OHM));
-                } else if (chID.startsWith(CHANNEL_TEMP_ADJUST)) {
-                    basValues[channel - 1].temperatureOffset = value;
-                    updateBas(channel);
-                    updateState(channelUID, new DecimalType(value));
-                } else if (chID.startsWith(CHANNEL_MODE)) {
-                    basValues[channel - 1].mode = intValue;
-                    updateBas(channel);
-                    updateState(channelUID, new DecimalType(intValue));
-                } else {
-                    /* set resistor value for Open Connection, 1 megaohm */
+        EmDeviceEmulator dev = device;
+        if (dev != null) {
+            if (chID.startsWith(CHANNEL_TEMP)) {
+                dev.setResistorValueByNrAndPt1000Temperatur(channel, value);
+                updateState(channelUID, new DecimalType(value));
+            } else if (chID.startsWith(CHANNEL_SWITCH)) {
+                if (intValue == 0) {
+                    /* switch is open => 1 megaohm */
                     dev.setResistorValueByNr(channel, 1000000000);
-                    updateState(channelUID, new QuantityType<>(1000000, Units.OHM));
+                    updateState(channelUID, OnOffType.OFF);
+                } else {
+                    /* switch is closed */
+                    dev.setResistorValueByNr(channel, 0);
+                    updateState(channelUID, OnOffType.ON);
                 }
+            } else if (chID.startsWith(CHANNEL_RESIST)) {
+                dev.setResistorValueByNr(channel, (int) (value * 1000.0));
+                updateState(channelUID, new QuantityType<>(intValue, Units.OHM));
+            } else if (chID.startsWith(CHANNEL_TEMP_ADJUST)) {
+                basValues[channel - 1].temperatureOffset = value;
+                updateBas(channel);
+                updateState(channelUID, new DecimalType(value));
+            } else if (chID.startsWith(CHANNEL_MODE)) {
+                basValues[channel - 1].mode = intValue;
+                updateBas(channel);
+                updateState(channelUID, new DecimalType(intValue));
+            } else {
+                /* set resistor value for Open Connection, 1 megaohm */
+                dev.setResistorValueByNr(channel, 1000000000);
+                updateState(channelUID, new QuantityType<>(1000000, Units.OHM));
             }
         }
     }

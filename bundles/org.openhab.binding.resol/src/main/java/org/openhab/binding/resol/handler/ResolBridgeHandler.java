@@ -59,9 +59,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ResolBridgeHandler.class);
 
-    private Language lang;
-    private Locale locale;
-
     private String ipAddress = "";
     private String password = "";
     private int refreshInterval;
@@ -79,18 +76,12 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     private boolean scanning;
 
+    private final @Nullable LocaleProvider localeProvider;
+
     public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider) {
         super(bridge);
         spec = Specification.getDefaultSpecification();
-
-        if (localeProvider != null) {
-            locale = localeProvider.getLocale();
-            lang = SpecificationFile.getLanguageForLocale(getLocale());
-
-        } else {
-            locale = Locale.getDefault();
-            lang = Language.En;
-        }
+        this.localeProvider = localeProvider;
     }
 
     public void updateStatus() {
@@ -256,7 +247,11 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     }
 
     Locale getLocale() {
-        return locale;
+        if (localeProvider != null) {
+            return localeProvider.getLocale();
+        } else {
+            return Locale.getDefault();
+        }
     }
 
     /* adapter to react on connection state changes and handle received packets */
@@ -291,6 +286,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
             if (connection == null || packet == null) {
                 return;
             }
+            Language lang = SpecificationFile.getLanguageForLocale(getLocale());
             boolean packetHandled = false;
             String thingType = spec.getSourceDeviceSpec(packet).getName(); // use En here
 

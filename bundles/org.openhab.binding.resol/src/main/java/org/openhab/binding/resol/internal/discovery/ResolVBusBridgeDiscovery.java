@@ -13,12 +13,15 @@
 package org.openhab.binding.resol.internal.discovery;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -47,6 +50,7 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(ResolVBusBridgeDiscovery.class);
 
     private volatile boolean discoveryRunning = false;
+    private @Nullable Future<?> searchFuture;
 
     public ResolVBusBridgeDiscovery() throws IllegalArgumentException {
         super(ResolBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 35, false);
@@ -55,12 +59,15 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         discoveryRunning = true;
-        scheduler.execute(this::searchRunnable);
+        searchFuture = scheduler.submit(this::searchRunnable);
     }
 
     @Override
     protected void stopScan() {
         discoveryRunning = false;
+        if (searchFuture != null) {
+            searchFuture.cancel(true);
+        }
     }
 
     /*
@@ -89,6 +96,9 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
                     currentDataSourceById.put(addressId, dsWithInfo);
                     addAdapter(addressId, dsWithInfo);
                     // here we can add the detection of Multi-Channel interfaces like DL3
+                } catch (InterruptedIOException ex) {
+                    /* openHAB interrupted the io thread and wants to shutdown */
+                    break;
                 } catch (IOException ex) {
                     /* address is no valid adapter */
                 }
