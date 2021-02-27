@@ -94,6 +94,7 @@ public class HttpHelper {
             // refresh the token if it's about to expire
             if (accessTokenResponse != null
                     && accessTokenResponse.isExpired(LocalDateTime.now(), OAUTH_EXPIRE_BUFFER)) {
+                LoggerFactory.getLogger(HttpHelper.class).debug("Requesting a refresh of the access token.");
                 accessTokenResponse = oAuthClientService.refreshToken();
             }
 
