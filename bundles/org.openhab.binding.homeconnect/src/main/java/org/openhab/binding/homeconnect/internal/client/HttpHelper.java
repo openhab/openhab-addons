@@ -18,6 +18,7 @@ import static io.github.bucket4j.Refill.intervally;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -60,6 +61,7 @@ public class HttpHelper {
             .addLimit(classic(50, intervally(50, Duration.ofSeconds(70))).withInitialTokens(40))
             // but not often then 50 tokens per second
             .addLimit(classic(10, intervally(10, Duration.ofSeconds(1)))).build();
+    private static @Nullable String lastAccessToken = null;
 
     public static ContentResponse sendRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
@@ -99,6 +101,15 @@ public class HttpHelper {
             }
 
             if (accessTokenResponse != null) {
+                String lastToken = lastAccessToken;
+                if (lastToken == null) {
+                    LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
+                            accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                } else if (!lastToken.equals(accessTokenResponse.getAccessToken())) {
+                    LoggerFactory.getLogger(HttpHelper.class).debug("The access token changed. New one created at {}",
+                            accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                }
+                lastAccessToken = accessTokenResponse.getAccessToken();
                 return BEARER + accessTokenResponse.getAccessToken();
             } else {
                 LoggerFactory.getLogger(HttpHelper.class).error("No access token available! Fatal error.");
