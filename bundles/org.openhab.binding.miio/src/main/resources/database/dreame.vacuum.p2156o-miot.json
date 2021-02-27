@@ -1,46 +1,84 @@
 {
 	"deviceMapping": {
 		"id": [
-			"dreame.vacuum.p2009",
-			"dreame.vacuum.p2036",
-			"dreame.vacuum.p2157"
+			"dreame.vacuum.p2156o",
+			"dreame.vacuum.p2041o"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
 		"channels": [
 			{
 				"property": "",
-				"friendlyName": "Vacuum Action",
-				"channel": "vacuumaction",
+				"friendlyName": "Actions",
+				"channel": "actions",
 				"type": "String",
 				"stateDescription": {
 					"options": [
 						{
-							"value": "sweep",
-							"label": "Sweep"
+							"value": "vacuum-start-sweep",
+							"label": "Start Sweep"
 						},
 						{
-							"value": "stopsweep",
-							"label": "Stop Sweep"
+							"value": "vacuum-stop-sweeping",
+							"label": "Stop Sweeping"
 						},
 						{
-							"value": "dock",
-							"label": "Goto Dock"
+							"value": "battery-start-charge",
+							"label": "Start Charge"
+						},
+						{
+							"value": "brush-cleaner-reset-brush-life",
+							"label": "Brush Cleaner Reset Brush Life"
+						},
+						{
+							"value": "brush-cleaner-reset-brush-life",
+							"label": "Brush Cleaner Reset Brush Life"
+						},
+						{
+							"value": "filter-reset-filter-life",
+							"label": "Filter Reset Filter Life"
+						},
+						{
+							"value": "vacuum-extend-start-clean",
+							"label": "Vacuum Extend Start Clean"
+						},
+						{
+							"value": "vacuum-extend-stop-clean",
+							"label": "Vacuum Extend Stop Clean"
+						},
+						{
+							"value": "map-map-req",
+							"label": "Map Map Req"
+						},
+						{
+							"value": "map-update-map",
+							"label": "Map Update Map"
+						},
+						{
+							"value": "audio-position",
+							"label": "Audio Position"
+						},
+						{
+							"value": "audio-play-sound",
+							"label": "Audio Play Sound"
+						},
+						{
+							"value": "time-delete-timer",
+							"label": "Time Delete Timer"
 						}
 					]
 				},
-				"refresh": false,
 				"actions": [
 					{
 						"command": "action",
 						"parameterType": "EMPTY",
 						"siid": 2,
-						"aiid": 2,
+						"aiid": 1,
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "sweep"
+									"matchValue": "vacuum-start-sweep"
 								}
 							]
 						}
@@ -54,7 +92,7 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "stopsweep"
+									"matchValue": "vacuum-stop-sweeping"
 								}
 							]
 						}
@@ -68,13 +106,165 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "dock"
+									"matchValue": "battery-start-charge"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brush-cleaner-reset-brush-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 10,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brush-cleaner-reset-brush-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 11,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-reset-filter-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							10.0
+						],
+						"siid": 4,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-extend-start-clean"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-extend-stop-clean"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							2.0
+						],
+						"siid": 6,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "map-map-req"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							4.0
+						],
+						"siid": 6,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "map-update-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "audio-position"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "audio-play-sound"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							3.0
+						],
+						"siid": 8,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "time-delete-timer"
 								}
 							]
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\"]"
+				"readmeComment": "Value mapping [\"vacuum-start-sweep\"\u003d\"Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Stop Sweeping\",\"battery-start-charge\"\u003d\"Start Charge\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"vacuum-extend-start-clean\"\u003d\"Vacuum Extend Start Clean\",\"vacuum-extend-stop-clean\"\u003d\"Vacuum Extend Stop Clean\",\"map-map-req\"\u003d\"Map Map Req\",\"map-update-map\"\u003d\"Map Update Map\",\"audio-position\"\u003d\"Audio Position\",\"audio-play-sound\"\u003d\"Audio Play Sound\",\"time-delete-timer\"\u003d\"Time Delete Timer\"]"
 			},
 			{
 				"property": "status",
@@ -142,11 +332,47 @@
 				"actions": []
 			},
 			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Robot Cleaner - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Silent"
+						},
+						{
+							"value": "1",
+							"label": "Basic"
+						},
+						{
+							"value": "2",
+							"label": "Strong"
+						},
+						{
+							"value": "3",
+							"label": "Full Speed"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Strong\",\"3\"\u003d\"Full Speed\"]"
+			},
+			{
 				"property": "battery-level",
 				"siid": 3,
 				"piid": 1,
 				"friendlyName": "Battery - Battery Level",
-				"channel": "battery-level",
+				"channel": "battery_level",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
@@ -164,7 +390,7 @@
 				"siid": 3,
 				"piid": 2,
 				"friendlyName": "Battery - Charging State",
-				"channel": "charging-state",
+				"channel": "charging_state",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -188,80 +414,11 @@
 				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"5\"\u003d\"Go Charging\"]"
 			},
 			{
-				"property": "",
-				"friendlyName": "Consumables Reset",
-				"channel": "resetConsumable",
-				"type": "String",
-				"stateDescription": {
-					"readOnly": true,
-					"options": [
-						{
-							"value": "mainbrush-cleaner-reset-brush-life",
-							"label": "Reset Main Brush"
-						},
-						{
-							"value": "sidebrush-cleaner-reset-brush-life",
-							"label": "Reset Side Brush"
-						},
-						{
-							"value": "filter-reset-filter-life",
-							"label": "Reset Filter"
-						}
-					]
-				},
-				"refresh": false,
-				"actions": [
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 9,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "mainbrush-cleaner-reset-brush-life"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 10,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "sidebrush-cleaner-reset-brush-life"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 11,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "filter-reset-filter-life"
-								}
-							]
-						}
-					}
-				],
-				"readmeComment": "Value mapping [\"mainbrush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush\",\"sidebrush-cleaner-reset-brush-life\"\u003d\"Reset Side Brush\",\"filter-reset-filter-life\"\u003d\"Reset Filter\"]"
-			},
-			{
 				"property": "brush-left-time",
 				"siid": 9,
 				"piid": 1,
 				"friendlyName": "Main Cleaning Brush - Brush Left Time",
-				"channel": "brush-left-time",
+				"channel": "brush_left_time",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
@@ -279,7 +436,7 @@
 				"siid": 9,
 				"piid": 2,
 				"friendlyName": "Main Cleaning Brush - Brush Life Level",
-				"channel": "brush-life-level",
+				"channel": "brush_life_level",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
@@ -297,7 +454,7 @@
 				"siid": 10,
 				"piid": 1,
 				"friendlyName": "Side Cleaning Brush - Brush Left Time",
-				"channel": "brush-left-time1",
+				"channel": "brush_left_time1",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
@@ -315,7 +472,7 @@
 				"siid": 10,
 				"piid": 2,
 				"friendlyName": "Side Cleaning Brush - Brush Life Level",
-				"channel": "brush-life-level1",
+				"channel": "brush_life_level1",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
@@ -333,7 +490,7 @@
 				"siid": 11,
 				"piid": 1,
 				"friendlyName": "Filter - Filter Life Level",
-				"channel": "filter-life-level",
+				"channel": "filter_life_level",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
@@ -351,7 +508,7 @@
 				"siid": 11,
 				"piid": 2,
 				"friendlyName": "Filter - Filter Left Time",
-				"channel": "filter-left-time",
+				"channel": "filter_left_time",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
@@ -369,7 +526,7 @@
 				"siid": 4,
 				"piid": 1,
 				"friendlyName": "Vacuum Extend - Work Mode",
-				"channel": "work-mode",
+				"channel": "work_mode",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
@@ -386,7 +543,7 @@
 				"siid": 4,
 				"piid": 2,
 				"friendlyName": "Vacuum Extend - Cleaning Time",
-				"channel": "cleaning-time",
+				"channel": "cleaning_time",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -422,7 +579,7 @@
 				"siid": 4,
 				"piid": 4,
 				"friendlyName": "Vacuum Extend - Cleaning Mode",
-				"channel": "cleaning-mode",
+				"channel": "cleaning_mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -458,7 +615,7 @@
 				"siid": 4,
 				"piid": 5,
 				"friendlyName": "Vacuum Extend - Mop Mode",
-				"channel": "mop-mode",
+				"channel": "mop_mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -490,7 +647,7 @@
 				"siid": 4,
 				"piid": 6,
 				"friendlyName": "Vacuum Extend - Waterbox Status",
-				"channel": "waterbox-status",
+				"channel": "waterbox_status",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -514,7 +671,7 @@
 				"siid": 4,
 				"piid": 7,
 				"friendlyName": "Vacuum Extend - Task Status",
-				"channel": "task-status",
+				"channel": "task_status",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -550,7 +707,7 @@
 				"siid": 4,
 				"piid": 11,
 				"friendlyName": "Vacuum Extend - Break Point Restart",
-				"channel": "break-point-restart",
+				"channel": "break_point_restart",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -578,7 +735,7 @@
 				"siid": 4,
 				"piid": 12,
 				"friendlyName": "Vacuum Extend - Carpet Press",
-				"channel": "carpet-press",
+				"channel": "carpet_press",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -602,11 +759,11 @@
 				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
 			},
 			{
-				"property": "serial-number1",
+				"property": "serial-number",
 				"siid": 4,
 				"piid": 14,
 				"friendlyName": "Vacuum Extend - Serial Number",
-				"channel": "serial-number1",
+				"channel": "serial_number",
 				"type": "String",
 				"stateDescription": {
 					"readOnly": true
@@ -615,33 +772,11 @@
 				"actions": []
 			},
 			{
-				"property": "clean-rags-tip",
-				"siid": 4,
-				"piid": 16,
-				"friendlyName": "Vacuum Extend - Clean Rags Tip",
-				"channel": "clean-rags-tip",
-				"type": "Number:Time",
-				"unit": "minutes",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 120,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
-			},
-			{
 				"property": "keep-sweeper-time",
 				"siid": 4,
 				"piid": 17,
 				"friendlyName": "Vacuum Extend - Keep Sweeper Time",
-				"channel": "keep-sweeper-time",
+				"channel": "keep_sweeper_time",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -687,7 +822,7 @@
 				"siid": 5,
 				"piid": 2,
 				"friendlyName": "Do Not Disturb - Start Time",
-				"channel": "start-time",
+				"channel": "start_time",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -702,7 +837,7 @@
 				"siid": 5,
 				"piid": 3,
 				"friendlyName": "Do Not Disturb - End Time",
-				"channel": "end-time",
+				"channel": "end_time",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -739,7 +874,7 @@
 				"siid": 7,
 				"piid": 2,
 				"friendlyName": "Audio - Voice Packet Id",
-				"channel": "voice-packet-id",
+				"channel": "voice_packet_id",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -754,7 +889,7 @@
 				"siid": 7,
 				"piid": 3,
 				"friendlyName": "Audio - Voice Change State",
-				"channel": "voice-change-state",
+				"channel": "voice_change_state",
 				"type": "String",
 				"stateDescription": {
 					"readOnly": true
@@ -767,7 +902,7 @@
 				"siid": 8,
 				"piid": 1,
 				"friendlyName": "Time - Time Zone",
-				"channel": "time-zone",
+				"channel": "time_zone",
 				"type": "String",
 				"stateDescription": {
 					"readOnly": true
@@ -780,7 +915,7 @@
 				"siid": 8,
 				"piid": 2,
 				"friendlyName": "Time - Timer Clean",
-				"channel": "timer-clean",
+				"channel": "timer_clean",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -795,12 +930,12 @@
 				"siid": 12,
 				"piid": 1,
 				"friendlyName": "Clean Logs - First Clean Time",
-				"channel": "first-clean-time",
+				"channel": "first_clean_time",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -811,7 +946,7 @@
 				"siid": 12,
 				"piid": 2,
 				"friendlyName": "Clean Logs - Total Clean Time",
-				"channel": "total-clean-time",
+				"channel": "total_clean_time",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -828,12 +963,12 @@
 				"siid": 12,
 				"piid": 3,
 				"friendlyName": "Clean Logs - Total Clean Times",
-				"channel": "total-clean-times",
+				"channel": "total_clean_times",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -844,19 +979,47 @@
 				"siid": 12,
 				"piid": 4,
 				"friendlyName": "Clean Logs - Total Clean Area",
-				"channel": "total-clean-area",
+				"channel": "total_clean_area",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
 				"actions": []
+			},
+			{
+				"property": "save-map-status",
+				"siid": 13,
+				"piid": 1,
+				"friendlyName": "Vslam Extend - Save Map Status",
+				"channel": "save_map_status",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
 			}
 		],
-		"readmeComment": "Identified manual actions for execution not linked in the database \u003e`action{\"did\":\"vacuum-extend-start-clean\",\"siid\":4,\"aiid\":1,\"in\":[10.0]}`\u003cbr /\u003e`action{\"did\":\"vacuum-extend-stop-clean\",\"siid\":4,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-map-req\",\"siid\":6,\"aiid\":1,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"map-update-map\",\"siid\":6,\"aiid\":2,\"in\":[4.0]}`\u003cbr /\u003e`action{\"did\":\"audio-position\",\"siid\":7,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-play-sound\",\"siid\":7,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"time-delete-timer\",\"siid\":8,\"aiid\":1,\"in\":[3.0]}`\u003cbr /\u003e",
-		"experimental": false
+		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"vacuum-start-sweep\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":2,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"battery-start-charge\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":9,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":10,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":11,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-extend-start-clean\",\"siid\":4,\"aiid\":1,\"in\":[10.0]}`\u003cbr /\u003e`action{\"did\":\"vacuum-extend-stop-clean\",\"siid\":4,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-map-req\",\"siid\":6,\"aiid\":1,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"map-update-map\",\"siid\":6,\"aiid\":2,\"in\":[4.0]}`\u003cbr /\u003e`action{\"did\":\"audio-position\",\"siid\":7,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-play-sound\",\"siid\":7,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"time-delete-timer\",\"siid\":8,\"aiid\":1,\"in\":[3.0]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
+		"experimental": true
 	}
 }
