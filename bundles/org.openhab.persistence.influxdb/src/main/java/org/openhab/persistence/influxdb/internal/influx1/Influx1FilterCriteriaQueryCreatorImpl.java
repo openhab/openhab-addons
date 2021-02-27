@@ -61,7 +61,7 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         Where where = select.where();
 
-        if (itemName != null && !tableName.equals(itemName))) {
+        if (itemName != null && !tableName.equals(itemName)) {
             where = where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemName));
         }
 
