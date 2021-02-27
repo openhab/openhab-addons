@@ -88,37 +88,10 @@ public class VDRHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // background initialization:
-        scheduler.execute(() -> {
-            stopRefreshThread(true);
-
-            SVDRPClient con = new SVDRPClientImpl(config.getHost(), config.getPort());
-            try {
-                con.openConnection();
-                updateStatus(ThingStatus.ONLINE);
-                updateProperties(con);
-            } catch (SVDRPConnectionException ce) {
-                // also update power channel when thing is offline when initializing
-                thing.getChannels().stream().map(c -> c.getUID()).filter(this::isLinked).forEach(channelUID -> {
-                    if (VDRBindingConstants.CHANNEL_UID_POWER.equals(channelUID.getIdWithoutGroup())) {
-                        updateState(channelUID, OnOffType.OFF);
-                    }
-                });
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ce.getMessage());
-            } catch (SVDRPParseResponseException se) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
-            } finally {
-                try {
-                    con.closeConnection();
-                } catch (SVDRPConnectionException | SVDRPParseResponseException se) {
-                    logger.trace(
-                            "Error on VDR initialize while closing SVDRP Connection for Thing : {} with message {}",
-                            this.getThing().getUID(), se.getMessage());
-                }
-            }
-
-            scheduleRefreshThread();
-        });
+        // ensure that there is no active refresh thread
+        stopRefreshThread(true);
+        // initialize and schedule refresh thread
+        scheduleRefreshThread();
     }
 
     /**
@@ -201,10 +174,9 @@ public class VDRHandler extends BaseThingHandler {
         Thing thing = getThing();
         try {
             con.openConnection();
-            if (thing.getStatus() == ThingStatus.OFFLINE) {
-                updateStatus(ThingStatus.ONLINE);
-                updateProperties(con);
-            }
+            updateStatus(ThingStatus.ONLINE);
+            updateProperties(con);
+
             thing.getChannels().stream().map(c -> c.getUID()).filter(this::isLinked).forEach(channelUID -> {
                 try {
                     logger.trace("updateChannel: {}", channelUID);
