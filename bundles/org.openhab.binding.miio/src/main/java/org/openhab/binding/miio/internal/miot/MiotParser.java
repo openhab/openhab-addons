@@ -67,6 +67,7 @@ public class MiotParser {
     private static final String BASEURL = "http://miot-spec.org/miot-spec-v2/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final JsonParser PARSER = new JsonParser();
+    private static final boolean SKIP_SIID_1 = true;
 
     private String model;
     private @Nullable String urn;
@@ -134,6 +135,9 @@ public class MiotParser {
                     String propertyId = property.type.substring(property.type.indexOf("property:")).split(":")[1];
                     logger.info("siid: {}, description: {}, piid: {}, description: {}, identifier: {}", service.siid,
                             service.description, property.piid, property.description, propertyId);
+                    if (service.siid == 1 && SKIP_SIID_1) {
+                        continue;
+                    }
                     if (property.access.contains("read")) {
                         MiIoBasicChannel miIoBasicChannel = new MiIoBasicChannel();
                         // miIoBasicChannel.setProperty(prop);
