@@ -118,7 +118,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="sensorSleepTime">
+	<channel-type id="sensorSleepTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.shelly.sensorSleepTime.label</label>
 		<description>@text/channel-type.shelly.sensorSleepTime.description</description>

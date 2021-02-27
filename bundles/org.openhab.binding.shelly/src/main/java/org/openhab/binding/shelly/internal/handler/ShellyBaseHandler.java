@@ -38,6 +38,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapHandler;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
@@ -262,9 +263,21 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         tmpPrf.updateFromStatus(tmpPrf.status);
         updateProperties(tmpPrf, tmpPrf.status);
         checkVersion(tmpPrf, tmpPrf.status);
-        if ((tmpPrf.settings.coiot.enabled != null) && !tmpPrf.settings.coiot.enabled) {
-            logger.info("{}: CoIoT is disabled in device settings", thingName);
-            config.eventsCoIoT = autoCoIoT = false;
+        if (config.eventsCoIoT && (tmpPrf.settings.coiot.enabled != null)) {
+            String devpeer = getString(tmpPrf.settings.coiot.peer);
+            String ourpeer = config.localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT;
+            if (!tmpPrf.settings.coiot.enabled || (profile.isMotion && devpeer.isEmpty())) {
+                try {
+                    api.setCoIoTPeer(ourpeer);
+                    logger.info("{}: CoIoT peer updated to {}", thingName, ourpeer);
+                } catch (ShellyApiException e) {
+                    logger.debug("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
+                }
+            } else if (!devpeer.equals(ourpeer)) {
+                logger.warn("{}: CoIoT peer in device settings does not point this to this host, disabling CoIoT",
+                        thingName);
+                config.eventsCoIoT = autoCoIoT = false;
+            }
         }
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);

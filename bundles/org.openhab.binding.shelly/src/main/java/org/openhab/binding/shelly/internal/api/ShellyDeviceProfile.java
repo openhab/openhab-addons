@@ -324,14 +324,28 @@ public class ShellyDeviceProfile {
 
     public static String extractFwVersion(@Nullable String version) {
         if (version != null) {
+            if (version.chars().filter(ch -> ch == '-').count() >= 3) {
+                // new format starting with version 1.0
+                // e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
+            }
             if (version.contains("@")) { // standard format
                 return substringBetween(getString(version), "/", "@");
             }
+
             if (version.indexOf('/') != version.lastIndexOf('/')) {
                 // includes 2 /, e.g. beta
                 return substringAfterLast(version, "/");
             }
         }
         return "";
+    }
+
+    public boolean coiotEnabled() {
+        if ((settings.coiot != null) && (settings.coiot.enabled != null)) {
+            return settings.coiot.enabled;
+        }
+
+        // If device is not yet intialized or the enabled property is missing we assume that CoIoT is enabled
+        return true;
     }
 }
