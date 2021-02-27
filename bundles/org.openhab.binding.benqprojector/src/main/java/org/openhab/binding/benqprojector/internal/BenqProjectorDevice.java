@@ -67,12 +67,13 @@ public class BenqProjectorDevice {
 
         logger.debug("Response: '{}'", response);
 
+        // example: SOUR=HDMI2
         String[] responseParts = response.split("=");
         if (responseParts.length != 2) {
             throw new BenqProjectorCommandException("Invalid respose for command: " + query);
         }
 
-        return responseParts[1];
+        return responseParts[1].toLowerCase();
     }
 
     protected void sendCommand(String command, int timeout)
@@ -113,7 +114,7 @@ public class BenqProjectorDevice {
      * Power
      */
     public Switch getPowerStatus() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("pow=?").toUpperCase().contains("ON") ? Switch.ON : Switch.OFF);
+        return (queryString("pow=?").contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setPower(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
@@ -157,7 +158,7 @@ public class BenqProjectorDevice {
      * Blank Screen
      */
     public Switch getBlank() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("blank=?").toUpperCase().contains("ON") ? Switch.ON : Switch.OFF);
+        return (queryString("blank=?").contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setBlank(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
@@ -168,7 +169,7 @@ public class BenqProjectorDevice {
      * Freeze
      */
     public Switch getFreeze() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("freeze=?").toUpperCase().contains("ON") ? Switch.ON : Switch.OFF);
+        return (queryString("freeze=?").contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setFreeze(Switch value) throws BenqProjectorCommandException, BenqProjectorException {

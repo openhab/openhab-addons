@@ -83,10 +83,10 @@
 				<option value="hdmi2">HDMI2</option>
 				<option value="ypbr">Component</option>
 				<option value="ypbr2">Component2</option>
-				<option value="RGB">Computer/YPbPr</option>
-				<option value="RGB2">Computer/YPbPr2</option>
-				<option value="RGB3">Computer/YPbPr3</option>
-				<option value="dviA">DVI-A</option>
+				<option value="rgb">Computer/YPbPr</option>
+				<option value="rgb2">Computer/YPbPr2</option>
+				<option value="rgb3">Computer/YPbPr3</option>
+				<option value="dvia">DVI-A</option>
 				<option value="dvid">DVI-D</option>
 				<option value="vid">Video</option>
 				<option value="svid">S-Video</option>
@@ -138,13 +138,13 @@
 				<option value="16:6">16:6</option>
 				<option value="16:9">16:9</option>
 				<option value="16:10">16:10</option>
-				<option value="AUTO">Auto</option>
-				<option value="REAL">Real</option>
-				<option value="LBOX">Letterbox</option>
-				<option value="WIDE">Wide</option>
-				<option value="ANAM">Anamorphic</option>
-				<option value="ANAM2.35:1">Anamorphic 2.35:1</option>
-				<option value="ANAM16:9">Anamorphic 16:9</option>
+				<option value="auto">Auto</option>
+				<option value="real">Real</option>
+				<option value="lbox">Letterbox</option>
+				<option value="wide">Wide</option>
+				<option value="anam">Anamorphic</option>
+				<option value="anam2.35:1">Anamorphic 2.35:1</option>
+				<option value="anam16:9">Anamorphic 16:9</option>
 			</options>
 		</state>
 	</channel-type>

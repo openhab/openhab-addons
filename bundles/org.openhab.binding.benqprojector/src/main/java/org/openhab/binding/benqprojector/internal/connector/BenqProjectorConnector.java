@@ -25,6 +25,7 @@ public interface BenqProjectorConnector {
 
     public static final String START = "\r*";
     public static final String END = "#\r";
+    public static final String RESP_START = ">*";
 
     /**
      * Procedure for connecting to projector.
