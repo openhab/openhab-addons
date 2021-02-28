@@ -86,8 +86,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                     logger.warn("Invalid locking mode: {}, ignoring command", newLockingModeIdStr);
                                 } catch (SurePetcareApiException e) {
                                     logger.warn(
-                                            "Error from SurePetcare API. Can't update locking mode {} for device {}: {}",
-                                            newLockingModeIdStr, device, e.getMessage());
+                                            "Error from SurePetcare API. Can't update locking mode {} for device {}",
+                                            newLockingModeIdStr, device, e);
                                 }
                             }
                         }
@@ -107,9 +107,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                 } catch (NumberFormatException e) {
                                     logger.warn("Invalid locking mode: {}, ignoring command", newLedModeIdStr);
                                 } catch (SurePetcareApiException e) {
-                                    logger.warn(
-                                            "Error from SurePetcare API. Can't update LED mode {} for device {}: {}",
-                                            newLedModeIdStr, device, e.getMessage());
+                                    logger.warn("Error from SurePetcare API. Can't update LED mode {} for device {}",
+                                            newLedModeIdStr, device, e);
                                 }
                             }
                         }

@@ -77,25 +77,25 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
                             if (pet != null) {
                                 String newLocationIdStr = ((StringType) command).toString();
-                                Integer newLocationId = Integer.valueOf(newLocationIdStr);
-                                // Only update if location has changed. (Needed for Group:Switch item)
-                                if ((pet.status.activity.where.equals(newLocationId)) || newLocationId.equals(0)) {
-                                    logger.debug("Location has not changed, skip pet id: {} with loc id: {}", pet.id,
-                                            newLocationId);
-                                } else {
-                                    try {
+                                try {
+                                    Integer newLocationId = Integer.valueOf(newLocationIdStr);
+                                    // Only update if location has changed. (Needed for Group:Switch item)
+                                    if ((pet.status.activity.where.equals(newLocationId)) || newLocationId.equals(0)) {
+                                        logger.debug("Location has not changed, skip pet id: {} with loc id: {}",
+                                                pet.id, newLocationId);
+                                    } else {
                                         logger.debug("Received new location: {}", newLocationId);
                                         petcareAPI.setPetLocation(pet, newLocationId, ZonedDateTime.now());
                                         updateState(PET_CHANNEL_LOCATION,
                                                 new StringType(pet.status.activity.where.toString()));
                                         updateState(PET_CHANNEL_LOCATION_CHANGED,
                                                 new DateTimeType(pet.status.activity.since));
-                                    } catch (NumberFormatException e) {
-                                        logger.warn("Invalid location id: {}, ignoring command", newLocationIdStr);
-                                    } catch (SurePetcareApiException e) {
-                                        logger.warn("Error from SurePetcare API. Can't update location {} for pet {}",
-                                                newLocationIdStr, pet);
                                     }
+                                } catch (NumberFormatException e) {
+                                    logger.warn("Invalid location id: {}, ignoring command", newLocationIdStr, e);
+                                } catch (SurePetcareApiException e) {
+                                    logger.warn("Error from SurePetcare API. Can't update location {} for pet {}",
+                                            newLocationIdStr, pet, e);
                                 }
                             }
                         }
@@ -125,10 +125,10 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                                             new DateTimeType(pet.status.activity.since));
                                     updateState(PET_CHANNEL_LOCATION_TIMEOFFSET, UnDefType.UNDEF);
                                 } catch (NumberFormatException e) {
-                                    logger.warn("Invalid location id: {}, ignoring command", commandIdStr);
+                                    logger.warn("Invalid location id: {}, ignoring command", commandIdStr, e);
                                 } catch (SurePetcareApiException e) {
                                     logger.warn("Error from SurePetcare API. Can't update location {} for pet {}",
-                                            commandIdStr, pet);
+                                            commandIdStr, pet, e);
                                 }
                             }
                         }

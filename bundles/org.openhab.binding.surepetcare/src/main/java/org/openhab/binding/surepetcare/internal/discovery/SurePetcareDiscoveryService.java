@@ -135,7 +135,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
     private void householdDiscovered(SurePetcareHousehold household) {
         logger.debug("Discovered household: {}", household.name);
         ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID, household.id.toString());
-        Map<String, Object> properties = new HashMap<String, Object>(household.getThingProperties());
+        Map<String, Object> properties = new HashMap<>(household.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.name).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_NAME_ID).withBridge(bridgeUID).build());
     }
@@ -143,7 +143,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
     private void petDiscovered(SurePetcarePet pet) {
         logger.debug("Discovered pet: {}", pet.name);
         ThingUID thingsUID = new ThingUID(THING_TYPE_PET, bridgeUID, pet.id.toString());
-        Map<String, Object> properties = new HashMap<String, Object>(pet.getThingProperties());
+        Map<String, Object> properties = new HashMap<>(pet.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(pet.name).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_NAME_ID).withBridge(bridgeUID).build());
     }
@@ -169,7 +169,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
                 return;
         }
         ThingUID thingsUID = new ThingUID(typeUID, bridgeUID, device.id.toString());
-        Map<String, Object> properties = new HashMap<String, Object>(device.getThingProperties());
+        Map<String, Object> properties = new HashMap<>(device.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(device.name).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_NAME_ID).withBridge(bridgeUID).build());
     }

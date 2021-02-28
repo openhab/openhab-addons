@@ -83,6 +83,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 updateThings();
             } catch (AuthenticationException e) {
+                logger.debug("Authentication exception during initializing", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-authentication");
                 return;

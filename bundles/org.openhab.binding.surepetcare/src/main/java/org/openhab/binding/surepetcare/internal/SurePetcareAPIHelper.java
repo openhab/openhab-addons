@@ -112,7 +112,7 @@ public class SurePetcareAPIHelper {
                     authenticationToken = loginResponse.getToken();
                     this.username = username;
                     this.password = password;
-                    logger.debug("Login successful, token: {}", authenticationToken);
+                    logger.debug("Login successful");
                 } else {
                     throw new AuthenticationException("Invalid JSON response from login");
                 }
@@ -123,7 +123,6 @@ public class SurePetcareAPIHelper {
                         "HTTP response " + response.getStatus() + " - " + response.getReason());
             }
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Exception caught during login: {}", e.getMessage());
             throw new AuthenticationException(e);
         }
     }
@@ -140,7 +139,7 @@ public class SurePetcareAPIHelper {
                 topologyCache = tc;
             }
         } catch (JsonSyntaxException | SurePetcareApiException e) {
-            logger.warn("Exception caught during topology cache update: {}", e.getMessage());
+            logger.warn("Exception caught during topology cache update", e);
         }
     }
 
@@ -155,7 +154,7 @@ public class SurePetcareAPIHelper {
             topologyCache.pets = Arrays
                     .asList(SurePetcareConstants.GSON.fromJson(getDataFromApi(url), SurePetcarePet[].class));
         } catch (JsonSyntaxException | SurePetcareApiException e) {
-            logger.warn("Exception caught during pet status update: {}", e.getMessage());
+            logger.warn("Exception caught during pet status update", e);
         }
     }
 
@@ -352,7 +351,7 @@ public class SurePetcareAPIHelper {
                 logger.debug("current hostname: {}, device id: {}", hostname, decimal);
             }
         } catch (SocketException e) {
-            logger.debug("Socket Exception: cause={}. message={}", e.getCause(), e.getMessage());
+            logger.debug("Socket Exception", e);
         }
         return decimal;
     }
@@ -466,7 +465,7 @@ public class SurePetcareAPIHelper {
                 }
             } catch (AuthenticationException | InterruptedException | ExecutionException | TimeoutException
                     | ProtocolException e) {
-                throw new SurePetcareApiException("Exception caught during API execution." + e);
+                throw new SurePetcareApiException("Exception caught during API execution.", e);
             }
         }
         throw new SurePetcareApiException("Can't execute API after 3 retries");
