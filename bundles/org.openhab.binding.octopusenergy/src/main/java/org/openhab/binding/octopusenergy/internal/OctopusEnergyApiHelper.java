@@ -249,7 +249,7 @@ public class OctopusEnergyApiHelper {
                         "Unexpected Http response: " + response.getStatus() + " - " + response.getReason());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new ApiException("Exception caught during API execution." + e);
+            throw new ApiException("Exception caught during API execution.", e);
         }
     }
 }

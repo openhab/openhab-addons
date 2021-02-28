@@ -132,7 +132,7 @@ public class OctopusEnergyDiscoveryService extends AbstractDiscoveryService
     private void electricityMeterPointDiscovered(ElectricityMeterPoint meterPoint) {
         logger.debug("Discovered meter point: {}", meterPoint.mpan);
         ThingUID thingsUID = new ThingUID(THING_TYPE_ELECTRICITY_METER_POINT, bridgeUID, meterPoint.mpan);
-        Map<String, Object> properties = new HashMap<String, Object>(meterPoint.getThingProperties());
+        Map<String, Object> properties = new HashMap<>(meterPoint.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID)
                 .withLabel("Octopus Energy Electricity Meter Point " + meterPoint.mpan).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_NAME_MPAN).withBridge(bridgeUID).build());
@@ -141,7 +141,7 @@ public class OctopusEnergyDiscoveryService extends AbstractDiscoveryService
     private void gasMeterPointDiscovered(GasMeterPoint meterPoint) {
         logger.debug("Discovered meter point: {}", meterPoint.mprn);
         ThingUID thingsUID = new ThingUID(THING_TYPE_GAS_METER_POINT, bridgeUID, meterPoint.mprn);
-        Map<String, Object> properties = new HashMap<String, Object>(meterPoint.getThingProperties());
+        Map<String, Object> properties = new HashMap<>(meterPoint.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID)
                 .withLabel("Octopus Gas Electricity Meter Point " + meterPoint.mprn).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_NAME_MPRN).withBridge(bridgeUID).build());

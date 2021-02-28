@@ -109,7 +109,7 @@ public class OctopusEnergyBridgeHandler extends BaseBridgeHandler {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } catch (ApiException e) {
-                    logger.warn("Exception from API - {}, {}", getThing().getUID(), e.getMessage());
+                    logger.warn("Exception from API - {}", getThing().getUID(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error-general");
                 }
