@@ -56,8 +56,9 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         tableName = calculateTableName(itemName);
 
-        Select select = select(COLUMN_VALUE_NAME_V1).fromRaw(null,
-                fullQualifiedTableName(retentionPolicy, tableName, hasCriteriaName));
+        Select select = select().column("\"" + COLUMN_VALUE_NAME_V1 + "\"::field")
+                .column("\"" + TAG_ITEM_NAME + "\"::tag")
+                .fromRaw(null, fullQualifiedTableName(retentionPolicy, tableName, hasCriteriaName));
 
         Where where = select.where();
 
