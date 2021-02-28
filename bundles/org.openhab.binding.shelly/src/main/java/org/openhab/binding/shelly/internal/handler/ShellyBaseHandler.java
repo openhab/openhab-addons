@@ -263,7 +263,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         tmpPrf.updateFromStatus(tmpPrf.status);
         updateProperties(tmpPrf, tmpPrf.status);
         checkVersion(tmpPrf, tmpPrf.status);
-        if (config.eventsCoIoT && (tmpPrf.settings.coiot.enabled != null)) {
+        if (config.eventsCoIoT && (tmpPrf.settings.coiot != null) && (tmpPrf.settings.coiot.enabled != null)) {
             String devpeer = getString(tmpPrf.settings.coiot.peer);
             String ourpeer = config.localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT;
             if (!tmpPrf.settings.coiot.enabled || (profile.isMotion && devpeer.isEmpty())) {
