@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.bouncycastle.util.encoders.Hex;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.FormContentProvider;
@@ -225,9 +224,12 @@ public class TeslaSSOHandler {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(codeVerifier.getBytes());
 
-        String hashStr = new String(Hex.encode(hash));
+        StringBuilder hashStr = new StringBuilder(hash.length * 2);
+        for (byte b : hash) {
+            hashStr.append(String.format("%02x", b));
+        }
 
-        return Base64.getUrlEncoder().encodeToString(hashStr.getBytes());
+        return Base64.getUrlEncoder().encodeToString(hashStr.toString().getBytes());
     }
 
     private void addQueryParameters(org.eclipse.jetty.client.api.Request request, String codeChallenge, String state) {
