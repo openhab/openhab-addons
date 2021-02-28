@@ -116,7 +116,17 @@ public class HomeConnectEventSourceClient {
      * @param eventListener appliance event listener
      */
     public synchronized void unregisterEventListener(HomeConnectEventListener eventListener) {
-        unregisterEventListener(eventListener, false);
+        unregisterEventListener(eventListener, false, false);
+    }
+
+    /**
+     * Unregister {@link HomeConnectEventListener}.
+     *
+     * @param eventListener appliance event listener
+     * @param completed true when the event source is known as already completed by the server
+     */
+    public synchronized void unregisterEventListener(HomeConnectEventListener eventListener, boolean completed) {
+        unregisterEventListener(eventListener, false, completed);
     }
 
     /**
@@ -124,21 +134,23 @@ public class HomeConnectEventSourceClient {
      *
      * @param eventListener appliance event listener
      * @param immediate true when the unregistering of the event source has to be fast
+     * @param completed true when the event source is known as already completed by the server
      */
-    public synchronized void unregisterEventListener(HomeConnectEventListener eventListener, boolean immediate) {
+    public synchronized void unregisterEventListener(HomeConnectEventListener eventListener, boolean immediate,
+            boolean completed) {
         if (eventSourceConnections.containsKey(eventListener)) {
             @Nullable
             SseEventSource eventSource = eventSourceConnections.get(eventListener);
             if (eventSource != null) {
-                closeEventSource(eventSource, immediate);
+                closeEventSource(eventSource, immediate, completed);
                 eventSourceListeners.remove(eventSource);
             }
             eventSourceConnections.remove(eventListener);
         }
     }
 
-    private void closeEventSource(SseEventSource eventSource, boolean immediate) {
-        if (eventSource.isOpen()) {
+    private void closeEventSource(SseEventSource eventSource, boolean immediate, boolean completed) {
+        if (eventSource.isOpen() && !completed) {
             logger.debug("Close event source (immediate = {})", immediate);
             eventSource.close(immediate ? 0 : 10, TimeUnit.SECONDS);
         }
@@ -163,7 +175,7 @@ public class HomeConnectEventSourceClient {
      * @param immediate true to request a fast execution
      */
     public synchronized void dispose(boolean immediate) {
-        eventSourceConnections.forEach((key, eventSource) -> closeEventSource(eventSource, immediate));
+        eventSourceConnections.forEach((key, eventSource) -> closeEventSource(eventSource, immediate, false));
         eventSourceListeners.clear();
         eventSourceConnections.clear();
     }

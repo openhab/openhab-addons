@@ -110,7 +110,7 @@ public class HomeConnectEventSourceListener {
     public void onComplete() {
         logger.debug("Event source listener channel closed ({}).", haId);
 
-        client.unregisterEventListener(eventListener);
+        client.unregisterEventListener(eventListener, true);
 
         try {
             eventListener.onClosed();

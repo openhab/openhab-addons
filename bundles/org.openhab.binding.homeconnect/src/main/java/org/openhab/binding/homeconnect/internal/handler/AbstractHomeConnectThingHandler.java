@@ -300,7 +300,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private void unregisterEventListener(boolean immediate) {
         getEventSourceClient().ifPresent(client -> {
             ignoreEventSourceClosedEvent = true;
-            client.unregisterEventListener(this, immediate);
+            client.unregisterEventListener(this, immediate, false);
         });
     }
 
