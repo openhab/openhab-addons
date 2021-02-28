@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="tapocontrol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+	<name>TapoControl Binding</name>
+	<description>Control your TAPO-SmartHome Devices</description>
+
+	<config-description>
+		<parameter name="username" type="text">
+			<label>E-Mail</label>
+			<description>Enter your TAPO-Cloud e-mail-adress</description>
+			<required>fasle</required>
+		</parameter>
+		<parameter name="password" type="text">
+			<label>Password</label>
+			<description>Enter your TAPO-Cloud password</description>
+			<required>false</required>
+		</parameter>
+	</config-description>
+</binding:binding>

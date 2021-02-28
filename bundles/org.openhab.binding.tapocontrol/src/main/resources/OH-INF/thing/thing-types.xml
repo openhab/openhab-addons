@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- THINGS -->
+	<!-- P100 THING-TYPE -->
+	<thing-type id="tapoP100">
+		<label>P100 SmartPlug</label>
+		<description>Tapo Plug device with relay</description>
+		<channels>
+			<channel id="output" typeId="outputChannel"/>
+		</channels>
+		<representation-property>deviceName</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+
+
+	<!-- CHANNEL GROUP TYPES -->
+	<!--Device-Statuss Channel Type -->
+	<channel-group-type id="deviceState">
+		<label>Device State</label>
+		<description>Information about the device</description>
+		<channels>
+			<channel id="wifiSignal" typeId="system.signal-strength"/>
+			<channel id="uptime" typeId="uptime"/>
+		</channels>
+	</channel-group-type>
+
+	<!--Actor Channel Type -->
+	<channel-group-type id="smartPlug">
+		<label>SmartPlug</label>
+		<description>Tapo Smart Plug Power Outlet</description>
+		<channels>
+			<channel id="output" typeId="outputChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<!--Dimmer Channel Type -->
+	<channel-group-type id="lightbulb">
+		<label>LightBulb</label>
+		<description>Tapo Light Bulb</description>
+		<channels>
+			<channel id="output" typeId="outputChannel"/>
+			<channel id="brightness" typeId="dimmerChannel"/>
+		</channels>
+	</channel-group-type>
+
+
+	<!-- ACTOR CHANNEL TYPES -->
+	<!-- OuputState Channel Type -->
+	<channel-type id="outputChannel">
+		<item-type>Switch</item-type>
+		<label>Output Switch</label>
+		<description>Switches the power state on/off</description>
+		<category>PowerOutlet</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- OuputState Channel Type -->
+	<channel-type id="dimmerChannel">
+		<item-type>Number:Percent</item-type>
+		<label>Brightness</label>
+		<description>Brightness</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+
+	<!-- DEVICE-STATE CHANNEL TYPES -->
+	<!-- uptime -->
+	<channel-type id="uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>Number of seconds since the device was powered up</description>
+		<state readOnly="true" pattern="%d %unit%">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
