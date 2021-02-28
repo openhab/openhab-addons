@@ -16,6 +16,7 @@ import java.io.InvalidClassException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 
@@ -33,7 +34,8 @@ public enum BenqProjectorCommandType {
     ASPECT_RATIO("AspectRatio", StringItem.class),
     FREEZE("Freeze", SwitchItem.class),
     BLANK("Blank", SwitchItem.class),
-    DIRECTCMD("DirectCmd", StringItem.class);
+    DIRECTCMD("DirectCmd", StringItem.class),
+    LAMP_TIME("LampTime", NumberItem.class);
 
     private final String text;
     private Class<? extends Item> itemClass;

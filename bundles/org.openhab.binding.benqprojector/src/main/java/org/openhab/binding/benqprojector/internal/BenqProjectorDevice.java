@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.benqprojector.internal;
 
+import java.time.Duration;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.benqprojector.internal.configuration.BenqProjectorConfiguration;
@@ -19,6 +21,7 @@ import org.openhab.binding.benqprojector.internal.connector.BenqProjectorConnect
 import org.openhab.binding.benqprojector.internal.connector.BenqProjectorSerialConnector;
 import org.openhab.binding.benqprojector.internal.connector.BenqProjectorTcpConnector;
 import org.openhab.binding.benqprojector.internal.enums.Switch;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,11 @@ public class BenqProjectorDevice {
     private static final String UNSUPPORTED_ITM = "Unsupported item";
     private static final String BLOCK_ITM = "Block item";
     private static final String ILLEGAL_FMT = "Illegal format";
+
+    private static final int LAMP_REFRESH_WAIT_MINUTES = 5;
+
+    private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
+            this::queryLamp);
 
     private final Logger logger = LoggerFactory.getLogger(BenqProjectorDevice.class);
 
@@ -90,12 +98,10 @@ public class BenqProjectorDevice {
         sendCommand(command, DEFAULT_TIMEOUT_MS);
     }
 
-    /*
-     * protected int queryInt(String query) throws BenqProjectorCommandException, BenqProjectorException {
-     * String response = sendQuery(query, DEFAULT_TIMEOUT);
-     * return Integer.parseInt(response);
-     * }
-     */
+    protected int queryInt(String query) throws BenqProjectorCommandException, BenqProjectorException {
+        String response = sendQuery(query, DEFAULT_TIMEOUT_MS);
+        return Integer.parseInt(response);
+    }
 
     protected String queryString(String query) throws BenqProjectorCommandException, BenqProjectorException {
         return sendQuery(query, DEFAULT_TIMEOUT_MS);
@@ -186,5 +192,30 @@ public class BenqProjectorDevice {
      */
     public void sendDirectCommand(String value) throws BenqProjectorCommandException, BenqProjectorException {
         sendCommand(value);
+    }
+
+    /*
+     * Lamp Time (hours) - get from cache
+     */
+    public int getLampTime() throws BenqProjectorCommandException, BenqProjectorException {
+        Integer lampHours = cachedLampHours.getValue();
+
+        if (lampHours != null) {
+            return lampHours.intValue();
+        } else {
+            throw new BenqProjectorCommandException("cachedLampHours returned null");
+        }
+    }
+
+    /*
+     * Get Lamp Time
+     */
+    private @Nullable Integer queryLamp() {
+        try {
+            return Integer.valueOf(queryInt("ltim=?"));
+        } catch (BenqProjectorCommandException | BenqProjectorException e) {
+            logger.debug("Error executing command ltim=?", e);
+            return null;
+        }
     }
 }

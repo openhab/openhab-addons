@@ -59,6 +59,7 @@ Some notes:
 | freeze             | Switch    | Turn the freeze image mode on or off.               |           | 
 | blank              | Switch    | Turn the screen blank mode on or off.               |           | 
 | directcmd          | String    | Send a command directly to the projector.           | Send only | 
+| lamptime           | Number    | Retrieves the lamp hours.                           | Read only | 
 
 ## Full Example
 
@@ -83,6 +84,7 @@ String benqAspectRatio  "Aspect Ratio [%s]"           { channel="benqprojector:p
 Switch benqFreeze                                     { channel="benqprojector:projector-serial:hometheater:freeze" }
 Switch benqBlank                                      { channel="benqprojector:projector-serial:hometheater:blank" }
 String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd", autoupdate="false" }
+Number benqLampTime     "Lamp Time [%d h]"   <switch> { channel="benqprojector:projector-serial:hometheater:lamptime" }
 ```
 
 sitemaps/benq.sitemap
@@ -97,6 +99,7 @@ sitemap benq label="BenQ Projector Demo" {
         Switch     item=benqFreeze label="Freeze"
         Switch     item=benqBlank  label="Blank Screen"
         Selection  item=benqDirect label="Direct Command"
+        Text       item=benqLampTime
     }
     Frame label="Advanced Controls" {
         Switch     item=benqDirect label="Image Flip"       mappings=["pp=FT"="Front","pp=RE"="Rear","pp=FC"="Front Ceiling","pp=RC"="Rear Ceiling"]

@@ -28,6 +28,7 @@ import org.openhab.binding.benqprojector.internal.BenqProjectorException;
 import org.openhab.binding.benqprojector.internal.configuration.BenqProjectorConfiguration;
 import org.openhab.binding.benqprojector.internal.enums.Switch;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -207,6 +208,9 @@ public class BenqProjectorHandler extends BaseThingHandler {
                     return blank == Switch.ON ? OnOffType.ON : OnOffType.OFF;
                 case DIRECTCMD:
                     break;
+                case LAMP_TIME:
+                    int lampTime = remoteController.getLampTime();
+                    return new DecimalType(lampTime);
                 default:
                     logger.warn("Unknown '{}' command!", commandType);
                     return UnDefType.UNDEF;

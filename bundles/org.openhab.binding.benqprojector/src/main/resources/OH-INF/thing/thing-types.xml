@@ -16,6 +16,7 @@
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="blank" typeId="blank"/>
 			<channel id="directcmd" typeId="directcmd"/>
+			<channel id="lamptime" typeId="lamptime"/>
 		</channels>
 
 		<config-description>
@@ -46,6 +47,7 @@
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="blank" typeId="blank"/>
 			<channel id="directcmd" typeId="directcmd"/>
+			<channel id="lamptime" typeId="lamptime"/>
 		</channels>
 
 		<config-description>
@@ -82,20 +84,10 @@
 				<option value="hdmi">HDMI</option>
 				<option value="hdmi2">HDMI2</option>
 				<option value="ypbr">Component</option>
-				<option value="ypbr2">Component2</option>
 				<option value="rgb">Computer/YPbPr</option>
-				<option value="rgb2">Computer/YPbPr2</option>
-				<option value="rgb3">Computer/YPbPr3</option>
-				<option value="dvia">DVI-A</option>
-				<option value="dvid">DVI-D</option>
 				<option value="vid">Video</option>
 				<option value="svid">S-Video</option>
-				<option value="network">Network</option>
-				<option value="usbdisplay">USB Display</option>
-				<option value="usbreader">USB Reader</option>
-				<option value="hdbaset">HDBaseT</option>
 				<option value="dp">DisplayPort</option>
-				<option value="sdi">3G-SDI</option>
 			</options>
 		</state>
 	</channel-type>
@@ -115,10 +107,6 @@
 				<option value="std">Standard/Vivid</option>
 				<option value="football">Football</option>
 				<option value="footballbt">Football Bright</option>
-				<option value="dicom">DICOM</option>
-				<option value="thx">THX</option>
-				<option value="silence">Silence mode</option>
-				<option value="dci-p3#">DCI-P3 mode</option>
 				<option value="user1">User 1</option>
 				<option value="user2">User 2</option>
 				<option value="user3">User 3</option>
@@ -135,16 +123,10 @@
 		<state>
 			<options>
 				<option value="4:3">4:3</option>
-				<option value="16:6">16:6</option>
 				<option value="16:9">16:9</option>
-				<option value="16:10">16:10</option>
 				<option value="auto">Auto</option>
-				<option value="real">Real</option>
 				<option value="lbox">Letterbox</option>
 				<option value="wide">Wide</option>
-				<option value="anam">Anamorphic</option>
-				<option value="anam2.35:1">Anamorphic 2.35:1</option>
-				<option value="anam16:9">Anamorphic 16:9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -180,6 +162,12 @@
 				<option value="enter">Enter</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="lamptime">
+		<item-type>Number</item-type>
+		<label>Lamp Time</label>
+		<description>Retrieves the Lamp Hours</description>
+		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 
 </thing:thing-descriptions>
