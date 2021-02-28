@@ -121,8 +121,9 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     public @Nullable Boolean refreshState() {
+        SenecHomeResponse response = null;
         try {
-            SenecHomeResponse response = senecHomeApi.getStatistics();
+            response = senecHomeApi.getStatistics();
             logger.trace("received {}", response);
 
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.limitation.powerLimitation))
@@ -280,6 +281,7 @@ public class SenecHomeHandler extends BaseThingHandler {
             errorCounter = 0;
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Faulty response: {}", response.toString());
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
             if (errorCounter < 3)
                 errorCounter++;
