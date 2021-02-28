@@ -188,8 +188,7 @@ public class BenqProjectorSerialConnector implements BenqProjectorConnector, Ser
                     int readBytes = in.read(tmpData, 0, availableBytes);
                     resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
                     if (resp.contains(END)) {
-                        return resp.replace(RESP_START, "").replace(END, "").replace(data, "").replace("\r", "")
-                                .replace("\n", "");
+                        return resp.replace(RESP_START, "").replace(END, "").replace("\r", "").replace("\n", "");
                     }
                 } else {
                     try {

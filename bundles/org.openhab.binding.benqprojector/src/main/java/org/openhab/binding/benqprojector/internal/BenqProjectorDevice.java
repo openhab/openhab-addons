@@ -67,13 +67,13 @@ public class BenqProjectorDevice {
 
         logger.debug("Response: '{}'", response);
 
-        // example: SOUR=HDMI2
+        // example: sour=?*SOUR=HDMI2
         String[] responseParts = response.split("=");
-        if (responseParts.length != 2) {
+        if (responseParts.length != 3) {
             throw new BenqProjectorCommandException("Invalid respose for command: " + query);
         }
 
-        return responseParts[1].toLowerCase();
+        return responseParts[2].toLowerCase();
     }
 
     protected void sendCommand(String command, int timeout)
