@@ -71,5 +71,5 @@ Fragment-Host: org.openhab.binding.hue
 	junit-platform-commons;version='[1.7.0,1.7.1)',\
 	junit-platform-engine;version='[1.7.0,1.7.1)',\
 	junit-platform-launcher;version='[1.7.0,1.7.1)',\
-	biz.aQute.tester.junit-platform;version='[5.2.0,5.2.1)',\
-	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)'
+	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
+	biz.aQute.tester.junit-platform;version='[5.3.0,5.3.1)'
