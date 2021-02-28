@@ -215,7 +215,7 @@ public class TeslaSSOHandler {
             }
         } else {
             logger.debug("An error occurred while exchanging authorization code for SSO refresh token: {}",
-                    response.getStatus(), response);
+                    response.getStatus());
         }
 
         return null;

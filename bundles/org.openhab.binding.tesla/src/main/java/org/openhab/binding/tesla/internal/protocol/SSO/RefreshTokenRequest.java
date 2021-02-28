@@ -14,6 +14,12 @@ package org.openhab.binding.tesla.internal.protocol.SSO;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
+/**
+ * The {@link RefreshTokenRequest} is a datastructure to refresh
+ * the access token for the SSO endpoint
+ *
+ * @author Christian Güdel
+ */
 public class RefreshTokenRequest {
     public String grant_type = "refresh_token";
     public String client_id = CLIENT_ID;

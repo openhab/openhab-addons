@@ -14,6 +14,12 @@ package org.openhab.binding.tesla.internal.protocol.SSO;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
+/**
+ * The {@link AuthorizationCodeExchangeRequest} is a datastructure to exchange
+ * the authorization code for an access token on the SSO endpoint
+ *
+ * @author Christian Güdel
+ */
 @SuppressWarnings("unused")
 public class AuthorizationCodeExchangeRequest {
     private String grant_type = "authorization_code";

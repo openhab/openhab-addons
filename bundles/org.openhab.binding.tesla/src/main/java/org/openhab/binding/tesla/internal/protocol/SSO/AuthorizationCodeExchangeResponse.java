@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.tesla.internal.protocol.SSO;
 
+/**
+ * The {@link AuthorizationCodeExchangeResponse} is a datastructure to capture
+ * the response of an {@link AuthorizationCodeExchangeRequest}
+ *
+ * @author Christian Güdel
+ */
 public class AuthorizationCodeExchangeResponse {
     public String access_token;
     public String refresh_token;
