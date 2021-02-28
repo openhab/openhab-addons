@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.dali.internal.DaliBindingConstants.*;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dali.internal.protocol.DaliAddress;
 import org.openhab.binding.dali.internal.protocol.DaliDAPCCommand;
 import org.openhab.binding.dali.internal.protocol.DaliResponse;
@@ -29,10 +30,10 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DaliDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaliDeviceHandler.class);
-
-    static final int Switch100Percent = 254;
+    @Nullable
+    private Integer targetId;
 
     public DaliDeviceHandler(Thing thing) {
         super(thing);
@@ -53,29 +54,15 @@ public class DaliDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        initDeviceState();
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-            initDeviceState();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-    }
-
-    public void initDeviceState() {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatus.ONLINE);
         }
+
+        targetId = ((BigDecimal) this.thing.getConfiguration().get(TARGET_ID)).intValueExact();
     }
 
     @Override
@@ -83,8 +70,6 @@ public class DaliDeviceHandler extends BaseThingHandler {
         try {
             if (CHANNEL_DIM_AT_FADE_RATE.equals(channelUID.getId())
                     || CHANNEL_DIM_IMMEDIATELY.equals(channelUID.getId())) {
-                Integer targetId = ((BigDecimal) this.thing.getConfiguration().get(TARGET_ID)).intValueExact();
-
                 DaliAddress address;
                 if (THING_TYPE_DEVICE.equals(this.thing.getThingTypeUID())) {
                     address = DaliAddress.Short(targetId);
@@ -97,11 +82,12 @@ public class DaliDeviceHandler extends BaseThingHandler {
                 boolean queryDeviceState = false;
 
                 if (command instanceof PercentType) {
-                    byte dimmValue = (byte) ((((PercentType) command).floatValue() * Switch100Percent) / 100);
+                    byte dimmValue = (byte) ((((PercentType) command).floatValue() * DALI_SWITCH_100_PERCENT) / 100);
+                    // A dimm value of zero is handled correctly by DALI devices, i.e. they are turned off
                     getBridgeHandler().sendCommand(new DaliDAPCCommand(address, dimmValue));
                 } else if (command instanceof OnOffType) {
                     if ((OnOffType) command == OnOffType.ON) {
-                        getBridgeHandler().sendCommand(new DaliDAPCCommand(address, (byte) Switch100Percent));
+                        getBridgeHandler().sendCommand(new DaliDAPCCommand(address, (byte) DALI_SWITCH_100_PERCENT));
                     } else {
                         getBridgeHandler().sendCommand(DaliStandardCommand.Off(address));
                     }
@@ -120,21 +106,25 @@ public class DaliDeviceHandler extends BaseThingHandler {
                         }
                     }
                     queryDeviceState = true;
+                } else if (command instanceof RefreshType) {
+                    queryDeviceState = true;
                 }
 
                 if (queryDeviceState) {
                     getBridgeHandler().sendCommandWithResponse(DaliStandardCommand.QueryActualLevel(address),
-                            DaliResponse.NumericMask.class).thenAccept(r -> {
-                                if (r != null && r.mask == false) {
-                                    Integer value = r.value != null ? r.value : 0;
-                                    int percentValue = (int) (value.floatValue() * 100 / Switch100Percent);
+                            DaliResponse.NumericMask.class).thenAccept(response -> {
+                                if (response != null && response.mask == false) {
+                                    Integer value = response.value != null ? response.value : 0;
+                                    int percentValue = (int) (value.floatValue() * 100 / DALI_SWITCH_100_PERCENT);
                                     updateState(channelUID, new PercentType(percentValue));
                                 }
+                            }).exceptionally(e -> {
+                                logger.warn("Error querying device status: {}", e.getMessage());
+                                return null;
                             });
                 }
             }
         } catch (DaliException e) {
-            logger.warn("Error handling command: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

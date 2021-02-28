@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.dali.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dali.internal.handler.DaliException;
 
 /**
  * The {@link DaliAddress} represents an address on the DALI bus.
@@ -28,7 +29,7 @@ public abstract class DaliAddress {
 
     public static DaliAddress Short(int address) {
         if (address < 0 || address > 63) {
-            throw new RuntimeException("address must be in the range 0..63");
+            throw new DaliException("address must be in the range 0..63");
         }
         return new DaliAddress() {
             @Override
@@ -40,7 +41,7 @@ public abstract class DaliAddress {
                     frame.data &= ~(1 << 23); // unset bit 23
                     frame.data |= ((address & 0b11111) << 17);
                 } else {
-                    throw new RuntimeException("Unsupported frame size");
+                    throw new DaliException("Unsupported frame size");
                 }
                 return frame;
             }
@@ -56,7 +57,7 @@ public abstract class DaliAddress {
                 } else if (frame.length() == 24) {
                     frame.data |= 0x7f << 17;
                 } else {
-                    throw new RuntimeException("Unsupported frame size");
+                    throw new DaliException("Unsupported frame size");
                 }
                 return frame;
             }
@@ -72,7 +73,7 @@ public abstract class DaliAddress {
                 } else if (frame.length() == 24) {
                     frame.data |= 0x7e << 17;
                 } else {
-                    throw new RuntimeException("Unsupported frame size");
+                    throw new DaliException("Unsupported frame size");
                 }
                 return frame;
             }
@@ -81,20 +82,20 @@ public abstract class DaliAddress {
 
     public static DaliAddress Group(int address) {
         if (address < 0 || address > 31) {
-            throw new RuntimeException("address must be in the range 0..31");
+            throw new DaliException("address must be in the range 0..31");
         }
         return new DaliAddress() {
             @Override
             protected <T extends DaliFrame> T addToFrame(T frame) {
                 if (frame.length() == 16) {
                     if (address > 15) {
-                        throw new RuntimeException("Groups 16..31 are not supported in 16-bit forward frames");
+                        throw new DaliException("Groups 16..31 are not supported in 16-bit forward frames");
                     }
                     frame.data |= ((0x4 << 3) & (address & 0b111)) << 9;
                 } else if (frame.length() == 24) {
                     frame.data |= ((0x2 << 4) & (address & 0b1111)) << 17;
                 } else {
-                    throw new RuntimeException("Unsupported frame size");
+                    throw new DaliException("Unsupported frame size");
                 }
                 return frame;
             }

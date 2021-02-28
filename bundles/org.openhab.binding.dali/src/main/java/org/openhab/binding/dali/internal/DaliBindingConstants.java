@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,4 +47,6 @@ public class DaliBindingConstants {
     public static final String TARGET_ID_R = "targetIdR";
     public static final String TARGET_ID_G = "targetIdG";
     public static final String TARGET_ID_B = "targetIdB";
+
+    public static final int DALI_SWITCH_100_PERCENT = 254;
 }

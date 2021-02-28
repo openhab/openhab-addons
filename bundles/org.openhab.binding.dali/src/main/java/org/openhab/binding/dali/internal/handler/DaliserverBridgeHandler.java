@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -55,11 +54,9 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_TYPE);
 
     private final Logger logger = LoggerFactory.getLogger(DaliserverBridgeHandler.class);
-    private static final int HEARTBEAT_MINUTES = 2;
     private static final int DALI_DEFAULT_TIMEOUT = 5000;
 
     private DaliserverConfig config = new DaliserverConfig();
-    private @Nullable ScheduledFuture<?> heartbeat;
     private @Nullable ExecutorService commandExecutor;
 
     public DaliserverBridgeHandler(Bridge thing) {
@@ -72,29 +69,9 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.info("Initializing dali bridge");
-        config = getThing().getConfiguration().as(DaliserverConfig.class);
-
+        config = getConfigAs(DaliserverConfig.class);
         commandExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
-
-        if (validConfiguration(config)) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    private boolean validConfiguration(@Nullable DaliserverConfig config) {
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "dali configuration missing");
-            return false;
-        }
-
-        if (config.host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "daliserver address not specified");
-            return false;
-        }
-
-        return true;
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private Socket getConnection() throws IOException {
@@ -111,12 +88,8 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        dispose(commandExecutor);
-    }
-
-    private static void dispose(@Nullable ExecutorService executor) {
-        if (executor != null) {
-            executor.shutdownNow();
+        if (commandExecutor != null) {
+            commandExecutor.shutdownNow();
         }
     }
 

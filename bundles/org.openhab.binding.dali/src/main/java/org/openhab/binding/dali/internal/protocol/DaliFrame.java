@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dali.internal.handler.DaliException;
 
 /**
  * The {@link DaliFrame} represents a message on the DALI bus.
@@ -29,7 +30,7 @@ public class DaliFrame {
 
     public DaliFrame(int bits, byte[] data) {
         if (bits < 1) {
-            throw new RuntimeException("Frames must contain at least 1 data bit");
+            throw new DaliException("Frames must contain at least 1 data bit");
         }
 
         this.bits = bits;
@@ -42,11 +43,11 @@ public class DaliFrame {
         this.data = d;
 
         if (this.data < 0) {
-            throw new RuntimeException("Initial data must not be negative");
+            throw new DaliException("Initial data must not be negative");
         }
 
         if (Math.abs(this.data) >= (1 << this.bits)) {
-            throw new RuntimeException("Initial data will not fit in the specified number of bits");
+            throw new DaliException("Initial data will not fit in the specified number of bits");
         }
     }
 
