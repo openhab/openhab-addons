@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -225,7 +225,7 @@ public class FreeAtHomeThermostatHandler extends FreeAtHomeSystemBaseHandler {
                 String value = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, measuredTempOdp);
                 DecimalType dec = new DecimalType(value);
 
-                updateState(channelUID, dec);
+                updateState(FreeAtHomeSystemBindingConstants.THERMOSTAT_CHANNEL_MEASUREDTEMP_ID, dec);
             }
 
             if (channelUID.getId()
@@ -233,7 +233,7 @@ public class FreeAtHomeThermostatHandler extends FreeAtHomeSystemBaseHandler {
                 String value = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, setpointTempOdp);
                 DecimalType dec = new DecimalType(value);
 
-                updateState("thermostat_setpoint_temperature", dec);
+                updateState(FreeAtHomeSystemBindingConstants.THERMOSTAT_CHANNEL_SETPOINTTEMP_ID, dec);
             }
 
             if (channelUID.getId()
@@ -249,6 +249,13 @@ public class FreeAtHomeThermostatHandler extends FreeAtHomeSystemBaseHandler {
                 String value = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, heatingActiveOdp);
                 DecimalType dec = new DecimalType(value);
                 updateState(FreeAtHomeSystemBindingConstants.THERMOSTAT_CHANNEL_HEATINGACTIVE_ID, dec);
+            }
+
+            if (channelUID.getId().equalsIgnoreCase(FreeAtHomeSystemBindingConstants.THERMOSTAT_CHANNEL_STATE_ID)) {
+
+                String value = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, statesOdp);
+                DecimalType dec = new DecimalType(value);
+                updateState(FreeAtHomeSystemBindingConstants.THERMOSTAT_CHANNEL_STATE_ID, dec);
             }
 
             if (channelUID.getId()
@@ -339,6 +346,18 @@ public class FreeAtHomeThermostatHandler extends FreeAtHomeSystemBaseHandler {
         }
 
         if (command instanceof QuantityType) {
+            if (channelUID.getId()
+                    .equalsIgnoreCase(FreeAtHomeSystemBindingConstants.THERMOSTAT_CHANNEL_SETPOINTTEMP_ID)) {
+
+                String valueString = ((DecimalType) command).toString();
+
+                freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, setpointTempIdp, valueString);
+
+                updateState(channelUID, ((DecimalType) command));
+            }
+        }
+
+        if (command instanceof DecimalType) {
             if (channelUID.getId()
                     .equalsIgnoreCase(FreeAtHomeSystemBindingConstants.THERMOSTAT_CHANNEL_SETPOINTTEMP_ID)) {
 

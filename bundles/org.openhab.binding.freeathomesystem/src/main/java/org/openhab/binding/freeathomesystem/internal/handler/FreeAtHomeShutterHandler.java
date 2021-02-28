@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.FreeAtHomeSystemBindingConstants;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverters.BooleanValueStateConverter;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -31,6 +31,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,12 +89,6 @@ public class FreeAtHomeShutterHandler extends FreeAtHomeSystemBaseHandler {
                 freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
 
                 logger.debug("Initialize switch - {}", deviceID);
-
-                // Get initial state of the switch directly from the free@home switch
-                String valueString = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, devicePosOdp);
-
-                DecimalType dec = new DecimalType(valueString);
-                updateState(FreeAtHomeSystemBindingConstants.SHUTTER_POS_CHANNEL_ID, dec);
 
                 // Register device and specific channel for event based state updated
                 ChannelUpdateHandler updateHandler = freeAtHomeBridge.channelUpdateHandler;
@@ -161,35 +156,48 @@ public class FreeAtHomeShutterHandler extends FreeAtHomeSystemBaseHandler {
         }
 
         if (command instanceof RefreshType) {
-            String valueString = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, devicePosOdp);
 
-            DecimalType dec = new DecimalType(valueString);
-            updateState(FreeAtHomeSystemBindingConstants.SHUTTER_POS_CHANNEL_ID, dec);
-        }
+            if (channelUID.getId().equalsIgnoreCase(FreeAtHomeSystemBindingConstants.SHUTTER_POS_CHANNEL_ID)) {
+                String valueString = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, devicePosOdp);
 
-        if (command instanceof UpDownType) {
-            UpDownType locCommand = (UpDownType) command;
-
-            if (locCommand.equals(UpDownType.UP)) {
-                freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, deviceStepIdp, "0");
-                updateState(channelUID, UpDownType.UP);
+                PercentType pos = new PercentType(valueString);
+                updateState(FreeAtHomeSystemBindingConstants.SHUTTER_POS_CHANNEL_ID, pos);
             }
 
-            if (locCommand.equals(UpDownType.DOWN)) {
-                freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, deviceStepIdp, "1");
-                updateState(channelUID, UpDownType.DOWN);
+            if (channelUID.getId().equalsIgnoreCase(FreeAtHomeSystemBindingConstants.SHUTTER_TRIGGER_CHANNEL_ID)) {
+                updateState(FreeAtHomeSystemBindingConstants.SHUTTER_TRIGGER_CHANNEL_ID, UnDefType.UNDEF);
             }
         }
 
-        if (command instanceof StopMoveType) {
-            freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, deviceStopIdp, "0");
+        if (channelUID.getId().equalsIgnoreCase(FreeAtHomeSystemBindingConstants.SHUTTER_TRIGGER_CHANNEL_ID)) {
+            if (command instanceof UpDownType) {
+                UpDownType locCommand = (UpDownType) command;
+
+                if (locCommand.equals(UpDownType.UP)) {
+                    freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, deviceStepIdp, "0");
+                    updateState(channelUID, UpDownType.UP);
+                }
+
+                if (locCommand.equals(UpDownType.DOWN)) {
+                    freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, deviceStepIdp, "1");
+                    updateState(channelUID, UpDownType.DOWN);
+                }
+            }
+
+            if (command instanceof StopMoveType) {
+                freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, deviceStopIdp, "0");
+                StringType triggerStoptValue = new StringType("STOP");
+                updateState(FreeAtHomeSystemBindingConstants.SHUTTER_TRIGGER_CHANNEL_ID, triggerStoptValue);
+            }
         }
 
-        if (command instanceof PercentType) {
-            PercentType locCommand = (PercentType) command;
+        if (channelUID.getId().equalsIgnoreCase(FreeAtHomeSystemBindingConstants.SHUTTER_POS_CHANNEL_ID)) {
+            if (command instanceof PercentType) {
+                PercentType locCommand = (PercentType) command;
 
-            freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, deviceStepIdp, locCommand.toString());
-            updateState(channelUID, locCommand);
+                freeAtHomeBridge.setDatapoint(deviceID, deviceChannel, devicePosIdp, locCommand.toString());
+                updateState(channelUID, locCommand);
+            }
         }
 
         logger.debug("Handle command switch {} - at channel {} - full command {}", deviceID, channelUID.getAsString(),

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeathomesystem.internal.FreeAtHomeSystemBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,9 +36,11 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class FreeAtHomeDeviceDescription {
 
+    private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceDescription.class);
+
     public static final int FID_UNKNOWN = 0xFFFFAAFF; // Control element
 
-    // // free@home constants
+    // free@home constants
     public static final int FID_SWITCH_SENSOR = 0x0000; // Control element
     public static final int FID_DIMMING_SENSOR = 0x0001; // Dimming sensor
     public static final int FID_BLIND_SENSOR = 0x0003; // Blind sensor
@@ -118,7 +122,7 @@ public class FreeAtHomeDeviceDescription {
     public static final String CHANNEL_TYPE_WINDOWPOSSENSOR = "Window Position Sensor";
     public static final String CHANNEL_TYPE_TRIGGER = "Trigger";
     public static final String CHANNEL_TYPE_DOOROPENERACTUATOR = "Door Opener Actuator";
-    public static final String CHANNEL_TYPE_RINGSENSOR = "Ring Sesnor";
+    public static final String CHANNEL_TYPE_RINGSENSOR = "Ring Sensor";
     public static final String CHANNEL_TYPE_CORRIDORLIGHTSWITCH = "Corridor Light Switch";
     public static final String CHANNEL_TYPE_MUTEACTUATOR = "Mute Actor";
     public static final String CHANNEL_TYPE_DIMMINGACTUATOR = "Dimming Actuator";
@@ -145,18 +149,23 @@ public class FreeAtHomeDeviceDescription {
 
     public FreeAtHomeDeviceDescription(JsonObject jsonObject, String id) {
 
-        // deviceLabel = new String();
-        // interfaceType = new String();
+        // set the device ID
         deviceId = id;
+
+        // set the device invalid at first
         validDevice = false;
 
         boolean sceneIsDetected = id.toLowerCase().startsWith("ffff48");
         boolean ruleIsDetected = id.toLowerCase().startsWith("ffff4a");
 
         JsonObject jsonObjectOfId = jsonObject.getAsJsonObject(id);
-        JsonObject jsonObjectOfChannels = jsonObjectOfId.getAsJsonObject("channels");
 
-        JsonElement jsonObjectOfInterface = jsonObject.get("interface");
+        if (null == jsonObjectOfId) {
+            return;
+        }
+
+        JsonElement jsonObjectOfInterface = jsonObjectOfId.get("interface");
+
         if (null != jsonObjectOfInterface) {
             String interfaceString = jsonObjectOfInterface.getAsString();
 
@@ -175,6 +184,20 @@ public class FreeAtHomeDeviceDescription {
             interfaceType = DEVICE_INTERFACE_UNKNOWN_TYPE;
         }
 
+        JsonElement jsonObjectOfDeviceLabel = jsonObjectOfId.get("displayName");
+
+        if (null == jsonObjectOfDeviceLabel) {
+            this.deviceLabel = "NoName";
+        } else {
+            this.deviceLabel = jsonObjectOfDeviceLabel.getAsString();
+        }
+
+        if (this.deviceLabel.length() == 0) {
+            this.deviceLabel = "NoName";
+        }
+
+        JsonObject jsonObjectOfChannels = jsonObjectOfId.getAsJsonObject("channels");
+
         if (null != jsonObjectOfChannels) {
             Set<String> keys = jsonObjectOfChannels.keySet();
 
@@ -186,8 +209,6 @@ public class FreeAtHomeDeviceDescription {
 
                 JsonObject channelObject = jsonObjectOfChannels.getAsJsonObject(nextChannel);
 
-                this.deviceLabel = channelObject.get("displayName").getAsString();
-
                 String channelFunctionID = channelObject.get("functionID").getAsString();
 
                 if (true == sceneIsDetected) {
@@ -197,6 +218,12 @@ public class FreeAtHomeDeviceDescription {
                 if (false == channelFunctionID.isEmpty()) {
 
                     FreeAtHomeDeviceChannel newChannel = new FreeAtHomeDeviceChannel();
+
+                    newChannel.channelLabel = channelObject.get("displayName").getAsString();
+
+                    if (newChannel.channelLabel.length() == 0) {
+                        newChannel.channelLabel = this.deviceLabel;
+                    }
 
                     switch (getIntegerFromHex(channelFunctionID)) {
 
@@ -403,7 +430,7 @@ public class FreeAtHomeDeviceDescription {
                                     "deviceDimIdp", channelObject);
                             newChannel.searchForDatapoint(FreeAtHomeDeviceChannel.DATAPOINT_DIRECTION_INPUT, 1,
                                     "deviceSwitchIdp", channelObject);
-                            newChannel.searchForDatapoint(FreeAtHomeDeviceChannel.DATAPOINT_DIRECTION_OUTPUT, 282,
+                            newChannel.searchForDatapoint(FreeAtHomeDeviceChannel.DATAPOINT_DIRECTION_OUTPUT, 272,
                                     "deviceDimOdp", channelObject);
                             newChannel.searchForDatapoint(FreeAtHomeDeviceChannel.DATAPOINT_DIRECTION_OUTPUT, 256,
                                     "deviceSwitchOdp", channelObject);
@@ -436,13 +463,8 @@ public class FreeAtHomeDeviceDescription {
                         }
 
                         default: {
-                            newChannel.channelId = nextChannel;
-                            newChannel.thingTypeOfChannel = FreeAtHomeSystemBindingConstants.UNKNOWN_TYPE_ID;
-                            newChannel.channelTypeString = CHANNEL_TYPE_UNKNOWN;
-
-                            listOfThings.add(newChannel);
-
-                            validDevice = false;
+                            logger.info("Unknown device found - device label: {} - Channel FID: {}", this.deviceLabel,
+                                    channelFunctionID);
 
                             break;
                         }

@@ -9,10 +9,6 @@
 This openHAB binding allows you to connect your free@home Smart Home system from ABB / Busch-Jaeger to openHAB and to control and observe most of the components.
 It requires a System Access Point with version 2.6.1 or higher.
 
-# Features
-
-* Control your ABB/Busch-free@home system with its Lights, Outlets, Blinds, etc. from openHAB via local API.
-
 # Supported Devices
 
 - ABB / Busch-Jaeger System Access Point 2.0

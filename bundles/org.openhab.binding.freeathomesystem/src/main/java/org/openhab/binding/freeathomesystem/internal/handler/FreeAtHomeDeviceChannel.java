@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ public class FreeAtHomeDeviceChannel {
     public String thingTypeOfChannel = "";
     public String channelTypeString = "";
     public String channelId = "";
+    public String channelLabel = "";
 
     public List<String> datapoints = new ArrayList<>();
     public List<String> channels = new ArrayList<>();

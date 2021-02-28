@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,33 +60,31 @@ public class FreeAtHomeSystemBindingConstants {
     public static final ThingTypeUID DIMMINGACTUATOR_TYPE_UID = new ThingTypeUID(BINDING_ID, DIMMINGACTUATOR_TYPE_ID);
 
     // Switch/Actuator Channel ids
-    public static final String SWITCH_CHANNEL_ID = "switch_channel";
-    public static final String ACTUATOR_CHANNEL_ID = "actuator_channel";
+    public static final String SWITCH_CHANNEL_ID = "switchChannel";
 
     // Thermostat Channel ids
-    public static final String THERMOSTAT_CHANNEL_SETPOINTTEMP_ID = "thermostat_setpoint_temperature";
-    public static final String THERMOSTAT_CHANNEL_MEASUREDTEMP_ID = "thermostat_measured_temperature";
-    public static final String THERMOSTAT_CHANNEL_HEATDEMAND_ID = "thermostat_heating_demand";
-    public static final String THERMOSTAT_CHANNEL_HEATINGACTIVE_ID = "thermostat_heating_active";
-    public static final String THERMOSTAT_CHANNEL_STATE_ID = "thermostat_state";
-    public static final String THERMOSTAT_CHANNEL_ONOFFWITCH_ID = "thermostat_onoff_switch";
-    public static final String THERMOSTAT_CHANNEL_ECOSWITCH_ID = "thermostat_eco_switch";
+    public static final String THERMOSTAT_CHANNEL_SETPOINTTEMP_ID = "thermostatSetpointTemperature";
+    public static final String THERMOSTAT_CHANNEL_MEASUREDTEMP_ID = "thermostatMeasuredTemperature";
+    public static final String THERMOSTAT_CHANNEL_HEATDEMAND_ID = "thermostatHeatingDemand";
+    public static final String THERMOSTAT_CHANNEL_HEATINGACTIVE_ID = "thermostatHeatingActive";
+    public static final String THERMOSTAT_CHANNEL_STATE_ID = "thermostatState";
+    public static final String THERMOSTAT_CHANNEL_ONOFFWITCH_ID = "thermostatOnoffSwitch";
+    public static final String THERMOSTAT_CHANNEL_ECOSWITCH_ID = "thermostatEcoSwitch";
 
     // Window Sensor Channel ids
-    public static final String WINDOWSENSOR_CHANNEL_STATE_ID = "window_state_channel";
-    public static final String WINDOWSENSOR_CHANNEL_POS_ID = "window_pos_channel";
+    public static final String WINDOWSENSOR_CHANNEL_STATE_ID = "windowState";
+    public static final String WINDOWSENSOR_CHANNEL_POS_ID = "windowPosition";
 
     // Door Ring Channel id
-    public static final String DOORDINGSENSOR_CHANNEL_STATE_ID = "doorringsensor_channel";
+    public static final String DOORDINGSENSOR_CHANNEL_STATE_ID = "doorringSensor";
 
     // Shutter Channel id
-    public static final String SHUTTER_UP_TRIGGER_CHANNEL_ID = "shutter_up_tigger_channel";
-    public static final String SHUTTER_DOWN_TRIGGER_CHANNEL_ID = "shutter_down_tigger_channel";
-    public static final String SHUTTER_POS_CHANNEL_ID = "shutter_pos_channel";
+    public static final String SHUTTER_TRIGGER_CHANNEL_ID = "shutterUpDownTrigger";
+    public static final String SHUTTER_POS_CHANNEL_ID = "shutterPosition";
 
     // Dimming Channel id
-    public static final String DIMMING_VALUE_CHANNEL_ID = "dim_value_channel";
-    public static final String DIMMING_SWITCH_CHANNEL_ID = "dim_switch_channel";
+    public static final String DIMMING_VALUE_CHANNEL_ID = "dimmerValue";
+    public static final String DIMMING_SWITCH_CHANNEL_ID = "dimmerSwitchChannel";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(UNKNOWN_TYPE_UID, BRIDGE_TYPE_UID,
             WINDOWSENSOR_TYPE_UID, THERMOSTAT_TYPE_UID, SCENE_TYPE_UID, RULE_TYPE_UID, ACTUATOR_TYPE_UID,

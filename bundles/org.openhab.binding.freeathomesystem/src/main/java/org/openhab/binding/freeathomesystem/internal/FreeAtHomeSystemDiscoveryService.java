@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
                 FreeAtHomeDeviceList deviceList = bridge.getDeviceDeviceList();
 
                 for (int i = 0; i < deviceList.getNumberOfDevices(); i++) {
+                    String deviceLabel;
 
                     FreeAtHomeDeviceDescription device = deviceList
                             .getDeviceDescription(deviceList.getDeviceIdByIndex(i));
@@ -57,11 +58,24 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
                     for (int ch = 0; ch < device.numberOfThings(); ch++) {
 
                         String deviceID = device.deviceId + "_" + String.format("%1d", ch);
-                        String deviceLabel = device.listOfThings.get(ch).channelTypeString + "-" + device.deviceId + "-"
-                                + device.deviceLabel;
+                        String deviceChannelCounter;
 
                         if (device.numberOfThings() > 1) {
-                            deviceLabel += "-Ch" + (ch + 1) + "/" + device.numberOfThings();
+                            deviceChannelCounter = "-Ch" + (ch + 1) + "/" + device.numberOfThings();
+                        } else {
+                            deviceChannelCounter = "";
+                        }
+
+                        if (device.deviceLabel.contentEquals(device.listOfThings.get(ch).channelLabel)) {
+
+                            deviceLabel = device.listOfThings.get(ch).channelTypeString + "-" + device.deviceId + "-"
+                                    + device.deviceLabel + deviceChannelCounter;
+
+                        } else {
+
+                            deviceLabel = device.listOfThings.get(ch).channelTypeString + "-" + device.deviceId + "-"
+                                    + device.deviceLabel + deviceChannelCounter + "-"
+                                    + device.listOfThings.get(ch).channelLabel;
                         }
 
                         switch (device.listOfThings.get(ch).thingTypeOfChannel) {
@@ -294,25 +308,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
                                         .build();
 
                                 thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.UNKNOWN_TYPE_ID: {
-                                if (true == device.validDevice) {
-                                    ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.UNKNOWN_TYPE_UID,
-                                            bridgeUID, deviceID);
-                                    Map<String, Object> properties = new HashMap<>(1);
-                                    properties.put("deviceId", device.deviceId);
-                                    properties.put("interface", device.interfaceType);
-                                    properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                            .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                            .build();
-
-                                    thingDiscovered(discoveryResult);
-                                }
-
                                 break;
                             }
                         }

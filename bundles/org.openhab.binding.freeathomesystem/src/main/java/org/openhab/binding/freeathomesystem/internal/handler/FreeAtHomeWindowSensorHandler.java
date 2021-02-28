@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,36 +84,6 @@ public class FreeAtHomeWindowSensorHandler extends FreeAtHomeSystemBaseHandler {
 
                 logger.debug("Initialize window sensor - {}", deviceID);
 
-                // Get initial state of the switch directly from the free@home sensor
-                int value = 0;
-
-                String valueString = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, deviceStateOdp);
-
-                try {
-                    value = Integer.parseInt(valueString);
-                } catch (NumberFormatException e) {
-                    value = 0;
-                }
-
-                DecimalType decState = new DecimalType(value);
-
-                // set the initial state
-                updateState(FreeAtHomeSystemBindingConstants.WINDOWSENSOR_CHANNEL_STATE_ID, decState);
-
-                // Get initial state of the switch directly from the free@home sensor
-                valueString = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, devicePosOdp);
-
-                try {
-                    value = Integer.parseInt(valueString);
-                } catch (NumberFormatException e) {
-                    value = 0;
-                }
-
-                DecimalType decPos = new DecimalType(value);
-
-                // set the initial state
-                updateState(FreeAtHomeSystemBindingConstants.WINDOWSENSOR_CHANNEL_POS_ID, decPos);
-
                 // Register device and specific channel for event based state updated
                 ChannelUpdateHandler updateHandler = freeAtHomeBridge.channelUpdateHandler;
 
@@ -165,9 +136,42 @@ public class FreeAtHomeWindowSensorHandler extends FreeAtHomeSystemBaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        updateStatus(ThingStatus.ONLINE);
+        FreeAtHomeBridgeHandler freeAtHomeBridge = null;
 
-        // update only via Websocket
+        Bridge bridge = this.getBridge();
+
+        if (null != bridge) {
+            ThingHandler handler = bridge.getHandler();
+
+            if (handler instanceof FreeAtHomeBridgeHandler) {
+                freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+            }
+        }
+
+        if (null != freeAtHomeBridge) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+
+        // Init here but other update only via Websocket
+        if (command instanceof RefreshType) {
+            if (channelUID.getId().equalsIgnoreCase(FreeAtHomeSystemBindingConstants.WINDOWSENSOR_CHANNEL_STATE_ID)) {
+                String value = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, deviceStateOdp);
+                DecimalType dec = new DecimalType(value);
+
+                updateState(FreeAtHomeSystemBindingConstants.WINDOWSENSOR_CHANNEL_STATE_ID, dec);
+            }
+
+            if (channelUID.getId().equalsIgnoreCase(FreeAtHomeSystemBindingConstants.WINDOWSENSOR_CHANNEL_POS_ID)) {
+                String value = freeAtHomeBridge.getDatapoint(deviceID, deviceChannel, devicePosOdp);
+                DecimalType dec = new DecimalType(value);
+
+                updateState(FreeAtHomeSystemBindingConstants.WINDOWSENSOR_CHANNEL_POS_ID, dec);
+            }
+        }
+
         logger.debug("Handle command switch {} - at channel {} - full command {}", deviceID, channelUID.getAsString(),
                 command.toFullString());
     }

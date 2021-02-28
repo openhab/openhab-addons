@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ package org.openhab.binding.freeathomesystem.internal.handler;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -24,7 +25,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.net.util.Base64;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -137,6 +137,10 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
                         JsonElement element = jsonValueArray.get(0);
                         String value = element.getAsString();
+
+                        if (0 == value.length()) {
+                            value = "0";
+                        }
 
                         return value;
                     }
@@ -286,6 +290,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                         "Cannot open http connection, wrong passord");
 
                 logger.error("Cannot open http connection {}", e.getMessage());
+
+                ret = false;
             }
         }
 
@@ -378,8 +384,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         boolean ret = false;
 
         String authString = username + ":" + password;
-        byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-        String authStringEnc = new String(authEncBytes);
+        // byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+        // String authStringEnc = new String(authEncBytes);
+
+        // create base64 encoder
+        Base64.Encoder bas64Encoder = Base64.getEncoder();
+
+        // Encoding string using encoder object
+        String authStringEnc = bas64Encoder.encodeToString(authString.getBytes());
 
         authField = "Basic " + authStringEnc;
 
@@ -448,25 +460,13 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         // Open Http connection
         if (false == openHttpConnection()) {
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot open http connection");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Cannot open http connection, wrong password or IP address");
 
             logger.error("Cannot open http connection");
 
             return;
         }
-
-        // // Create channel update handler
-        // channelUpdateHandler = new ChannelUpdateHandler();
-        //
-        // if (null == channelUpdateHandler) {
-        //
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-        // "Cannot create internal structure");
-        //
-        // logger.error("Cannot create internal structure - ChannelUpdateHandler");
-        //
-        // return;
-        // }
 
         // Open the websocket connection for immediate status updates
         if (false == openWebSocketConnection()) {
@@ -487,13 +487,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 freeAtHomeSystemHandler = this;
                 updateStatus(ThingStatus.ONLINE);
 
-                // try {
-                // if (null != socket) {
-                // socket.getLatch().await();
-                // }
-                // } catch (InterruptedException e) {
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No online updates");
-                // }
             } else {
                 freeAtHomeSystemHandler = this;
                 updateStatus(ThingStatus.OFFLINE);
@@ -507,9 +500,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     public FreeAtHomeDeviceList getDeviceDeviceList() {
         FreeAtHomeSysApDeviceList deviceList = new FreeAtHomeSysApDeviceList(httpClient, ipAddress, sysApUID);
-        // FreeAtHomeTestDeviceList deviceList = new FreeAtHomeTestDeviceList(
-        // "/Users/andras/Development/openhab-main/testfiles/responsedevice.json",
-        // "/Users/andras/Development/openhab-main/testfiles/response_formatted.json", sysApUID);
 
         deviceList.buildComponentList();
 
