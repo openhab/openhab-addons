@@ -318,14 +318,13 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             logger.debug("API: Call to Ecobee API failed with exception: {}: {}", rootCause.getClass().getSimpleName(),
                     rootCause.getMessage());
         } else {
-            // What's left are unexpected errors that should be logged as INFO with a full stack trace
-            logger.debug("API: Call to Ecobee API failed", e);
+            // What's left are unexpected errors that should be logged as WARN with a full stack trace
+            logger.warn("API: Call to Ecobee API failed", e);
         }
     }
 
     private void logJSException(Exception e, String response) {
         // The API sometimes returns an HTML page complaining of an SSL error
-        // Otherwise, this probably should be INFO level
         logger.debug("API: JsonSyntaxException parsing response: {}", response, e);
     }
 
