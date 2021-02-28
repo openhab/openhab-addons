@@ -33,6 +33,7 @@ public class BenqProjectorDevice {
     private static final int DEFAULT_TIMEOUT_MS = 5 * 1000;
 
     private static final String UNSUPPORTED_ITM = "Unsupported item";
+    private static final String BLOCK_ITM = "Block item";
     private static final String ILLEGAL_FMT = "Illegal format";
 
     private final Logger logger = LoggerFactory.getLogger(BenqProjectorDevice.class);
@@ -57,11 +58,15 @@ public class BenqProjectorDevice {
             throw new BenqProjectorException("No response received");
         }
 
-        if (UNSUPPORTED_ITM.equals(response)) {
+        if (response.contains(UNSUPPORTED_ITM)) {
             throw new BenqProjectorCommandException("Unsupported Command response received for command: " + query);
         }
 
-        if (ILLEGAL_FMT.equals(response)) {
+        if (response.contains(BLOCK_ITM)) {
+            throw new BenqProjectorCommandException("Block Item received for command: " + query);
+        }
+
+        if (response.contains(ILLEGAL_FMT)) {
             throw new BenqProjectorCommandException("Illegal Format response received for command: " + query);
         }
 

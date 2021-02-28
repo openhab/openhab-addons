@@ -193,7 +193,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
                         return UnDefType.UNDEF;
                     }
                 case ASPECT_RATIO:
-                    String aspectratio = remoteController.getPictureMode();
+                    String aspectratio = remoteController.getAspectRatio();
                     if (aspectratio != null) {
                         return new StringType(aspectratio);
                     } else {
