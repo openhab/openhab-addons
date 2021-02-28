@@ -50,7 +50,7 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                     if (dp.isIntegerType()) {
                         dp.setMinValue(toInteger(entry.minValue));
                         dp.setMaxValue(toInteger(entry.maxValue));
-                    } else {
+                    } else if (dp.isFloatType()) {
                         dp.setMinValue(toDouble(entry.minValue));
                         dp.setMaxValue(toDouble(entry.maxValue));
                     }
