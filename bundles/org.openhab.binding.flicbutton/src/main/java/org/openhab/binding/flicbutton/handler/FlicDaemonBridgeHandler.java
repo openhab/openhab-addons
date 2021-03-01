@@ -60,8 +60,6 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialize Fliclib bridge");
-
         try {
             initConfigParameters();
             startFlicdClientAsync();
@@ -73,8 +71,8 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration (hostname, port) is invalid and cannot be parsed.");
         } catch (IOException e) {
-            logger.warn("Error occured while connecting to flicd", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error connecting to flicd!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error connecting to flicd!\n" + e);
         }
     }
 
@@ -93,9 +91,9 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
         Runnable flicClientService = () -> {
             try {
                 flicClient.handleEvents();
-                logger.info("Listening to flicd unexpectedly ended");
-            } catch (Exception e) {
-                logger.info("Error occured while listening to flicd", e);
+                logger.warn("Listening to flicd unexpectedly ended");
+            } catch (IOException e) {
+                logger.debug("Error occured while listening to flicd", e);
             } finally {
                 onClientFailure();
             }
@@ -125,8 +123,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
         for (Future<?> startedTask : startedTasks) {
-                startedTask.cancel(true);
-            }
+            startedTask.cancel(true);
         }
         startedTasks = new ArrayList<>(2);
         buttonDiscoveryService.deactivate();

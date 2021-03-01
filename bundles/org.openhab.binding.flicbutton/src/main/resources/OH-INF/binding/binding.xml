@@ -4,7 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>FlicButton Binding</name>
-	<description>This is the binding for FlicButton.</description>
-	<author>Patrick Fink</author>
+	<description>This is the binding for Flic buttons by Shortcut Labs.</description>
 
 </binding:binding>

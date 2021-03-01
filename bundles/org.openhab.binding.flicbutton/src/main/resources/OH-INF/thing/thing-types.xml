@@ -10,6 +10,7 @@
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
 				<label>Flic daemon (flicd) hostname</label>
 				<description>IP or Host name of the Flic daemon (flicd).</description>
 				<default>localhost</default>

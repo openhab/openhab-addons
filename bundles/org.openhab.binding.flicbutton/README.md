@@ -39,7 +39,7 @@ The default host is localhost:5551 (this should be sufficient if flicd is runnin
 server as openHAB). If your flicd service is running somewhere else, specify it like this:
 
 ```
-Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port="<YOUR_PORT>"]
+Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port=<YOUR_PORT>]
 ```
 
 If flicd is running on a remote host, please do not forget to start it with the parameter `-s <openHAB IP>`, otherwise it won't be accessible for openHAB (more details on [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci)).
@@ -50,8 +50,8 @@ For the button, the only config parameter is the MAC address. Normally, no textu
 
 ```
 Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port="<YOUR_PORT>"] {
-    Thing button myflic1 "<YOUR_LABEL>" [address = <MAC_ADDRESS>]
-    Thing button myflic2 "<YOUR_LABEL>" [address =<MAC_ADDRESS> ]
+    Thing button myflic1 "<YOUR_LABEL>" [address ="<MAC_ADDRESS>"]
+    Thing button myflic2 "<YOUR_LABEL>" [address ="<MAC_ADDRESS>"]
     ...
 }
 ```
@@ -100,20 +100,20 @@ Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="f
 
 It's also possible to setup [Rules](https://www.openhab.org/docs/configuration/rules-dsl.html).
 The following rules help to initially test your setup as they'll trigger log messages on incoming events.
-    ```
-    rule "Button rule using the button channel"
+```
+rule "Button rule using the button channel"
 
-    when
-        Channel "flicbutton:button:local-flicd:flic_livingroom:button" triggered SHORT_PRESSED
-    then
-        logInfo("Flic", "Flic 'short pressed' triggered")
-    end
+when
+    Channel "flicbutton:button:local-flicd:flic_livingroom:button" triggered SHORT_PRESSED
+then
+    logInfo("Flic", "Flic 'short pressed' triggered")
+end
 
-    rule "Button rule directly using the rawbutton channel"
+rule "Button rule directly using the rawbutton channel"
 
-    when
-        Channel "flicbutton:button:local-flicd:flic_livingroom:rawbutton" triggered
-    then
-        logInfo("Flic", "Flic pressed: " + receivedEvent.event)
-    end
-    ```
+when
+    Channel "flicbutton:button:local-flicd:flic_livingroom:rawbutton" triggered
+then
+    logInfo("Flic", "Flic pressed: " + receivedEvent.event)
+end
+```
