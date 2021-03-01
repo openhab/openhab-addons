@@ -22,13 +22,13 @@ After confirming this request, the user can link its items to receive data or co
 
 There are three mandatory configuration parameters for a thing: `ipAddress`, `macAddress` and `deviceType`.
 
-| parameter  | mandatory/optional description |
+| parameter  | required | description |
 |----------|------------|-------------------------------------------|
-| ipAddress | mandatory | The IP Address or hostname of the device. |
-| macAddress | mandatory | The MAC address of the device. |
-| deviceType | mandatory | Defines the type of device. It is an integer value and its best to use the automatic discovery to obtain it from the device. |
-| pollingTime | optional | The time interval in seconds in which the data should be polled from the device, default is 10 seconds. |
-| hash | optional | It is a negative integer value and it is used by the device to identify a connection to a client, like the App from the vendor for example. (*) |
+| ipAddress | Y | The IP Address or hostname of the device. |
+| macAddress | Y | The MAC address of the device. |
+| deviceType | Y | Defines the type of device. It is an integer value and its best to use the automatic discovery to obtain it from the device. |
+| pollingTime | N | The time interval in seconds in which the data should be polled from the device, default is 10 seconds. |
+| hash | N | It is a negative integer value and it is used by the device to identify a connection to a client, like the App from the vendor for example. (*) |
 
 (*) I do not know whether there are devices which are restricted to only one client, so I added this parameter to allow the user to set the same value as his App on the phone (can be obtained via sniffing the network).
 However, the LW60-T allows for multiple connections to different clients, identified by different `hash` values at the same time without issues.

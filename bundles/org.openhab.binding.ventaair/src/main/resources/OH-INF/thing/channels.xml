@@ -6,7 +6,7 @@
 
 	<channel-type id="fanSpeed">
 		<item-type>Number</item-type>
-		<label>FanSpeed</label>
+		<label>Fan Speed</label>
 		<description>Speed of the ventilation fan (0-5)</description>
 		<state readOnly="false">
 			<options>
@@ -65,8 +65,8 @@
 
 	<channel-type id="sleepMode">
 		<item-type>Switch</item-type>
-		<label>SleepMode</label>
-		<description>SleepMode</description>
+		<label>Sleep Mode</label>
+		<description>Sleep Mode</description>
 	</channel-type>
 
 	<channel-type id="boost">
@@ -77,8 +77,8 @@
 
 	<channel-type id="childLock">
 		<item-type>Switch</item-type>
-		<label>ChildLock</label>
-		<description>ChildLock</description>
+		<label>Child Lock</label>
+		<description>Child Lock</description>
 	</channel-type>
 
 	<channel-type id="automatic">
@@ -105,7 +105,7 @@
 
 	<channel-type id="waterLevel">
 		<item-type>Number</item-type>
-		<label>WaterLevel</label>
+		<label>Water Level</label>
 		<description>Water Level</description>
 		<state readOnly="true">
 			<options>
@@ -134,21 +134,21 @@
 	<channel-type id="operationTime">
 		<item-type>Number</item-type>
 		<label>Operation Time</label>
-		<description>Operation Time</description>
+		<description>Operation Time since the device was first started (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="discReplaceTime">
 		<item-type>Number</item-type>
-		<label>Hygiene Disc replacement</label>
-		<description>Time in hours until Hygiene Disc schould be replaced</description>
+		<label>Hygiene Disc Replacement</label>
+		<description>Time until the Hygiene Disc should be replaced (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cleaningTime">
 		<item-type>Number</item-type>
-		<label>CleaningTime</label>
-		<description>Time in hours until next cleaning</description>
+		<label>Cleaning Time</label>
+		<description>Time until next cleaning (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 

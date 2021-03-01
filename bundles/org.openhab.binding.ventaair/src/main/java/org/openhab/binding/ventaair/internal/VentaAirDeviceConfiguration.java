@@ -28,5 +28,5 @@ public class VentaAirDeviceConfiguration {
     public BigDecimal deviceType = BigDecimal.ZERO;
     // we all know that 42 is the answer to everything, so let's pick this one ;)
     public BigDecimal hash = new BigDecimal("-42");
-    public BigDecimal pollingTime = new BigDecimal(10);
+    public BigDecimal pollingTime = BigDecimal.TEN;
 }
