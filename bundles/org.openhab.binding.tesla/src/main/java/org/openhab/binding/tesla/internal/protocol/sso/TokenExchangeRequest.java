@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.SSO;
+package org.openhab.binding.tesla.internal.protocol.sso;
 
 /**
  * The {@link TokenExchangeRequest} is a datastructure to exchange
  * the access token from the SSO endpoint for an owners API access token
  *
- * @author Christian Güdel
+ * @author Christian Güdel - Initial contribution
  */
 public class TokenExchangeRequest {
     public String grant_type = "urn:ietf:params:oauth:grant-type:jwt-bearer";

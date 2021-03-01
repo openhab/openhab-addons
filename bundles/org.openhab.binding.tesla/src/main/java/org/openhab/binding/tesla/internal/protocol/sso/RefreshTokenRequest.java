@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.SSO;
+package org.openhab.binding.tesla.internal.protocol.sso;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
@@ -18,7 +18,7 @@ import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
  * The {@link RefreshTokenRequest} is a datastructure to refresh
  * the access token for the SSO endpoint
  *
- * @author Christian Güdel
+ * @author Christian Güdel - Initial contribution
  */
 public class RefreshTokenRequest {
     public String grant_type = "refresh_token";

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.SSO;
+package org.openhab.binding.tesla.internal.protocol.sso;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
@@ -18,9 +18,9 @@ import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
  * The {@link AuthorizationCodeExchangeRequest} is a datastructure to exchange
  * the authorization code for an access token on the SSO endpoint
  *
- * @author Christian Güdel
+ * @author Christian Güdel - Initial contribution
  */
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // Unused fields must not be removed since they are used for serialization to JSON
 public class AuthorizationCodeExchangeRequest {
     private String grant_type = "authorization_code";
     private String client_id = CLIENT_ID;

@@ -10,22 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.SSO;
+package org.openhab.binding.tesla.internal.protocol.sso;
 
 /**
- * The {@link TokenResponse} is a datastructure to capture
- * authentication response from Tesla Remote Service
+ * The {@link AuthorizationCodeExchangeResponse} is a datastructure to capture
+ * the response of an {@link AuthorizationCodeExchangeRequest}
  *
- * @author Nicolai Grødum
+ * @author Christian Güdel - Initial contribution
  */
-public class TokenResponse {
-
+public class AuthorizationCodeExchangeResponse {
     public String access_token;
-    public String token_type;
-    public Long expires_in;
-    public Long created_at;
     public String refresh_token;
-
-    public TokenResponse() {
-    }
+    public String expires_in;
+    public String state;
+    public String token_type;
 }

@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.FormContentProvider;
@@ -34,11 +36,11 @@ import org.eclipse.jetty.util.Fields.Field;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.openhab.binding.tesla.internal.protocol.SSO.AuthorizationCodeExchangeRequest;
-import org.openhab.binding.tesla.internal.protocol.SSO.AuthorizationCodeExchangeResponse;
-import org.openhab.binding.tesla.internal.protocol.SSO.RefreshTokenRequest;
-import org.openhab.binding.tesla.internal.protocol.SSO.TokenExchangeRequest;
-import org.openhab.binding.tesla.internal.protocol.SSO.TokenResponse;
+import org.openhab.binding.tesla.internal.protocol.sso.AuthorizationCodeExchangeRequest;
+import org.openhab.binding.tesla.internal.protocol.sso.AuthorizationCodeExchangeResponse;
+import org.openhab.binding.tesla.internal.protocol.sso.RefreshTokenRequest;
+import org.openhab.binding.tesla.internal.protocol.sso.TokenExchangeRequest;
+import org.openhab.binding.tesla.internal.protocol.sso.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,7 @@ import com.google.gson.Gson;
  *
  * @author Christian Güdel - Initial contribution
  */
+@NonNullByDefault
 public class TeslaSSOHandler {
 
     private final HttpClient httpClient;
@@ -59,6 +62,7 @@ public class TeslaSSOHandler {
         this.httpClient = httpClient;
     }
 
+    @Nullable
     public TokenResponse getAccessToken(String refreshToken) {
         logger.debug("Exchanging SSO refresh token for API access token");
 
@@ -73,7 +77,7 @@ public class TeslaSSOHandler {
 
         ContentResponse refreshResponse = executeHttpRequest(request);
 
-        if (refreshResponse.getStatus() == 200) {
+        if (refreshResponse != null && refreshResponse.getStatus() == 200) {
             String refreshTokenResponse = refreshResponse.getContentAsString();
             TokenResponse tokenResponse = gson.fromJson(refreshTokenResponse.trim(), TokenResponse.class);
 
@@ -90,7 +94,7 @@ public class TeslaSSOHandler {
 
                 ContentResponse logonTokenResponse = executeHttpRequest(logonRequest);
 
-                if (logonTokenResponse.getStatus() == 200) {
+                if (logonTokenResponse != null && logonTokenResponse.getStatus() == 200) {
                     String tokenResponsePayload = logonTokenResponse.getContentAsString();
                     TokenResponse tr = gson.fromJson(tokenResponsePayload.trim(), TokenResponse.class);
 
@@ -99,11 +103,12 @@ public class TeslaSSOHandler {
                     }
                 } else {
                     logger.debug("An error occurred while exchanging SSO access token for API access token: {}",
-                            logonTokenResponse.getStatus());
+                            (logonTokenResponse != null ? logonTokenResponse.getStatus() : "no response"));
                 }
             }
         } else {
-            logger.debug("An error occurred during refresh of SSO token: {}", refreshResponse.getStatus());
+            logger.debug("An error occurred during refresh of SSO token: {}",
+                    (refreshResponse != null ? refreshResponse.getStatus() : "no response"));
         }
 
         return null;
@@ -116,6 +121,7 @@ public class TeslaSSOHandler {
      * @param password Password
      * @return Refresh token for use with {@link getAccessToken}
      */
+    @Nullable
     public String authenticate(String username, String password) {
         String codeVerifier = generateRandomString(86);
         String codeChallenge = null;
@@ -138,7 +144,7 @@ public class TeslaSSOHandler {
         ContentResponse loginPageResponse = executeHttpRequest(loginPageRequest);
         if (loginPageResponse == null
                 || (loginPageResponse.getStatus() != 200 && loginPageResponse.getStatus() != 302)) {
-            logger.error("Failed to obtain SSO login page, response status code: {}",
+            logger.debug("Failed to obtain SSO login page, response status code: {}",
                     (loginPageResponse != null ? loginPageResponse.getStatus() : "no response"));
             return null;
         }
@@ -152,7 +158,7 @@ public class TeslaSSOHandler {
             if (isValidRedirectLocation(redirectLocation)) {
                 authorizationCode = extractAuthorizationCodeFromUri(redirectLocation);
             } else {
-                logger.error("Unexpected redirect location received when fetching login page: {}", redirectLocation);
+                logger.debug("Unexpected redirect location received when fetching login page: {}", redirectLocation);
                 return null;
             }
         } else {
@@ -188,14 +194,14 @@ public class TeslaSSOHandler {
 
             ContentResponse formSubmitResponse = executeHttpRequest(formSubmitRequest);
             if (formSubmitResponse == null || formSubmitResponse.getStatus() != 302) {
-                logger.error("Failed to obtain code from SSO login page when submitting form, response status code: {}",
+                logger.debug("Failed to obtain code from SSO login page when submitting form, response status code: {}",
                         (formSubmitResponse != null ? formSubmitResponse.getStatus() : "no response"));
                 return null;
             }
 
             String redirectLocation = formSubmitResponse.getHeaders().get(HttpHeader.LOCATION);
             if (!isValidRedirectLocation(redirectLocation)) {
-                logger.error("Redirect location not set or doesn't match expected callback URI {}: {}", URI_CALLBACK,
+                logger.debug("Redirect location not set or doesn't match expected callback URI {}: {}", URI_CALLBACK,
                         redirectLocation);
                 return null;
             }
@@ -205,7 +211,7 @@ public class TeslaSSOHandler {
         }
 
         if (authorizationCode == null) {
-            logger.error("Did not receive an authorization code");
+            logger.debug("Did not receive an authorization code");
             return null;
         }
 
@@ -221,7 +227,7 @@ public class TeslaSSOHandler {
         tokenExchangeRequest.method(HttpMethod.POST);
 
         ContentResponse response = executeHttpRequest(tokenExchangeRequest);
-        if (response.getStatus() == 200) {
+        if (response != null && response.getStatus() == 200) {
             String responsePayload = response.getContentAsString();
             AuthorizationCodeExchangeResponse ssoTokenResponse = gson.fromJson(responsePayload.trim(),
                     AuthorizationCodeExchangeResponse.class);
@@ -232,16 +238,17 @@ public class TeslaSSOHandler {
             }
         } else {
             logger.debug("An error occurred while exchanging authorization code for SSO refresh token: {}",
-                    response.getStatus());
+                    (response != null ? response.getStatus() : "no response"));
         }
 
         return null;
     }
 
-    private Boolean isValidRedirectLocation(String redirectLocation) {
+    private Boolean isValidRedirectLocation(@Nullable String redirectLocation) {
         return redirectLocation != null && redirectLocation.startsWith(URI_CALLBACK);
     }
 
+    @Nullable
     private String extractAuthorizationCodeFromUri(String uri) {
         Field code = httpClient.newRequest(uri).getParams().get("code");
         return code != null ? code.getValue() : null;
@@ -278,6 +285,7 @@ public class TeslaSSOHandler {
         request.param("state", state);
     }
 
+    @Nullable
     private ContentResponse executeHttpRequest(org.eclipse.jetty.client.api.Request request) {
         request.timeout(10, TimeUnit.SECONDS);
 
@@ -286,7 +294,7 @@ public class TeslaSSOHandler {
             response = request.send();
             return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.error("An exception occurred while invoking a HTTP request: '{}'", e.getMessage());
+            logger.debug("An exception occurred while invoking a HTTP request: '{}'", e.getMessage());
             return null;
         }
     }
