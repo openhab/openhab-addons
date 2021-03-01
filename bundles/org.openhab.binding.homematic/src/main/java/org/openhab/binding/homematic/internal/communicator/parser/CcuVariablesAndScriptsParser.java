@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -51,14 +50,13 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                     if (dp.isIntegerType()) {
                         dp.setMinValue(toInteger(entry.minValue));
                         dp.setMaxValue(toInteger(entry.maxValue));
-                    } else {
+                    } else if (dp.isFloatType()) {
                         dp.setMinValue(toDouble(entry.minValue));
                         dp.setMaxValue(toDouble(entry.maxValue));
                     }
                     dp.setReadOnly(entry.readOnly);
                     dp.setUnit(entry.unit);
-
-                    String[] result = StringUtils.splitByWholeSeparatorPreserveAllTokens(entry.options, ";");
+                    String[] result = entry.options == null ? null : entry.options.split(";");
                     dp.setOptions(result == null || result.length == 0 ? null : result);
 
                     if (dp.getOptions() != null) {

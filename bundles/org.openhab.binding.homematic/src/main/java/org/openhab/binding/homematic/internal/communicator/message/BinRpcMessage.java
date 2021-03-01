@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +83,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         if (length != 4) {
             throw new EOFException("Only " + length + " bytes received reading message length");
         }
-        int datasize = (new BigInteger(ArrayUtils.subarray(sig, 4, 8))).intValue();
+        int datasize = (new BigInteger(Arrays.copyOfRange(sig, 4, 8))).intValue();
         byte payload[] = new byte[datasize];
         int offset = 0;
         int currentLength;
@@ -96,7 +95,10 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
             throw new EOFException("Only " + offset + " bytes received while reading message payload, expected "
                     + datasize + " bytes");
         }
-        byte[] message = ArrayUtils.addAll(sig, payload);
+        byte[] message = new byte[sig.length + payload.length];
+        System.arraycopy(sig, 0, message, 0, sig.length);
+        System.arraycopy(payload, 0, message, sig.length, payload.length);
+
         decodeMessage(message, methodHeader);
     }
 
@@ -221,7 +223,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         int type = readInt();
         switch (type) {
             case 1:
-                return new Integer(readInt());
+                return Integer.valueOf(readInt());
             case 2:
                 return binRpcData[offset++] != 0 ? Boolean.TRUE : Boolean.FALSE;
             case 3:
@@ -235,7 +237,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
                 return new Date(readInt() * 1000);
             case 0xD1:
                 // Int64
-                return new Long(readInt64());
+                return Long.valueOf(readInt64());
             case 0x100:
                 // Array
                 int numElements = readInt();

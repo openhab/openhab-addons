@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -37,8 +35,8 @@ public class HomekitOutletImpl extends AbstractHomekitAccessoryImpl implements O
     public HomekitOutletImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        inUseReader = createBooleanReader(HomekitCharacteristicType.INUSE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
-        onReader = createBooleanReader(HomekitCharacteristicType.ON_STATE, OnOffType.ON, OpenClosedType.OPEN);
+        inUseReader = createBooleanReader(HomekitCharacteristicType.INUSE_STATUS);
+        onReader = createBooleanReader(HomekitCharacteristicType.ON_STATE);
         getServices().add(new OutletService(this));
     }
 

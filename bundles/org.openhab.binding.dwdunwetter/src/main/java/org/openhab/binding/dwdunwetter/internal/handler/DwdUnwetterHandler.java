@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,9 +31,10 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -54,7 +56,6 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     private @Nullable DwdWarningsData data;
 
     private boolean inRefresh;
-    private boolean initializing;
 
     public DwdUnwetterHandler(Thing thing) {
         super(thing);
@@ -79,14 +80,8 @@ public class DwdUnwetterHandler extends BaseThingHandler {
             return;
         }
 
-        if (initializing) {
-            logger.trace("Still initializing. Ignoring refresh request.");
-            return;
-        }
-
-        ThingStatus status = getThing().getStatus();
-        if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
-            logger.debug("Unable to refresh. Thing status is {}", status);
+        if (!ThingHandlerHelper.isHandlerInitialized(getThing())) {
+            logger.debug("Unable to refresh. Thing status is '{}'", getThing().getStatus());
             return;
         }
 
@@ -105,33 +100,32 @@ public class DwdUnwetterHandler extends BaseThingHandler {
             return;
         }
 
-        if (status == ThingStatus.UNKNOWN) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        updateStatus(ThingStatus.ONLINE);
 
         updateState(getChannelUuid(CHANNEL_LAST_UPDATED), new DateTimeType());
 
         for (int i = 0; i < warningCount; i++) {
             State warning = warningsData.getWarning(i);
+            int warningNumber = i + 1;
             if (warning == OnOffType.OFF) {
-                updateState(getChannelUuid(CHANNEL_WARNING, i), warning);
+                updateState(getChannelUuid(CHANNEL_WARNING, warningNumber), warning);
             }
-            updateState(getChannelUuid(CHANNEL_SEVERITY, i), warningsData.getSeverity(i));
-            updateState(getChannelUuid(CHANNEL_DESCRIPTION, i), warningsData.getDescription(i));
-            updateState(getChannelUuid(CHANNEL_EFFECTIVE, i), warningsData.getEffective(i));
-            updateState(getChannelUuid(CHANNEL_EXPIRES, i), warningsData.getExpires(i));
-            updateState(getChannelUuid(CHANNEL_ONSET, i), warningsData.getOnset(i));
-            updateState(getChannelUuid(CHANNEL_EVENT, i), warningsData.getEvent(i));
-            updateState(getChannelUuid(CHANNEL_HEADLINE, i), warningsData.getHeadline(i));
-            updateState(getChannelUuid(CHANNEL_ALTITUDE, i), warningsData.getAltitude(i));
-            updateState(getChannelUuid(CHANNEL_CEILING, i), warningsData.getCeiling(i));
-            updateState(getChannelUuid(CHANNEL_INSTRUCTION, i), warningsData.getInstruction(i));
-            updateState(getChannelUuid(CHANNEL_URGENCY, i), warningsData.getUrgency(i));
+            updateState(getChannelUuid(CHANNEL_SEVERITY, warningNumber), warningsData.getSeverity(i));
+            updateState(getChannelUuid(CHANNEL_DESCRIPTION, warningNumber), warningsData.getDescription(i));
+            updateState(getChannelUuid(CHANNEL_EFFECTIVE, warningNumber), warningsData.getEffective(i));
+            updateState(getChannelUuid(CHANNEL_EXPIRES, warningNumber), warningsData.getExpires(i));
+            updateState(getChannelUuid(CHANNEL_ONSET, warningNumber), warningsData.getOnset(i));
+            updateState(getChannelUuid(CHANNEL_EVENT, warningNumber), warningsData.getEvent(i));
+            updateState(getChannelUuid(CHANNEL_HEADLINE, warningNumber), warningsData.getHeadline(i));
+            updateState(getChannelUuid(CHANNEL_ALTITUDE, warningNumber), warningsData.getAltitude(i));
+            updateState(getChannelUuid(CHANNEL_CEILING, warningNumber), warningsData.getCeiling(i));
+            updateState(getChannelUuid(CHANNEL_INSTRUCTION, warningNumber), warningsData.getInstruction(i));
+            updateState(getChannelUuid(CHANNEL_URGENCY, warningNumber), warningsData.getUrgency(i));
             if (warning == OnOffType.ON) {
-                updateState(getChannelUuid(CHANNEL_WARNING, i), warning);
+                updateState(getChannelUuid(CHANNEL_WARNING, warningNumber), warning);
             }
             if (warningsData.isNew(i)) {
-                triggerChannel(getChannelUuid(CHANNEL_UPDATED, i), "NEW");
+                triggerChannel(getChannelUuid(CHANNEL_UPDATED, warningNumber), "NEW");
             }
         }
 
@@ -142,23 +136,41 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        initializing = true;
         updateStatus(ThingStatus.UNKNOWN);
 
         DwdUnwetterConfiguration config = getConfigAs(DwdUnwetterConfiguration.class);
-        warningCount = config.warningCount;
+        int newWarningCount = config.warningCount;
+
+        if (warningCount != newWarningCount) {
+            List<Channel> toBeAddedChannels = new ArrayList<>();
+            List<Channel> toBeRemovedChannels = new ArrayList<>();
+            if (warningCount > newWarningCount) {
+                for (int i = newWarningCount + 1; i <= warningCount; ++i) {
+                    toBeRemovedChannels.addAll(removeChannels(i));
+                }
+            } else {
+                for (int i = warningCount + 1; i <= newWarningCount; ++i) {
+                    toBeAddedChannels.addAll(createChannels(i));
+                }
+            }
+            warningCount = newWarningCount;
+
+            ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
+            for (Channel channel : toBeAddedChannels) {
+                builder.withChannel(channel);
+            }
+            updateThing(builder.build());
+        }
 
         data = new DwdWarningsData(config.cellId);
 
-        updateThing(editThing().withChannels(createChannels()).build());
-
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
-        initializing = false;
+
         logger.debug("Finished initializing!");
     }
 
     private ChannelUID getChannelUuid(String typeId, int warningNumber) {
-        return new ChannelUID(getThing().getUID(), typeId + (warningNumber + 1));
+        return new ChannelUID(getThing().getUID(), typeId + warningNumber);
     }
 
     private ChannelUID getChannelUuid(String typeId) {
@@ -166,69 +178,68 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     }
 
     /**
-     * Creates a trigger Channel.
-     */
-    private Channel createTriggerChannel(String typeId, String label, int warningNumber) {
-        ChannelUID channelUID = getChannelUuid(typeId, warningNumber);
-        return ChannelBuilder.create(channelUID, "String") //
-                .withType(new ChannelTypeUID(BINDING_ID, typeId)) //
-                .withLabel(label + " (" + (warningNumber + 1) + ")")//
-                .withKind(ChannelKind.TRIGGER) //
-                .build();
-    }
-
-    /**
      * Creates a normal, state based, channel associated with a warning.
      */
-    private Channel createChannel(String typeId, String itemType, String label, int warningNumber) {
+    private void createChannelIfNotExist(ThingHandlerCallback cb, List<Channel> channels, String typeId, String label,
+            int warningNumber) {
         ChannelUID channelUID = getChannelUuid(typeId, warningNumber);
-        return ChannelBuilder.create(channelUID, itemType) //
-                .withType(new ChannelTypeUID(BINDING_ID, typeId)) //
-                .withLabel(label + " (" + (warningNumber + 1) + ")")//
-                .build();
+        Channel existingChannel = getThing().getChannel(channelUID);
+        if (existingChannel != null) {
+            logger.trace("Thing '{}' already has an existing channel '{}'. Omit adding new channel '{}'.",
+                    getThing().getUID(), existingChannel.getUID(), channelUID);
+        } else {
+            channels.add(cb.createChannelBuilder(channelUID, new ChannelTypeUID(BINDING_ID, typeId))
+                    .withLabel(label + " " + getChannelLabelSuffix(warningNumber)).build());
+        }
+    }
+
+    private String getChannelLabelSuffix(int warningNumber) {
+        return "(" + warningNumber + ")";
     }
 
     /**
-     * Creates a normal, state based, channel not associated with a warning.
-     */
-    private Channel createChannel(String typeId, String itemType, String label) {
-        ChannelUID channelUID = getChannelUuid(typeId);
-        return ChannelBuilder.create(channelUID, itemType) //
-                .withType(new ChannelTypeUID(BINDING_ID, typeId)) //
-                .withLabel(label)//
-                .build();
-    }
-
-    /**
-     * Creates the ChannelsT for each warning.
+     * Creates the Channels for each warning.
      *
-     * @return The List of Channels
+     * @return The List of Channels to be added
      */
-    private List<Channel> createChannels() {
-        List<Channel> channels = new ArrayList<>(warningCount * 11 + 1);
-        channels.add(createChannel(CHANNEL_LAST_UPDATED, "DateTime", "Last Updated"));
-        for (int i = 0; i < warningCount; i++) {
-            channels.add(createChannel(CHANNEL_WARNING, "Switch", "Warning", i));
-            channels.add(createTriggerChannel(CHANNEL_UPDATED, "Updated", i));
-            channels.add(createChannel(CHANNEL_SEVERITY, "String", "Severity", i));
-            channels.add(createChannel(CHANNEL_DESCRIPTION, "String", "Description", i));
-            channels.add(createChannel(CHANNEL_EFFECTIVE, "DateTime", "Issued", i));
-            channels.add(createChannel(CHANNEL_ONSET, "DateTime", "Valid From", i));
-            channels.add(createChannel(CHANNEL_EXPIRES, "DateTime", "Valid To", i));
-            channels.add(createChannel(CHANNEL_EVENT, "String", "Type", i));
-            channels.add(createChannel(CHANNEL_HEADLINE, "String", "Headline", i));
-            channels.add(createChannel(CHANNEL_ALTITUDE, "Number:Length", "Height (from)", i));
-            channels.add(createChannel(CHANNEL_CEILING, "Number:Length", "Height (to)", i));
-            channels.add(createChannel(CHANNEL_INSTRUCTION, "String", "Instruction", i));
-            channels.add(createChannel(CHANNEL_URGENCY, "String", "Urgency", i));
+    private List<Channel> createChannels(int warningNumber) {
+        logger.debug("Building channels for thing '{}'.", getThing().getUID());
+        List<Channel> channels = new ArrayList<>();
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            createChannelIfNotExist(callback, channels, CHANNEL_UPDATED, "Updated", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_WARNING, "Warning", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_SEVERITY, "Severity", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_DESCRIPTION, "Description", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_EFFECTIVE, "Issued", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_ONSET, "Valid From", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_EXPIRES, "Valid To", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_EVENT, "Type", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_HEADLINE, "Headline", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_ALTITUDE, "Height (from)", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_CEILING, "Height (to)", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_INSTRUCTION, "Instruction", warningNumber);
+            createChannelIfNotExist(callback, channels, CHANNEL_URGENCY, "Urgency", warningNumber);
         }
         return channels;
+    }
+
+    /**
+     * Filters the Channels for each warning
+     *
+     * @return The List of Channels to be removed
+     */
+    @SuppressWarnings("null")
+    private List<Channel> removeChannels(int warningNumber) {
+        return getThing().getChannels().stream()
+                .filter(channel -> channel.getLabel() != null
+                        && channel.getLabel().endsWith(getChannelLabelSuffix(warningNumber)))
+                .collect(Collectors.toList());
     }
 
     @Override
     public void dispose() {
         final ScheduledFuture<?> job = refreshJob;
-
         if (job != null) {
             job.cancel(true);
         }

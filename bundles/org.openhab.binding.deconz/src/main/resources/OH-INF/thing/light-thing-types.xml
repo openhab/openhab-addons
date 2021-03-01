@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Warning Device</label>
 		<description>A warning device</description>
+		<category>Siren</category>
 		<channels>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
@@ -25,6 +26,7 @@
 		</supported-bridge-type-refs>
 		<label>Window Covering</label>
 		<description>A device to cover windows.</description>
+		<category>Blinds</category>
 		<channels>
 			<channel typeId="position" id="position"/>
 		</channels>
@@ -41,7 +43,8 @@
 		<label>On/Off Light</label>
 		<description>A light that can be turned on or off.</description>
 		<channels>
-			<channel typeId="onoff" id="switch"/>
+			<channel typeId="system.power" id="switch"/>
+			<channel typeId="ontime" id="ontime"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -55,8 +58,11 @@
 		</supported-bridge-type-refs>
 		<label>Dimmable Light</label>
 		<description>A dimmable light.</description>
+		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="brightness" id="brightness"/>
+			<channel typeId="system.brightness" id="brightness"/>
+			<channel typeId="ontime" id="ontime"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -70,9 +76,12 @@
 		</supported-bridge-type-refs>
 		<label>Color-Temperature Light</label>
 		<description>A dimmable light with adjustable color temperature.</description>
+		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="brightness" id="brightness"/>
+			<channel typeId="system.brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="ontime" id="ontime"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -86,13 +95,16 @@
 		</supported-bridge-type-refs>
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
+		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="color" id="color"/>
+			<channel typeId="system.color" id="color"/>
+			<channel typeId="ontime" id="ontime"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="extendedcolorlight">
@@ -101,14 +113,17 @@
 		</supported-bridge-type-refs>
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
+		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="color" id="color"/>
+			<channel typeId="system.color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="ontime" id="ontime"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="doorlock">
@@ -117,6 +132,7 @@
 		</supported-bridge-type-refs>
 		<label>Doorlock</label>
 		<description>A doorlock that can be locked (ON) or unlocked (OFF).</description>
+		<category>Lock</category>
 		<channels>
 			<channel typeId="lock" id="switch"/>
 		</channels>
@@ -129,38 +145,57 @@
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
+		<category>Rollershutter</category>
 		<state pattern="%.1f %%"/>
-	</channel-type>
-
-	<channel-type id="onoff">
-		<item-type>Switch</item-type>
-		<label>On/Off</label>
-	</channel-type>
-
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<state pattern="%.1f %%"/>
-	</channel-type>
-
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
 	</channel-type>
 
 	<channel-type id="ct">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
-		<state pattern="%d K" min="15" max="100000" step="100"/>
+		<description>Controls the color temperature of the light in Kelvin</description>
+		<category>ColorLight</category>
+		<state pattern="%.0f K" min="1000" max="10000"/>
+	</channel-type>
+
+	<channel-type id="ontime">
+		<item-type>Number:Time</item-type>
+		<label>On Time</label>
+		<description>Time that the light stays on before switched off automatically (0=forever)</description>
+	</channel-type>
+
+	<channel-type id="effect">
+		<item-type>String</item-type>
+		<label>Effect Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="effectSpeed">
+		<item-type>Number</item-type>
+		<label>Effect Speed Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state min="0" max="10" step="1"/>
 	</channel-type>
 
 	<channel-type id="alert">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Alert</label>
+		<category>Alarm</category>
+		<command>
+			<options>
+				<option value="none">No Alarm</option>
+				<option value="select">Blinking (short time)</option>
+				<option value="lselect">Blinking (long time)</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 	</channel-type>
+
 </thing:thing-descriptions>

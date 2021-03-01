@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -958,17 +958,17 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateCurrentTime(long currentTime) {
-        updateState(CHANNEL_CURRENTTIME, createQuantityState(currentTime, SmartHomeUnits.SECOND));
+        updateState(CHANNEL_CURRENTTIME, createQuantityState(currentTime, Units.SECOND));
     }
 
     @Override
     public void updateCurrentTimePercentage(double currentTimePercentage) {
-        updateState(CHANNEL_CURRENTTIMEPERCENTAGE, createQuantityState(currentTimePercentage, SmartHomeUnits.PERCENT));
+        updateState(CHANNEL_CURRENTTIMEPERCENTAGE, createQuantityState(currentTimePercentage, Units.PERCENT));
     }
 
     @Override
     public void updateDuration(long duration) {
-        updateState(CHANNEL_DURATION, createQuantityState(duration, SmartHomeUnits.SECOND));
+        updateState(CHANNEL_DURATION, createQuantityState(duration, Units.SECOND));
     }
 
     @Override

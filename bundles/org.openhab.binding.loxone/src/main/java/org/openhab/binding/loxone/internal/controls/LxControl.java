@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -264,6 +264,8 @@ public class LxControl {
         Callbacks c = callbacks.get(channelId);
         if (c != null && c.commandCallback != null) {
             c.commandCallback.handleCommand(command);
+        } else {
+            logger.debug("Control UUID={} has no command handler", getUuid());
         }
     }
 

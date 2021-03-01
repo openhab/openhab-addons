@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.openhab.core.common.NamedThreadFactory;
  */
 class RetryFutureTest {
 
+    private static final int TIMEOUT_MS = 1000;
     private ScheduledExecutorService scheduler;
 
     @BeforeEach
@@ -52,17 +53,17 @@ class RetryFutureTest {
     }
 
     @Test
-    void callWithRetryNormal() throws InterruptedException {
+    void callWithRetryNormal() {
         Future<String> retryFuture = RetryFuture.callWithRetry(() -> "test", scheduler);
         try {
-            assertEquals("test", retryFuture.get(100, TimeUnit.MILLISECONDS));
+            assertEquals("test", retryFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             fail(e);
         }
     }
 
     @Test
-    void callWithRetry1() throws InterruptedException {
+    void callWithRetry1() {
         AtomicInteger visitCount = new AtomicInteger();
         Future<String> retryFuture = RetryFuture.callWithRetry(() -> {
             if (visitCount.getAndIncrement() == 0) {
@@ -71,14 +72,14 @@ class RetryFutureTest {
             return "test";
         }, scheduler);
         try {
-            assertEquals("test", retryFuture.get(100, TimeUnit.MILLISECONDS));
+            assertEquals("test", retryFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             fail(e);
         }
     }
 
     @Test
-    void composeWithRetryNormal() throws InterruptedException {
+    void composeWithRetryNormal() {
         CompletableFuture<?> composedFuture = new CompletableFuture<>();
 
         Future<?> retryFuture = RetryFuture.composeWithRetry(() -> {
@@ -87,7 +88,7 @@ class RetryFutureTest {
         }, scheduler);
 
         try {
-            retryFuture.get(100, TimeUnit.MILLISECONDS);
+            retryFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             fail(e);
         }
@@ -95,7 +96,7 @@ class RetryFutureTest {
     }
 
     @Test
-    void composeWithRetryThrow() throws InterruptedException {
+    void composeWithRetryThrow() {
         CompletableFuture<?> composedFuture = new CompletableFuture<>();
 
         Future<?> retryFuture = RetryFuture.composeWithRetry(() -> {
@@ -104,7 +105,7 @@ class RetryFutureTest {
         }, scheduler);
 
         try {
-            retryFuture.get(100, TimeUnit.MILLISECONDS);
+            retryFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | TimeoutException e) {
             fail(e);
         } catch (ExecutionException ex) {
@@ -114,7 +115,7 @@ class RetryFutureTest {
     }
 
     @Test
-    void composeWithRetry1() throws InterruptedException {
+    void composeWithRetry1() {
         AtomicInteger visitCount = new AtomicInteger();
         CompletableFuture<String> composedFuture = new CompletableFuture<>();
         Future<String> retryFuture = RetryFuture.composeWithRetry(() -> {
@@ -126,7 +127,7 @@ class RetryFutureTest {
         }, scheduler);
 
         try {
-            assertEquals("test", retryFuture.get(100, TimeUnit.MILLISECONDS));
+            assertEquals("test", retryFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             fail(e);
         }
@@ -135,7 +136,7 @@ class RetryFutureTest {
     }
 
     @Test
-    void composeWithRetry1Cancel() throws InterruptedException {
+    void composeWithRetry1Cancel() {
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger visitCount = new AtomicInteger();
         CompletableFuture<String> composedFuture = new CompletableFuture<>();
@@ -148,14 +149,15 @@ class RetryFutureTest {
         }, scheduler);
 
         try {
-            if (!latch.await(100, TimeUnit.MILLISECONDS)) {
+            if (!latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
                 fail("Timeout while waiting for latch");
             }
-            Thread.sleep(1);
-            retryFuture.cancel(false);
-
-            assertTrue(composedFuture.isCancelled());
-        } catch (InterruptedException e) {
+            Future<Boolean> future = scheduler.submit(() -> {
+                retryFuture.cancel(false);
+                return composedFuture.isCancelled();
+            });
+            assertTrue(future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             fail(e);
         }
         assertEquals(2, visitCount.get());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -107,7 +107,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.maxCurrent == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.maxCurrent, SmartHomeUnits.AMPERE);
+                return new QuantityType<>(goeResponse.maxCurrent, Units.AMPERE);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
                     return UnDefType.UNDEF;
@@ -182,7 +182,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.cableEncoding == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.cableEncoding, SmartHomeUnits.AMPERE);
+                return new QuantityType<>(goeResponse.cableEncoding, Units.AMPERE);
             case PHASES:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
@@ -208,19 +208,18 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 360000d),
-                        SmartHomeUnits.KILOWATT_HOUR);
+                        Units.KILOWATT_HOUR);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 if (goeResponse.sessionChargeConsumptionLimit == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 10d),
-                        SmartHomeUnits.KILOWATT_HOUR);
+                        Units.KILOWATT_HOUR);
             case TOTAL_CONSUMPTION:
                 if (goeResponse.totalChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 10d),
-                        SmartHomeUnits.KILOWATT_HOUR);
+                return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 10d), Units.KILOWATT_HOUR);
             case FIRMWARE:
                 if (goeResponse.firmware == null) {
                     return UnDefType.UNDEF;
@@ -230,49 +229,49 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[0], SmartHomeUnits.VOLT);
+                return new QuantityType<>(goeResponse.energy[0], Units.VOLT);
             case VOLTAGE_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[1], SmartHomeUnits.VOLT);
+                return new QuantityType<>(goeResponse.energy[1], Units.VOLT);
             case VOLTAGE_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[2], SmartHomeUnits.VOLT);
+                return new QuantityType<>(goeResponse.energy[2], Units.VOLT);
             case CURRENT_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 // values come in as A*10, 41 means 4.1A
-                return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), SmartHomeUnits.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), Units.AMPERE);
             case CURRENT_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[5] / 10d), SmartHomeUnits.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[5] / 10d), Units.AMPERE);
             case CURRENT_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[6] / 10d), SmartHomeUnits.AMPERE);
+                return new QuantityType<>((Double) (goeResponse.energy[6] / 10d), Units.AMPERE);
             case POWER_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 // values come in as kW*10, 41 means 4.1kW
-                return new QuantityType<>(goeResponse.energy[7] * 100, SmartHomeUnits.WATT);
+                return new QuantityType<>(goeResponse.energy[7] * 100, Units.WATT);
             case POWER_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[8] * 100, SmartHomeUnits.WATT);
+                return new QuantityType<>(goeResponse.energy[8] * 100, Units.WATT);
             case POWER_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[9] * 100, SmartHomeUnits.WATT);
+                return new QuantityType<>(goeResponse.energy[9] * 100, Units.WATT);
         }
         return UnDefType.UNDEF;
     }
@@ -293,8 +292,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(
-                            ((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.AMPERE).intValue());
+                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
                 }
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
@@ -302,8 +300,8 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue() * 10);
                 } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(
-                            ((QuantityType<Energy>) command).toUnit(SmartHomeUnits.KILOWATT_HOUR).intValue() * 10);
+                    value = String
+                            .valueOf(((QuantityType<Energy>) command).toUnit(Units.KILOWATT_HOUR).intValue() * 10);
                 }
                 break;
             case ALLOW_CHARGING:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeterEvent
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcEnergyMeter2;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -139,7 +139,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         if (power == null) {
             updateState(CHANNEL_POWER, UnDefType.UNDEF);
         } else {
-            updateState(CHANNEL_POWER, new QuantityType<>(power, SmartHomeUnits.WATT));
+            updateState(CHANNEL_POWER, new QuantityType<>(power, Units.WATT));
         }
         updateStatus(ThingStatus.ONLINE);
     }

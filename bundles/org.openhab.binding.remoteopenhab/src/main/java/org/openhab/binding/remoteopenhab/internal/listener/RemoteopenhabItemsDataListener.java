@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ public interface RemoteopenhabItemsDataListener {
     /**
      * A new ItemStateEvent was published.
      */
-    void onItemStateEvent(String itemName, String stateType, String state);
+    void onItemStateEvent(String itemName, String stateType, String state, boolean onlyIfStateChanged);
 
     /**
      * A new ItemAddedEvent was published.

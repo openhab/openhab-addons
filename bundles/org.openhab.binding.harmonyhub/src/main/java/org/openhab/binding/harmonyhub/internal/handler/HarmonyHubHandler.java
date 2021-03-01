@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -382,7 +382,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
         ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, "Current Activity", "String")
                 .withDescription("Current activity for " + getThing().getLabel())
-                .withStateDescription(new StateDescription(null, null, null, "%s", false, states)).build();
+                .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withPattern("%s")
+                        .withReadOnly(false).withOptions(states).build())
+                .build();
 
         factory.addChannelType(channelType);
 

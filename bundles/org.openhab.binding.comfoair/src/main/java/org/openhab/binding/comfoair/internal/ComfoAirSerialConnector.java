@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,8 +47,7 @@ public class ComfoAirSerialConnector {
     private static final byte[] END = { CTRL, (byte) 0x0f };
     private static final byte[] ACK = { CTRL, (byte) 0xf3 };
 
-    private static final int RS232_ENABLED_VALUE = 0x03;
-    private static final int RS232_DISABLED_VALUE = 0x00;
+    private static final int MAX_RETRIES = 5;
 
     private boolean isSuspended = true;
 
@@ -150,14 +149,17 @@ public class ComfoAirSerialConnector {
      */
     public synchronized int[] sendCommand(ComfoAirCommand command, int[] preRequestData) {
         Integer requestCmd = command.getRequestCmd();
+        Integer requestValue = command.getRequestValue();
         int retry = 0;
 
         if (requestCmd != null) {
             // Switch support for app or ccease control
-            if (requestCmd == ComfoAirCommandType.Constants.REQUEST_SET_RS232) {
-                isSuspended = !isSuspended;
-            } else if (requestCmd == ComfoAirCommandType.Constants.REPLY_SET_RS232) {
-                return new int[] { isSuspended ? RS232_DISABLED_VALUE : RS232_ENABLED_VALUE };
+            if (requestCmd == ComfoAirCommandType.Constants.REQUEST_SET_RS232 && requestValue != null) {
+                if (requestValue == 1) {
+                    isSuspended = false;
+                } else if (requestValue == 0) {
+                    isSuspended = true;
+                }
             } else if (isSuspended) {
                 logger.trace("Ignore cmd. Service is currently suspended");
                 return ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;
@@ -226,13 +228,44 @@ public class ComfoAirSerialConnector {
                             return ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;
                         }
 
+                        boolean isValidData = false;
+
                         // check for start and end sequence and if the response cmd
                         // matches
                         // 11 is the minimum response length with one data byte
                         if (responseBlock.length >= 11 && responseBlock[2] == START[0] && responseBlock[3] == START[1]
                                 && responseBlock[responseBlock.length - 2] == END[0]
-                                && responseBlock[responseBlock.length - 1] == END[1]
-                                && (responseBlock[5] & 0xff) == command.getReplyCmd()) {
+                                && responseBlock[responseBlock.length - 1] == END[1]) {
+                            if ((responseBlock[5] & 0xff) == command.getReplyCmd()) {
+                                isValidData = true;
+                            } else {
+                                int startIndex = -1;
+                                int endIndex = -1;
+
+                                for (int i = 4; i < (responseBlock.length - 11) && endIndex < 0; i++) {
+                                    if (responseBlock[i] == START[0] && responseBlock[i + 1] == START[1]
+                                            && ((responseBlock[i + 3] & 0xff) == command.getReplyCmd())) {
+                                        startIndex = i;
+                                        for (int j = startIndex; j < responseBlock.length; j++) {
+                                            if (responseBlock[j] == END[0] && responseBlock[j + 1] == END[1]) {
+                                                endIndex = j + 1;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (startIndex > -1 && endIndex > -1) {
+                                    byte[] subResponse = new byte[endIndex - startIndex + 3];
+                                    System.arraycopy(responseBlock, 0, subResponse, 0, 2);
+                                    System.arraycopy(responseBlock, startIndex, subResponse, 2, subResponse.length - 2);
+                                    responseBlock = subResponse;
+                                    isValidData = true;
+                                }
+                            }
+                        }
+
+                        if (isValidData) {
                             if (logger.isTraceEnabled()) {
                                 logger.trace("receive RAW DATA: {}", dumpData(responseBlock));
                             }
@@ -294,9 +327,9 @@ public class ComfoAirSerialConnector {
                     logger.warn("Transmission was interrupted: {}", e.getMessage());
                     throw new RuntimeException(e);
                 }
-            } while (retry++ < 5);
+            } while (retry++ < MAX_RETRIES);
 
-            if (retry == 5) {
+            if (retry >= MAX_RETRIES) {
                 logger.debug("Unable to send command. {} retries failed.", retry);
             }
         }
@@ -375,6 +408,10 @@ public class ComfoAirSerialConnector {
             }
             cleanedBuffer[pos] = processBuffer[i];
             pos++;
+            // Trim unrequested data in response
+            if (END[0] == processBuffer[i + 1] && END[1] == processBuffer[i + 2]) {
+                break;
+            }
         }
         return Arrays.copyOf(cleanedBuffer, pos);
     }
@@ -559,5 +596,9 @@ public class ComfoAirSerialConnector {
             }
         }
         return 0;
+    }
+
+    public boolean getIsSuspended() {
+        return isSuspended;
     }
 }

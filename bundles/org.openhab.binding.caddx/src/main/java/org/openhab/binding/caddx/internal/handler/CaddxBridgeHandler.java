@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,9 @@ import static org.openhab.binding.caddx.internal.CaddxBindingConstants.SEND_COMM
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,6 +33,7 @@ import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
 import org.openhab.binding.caddx.internal.CaddxSource;
+import org.openhab.binding.caddx.internal.action.CaddxBridgeActions;
 import org.openhab.binding.caddx.internal.config.CaddxBridgeConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxKeypadConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxPartitionConfiguration;
@@ -126,7 +128,8 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 protocol);
 
         try {
-            communicator = new CaddxCommunicator(portManager, protocol, serialPortName, baudRate);
+            communicator = new CaddxCommunicator(getThing().getUID().getAsString(), portManager, protocol,
+                    serialPortName, baudRate);
         } catch (IOException | TooManyListenersException | UnsupportedCommOperationException | PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication cannot be initialized. " + e.toString());
@@ -267,6 +270,12 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             case CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST:
                 msg = new CaddxMessage(CaddxMessageType.LOG_EVENT_REQUEST, data);
                 break;
+            case CaddxBindingConstants.KEYPAD_TERMINAL_MODE_REQUEST:
+                msg = new CaddxMessage(CaddxMessageType.KEYPAD_TERMINAL_MODE_REQUEST, data);
+                break;
+            case CaddxBindingConstants.KEYPAD_SEND_KEYPAD_TEXT_MESSAGE:
+                msg = new CaddxMessage(CaddxMessageType.SEND_KEYPAD_TEXT_MESSAGE, data);
+                break;
             default:
                 logger.debug("Unknown command {}", command);
                 return false;
@@ -388,11 +397,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     }
 
     @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(CaddxDiscoveryService.class);
-    }
-
-    @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof ThingHandlerPartition) {
             BigDecimal id = (BigDecimal) childThing.getConfiguration()
@@ -428,5 +432,25 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         }
 
         super.childHandlerDisposed(childHandler, childThing);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        Set<Class<? extends ThingHandlerService>> set = new HashSet<Class<? extends ThingHandlerService>>(2);
+        set.add(CaddxDiscoveryService.class);
+        set.add(CaddxBridgeActions.class);
+        return set;
+    }
+
+    public void restart() {
+        // Stop the currently running communicator
+        CaddxCommunicator comm = communicator;
+        if (comm != null) {
+            comm.stop();
+            comm = null;
+        }
+
+        // Initialize again
+        initialize();
     }
 }

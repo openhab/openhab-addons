@@ -60,10 +60,10 @@
 			</parameter>
 
 			<parameter name="exponentialBackoffRetryBaseInSeconds" type="integer" required="true" min="1" unit="s">
-				<label>Exponential Backoff Base for Retries</label>
-				<description>Exponential back-off base value for retries in seconds. For example, when this is 2 seconds, will retry
-					at 2, 4, 8, 16, 32, 64 seconds.</description>
-				<default>5</default>
+				<label>Doubling Backoff Base for Retries</label>
+				<description>Doubling back-off base value for retries in seconds. For example, when this is 30 seconds, will retry
+					at 30, 60, 120, 240 seconds.</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 

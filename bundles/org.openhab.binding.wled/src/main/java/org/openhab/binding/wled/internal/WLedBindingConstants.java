@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.wled.internal;
 
 import java.math.BigDecimal;
@@ -30,6 +29,7 @@ public class WLedBindingConstants {
 
     public static final String BINDING_ID = "wled";
     public static final BigDecimal BIG_DECIMAL_2_55 = new BigDecimal(2.55);
+    public static final BigDecimal BIG_DECIMAL_182_04 = new BigDecimal(182.04);
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WLED = new ThingTypeUID(BINDING_ID, "wled");

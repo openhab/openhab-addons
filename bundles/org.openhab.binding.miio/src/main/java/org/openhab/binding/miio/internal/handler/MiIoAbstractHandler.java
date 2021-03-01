@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -490,9 +490,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             this.pollingJob = null;
         }
         miIoScheduler.schedule(() -> {
-            ThingBuilder thingBuilder = editThing();
-            thingBuilder.withLabel(miDevice.getDescription());
-            updateThing(thingBuilder.build());
+            String label = getThing().getLabel();
+            if (label == null || label.startsWith("Xiaomi Mi Device")) {
+                ThingBuilder thingBuilder = editThing();
+                thingBuilder.withLabel(miDevice.getDescription());
+                updateThing(thingBuilder.build());
+            }
             logger.info("Mi Device model {} identified as: {}. Does not match thingtype {}. Changing thingtype to {}",
                     modelId, miDevice.toString(), getThing().getThingTypeUID().toString(),
                     miDevice.getThingType().toString());

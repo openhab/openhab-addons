@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,6 +99,9 @@ public class VeluxBindingConstants {
     public static final Set<ThingTypeUID> DISCOVERABLE_THINGS = Set.of(THING_TYPE_VELUX_SCENE,
             THING_TYPE_VELUX_ACTUATOR, THING_TYPE_VELUX_ROLLERSHUTTER, THING_TYPE_VELUX_WINDOW,
             THING_TYPE_VELUX_VSHUTTER, THING_TYPE_BINDING, THING_TYPE_BRIDGE);
+
+    public static final Set<ThingTypeUID> ACTUATOR_THINGS = Set.of(THING_TYPE_VELUX_ACTUATOR,
+            THING_TYPE_VELUX_ROLLERSHUTTER, THING_TYPE_VELUX_WINDOW);
 
     // *** List of all Channel ids ***
 

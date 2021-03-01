@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ import org.openhab.binding.ihc.internal.ws.projectfile.ProjectFileUtils;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -167,11 +168,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private String getFilePathInUserDataFolder(String fileName) {
-        String progArg = System.getProperty("smarthome.userdata");
-        if (progArg != null) {
-            return progArg + File.separator + fileName;
-        }
-        return fileName;
+        return OpenHAB.getUserDataFolder() + File.separator + fileName;
     }
 
     @Override

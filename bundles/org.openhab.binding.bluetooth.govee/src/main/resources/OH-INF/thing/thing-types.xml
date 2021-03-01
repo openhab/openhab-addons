@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<thing-type id="goveeHygrometer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>Govee Hygrometer</label>
+		<description>Govee Thermo-Hygrometer</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="battery" typeId="system.battery-level"/>
+
+			<channel id="temperature" typeId="govee-temperature"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+		</channels>
+
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter-group name="calibration">
+				<label>Calibration</label>
+				<description>Sensor calibration settings.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" required="true">
+				<label>Refresh Interval</label>
+				<description>The frequency at which battery, temperature, and humidity data will refresh</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="temperatureCalibration" type="decimal" min="-1.6" max="1.6" groupName="calibration"
+				unit="Cel">
+				<label>Temperature Calibration</label>
+				<description>Adds offset to reported temperature</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="humidityCalibration" type="decimal" min="-9" max="9" groupName="calibration" unit="%">
+				<label>Humidity Calibration</label>
+				<description>Adds offset to reported humidity</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="goveeHygrometerMonitor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>Govee Monitoring Hygrometer</label>
+		<description>Govee Thermo-Hygrometer w/ Warning Alarms</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="battery" typeId="system.battery-level"/>
+
+			<channel id="temperature" typeId="govee-temperature"/>
+			<channel id="temperatureAlarm" typeId="govee-temperature-alarm"/>
+
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="humidityAlarm" typeId="govee-humidity-alarm"/>
+
+		</channels>
+
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter-group name="calibration">
+				<label>Calibration</label>
+				<description>Sensor calibration settings.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter-group name="alarms">
+				<label>Alarm</label>
+				<description>Alarm settings.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" required="true">
+				<label>Refresh Interval</label>
+				<description>The frequency at which battery, temperature, and humidity data will refresh</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="temperatureCalibration" type="decimal" min="-1.6" max="1.6" groupName="calibration"
+				unit="Cel">
+				<label>Temperature Calibration</label>
+				<description>Adds offset to reported temperature</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="temperatureWarningAlarm" type="boolean" groupName="alarms" required="true">
+				<label>Broadcast Temperature Warning</label>
+				<description>If enabled, the Govee device will notify openHAB if temperature is out of the specified range</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="temperatureWarningMin" type="decimal" min="-20" max="60" step="0.2" groupName="alarms"
+				unit="Cel" required="true">
+				<label>Min Warning Temperature</label>
+				<description>Sets the lowest acceptable temperature value before a warning should be issued</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="temperatureWarningMax" type="decimal" min="-20" max="60" step="0.2" groupName="alarms"
+				unit="Cel" required="true">
+				<label>Max Warning Temperature</label>
+				<description>Sets the highest acceptable temperature value before a warning should be issued</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="humidityCalibration" type="decimal" min="-9" max="9" groupName="calibration" unit="%">
+				<label>Humidity Calibration</label>
+				<description>Adds offset to reported humidity</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="humidityWarningAlarm" type="boolean" groupName="alarms" required="true">
+				<label>Broadcast Humidity Warning</label>
+				<description>If enabled, the Govee device will notify openHAB if humidity is out of the specified range</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="humidityWarningMin" type="decimal" min="0" max="100" step="0.1" groupName="alarms"
+				unit="%" required="true">
+				<label>Min Warning Humidity</label>
+				<description>Sets the lowest acceptable humidity value before a warning should be issued</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="humidityWarningMax" type="decimal" min="0" max="100" step="0.1" groupName="alarms"
+				unit="%" required="true">
+				<label>Max Warning Humidity</label>
+				<description>Sets the highest acceptable humidity value before a warning should be issued</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="govee-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Measured Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="govee-temperature-alarm">
+		<item-type>Switch</item-type>
+		<label>Temperature Warning Alarm</label>
+		<description>
+			If temperature warnings are enabled, then this alarm indicates whether the current temperature is out of
+			range.
+		</description>
+		<category>Alarm</category>
+	</channel-type>
+
+	<channel-type id="govee-humidity-alarm">
+		<item-type>Switch</item-type>
+		<label>Humidity Warning Alarm</label>
+		<description>
+			If humidity warnings are enabled, then this alarm indicates whether the current humidity is out of range.
+		</description>
+		<category>Alarm</category>
+	</channel-type>
+
+</thing:thing-descriptions>

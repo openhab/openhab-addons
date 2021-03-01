@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -118,12 +118,12 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
 
     private State getHumidity() {
         if (getData().getId() != null && getData().getRoomStatId() != null) {
-            final RoomStatDTO roomStat = getDraytonWiseDTO().getRoomStat(getData().getRoomStatId());
+            final RoomStatDTO roomStat = getDraytonWiserDTO().getRoomStat(getData().getRoomStatId());
 
             if (roomStat != null) {
                 final Integer humidity = roomStat.getMeasuredHumidity();
 
-                return humidity == null ? UnDefType.UNDEF : new QuantityType<>(humidity, SmartHomeUnits.PERCENT);
+                return humidity == null ? UnDefType.UNDEF : new QuantityType<>(humidity, Units.PERCENT);
             }
         }
         return UnDefType.UNDEF;
@@ -137,7 +137,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     }
 
     private State getDemand() {
-        return new QuantityType<>(getData().getPercentageDemand(), SmartHomeUnits.PERCENT);
+        return new QuantityType<>(getData().getPercentageDemand(), Units.PERCENT);
     }
 
     private State getHeatRequest() {
@@ -167,10 +167,9 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     private State getBoostRemainingState() {
         final Integer overrideTimeout = getData().getOverrideTimeoutUnixTime();
         if (overrideTimeout != null && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
-            return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L),
-                    SmartHomeUnits.SECOND);
+            return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
         }
-        return new QuantityType<Time>(0, SmartHomeUnits.SECOND);
+        return new QuantityType<Time>(0, Units.SECOND);
     }
 
     private void setBoostDuration(final int durationMinutes) throws DraytonWiserApiException {

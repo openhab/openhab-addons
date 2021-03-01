@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,8 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         }
 
         if (thingType != null) {
-            logger.trace("Adding new pulseaudio {} with name '{}' to smarthome inbox",
-                    device.getClass().getSimpleName(), uidName);
+            logger.trace("Adding new pulseaudio {} with name '{}' to inbox", device.getClass().getSimpleName(),
+                    uidName);
             ThingUID thingUID = new ThingUID(thingType, bridge.getUID(), device.getUIDName());
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withBridge(bridge.getUID()).withLabel(device.getUIDName()).build();

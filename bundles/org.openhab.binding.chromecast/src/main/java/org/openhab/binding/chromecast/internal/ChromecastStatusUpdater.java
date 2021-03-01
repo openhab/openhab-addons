@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -168,7 +168,7 @@ public class ChromecastStatusUpdater {
                 break;
         }
 
-        callback.updateState(CHANNEL_CURRENT_TIME, new QuantityType<>(mediaStatus.currentTime, SmartHomeUnits.SECOND));
+        callback.updateState(CHANNEL_CURRENT_TIME, new QuantityType<>(mediaStatus.currentTime, Units.SECOND));
 
         // If we're playing, paused or buffering but don't have any MEDIA information don't null everything out.
         Media media = mediaStatus.media;
@@ -188,7 +188,7 @@ public class ChromecastStatusUpdater {
 
             // duration can be null when a new song is about to play.
             if (media.duration != null) {
-                duration = new QuantityType<>(media.duration, SmartHomeUnits.SECOND);
+                duration = new QuantityType<>(media.duration, Units.SECOND);
             }
         }
 

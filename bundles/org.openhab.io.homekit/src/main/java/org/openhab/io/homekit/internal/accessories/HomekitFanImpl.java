@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,6 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.ACTIVE_S
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
@@ -38,7 +36,7 @@ class HomekitFanImpl extends AbstractHomekitAccessoryImpl implements FanAccessor
     public HomekitFanImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        activeReader = createBooleanReader(ACTIVE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
+        activeReader = createBooleanReader(ACTIVE_STATUS);
         this.getServices().add(new FanService(this));
     }
 

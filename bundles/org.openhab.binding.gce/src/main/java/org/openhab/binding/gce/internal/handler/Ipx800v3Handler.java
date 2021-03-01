@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -270,7 +270,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                     case ANALOG:
                         state = new DecimalType(value);
                         updateState(channelId + PROPERTY_SEPARATOR + CHANNEL_VOLTAGE,
-                                new QuantityType<>(value * ANALOG_SAMPLING, SmartHomeUnits.VOLT));
+                                new QuantityType<>(value * ANALOG_SAMPLING, Units.VOLT));
                         break;
                     case CONTACT:
                         DigitalInputConfiguration config = configuration.as(DigitalInputConfiguration.class);
@@ -307,7 +307,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                 updateState(channelId, state);
                 if (!portData.isInitializing()) {
                     updateState(channelId + PROPERTY_SEPARATOR + CHANNEL_LAST_STATE_DURATION,
-                            new QuantityType<>(sinceLastChange / 1000, SmartHomeUnits.SECOND));
+                            new QuantityType<>(sinceLastChange / 1000, Units.SECOND));
                 }
                 portData.setData(value, now);
             } else {

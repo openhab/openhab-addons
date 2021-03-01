@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -81,14 +80,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ZmBridgeHandler extends BaseBridgeHandler {
 
-    private static final int REFRESH_INTERVAL_SECONDS = 1;
-    private static final int REFRESH_STARTUP_DELAY_SECONDS = 3;
-
-    private static final int MONITORS_INTERVAL_SECONDS = 5;
-    private static final int MONITORS_INITIAL_DELAY_SECONDS = 3;
-
-    private static final int DISCOVERY_INTERVAL_SECONDS = 300;
-    private static final int DISCOVERY_INITIAL_DELAY_SECONDS = 10;
+    private static final int MONITOR_REFRESH_INTERVAL_SECONDS = 10;
+    private static final int MONITOR_REFRESH_STARTUP_DELAY_SECONDS = 5;
 
     private static final int API_TIMEOUT_MSEC = 10000;
 
@@ -104,10 +97,6 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ZmBridgeHandler.class);
 
     private @Nullable Future<?> refreshMonitorsJob;
-    private final AtomicInteger monitorsCounter = new AtomicInteger();
-
-    private @Nullable MonitorDiscoveryService discoveryService;
-    private final AtomicInteger discoveryCounter = new AtomicInteger();
 
     private List<Monitor> savedMonitors = new ArrayList<>();
 
@@ -115,9 +104,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     private boolean useSSL;
     private @Nullable String portNumber;
     private String urlPath = DEFAULT_URL_PATH;
-    private int monitorsInterval;
-    private int discoveryInterval;
-    private boolean discoveryEnabled;
+    private int monitorRefreshInterval;
+    private boolean backgroundDiscoveryEnabled;
     private int defaultAlarmDuration;
     private @Nullable Integer defaultImageRefreshInterval;
 
@@ -144,17 +132,15 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
 
         Integer value;
         value = config.refreshInterval;
-        monitorsInterval = value == null ? MONITORS_INTERVAL_SECONDS : value;
-
-        value = config.discoveryInterval;
-        discoveryInterval = value == null ? DISCOVERY_INTERVAL_SECONDS : value;
+        monitorRefreshInterval = value == null ? MONITOR_REFRESH_INTERVAL_SECONDS : value;
 
         value = config.defaultAlarmDuration;
         defaultAlarmDuration = value == null ? DEFAULT_ALARM_DURATION_SECONDS : value;
 
         defaultImageRefreshInterval = config.defaultImageRefreshInterval;
 
-        discoveryEnabled = config.discoveryEnabled == null ? false : config.discoveryEnabled.booleanValue();
+        backgroundDiscoveryEnabled = config.discoveryEnabled;
+        logger.debug("Bridge: Background discovery is {}", backgroundDiscoveryEnabled == true ? "ENABLED" : "DISABLED");
 
         host = config.host;
         useSSL = config.useSSL.booleanValue();
@@ -222,12 +208,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         return Collections.singleton(MonitorDiscoveryService.class);
     }
 
-    public void setDiscoveryService(MonitorDiscoveryService discoveryService) {
-        this.discoveryService = discoveryService;
-    }
-
-    public boolean isDiscoveryEnabled() {
-        return discoveryEnabled;
+    public boolean isBackgroundDiscoveryEnabled() {
+        return backgroundDiscoveryEnabled;
     }
 
     public Integer getDefaultAlarmDuration() {
@@ -368,8 +350,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
             parameters.add("sort=StartTime");
             parameters.add("direction=desc");
             parameters.add("limit=1");
-            String response = executeGet(
-                    buildUrlWithParameters(String.format("/api/events/index/MonitorId:%s.json", id), parameters));
+            String response = executeGet(buildUrlWithParameters(
+                    String.format("/api/events/index/MonitorId:%s/Name!=:New%%20Event.json", id), parameters));
             EventsDTO events = GSON.fromJson(response, EventsDTO.class);
             if (events != null && events.eventsList != null && events.eventsList.size() == 1) {
                 EventDTO e = events.eventsList.get(0).event;
@@ -571,40 +553,14 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         return false;
     }
 
-    /*
-     * The refresh job is executed every second
-     * - updates the monitor handlers every monitorsInterval seconds, and
-     * - runs the monitor discovery every discoveryInterval seconds
-     */
-    private void refresh() {
-        refreshMonitors();
-        discoverMonitors();
-    }
-
     @SuppressWarnings("null")
     private void refreshMonitors() {
-        if (monitorsCounter.getAndDecrement() == 0) {
-            monitorsCounter.set(monitorsInterval);
-            List<Monitor> monitors = getMonitors();
-            savedMonitors = monitors;
-            for (Monitor monitor : monitors) {
-                ZmMonitorHandler handler = monitorHandlers.get(monitor.getId());
-                if (handler != null) {
-                    handler.updateStatus(monitor);
-                }
-            }
-        }
-    }
-
-    private void discoverMonitors() {
-        if (isDiscoveryEnabled()) {
-            if (discoveryCounter.getAndDecrement() == 0) {
-                discoveryCounter.set(discoveryInterval);
-                MonitorDiscoveryService localDiscoveryService = discoveryService;
-                if (localDiscoveryService != null) {
-                    logger.trace("Bridge: Running monitor discovery");
-                    localDiscoveryService.startBackgroundDiscovery();
-                }
+        List<Monitor> monitors = getMonitors();
+        savedMonitors = monitors;
+        for (Monitor monitor : monitors) {
+            ZmMonitorHandler handler = monitorHandlers.get(monitor.getId());
+            if (handler != null) {
+                handler.updateStatus(monitor);
             }
         }
     }
@@ -612,10 +568,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     private void scheduleRefreshJob() {
         logger.debug("Bridge: Scheduling monitors refresh job");
         cancelRefreshJob();
-        monitorsCounter.set(MONITORS_INITIAL_DELAY_SECONDS);
-        discoveryCounter.set(DISCOVERY_INITIAL_DELAY_SECONDS);
-        refreshMonitorsJob = scheduler.scheduleWithFixedDelay(this::refresh, REFRESH_STARTUP_DELAY_SECONDS,
-                REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        refreshMonitorsJob = scheduler.scheduleWithFixedDelay(this::refreshMonitors,
+                MONITOR_REFRESH_STARTUP_DELAY_SECONDS, monitorRefreshInterval, TimeUnit.SECONDS);
     }
 
     private void cancelRefreshJob() {
@@ -623,6 +577,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         if (localRefreshThermostatsJob != null) {
             localRefreshThermostatsJob.cancel(true);
             logger.debug("Bridge: Canceling monitors refresh job");
+            refreshMonitorsJob = null;
         }
     }
 }

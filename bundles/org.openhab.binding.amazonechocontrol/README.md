@@ -5,6 +5,7 @@ This binding can control Amazon Echo devices (Alexa).
 It provides features to control and view the current state of echo devices:
 
 - use echo device as text to speech from a rule
+- execute a text command
 - volume
 - pause/continue/next track/previous track
 - connect/disconnect bluetooth devices
@@ -76,6 +77,7 @@ The configuration of your amazon account must be done in the 'Amazon Account' de
 1) Create an 'Amazon Account' thing
 2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
 3) You should see now a message that the login was successful
+4) If you encounter redirect/page refresh issues, enable two-factor authentication (2FA) on your Amazon account.
 
 ## Discovery
 
@@ -163,7 +165,7 @@ It will be configured at runtime by using the save channel to store the current 
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying its id or stops playing if an empty string was provided
 | radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openHAB start)
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by its id or stops playing if an empty string was provided
-| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
+| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided.
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openHAB start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the Amazon software)
 | nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
@@ -178,6 +180,7 @@ It will be configured at runtime by using the save channel to store the current 
 | announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
+| textCommand           | String      | W           | echo, echoshow, echospot      | Write Only! Execute a text command (like a spoken text)                    
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
 | mediaProgressTime     | Number:Time | R/W         | echo, echoshow, echospot      | Media play time 
@@ -197,7 +200,6 @@ This can be used to call Alexa API from rules.
 E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
 http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
-
 
 ### Example
 
@@ -346,7 +348,7 @@ sitemap amazonechocontrol label="Echo Devices"
             // Change the <YOUR_DEVICE_MAC> Place holder with the MAC address shown, if Alexa is connected to the device
             Selection item=Echo_Living_Room_BluetoothMAC mappings=[ ''='Disconnected', '<YOUR_DEVICE_MAC>'='Bluetooth Device 1', '<YOUR_DEVICE_MAC>'='Bluetooth Device 2']
 
-            // These are only view of the possible options. Enable ShowIDsInGUI in the binding configuration and look in drop-down-box of this channel in the Paper UI Control section
+            // These are only view of the possible options.
             Selection item=Echo_Living_Room_PlayAlarmSound mappings=[ ''='None', 'ECHO:system_alerts_soothing_01'='Adrift', 'ECHO:system_alerts_atonal_02'='Clangy']
 
             Switch  item=Echo_Living_Room_Bluetooth
@@ -427,7 +429,7 @@ sitemap flashbriefings label="Flash Briefings"
 
 ## Smart Home Devices
 
-Note: the cannels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
+Note: the channels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
 The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
 
 #### Supported Things
@@ -444,11 +446,11 @@ The polling interval configured in the Account Thing to get the state is specifi
 |--------------------------|---------------------------------------------------------------------------|
 | id                       | The id of the device or device group                                      |
 
-The only possibility to find out the id is by using the discover function in the PaperUI. You can use then the id, if you want define the Thing in a file.
+The only possibility to find out the id is by using the discover function in the UI. You can use then the id, if you want define the Thing in a file.
 
 #### Channels
 
-The channels of the smarthome devices will be generated at runtime. Check in the paperUI thing configurations, which channels are created.
+The channels of the smarthome devices will be generated at runtime. Check in the UI thing configurations, which channels are created.
 
 | Channel Type ID          | Item Type | Access Mode | Thing Type                    | Description                                                                                                                                                                
 |--------------------------|-----------|-------------|-------------------------------|------------------------------------------------------------------------------------------
@@ -503,7 +505,7 @@ Switch Arm_State "State" { channel="amazonechocontrol:smartHomeDevice:account1:s
 Switch Group_State "On/Off" { channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:powerState" }
 ```
 
-The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function in the PaperUI.
+The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function.
 
 #### smarthome.sitemap:
 

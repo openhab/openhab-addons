@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,7 @@ public class HueBindingConstants {
 
     // List all channels
     public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
+    public static final String CHANNEL_COLORTEMPERATURE_ABS = "color_temperature_abs";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_ALERT = "alert";
@@ -82,6 +83,9 @@ public class HueBindingConstants {
     // List all triggers
     public static final String EVENT_DIMMER_SWITCH = "dimmer_switch_event";
     public static final String EVENT_TAP_SWITCH = "tap_switch_event";
+
+    // Binding configuration properties
+    public static final String REMOVAL_GRACE_PERIOD = "removalGracePeriod";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";

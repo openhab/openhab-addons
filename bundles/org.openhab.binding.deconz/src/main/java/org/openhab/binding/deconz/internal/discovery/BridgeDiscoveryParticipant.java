@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.ManufacturerDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -67,7 +69,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         // Add host+port
         String host = descriptorURL.getHost();
         int port = descriptorURL.getPort();
-        name = name + " (" + host + ":" + String.valueOf(port) + ")";
+        name = name + " (" + host + ":" + port + ")";
 
         Map<String, Object> properties = new TreeMap<>();
 
@@ -82,9 +84,15 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         DeviceDetails details = device.getDetails();
-        if (details != null && details.getManufacturerDetails() != null
-                && "dresden elektronik".equals(details.getManufacturerDetails().getManufacturer())) {
-            return new ThingUID(BRIDGE_TYPE, details.getSerialNumber());
+        if (details != null) {
+            ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
+            if (manufacturerDetails != null) {
+                URI manufacturerUri = manufacturerDetails.getManufacturerURI();
+                if ((manufacturerUri != null && manufacturerUri.toString().contains("dresden"))
+                        || "dresden elektronik".equals(manufacturerDetails.getManufacturer())) {
+                    return new ThingUID(BRIDGE_TYPE, details.getSerialNumber());
+                }
+            }
         }
         return null;
     }

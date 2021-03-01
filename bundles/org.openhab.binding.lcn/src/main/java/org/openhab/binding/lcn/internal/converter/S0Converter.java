@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ public class S0Converter extends ValueConverter {
     protected double pulsesPerKwh;
 
     public S0Converter(@Nullable Object parameter) {
-        super(SmartHomeUnits.WATT, n -> 0d, h -> 0L);
+        super(Units.WATT, n -> 0d, h -> 0L);
 
         if (parameter == null) {
             pulsesPerKwh = 1000;

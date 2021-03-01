@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.remoteopenhab.internal.rest;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -37,7 +39,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabChannelTriggerEvent;
@@ -86,9 +90,12 @@ public class RemoteopenhabRestClient {
     private @Nullable String restApiVersion;
     private Map<String, @Nullable String> apiEndPointsUrls = new HashMap<>();
     private @Nullable String topicNamespace;
+    private boolean authenticateAnyway;
     private String accessToken;
+    private String credentialToken;
     private boolean trustedCertificate;
     private boolean connected;
+    private boolean completed;
 
     private @Nullable SseEventSource eventSource;
     private long lastEventTimestamp;
@@ -100,6 +107,7 @@ public class RemoteopenhabRestClient {
         this.eventSourceFactory = eventSourceFactory;
         this.jsonParser = jsonParser;
         this.accessToken = "";
+        this.credentialToken = "";
     }
 
     public void setHttpClient(HttpClient httpClient) {
@@ -118,8 +126,16 @@ public class RemoteopenhabRestClient {
         this.restUrl = restUrl;
     }
 
-    public void setAccessToken(String accessToken) {
+    public void setAuthenticationData(boolean authenticateAnyway, String accessToken, String username,
+            String password) {
+        this.authenticateAnyway = authenticateAnyway;
         this.accessToken = accessToken;
+        if (username.isBlank() || password.isBlank()) {
+            this.credentialToken = "";
+        } else {
+            String token = username + ":" + password;
+            this.credentialToken = Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     public void setTrustedCertificate(boolean trustedCertificate) {
@@ -128,7 +144,7 @@ public class RemoteopenhabRestClient {
 
     public void tryApi() throws RemoteopenhabException {
         try {
-            String jsonResponse = executeUrl(HttpMethod.GET, getRestUrl(), "application/json", null, null);
+            String jsonResponse = executeGetUrl(getRestUrl(), "application/json", false, false);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -149,10 +165,14 @@ public class RemoteopenhabRestClient {
         }
     }
 
-    public List<RemoteopenhabItem> getRemoteItems() throws RemoteopenhabException {
+    public List<RemoteopenhabItem> getRemoteItems(@Nullable String fields) throws RemoteopenhabException {
         try {
             String url = String.format("%s?recursive=false", getRestApiUrl("items"));
-            String jsonResponse = executeUrl(HttpMethod.GET, url, "application/json", null, null);
+            if (fields != null) {
+                url += "&fields=" + fields;
+            }
+            boolean asyncReading = fields == null || Arrays.asList(fields.split(",")).contains("state");
+            String jsonResponse = executeGetUrl(url, "application/json", false, asyncReading);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -166,7 +186,7 @@ public class RemoteopenhabRestClient {
     public String getRemoteItemState(String itemName) throws RemoteopenhabException {
         try {
             String url = String.format("%s/%s/state", getRestApiUrl("items"), itemName);
-            return executeUrl(HttpMethod.GET, url, "text/plain", null, null);
+            return executeGetUrl(url, "text/plain", false, true);
         } catch (RemoteopenhabException e) {
             throw new RemoteopenhabException("Failed to get the state of remote item " + itemName
                     + " using the items REST API: " + e.getMessage(), e);
@@ -176,10 +196,9 @@ public class RemoteopenhabRestClient {
     public void sendCommandToRemoteItem(String itemName, Command command) throws RemoteopenhabException {
         try {
             String url = String.format("%s/%s", getRestApiUrl("items"), itemName);
-            InputStream stream = new ByteArrayInputStream(command.toFullString().getBytes(StandardCharsets.UTF_8));
-            executeUrl(HttpMethod.POST, url, "application/json", stream, "text/plain");
-            stream.close();
-        } catch (RemoteopenhabException | IOException e) {
+            executeUrl(HttpMethod.POST, url, "application/json", command.toFullString(), "text/plain", false, false,
+                    true);
+        } catch (RemoteopenhabException e) {
             throw new RemoteopenhabException("Failed to send command to the remote item " + itemName
                     + " using the items REST API: " + e.getMessage(), e);
         }
@@ -187,7 +206,7 @@ public class RemoteopenhabRestClient {
 
     public List<RemoteopenhabThing> getRemoteThings() throws RemoteopenhabException {
         try {
-            String jsonResponse = executeUrl(HttpMethod.GET, getRestApiUrl("things"), "application/json", null, null);
+            String jsonResponse = executeGetUrl(getRestApiUrl("things"), "application/json", true, false);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -201,7 +220,7 @@ public class RemoteopenhabRestClient {
     public RemoteopenhabThing getRemoteThing(String uid) throws RemoteopenhabException {
         try {
             String url = String.format("%s/%s", getRestApiUrl("things"), uid);
-            String jsonResponse = executeUrl(HttpMethod.GET, url, "application/json", null, null);
+            String jsonResponse = executeGetUrl(url, "application/json", true, false);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -218,7 +237,14 @@ public class RemoteopenhabRestClient {
 
     private String getRestApiUrl(String endPoint) throws RemoteopenhabException {
         String url = apiEndPointsUrls.get(endPoint);
-        return url != null ? url : getRestUrl() + "/" + endPoint;
+        if (url == null) {
+            url = getRestUrl();
+            if (!url.endsWith("/")) {
+                url += "/";
+            }
+            url += endPoint;
+        }
+        return url;
     }
 
     public String getTopicNamespace() {
@@ -234,16 +260,17 @@ public class RemoteopenhabRestClient {
         }
     }
 
-    public void stop() {
+    public void stop(boolean waitingForCompletion) {
         synchronized (startStopLock) {
             logger.debug("Closing EventSource");
-            closeEventSource(0, TimeUnit.SECONDS);
+            closeEventSource(waitingForCompletion);
             logger.debug("EventSource stopped");
             lastEventTimestamp = 0;
         }
     }
 
     private SseEventSource createEventSource(String restSseUrl) {
+        String credentialToken = restSseUrl.startsWith("https:") || authenticateAnyway ? this.credentialToken : "";
         Client client;
         // Avoid a timeout exception after 1 minute by setting the read timeout to 0 (infinite)
         if (trustedCertificate) {
@@ -253,14 +280,14 @@ public class RemoteopenhabRestClient {
                         public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                             return true;
                         }
-                    }).readTimeout(0, TimeUnit.SECONDS).register(new RemoteopenhabStreamingRequestFilter(accessToken))
-                    .build();
+                    }).readTimeout(0, TimeUnit.SECONDS)
+                    .register(new RemoteopenhabStreamingRequestFilter(credentialToken)).build();
         } else {
             client = clientBuilder.readTimeout(0, TimeUnit.SECONDS)
-                    .register(new RemoteopenhabStreamingRequestFilter(accessToken)).build();
+                    .register(new RemoteopenhabStreamingRequestFilter(credentialToken)).build();
         }
         SseEventSource eventSource = eventSourceFactory.newSource(client.target(restSseUrl));
-        eventSource.register(this::onEvent, this::onError);
+        eventSource.register(this::onEvent, this::onError, this::onComplete);
         return eventSource;
     }
 
@@ -276,7 +303,7 @@ public class RemoteopenhabRestClient {
             return;
         }
 
-        closeEventSource(10, TimeUnit.SECONDS);
+        closeEventSource(true);
 
         logger.debug("Opening new EventSource {}", url);
         SseEventSource localEventSource = createEventSource(url);
@@ -285,12 +312,12 @@ public class RemoteopenhabRestClient {
         eventSource = localEventSource;
     }
 
-    private void closeEventSource(long timeout, TimeUnit timeoutUnit) {
+    private void closeEventSource(boolean waitingForCompletion) {
         SseEventSource localEventSource = eventSource;
         if (localEventSource != null) {
-            if (!localEventSource.isOpen()) {
+            if (!localEventSource.isOpen() || completed) {
                 logger.debug("Existing EventSource is already closed");
-            } else if (localEventSource.close(timeout, timeoutUnit)) {
+            } else if (localEventSource.close(waitingForCompletion ? 10 : 0, TimeUnit.SECONDS)) {
                 logger.debug("Succesfully closed existing EventSource");
             } else {
                 logger.debug("Failed to close existing EventSource");
@@ -356,14 +383,20 @@ public class RemoteopenhabRestClient {
                 case "ItemStateEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "state");
                     payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
-                    itemsListeners
-                            .forEach(listener -> listener.onItemStateEvent(itemName, payload.type, payload.value));
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, false));
+                    break;
+                case "ItemStateChangedEvent":
+                    itemName = extractItemNameFromTopic(event.topic, event.type, "statechanged");
+                    payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, true));
                     break;
                 case "GroupItemStateChangedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "statechanged");
                     payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
-                    itemsListeners
-                            .forEach(listener -> listener.onItemStateEvent(itemName, payload.type, payload.value));
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, false));
                     break;
                 case "ItemAddedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "added");
@@ -411,7 +444,6 @@ public class RemoteopenhabRestClient {
                             .forEach(listener -> listener.onChannelTriggered(triggerEvent.channel, triggerEvent.event));
                     break;
                 case "ItemStatePredictedEvent":
-                case "ItemStateChangedEvent":
                 case "ItemCommandEvent":
                 case "ThingStatusInfoEvent":
                 case "ThingUpdatedEvent":
@@ -425,6 +457,12 @@ public class RemoteopenhabRestClient {
             logger.debug("An exception occurred while processing the inbound '{}' event containg data: {}", name, data,
                     e);
         }
+    }
+
+    private void onComplete() {
+        logger.debug("Disconnected from streaming events");
+        completed = true;
+        listeners.forEach(listener -> listener.onDisconnected());
     }
 
     private void onError(Throwable error) {
@@ -454,34 +492,90 @@ public class RemoteopenhabRestClient {
         return parts[2];
     }
 
-    public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable InputStream content,
-            @Nullable String contentType) throws RemoteopenhabException {
-        final Request request = httpClient.newRequest(url).method(httpMethod).timeout(REQUEST_TIMEOUT,
-                TimeUnit.MILLISECONDS);
+    public String executeGetUrl(String url, String acceptHeader, boolean provideAccessToken, boolean asyncReading)
+            throws RemoteopenhabException {
+        return executeUrl(HttpMethod.GET, url, acceptHeader, null, null, provideAccessToken, asyncReading, true);
+    }
 
-        request.header(HttpHeaders.ACCEPT, acceptHeader);
-        if (!accessToken.isEmpty()) {
-            request.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+    public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable String content,
+            @Nullable String contentType, boolean provideAccessToken, boolean asyncReading, boolean retryIfEOF)
+            throws RemoteopenhabException {
+        final Request request = httpClient.newRequest(url).method(httpMethod)
+                .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).followRedirects(false)
+                .header(HttpHeaders.ACCEPT, acceptHeader);
+
+        if (url.startsWith("https:") || authenticateAnyway) {
+            boolean useAlternativeHeader = false;
+            if (!credentialToken.isEmpty()) {
+                request.header(HttpHeaders.AUTHORIZATION, "Basic " + credentialToken);
+                useAlternativeHeader = true;
+            }
+            if (provideAccessToken && !accessToken.isEmpty()) {
+                if (useAlternativeHeader) {
+                    request.header("X-OPENHAB-TOKEN", accessToken);
+                } else {
+                    request.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+                }
+            }
         }
 
         if (content != null && (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod))
                 && contentType != null) {
-            try (final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(
-                    content)) {
-                request.content(inputStreamContentProvider, contentType);
-            }
+            request.content(new StringContentProvider(content), contentType);
         }
 
+        logger.debug("Request {} {}", request.getMethod(), request.getURI());
+
         try {
-            ContentResponse response = request.send();
-            int statusCode = response.getStatus();
-            if (statusCode >= HttpStatus.BAD_REQUEST_400) {
-                String statusLine = statusCode + " " + response.getReason();
-                throw new RemoteopenhabException("HTTP call failed: " + statusLine);
+            if (asyncReading) {
+                InputStreamResponseListener listener = new InputStreamResponseListener();
+                request.send(listener);
+                Response response = listener.get(5, TimeUnit.SECONDS);
+                int statusCode = response.getStatus();
+                if (statusCode != HttpStatus.OK_200) {
+                    response.abort(new Exception(response.getReason()));
+                    String statusLine = statusCode + " " + response.getReason();
+                    throw new RemoteopenhabException("HTTP call failed: " + statusLine);
+                }
+                ByteArrayOutputStream responseContent = new ByteArrayOutputStream();
+                try (InputStream input = listener.getInputStream()) {
+                    input.transferTo(responseContent);
+                }
+                return new String(responseContent.toByteArray(), StandardCharsets.UTF_8.name());
+            } else {
+                ContentResponse response = request.send();
+                int statusCode = response.getStatus();
+                if (statusCode == HttpStatus.MOVED_PERMANENTLY_301 || statusCode == HttpStatus.FOUND_302) {
+                    String locationHeader = response.getHeaders().get(HttpHeaders.LOCATION);
+                    if (locationHeader != null && !locationHeader.isBlank()) {
+                        logger.debug("The remopte server redirected the request to this URL: {}", locationHeader);
+                        return executeUrl(httpMethod, locationHeader, acceptHeader, content, contentType,
+                                provideAccessToken, asyncReading, retryIfEOF);
+                    } else {
+                        String statusLine = statusCode + " " + response.getReason();
+                        throw new RemoteopenhabException("HTTP call failed: " + statusLine);
+                    }
+                } else if (statusCode >= HttpStatus.BAD_REQUEST_400) {
+                    String statusLine = statusCode + " " + response.getReason();
+                    throw new RemoteopenhabException("HTTP call failed: " + statusLine);
+                }
+                String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
+                        : StandardCharsets.UTF_8.name();
+                return new String(response.getContent(), encoding);
             }
-            String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
-                    : StandardCharsets.UTF_8.name();
-            return new String(response.getContent(), encoding);
+        } catch (RemoteopenhabException e) {
+            throw e;
+        } catch (ExecutionException e) {
+            // After a long network outage, the first HTTP request will fail with an EOFException exception.
+            // We retry the request a second time in this case.
+            Throwable cause = e.getCause();
+            if (retryIfEOF && cause instanceof EOFException) {
+                logger.debug("EOFException - retry the request");
+                return executeUrl(httpMethod, url, acceptHeader, content, contentType, provideAccessToken, asyncReading,
+                        false);
+            } else {
+                throw new RemoteopenhabException(e);
+            }
         } catch (Exception e) {
             throw new RemoteopenhabException(e);
         }

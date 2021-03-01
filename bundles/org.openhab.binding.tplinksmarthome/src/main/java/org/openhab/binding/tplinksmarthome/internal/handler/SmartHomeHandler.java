@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -251,7 +251,7 @@ public class SmartHomeHandler extends BaseThingHandler {
         if (deviceState == null) {
             state = UnDefType.UNDEF;
         } else if (CHANNEL_RSSI.equals(channelId)) {
-            state = new QuantityType<>(deviceState.getSysinfo().getRssi(), SmartHomeUnits.DECIBEL_MILLIWATTS);
+            state = new QuantityType<>(deviceState.getSysinfo().getRssi(), Units.DECIBEL_MILLIWATTS);
         } else {
             state = smartHomeDevice.updateChannel(channelUID, deviceState);
         }

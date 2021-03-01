@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,18 +38,16 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
     public String createQuery(FilterCriteria criteria, String retentionPolicy) {
         Flux flux = Flux.from(retentionPolicy);
 
-        if (criteria.getBeginDate() != null || criteria.getEndDate() != null) {
-            RangeFlux range = flux.range();
-            if (criteria.getBeginDate() != null) {
-                range = range.withStart(criteria.getBeginDate().toInstant());
-            }
-            if (criteria.getEndDate() != null) {
-                range = range.withStop(criteria.getEndDate().toInstant());
-            }
-            flux = range;
+        RangeFlux range = flux.range();
+        if (criteria.getBeginDate() != null) {
+            range = range.withStart(criteria.getBeginDate().toInstant());
         } else {
-            flux = flux.range(-100L, ChronoUnit.YEARS); // Flux needs a mandatory range
+            range = flux.range(-100L, ChronoUnit.YEARS); // Flux needs a mandatory start range
         }
+        if (criteria.getEndDate() != null) {
+            range = range.withStop(criteria.getEndDate().toInstant());
+        }
+        flux = range;
 
         if (criteria.getItemName() != null) {
             flux = flux.filter(measurement().equal(criteria.getItemName()));

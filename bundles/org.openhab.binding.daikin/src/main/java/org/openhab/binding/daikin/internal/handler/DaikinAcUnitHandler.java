@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -102,14 +102,14 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
         if (sensorInfo.indoorhumidity.isPresent()) {
             updateState(DaikinBindingConstants.CHANNEL_HUMIDITY,
-                    new QuantityType<>(sensorInfo.indoorhumidity.get(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(sensorInfo.indoorhumidity.get(), Units.PERCENT));
         } else {
             updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
         }
 
         if (sensorInfo.compressorfrequency.isPresent()) {
             updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ,
-                    new QuantityType<>(sensorInfo.compressorfrequency.get(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(sensorInfo.compressorfrequency.get(), Units.PERCENT));
         } else {
             updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, UnDefType.UNDEF);
         }
@@ -247,13 +247,13 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
      * @param maybePower
      */
     protected void updateEnergyYearChannel(String channelPrefix, Optional<Integer[]> maybePower) {
-        IntStream.range(1, 13)
-                .forEach(i -> updateState(
-                        String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channelPrefix, i),
-                        maybePower.<State> map(t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1),
-                                SmartHomeUnits.KILOWATT_HOUR)).orElse(UnDefType.UNDEF))
+        IntStream.range(1, 13).forEach(i -> updateState(
+                String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channelPrefix, i),
+                maybePower.<State> map(
+                        t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1), Units.KILOWATT_HOUR))
+                        .orElse(UnDefType.UNDEF))
 
-                );
+        );
     }
 
     @Override

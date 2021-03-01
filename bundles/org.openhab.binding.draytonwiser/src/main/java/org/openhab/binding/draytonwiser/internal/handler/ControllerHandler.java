@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -60,6 +60,8 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
                 setAwayMode(onOffState);
             } else if (CHANNEL_ECO_MODE_STATE.equals(channelId)) {
                 setEcoMode(onOffState);
+            } else if (CHANNEL_COMFORT_MODE_STATE.equals(channelId)) {
+                setComfortMode(onOffState);
             }
         }
     }
@@ -76,6 +78,7 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
         updateState(CHANNEL_HEATCHANNEL_2_DEMAND_STATE, this::getHeatChannel2DemandState);
         updateState(CHANNEL_AWAY_MODE_STATE, this::getAwayModeState);
         updateState(CHANNEL_ECO_MODE_STATE, this::getEcoModeState);
+        updateState(CHANNEL_COMFORT_MODE_STATE, this::getComfortModeState);
     }
 
     @Override
@@ -110,13 +113,13 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
 
     private State getHeatChannel1Demand() {
         return getData().heatingChannels.size() >= 1
-                ? new QuantityType<>(getData().heatingChannels.get(0).getPercentageDemand(), SmartHomeUnits.PERCENT)
+                ? new QuantityType<>(getData().heatingChannels.get(0).getPercentageDemand(), Units.PERCENT)
                 : UnDefType.UNDEF;
     }
 
     private State getHeatChannel2Demand() {
         return getData().heatingChannels.size() >= 2
-                ? new QuantityType<>(getData().heatingChannels.get(1).getPercentageDemand(), SmartHomeUnits.PERCENT)
+                ? new QuantityType<>(getData().heatingChannels.get(1).getPercentageDemand(), Units.PERCENT)
                 : UnDefType.UNDEF;
     }
 
@@ -139,12 +142,21 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
         return OnOffType.from(getData().system.getEcoModeEnabled() != null && getData().system.getEcoModeEnabled());
     }
 
+    private State getComfortModeState() {
+        return OnOffType
+                .from(getData().system.getComfortModeEnabled() != null && getData().system.getComfortModeEnabled());
+    }
+
     private void setAwayMode(final Boolean awayMode) throws DraytonWiserApiException {
         getApi().setAwayMode(awayMode);
     }
 
     private void setEcoMode(final Boolean ecoMode) throws DraytonWiserApiException {
         getApi().setEcoMode(ecoMode);
+    }
+
+    private void setComfortMode(final Boolean comfortMode) throws DraytonWiserApiException {
+        getApi().setComfortMode(comfortMode);
     }
 
     static class ControllerData {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,10 +22,14 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
@@ -54,7 +58,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -88,6 +92,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
+
+    private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream
+            .of(RobotCababilities.SEGMENT_STATUS, RobotCababilities.MAP_STATUS, RobotCababilities.LED_STATUS,
+                    RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
+                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE)
+            .collect(Collectors.toSet()));
 
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
@@ -161,6 +171,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
+        updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
     }
 
     @Override
@@ -227,9 +238,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
-        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()) {
+        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
+                && !command.toString().contentEquals("-")) {
             sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
-            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), UnDefType.UNDEF);
+            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
             forceStatusUpdate();
             return;
         }
@@ -270,7 +282,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (statusInfo.getCleanTime() != null) {
             updateState(CHANNEL_CLEAN_TIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime()), SmartHomeUnits.MINUTE));
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime()), Units.MINUTE));
         }
         safeUpdateState(CHANNEL_DND_ENABLED, statusInfo.getDndEnabled());
 
@@ -287,6 +299,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         safeUpdateState(CHANNEL_IN_CLEANING, statusInfo.getInCleaning());
         safeUpdateState(CHANNEL_MAP_PRESENT, statusInfo.getMapPresent());
         if (statusInfo.getState() != null) {
+            stateId = statusInfo.getState();
             StatusType state = StatusType.getType(statusInfo.getState());
             updateState(CHANNEL_STATE, new StringType(state.getDescription()));
             updateState(CHANNEL_STATE_ID, new DecimalType(statusInfo.getState()));
@@ -342,6 +355,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_FORBIDDEN)) {
             safeUpdateState(RobotCababilities.MOP_FORBIDDEN.getChannel(), statusInfo.getMopForbiddenEnable());
         }
+        if (deviceCapabilities.containsKey(RobotCababilities.LOCATING)) {
+            safeUpdateState(RobotCababilities.LOCATING.getChannel(), statusInfo.getIsLocating());
+        }
         return true;
     }
 
@@ -350,20 +366,20 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         int sideBrush = consumablesData.get("side_brush_work_time").getAsInt();
         int filter = consumablesData.get("filter_work_time").getAsInt();
         int sensor = consumablesData.get("sensor_dirty_time").getAsInt();
-        updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_MAIN_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(mainBrush, ConsumablesType.MAIN_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_SIDE_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sideBrush, ConsumablesType.SIDE_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(filter, ConsumablesType.FILTER)));
-        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sensor, ConsumablesType.SENSOR)));
         return true;
@@ -382,7 +398,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean updateHistory(JsonArray historyData) {
         logger.trace("Cleaning history data: {}", historyData.toString());
         updateState(CHANNEL_HISTORY_TOTALTIME,
-                new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), SmartHomeUnits.MINUTE));
+                new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), Units.MINUTE));
         updateState(CHANNEL_HISTORY_TOTALAREA,
                 new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
@@ -414,7 +430,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         historyRecord.addProperty("finished", finished);
         updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(startTime));
         updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(endTime));
-        updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, SmartHomeUnits.MINUTE));
+        updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
         updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(area, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_ERROR, new DecimalType(error));
         updateState(CHANNEL_HISTORY_FINISH, new DecimalType(finished));
@@ -457,6 +473,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             if (lastMap.isEmpty() || stateId != 8) {
                 if (isLinked(mapChannelUid)) {
                     map.getValue();
+                }
+            }
+            for (RobotCababilities cmd : FEATURES_CHANNELS) {
+                if (isLinked(cmd.getChannel())) {
+                    sendCommand(cmd.getCommand());
                 }
             }
         } catch (Exception e) {
@@ -525,8 +546,51 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     }
                 }
                 break;
+            case GET_MAP_STATUS:
+            case GET_SEGMENT_STATUS:
+            case GET_LED_STATUS:
+                updateNumericChannel(response);
+                break;
+            case GET_CARPET_MODE:
+            case GET_FW_FEATURES:
+            case GET_CUSTOMIZED_CLEAN_MODE:
+            case GET_MULTI_MAP_LIST:
+            case GET_ROOM_MAPPING:
+                for (RobotCababilities cmd : FEATURES_CHANNELS) {
+                    if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
+                        updateState(cmd.getChannel(), new StringType(response.getResult().toString()));
+                        break;
+                    }
+                }
+                break;
             default:
                 break;
+        }
+    }
+
+    private void updateNumericChannel(MiIoSendCommand response) {
+        RobotCababilities capabilityChannel = null;
+        for (RobotCababilities cmd : FEATURES_CHANNELS) {
+            if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
+                capabilityChannel = cmd;
+                break;
+            }
+        }
+        if (capabilityChannel != null) {
+            if (response.getResult().isJsonArray() && response.getResult().getAsJsonArray().get(0).isJsonPrimitive()) {
+                try {
+                    Integer stat = response.getResult().getAsJsonArray().get(0).getAsInt();
+                    updateState(capabilityChannel.getChannel(), new DecimalType(stat));
+                    return;
+                } catch (ClassCastException | IllegalStateException e) {
+                    logger.debug("Could not update numeric channel {} with '{}': {}", capabilityChannel.getChannel(),
+                            response.getResult(), e.getMessage());
+                }
+            } else {
+                logger.debug("Could not update numeric channel {} with '{}': Not in expected format",
+                        capabilityChannel.getChannel(), response.getResult());
+            }
+            updateState(capabilityChannel.getChannel(), UnDefType.UNDEF);
         }
     }
 

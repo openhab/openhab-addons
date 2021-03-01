@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,9 @@ public class ShellyThingConfiguration {
     public int updateInterval = 60; // schedule interval for the update job
     public int lowBattery = 15; // threshold for battery value
     public boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
+
+    public int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
+    public int favoriteDOWN = 0; // Roller position favorite when control channel receives ON, 0=none
 
     public boolean eventsButton = false; // true: register for Relay btn_xxx events
     public boolean eventsSwitch = true; // true: register for device out_xxx events

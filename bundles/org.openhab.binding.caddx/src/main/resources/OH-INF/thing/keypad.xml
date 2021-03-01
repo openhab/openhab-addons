@@ -12,12 +12,24 @@
 		<label>Caddx Alarm Keypad</label>
 		<description>Represents any of the keypads of the Caddx Alarm System.</description>
 
+		<channels>
+			<channel id="keypad_key_pressed" typeId="keypad_button_press">
+				<label>Key</label>
+				<description>Key pressed</description>
+			</channel>
+		</channels>
+
 		<representation-property>keypadAddress</representation-property>
 
 		<config-description>
-			<parameter name="keypadAddress" type="text" required="true">
+			<parameter name="keypadAddress" type="integer" required="true" min="192" max="255">
 				<label>Keypad Address</label>
 				<description>The Keypad Address.</description>
+				<default>192</default>
+			</parameter>
+			<parameter name="terminalModeSeconds" type="integer" required="true" min="1" max="120">
+				<label>Terminal Mode Seconds</label>
+				<description>The number of Seconds the keypad has to remain in Terminal Mode.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

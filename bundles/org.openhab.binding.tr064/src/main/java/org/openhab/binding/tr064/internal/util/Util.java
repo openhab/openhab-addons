@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,13 @@ import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -30,6 +36,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,7 +57,12 @@ import org.openhab.binding.tr064.internal.dto.config.ChannelTypeDescription;
 import org.openhab.binding.tr064.internal.dto.config.ChannelTypeDescriptions;
 import org.openhab.binding.tr064.internal.dto.config.ParameterType;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
-import org.openhab.binding.tr064.internal.dto.scpd.service.*;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDArgumentType;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDDirection;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDScpdType;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDStateVariableType;
+import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -67,21 +81,28 @@ import org.w3c.dom.NodeList;
 @NonNullByDefault
 public class Util {
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+    private static final int HTTP_REQUEST_TIMEOUT = 5; // in s
+    // cache XML content for 5s
+    private static final ExpiringCacheMap<String, Object> XML_OBJECT_CACHE = new ExpiringCacheMap<>(
+            Duration.ofMillis(3000));
 
     /**
      * read the channel config from the resource file (static initialization)
-     * 
+     *
      * @return a list of all available channel configurations
      */
     public static List<ChannelTypeDescription> readXMLChannelConfig() {
         try {
             InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("channels.xml");
             JAXBContext context = JAXBContext.newInstance(ChannelTypeDescriptions.class);
+            XMLInputFactory xif = XMLInputFactory.newFactory();
+            xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            XMLStreamReader xsr = xif.createXMLStreamReader(new StreamSource(resource));
             Unmarshaller um = context.createUnmarshaller();
-            JAXBElement<ChannelTypeDescriptions> root = um.unmarshal(new StreamSource(resource),
-                    ChannelTypeDescriptions.class);
+            JAXBElement<ChannelTypeDescriptions> root = um.unmarshal(xsr, ChannelTypeDescriptions.class);
             return root.getValue().getChannel();
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             LOGGER.warn("Failed to read channel definitions", e);
             return List.of();
         }
@@ -89,7 +110,7 @@ public class Util {
 
     /**
      * Extract an argument from an SCPD action definition
-     * 
+     *
      * @param scpdAction the action object
      * @param argumentName the argument's name
      * @param direction the direction (in or out)
@@ -108,7 +129,7 @@ public class Util {
 
     /**
      * Extract the related state variable from the service root for a given argument
-     * 
+     *
      * @param serviceRoot the service root object
      * @param scpdArgument the argument object
      * @return the related state variable object for this argument
@@ -124,7 +145,7 @@ public class Util {
 
     /**
      * Extract an action from the service root
-     * 
+     *
      * @param serviceRoot the service root object
      * @param actionName the action name
      * @param actionType "Get-Action" or "Set-Action" (for exception string only)
@@ -217,7 +238,10 @@ public class Util {
                         } else {
                             // create a channel for each parameter
                             parameters.forEach(parameter -> {
-                                String normalizedParameter = UIDUtils.encode(parameter);
+                                // remove comment: split parameter at '#', discard everything after that and remove
+                                // trailing spaces
+                                String rawParameter = parameter.split("#")[0].trim();
+                                String normalizedParameter = UIDUtils.encode(rawParameter);
                                 ChannelUID channelUID = new ChannelUID(thing.getUID(),
                                         channelId + "_" + normalizedParameter);
                                 ChannelBuilder channelBuilder = ChannelBuilder
@@ -226,7 +250,7 @@ public class Util {
                                         .withLabel(channelTypeDescription.getLabel() + " " + parameter);
                                 thingBuilder.withChannel(channelBuilder.build());
                                 Tr064ChannelConfig channelConfig1 = new Tr064ChannelConfig(channelConfig);
-                                channelConfig1.setParameter(parameter);
+                                channelConfig1.setParameter(rawParameter);
                                 channels.put(channelUID, channelConfig1);
                             });
                         }
@@ -259,7 +283,15 @@ public class Util {
             // validate parameter against pattern
             String parameterPattern = parameter.getPattern();
             if (parameterPattern != null) {
-                parameters.removeIf(param -> !param.matches(parameterPattern));
+                parameters.removeIf(param -> {
+                    if (!param.matches(parameterPattern)) {
+                        LOGGER.warn("Removing {} while processing {}, does not match pattern {}, check config.", param,
+                                channelId, parameterPattern);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
             }
 
             // validate parameter against SCPD (if not internal only)
@@ -306,23 +338,41 @@ public class Util {
      * @param clazz the class describing the XML file
      * @return unmarshalling result
      */
+    @SuppressWarnings("unchecked")
     public static <T> @Nullable T getAndUnmarshalXML(HttpClient httpClient, String uri, Class<T> clazz) {
         try {
-            ContentResponse contentResponse = httpClient.newRequest(uri).timeout(2, TimeUnit.SECONDS)
-                    .method(HttpMethod.GET).send();
-            byte[] response = contentResponse.getContent();
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("XML = {}", new String(response));
-            }
-            InputStream xml = new ByteArrayInputStream(response);
+            T returnValue = (T) XML_OBJECT_CACHE.putIfAbsentAndGet(uri, () -> {
+                try {
+                    LOGGER.trace("Refreshing cache for '{}'", uri);
+                    ContentResponse contentResponse = httpClient.newRequest(uri)
+                            .timeout(HTTP_REQUEST_TIMEOUT, TimeUnit.SECONDS).method(HttpMethod.GET).send();
+                    byte[] response = contentResponse.getContent();
+                    if (LOGGER.isTraceEnabled()) {
+                        LOGGER.trace("XML = {}", new String(response));
+                    }
+                    InputStream xml = new ByteArrayInputStream(response);
 
-            JAXBContext context = JAXBContext.newInstance(clazz);
-            Unmarshaller um = context.createUnmarshaller();
-            return um.unmarshal(new StreamSource(xml), clazz).getValue();
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            LOGGER.debug("HTTP Failed to GET uri '{}': {}", uri, e.getMessage());
-        } catch (JAXBException e) {
-            LOGGER.debug("Unmarshalling failed: {}", e.getMessage());
+                    JAXBContext context = JAXBContext.newInstance(clazz);
+                    XMLInputFactory xif = XMLInputFactory.newFactory();
+                    xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+                    xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+                    XMLStreamReader xsr = xif.createXMLStreamReader(new StreamSource(xml));
+                    Unmarshaller um = context.createUnmarshaller();
+                    T newValue = um.unmarshal(xsr, clazz).getValue();
+                    LOGGER.trace("Storing in cache {}", newValue);
+                    return newValue;
+                } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                    LOGGER.debug("HTTP Failed to GET uri '{}': {}", uri, e.getMessage());
+                    throw new IllegalArgumentException();
+                } catch (JAXBException | XMLStreamException e) {
+                    LOGGER.debug("Unmarshalling failed: {}", e.getMessage());
+                    throw new IllegalArgumentException();
+                }
+            });
+            LOGGER.trace("Returning from cache: {}", returnValue);
+            return returnValue;
+        } catch (IllegalArgumentException e) {
+            // already logged
         }
         return null;
     }

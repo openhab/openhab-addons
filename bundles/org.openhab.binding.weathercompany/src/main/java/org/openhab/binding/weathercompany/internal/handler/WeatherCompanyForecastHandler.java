@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.RawType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -268,9 +268,9 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             updateDaypart(i, dOrN, CH_DP_TEMP, undefOrQuantity(dp.temperature[i], getTempUnit()));
             updateDaypart(i, dOrN, CH_DP_TEMP_HEAT_INDEX, undefOrQuantity(dp.temperatureHeatIndex[i], getTempUnit()));
             updateDaypart(i, dOrN, CH_DP_TEMP_WIND_CHILL, undefOrQuantity(dp.temperatureWindChill[i], getTempUnit()));
-            updateDaypart(i, dOrN, CH_DP_HUMIDITY, undefOrQuantity(dp.relativeHumidity[i], SmartHomeUnits.PERCENT));
-            updateDaypart(i, dOrN, CH_DP_CLOUD_COVER, undefOrQuantity(dp.cloudCover[i], SmartHomeUnits.PERCENT));
-            updateDaypart(i, dOrN, CH_DP_PRECIP_CHANCE, undefOrQuantity(dp.precipChance[i], SmartHomeUnits.PERCENT));
+            updateDaypart(i, dOrN, CH_DP_HUMIDITY, undefOrQuantity(dp.relativeHumidity[i], Units.PERCENT));
+            updateDaypart(i, dOrN, CH_DP_CLOUD_COVER, undefOrQuantity(dp.cloudCover[i], Units.PERCENT));
+            updateDaypart(i, dOrN, CH_DP_PRECIP_CHANCE, undefOrQuantity(dp.precipChance[i], Units.PERCENT));
             updateDaypart(i, dOrN, CH_DP_PRECIP_TYPE, undefOrString(dp.precipType[i]));
             updateDaypart(i, dOrN, CH_DP_PRECIP_RAIN, undefOrQuantity(dp.qpf[i], getLengthUnit()));
             updateDaypart(i, dOrN, CH_DP_PRECIP_SNOW, undefOrQuantity(dp.qpfSnow[i], getLengthUnit()));
@@ -278,7 +278,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             updateDaypart(i, dOrN, CH_DP_WIND_SPEED, undefOrQuantity(dp.windSpeed[i], getSpeedUnit()));
             updateDaypart(i, dOrN, CH_DP_WIND_DIR_CARDINAL, undefOrString(dp.windDirectionCardinal[i]));
             updateDaypart(i, dOrN, CH_DP_WIND_PHRASE, undefOrString(dp.windPhrase[i]));
-            updateDaypart(i, dOrN, CH_DP_WIND_DIR, undefOrQuantity(dp.windDirection[i], SmartHomeUnits.DEGREE_ANGLE));
+            updateDaypart(i, dOrN, CH_DP_WIND_DIR, undefOrQuantity(dp.windDirection[i], Units.DEGREE_ANGLE));
             updateDaypart(i, dOrN, CH_DP_THUNDER_CATEGORY, undefOrString(dp.thunderCategory[i]));
             updateDaypart(i, dOrN, CH_DP_THUNDER_INDEX, undefOrDecimal(dp.thunderIndex[i]));
             updateDaypart(i, dOrN, CH_DP_UV_DESCRIPTION, undefOrString(dp.uvDescription[i]));

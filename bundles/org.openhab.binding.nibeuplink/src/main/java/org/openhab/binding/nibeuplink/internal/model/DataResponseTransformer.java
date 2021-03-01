@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
@@ -73,39 +73,38 @@ public class DataResponseTransformer {
                         putQuantityType(result, channel, value, DIV_10, SIUnits.CELSIUS);
                         break;
                     case CHANNEL_TYPE_PRESSURE:
-                        putQuantityType(result, channel, value, DIV_10, SmartHomeUnits.BAR);
+                        putQuantityType(result, channel, value, DIV_10, Units.BAR);
                         break;
                     case CHANNEL_TYPE_ENERGY:
-                        putQuantityType(result, channel, value, DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR));
+                        putQuantityType(result, channel, value, DIV_10, MetricPrefix.KILO(Units.WATT_HOUR));
                         break;
                     case CHANNEL_TYPE_POWER:
-                        putQuantityType(result, channel, value, DIV_100, MetricPrefix.KILO(SmartHomeUnits.WATT));
+                        putQuantityType(result, channel, value, DIV_100, MetricPrefix.KILO(Units.WATT));
                         break;
                     case CHANNEL_TYPE_SWITCH_RW:
                     case CHANNEL_TYPE_SWITCH:
                         putOnOffType(result, channel, value);
                         break;
                     case CHANNEL_TYPE_ELECTRIC_CURRENT:
-                        putQuantityType(result, channel, value, DIV_10, SmartHomeUnits.AMPERE);
+                        putQuantityType(result, channel, value, DIV_10, Units.AMPERE);
                         break;
                     case CHANNEL_TYPE_TIME_UNSCALED:
-                        putQuantityType(result, channel, value, UNSCALED, SmartHomeUnits.HOUR);
+                        putQuantityType(result, channel, value, UNSCALED, Units.HOUR);
                         break;
                     case CHANNEL_TYPE_TIME_SCALE10:
-                        putQuantityType(result, channel, value, DIV_10, SmartHomeUnits.HOUR);
+                        putQuantityType(result, channel, value, DIV_10, Units.HOUR);
                         break;
                     case CHANNEL_TYPE_FREQUENCY_UNSCALED:
-                        putQuantityType(result, channel, value, UNSCALED, SmartHomeUnits.HERTZ);
+                        putQuantityType(result, channel, value, UNSCALED, Units.HERTZ);
                         break;
                     case CHANNEL_TYPE_FREQUENCY_SCALE10:
-                        putQuantityType(result, channel, value, DIV_10, SmartHomeUnits.HERTZ);
+                        putQuantityType(result, channel, value, DIV_10, Units.HERTZ);
                         break;
                     case CHANNEL_TYPE_FLOW:
-                        putQuantityType(result, channel, value, DIV_10,
-                                SmartHomeUnits.LITRE.divide(SmartHomeUnits.MINUTE));
+                        putQuantityType(result, channel, value, DIV_10, Units.LITRE.divide(Units.MINUTE));
                         break;
                     case CHANNEL_TYPE_SPEED:
-                        putQuantityType(result, channel, value, UNSCALED, SmartHomeUnits.PERCENT);
+                        putQuantityType(result, channel, value, UNSCALED, Units.PERCENT);
                         break;
                     case CHANNEL_TYPE_NUMBER_SCALE100:
                         putDecimalType(result, channel, value, DIV_100);
