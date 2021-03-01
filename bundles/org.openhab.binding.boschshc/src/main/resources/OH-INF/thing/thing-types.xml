@@ -18,7 +18,7 @@
 		</supported-bridge-type-refs>
 
 		<label>In-wall Switch</label>
-		<description>In-wall switch for light control</description>
+		<description>A simple light control.</description>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -36,7 +36,7 @@
 		</supported-bridge-type-refs>
 
 		<label>TwinGuard</label>
-		<description>TwinGuard environmental sensor</description>
+		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -58,8 +58,8 @@
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>Window/Door Contact</label>
-		<description>Contact for windows and doors</description>
+		<label>Door/Window Contact</label>
+		<description>Detects open windows and doors.</description>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -75,7 +75,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Motion Detector</label>
-		<description>Motion Detector</description>
+		<description>Detects every movement through an intelligent combination of passive infra-red technology and an
+			additional temperature sensor.</description>
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
@@ -91,7 +92,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Shutter Control</label>
-		<description>Shutter Control</description>
+		<description>Control of your shutter to take any position you desire.</description>
 
 		<channels>
 			<channel id="level" typeId="level"/>

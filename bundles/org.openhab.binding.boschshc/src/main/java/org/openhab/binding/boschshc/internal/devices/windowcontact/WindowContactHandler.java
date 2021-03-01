@@ -27,7 +27,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
- * The {@link BoschSHCHandler} is responsible for handling Bosch window/door contacts.
+ * Detects open windows and doors.
  *
  * @author Stefan Kästle - Initial contribution
  */

@@ -38,7 +38,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link BoschTwinguardHandler} is responsible for handling commands for the TwinGuard handler.
+ * The Twinguard smoke detector warns you in case of fire and constantly monitors the air.
  *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - Use service instead of custom logic

@@ -25,7 +25,8 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Thing;
 
 /**
- * MotionDetectorHandler
+ * Detects every movement through an intelligent combination of passive infra-red technology and an additional
+ * temperature sensor.
  *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - Use service instead of custom logic

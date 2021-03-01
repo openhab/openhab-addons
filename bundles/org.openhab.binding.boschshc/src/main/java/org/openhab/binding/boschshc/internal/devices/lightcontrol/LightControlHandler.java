@@ -36,7 +36,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * Represents Bosch in-wall switches.
+ * A simple light control.
  *
  * @author Stefan Kästle - Initial contribution
  */

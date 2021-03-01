@@ -20,7 +20,9 @@ Binding for the Bosch Smart Home.
 
 ## Supported Things
 
-### Bosch In-Wall switches & Bosch Smart Plugs
+### In-Wall switches & Smart Plugs
+
+A simple light control.
 
 **Thing Type ID**: `in-wall-switch`
 
@@ -30,7 +32,9 @@ Binding for the Bosch Smart Home.
 | power-consumption  | Number:Power  | &#9744; | Current power consumption (W) of the device. |
 | energy-consumption | Number:Energy | &#9744; | Energy consumption of the device.            |
 
-### Bosch TwinGuard smoke detector
+### TwinGuard smoke detector
+
+The Twinguard smoke detector warns you in case of fire and constantly monitors the air.
 
 **Thing Type ID**: `twinguard`
 
@@ -45,7 +49,9 @@ Binding for the Bosch Smart Home.
 | air-description    | String               | &#9744; | Overall description of the air quality.                                                           |
 | combined-rating    | String               | &#9744; | Combined rating of the air quality.                                                               |
 
-### Bosch Window/Door contacts
+### Door/Window contact
+
+Detects open windows and doors.
 
 **Thing Type ID**: `window-contact`
 
@@ -53,7 +59,9 @@ Binding for the Bosch Smart Home.
 |-----------------|-----------| :------: |------------------------------|
 | contact         | Contact   | &#9744; | Contact state of the device. |
 
-### Bosch Motion Detector
+### Motion Detector
+
+Detects every movement through an intelligent combination of passive infra-red technology and an additional temperature sensor.
 
 **Thing Type ID**: `motion-detector`
 
@@ -61,7 +69,9 @@ Binding for the Bosch Smart Home.
 |-----------------|-----------| :------: |--------------------------------|
 | latest-motion   | DateTime  | &#9744; | The date of the latest motion. |
 
-### Bosch Shutter Control in-wall
+### Shutter Control
+
+Control of your shutter to take any position you desire.
 
 **Thing Type ID**: `shutter-control`
 
@@ -69,7 +79,9 @@ Binding for the Bosch Smart Home.
 |-----------------|---------------| :------: |------------------------------------------|
 | level           | Rollershutter | &#9745; | Current open ratio (0 to 100, Step 0.5). |
 
-### Bosch Thermostat
+### Thermostat
+
+Radiator thermostat
 
 **Thing Type ID**: `thermostat`
 
@@ -78,7 +90,9 @@ Binding for the Bosch Smart Home.
 | temperature           | Number:Temperature   | &#9744; | Current measured temperature.                  |
 | valve-tappet-position | Number:Dimensionless | &#9744; | Current open ratio of valve tappet (0 to 100). |
 
-### Bosch Climate Control
+### Climate Control
+
+A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.
 
 **Thing Type ID**: `climate-control`
 
