@@ -18,11 +18,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.FormContentProvider;
@@ -117,9 +117,9 @@ public class TeslaSSOHandler {
      * @return Refresh token for use with {@link getAccessToken}
      */
     public String authenticate(String username, String password) {
-        String codeVerifier = RandomStringUtils.randomAlphabetic(86);
+        String codeVerifier = generateRandomString(86);
         String codeChallenge = null;
-        String state = RandomStringUtils.randomAlphabetic(10);
+        String state = generateRandomString(10);
 
         try {
             codeChallenge = getCodeChallenge(codeVerifier);
@@ -257,6 +257,15 @@ public class TeslaSSOHandler {
         }
 
         return Base64.getUrlEncoder().encodeToString(hashStr.toString().getBytes());
+    }
+
+    private String generateRandomString(int length) {
+        Random random = new Random();
+
+        String generatedString = random.ints('a', 'z' + 1).limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+
+        return generatedString;
     }
 
     private void addQueryParameters(org.eclipse.jetty.client.api.Request request, String codeChallenge, String state) {
