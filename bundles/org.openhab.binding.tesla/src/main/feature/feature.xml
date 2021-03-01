@@ -4,6 +4,10 @@
 
 	<feature name="openhab-binding-tesla" description="Tesla Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<config name="org.apache.cxf.http.conduits-custom_config">
+			tlsClientParameters.disableCNCheck = true
+			url = .*.teslamotors.com/.*
+		</config>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tesla/${project.version}</bundle>
 	</feature>
 </features>
