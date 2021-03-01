@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
@@ -115,10 +116,10 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedZoneStatu
 
         switch (channelUID.getId()) {
             case CHANNEL_ZONE_BYPASS:
-                mode = OmniLinkCmd.CMD_SECURITY_BYPASS_ZONE.getNumber();
+                mode = CommandMessage.CMD_SECURITY_BYPASS_ZONE;
                 break;
             case CHANNEL_ZONE_RESTORE:
-                mode = OmniLinkCmd.CMD_SECURITY_RESTORE_ZONE.getNumber();
+                mode = CommandMessage.CMD_SECURITY_RESTORE_ZONE;
                 break;
             default:
                 mode = -1;

@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AccessControlReaderProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedAccessControlReaderLockStatus;
@@ -92,8 +93,8 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<ExtendedAccessCon
         switch (channelUID.getId()) {
             case CHANNEL_LOCK_SWITCH:
                 if (command instanceof OnOffType) {
-                    sendOmnilinkCommand(OnOffType.OFF.equals(command) ? OmniLinkCmd.CMD_UNLOCK_DOOR.getNumber()
-                            : OmniLinkCmd.CMD_LOCK_DOOR.getNumber(), 0, thingID);
+                    sendOmnilinkCommand(OnOffType.OFF.equals(command) ? CommandMessage.CMD_UNLOCK_DOOR
+                            : CommandMessage.CMD_LOCK_DOOR, 0, thingID);
                 } else {
                     logger.debug("Invalid command {}, must be OnOffType", command);
                 }

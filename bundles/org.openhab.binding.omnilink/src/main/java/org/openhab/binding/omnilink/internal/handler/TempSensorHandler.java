@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AuxSensorProperties;
@@ -125,12 +126,12 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<ExtendedAux
 
         switch (channelUID.getId()) {
             case CHANNEL_AUX_LOW_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_LOW_POINT.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_HEAT_POINT,
                         temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_AUX_HIGH_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_HIGH_POINT.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_COOL_POINT,
                         temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
