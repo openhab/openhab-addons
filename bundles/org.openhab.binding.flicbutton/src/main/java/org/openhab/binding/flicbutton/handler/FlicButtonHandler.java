@@ -81,11 +81,14 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
                 bridgeHandler.getFlicClient().addConnectionChannel(eventConnection);
                 this.eventConnection = eventConnection;
                 eventListener.wait(5000);
-                // Listener calls initializeStatus() before notifying so that ThingStatus is set at this point
+                // Listener calls initializeStatus() before notifying so that ThingStatus is should be set at this point
+                if (this.getThing().getStatus().equals(ThingStatus.INITIALIZING)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Got no response by eventListener");
+                }
             }
         } catch (IOException | InterruptedException e) {
-            logger.info("Connection setup for Flic Button {} failed.", this.getThing(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection setup failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection setup failed. " + e);
         }
     }
 
@@ -118,7 +121,8 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     void connectionStatusChanged(ConnectionStatus connectionStatus, DisconnectReason disconnectReason) {
         latestDisconnectReason = disconnectReason;
         if (connectionStatus == ConnectionStatus.Disconnected) {
-            // Status change to offline have to be scheduled to improve stability, see issue #2
+            // Status change to offline have to be scheduled to improve stability,
+            // see https://github.com/pfink/openhab2-flicbutton/issues/2
             scheduleStatusChangeToOffline();
         } else {
             setOnline();
@@ -137,7 +141,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     protected void setOffline() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
                 "Disconnect Reason: " + Objects.toString(latestDisconnectReason));
     }
 
