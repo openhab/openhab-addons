@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.jetty.util.Fields.Field;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -144,52 +145,69 @@ public class TeslaSSOHandler {
 
         logger.debug("Obtained SSO login page");
 
-        Fields postData = new Fields();
+        String authorizationCode = null;
 
-        try {
-            Document doc = Jsoup.parse(loginPageResponse.getContentAsString());
-            Element loginForm = doc.getElementsByTag("form").first();
-
-            Iterator<Element> elIt = loginForm.getElementsByTag("input").iterator();
-            while (elIt.hasNext()) {
-                Element input = elIt.next();
-                if (input.attr("type").equalsIgnoreCase("hidden")) {
-                    postData.add(input.attr("name"), input.attr("value"));
-                }
+        if (loginPageResponse.getStatus() == 302) {
+            String redirectLocation = loginPageResponse.getHeaders().get(HttpHeader.LOCATION);
+            if (isValidRedirectLocation(redirectLocation)) {
+                authorizationCode = extractAuthorizationCodeFromUri(redirectLocation);
+            } else {
+                logger.error("Unexpected redirect location received when fetching login page: {}", redirectLocation);
+                return null;
             }
-        } catch (Exception e) {
-            logger.error("Failed to parse login page: {}", e.getMessage());
-            logger.debug("login page response {}", loginPageResponse.getContentAsString());
-            return null;
+        } else {
+            Fields postData = new Fields();
+
+            try {
+                Document doc = Jsoup.parse(loginPageResponse.getContentAsString());
+                Element loginForm = doc.getElementsByTag("form").first();
+
+                Iterator<Element> elIt = loginForm.getElementsByTag("input").iterator();
+                while (elIt.hasNext()) {
+                    Element input = elIt.next();
+                    if (input.attr("type").equalsIgnoreCase("hidden")) {
+                        postData.add(input.attr("name"), input.attr("value"));
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Failed to parse login page: {}", e.getMessage());
+                logger.debug("login page response {}", loginPageResponse.getContentAsString());
+                return null;
+            }
+
+            postData.add("identity", username);
+            postData.add("credential", password);
+
+            final org.eclipse.jetty.client.api.Request formSubmitRequest = httpClient
+                    .newRequest(URI_SSO + "/" + PATH_AUTHORIZE);
+            formSubmitRequest.method(HttpMethod.POST);
+            formSubmitRequest.content(new FormContentProvider(postData));
+            formSubmitRequest.followRedirects(false); // this should return a 302 ideally, but that location doesn't
+                                                      // exist
+            addQueryParameters(formSubmitRequest, codeChallenge, state);
+
+            ContentResponse formSubmitResponse = executeHttpRequest(formSubmitRequest);
+            if (formSubmitResponse == null || formSubmitResponse.getStatus() != 302) {
+                logger.error("Failed to obtain code from SSO login page when submitting form, response status code: {}",
+                        (formSubmitResponse != null ? formSubmitResponse.getStatus() : "no response"));
+                return null;
+            }
+
+            String redirectLocation = formSubmitResponse.getHeaders().get(HttpHeader.LOCATION);
+            if (!isValidRedirectLocation(redirectLocation)) {
+                logger.error("Redirect location not set or doesn't match expected callback URI {}: {}", URI_CALLBACK,
+                        redirectLocation);
+                return null;
+            }
+
+            logger.debug("Obtained valid redirect location");
+            authorizationCode = extractAuthorizationCodeFromUri(redirectLocation);
         }
 
-        postData.add("identity", username);
-        postData.add("credential", password);
-
-        final org.eclipse.jetty.client.api.Request formSubmitRequest = httpClient
-                .newRequest(URI_SSO + "/" + PATH_AUTHORIZE);
-        formSubmitRequest.method(HttpMethod.POST);
-        formSubmitRequest.content(new FormContentProvider(postData));
-        formSubmitRequest.followRedirects(false); // this should return a 302 ideally, but that location doesn't exist
-        addQueryParameters(formSubmitRequest, codeChallenge, state);
-
-        ContentResponse formSubmitResponse = executeHttpRequest(formSubmitRequest);
-        if (formSubmitResponse == null || formSubmitResponse.getStatus() != 302) {
-            logger.error("Failed to obtain code from SSO login page when submitting form, response status code: {}",
-                    (formSubmitResponse != null ? formSubmitResponse.getStatus() : "no response"));
+        if (authorizationCode == null) {
+            logger.error("Did not receive an authorization code");
             return null;
         }
-
-        String redirectLocation = formSubmitResponse.getHeaders().get(HttpHeader.LOCATION);
-        if (redirectLocation == null || !redirectLocation.startsWith(URI_CALLBACK)) {
-            logger.error("Redirect location not set or doesn't match expected callback URI {}: {}", URI_CALLBACK,
-                    redirectLocation);
-            return null;
-        }
-
-        logger.debug("Obtained valid redirect location");
-
-        String authorizationCode = httpClient.newRequest(redirectLocation).getParams().get("code").getValue();
 
         // exchange authorization code for SSO access + refresh token
         AuthorizationCodeExchangeRequest request = new AuthorizationCodeExchangeRequest(authorizationCode,
@@ -218,6 +236,15 @@ public class TeslaSSOHandler {
         }
 
         return null;
+    }
+
+    private Boolean isValidRedirectLocation(String redirectLocation) {
+        return redirectLocation != null && redirectLocation.startsWith(URI_CALLBACK);
+    }
+
+    private String extractAuthorizationCodeFromUri(String uri) {
+        Field code = httpClient.newRequest(uri).getParams().get("code");
+        return code != null ? code.getValue() : null;
     }
 
     private String getCodeChallenge(String codeVerifier) throws NoSuchAlgorithmException {
