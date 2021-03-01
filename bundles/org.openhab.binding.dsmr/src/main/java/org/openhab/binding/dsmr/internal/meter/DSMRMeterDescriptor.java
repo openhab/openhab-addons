@@ -44,7 +44,6 @@ public class DSMRMeterDescriptor {
      *
      * @param meterType The meter type
      * @param channel The M-Bus channel this meter is connected to
-     * @throws IllegalArgumentException if one of the parameters is null
      */
     public DSMRMeterDescriptor(DSMRMeterType meterType, int channel) {
         this.meterType = meterType;

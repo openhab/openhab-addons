@@ -13,10 +13,18 @@
 package org.openhab.binding.dsmr.internal.meter;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectType;
@@ -29,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author M. Volaart - Initial contribution
  */
+@NonNullByDefault
 public enum DSMRMeterType {
     // Don't auto format the enum list. For readability the format for the enum is:
     // First line parameters; DSMRMeterKind and CosemObjectType (identification object type)
@@ -310,6 +319,9 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_TRESHOLD_KWH, CosemObjectType.EMETER_FUSE_THRESHOLD_A,
                     CosemObjectType.EMETER_SWITCH_POSITION},
             new CosemObjectType[] {
+                    CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L1, CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L2,
+                    CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L3, CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L1,
+                    CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L2, CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L3,
                     CosemObjectType.EMETER_INSTANT_CURRENT_L1, CosemObjectType.EMETER_INSTANT_CURRENT_L2,
                     CosemObjectType.EMETER_INSTANT_CURRENT_L3, CosemObjectType.EMETER_INSTANT_VOLTAGE_L1,
                     CosemObjectType.EMETER_INSTANT_VOLTAGE_L2, CosemObjectType.EMETER_INSTANT_VOLTAGE_L3
@@ -398,23 +410,36 @@ public enum DSMRMeterType {
      * @param availableCosemObjects the Cosem Objects to detect if the current meter compatible
      * @return {@link DSMRMeterDescriptor} containing the identification of the compatible meter
      */
-    public DSMRMeterDescriptor isCompatible(Map<CosemObjectType, CosemObject> availableCosemObjects) {
-        DSMRMeterDescriptor meterDescriptor = null;
+    public @Nullable DSMRMeterDescriptor findCompatible(List<CosemObject> availableCosemObjects) {
+        final Map<@Nullable Integer, AtomicInteger> channelCounter = new HashMap<>(3);
 
         for (CosemObjectType objectType : requiredCosemObjects) {
-            if (!availableCosemObjects.containsKey(objectType)) {
-                logger.trace("Required objectType {} not found", objectType);
+            AtomicBoolean match = new AtomicBoolean();
+            availableCosemObjects.stream().filter(a -> a.getType() == objectType).forEach(b -> {
+                match.set(true);
+                channelCounter.computeIfAbsent(b.getObisIdentifier().getChannel(), t -> new AtomicInteger())
+                        .incrementAndGet();
+            });
+            if (!match.get()) {
+                logger.trace("Required objectType {} not found for meter: {}", objectType, this);
                 return null;
-            } else {
-                logger.trace("FOUND Required objectType {}", objectType);
-            }
-            CosemObject cosemObject = availableCosemObjects.get(objectType);
-
-            // Checking by reference is possible here due to comparing enums
-            if (cosemObjectTypeMeterId != CosemObjectType.UNKNOWN && objectType == cosemObjectTypeMeterId) {
-                meterDescriptor = new DSMRMeterDescriptor(this, cosemObject.getObisIdentifier().getGroupB());
             }
         }
+        DSMRMeterDescriptor meterDescriptor = null;
+
+        if (meterKind.isChannelRelevant()) {
+            Optional<Entry<@Nullable Integer, AtomicInteger>> max = channelCounter.entrySet().stream()
+                    .max((e1, e2) -> Integer.compare(e1.getValue().get(), e2.getValue().get()));
+
+            if (max.isPresent()) {
+                final Integer channel = max.get().getKey();
+                meterDescriptor = new DSMRMeterDescriptor(this,
+                        channel == null ? DSMRMeterConstants.UNKNOWN_CHANNEL : channel);
+            }
+        } else {
+            meterDescriptor = new DSMRMeterDescriptor(this, DSMRMeterConstants.UNKNOWN_CHANNEL);
+        }
+
         // Meter type is compatible, check if an identification exists
         if (meterDescriptor == null && cosemObjectTypeMeterId == CosemObjectType.UNKNOWN) {
             logger.trace("Meter type {} has no identification, but is compatible", this);
