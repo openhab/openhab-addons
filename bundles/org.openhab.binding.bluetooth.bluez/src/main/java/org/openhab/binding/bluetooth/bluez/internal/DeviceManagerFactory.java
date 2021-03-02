@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,7 +64,11 @@ public class DeviceManagerFactory {
         // we can cheat the null checker with casting here
         var future = (CompletableFuture<@Nullable DeviceManagerWrapper>) deviceManagerWrapperFuture;
         if (future != null) {
-            return future.getNow(null);
+            try {
+                return future.getNow(null);
+            } catch (CancellationException | CompletionException e) {
+                return null;
+            }
         }
         return null;
     }

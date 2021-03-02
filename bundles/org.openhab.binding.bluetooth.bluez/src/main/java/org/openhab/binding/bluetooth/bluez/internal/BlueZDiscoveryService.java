@@ -63,13 +63,7 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        backgroundScan = scheduler.scheduleWithFixedDelay(() -> {
-            DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
-            if (deviceManager == null) {
-                return;
-            }
-            startScan();
-        }, 5, 10, TimeUnit.SECONDS);
+        backgroundScan = scheduler.scheduleWithFixedDelay(this::startScan, 5, 10, TimeUnit.SECONDS);
     }
 
     @Override
@@ -82,7 +76,7 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
         if (deviceManager == null) {
-            logger.warn("The DeviceManager is not available");
+            logger.debug("The DeviceManager is not available");
             return;
         }
         // the first time the device manager is not null we can cancel background discovery
