@@ -205,10 +205,8 @@ public class SoulissCommonCommands {
             DatagramPacket packet = new DatagramPacket(merd, merd.length, serverAddr,
                     SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
             SoulissBindingSendDispatcherJob.put(socket, packet, this.logger);
-            // socket.send(packet);
         } catch (IOException e) {
             logger.error("Error: {} ", e.getMessage());
-            // logger.error(e.getMessage());
         }
     }
 
