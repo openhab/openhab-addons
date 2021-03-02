@@ -37,10 +37,10 @@
 				<description>Credentials: Account Password (same as for the Telekom Kundencenter)</description>
 				<context>password</context>
 			</parameter>
-            <parameter name="userId" type="text">
-                <label>User ID</label>
-                <description>Technical User ID required for pairing process</description>
-            </parameter>
+			<parameter name="userId" type="text">
+				<label>User ID</label>
+				<description>Technical User ID required for pairing process</description>
+			</parameter>
 			<parameter name="udn" type="text">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the Media Receiver</description>
