@@ -28,6 +28,7 @@ import org.openhab.binding.magentatv.internal.network.MagentaTVOAuth;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,14 +48,15 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
     private static final String CMD_LOGIN = "login";
 
     private final Logger logger = LoggerFactory.getLogger(MagentaTVConsoleHandler.class);
-    private final MagentaTVOAuth oauth = new MagentaTVOAuth();
+    private final MagentaTVOAuth oauth;
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     private @Nullable ClientBuilder injectedClientBuilder;
 
     @Activate
-    public MagentaTVConsoleHandler() {
+    public MagentaTVConsoleHandler(@Reference HttpClientFactory httpClientFactory) {
         super(BINDING_ID, "Interact with the " + BINDING_ID + " integration.");
+        oauth = new MagentaTVOAuth(httpClientFactory.getCommonHttpClient());
     }
 
     @Override
