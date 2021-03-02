@@ -55,8 +55,6 @@ public class SoulissBindingUDPServerJob implements Runnable {
     }
 
     private void init(@Nullable DatagramSocket datagramSocket, @Nullable DiscoverResult pDiscoverResult) {
-
-        // if (discoverResult != null) {
         decoder = new SoulissBindingUDPDecoder(discoverResult);
         logger.info("Starting UDP Server Job - Server on port {}", soulissDatagramSocket.getLocalPort());
     }
