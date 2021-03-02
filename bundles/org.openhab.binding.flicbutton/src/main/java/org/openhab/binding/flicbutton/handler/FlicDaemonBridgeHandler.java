@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.flicbutton.FlicButtonBindingConstants;
 import org.openhab.binding.flicbutton.internal.discovery.FlicButtonDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -77,9 +76,8 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void initConfigParameters() throws UnknownHostException {
-        Object hostConfigRaw = thing.getConfiguration().get(FlicButtonBindingConstants.CONFIG_HOST_NAME);
-        Object portConfigRaw = thing.getConfiguration().get(FlicButtonBindingConstants.CONFIG_PORT);
-        cfg = new FlicDaemonBridgeConfiguration(hostConfigRaw, portConfigRaw);
+        cfg = getConfigAs(FlicDaemonBridgeConfiguration.class);
+        cfg.initAndValidate();
     }
 
     private void activateButtonDiscoveryService() {
@@ -87,7 +85,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startFlicdClientAsync() throws IOException {
-        flicClient = new FlicClient(cfg.getHostname().getHostAddress(), cfg.getPort());
+        flicClient = new FlicClient(cfg.getHost().getHostAddress(), cfg.getPort());
         Runnable flicClientService = () -> {
             try {
                 flicClient.handleEvents();

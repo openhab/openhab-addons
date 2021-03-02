@@ -25,36 +25,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class FlicDaemonBridgeConfiguration {
 
-    private final InetAddress hostname;
-    private final int port;
+    private String hostname;
+    private int port;
 
-    FlicDaemonBridgeConfiguration(InetAddress hostname, int port) {
-        this.hostname = hostname;
-        this.port = port;
+    private InetAddress host;
+
+    public void initAndValidate() throws UnknownHostException {
+        host = InetAddress.getByName(hostname);
     }
 
-    FlicDaemonBridgeConfiguration(Object rawHostname, Object rawPort)
-            throws UnknownHostException, IllegalArgumentException {
-        if (rawHostname == null || rawPort == null) {
-            throw new IllegalArgumentException("Hostname and port must not be null");
-        }
-        this.hostname = parseBridgeHostname(rawHostname);
-        this.port = parseBridgePort(rawPort);
-    }
-
-    private InetAddress parseBridgeHostname(Object rawHostname) throws UnknownHostException {
-        String host_config = ((rawHostname instanceof String) ? (String) rawHostname
-                : (rawHostname instanceof InetAddress) ? ((InetAddress) rawHostname).getHostAddress() : null);
-
-        return InetAddress.getByName(host_config);
-    }
-
-    private int parseBridgePort(Object rawPort) {
-        return Integer.parseInt(rawPort.toString());
-    }
-
-    public InetAddress getHostname() {
-        return hostname;
+    public InetAddress getHost() {
+        return host;
     }
 
     public int getPort() {
