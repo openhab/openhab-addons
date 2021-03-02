@@ -25,11 +25,11 @@ The binding provides device discovery, sending keys for the remote and also rece
 
 ## Auto Discovery
 
-UPnP will be used to discover receivers on the local network and discover the nessesary parameters.
+UPnP will be used to discover receivers on the local network and discover the necessary parameters.
 The receiver needs to be powered on to get discovered.
 
 Once the receiver is discovered it can be added from the Inbox.
-Make sure to set the U in the Thing configuration after adding the new thing, see section Thing Configuration.
+Make sure to set `userId` in the Thing configuration after adding the new thing, see section Thing Configuration.
 
 Note:
 The binding uses the network settings in openHAB's system configuration to determine the local IP address.
@@ -85,7 +85,7 @@ There are different ways to setup the User ID:
 Run the following command on the console and provide your Telekom account credentials:
 
 ```
-openhab> smarthome:magentatv login
+openhab> openhab:magentatv login
 Username (email): mail@example.com
 Password: topsecret
 
@@ -117,7 +117,7 @@ For security reasons the credentials are automatically deleted from the thing co
 |        |key            |String   |Send key code to the receiver (see code table below)                      |
 |        |mute           |Switch   |Mute volume (mute the speaker)                                            |
 |status  |playMode       |String   |Current play mode - this info is not reliable                             |
-|        |channelCode    |Number   |The channel code from the EPG.                                            |
+|        |channelCode    |Number   |The channel code from the EPG.                                            |
 |program |title          |String   |Title of the running program or video being played                        |
 |        |text           |String   |Some description (as reported by the receiver, could be empty)            |
 |        |start          |DateTime |Time when the program started                                             |
@@ -126,7 +126,9 @@ For security reasons the credentials are automatically deleted from the thing co
 
 Please note:
 
-- POWER is a toggle button, not an on/off switch. The binding tries to detect and maintain the correct state, but due to device limitations this is not always possible. Make sure the receiver's and binding's state are in sync when OH is restarted (binidng assume state OFF).
+- POWER is a toggle button, not an on/off switch.
+The binding tries to detect and maintain the correct state, but due to device limitations this is not always possible.
+Make sure the receiver's and binding's state are in sync when OH is restarted (binding assumes state is OFF).
 - Channels receiving event information get updated when changing the channel or playing a video.
 There is no way to read the current status, therefore they don't get initialized on startup nor being updated in real-time.
 
@@ -191,7 +193,6 @@ The player channel supports the following actions:
 
 In addition you could send any key code in the 0xHHHH format., refer to
 [Key Codes for Magenta/Huawei Media Receiver](http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html)
-
 
 ## Full Configuraton Example
 
@@ -327,4 +328,3 @@ to switch it ON and
 to switch it off.
 
 After an openHAB restart you need to make sure that OH and receiver are in sync, because the binding can't read the power status at startup.
-
