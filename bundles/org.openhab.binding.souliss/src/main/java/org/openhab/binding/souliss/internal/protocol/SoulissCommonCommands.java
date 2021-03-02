@@ -425,10 +425,6 @@ public class SoulissCommonCommands {
     static boolean flag = true;
 
     private static String macacoToString(ArrayList<Byte> mACACOframe) {
-        /*
-         * while (!flag) {
-         * };
-         */
         // copio array per evitare modifiche concorrenti
         ArrayList<Byte> mACACOframe2 = new ArrayList<>();
         mACACOframe2.addAll(mACACOframe);
