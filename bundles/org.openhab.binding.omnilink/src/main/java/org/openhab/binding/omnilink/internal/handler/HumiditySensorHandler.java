@@ -101,7 +101,7 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
 
         if (command instanceof RefreshType) {
             retrieveStatus().ifPresentOrElse(this::updateChannels, () -> updateStatus(ThingStatus.OFFLINE,
-                    ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null staus update!"));
+                    ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null status update!"));
             return;
         }
 
@@ -113,12 +113,12 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
         switch (channelUID.getId()) {
             case CHANNEL_AUX_LOW_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_LOW_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_AUX_HIGH_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_HIGH_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             default:

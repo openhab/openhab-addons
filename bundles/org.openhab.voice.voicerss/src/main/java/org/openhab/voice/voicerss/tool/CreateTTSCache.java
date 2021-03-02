@@ -49,18 +49,19 @@ public class CreateTTSCache {
         String apiKey = args[1];
         String cacheDir = args[2];
         String locale = args[3];
-        if (args[4].startsWith("@")) {
-            String inputFileName = args[4].substring(1);
+        String voice = args[4];
+        if (args[5].startsWith("@")) {
+            String inputFileName = args[5].substring(1);
             File inputFile = new File(inputFileName);
             if (!inputFile.exists()) {
                 usage();
                 System.err.println("File " + inputFileName + " not found");
                 return RC_INPUT_FILE_NOT_FOUND;
             }
-            generateCacheForFile(apiKey, cacheDir, locale, inputFileName);
+            generateCacheForFile(apiKey, cacheDir, locale, voice, inputFileName);
         } else {
-            String text = args[4];
-            generateCacheForMessage(apiKey, cacheDir, locale, text);
+            String text = args[5];
+            generateCacheForMessage(apiKey, cacheDir, locale, voice, text);
         }
         return RC_OK;
     }
@@ -71,6 +72,7 @@ public class CreateTTSCache {
         System.out.println("  key       the VoiceRSS API Key, e.g. \"123456789\"");
         System.out.println("  cache-dir is directory where the files will be stored, e.g. \"voicerss-cache\"");
         System.out.println("  locale    the language locale, has to be valid, e.g. \"en-us\", \"de-de\"");
+        System.out.println("  voice     the voice, \"default\" for the default voice");
         System.out.println("  text      the text to create audio file for, e.g. \"Hello World\"");
         System.out.println(
                 "  inputfile a name of a file, where all lines will be translatet to text, e.g. \"@message.txt\"");
@@ -80,19 +82,20 @@ public class CreateTTSCache {
         System.out.println();
     }
 
-    private void generateCacheForFile(String apiKey, String cacheDir, String locale, String inputFileName)
+    private void generateCacheForFile(String apiKey, String cacheDir, String locale, String voice, String inputFileName)
             throws IOException {
         File inputFile = new File(inputFileName);
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
             while ((line = br.readLine()) != null) {
                 // process the line.
-                generateCacheForMessage(apiKey, cacheDir, locale, line);
+                generateCacheForMessage(apiKey, cacheDir, locale, voice, line);
             }
         }
     }
 
-    private void generateCacheForMessage(String apiKey, String cacheDir, String locale, String msg) throws IOException {
+    private void generateCacheForMessage(String apiKey, String cacheDir, String locale, String voice, String msg)
+            throws IOException {
         if (msg == null) {
             System.err.println("Ignore msg=null");
             return;
@@ -103,7 +106,7 @@ public class CreateTTSCache {
             return;
         }
         CachedVoiceRSSCloudImpl impl = new CachedVoiceRSSCloudImpl(cacheDir);
-        File cachedFile = impl.getTextToSpeechAsFile(apiKey, trimmedMsg, locale, "MP3");
+        File cachedFile = impl.getTextToSpeechAsFile(apiKey, trimmedMsg, locale, voice, "MP3");
         System.out.println(
                 "Created cached audio for locale='" + locale + "', msg='" + trimmedMsg + "' to file=" + cachedFile);
     }

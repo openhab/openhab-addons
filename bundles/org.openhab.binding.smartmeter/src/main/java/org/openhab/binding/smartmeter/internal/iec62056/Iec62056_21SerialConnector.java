@@ -100,7 +100,6 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
                         @Override
                         public void newDataMessage(@Nullable DataMessage dataMessage) {
                             logger.debug("Datamessage read: {}", dataMessage);
-                            emitter.onError(new IllegalArgumentException("Error while emitting dataMessage"));
                             emitter.onNext(dataMessage);
                         }
 

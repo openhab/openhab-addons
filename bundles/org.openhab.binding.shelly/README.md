@@ -30,6 +30,7 @@ Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB 
 | shellydimmer       | Shelly Dimmer                                          | SHDM-1    |
 | shellydimmer2      | Shelly Dimmer2                                         | SHDM-2    |
 | shellyix3          | Shelly ix3                                             | SHIX3-1   |
+| shellyuni          | Shelly UNI                                             | SHUNI-1   |
 | shellyplug         | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
@@ -577,6 +578,23 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |          |button       |Trigger  |yes      |Event trigger: Event trigger, see section Button Events                |
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
+
+### Shelly UNI - Low voltage sensor/actor: shellyuni)
+
+|Group     |Channel      |Type     |read-only|Description                                                                 |
+|----------|-------------|---------|---------|----------------------------------------------------------------------------|
+|relay1    |             |         |         |See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels       |
+|relay2    |             |         |         |See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels       |
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)    |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)    |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)    |
+|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                        |
+|          |voltage      |Number   |yes      |ADCS voltage                                                                |
+|status    |input1       |Switch   |yes      |State of Input 1                                                            |
+|          |input2       |Switch   |yes      |State of Input 2                                                            |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                    |
+|          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                             |
+|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.       |
 
 ### Shelly Bulb (thing-type: shellybulb)
 
