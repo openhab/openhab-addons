@@ -168,16 +168,16 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             ecobeeAuth.doAuthorization();
         } catch (OAuthException | IOException | RuntimeException e) {
             if (logger.isDebugEnabled()) {
-                logger.info("API: Got exception trying to get access token from OAuth service", e);
+                logger.warn("API: Got exception trying to get access token from OAuth service", e);
             } else {
-                logger.info("API: Got {} trying to get access token from OAuth service: {}",
+                logger.warn("API: Got {} trying to get access token from OAuth service: {}",
                         e.getClass().getSimpleName(), e.getMessage());
             }
         } catch (EcobeeAuthException e) {
             if (logger.isDebugEnabled()) {
-                logger.info("API: The Ecobee authorization process threw an exception", e);
+                logger.warn("API: The Ecobee authorization process threw an exception", e);
             } else {
-                logger.info("API: The Ecobee authorization process threw an exception: {}", e.getMessage());
+                logger.warn("API: The Ecobee authorization process threw an exception: {}", e.getMessage());
             }
             ecobeeAuth.setState(EcobeeAuthState.NEED_PIN);
         } catch (OAuthResponseException e) {
@@ -189,12 +189,12 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     private void handleOAuthException(OAuthResponseException e) {
         if ("invalid_grant".equalsIgnoreCase(e.getError())) {
             // Usually indicates that the refresh token is no longer valid and will require reauthorization
-            logger.warn("API: Received 'invalid_grant' error response. Please reauthorize application with Ecobee");
+            logger.debug("API: Received 'invalid_grant' error response. Please reauthorize application with Ecobee");
             deleteOAuthClientService();
             createOAuthClientService();
         } else {
             // Other errors may not require reauthorization and/or may not apply
-            logger.warn("API: Exception getting access token: error='{}', description='{}'", e.getError(),
+            logger.debug("API: Exception getting access token: error='{}', description='{}'", e.getError(),
                     e.getErrorDescription());
         }
     }
@@ -285,7 +285,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         } catch (IOException e) {
             logIOException(e);
         } catch (EcobeeAuthException e) {
-            logger.info("API: Unable to execute GET: {}", e.getMessage());
+            logger.debug("API: Unable to execute GET: {}", e.getMessage());
         }
         return response;
     }
@@ -306,7 +306,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         } catch (IOException e) {
             logIOException(e);
         } catch (EcobeeAuthException e) {
-            logger.info("API: Unable to execute POST: {}", e.getMessage());
+            logger.debug("API: Unable to execute POST: {}", e.getMessage());
         }
         return false;
     }
@@ -318,22 +318,21 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             logger.debug("API: Call to Ecobee API failed with exception: {}: {}", rootCause.getClass().getSimpleName(),
                     rootCause.getMessage());
         } else {
-            // What's left are unexpected errors that should be logged as INFO with a full stack trace
-            logger.info("API: Call to Ecobee API failed", e);
+            // What's left are unexpected errors that should be logged as WARN with a full stack trace
+            logger.warn("API: Call to Ecobee API failed", e);
         }
     }
 
     private void logJSException(Exception e, String response) {
         // The API sometimes returns an HTML page complaining of an SSL error
-        // Otherwise, this probably should be INFO level
         logger.debug("API: JsonSyntaxException parsing response: {}", response, e);
     }
 
     private boolean isSuccess(@Nullable AbstractResponseDTO response) {
         if (response == null) {
-            logger.info("API: Ecobee API returned null response");
+            logger.debug("API: Ecobee API returned null response");
         } else if (response.status.code.intValue() != 0) {
-            logger.info("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
+            logger.debug("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
                     response.status.message);
             if (response.status.code == ECOBEE_DEAUTHORIZED_TOKEN) {
                 // Token has been deauthorized, so restart the authorization process from the beginning
@@ -342,11 +341,11 @@ public class EcobeeApi implements AccessTokenRefreshListener {
                 createOAuthClientService();
             } else if (response.status.code == ECOBEE_TOKEN_EXPIRED) {
                 // Check isAuthorized again to see if we can get a valid token
-                logger.info("API: Unable to complete API call because token is expired");
+                logger.debug("API: Unable to complete API call because token is expired");
                 if (isAuthorized()) {
                     return true;
                 } else {
-                    logger.warn("API: isAuthorized was NOT successful on second try");
+                    logger.debug("API: isAuthorized was NOT successful on second try");
                 }
             }
         } else {
