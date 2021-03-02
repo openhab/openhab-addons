@@ -417,7 +417,6 @@ public class SoulissCommonCommands {
         macacoFrame.add((byte) 0x00); // startOffset
 
         macacoFrame.add((byte) nodes); // iNodes
-        // macacoFrame.add((byte) 0x00); // iNodes
         logger.debug("sendTypicalRequestFrame - {}, IP: {} - port: {}", macacoToString(macacoFrame),
                 soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
         send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
