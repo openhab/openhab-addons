@@ -22,7 +22,7 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 - includes some common actions and 
 - simplifies firmware updates.
 
-[Shelly Manager](doc/ShellyManager.md) could also act as a firmware upgrade proxy - the device doesn't need to connect directly to the Internet, instead openHAB services as a download proxy, which improves device security. 
+
 
 ## Supported Devices
 
@@ -815,7 +815,7 @@ Important: The Shelly Motion does only support CoIoT Unicast, which means you ne
 |          |illumination   |String   |yes      |Current illumination: dark/twilight/bright                           |
 |          |vibration      |Switch   |yes      |ON: Vibration detected                                               |
 |          |charger        |Switch   |yes      |ON: USB charging cable is connected external power supply activated. |
-|          |notionActive   |Switch   |yes      |ON: Motion detection is currently active                             |
+|          |motionActive   |Switch   |yes      |ON: Motion detection is currently active                             |
 |          |lastUpdate     |DateTime |yes      |Timestamp of the last update (any sensor value changed)              |
 |battery   |batteryLevel   |Number   |yes      |Battery Level in %                                                   |
 |          |lowBattery     |Switch   |yes      |Low battery alert (< 20%)                                            |
@@ -824,7 +824,7 @@ Important: The Shelly Motion does only support CoIoT Unicast, which means you ne
 Use case for the 'sensorSleepTime': 
 You have a Motion controlling your light. 
 You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
-Using 'sensorSleepTime' you could suspress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on. 
+Using 'sensorSleepTime' you could suppress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on. 
 
 ### Shelly Button 1 (thing-type: shellybutton1)
 
