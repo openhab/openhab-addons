@@ -66,11 +66,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         if (node >= 0) {
             logger.debug("Push packet in queue - Node {}", node);
         }
-        /*
-         * else {
-         * // logger.debug("Push packet in queue");
-         * }
-         */
 
         if (packetsList.size() == 0 || node < 0) {
             bPacchettoGestito = false;
@@ -89,8 +84,8 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                         // scorre i byte di comando e se il byte è diverso da
                         // zero sovrascrive il byte presente nel pacchetto in
                         // coda
-                        logger.debug("Optimizer. Packet to push: {}", macacoToString(packetToPUT.getData()));
-                        logger.debug("Optimizer. Previous frame: {}",
+                        logger.trace("Optimizer. Packet to push: {}", macacoToString(packetToPUT.getData()));
+                        logger.trace("Optimizer. Previous frame: {}",
                                 macacoToString(packetsList.get(i).packet.getData()));
                         // i valori dei tipici partono dal byte 12 in poi
                         for (int j = 12; j < packetToPUT.getData().length; j++) {
