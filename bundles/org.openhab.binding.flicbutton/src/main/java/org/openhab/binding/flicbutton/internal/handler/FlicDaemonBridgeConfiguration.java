@@ -10,19 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.flicbutton.handler;
+package org.openhab.binding.flicbutton.internal.handler;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
  * @author Patrick Fink - Initial contribution
  *
  */
-@NonNullByDefault
 public class FlicDaemonBridgeConfiguration {
 
     private String hostname;

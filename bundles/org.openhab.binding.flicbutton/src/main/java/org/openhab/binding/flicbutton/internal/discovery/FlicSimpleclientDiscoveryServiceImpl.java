@@ -15,7 +15,7 @@ package org.openhab.binding.flicbutton.internal.discovery;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.openhab.binding.flicbutton.FlicButtonBindingConstants;
+import org.openhab.binding.flicbutton.internal.FlicButtonBindingConstants;
 import org.openhab.binding.flicbutton.internal.FlicButtonHandlerFactory;
 import org.openhab.binding.flicbutton.internal.util.FlicButtonUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;

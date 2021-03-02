@@ -20,11 +20,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.flicbutton.FlicButtonBindingConstants;
-import org.openhab.binding.flicbutton.handler.FlicButtonHandler;
-import org.openhab.binding.flicbutton.handler.FlicDaemonBridgeHandler;
 import org.openhab.binding.flicbutton.internal.discovery.FlicButtonDiscoveryService;
 import org.openhab.binding.flicbutton.internal.discovery.FlicSimpleclientDiscoveryServiceImpl;
+import org.openhab.binding.flicbutton.internal.handler.FlicButtonHandler;
+import org.openhab.binding.flicbutton.internal.handler.FlicDaemonBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;

@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.flicbutton.handler;
+package org.openhab.binding.flicbutton.internal.handler;
 
 import java.util.Collection;
 import java.util.Collections;
