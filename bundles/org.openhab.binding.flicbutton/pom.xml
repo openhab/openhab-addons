@@ -27,7 +27,7 @@
             <phase>generate-sources</phase>
             <configuration>
               <sources>
-                <source>src/3rdparty</source>
+                <source>src/3rdparty/java</source>
               </sources>
             </configuration>
           </execution>
