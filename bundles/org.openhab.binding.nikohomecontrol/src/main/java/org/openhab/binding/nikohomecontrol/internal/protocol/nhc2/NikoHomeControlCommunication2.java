@@ -33,7 +33,11 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.*;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeter;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcProperty;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMessage2.NhcMessageParam;
@@ -307,9 +311,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             deviceList.forEach(this::removeDevice);
             return;
         } else if ("devices.added".equals(method)) {
-            deviceList.forEach(this::addDevice);
-        } else if ("devices.changed".equals(method)) {
-            deviceList.forEach(this::removeDevice);
             deviceList.forEach(this::addDevice);
         }
 
