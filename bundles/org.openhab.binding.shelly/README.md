@@ -16,6 +16,14 @@ The binding gets in sync with the next status refresh.
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
+Also check out the [Shelly Manager](doc/ShellyManager.md), which
+- provides detailed information on your Shellys
+- helps to diagnose WiFi issues or device instabilities
+- includes some common actions and 
+- simplifies firmware updates.
+
+[Shelly Manager](doc/ShellyManager.md) could also act as a firmware upgrade proxy - the device doesn't need to connect directly to the Internet, instead openHAB services as a download proxy, which improves device security.
+
 ## Supported Devices
 
 | thing-type         | Model                                                  | Vendor ID |
@@ -796,7 +804,8 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 Important: The Shelly Motion does only support CoIoT Unicast, which means you need to set the CoIoT peer address.
 
-Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
+- Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
+- Use [Shelly Manager](doc/ShellyManager.md, select Action 'Set CoIoT peer' and the Manager will sets the openHAB IP address as peer address
 
 |Group     |Channel        |Type     |read-only|Description                                                          |
 |----------|---------------|---------|---------|---------------------------------------------------------------------|
