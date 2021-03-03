@@ -193,7 +193,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcSystemInfo2> systemInfo = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 timeInfo = messageParams.stream().filter(p -> (p.timeInfo != null)).findFirst().get().timeInfo;
                 systemInfo = messageParams.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
@@ -218,7 +218,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcSystemInfo2> systemInfo = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 systemInfo = messageParams.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
             }
@@ -238,7 +238,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcService2> serviceList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 serviceList = messageParams.stream().filter(p -> (p.services != null)).findFirst().get().services;
             }
@@ -259,7 +259,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcDevice2> deviceList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 deviceList = messageParams.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
             }
@@ -293,8 +293,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         String method = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            method = message.method;
-            List<NhcMessageParam> messageParams = message.params;
+            method = (message != null) ? message.method : null;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 deviceList = messageParams.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
             }
@@ -323,7 +323,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcNotification2> notificationList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 notificationList = messageParams.stream().filter(p -> (p.notifications != null)).findFirst()
                         .get().notifications;
@@ -425,14 +425,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void removeDevice(NhcDevice2 device) {
-        if (actions.containsKey(device.uuid)) {
-            actions.get(device.uuid).actionRemoved();
+        NhcAction action = actions.get(device.uuid);
+        NhcThermostat thermostat = thermostats.get(device.uuid);
+        NhcEnergyMeter energyMeter = energyMeters.get(device.uuid);
+        if (action != null) {
+            action.actionRemoved();
             actions.remove(device.uuid);
-        } else if (thermostats.containsKey(device.uuid)) {
-            thermostats.get(device.uuid).thermostatRemoved();
+        } else if (thermostat != null) {
+            thermostat.thermostatRemoved();
             thermostats.remove(device.uuid);
-        } else if (energyMeters.containsKey(device.uuid)) {
-            energyMeters.get(device.uuid).energyMeterRemoved();
+        } else if (energyMeter != null) {
+            energyMeter.energyMeterRemoved();
             energyMeters.remove(device.uuid);
         }
     }
@@ -608,6 +611,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         device.properties = deviceProperties;
 
         NhcAction2 action = (NhcAction2) actions.get(actionId);
+        if (action == null) {
+            return;
+        }
 
         switch (action.getType()) {
             case GENERIC:
@@ -746,12 +752,18 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
 
-        ((NhcEnergyMeter2) energyMeters.get(energyMeterId)).startEnergyMeter(topic, gsonMessage);
+        NhcEnergyMeter2 energyMeter = (NhcEnergyMeter2) energyMeters.get(energyMeterId);
+        if (energyMeter != null) {
+            energyMeter.startEnergyMeter(topic, gsonMessage);
+        }
     }
 
     @Override
     public void stopEnergyMeter(String energyMeterId) {
-        ((NhcEnergyMeter2) energyMeters.get(energyMeterId)).stopEnergyMeter();
+        NhcEnergyMeter2 energyMeter = (NhcEnergyMeter2) energyMeters.get(energyMeterId);
+        if (energyMeter != null) {
+            energyMeter.stopEnergyMeter();
+        }
     }
 
     /**

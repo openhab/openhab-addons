@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -244,6 +245,9 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         try {
             NhcMessageBase1 nhcMessageGson = gsonIn.fromJson(nhcMessage, NhcMessageBase1.class);
 
+            if (nhcMessageGson == null) {
+                return;
+            }
             String cmd = nhcMessageGson.getCmd();
             String event = nhcMessageGson.getEvent();
 
@@ -360,7 +364,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                     logger.debug("name not found in action {}", action);
                     continue;
                 }
-                String type = action.get("type");
+                String type = Optional.ofNullable(action.get("type")).orElse("");
                 ActionType actionType = ActionType.GENERIC;
                 switch (type) {
                     case "0":
@@ -395,14 +399,18 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 // Action object already exists, so only update state.
                 // If we would re-instantiate action, we would lose pointer back from action to thing handler that was
                 // set in thing handler initialize().
-                actions.get(id).setState(state);
+                NhcAction nhcAction = actions.get(id);
+                if (nhcAction != null) {
+                    nhcAction.setState(state);
+                }
             }
         }
     }
 
     private int parseIntOrThrow(@Nullable String str) throws IllegalArgumentException {
-        if (str == null)
+        if (str == null) {
             throw new IllegalArgumentException("String is null");
+        }
         try {
             return Integer.parseInt(str);
         } catch (NumberFormatException e) {
@@ -442,8 +450,11 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                     String name = thermostat.get("name");
                     String locationId = thermostat.get("location");
                     String location = "";
-                    if (!locationId.isEmpty()) {
-                        location = locations.get(locationId).getName();
+                    if (!((locationId == null) || locationId.isEmpty())) {
+                        NhcLocation1 nhcLocation = locations.get(locationId);
+                        if (nhcLocation != null) {
+                            location = nhcLocation.getName();
+                        }
                     }
                     if (name != null) {
                         return new NhcThermostat1(i, name, location, this);
