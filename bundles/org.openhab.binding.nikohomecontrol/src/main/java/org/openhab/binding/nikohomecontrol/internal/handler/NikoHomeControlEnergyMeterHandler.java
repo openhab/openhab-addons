@@ -48,7 +48,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlEnergyMeterHandler.class);
 
-    private volatile @NonNullByDefault({}) NhcEnergyMeter nhcEnergyMeter;
+    private volatile @Nullable NhcEnergyMeter nhcEnergyMeter;
 
     private String energyMeterId = "";
 
@@ -58,6 +58,12 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        NhcEnergyMeter nhcEnergyMeter = this.nhcEnergyMeter;
+        if (nhcEnergyMeter == null) {
+            logger.debug("Niko Home Control: energy meter with ID {} not initialized", energyMeterId);
+            return;
+        }
+
         if (command == REFRESH) {
             energyMeterEvent(nhcEnergyMeter.getPower());
         }
@@ -84,7 +90,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
                 return;
             }
 
-            nhcEnergyMeter = nhcComm.getEnergyMeters().get(energyMeterId);
+            NhcEnergyMeter nhcEnergyMeter = nhcComm.getEnergyMeters().get(energyMeterId);
             if (nhcEnergyMeter == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: energyMeterId does not match a energy meter in the controller "
@@ -101,6 +107,8 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
             if (isLinked(CHANNEL_POWER)) {
                 nhcComm.startEnergyMeter(energyMeterId);
             }
+
+            this.nhcEnergyMeter = nhcEnergyMeter;
 
             logger.debug("Niko Home Control: energy meter intialized {}", energyMeterId);
 

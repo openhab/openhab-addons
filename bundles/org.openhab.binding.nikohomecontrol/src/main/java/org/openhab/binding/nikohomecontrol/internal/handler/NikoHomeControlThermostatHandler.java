@@ -52,7 +52,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlThermostatHandler.class);
 
-    private volatile @NonNullByDefault({}) NhcThermostat nhcThermostat;
+    private volatile @Nullable NhcThermostat nhcThermostat;
 
     private String thermostatId = "";
     private int overruleTime;
@@ -87,6 +87,12 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     }
 
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
+        NhcThermostat nhcThermostat = this.nhcThermostat;
+        if (nhcThermostat == null) {
+            logger.debug("Niko Home Control: thermostat with ID {} not initialized", thermostatId);
+            return;
+        }
+
         logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
         if (REFRESH.equals(command)) {
@@ -166,7 +172,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 return;
             }
 
-            nhcThermostat = nhcComm.getThermostats().get(thermostatId);
+            NhcThermostat nhcThermostat = nhcComm.getThermostats().get(thermostatId);
             if (nhcThermostat == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: thermostatId does not match a thermostat in the controller "
@@ -185,6 +191,8 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
                     nhcThermostat.getOverrule(), nhcThermostat.getDemand());
+
+            this.nhcThermostat = nhcThermostat;
 
             logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
 
@@ -211,6 +219,12 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
+        NhcThermostat nhcThermostat = this.nhcThermostat;
+        if (nhcThermostat == null) {
+            logger.debug("Niko Home Control: thermostat with ID {} not initialized", thermostatId);
+            return;
+        }
+
         updateState(CHANNEL_MEASURED, new QuantityType<>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
 
         int overruletime = nhcThermostat.getRemainingOverruletime();

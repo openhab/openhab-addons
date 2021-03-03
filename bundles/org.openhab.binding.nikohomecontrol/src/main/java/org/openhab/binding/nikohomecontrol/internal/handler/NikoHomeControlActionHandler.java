@@ -52,7 +52,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlActionHandler.class);
 
-    private volatile @NonNullByDefault({}) NhcAction nhcAction;
+    private volatile @Nullable NhcAction nhcAction;
 
     private String actionId = "";
     private int stepValue;
@@ -84,6 +84,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     }
 
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
+        NhcAction nhcAction = this.nhcAction;
+        if (nhcAction == null) {
+            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            return;
+        }
+
         logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
         if (command == REFRESH) {
@@ -114,6 +120,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     }
 
     private void handleSwitchCommand(Command command) {
+        NhcAction nhcAction = this.nhcAction;
+        if (nhcAction == null) {
+            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            return;
+        }
+
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (OnOffType.OFF.equals(s)) {
@@ -125,6 +137,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     }
 
     private void handleBrightnessCommand(Command command) {
+        NhcAction nhcAction = this.nhcAction;
+        if (nhcAction == null) {
+            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            return;
+        }
+
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (OnOffType.OFF.equals(s)) {
@@ -162,6 +180,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     }
 
     private void handleRollershutterCommand(Command command) {
+        NhcAction nhcAction = this.nhcAction;
+        if (nhcAction == null) {
+            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            return;
+        }
+
         if (command instanceof UpDownType) {
             UpDownType s = (UpDownType) command;
             if (UpDownType.UP.equals(s)) {
@@ -202,7 +226,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 return;
             }
 
-            nhcAction = nhcComm.getActions().get(actionId);
+            NhcAction nhcAction = nhcComm.getActions().get(actionId);
             if (nhcAction == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: actionId does not match an action in the controller " + actionId);
@@ -220,6 +244,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
             actionEvent(nhcAction.getState());
 
+            this.nhcAction = nhcAction;
+
             logger.debug("Niko Home Control: action initialized {}", actionId);
 
             Bridge bridge = getBridge();
@@ -232,6 +258,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     }
 
     private void updateProperties() {
+        NhcAction nhcAction = this.nhcAction;
+        if (nhcAction == null) {
+            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            return;
+        }
+
         Map<String, String> properties = new HashMap<>();
         properties.put("type", String.valueOf(nhcAction.getType()));
         if (getThing().getThingTypeUID() == THING_TYPE_BLIND) {
@@ -250,6 +282,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
     @Override
     public void actionEvent(int actionState) {
+        NhcAction nhcAction = this.nhcAction;
+        if (nhcAction == null) {
+            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            return;
+        }
+
         ActionType actionType = nhcAction.getType();
 
         switch (actionType) {
