@@ -18,6 +18,8 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,6 +44,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
+    private final static Pattern VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+");
 
     public boolean initialized = false; // true when initialized
 
@@ -324,14 +327,14 @@ public class ShellyDeviceProfile {
 
     public static String extractFwVersion(@Nullable String version) {
         if (version != null) {
-            if (version.chars().filter(ch -> ch == '-').count() >= 3) {
-                // new format starting with version 1.0
+            Matcher matcher = VERSION_PATTERN.matcher(version);
+            if (matcher.find()) {
                 // e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
+                return matcher.group(0);
             }
             if (version.contains("@")) { // standard format
                 return substringBetween(getString(version), "/", "@");
             }
-
             if (version.indexOf('/') != version.lastIndexOf('/')) {
                 // includes 2 /, e.g. beta
                 return substringAfterLast(version, "/");

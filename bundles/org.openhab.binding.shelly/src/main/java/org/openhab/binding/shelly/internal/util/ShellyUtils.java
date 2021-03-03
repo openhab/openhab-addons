@@ -54,6 +54,7 @@ import com.google.gson.internal.Primitives;
 @NonNullByDefault
 public class ShellyUtils {
     private final static String PRE = "Unable to create object of type ";
+    public final static DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
         @Nullable
@@ -277,8 +278,7 @@ public class ShellyUtils {
         if (ts == 0) {
             return "";
         }
-        String time = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN)
-                .format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+        String time = DATE_TIME.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
         return time.replace('T', ' ').replace('-', '/');
     }
 

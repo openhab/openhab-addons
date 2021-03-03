@@ -345,7 +345,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
                     break;
 
-                case CHANNEL_DEVST_SENSOR_SLEEPTIME:
+                case CHANNEL_SENSOR_SLEEPTIME:
                     logger.debug("{}: Set sensor sleep time to {}", thingName, command);
                     int value = ((DecimalType) command).intValue();
                     value = value > 0 ? Math.max(SHELLY_MOTION_SLEEPTIME_OFFSET, value - SHELLY_MOTION_SLEEPTIME_OFFSET)
@@ -569,9 +569,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
 
     private boolean checkRestarted(ShellySettingsStatus status) {
-        if (profile.isInitialized()
-                && ((status.uptime < stats.lastUptime) || (!profile.status.update.oldVersion.isEmpty()
-                        && !status.update.oldVersion.equals(profile.status.update.oldVersion)))) {
+        if (profile.isInitialized() && (status.uptime < stats.lastUptime || !profile.status.update.oldVersion.isEmpty()
+                && !status.update.oldVersion.equals(profile.status.update.oldVersion))) {
             logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
             stats.restarts++;
             postEvent(ALARM_TYPE_RESTARTED, true);

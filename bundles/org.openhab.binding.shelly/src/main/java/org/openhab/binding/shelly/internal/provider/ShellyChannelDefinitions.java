@@ -116,7 +116,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPTIME, "uptime", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -187,6 +186,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VALVE, "sensorValve", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // Button/ix3
@@ -250,6 +250,7 @@ public class ShellyChannelDefinitions {
             // Only some devices report the internal device temp
             addChannel(thing, add, (status.tmp != null) || (status.temperature != null), CHGR_DEVST,
                     CHANNEL_DEVST_ITEMP);
+            addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
         }
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
@@ -263,9 +264,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT);
         addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
         addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
-                                                                                                                  // LED
-        addChannel(thing, add, profile.settings.sleepTime != null, CHGR_DEVST, CHANNEL_DEVST_SENSOR_SLEEPTIME);
-
+                                                                                                                  //
         return add;
     }
 

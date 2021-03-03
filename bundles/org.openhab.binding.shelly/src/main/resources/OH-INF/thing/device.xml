@@ -118,11 +118,5 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="sensorSleepTime" advanced="true">
-		<item-type>Number:Time</item-type>
-		<label>@text/channel-type.shelly.sensorSleepTime.label</label>
-		<description>@text/channel-type.shelly.sensorSleepTime.description</description>
-		<state readOnly="false" min="0" max="86400" pattern="%.0f %unit%"/>
-	</channel-type>
 
 </thing:thing-descriptions>

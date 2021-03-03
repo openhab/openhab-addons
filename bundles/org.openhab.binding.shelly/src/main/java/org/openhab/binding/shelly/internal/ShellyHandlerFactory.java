@@ -14,9 +14,9 @@ package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -144,11 +144,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     }
 
     public Map<String, ShellyManagerInterface> getThingHandlers() {
-        Map<String, ShellyManagerInterface> handlers = new TreeMap<>();
-        for (Map.Entry<String, ShellyBaseHandler> bh : deviceListeners.entrySet()) {
-            handlers.put(bh.getKey(), bh.getValue());
-        }
-        return handlers;
+        return new HashMap<>(deviceListeners);
     }
 
     /**
