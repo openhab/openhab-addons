@@ -440,19 +440,19 @@
 
 	<channel-type id="pm1_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. >1μ</label>
+		<label>Max. Error Fine Dust Conc. >1μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="pm10_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. >10μ</label>
+		<label>Max. Error Fine Dust Conc. >10μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="pm2_5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. >2,5μ</label>
+		<label>Max. Error Fine Dust Conc. >2,5μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 

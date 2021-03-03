@@ -80,16 +80,21 @@ public class AirqHandler extends BaseThingHandler {
         private final float value;
         private final float maxdev;
 
-        public float getvalue() {
+        public float getValue() {
             return value;
         }
 
-        public float getmaxdev() {
+        public float getMaxdev() {
             return maxdev;
         }
 
-        // ResultPair() expects a string formed as this: [1234,56,789,012] and gives back a ResultPair
-        // consisting of the two numbers
+        /**
+         * Expects a string consisting of two values as sent by the air-Q device
+         * and returns a corresponding object
+         *
+         * @param input string formed as this: [1234,56,789,012] (including the brackets)
+         * @return ResultPair object with the two values
+         */
         public ResultPair(String input) {
             value = Float.parseFloat(input.substring(1, input.indexOf(',')));
             maxdev = Float.parseFloat(input.substring(input.indexOf(',') + 1, input.length() - 1));
@@ -111,9 +116,6 @@ public class AirqHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace(
-                "air-Q - airqHandler - handleCommand(): request received to handle value {} command {} of channelUID={}",
-                command, command.getClass(), channelUID);
         if ((command instanceof OnOffType) || (command instanceof StringType)) {
             JsonObject newobj = new JsonObject();
             JsonObject subjson = new JsonObject();
@@ -296,7 +298,6 @@ public class AirqHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getThing().getConfiguration().as(AirqConfiguration.class);
-        logger.debug("air-Q - airqHandler - initialize(): config={}", config);
         updateStatus(ThingStatus.UNKNOWN);
         // We don't have to test if ipAddress and password have been set because we have defined them
         // as being 'required' in thing-types.xml and OpenHAB will only initialize the handler if both are set.
@@ -312,7 +313,6 @@ public class AirqHandler extends BaseThingHandler {
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA, TimeUnit.MILLISECONDS);
         getConfigDataJob = scheduler.scheduleWithFixedDelay(this::getConfigData, 0, POLLING_PERIOD_CONFIG,
                 TimeUnit.MINUTES);
-        logger.debug("air-Q - airqHandler - initialize() finished");
     }
 
     // AES decoding based on this tutorial: https://www.javainterviewpoint.com/aes-256-encryption-and-decryption/
@@ -649,8 +649,8 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "pair":
                     ResultPair pair = new ResultPair(dec.get(airqName).toString());
-                    updateState(channelName, new DecimalType(pair.getvalue()));
-                    updateState(channelName + "_maxerr", new DecimalType(pair.getmaxdev()));
+                    updateState(channelName, new DecimalType(pair.getValue()));
+                    updateState(channelName + "_maxerr", new DecimalType(pair.getMaxdev()));
                     break;
                 case "datetime":
                     Long timest = Long.valueOf(dec.get(airqName).toString());
