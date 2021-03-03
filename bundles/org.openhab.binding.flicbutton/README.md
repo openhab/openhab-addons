@@ -49,7 +49,7 @@ If flicd is running on a remote host, please do not forget to start it with the 
 For the button, the only config parameter is the MAC address. Normally, no textual configuration is necessary as buttons are autodiscovered as soon as the bridge is configured. If you want to use textual configuration anyway, you can do it like this:
 
 ```
-Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port="<YOUR_PORT>"] {
+Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port=<YOUR_PORT>] {
     Thing button myflic1 "<YOUR_LABEL>" [address ="<MAC_ADDRESS>"]
     Thing button myflic2 "<YOUR_LABEL>" [address ="<MAC_ADDRESS>"]
     ...
