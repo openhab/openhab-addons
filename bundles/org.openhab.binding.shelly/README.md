@@ -16,14 +16,6 @@ The binding gets in sync with the next status refresh.
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
-Also check out the [Shelly Manager](doc/ShellyManager.md), which
-- provides detailed information on your Shellys
-- helps to diagnose WiFi issues or device instabilities
-- includes some common actions and 
-- simplifies firmware updates.
-
-
-
 ## Supported Devices
 
 | thing-type         | Model                                                  | Vendor ID |
@@ -804,8 +796,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 Important: The Shelly Motion does only support CoIoT Unicast, which means you need to set the CoIoT peer address.
 
-- Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
-- Use [Shelly Manager](doc/ShellyManager.md, select Action 'Set CoIoT peer' and the Manager will sets the openHAB IP address as peer address
+Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
 
 |Group     |Channel        |Type     |read-only|Description                                                          |
 |----------|---------------|---------|---------|---------------------------------------------------------------------|
@@ -816,10 +807,10 @@ Important: The Shelly Motion does only support CoIoT Unicast, which means you ne
 |          |vibration      |Switch   |yes      |ON: Vibration detected                                               |
 |          |charger        |Switch   |yes      |ON: USB charging cable is connected external power supply activated. |
 |          |motionActive   |Switch   |yes      |ON: Motion detection is currently active                             |
+|          |sensorSleepTime|Number   |no       |Specifies the number of sec the sensor should not report events      ]
 |          |lastUpdate     |DateTime |yes      |Timestamp of the last update (any sensor value changed)              |
 |battery   |batteryLevel   |Number   |yes      |Battery Level in %                                                   |
 |          |lowBattery     |Switch   |yes      |Low battery alert (< 20%)                                            |
-|device    |sensorSleepTime|Number   |no       |Specifies the number of sec the sensor should not report events      ]
 
 Use case for the 'sensorSleepTime': 
 You have a Motion controlling your light. 

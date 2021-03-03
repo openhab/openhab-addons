@@ -332,13 +332,6 @@ public class ShellyDeviceProfile {
                 // e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
                 return matcher.group(0);
             }
-            if (version.contains("@")) { // standard format
-                return substringBetween(getString(version), "/", "@");
-            }
-            if (version.indexOf('/') != version.lastIndexOf('/')) {
-                // includes 2 /, e.g. beta
-                return substringAfterLast(version, "/");
-            }
         }
         return "";
     }

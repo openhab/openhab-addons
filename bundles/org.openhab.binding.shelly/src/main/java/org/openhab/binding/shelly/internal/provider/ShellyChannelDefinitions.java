@@ -250,8 +250,8 @@ public class ShellyChannelDefinitions {
             // Only some devices report the internal device temp
             addChannel(thing, add, (status.tmp != null) || (status.temperature != null), CHGR_DEVST,
                     CHANNEL_DEVST_ITEMP);
-            addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
         }
+        addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
         boolean accuChannel = (((status.meters != null) && (status.meters.size() > 1) && !profile.isRoller
