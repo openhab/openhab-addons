@@ -12,17 +12,7 @@
  */
 package org.openhab.binding.automower.internal.things;
 
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_CALENDAR_TASKS;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_PLANNER_NEXT_START;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_PLANNER_OVERRIDE_ACTION;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_STATUS_ACTIVITY;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_STATUS_BATTERY;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_STATUS_ERROR_CODE;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_STATUS_ERROR_TIMESTAMP;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_STATUS_LAST_UPDATE;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_STATUS_MODE;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_STATUS_STATE;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_AUTOMOWER;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
 import java.time.*;
 import java.util.Collection;
@@ -35,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.quantity.Dimensionless;
+import javax.validation.constraints.NotNull;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.actions.AutomowerActions;
@@ -77,7 +67,6 @@ import com.google.gson.Gson;
  * @author Markus Pfleger - Initial contribution
  * @author Marcin Czeczko - Added support for planner & calendar data
  */
-@NonNullByDefault
 public class AutomowerHandler extends BaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AUTOMOWER);
     private static final String NO_ID = "NO_ID";
@@ -85,13 +74,15 @@ public class AutomowerHandler extends BaseThingHandler {
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.MINUTES.toSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
-    private final TimeZoneProvider timeZoneProvider;
+    private @NotNull final TimeZoneProvider timeZoneProvider;
 
     private AtomicReference<String> automowerId = new AtomicReference<String>(NO_ID);
     private long lastQueryTimeMs = 0L;
 
-    private @Nullable ScheduledFuture<?> automowerPollingJob;
+    private ScheduledFuture<?> automowerPollingJob;
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
+
+    private Mower mowerState;
 
     private Gson gson = new Gson();
 
@@ -209,38 +200,36 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private synchronized void updateAutomowerState() {
-        if (System.nanoTime() - lastQueryTimeMs > maxQueryFrequencyNanos) {
-            lastQueryTimeMs = System.nanoTime();
-            String id = automowerId.get();
-            try {
-                AutomowerBridge automowerBridge = getAutomowerBridge();
-                if (automowerBridge != null) {
-                    Mower mower = automowerBridge.getAutomowerStatus(id);
+        String id = automowerId.get();
+        try {
+            AutomowerBridge automowerBridge = getAutomowerBridge();
+            if (automowerBridge != null) {
+                if (mowerState == null || (System.nanoTime() - lastQueryTimeMs > maxQueryFrequencyNanos)) {
+                    lastQueryTimeMs = System.nanoTime();
+                    mowerState = automowerBridge.getAutomowerStatus(id);
+                }
+                if (isValidResult(mowerState)) {
+                    initializeProperties(mowerState);
 
-                    if (isValidResult(mower)) {
-                        initializeProperties(mower);
+                    updateChannelState(mowerState);
 
-                        updateChannelState(mower);
-
-                        if (isConnected(mower)) {
-                            updateStatus(ThingStatus.ONLINE);
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/comm-error-mower-not-connected-to-cloud");
-                        }
+                    if (isConnected(mowerState)) {
+                        updateStatus(ThingStatus.ONLINE);
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/comm-error-query-mower-failed");
+                                "@text/comm-error-mower-not-connected-to-cloud");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                            "@text/comm-error-query-mower-failed");
                 }
-            } catch (AutomowerCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error-query-mower-failed");
-                logger.warn("Unable to query automower status for:  {}. Error: {}", id, e.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }
+        } catch (AutomowerCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error-query-mower-failed");
+            logger.warn("Unable to query automower status for:  {}. Error: {}", id, e.getMessage());
         }
     }
 
@@ -285,6 +274,7 @@ public class AutomowerHandler extends BaseThingHandler {
 
     private void updateChannelState(Mower mower) {
         if (isValidResult(mower)) {
+            updateState(CHANNEL_STATUS_NAME, new StringType(mower.getAttributes().getSystem().getName()));
             updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
             updateState(CHANNEL_STATUS_ACTIVITY, new StringType(mower.getAttributes().getMower().getActivity().name()));
 
@@ -349,7 +339,7 @@ public class AutomowerHandler extends BaseThingHandler {
      * @return ZonedDateTime in system timezone
      */
     private ZonedDateTime toZonedDateTime(long timestamp) {
-        LocalDateTime local = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC);
-        return ZonedDateTime.of(local, timeZoneProvider.getTimeZone());
+        Instant timestampInstant = Instant.ofEpochMilli(timestamp);
+        return ZonedDateTime.ofInstant(timestampInstant, timeZoneProvider.getTimeZone());
     }
 }
