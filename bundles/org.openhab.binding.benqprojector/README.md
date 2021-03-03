@@ -1,6 +1,6 @@
 # BenQ Projector Binding
 
-This binding is compatible with BenQ projectors that support the control protocol via the built-in network (ethernet or Wi-Fi?) port, serial port or USB to serial adapter.
+This binding is compatible with BenQ projectors that support the control protocol via the built-in ethernet port, serial port or USB to serial adapter.
 If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.  
 
 The control protocol can be found here: https://business-display.benq.com/content/dam/bb/en/product/projector/corporate/lx770/quick-start-guide/lx770-rs232-control-guide-0-windows7-windows8-winxp.pdf

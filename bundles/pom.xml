@@ -53,6 +53,7 @@
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.airthings</module>

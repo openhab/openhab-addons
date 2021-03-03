@@ -66,12 +66,10 @@ public class BenqProjectorDevice {
             throw new BenqProjectorException("No response received");
         }
 
-        // TODO: Do something with these...
         if (response.contains(UNSUPPORTED_ITM)) {
-            throw new BenqProjectorCommandException("Unsupported Command response received for command: " + query);
+            return "UNSUPPORTED";
         }
 
-        // TODO: Blocked commands could potentially be re-tried later
         if (response.contains(BLOCK_ITM)) {
             throw new BenqProjectorCommandException("Block Item received for command: " + query);
         }
@@ -82,14 +80,13 @@ public class BenqProjectorDevice {
 
         logger.debug("Response: '{}'", response);
 
-        // TODO: clean this up.
-        // example: sour=?*SOUR=HDMI2
+        // example: SOUR=HDMI2
         String[] responseParts = response.split("=");
-        if (responseParts.length != 3) {
+        if (responseParts.length != 2) {
             throw new BenqProjectorCommandException("Invalid respose for command: " + query);
         }
 
-        return responseParts[2].toLowerCase();
+        return responseParts[1].toLowerCase();
     }
 
     protected void sendCommand(String command, int timeout)

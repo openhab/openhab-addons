@@ -148,7 +148,7 @@ public class BenqProjectorSerialConnector implements BenqProjectorConnector, Ser
                 }
                 return sendMmsg(data, timeout);
             } else {
-                return "";
+                return BLANK;
             }
         } catch (IOException e) {
             logger.debug("IO error occurred...reconnect and resend once: {}", e.getMessage());
@@ -168,14 +168,13 @@ public class BenqProjectorSerialConnector implements BenqProjectorConnector, Ser
     }
 
     private String sendMmsg(String data, int timeout) throws IOException, BenqProjectorException {
-        String resp = "";
+        String resp = BLANK;
 
         InputStream in = this.in;
         OutputStream out = this.out;
 
         if (in != null && out != null) {
-            data = START + data + END;
-            out.write(data.getBytes(StandardCharsets.US_ASCII));
+            out.write((START + data + END).getBytes(StandardCharsets.US_ASCII));
             out.flush();
 
             long startTime = System.currentTimeMillis();
@@ -188,8 +187,7 @@ public class BenqProjectorSerialConnector implements BenqProjectorConnector, Ser
                     int readBytes = in.read(tmpData, 0, availableBytes);
                     resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
                     if (resp.contains(END)) {
-                        // TODO: Clean this up and remove the query string if it is sent back in the response
-                        return resp.replace(RESP_START, "").replace(END, "").replace("\r", "").replace("\n", "");
+                        return resp.replaceAll("[\\r\\n*#>]", BLANK).replace(data, BLANK);
                     }
                 } else {
                     try {
