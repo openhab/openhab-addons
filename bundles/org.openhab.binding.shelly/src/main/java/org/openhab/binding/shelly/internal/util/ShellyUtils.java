@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.measure.Unit;
 
@@ -53,6 +54,7 @@ import com.google.gson.internal.Primitives;
 @NonNullByDefault
 public class ShellyUtils {
     private final static String PRE = "Unable to create object of type ";
+    public final static DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
         @Nullable
@@ -256,7 +258,7 @@ public class ShellyUtils {
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
             if (timestamp == 0) {
-                return getTimestamp();
+                throw new IllegalArgumentException("Timestamp value 0 is invalid");
             }
             ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
             ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
@@ -266,6 +268,18 @@ public class ShellyUtils {
             // Unable to convert device's timezone, use system one
             return getTimestamp();
         }
+    }
+
+    public static String getTimestamp(DateTimeType dt) {
+        return dt.getZonedDateTime().toString().replace('T', ' ').replace('-', '/');
+    }
+
+    public static String convertTimestamp(long ts) {
+        if (ts == 0) {
+            return "";
+        }
+        String time = DATE_TIME.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+        return time.replace('T', ' ').replace('-', '/');
     }
 
     public static Integer getLightIdFromGroup(String groupName) {
