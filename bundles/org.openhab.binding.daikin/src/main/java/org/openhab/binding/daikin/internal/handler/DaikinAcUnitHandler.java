@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
 
     public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
             @Nullable HttpClient httpClient) {
@@ -131,7 +131,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             }
         } catch (DaikinCommunicationException e) {
             // Suppress any error if energy info is not supported.
-            logger.debug("getEnergyInfoYear() error: {}", e.getMessage());
+            LOGGER.debug("getEnergyInfoYear() error: {}", e.getMessage());
         }
 
         try {
@@ -151,7 +151,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                     energyInfoDayAndWeek.energyCoolingLastWeek);
         } catch (DaikinCommunicationException e) {
             // Suppress any error if energy info is not supported.
-            logger.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
+            LOGGER.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
         }
     }
 
@@ -207,7 +207,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         try {
             newMode = Mode.valueOf(mode);
         } catch (IllegalArgumentException ex) {
-            logger.warn("Invalid mode: {}. Valid values: {}", mode, Mode.values());
+            LOGGER.warn("Invalid mode: {}. Valid values: {}", mode, Mode.values());
             return;
         }
         ControlInfo info = webTargets.getControlInfo();
@@ -225,7 +225,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         try {
             newSpeed = FanSpeed.valueOf(fanSpeed);
         } catch (IllegalArgumentException ex) {
-            logger.warn("Invalid fan speed: {}. Valid values: {}", fanSpeed, FanSpeed.values());
+            LOGGER.warn("Invalid fan speed: {}. Valid values: {}", fanSpeed, FanSpeed.values());
             return;
         }
         ControlInfo info = webTargets.getControlInfo();
@@ -242,7 +242,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         try {
             newMovement = FanMovement.valueOf(fanDir);
         } catch (IllegalArgumentException ex) {
-            logger.warn("Invalid fan direction: {}. Valid values: {}", fanDir, FanMovement.values());
+            LOGGER.warn("Invalid fan direction: {}. Valid values: {}", fanDir, FanMovement.values());
             return;
         }
         ControlInfo info = webTargets.getControlInfo();
@@ -306,7 +306,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             webTargets.registerUuid(key);
         } catch (Exception e) {
             // suppress exceptions
-            logger.debug("registerUuid({}) error: {}", key, e.getMessage());
+            LOGGER.debug("registerUuid({}) error: {}", key, e.getMessage());
         }
     }
 }
