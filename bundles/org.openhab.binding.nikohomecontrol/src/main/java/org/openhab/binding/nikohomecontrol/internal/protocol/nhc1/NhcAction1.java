@@ -74,7 +74,7 @@ public class NhcAction1 extends NhcAction {
         if (getType() == ActionType.ROLLERSHUTTER) {
             if (filterEvent) {
                 filterEvent = false;
-                logger.debug("Niko Home Control: filtered event {} for {}", newState, id);
+                logger.debug("filtered event {} for {}", newState, id);
                 return;
             }
 
@@ -88,7 +88,7 @@ public class NhcAction1 extends NhcAction {
             }
         }
         if (waitForEvent) {
-            logger.debug("Niko Home Control: received requested rollershutter {} position event {}", id, newState);
+            logger.debug("received requested rollershutter {} position event {}", id, newState);
             executeRollershutterTask();
         } else {
             state = newState;
@@ -103,7 +103,7 @@ public class NhcAction1 extends NhcAction {
      */
     @Override
     public void execute(String command) {
-        logger.debug("Niko Home Control: execute action {} of type {} for {}", command, type, id);
+        logger.debug("execute action {} of type {} for {}", command, type, id);
 
         String value = "";
         switch (getType()) {

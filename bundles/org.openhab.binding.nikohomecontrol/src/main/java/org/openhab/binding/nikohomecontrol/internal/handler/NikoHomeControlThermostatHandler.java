@@ -89,11 +89,11 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
         NhcThermostat nhcThermostat = this.nhcThermostat;
         if (nhcThermostat == null) {
-            logger.debug("Niko Home Control: thermostat with ID {} not initialized", thermostatId);
+            logger.debug("thermostat with ID {} not initialized", thermostatId);
             return;
         }
 
-        logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
+        logger.debug("handle command {} for {}", command, channelUID);
 
         if (REFRESH.equals(command)) {
             thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
@@ -194,7 +194,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             this.nhcThermostat = nhcThermostat;
 
-            logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
+            logger.debug("thermostat intialized {}", thermostatId);
 
             Bridge bridge = getBridge();
             if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
@@ -221,7 +221,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
         NhcThermostat nhcThermostat = this.nhcThermostat;
         if (nhcThermostat == null) {
-            logger.debug("Niko Home Control: thermostat with ID {} not initialized", thermostatId);
+            logger.debug("thermostat with ID {} not initialized", thermostatId);
             return;
         }
 

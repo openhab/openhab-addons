@@ -57,7 +57,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public void initialize() {
-        logger.debug("Niko Home Control: initializing NHC II bridge handler");
+        logger.debug("initializing NHC II bridge handler");
 
         setConfig();
 
@@ -168,7 +168,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
     public String getToken() {
         String token = ((NikoHomeControlBridgeConfig2) config).password;
         if ((token == null) || token.isEmpty()) {
-            logger.debug("Niko Home Control: no JWT token set.");
+            logger.debug("no JWT token set.");
             return "";
         }
         return token;
@@ -192,10 +192,10 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             try {
                 jwtToken = gson.fromJson(tokenPayload, NhcJwtToken2.class);
             } catch (JsonSyntaxException e) {
-                logger.debug("Niko Home Control: unexpected token payload {}", tokenPayload);
+                logger.debug("unexpected token payload {}", tokenPayload);
             } catch (NoSuchElementException ignore) {
                 // Ignore if exp not present in response, this should not happen in token payload response
-                logger.trace("Niko Home Control: no expiry date found in payload {}", tokenPayload);
+                logger.trace("no expiry date found in payload {}", tokenPayload);
             }
         }
 
@@ -206,20 +206,20 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
                 long epoch = Long.parseLong(expiryEpoch) * 1000; // convert to milliseconds
                 expiryDate = new Date(epoch);
             } catch (NumberFormatException e) {
-                logger.debug("Niko Home Control: token expiry not valid {}", jwtToken.exp);
+                logger.debug("token expiry not valid {}", jwtToken.exp);
                 return null;
             }
 
             Date now = new Date();
             if (expiryDate.before(now)) {
-                logger.warn("Niko Home Control: hobby API token expired, was valid until {}",
+                logger.warn("hobby API token expired, was valid until {}",
                         DateFormat.getDateInstance().format(expiryDate));
             } else {
                 Calendar c = Calendar.getInstance();
                 c.setTime(expiryDate);
                 c.add(Calendar.DATE, -14);
                 if (c.getTime().before(now)) {
-                    logger.info("Niko Home Control: hobby API token will expire in less than 14 days, valid until {}",
+                    logger.info("hobby API token will expire in less than 14 days, valid until {}",
                             DateFormat.getDateInstance().format(expiryDate));
                 }
             }

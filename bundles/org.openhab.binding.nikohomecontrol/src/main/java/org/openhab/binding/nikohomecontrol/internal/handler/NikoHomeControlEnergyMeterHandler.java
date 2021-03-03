@@ -60,7 +60,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     public void handleCommand(ChannelUID channelUID, Command command) {
         NhcEnergyMeter nhcEnergyMeter = this.nhcEnergyMeter;
         if (nhcEnergyMeter == null) {
-            logger.debug("Niko Home Control: energy meter with ID {} not initialized", energyMeterId);
+            logger.debug("energy meter with ID {} not initialized", energyMeterId);
             return;
         }
 
@@ -110,7 +110,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
             this.nhcEnergyMeter = nhcEnergyMeter;
 
-            logger.debug("Niko Home Control: energy meter intialized {}", energyMeterId);
+            logger.debug("energy meter intialized {}", energyMeterId);
 
             Bridge bridge = getBridge();
             if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {

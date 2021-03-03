@@ -86,11 +86,11 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", actionId);
             return;
         }
 
-        logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
+        logger.debug("handle command {} for {}", command, channelUID);
 
         if (command == REFRESH) {
             actionEvent(nhcAction.getState());
@@ -122,7 +122,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void handleSwitchCommand(Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", actionId);
             return;
         }
 
@@ -139,7 +139,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void handleBrightnessCommand(Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", actionId);
             return;
         }
 
@@ -182,7 +182,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void handleRollershutterCommand(Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", actionId);
             return;
         }
 
@@ -246,7 +246,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
             this.nhcAction = nhcAction;
 
-            logger.debug("Niko Home Control: action initialized {}", actionId);
+            logger.debug("action initialized {}", actionId);
 
             Bridge bridge = getBridge();
             if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
@@ -260,7 +260,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void updateProperties() {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", actionId);
             return;
         }
 
@@ -284,7 +284,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     public void actionEvent(int actionState) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("Niko Home Control: action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", actionId);
             return;
         }
 
