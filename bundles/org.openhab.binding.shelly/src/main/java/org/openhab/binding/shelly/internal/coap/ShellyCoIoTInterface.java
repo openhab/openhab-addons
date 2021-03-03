@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
+import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.core.types.State;
 
 /**
@@ -30,8 +32,12 @@ import org.openhab.core.types.State;
 public interface ShellyCoIoTInterface {
     public int getVersion();
 
-    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);
+    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);
 
-    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates);
+    public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap);
+
+    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
+            Map<String, State> updates, ShellyColorUtils col);
+
+    public String getLastWakeup();
 }

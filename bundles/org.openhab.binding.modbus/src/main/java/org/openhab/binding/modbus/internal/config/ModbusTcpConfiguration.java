@@ -25,12 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ModbusTcpConfiguration {
     private @Nullable String host;
     private int port;
-    private int id;
-    private int timeBetweenTransactionsMillis;
+    private int id = 1;
+    private int timeBetweenTransactionsMillis = 60;
     private int timeBetweenReconnectMillis;
-    private int connectMaxTries;
+    private int connectMaxTries = 1;
     private int reconnectAfterMillis;
-    private int connectTimeoutMillis;
+    private int connectTimeoutMillis = 10_000;
     private boolean enableDiscovery;
     private boolean rtuEncoded;
 

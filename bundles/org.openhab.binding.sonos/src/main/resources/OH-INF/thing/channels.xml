@@ -350,4 +350,20 @@
 		<description>Play the line-in of the the Zone Player corresponding to the given UIN</description>
 	</channel-type>
 
+	<!-- Extended channels (for SONOS Move only) -->
+	<channel-type id="batterycharging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Battery Charging</label>
+		<description>Indicator set to ON when the battery is charging</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Extended channels (for One, Beam, Arc and Move only) -->
+	<channel-type id="microphone" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Microphone</label>
+		<description>Indicator set to ON when the microphone is enabled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

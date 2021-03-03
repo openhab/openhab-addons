@@ -177,6 +177,24 @@ public class MQTTProtocol {
         }
     }
 
+    public static class MapUploadAllowed extends StateValue {
+        public boolean mapUploadAllowed;
+
+        public MapUploadAllowed(boolean mapUploadAllowed) {
+            this.mapUploadAllowed = mapUploadAllowed;
+        }
+    }
+
+    public static class SubModSwVer {
+        public String nav;
+        public String mob;
+        public String pwr;
+        public String sft;
+        public String mobBtl;
+        public String linux;
+        public String con;
+    }
+
     // "reported" messages never contain the full state, only a part.
     // Therefore all the fields in this class are nullable
     public static class GenericState extends StateValue {
@@ -202,6 +220,8 @@ public class MQTTProtocol {
         public Boolean noAutoPasses;
         // "twoPass":true
         public Boolean twoPass;
+        // "mapUploadAllowed":true
+        public Boolean mapUploadAllowed;
         // "softwareVer":"v2.4.6-3"
         public String softwareVer;
         // "navSwVer":"01.12.01#1"
@@ -214,6 +234,18 @@ public class MQTTProtocol {
         public String bootloaderVer;
         // "umiVer":"6",
         public String umiVer;
+        // "sku":"R981040"
+        public String sku;
+        // "batteryType":"lith"
+        public String batteryType;
+        // Used by i7:
+        // "subModSwVer":{
+        // "nav": "lewis-nav+3.2.4-EPMF+build-HEAD-7834b608797+12", "mob":"3.2.4-XX+build-HEAD-7834b608797+12",
+        // "pwr": "0.5.0+build-HEAD-7834b608797+12",
+        // "sft":"1.1.0+Lewis-Builds/Lewis-Certified-Safety/lewis-safety-bbbe81f2c82+21",
+        // "mobBtl": "4.2", "linux":"linux+2.1.6_lock-1+lewis-release-rt419+12",
+        // "con":"2.1.6-tags/release-2.1.6@c6b6585a/build"}
+        public SubModSwVer subModSwVer;
         // "lastCommand":
         // {"command":"start","initiator":"localApp","time":1610283995,"ordered":1,"pmap_id":"AAABBBCCCSDDDEEEFFF","regions":[{"region_id":"6","type":"rid"}]}
         public JsonElement lastCommand;

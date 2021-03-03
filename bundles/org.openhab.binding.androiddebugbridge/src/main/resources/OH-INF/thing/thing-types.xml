@@ -18,6 +18,7 @@
 			<channel id="current-package" typeId="current-package-channel"/>
 			<channel id="wake-lock" typeId="wake-lock-channel"/>
 			<channel id="screen-state" typeId="screen-state-channel"/>
+			<channel id="awake-state" typeId="awake-state-channel"/>
 		</channels>
 		<representation-property>serial</representation-property>
 		<config-description>
@@ -383,6 +384,13 @@
 		<item-type>Number</item-type>
 		<label>Wake Lock</label>
 		<description>Power Wake Lock State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="awake-state-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Awake State</label>
+		<description>Awake State</description>
 		<state readOnly="true"/>
 	</channel-type>
 

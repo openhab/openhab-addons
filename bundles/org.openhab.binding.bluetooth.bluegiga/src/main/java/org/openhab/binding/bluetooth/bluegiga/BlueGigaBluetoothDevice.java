@@ -206,7 +206,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
-        if (ch.isNotificationEnabled()) {
+        if (ch.isNotifying()) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -252,7 +252,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
-        if (ch.isNotificationEnabled()) {
+        if (!ch.isNotifying()) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -282,6 +282,12 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         currentProcedure = notifyProcedure;
 
         return notifyProcedure.writeFuture;
+    }
+
+    @Override
+    public boolean isNotifying(BluetoothCharacteristic characteristic) {
+        BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
+        return ch.isNotifying();
     }
 
     @Override
@@ -620,7 +626,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                             .completeExceptionally(new BluetoothException("Enable characteristic notification failed: "
                                     + notifyEnableProcedure.characteristic.getUuid()));
                 }
-                notifyEnableProcedure.characteristic.setNotificationEnabled(success);
+                notifyEnableProcedure.characteristic.setNotifying(success);
                 currentProcedure = PROCEDURE_NONE;
                 break;
             case NOTIFICATION_DISABLE:
@@ -633,7 +639,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                             .completeExceptionally(new BluetoothException("Disable characteristic notification failed: "
                                     + notifyDisableProcedure.characteristic.getUuid()));
                 }
-                notifyDisableProcedure.characteristic.setNotificationEnabled(!success);
+                notifyDisableProcedure.characteristic.setNotifying(!success);
                 currentProcedure = PROCEDURE_NONE;
                 break;
             default:
@@ -666,7 +672,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         for (BlueGigaBluetoothCharacteristic ch : handleToCharacteristic.values()) {
-            ch.setNotificationEnabled(false);
+            ch.setNotifying(false);
         }
 
         cancelTimer(procedureTimer);

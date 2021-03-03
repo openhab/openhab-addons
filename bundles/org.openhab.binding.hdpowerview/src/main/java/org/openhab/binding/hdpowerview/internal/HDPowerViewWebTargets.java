@@ -13,17 +13,18 @@
 package org.openhab.binding.hdpowerview.internal;
 
 import java.time.Instant;
-
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
@@ -45,14 +46,6 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class HDPowerViewWebTargets {
 
-    private static final String PUT = "PUT";
-    private static final String GET = "GET";
-    private static final String SCENE_ID = "sceneId";
-    private static final String ID = "id";
-    private static final String REFRESH = "refresh";
-    private static final String CONN_HDR = "Connection";
-    private static final String CONN_VAL = "close"; // versus "keep-alive"
-
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
 
     /*
@@ -64,128 +57,159 @@ public class HDPowerViewWebTargets {
     private final int maintenancePeriod = 300;
     private Instant maintenanceScheduledEnd = Instant.now().minusSeconds(2 * maintenancePeriod);
 
-    private WebTarget base;
-    private WebTarget shades;
-    private WebTarget shade;
-    private WebTarget sceneActivate;
-    private WebTarget scenes;
+    private final String base;
+    private final String shades;
+    private final String sceneActivate;
+    private final String scenes;
 
     private final Gson gson = new Gson();
+    private final HttpClient httpClient;
+
+    /**
+     * private helper class for passing http url query parameters
+     */
+    private static class Query {
+        private final String key;
+        private final String value;
+
+        private Query(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public static Query of(String key, String value) {
+            return new Query(key, value);
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
     /**
      * Initialize the web targets
-     * 
-     * @param client the Javax RS client (the binding)
+     *
+     * @param httpClient the HTTP client (the binding)
      * @param ipAddress the IP address of the server (the hub)
      */
-    public HDPowerViewWebTargets(Client client, String ipAddress) {
-        base = client.target("http://" + ipAddress + "/api");
-        shades = base.path("shades/");
-        shade = base.path("shades/{id}");
-        sceneActivate = base.path("scenes");
-        scenes = base.path("scenes/");
+    public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress) {
+        base = "http://" + ipAddress + "/api/";
+        shades = base + "shades/";
+        sceneActivate = base + "scenes";
+        scenes = base + "scenes/";
+        this.httpClient = httpClient;
     }
 
     /**
      * Fetches a JSON package that describes all shades in the hub, and wraps it in
      * a Shades class instance
-     * 
+     *
      * @return Shades class instance
      * @throws JsonParseException if there is a JSON parsing error
-     * @throws ProcessingException if there is any processing error
+     * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Shades getShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        String json = invoke(shades.request().header(CONN_HDR, CONN_VAL).buildGet(), shades, null);
+    public @Nullable Shades getShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, shades, null, null);
         return gson.fromJson(json, Shades.class);
     }
 
     /**
      * Instructs the hub to move a specific shade
-     * 
+     *
      * @param shadeId id of the shade to be moved
      * @param position instance of ShadePosition containing the new position
-     * @throws ProcessingException if there is any processing error
+     * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public void moveShade(int shadeId, ShadePosition position) throws ProcessingException, HubMaintenanceException {
-        WebTarget target = shade.resolveTemplate(ID, shadeId);
+    public void moveShade(int shadeId, ShadePosition position) throws HubProcessingException, HubMaintenanceException {
         String json = gson.toJson(new ShadeMove(shadeId, position));
-        invoke(target.request().header(CONN_HDR, CONN_VAL)
-                .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target, json);
-        return;
+        invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, json);
     }
 
     /**
      * Fetches a JSON package that describes all scenes in the hub, and wraps it in
      * a Scenes class instance
-     * 
+     *
      * @return Scenes class instance
      * @throws JsonParseException if there is a JSON parsing error
-     * @throws ProcessingException if there is any processing error
+     * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        String json = invoke(scenes.request().header(CONN_HDR, CONN_VAL).buildGet(), scenes, null);
+    public @Nullable Scenes getScenes() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, scenes, null, null);
         return gson.fromJson(json, Scenes.class);
     }
 
     /**
      * Instructs the hub to execute a specific scene
-     * 
+     *
      * @param sceneId id of the scene to be executed
-     * @throws ProcessingException if there is any processing error
+     * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public void activateScene(int sceneId) throws ProcessingException, HubMaintenanceException {
-        WebTarget target = sceneActivate.queryParam(SCENE_ID, sceneId);
-        invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
+    public void activateScene(int sceneId) throws HubProcessingException, HubMaintenanceException {
+        invoke(HttpMethod.GET, sceneActivate, Query.of("sceneId", Integer.toString(sceneId)), null);
     }
 
-    private synchronized String invoke(Invocation invocation, WebTarget target, @Nullable String jsonCommand)
-            throws ProcessingException, HubMaintenanceException {
+    /**
+     * Invoke a call on the hub server to retrieve information or send a command
+     *
+     * @param method GET or PUT
+     * @param url the host url to be called
+     * @param query the http query parameter
+     * @param jsonCommand the request command content (as a json string)
+     * @return the response content (as a json string)
+     * @throws HubProcessingException
+     * @throws HubMaintenanceException
+     * @throws HubProcessingException
+     */
+    private synchronized String invoke(HttpMethod method, String url, @Nullable Query query,
+            @Nullable String jsonCommand) throws HubMaintenanceException, HubProcessingException {
         if (logger.isTraceEnabled()) {
-            logger.trace("API command {} {}", jsonCommand == null ? GET : PUT, target.getUri());
+            logger.trace("API command {} {}", method, url);
             if (jsonCommand != null) {
                 logger.trace("JSON command = {}", jsonCommand);
             }
         }
-        Response response;
+        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*");
+        if (query != null) {
+            request.param(query.getKey(), query.getValue());
+        }
+        if (jsonCommand != null) {
+            request.header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(jsonCommand));
+        }
+        ContentResponse response;
         try {
-            response = invocation.invoke();
-        } catch (ProcessingException e) {
+            response = request.send();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             if (Instant.now().isBefore(maintenanceScheduledEnd)) {
                 // throw "softer" exception during maintenance window
                 logger.debug("Hub still undergoing maintenance");
                 throw new HubMaintenanceException("Hub still undergoing maintenance");
             }
-            throw e;
+            throw new HubProcessingException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         }
         int statusCode = response.getStatus();
-        if (statusCode == 423) {
+        if (statusCode == HttpStatus.LOCKED_423) {
             // set end of maintenance window, and throw a "softer" exception
             maintenanceScheduledEnd = Instant.now().plusSeconds(maintenancePeriod);
             logger.debug("Hub undergoing maintenance");
-            if (response.hasEntity()) {
-                response.readEntity(String.class);
-            }
-            response.close();
             throw new HubMaintenanceException("Hub undergoing maintenance");
         }
-        if (statusCode != 200) {
-            logger.warn("Hub returned HTTP error '{}'", statusCode);
-            if (response.hasEntity()) {
-                response.readEntity(String.class);
-            }
-            response.close();
-            throw new ProcessingException(String.format("HTTP %d error", statusCode));
+        if (statusCode != HttpStatus.OK_200) {
+            logger.warn("Hub returned HTTP {} {}", statusCode, response.getReason());
+            throw new HubProcessingException(String.format("HTTP %d error", statusCode));
         }
-        if (!response.hasEntity()) {
+        String jsonResponse = response.getContentAsString();
+        if ("".equals(jsonResponse)) {
             logger.warn("Hub returned no content");
-            response.close();
-            throw new ProcessingException("Missing response entity");
+            throw new HubProcessingException("Missing response entity");
         }
-        String jsonResponse = response.readEntity(String.class);
         if (logger.isTraceEnabled()) {
             logger.trace("JSON response = {}", jsonResponse);
         }
@@ -195,15 +219,16 @@ public class HDPowerViewWebTargets {
     /**
      * Fetches a JSON package that describes a specific shade in the hub, and wraps it
      * in a Shade class instance
-     * 
+     *
      * @param shadeId id of the shade to be fetched
      * @return Shade class instance
-     * @throws ProcessingException if there is any processing error
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Shade getShade(int shadeId) throws ProcessingException, HubMaintenanceException {
-        WebTarget target = shade.resolveTemplate(ID, shadeId);
-        String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
+    public @Nullable Shade getShade(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId), null, null);
         return gson.fromJson(json, Shade.class);
     }
 
@@ -211,30 +236,29 @@ public class HDPowerViewWebTargets {
      * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
      * a specific shade; fetches a JSON package that describes that shade, and wraps
      * it in a Shade class instance
-     * 
+     *
      * @param shadeId id of the shade to be refreshed
      * @return Shade class instance
-     * @throws ProcessingException if there is any processing error
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Shade refreshShade(int shadeId) throws ProcessingException, HubMaintenanceException {
-        WebTarget target = shade.resolveTemplate(ID, shadeId).queryParam(REFRESH, true);
-        String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
+    public @Nullable Shade refreshShade(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
+                Query.of("refresh", Boolean.toString(true)), null);
         return gson.fromJson(json, Shade.class);
     }
 
     /**
      * Tells the hub to stop movement of a specific shade
-     * 
+     *
      * @param shadeId id of the shade to be stopped
-     * @throws ProcessingException if there is any processing error
+     * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public void stopShade(int shadeId) throws ProcessingException, HubMaintenanceException {
-        WebTarget target = shade.resolveTemplate(ID, shadeId);
+    public void stopShade(int shadeId) throws HubProcessingException, HubMaintenanceException {
         String json = gson.toJson(new ShadeStop(shadeId));
-        invoke(target.request().header(CONN_HDR, CONN_VAL)
-                .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target, json);
-        return;
+        invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, json);
     }
 }

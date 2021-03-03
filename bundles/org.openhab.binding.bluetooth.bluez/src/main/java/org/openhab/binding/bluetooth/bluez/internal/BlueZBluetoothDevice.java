@@ -58,6 +58,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Benjamin Lafois - Replaced tinyB with bluezDbus
+ * @author Peter Rosenberg - Improve notifications and properties support
  *
  */
 @NonNullByDefault
@@ -405,6 +406,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                 for (BluetoothGattCharacteristic dBusBlueZCharacteristic : dBusBlueZService.getGattCharacteristics()) {
                     BluetoothCharacteristic characteristic = new BluetoothCharacteristic(
                             UUID.fromString(dBusBlueZCharacteristic.getUuid()), 0);
+                    convertCharacteristicProperties(dBusBlueZCharacteristic, characteristic);
 
                     for (BluetoothGattDescriptor dBusBlueZDescriptor : dBusBlueZCharacteristic.getGattDescriptors()) {
                         BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
@@ -418,6 +420,42 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
         return true;
+    }
+
+    /**
+     * Convert the flags of BluetoothGattCharacteristic to the int bitset used by BluetoothCharacteristic.
+     *
+     * @param dBusBlueZCharacteristic source characteristic to read the flags from
+     * @param characteristic destination characteristic to write to properties to
+     */
+    private void convertCharacteristicProperties(BluetoothGattCharacteristic dBusBlueZCharacteristic,
+            BluetoothCharacteristic characteristic) {
+        int properties = 0;
+
+        for (String property : dBusBlueZCharacteristic.getFlags()) {
+            switch (property) {
+                case "broadcast":
+                    properties |= BluetoothCharacteristic.PROPERTY_BROADCAST;
+                    break;
+                case "read":
+                    properties |= BluetoothCharacteristic.PROPERTY_READ;
+                    break;
+                case "write-without-response":
+                    properties |= BluetoothCharacteristic.PROPERTY_WRITE_NO_RESPONSE;
+                    break;
+                case "write":
+                    properties |= BluetoothCharacteristic.PROPERTY_WRITE;
+                    break;
+                case "notify":
+                    properties |= BluetoothCharacteristic.PROPERTY_NOTIFY;
+                    break;
+                case "indicate":
+                    properties |= BluetoothCharacteristic.PROPERTY_INDICATE;
+                    break;
+            }
+        }
+
+        characteristic.setProperties(properties);
     }
 
     @Override
@@ -438,12 +476,25 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return RetryFuture.callWithRetry(() -> {
             try {
                 return c.readValue(null);
-            } catch (DBusException e) {
+            } catch (DBusException | DBusExecutionException e) {
+                // DBusExecutionException is thrown if the value cannot be read
                 logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
                         e.getMessage());
                 throw e;
             }
         }, scheduler);
+    }
+
+    @Override
+    public boolean isNotifying(BluetoothCharacteristic characteristic) {
+        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c != null) {
+            Boolean isNotifying = c.isNotifying();
+            return Objects.requireNonNullElse(isNotifying, false);
+        } else {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
     }
 
     @Override
@@ -453,7 +504,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
-
         BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
         if (c == null) {
             logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);

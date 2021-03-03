@@ -24,7 +24,10 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HeliosEasyControlsHandlerFactory} is responsible for creating things and thing
@@ -38,6 +41,14 @@ public class HeliosEasyControlsHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS);
+    private final HeliosEasyControlsTranslationProvider translationProvider;
+
+    @Activate
+    public HeliosEasyControlsHandlerFactory(@Reference HeliosEasyControlsTranslationProvider translationProvider,
+            ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.translationProvider = translationProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +59,7 @@ public class HeliosEasyControlsHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS.equals(thingTypeUID)) {
-            return new HeliosEasyControlsHandler(thing);
+            return new HeliosEasyControlsHandler(thing, this.translationProvider);
         }
         return null;
     }

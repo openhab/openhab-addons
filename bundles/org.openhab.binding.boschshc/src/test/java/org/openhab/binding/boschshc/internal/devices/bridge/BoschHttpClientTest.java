@@ -49,6 +49,11 @@ class BoschHttpClientTest {
     }
 
     @Test
+    void getPublicInformationUrl() {
+        assertEquals("https://127.0.0.1:8446/smarthome/public/information", httpClient.getPublicInformationUrl());
+    }
+
+    @Test
     void getPairingUrl() {
         assertEquals("https://127.0.0.1:8443/smarthome/clients", httpClient.getPairingUrl());
     }
@@ -73,6 +78,11 @@ class BoschHttpClientTest {
     @Test
     void isAccessPossible() throws InterruptedException {
         assertFalse(httpClient.isAccessPossible());
+    }
+
+    @Test
+    void isOnline() throws InterruptedException {
+        assertFalse(httpClient.isOnline());
     }
 
     @Test
