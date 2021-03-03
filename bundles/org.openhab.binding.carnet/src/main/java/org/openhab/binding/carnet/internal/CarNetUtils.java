@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class CarNetUtils {
         String className = CarNetUtils.substringAfter(classOfT.getName(), "$");
 
         if (json == null) {
-            throw new IllegalArgumentException(PRE + className + ": json is null!");
+            throw new CarNetException(PRE + className + ": json is null!");
         }
 
         if (classOfT.isInstance(json)) {

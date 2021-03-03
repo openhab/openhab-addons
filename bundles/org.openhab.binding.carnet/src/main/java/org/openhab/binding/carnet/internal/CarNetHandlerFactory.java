@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.openhab.binding.carnet.internal.discovery.CarNetDiscoveryService;
 import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -52,15 +53,18 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
     private final CarNetTextResources resources;
     private final CarNetIChanneldMapper channelIdMapper;
     private final CarNetTokenManager tokenManager;
+    private final CarNetChannelTypeProvider channelTypeProvider;
     private final ZoneId zoneId;
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Activate
     public CarNetHandlerFactory(@Reference TimeZoneProvider tzProvider, @Reference CarNetTextResources resources,
-            @Reference CarNetIChanneldMapper channelIdMapper, @Reference CarNetTokenManager tokenManager) {
+            @Reference CarNetIChanneldMapper channelIdMapper, @Reference CarNetTokenManager tokenManager,
+            @Reference CarNetChannelTypeProvider channelTypeProvider) {
         this.resources = resources;
         this.channelIdMapper = channelIdMapper;
         this.tokenManager = tokenManager;
+        this.channelTypeProvider = channelTypeProvider;
         zoneId = tzProvider.getTimeZone();
     }
 
@@ -78,7 +82,8 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-            return new CarNetVehicleHandler(thing, resources, zoneId, channelIdMapper, tokenManager);
+            return new CarNetVehicleHandler(thing, resources, zoneId, channelIdMapper, tokenManager,
+                    channelTypeProvider);
         }
 
         return null;

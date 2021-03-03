@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,5 +115,14 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
             }
         }
         channelTypes.removeAll(removes);
+    }
+
+    public boolean channelTypeExists(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
+        for (ChannelType c : channelTypes) {
+            if (c.getUID().getAsString().startsWith(channelTypeUID.getAsString())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

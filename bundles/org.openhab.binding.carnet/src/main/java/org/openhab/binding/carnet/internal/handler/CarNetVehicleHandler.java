@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiResult;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
+import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.services.CarNetVehicleBaseService;
@@ -68,6 +69,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -90,6 +93,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private final CarNetIChanneldMapper idMapper;
     private final Map<String, Object> channelData = new HashMap<>();
     private final CarNetTokenManager tokenManager;
+    private final CarNetChannelTypeProvider channelTypeProvider;
     private final ZoneId zoneId;
 
     public String thingId = "";
@@ -107,12 +111,14 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private CarNetCombinedConfig config = new CarNetCombinedConfig();
 
     public CarNetVehicleHandler(Thing thing, CarNetTextResources resources, ZoneId zoneId,
-            CarNetIChanneldMapper idMapper, CarNetTokenManager tokenManager) {
+            CarNetIChanneldMapper idMapper, CarNetTokenManager tokenManager,
+            CarNetChannelTypeProvider channelTypeProvider) {
         super(thing);
 
         this.resources = resources;
         this.idMapper = idMapper;
         this.tokenManager = tokenManager;
+        this.channelTypeProvider = channelTypeProvider;
         this.zoneId = zoneId;
     }
 
@@ -540,10 +546,19 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             if (groupId.isEmpty()) {
                 groupId = CHANNEL_GROUP_STATUS; // default group
             }
+            String itemType = channelDef.itemType.isEmpty() ? ITEMT_NUMBER : channelDef.itemType;
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+            boolean cte = this.channelTypeProvider.channelTypeExists(channelTypeUID, null);
+            // check if channelTypeUID exists in the registry, if not create it
+            if (!cte) {
+                logger.debug("{}: Channel type {} doesn't exist, creating", thingId, channelTypeUID.getAsString());
+                ChannelType ct = ChannelTypeBuilder.state(channelTypeUID, channelTypeUID.getId(), itemType)
+                        .withDescription("Auto-created for " + channelTypeUID.getId()).build();
+                this.channelTypeProvider.addChannelType(ct);
+            }
+
             if (getThing().getChannel(groupId + "#" + channelId) == null) {
                 // the channel does not exist yet, so let's add it
-                String itemType = channelDef.itemType.isEmpty() ? ITEMT_NUMBER : channelDef.itemType;
                 logger.debug("{}: Auto-creating channel {}#{}, type {}", thingId, groupId, channelId, itemType);
                 String label = getChannelAttribute(channelId, "label");
                 String description = getChannelAttribute(channelId, "description");
@@ -551,7 +566,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                     label = channelDef.symbolicName;
                 }
                 Channel channel = ChannelBuilder
-                        .create(new ChannelUID(getThing().getUID(), groupId + "#" + channelId), itemType)
+                        .create(new ChannelUID(getThing().getUID(), mkChannelId(groupId, channelId)), itemType)
                         .withType(channelTypeUID).withLabel(label).withDescription(description)
                         .withKind(ChannelKind.STATE).build();
                 updatedThing.withChannel(channel);
@@ -677,6 +692,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
     @Override
     public void dispose() {
+        logger.debug("Handler has been disposed");
         cancelPollingJob();
         super.dispose();
     }
