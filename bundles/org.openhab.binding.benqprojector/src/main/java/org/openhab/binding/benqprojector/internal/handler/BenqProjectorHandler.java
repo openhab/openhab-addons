@@ -151,7 +151,8 @@ public class BenqProjectorHandler extends BaseThingHandler {
                 if (isLinked(channel.getUID())) {
                     updateState(channel.getUID(), state);
                 }
-                if (state != UnDefType.UNDEF && getThing().getStatus() != ThingStatus.ONLINE) {
+                // the first valid response will cause the thing to go ONLINE
+                if (state != UnDefType.UNDEF) {
                     updateStatus(ThingStatus.ONLINE);
                 }
             }

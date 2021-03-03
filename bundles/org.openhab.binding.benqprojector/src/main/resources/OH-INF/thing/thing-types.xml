@@ -85,9 +85,9 @@
 				<option value="hdmi2">HDMI2</option>
 				<option value="ypbr">Component</option>
 				<option value="rgb">Computer/YPbPr</option>
+				<option value="rgb2">Computer/YPbPr2</option>
 				<option value="vid">Video</option>
 				<option value="svid">S-Video</option>
-				<option value="dp">DisplayPort</option>
 			</options>
 		</state>
 	</channel-type>

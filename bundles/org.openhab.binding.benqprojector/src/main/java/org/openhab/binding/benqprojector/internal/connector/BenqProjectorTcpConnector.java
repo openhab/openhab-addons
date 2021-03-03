@@ -163,6 +163,7 @@ public class BenqProjectorTcpConnector implements BenqProjectorConnector {
                     int readBytes = in.read(tmpData, 0, availableBytes);
                     resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
                     if (resp.contains(END)) {
+                        // TODO: Clean this up and remove the query string if it is sent back in the response
                         return resp.replace(RESP_START, "").replace(END, "").replace("\r", "").replace("\n", "");
                     }
                 } else {

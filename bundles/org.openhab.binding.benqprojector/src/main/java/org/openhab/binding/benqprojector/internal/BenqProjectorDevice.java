@@ -66,10 +66,12 @@ public class BenqProjectorDevice {
             throw new BenqProjectorException("No response received");
         }
 
+        // TODO: Do something with these...
         if (response.contains(UNSUPPORTED_ITM)) {
             throw new BenqProjectorCommandException("Unsupported Command response received for command: " + query);
         }
 
+        // TODO: Blocked commands could potentially be re-tried later
         if (response.contains(BLOCK_ITM)) {
             throw new BenqProjectorCommandException("Block Item received for command: " + query);
         }
@@ -80,6 +82,7 @@ public class BenqProjectorDevice {
 
         logger.debug("Response: '{}'", response);
 
+        // TODO: clean this up.
         // example: sour=?*SOUR=HDMI2
         String[] responseParts = response.split("=");
         if (responseParts.length != 3) {

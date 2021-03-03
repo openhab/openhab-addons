@@ -34,7 +34,7 @@ The `projector-tcp` thing has the following configuration parameters:
 Some notes:
 
 * If using a serial port connection, the baud rate in the projector OSD menu must be set to 9600 bps.
-* The _source_, _picturemode_ and _aspectratio_ channels include a dropdown with all possible settings as described in the BenQ protocol document.
+* The _source_, _picturemode_ and _aspectratio_ channels include a dropdown with the most commonly used settings.
 * Not all pre-defined dropdown options will be usable if your particular projector does support a given option.
 * If your projector has an option that is not in the dropdown, the string code to access that option will be displayed by the channel when that option is selected by the remote control.
 * By using the sitemap mapping or a rule to send that code back to the channel, any options that are missing in the binding can be accessed.
