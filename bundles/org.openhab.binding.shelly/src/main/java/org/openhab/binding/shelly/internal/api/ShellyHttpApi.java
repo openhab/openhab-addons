@@ -194,24 +194,26 @@ public class ShellyHttpApi {
                     .convert(getDouble(status.tmp.value));
             status.tmp.tF = status.tmp.units.equals(SHELLY_TEMP_FAHRENHEIT) ? status.tmp.value : f;
         }
-        if ((status.charger == null) && (status.externalPower != null)) {
+        if ((status.charger == null) && (profile.settings.externalPower != null)) {
             // SHelly H&T uses external_power, Sense uses charger
-            status.charger = status.externalPower != 0;
+            status.charger = profile.settings.externalPower != 0;
         }
-
         return status;
     }
 
-    public void setTimer(Integer index, String timerName, Double value) throws ShellyApiException {
+    public void setTimer(int index, String timerName, int value) throws ShellyApiException {
         String type = SHELLY_CLASS_RELAY;
         if (profile.isRoller) {
             type = SHELLY_CLASS_ROLLER;
         } else if (profile.isLight) {
             type = SHELLY_CLASS_LIGHT;
         }
-        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "="
-                + ((Integer) value.intValue()).toString();
+        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + value;
         request(uri);
+    }
+
+    public void setSleepTime(int value) throws ShellyApiException {
+        request(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
     }
 
     public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
@@ -239,6 +241,10 @@ public class ShellyHttpApi {
                 ShellySettingsLogin.class);
     }
 
+    public ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "?coiot_enable=true&coiot_peer=" + peer, ShellySettingsLogin.class);
+    }
+
     public String deviceReboot() throws ShellyApiException {
         return callApi(SHELLY_URL_RESTART, String.class);
     }
@@ -249,6 +255,10 @@ public class ShellyHttpApi {
 
     public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException {
         return callApi("/ota?" + uri, ShellySettingsUpdate.class);
+    }
+
+    public String setCloud(boolean enabled) throws ShellyApiException {
+        return callApi("/settings/cloud/?enabled=" + (enabled ? "1" : "0"), String.class);
     }
 
     /**
