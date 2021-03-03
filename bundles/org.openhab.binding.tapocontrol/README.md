@@ -10,7 +10,8 @@ The following Tapo-Devices are supported
 ### P100 SmartPlug (WiFi)
 
 * Power On/Off
-* Wi-Fi signal strength (RSSI)
+* Wi-Fi signal (SignalStrenght)
+* On-Time (Time in seconds device is switched on)
 
 ## Prerequisites
 
@@ -64,7 +65,7 @@ When the thing receives a `RefreshType` command the thing will send a new refres
 ### tapocontrol.things:
 
 ```
-tapocontrol:tapoP100:mySocket      "My-Socket"                 [ ipAddress="192.168.178.150", pollingInterval=30 ]
+tapocontrol:P100:mySocket      "My-Socket"                 [ ipAddress="192.168.178.150", pollingInterval=30 ]
 ``` 
 
 ### tapocontrol.items:

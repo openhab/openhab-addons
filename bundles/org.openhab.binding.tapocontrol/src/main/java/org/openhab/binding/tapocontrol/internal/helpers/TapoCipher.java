@@ -1,20 +1,23 @@
 /**
-* Copyright (c) 2010-2021 Contributors to the openHAB project
-*
-* See the NOTICE file(s) distributed with this work for additional
-* information.
-*
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License 2.0 which is available at
-* http://www.eclipse.org/legal/epl-2.0
-*
-* SPDX-License-Identifier: EPL-2.0
-*/
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.tapocontrol.internal.helpers;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * TAPO-CIPHER
@@ -22,13 +25,17 @@ import javax.crypto.spec.SecretKeySpec;
  * 
  * @author Christian Wild - Initial Initial contribution
  */
+@NonNullByDefault
 public class TapoCipher {
     protected static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
     protected static final String CIPHER_ALGORITHM = "AES";
     protected static final String CIPHER_CHARSET = "UTF-8";
 
+    @Nullable
     private Cipher enc_cipher;
+    @Nullable
     private Cipher dec_cipher;
+    @Nullable
     private MimeEncode mimeEncode;
 
     public TapoCipher() {

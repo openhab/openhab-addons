@@ -28,8 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class TapoControlBindingConstants {
-
-    private static final String BINDING_ID = "tapocontrol";
+    public static final String BINDING_ID = "tapocontrol";
 
     // Lisst of all constant configurations
     public static final String HTTP_HEADER_AUTH = "Authorization";
@@ -44,8 +43,8 @@ public class TapoControlBindingConstants {
     public static final Integer TAPO_PING_TIMEOUT_MS = 500;
 
     // LIST OF SUPPORTED DEVICE NAMES
-    public static final String DEVICE_P100 = "tapoP100";
-    public static final String DEVICE_L530E = "tapoL530E";
+    public static final String DEVICE_P100 = "P100";
+    public static final String DEVICE_L530E = "L530E";
 
     // LIST OF SUPPORTED THING UIDS
     public static final ThingTypeUID P100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P100);
@@ -57,9 +56,16 @@ public class TapoControlBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_SMART_BULB_UIDS).flatMap(Set::stream).collect(Collectors.toSet()));
 
+    // THINGS WITH CHANNEL GROUPS
+    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Set.of(P100_THING_TYPE);
     // CHANNEL LIST
+    public static final String CHANNEL_GROUP_ACTUATOR = "actuator";
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_OUTPUT = "output";
+    public static final String CHANNEL_GROUP_DEVICE = "device";
+    public static final String CHANNEL_OVERHEAT = "overheated";
+    public static final String CHANNEL_ONTIME = "onTime";
+    public static final String CHANNEL_WIFI_STRENGTH = "wifiSignal";
 
     // THING CONFIGUTATION PROPERTYS
     public static final String CONFIG_EMAIL = "eMail";

@@ -14,6 +14,7 @@
 package org.openhab.binding.tapocontrol.internal.device;
 
 import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -70,10 +72,8 @@ public abstract class TapoDevice extends BaseThingHandler {
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // background initialization:
-        scheduler.execute(() -> {
-            connect();
-        });
+        // background initialization (delay it a little bit):
+        scheduler.schedule(this::connect, 2000, TimeUnit.MILLISECONDS);
         startScheduler();
     }
 
@@ -83,6 +83,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     @Override
     public void dispose() {
         stopScheduler();
+        connector.logout();
     }
 
     /**
@@ -96,16 +97,6 @@ public abstract class TapoDevice extends BaseThingHandler {
         if (errorCode != 0) {
             throw new IOException("Error (" + errorCode + "): " + this.connector.errorMessage());
         }
-    }
-
-    /**
-     * This routine is called every time the Thing configuration has been changed.
-     */
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-        logger.debug("{}: Thing config updated, re-initialize");
-        connect();
     }
 
     /**
@@ -180,7 +171,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     }
 
     /**
-     * Handle command
+     * Connect (login) to device
      * 
      */
     private Boolean connect() {
@@ -192,6 +183,12 @@ public abstract class TapoDevice extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 TapoDeviceInfo deviceInfo = connector.queryInfo();
                 devicePropertiesChanged(deviceInfo);
+                if (!isThingModel(deviceInfo.getModel())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "wrong device found: " + deviceInfo.getModel());
+                    return false;
+                }
+                devicePropertiesChanged(deviceInfo);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
             }
@@ -199,6 +196,33 @@ public abstract class TapoDevice extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
         }
         return loginSuccess;
+    }
+
+    /***
+     * Check if ThingType is model
+     * 
+     * @param model
+     * @return
+     */
+    protected Boolean isThingModel(String model) {
+        ThingTypeUID foundType = new ThingTypeUID(BINDING_ID, model);
+        ThingTypeUID expectedType = getThing().getThingTypeUID();
+        return expectedType.equals(foundType);
+    }
+
+    /**
+     * Get ChannelID including group
+     * 
+     * @param group String channel-group
+     * @param channel String channel-name
+     * @return String channelID
+     */
+    protected String getChannelID(String group, String channel) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (CHANNEL_GROUP_THING_SET.contains(thingTypeUID) && group.length() > 0) {
+            return group + "#" + channel;
+        }
+        return channel;
     }
 
     /**
@@ -217,7 +241,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, deviceInfo.getHardwareVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, deviceInfo.getModel());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceInfo.getSerial());
-        properties.put(PROPERTY_WIFI_LEVEL, deviceInfo.getSignalLevel().toString());
+        // properties.put(PROPERTY_WIFI_LEVEL, deviceInfo.getSignalLevel().toString());
         updateProperties(properties);
     }
 

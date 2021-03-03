@@ -13,7 +13,6 @@
 package org.openhab.binding.tapocontrol.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.OnOffType;
 
 import com.google.gson.JsonObject;
 
@@ -78,6 +77,7 @@ public class TapoDeviceInfo {
         this.overheated = getBool("overheated");
         this.device_on = getBool("device_on");
         this.signal_level = getInt("signal_level");
+        this.on_time = getInt("on_time");
     }
 
     /***********************************
@@ -201,11 +201,7 @@ public class TapoDeviceInfo {
         return !device_on;
     }
 
-    public OnOffType getOnOffType() {
-        if (isOn()) {
-            return OnOffType.ON;
-        } else {
-            return OnOffType.OFF;
-        }
+    public Integer getOnTime() {
+        return on_time;
     }
 }

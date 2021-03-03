@@ -6,12 +6,13 @@
 
 	<!-- THINGS -->
 	<!-- P100 THING-TYPE -->
-	<thing-type id="tapoP100">
+	<thing-type id="P100">
 		<label>P100 SmartPlug</label>
 		<description>Tapo Plug device with relay</description>
-		<channels>
-			<channel id="output" typeId="outputChannel"/>
-		</channels>
+		<channel-groups>
+			<channel-group id="actuator" typeId="smartPlug"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
 		<representation-property>deviceName</representation-property>
 
 		<config-description-ref uri="thing-type:tapo:device"/>
@@ -25,7 +26,7 @@
 		<description>Information about the device</description>
 		<channels>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="uptime" typeId="uptime"/>
+			<channel id="onTime" typeId="ontime"/>
 		</channels>
 	</channel-group-type>
 
@@ -71,11 +72,20 @@
 
 	<!-- DEVICE-STATE CHANNEL TYPES -->
 	<!-- uptime -->
-	<channel-type id="uptime" advanced="true">
+	<channel-type id="ontime" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Uptime</label>
-		<description>Number of seconds since the device was powered up</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<label>On-Time</label>
+		<description>Number of seconds since the device was powered on</description>
+		<state readOnly="true" pattern="%.0f s">
+		</state>
+	</channel-type>
+
+	<!-- overheated -->
+	<channel-type id="overheated" advanced="true">
+		<item-type>Number</item-type>
+		<label>Device Overheated</label>
+		<description>1 if device is overheated</description>
+		<state readOnly="true">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>

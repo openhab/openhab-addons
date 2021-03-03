@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.helpers;
+package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
 
@@ -21,6 +21,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

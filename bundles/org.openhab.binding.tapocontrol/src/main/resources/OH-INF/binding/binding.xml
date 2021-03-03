@@ -9,7 +9,7 @@
 		<parameter name="username" type="text">
 			<label>E-Mail</label>
 			<description>Enter your TAPO-Cloud e-mail-adress</description>
-			<required>fasle</required>
+			<required>false</required>
 		</parameter>
 		<parameter name="password" type="text">
 			<label>Password</label>

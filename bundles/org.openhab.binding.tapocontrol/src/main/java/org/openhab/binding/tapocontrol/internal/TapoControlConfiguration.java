@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.tapocontrol.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TapoControlConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Wild - Initial contribution
  */
-@SuppressWarnings("null")
+
+@NonNullByDefault
 public final class TapoControlConfiguration {
     /**
      * thing configuration parameter.
      */
-    public String ipAddress;
-    public Integer pollingInterval;
+    public String ipAddress = "";
+    public Integer pollingInterval = 30;
 }

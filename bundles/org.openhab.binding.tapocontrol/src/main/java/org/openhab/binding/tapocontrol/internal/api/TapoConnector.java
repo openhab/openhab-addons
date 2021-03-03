@@ -1,15 +1,15 @@
 /**
-* Copyright (c) 2010-2021 Contributors to the openHAB project
-*
-* See the NOTICE file(s) distributed with this work for additional
-* information.
-*
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License 2.0 which is available at
-* http://www.eclipse.org/legal/epl-2.0
-*
-* SPDX-License-Identifier: EPL-2.0
-*/
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
@@ -29,7 +29,6 @@ import org.openhab.binding.tapocontrol.internal.helpers.PayloadBuilder;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCipher;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
-import org.openhab.binding.tapocontrol.internal.helpers.TapoHttp;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,6 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class TapoConnector {
-
     private final Logger logger = LoggerFactory.getLogger(TapoConnector.class);
     private final TapoErrorHandler tapoError = new TapoErrorHandler();
     private TapoHttp tapoHttp;
@@ -92,7 +90,7 @@ public class TapoConnector {
         String payload = plBuilder.getPayload();
 
         /* send request (perform login) */
-        logger.trace("create handhsake with payload: " + payload.toString());
+        logger.debug("create handhsake with payload: {}", payload.toString());
         tapoHttp.url = deviceURL;
         tapoHttp.setRequest(payload);
 
@@ -111,7 +109,7 @@ public class TapoConnector {
             this.cookie = response.getResponseHeader("Set-Cookie").split(";")[0];
             return true;
         } catch (Exception ex) {
-            logger.debug("Something went wrong: " + ex.getMessage());
+            logger.warn("Something went wrong: {}", ex.getMessage());
             tapoError.raiseError(ex, "could not create handshake");
             this.cookie = "";
             return false;
@@ -125,7 +123,7 @@ public class TapoConnector {
      * @return true if success
      */
     private Boolean setCipher(String key) {
-        logger.trace("Will try to decode the following key: " + key);
+        logger.debug("Will try to decode the following key: {} ", key);
 
         MimeEncode mimeEncode = new MimeEncode();
 
@@ -144,7 +142,7 @@ public class TapoConnector {
             this.tapoCipher = new TapoCipher(bArr, bArr2);
             return true;
         } catch (Exception ex) {
-            logger.warn("Something went wrong: " + ex.getMessage());
+            logger.warn("Something went wrong: {}", ex.getMessage());
             tapoError.raiseError(ex);
             return false;
         }
@@ -176,12 +174,10 @@ public class TapoConnector {
     /**
      * login
      *
-     * @param name Name of command to send
-     * @param value Value to send to control
      * @return true if success
      */
     public boolean login() {
-        logger.trace("sending login");
+        logger.debug("sending login");
 
         String securePassthroughPayload = "";
         tapoError.reset(); // reset ErrorHandler
@@ -212,7 +208,7 @@ public class TapoConnector {
                 plBuilder.addParameter("request", encryptedPayload);
                 securePassthroughPayload = plBuilder.getPayload();
             } catch (Exception ex) {
-                logger.trace("error building payload '{}'", ex.toString());
+                logger.debug("error building payload '{}'", ex.toString());
                 tapoError.raiseError(ex, "error building payload for login request");
                 return false;
             }
@@ -237,13 +233,13 @@ public class TapoConnector {
                     tapoError.raiseError(errorCode, "could not get token");
                 }
             } else {
-                logger.trace("login failed");
+                logger.warn("invalid response while login");
                 tapoError.raiseError(ERROR_RESPONSE, "invalid response while login");
                 this.token = "";
             }
         } else {
-            logger.trace("cookie error");
-            tapoError.raiseError(ERROR_COOKIE, "cookie bot set while login");
+            logger.debug("cookie not set while login");
+            tapoError.raiseError(ERROR_COOKIE, "cookie not set while login");
             this.token = "";
         }
         return this.loggedIn();
@@ -275,7 +271,7 @@ public class TapoConnector {
                 plBuilder.addParameter("request", encryptedPayload);
                 securePassthroughPayload = plBuilder.getPayload();
             } catch (Exception ex) {
-                logger.trace("error building payload '{}'", ex.toString());
+                logger.debug("error building payload '{}'", ex.toString());
                 tapoError.raiseError(ex, "error building payload for send command");
                 return tapoError.getJson();
             }
@@ -326,7 +322,7 @@ public class TapoConnector {
      * @return true if sent successfull ( no error returned )
      */
     public Boolean setDeviceInfo(String name, String value) {
-        logger.trace("building command '{}' '{}'", name, value);
+        logger.debug("building command '{}' '{}'", name, value);
 
         /* encrypt command payload */
         PayloadBuilder plBuilder = new PayloadBuilder();
@@ -343,8 +339,6 @@ public class TapoConnector {
      * @return true if sent successfull ( no error returned )
      */
     public Boolean setDeviceInfo(String name, Boolean value) {
-        logger.trace("building command '{}' '{}'", name, value);
-
         /* encrypt command payload */
         PayloadBuilder plBuilder = new PayloadBuilder();
         plBuilder.method = "set_device_info";
@@ -360,8 +354,6 @@ public class TapoConnector {
      * @return true if sent successfull ( no error returned )
      */
     public Boolean setDeviceInfo(String name, Integer value) {
-        logger.trace("building command '{}' '{}'", name, value);
-
         /* encrypt command payload */
         PayloadBuilder plBuilder = new PayloadBuilder();
         plBuilder.method = "set_device_info";
@@ -414,7 +406,7 @@ public class TapoConnector {
     /**
      * perform logout (dispose cookie)
      */
-    protected void logout() {
+    public void logout() {
         this.token = "";
         this.cookie = "";
     }

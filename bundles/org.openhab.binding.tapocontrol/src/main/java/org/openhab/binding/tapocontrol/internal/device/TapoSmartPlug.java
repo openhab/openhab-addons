@@ -13,6 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.device;
 
 import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TapoSmartPlug extends TapoDevice {
-    private final Logger logger = LoggerFactory.getLogger(TapoDevice.class);
+    private final Logger logger = LoggerFactory.getLogger(TapoSmartPlug.class);
 
     /**
      * Constructor
@@ -49,7 +50,7 @@ public class TapoSmartPlug extends TapoDevice {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand '{}' for channelUID {}", command.toString(), channelUID.getId());
+        logger.debug("handleCommand '{}' for channelUID {}", command.toString(), channelUID.getId());
         Boolean refreshInfo = false;
 
         /* perform actions */
@@ -77,6 +78,11 @@ public class TapoSmartPlug extends TapoDevice {
     @Override
     protected void devicePropertiesChanged(TapoDeviceInfo deviceInfo) {
         super.devicePropertiesChanged(deviceInfo);
-        publishState(CHANNEL_OUTPUT, deviceInfo.getOnOffType());
+        publishState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceInfo.isOn()));
+        publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_WIFI_STRENGTH),
+                getDecimalType(deviceInfo.getSignalLevel()));
+        publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_ONTIME), getDecimalType(deviceInfo.getOnTime()));
+        publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT),
+                getDecimalType(deviceInfo.isOverheated() ? 1 : 0));
     }
 }
