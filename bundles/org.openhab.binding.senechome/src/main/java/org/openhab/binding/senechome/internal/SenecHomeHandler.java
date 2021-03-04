@@ -281,7 +281,11 @@ public class SenecHomeHandler extends BaseThingHandler {
             errorCounter = 0;
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Faulty response: {}", response.toString());
+            if (response == null) {
+                logger.warn("Faulty response: is null");
+            } else {
+                logger.warn("Faulty response: {}", response.toString());
+            }
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
             if (errorCounter < 3)
                 errorCounter++;

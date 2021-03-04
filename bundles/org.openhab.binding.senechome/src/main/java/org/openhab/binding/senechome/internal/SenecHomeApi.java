@@ -75,14 +75,29 @@ public class SenecHomeApi {
         Request request = httpClient.newRequest(location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
         request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
-        ContentResponse response = request.method(HttpMethod.POST)
-                .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
-
-        if (response.getStatus() == HttpStatus.OK_200) {
-            return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
-        } else {
-            logger.trace("Got unexpected response code {}", response.getStatus());
-            throw new IOException("Got unexpected response code " + response.getStatus());
+        ContentResponse response = null;
+        try {
+            response = request.method(HttpMethod.POST)
+                    .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
+            if (response.getStatus() == HttpStatus.OK_200) {
+                return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
+            } else {
+                logger.trace("Got unexpected response code {}", response.getStatus());
+                throw new IOException("Got unexpected response code " + response.getStatus());
+            }
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Issue with getting SenecHomeResponse");
+            logger.warn("location: {}", location);
+            logger.warn("request: {}", request.toString());
+            logger.warn("request.getHeaders: {}", request.getHeaders());
+            logger.warn("response: {}", response.toString());
+            logger.warn("response.getHeaders: {}", response.getHeaders());
+            if (response.getContent() == null) {
+                logger.warn("response.getContent is null");
+            } else {
+                logger.warn("response.getContentAsString: {}", response.getContentAsString());
+            }
+            throw e;
         }
     }
 }
