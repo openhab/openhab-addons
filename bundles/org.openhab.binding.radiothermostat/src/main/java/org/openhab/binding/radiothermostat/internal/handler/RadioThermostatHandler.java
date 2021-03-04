@@ -46,6 +46,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -289,7 +290,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     break;
                 case REMOTE_TEMP:
                     if (cmdInt != -1) {
-                        connector.sendCommand("rem_temp", cmdInt.toString(), REMOTE_TEMP_RESOURCE);
+                        QuantityType<?> remoteTemp = ((QuantityType<Temperature>) command)
+                                .toUnit(ImperialUnits.FAHRENHEIT);
+                        connector.sendCommand("rem_temp", String.valueOf(remoteTemp.intValue()), REMOTE_TEMP_RESOURCE);
                     } else {
                         connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
                     }
