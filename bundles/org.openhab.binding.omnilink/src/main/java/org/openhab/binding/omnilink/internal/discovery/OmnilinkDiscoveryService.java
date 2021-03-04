@@ -21,11 +21,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.SystemType;
-import org.openhab.binding.omnilink.internal.handler.BridgeOfflineException;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.binding.omnilink.internal.handler.OmnilinkBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -62,7 +63,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(OmnilinkDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private @Nullable OmnilinkBridgeHandler bridgeHandler;
-    private @Nullable SystemType systemType;
+    private Optional<SystemType> systemType = Optional.empty();
     private @Nullable List<AreaProperties> areas;
 
     /**
@@ -405,27 +406,22 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
 
                 Map<String, Object> properties = Map.of(THING_PROPERTIES_NAME, thingName);
 
-                final SystemType systemType = this.systemType;
-                if (systemType != null) {
-                    switch (systemType) {
-                        case LUMINA:
-                            thingUID = new ThingUID(THING_TYPE_LUMINA_AREA, bridgeUID, thingID);
-                            break;
-                        case OMNI:
-                            thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
-                            break;
-                        default:
-                            throw new IllegalStateException("Unknown System Type");
-                    }
+                switch (systemType.get()) {
+                    case LUMINA:
+                        thingUID = new ThingUID(THING_TYPE_LUMINA_AREA, bridgeUID, thingID);
+                        break;
+                    case OMNI:
+                        thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown System Type");
                 }
 
-                if (thingUID != null) {
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                            .withProperty(THING_PROPERTIES_NUMBER, thingID)
-                            .withRepresentationProperty(THING_PROPERTIES_NUMBER).withBridge(bridgeUID)
-                            .withLabel(thingName).build();
-                    thingDiscovered(discoveryResult);
-                }
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withProperty(THING_PROPERTIES_NUMBER, thingID)
+                        .withRepresentationProperty(THING_PROPERTIES_NUMBER).withBridge(bridgeUID).withLabel(thingName)
+                        .build();
+                thingDiscovered(discoveryResult);
 
                 areas.add(areaProperties);
             }
