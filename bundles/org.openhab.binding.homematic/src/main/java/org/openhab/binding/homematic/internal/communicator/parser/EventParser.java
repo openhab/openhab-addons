@@ -14,8 +14,6 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -38,10 +36,11 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
             address = HmDevice.ADDRESS_GATEWAY_EXTRAS;
             channel = HmChannel.CHANNEL_NUMBER_VARIABLE;
         } else {
-            String[] configParts = StringUtils.trimToEmpty(addressWithChannel).split(":");
+            String addrChannel = addressWithChannel == null ? "" : addressWithChannel.trim();
+            String[] configParts = addrChannel.split(":");
             address = getSanitizedAddress(configParts[0]);
             if (configParts.length > 1) {
-                channel = NumberUtils.createInteger(configParts[1]);
+                channel = configParts[1] == null ? null : Integer.valueOf(configParts[1]);
             }
         }
 

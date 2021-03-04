@@ -44,7 +44,7 @@ public class KebaBindingConstants {
     public static final String CHANNEL_PLUG_LOCKED = "locked";
     public static final String CHANNEL_ENABLED = "enabled";
     public static final String CHANNEL_PILOT_CURRENT = "maxpilotcurrent";
-    public static final String CHANNEL_PILOT_PWM = "pwmpilotcurrent";
+    public static final String CHANNEL_PILOT_PWM = "maxpilotcurrentdutycyle";
     public static final String CHANNEL_MAX_SYSTEM_CURRENT = "maxsystemcurrent";
     public static final String CHANNEL_MAX_PRESET_CURRENT_RANGE = "maxpresetcurrentrange";
     public static final String CHANNEL_MAX_PRESET_CURRENT = "maxpresetcurrent";
@@ -82,7 +82,7 @@ public class KebaBindingConstants {
         E('0'),
         B('1'),
         C('2', '3'),
-        X('A', 'B', 'C', 'D');
+        X('A', 'B', 'C', 'D', 'E', 'G', 'H');
 
         private final List<Character> things = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class KebaBindingConstants {
                 }
             }
 
-            throw new IllegalArgumentException("Not a valid series");
+            throw new IllegalArgumentException("Not a valid series: '" + text + "'");
         }
     }
 }

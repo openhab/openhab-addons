@@ -218,6 +218,7 @@ Number statusFanPow    "Fan Power [%1.0f%%]"  <signal>   (gVacStat) {channel="mi
 Number statusClean    "In Cleaning Status [%1.0f]"   <switch>  (gVacStat) {channel="miio:vacuum:034F0E45:status#in_cleaning" }
 Switch statusDND    "DND Activated"    (gVacStat) {channel="miio:vacuum:034F0E45:status#dnd_enabled" }
 Number statusStatus    "Status [%1.0f]"  <status>  (gVacStat) {channel="miio:vacuum:034F0E45:status#state"} 
+Switch isLocating    "Locating"    (gVacStat) {channel="miio:vacuum:034F0E45:status#is_locating" }
 
 Number consumableMain    "Main Brush [%1.0f]"    (gVacCons) {channel="miio:vacuum:034F0E45:consumables#main_brush_time"}
 Number consumableSide    "Side Brush [%1.0f]"    (gVacCons) {channel="miio:vacuum:034F0E45:consumables#side_brush_time"}
@@ -244,8 +245,20 @@ Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"
 
 Note: cleaning map is only available with cloud access.
 
-Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+There are several advanced channels, which may be useful in rules (e.g. for individual room cleaning etc)
+In case your vacuum does not support one of these commands, it will show "unsupported_method" for string channels or no value for numeric channels.
 
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Number  | status#segment_status             | Segment Status             |
+| Number  | status#map_status                 | Map Box Status             |
+| Number  | status#led_status                 | Led Box Status             |
+| String  | info#carpet_mode                  | Carpet Mode details        |
+| String  | info#fw_features                  | Firmware Features          |
+| String  | info#room_mapping                 | Room Mapping details       |
+| String  | info#multi_maps_list              | Maps Listing details       |
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|
@@ -254,6 +267,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Number  | status#water_box_mode             | Water Box Mode             |
 | Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
 
 
