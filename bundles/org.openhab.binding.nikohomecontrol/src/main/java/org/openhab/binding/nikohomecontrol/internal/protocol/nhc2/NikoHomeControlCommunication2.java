@@ -395,8 +395,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         break;
                     default:
                         actionType = ActionType.GENERIC;
-                        logger.debug("device type {} not recognised, default to GENERIC action",
-                                device.type);
+                        logger.debug("device type {} not recognised, default to GENERIC action", device.type);
                 }
 
                 NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
@@ -419,8 +418,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 energyMeters.put(device.uuid, nhcEnergyMeter);
             }
         } else {
-            logger.debug("device type {} not supported for {}, {}", device.type, device.uuid,
-                    device.name);
+            logger.debug("device type {} not supported for {}, {}", device.type, device.uuid, device.name);
         }
     }
 
@@ -496,8 +494,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             String brightness = dimmerProperty.get().brightness;
             if (brightness != null) {
                 action.setState(Integer.parseInt(brightness));
-                logger.debug("setting action {} internally to {}", action.getId(),
-                        dimmerProperty.get().brightness);
+                logger.debug("setting action {} internally to {}", action.getId(), dimmerProperty.get().brightness);
             }
         }
     }
@@ -581,12 +578,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 .ifPresent(electricalPower -> {
                     try {
                         energyMeter.setPower(Integer.parseInt(electricalPower));
-                        logger.trace("setting energy meter {} power to {}", energyMeter.getId(),
-                                electricalPower);
+                        logger.trace("setting energy meter {} power to {}", energyMeter.getId(), electricalPower);
                     } catch (NumberFormatException e) {
                         energyMeter.setPower(null);
-                        logger.trace("received empty energy meter {} power reading",
-                                energyMeter.getId());
+                        logger.trace("received empty energy meter {} power reading", energyMeter.getId());
                     }
                 });
     }
@@ -646,7 +641,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 } else if (NHCDOWN.equals(value)) {
                     property.position = "0";
                 } else {
-                    int position = 100 - Integer.parseInt(value);
+                    int position = Integer.parseInt(value);
                     property.position = String.valueOf(position);
                 }
                 break;

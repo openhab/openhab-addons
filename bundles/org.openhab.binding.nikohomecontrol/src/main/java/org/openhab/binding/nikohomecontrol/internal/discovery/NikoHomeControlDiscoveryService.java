@@ -99,8 +99,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
                             thingName, thingLocation);
                     break;
                 default:
-                    logger.debug("unrecognized action type {} for {} {}", nhcAction.getType(),
-                            actionId, thingName);
+                    logger.debug("unrecognized action type {} for {} {}", nhcAction.getType(), actionId, thingName);
             }
         });
 

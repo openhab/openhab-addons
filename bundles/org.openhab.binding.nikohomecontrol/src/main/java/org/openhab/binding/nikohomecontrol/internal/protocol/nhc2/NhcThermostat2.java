@@ -53,8 +53,7 @@ public class NhcThermostat2 extends NhcThermostat {
 
     @Override
     public void executeOverrule(int overrule, int overruletime) {
-        logger.debug("execute thermostat overrule {} during {} min for {}", overrule, overruletime,
-                id);
+        logger.debug("execute thermostat overrule {} during {} min for {}", overrule, overruletime, id);
 
         nhcComm.executeThermostat(id, overrule, overruletime);
     }

@@ -162,7 +162,7 @@ public class NhcAction1 extends NhcAction {
             } else if (command.equals(NHCSTOP)) {
                 executeRollershutterStop();
             } else {
-                int newValue = 100 - Integer.parseInt(command);
+                int newValue = Integer.parseInt(command);
                 if (logger.isTraceEnabled()) {
                     logger.trace("handleRollerShutterCommand: rollershutter {} percent command, current {}, new {}", id,
                             currentValue, newValue);
@@ -174,9 +174,9 @@ public class NhcAction1 extends NhcAction {
                     scheduleRollershutterStop(currentValue, newValue);
                 }
                 if (newValue < currentValue) {
-                    executeRollershutterDown();
-                } else if (newValue > currentValue) {
                     executeRollershutterUp();
+                } else if (newValue > currentValue) {
+                    executeRollershutterDown();
                 }
             }
         };

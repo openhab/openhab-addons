@@ -56,6 +56,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
     private String actionId = "";
     private int stepValue;
+    private boolean invert;
 
     public NikoHomeControlActionHandler(Thing thing) {
         super(thing);
@@ -189,15 +190,15 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         if (command instanceof UpDownType) {
             UpDownType s = (UpDownType) command;
             if (UpDownType.UP.equals(s)) {
-                nhcAction.execute(NHCUP);
+                nhcAction.execute(!invert ? NHCUP : NHCDOWN);
             } else {
-                nhcAction.execute(NHCDOWN);
+                nhcAction.execute(!invert ? NHCDOWN : NHCUP);
             }
         } else if (command instanceof StopMoveType) {
             nhcAction.execute(NHCSTOP);
         } else if (command instanceof PercentType) {
             PercentType p = (PercentType) command;
-            nhcAction.execute(Integer.toString(100 - p.intValue()));
+            nhcAction.execute(!invert ? Integer.toString(100 - p.intValue()) : Integer.toString(p.intValue()));
         }
     }
 
@@ -207,6 +208,9 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         if (thing.getThingTypeUID().equals(THING_TYPE_DIMMABLE_LIGHT)) {
             config = getConfig().as(NikoHomeControlActionDimmerConfig.class);
             stepValue = ((NikoHomeControlActionDimmerConfig) config).step;
+        } else if (thing.getThingTypeUID().equals(THING_TYPE_BLIND)) {
+            config = getConfig().as(NikoHomeControlActionBlindConfig.class);
+            invert = ((NikoHomeControlActionBlindConfig) config).invert;
         } else {
             config = getConfig().as(NikoHomeControlActionConfig.class);
         }
@@ -303,7 +307,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case ROLLERSHUTTER:
-                updateState(CHANNEL_ROLLERSHUTTER, new PercentType(actionState));
+                updateState(CHANNEL_ROLLERSHUTTER,
+                        !invert ? new PercentType(100 - actionState) : new PercentType(actionState));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:
