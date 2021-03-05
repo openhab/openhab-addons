@@ -54,7 +54,7 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
             startCommunication();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Niko Home Control: cannot resolve bridge IP with hostname " + config.addr);
+                    "Cannot resolve bridge IP with hostname " + config.addr);
         }
     }
 

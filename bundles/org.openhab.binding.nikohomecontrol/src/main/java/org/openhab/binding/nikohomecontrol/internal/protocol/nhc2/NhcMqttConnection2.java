@@ -100,7 +100,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
             tmFactory.init(keyStore);
             return tmFactory.getTrustManagers();
         } catch (CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
-            logger.warn("error with SSL context creation: {} ", e.getMessage());
+            logger.debug("error with SSL context creation: {} ", e.getMessage());
             throw new CertificateException("SSL context creation exception", e);
         } finally {
             ResourceBundle.clearCache();

@@ -116,9 +116,8 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             (new Thread(this::runNhcEvents)).start();
 
         } catch (IOException | InterruptedException e) {
-            logger.warn("error initializing communication");
             stopCommunication();
-            handler.controllerOffline();
+            handler.controllerOffline("Error initializing communication");
         }
     }
 
@@ -171,7 +170,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             if (!listenerStopped) {
                 nhcEventsRunning = false;
                 // this is a socket error, not a communication stop triggered from outside this runnable
-                logger.warn("IO error in listener");
+                logger.debug("IO error in listener");
                 // the IO has stopped working, so we need to close cleanly and try to restart
                 restartCommunication();
                 return;
@@ -222,14 +221,13 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         logger.debug("send json {}", json);
         nhcOut.println(json);
         if (nhcOut.checkError()) {
-            logger.warn("error sending message, trying to restart communication");
+            logger.debug("error sending message, trying to restart communication");
             restartCommunication();
             // retry sending after restart
             logger.debug("resend json {}", json);
             nhcOut.println(json);
             if (nhcOut.checkError()) {
-                logger.warn("error resending message");
-                handler.controllerOffline();
+                handler.controllerOffline("Error resending message");
             }
         }
     }
@@ -317,10 +315,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             if (errorCode == 0) {
                 logger.debug("start events success");
             } else {
-                logger.warn("error code {} returned on start events", errorCode);
+                logger.debug("error code {} returned on start events", errorCode);
             }
         } else {
-            logger.warn("could not determine error code returned on start events");
+            logger.debug("could not determine error code returned on start events");
         }
     }
 
@@ -476,10 +474,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             if (errorCode == 0) {
                 logger.debug("execute action success");
             } else {
-                logger.warn("error code {} returned on command execution", errorCode);
+                logger.debug("error code {} returned on command execution", errorCode);
             }
         } catch (IllegalArgumentException e) {
-            logger.warn("no error code returned on command execution");
+            logger.debug("no error code returned on command execution");
         }
     }
 
@@ -489,10 +487,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             if (errorCode == 0) {
                 logger.debug("execute thermostats success");
             } else {
-                logger.warn("error code {} returned on command execution", errorCode);
+                logger.debug("error code {} returned on command execution", errorCode);
             }
         } catch (IllegalArgumentException e) {
-            logger.warn("no error code returned on command execution");
+            logger.debug("no error code returned on command execution");
         }
     }
 

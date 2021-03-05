@@ -167,7 +167,7 @@ public abstract class NhcAction {
      * Method called when action is removed from the Niko Home Control Controller.
      */
     public void actionRemoved() {
-        logger.warn("action removed {}, {}", id, name);
+        logger.debug("action removed {}, {}", id, name);
         NhcActionEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.actionRemoved();

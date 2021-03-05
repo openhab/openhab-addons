@@ -69,15 +69,14 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
                 // advanced configuration, skipping token validation.
                 // This behavior would allow the same logic to be used (with profile UUID) as before token validation
                 // was introduced.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Niko Home Control: token is empty");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Token is empty");
                 return;
             }
         } else {
             Date now = new Date();
             if (expiryDate.before(now)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Niko Home Control: hobby api token has expired");
+                        "Hobby api token has expired");
                 return;
             }
         }
@@ -91,7 +90,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         } catch (CertificateException e) {
             // this should not happen unless there is a programming error
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Niko Home Control: not able to set SSL context");
+                    "Not able to set SSL context");
             return;
         }
     }

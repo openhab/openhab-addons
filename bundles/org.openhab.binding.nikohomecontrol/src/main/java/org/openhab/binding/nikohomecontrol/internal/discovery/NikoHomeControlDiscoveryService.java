@@ -70,7 +70,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
         NikoHomeControlCommunication nhcComm = handler.getCommunication();
 
         if ((nhcComm == null) || !nhcComm.communicationActive()) {
-            logger.warn("not connected.");
+            logger.warn("not connected");
             return;
         }
         logger.debug("getting devices on {}", handler.getThing().getUID().getId());

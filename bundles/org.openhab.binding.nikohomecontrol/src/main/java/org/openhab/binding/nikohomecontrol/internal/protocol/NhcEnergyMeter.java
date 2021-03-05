@@ -65,7 +65,7 @@ public abstract class NhcEnergyMeter {
      * Method called when energyMeters meter is removed from the Niko Home Control Controller.
      */
     public void energyMeterRemoved() {
-        logger.warn("action removed {}, {}", id, name);
+        logger.debug("action removed {}, {}", id, name);
         NhcEnergyMeterEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.energyMeterRemoved();

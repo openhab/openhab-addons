@@ -115,7 +115,7 @@ public abstract class NhcThermostat {
      * Method called when thermostat is removed from the Niko Home Control Controller.
      */
     public void thermostatRemoved() {
-        logger.warn("action removed {}, {}", id, name);
+        logger.debug("action removed {}, {}", id, name);
         NhcThermostatEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.thermostatRemoved();

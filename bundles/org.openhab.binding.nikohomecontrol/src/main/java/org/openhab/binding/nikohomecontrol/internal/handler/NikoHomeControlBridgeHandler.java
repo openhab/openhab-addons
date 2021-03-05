@@ -141,7 +141,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      */
     protected void bridgeOffline() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Niko Home Control: error starting bridge connection");
+                "Error with bridge connection");
     }
 
     /**
@@ -153,8 +153,8 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     }
 
     @Override
-    public void controllerOffline() {
-        bridgeOffline();
+    public void controllerOffline(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
     }
 
     @Override
