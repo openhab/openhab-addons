@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -84,12 +85,12 @@ class QueryResultJSONEncoderTest {
         assertThat(longValue, instanceOf(Number.class));
         assertThat(((Number) longValue).longValue(), is(Long.MAX_VALUE));
 
-        Object date = firstRow.get("date");
+        Object date = Objects.requireNonNull(firstRow.get("date"));
         assertThat(date, instanceOf(String.class));
         var parsedDate = Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String) date));
         assertThat(Duration.between(parsedDate, Instant.now()).getSeconds(), lessThan(10L));
 
-        Object instant = firstRow.get("instant");
+        Object instant = Objects.requireNonNull(firstRow.get("instant"));
         assertThat(instant, instanceOf(String.class));
         var parsedInstant = Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String) instant));
         assertThat(Duration.between(parsedInstant, Instant.now()).getSeconds(), lessThan(10L));
@@ -114,7 +115,7 @@ class QueryResultJSONEncoderTest {
 
         String json = instance.encode(queryParameters);
 
-        Map<?, ?> map = gson.fromJson(json, Map.class);
+        Map<?, ?> map = Objects.requireNonNull(gson.fromJson(json, Map.class));
         assertReadGivenValuesDecodedFromJson(map);
     }
 
