@@ -477,14 +477,14 @@ public class StatusWrapper {
                         if (!vStatus.cbsData.isEmpty()) {
                             wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getDescription()));
                         }
-                        assertEquals(wanted.toString(), st.toString(), "Service Name");
+                        assertEquals(wanted.toString(), st.toString(), "Service Details");
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
                         wanted = StringType.valueOf(Constants.NO_ENTRIES);
                         if (!vStatus.checkControlMessages.isEmpty()) {
                             wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionLong);
                         }
-                        assertEquals(wanted.toString(), st.toString(), "CheckControl Name");
+                        assertEquals(wanted.toString(), st.toString(), "CheckControl Details");
                         break;
                     default:
                         assertFalse(true, "Channel " + channelUID + " " + state + " not found");

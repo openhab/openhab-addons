@@ -7,6 +7,10 @@
 		<item-type>String</item-type>
 		<label>Service Name</label>
 	</channel-type>
+	<channel-type id="service-details-channel">
+		<item-type>String</item-type>
+		<label>Service Details</label>
+	</channel-type>
 	<channel-type id="service-date-channel">
 		<item-type>DateTime</item-type>
 		<label>Service Date </label>

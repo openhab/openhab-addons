@@ -180,6 +180,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         if (sl.size() == 0) {
             CBSMessage cbsm = new CBSMessage();
             cbsm.cbsType = Constants.NO_ENTRIES;
+            cbsm.cbsDescription = Constants.NO_ENTRIES;
             sl.add(cbsm);
         }
 

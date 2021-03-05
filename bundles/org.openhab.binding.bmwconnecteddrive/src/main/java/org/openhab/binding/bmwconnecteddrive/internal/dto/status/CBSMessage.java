@@ -28,6 +28,7 @@ public class CBSMessage {
     public int cbsRemainingMileage = -1; // 46000
 
     public String cbsTypeConverted = null;
+    public String cbsDescriptionConverted = null;
 
     public String getDueDate() {
         if (cbsDueDate == null) {
@@ -49,14 +50,14 @@ public class CBSMessage {
     }
 
     public String getDescription() {
-        if (cbsTypeConverted == null) {
-            if (cbsType == null) {
-                cbsTypeConverted = Constants.INVALID;
+        if (cbsDescriptionConverted == null) {
+            if (cbsDescription == null) {
+                cbsDescriptionConverted = Constants.INVALID;
             } else {
-                cbsTypeConverted = cbsDescription;
+                cbsDescriptionConverted = cbsDescription;
             }
         }
-        return cbsTypeConverted;
+        return cbsDescriptionConverted;
     }
 
     @Override
