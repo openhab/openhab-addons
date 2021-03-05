@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link NikoHomeControlActionBlindConfig} is the config class for Niko Home Control Blind Actions.
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 public class NikoHomeControlActionBlindConfig extends NikoHomeControlActionConfig {
     public boolean invert;
 }
