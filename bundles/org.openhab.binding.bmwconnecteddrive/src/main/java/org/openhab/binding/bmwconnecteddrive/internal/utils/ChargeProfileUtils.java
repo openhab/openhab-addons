@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class ChargeProfileUtils {
     }
 
     @SuppressWarnings("serial")
-    private static final Map<ProfileKey, TimedChannel> timedChannels = new HashMap<>() {
+    private static final Map<ProfileKey, TimedChannel> TIMED_CHANNELS = new HashMap<>() {
         {
             put(ProfileKey.WINDOWSTART, new TimedChannel(CHARGE_WINDOW_START, null, false));
             put(ProfileKey.WINDOWEND, new TimedChannel(CHARGE_WINDOW_END, null, false));
@@ -58,7 +58,7 @@ public class ChargeProfileUtils {
     };
 
     @SuppressWarnings("serial")
-    private static final Map<DayOfWeek, String> dayChannels = new HashMap<>() {
+    private static final Map<DayOfWeek, String> DAY_CHANNELS = new HashMap<>() {
         {
             put(DayOfWeek.MONDAY, CHARGE_DAY_MON);
             put(DayOfWeek.TUESDAY, CHARGE_DAY_TUE);
@@ -91,9 +91,9 @@ public class ChargeProfileUtils {
     }
 
     @SuppressWarnings("serial")
-    private static final Map<String, ProfileKey> chargeEnableChannelKeys = new HashMap<>() {
+    private static final Map<String, ProfileKey> CHARGE_ENABLED_CHANNEL_KEYS = new HashMap<>() {
         {
-            timedChannels.forEach((key, channel) -> {
+            TIMED_CHANNELS.forEach((key, channel) -> {
                 put(channel.timer + CHARGE_ENABLED, key);
             });
             put(CHARGE_PROFILE_CLIMATE, ProfileKey.CLIMATE);
@@ -101,9 +101,9 @@ public class ChargeProfileUtils {
     };
 
     @SuppressWarnings("serial")
-    private static final Map<String, ChargeKeyHour> chargeTimeChannelKeys = new HashMap<>() {
+    private static final Map<String, ChargeKeyHour> CHARGE_TIME_CHANNEL_KEYS = new HashMap<>() {
         {
-            timedChannels.forEach((key, channel) -> {
+            TIMED_CHANNELS.forEach((key, channel) -> {
                 put(channel.time + CHARGE_HOUR, new ChargeKeyHour(key, true));
                 put(channel.time + CHARGE_MINUTE, new ChargeKeyHour(key, false));
             });
@@ -111,9 +111,9 @@ public class ChargeProfileUtils {
     };
 
     @SuppressWarnings("serial")
-    private static final Map<String, ChargeKeyDay> chargeDayChannelKeys = new HashMap<>() {
+    private static final Map<String, ChargeKeyDay> CHARGE_DAYS_CHANNEL_KEYS = new HashMap<>() {
         {
-            dayChannels.forEach((dayOfWeek, dayChannel) -> {
+            DAY_CHANNELS.forEach((dayOfWeek, dayChannel) -> {
                 put(CHARGE_TIMER1 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER1, dayOfWeek));
                 put(CHARGE_TIMER2 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER2, dayOfWeek));
                 put(CHARGE_TIMER3 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER3, dayOfWeek));
@@ -122,23 +122,23 @@ public class ChargeProfileUtils {
     };
 
     public static @Nullable TimedChannel getTimedChannel(ProfileKey key) {
-        return timedChannels.get(key);
+        return TIMED_CHANNELS.get(key);
     }
 
     public static @Nullable String getDaysChannel(DayOfWeek day) {
-        return dayChannels.get(day);
+        return DAY_CHANNELS.get(day);
     }
 
     public static @Nullable ProfileKey getEnableKey(final String id) {
-        return chargeEnableChannelKeys.get(id);
+        return CHARGE_ENABLED_CHANNEL_KEYS.get(id);
     }
 
     public static @Nullable ChargeKeyDay getKeyDay(final String id) {
-        return chargeDayChannelKeys.get(id);
+        return CHARGE_DAYS_CHANNEL_KEYS.get(id);
     }
 
     public static @Nullable ChargeKeyHour getKeyHour(final String id) {
-        return chargeTimeChannelKeys.get(id);
+        return CHARGE_TIME_CHANNEL_KEYS.get(id);
     }
 
     public static String formatDays(final Set<DayOfWeek> weekdays) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey.*;
-import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.NULL_LOCAL_TIME;
-import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.TIME_FORMATER;
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -68,7 +66,7 @@ public class ChargeProfileWrapper {
         WINDOWEND
     }
 
-    final protected ProfileType type;
+    protected final ProfileType type;
 
     private Optional<ChargingMode> mode = Optional.empty();
     private Optional<ChargingPreference> preference = Optional.empty();
@@ -89,7 +87,6 @@ public class ChargeProfileWrapper {
     }
 
     private ChargeProfileWrapper(final ChargeProfile profile) {
-
         final WeeklyPlanner planner;
 
         if (profile.weeklyPlanner != null) {
