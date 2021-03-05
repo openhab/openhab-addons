@@ -50,9 +50,11 @@ The thing has the following configuration parameters:
 
 All devices support some of the following channels:
 
-| channel  | type   | description                  | things supporting this channel  |
-|----------|--------|------------------------------|---------------------------------|
-| output   | Switch | Power device on or off       | P100                            |
+| channel     | type         | description                  | things supporting this channel  |
+|-------------|--------------|------------------------------|---------------------------------|
+| output      | Switch       | Power device on or off       | P100                            |
+| wifiSignal  | QualityStats | WiFi-quality-level           | P100                            |
+| onTime      | Number       | seconds output is on         | P100                            |
 
 
 ## Channel Refresh
@@ -71,7 +73,7 @@ tapocontrol:P100:mySocket      "My-Socket"                 [ ipAddress="192.168.
 ### tapocontrol.items:
 
 ```
-Switch       TAPO_SOCKET      "socket"                { channel="tapocontrol:tapoP100:socket:mySocket:output" }
+Switch       TAPO_SOCKET      "socket"                { channel="tapocontrol:P100:socket:mySocket:output" }
 ``` 
 
 
