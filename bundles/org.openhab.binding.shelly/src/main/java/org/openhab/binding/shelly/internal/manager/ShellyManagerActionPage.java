@@ -153,7 +153,13 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     } else {
                         api.setCoIoTPeer(newPeer);
                         th.requestUpdates(1, true);
-                        refreshTimer = 5;
+                        if (!profile.isMotion) {
+                            refreshTimer = 5; // Motion doesn't support Multicast, so no restart required
+                        } else {
+                            // The device needs a restart after changing the peer mode
+                            message = getMessageP("action.restart.info", MCINFO);
+                            actionUrl = buildActionUrl(uid, ACTION_RESTART);
+                        }
                     }
                     break;
                 case ACTION_ENCLOUD:
