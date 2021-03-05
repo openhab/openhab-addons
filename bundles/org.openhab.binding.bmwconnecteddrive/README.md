@@ -304,6 +304,16 @@ Charging options with date and time for preferred time windows and charging mode
 | Override Timer: Departure Time Hour   | charge           | override-departure-hour   | Number   | 
 | Override Timer: Departure Time Minute | charge           | override-departure-minute | Number   | 
 
+The channel _profile_mode_ supports
+
+* **IMMEDIATE_CHARGING**
+* **DELAYED_CHARGING**
+
+The channel _profile-prefs supports
+
+* **NO_PRESELECTION**
+* **CHARGING_WINDOW**
+
 #### Location
 
 GPS location and heading of the vehicle.
@@ -464,6 +474,11 @@ Like in the Charge Profile Channels 3 Timers are provided. Replace _X_ with 1, 2
 | setOverrideTimerDays                  | Set<DayOfWeek>   | void                      | Sets the days of week the overrideTimer is enabled for     | 
 | cancel                                | void             | void                      | Sends the charging profile to the vehicle                  | 
 | send                                  | void             | void                      | Cancel current edit of charging profile                    | 
+
+Values for valid charging mode get/set
+
+* **IMMEDIATE_CHARGING**
+* **DELAYED_CHARGING**
 
 
 ## Further Descriptions
