@@ -48,6 +48,17 @@ public class CBSMessage {
         return cbsTypeConverted;
     }
 
+    public String getDescription() {
+        if (cbsTypeConverted == null) {
+            if (cbsType == null) {
+                cbsTypeConverted = Constants.INVALID;
+            } else {
+                cbsTypeConverted = cbsDescription;
+            }
+        }
+        return cbsTypeConverted;
+    }
+
     @Override
     public String toString() {
         return new StringBuilder(cbsDueDate).append(Constants.HYPHEN).append(cbsRemainingMileage)

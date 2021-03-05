@@ -20,6 +20,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 /**
@@ -78,6 +79,7 @@ public class VehicleAttributesContainer {
                 vehicleMessages.ccmMessages.forEach(entry -> {
                     CCMMessage ccmM = new CCMMessage();
                     ccmM.ccmDescriptionShort = entry.text;
+                    ccmM.ccmDescriptionLong = Constants.HYPHEN;
                     ccmM.ccmMileage = entry.unitOfLengthRemaining;
                     ccml.add(ccmM);
                 });
@@ -91,6 +93,7 @@ public class VehicleAttributesContainer {
                 vehicleMessages.cbsMessages.forEach(entry -> {
                     CBSMessage cbsm = new CBSMessage();
                     cbsm.cbsType = entry.text;
+                    cbsm.cbsDescription = entry.description;
                     cbsm.cbsDueDate = entry.date;
                     cbsm.cbsRemainingMileage = entry.unitOfLengthRemaining;
                     cbsl.add(cbsm);

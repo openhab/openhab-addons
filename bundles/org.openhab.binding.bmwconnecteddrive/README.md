@@ -194,6 +194,7 @@ If more than one service is scheduled in the future the channel _name_ contains 
 | Channel Label                  | Channel ID          | Type           | Access     |
 |--------------------------------|---------------------|----------------|------------|
 | Service Name                   | name                | String         | Read/Write |
+| Service Details                | details             | String         | Read       |
 | Service Date                   | date                | Number         | Read       |
 | Mileage till Service           | mileage             | Number:Length  | Read       |
 
@@ -209,6 +210,7 @@ If more than one message is active the channel _name_ contains all active messag
 | Channel Label                   | Channel ID          | Type           | Access     |
 |---------------------------------|---------------------|----------------|------------|
 | CheckControl Description        | name                | String         | Read/Write |
+| CheckControl Details            | details             | String         | Read       |
 | Mileage Occurrence              | mileage             | Number:Length  | Read       |
 
 #### Doors Details
@@ -272,7 +274,8 @@ Charging options with date and time for preferred time windows and charging mode
 
 * Channel Group ID is **charge**
 * Available for electric and hybrid vehicles
-* Read-only values
+* Read/Write access for UI. Use (Charge Profile Actions)[#charge_profile_ction] in rules
+* There are 3 Timers available. Replace _X_ with number 1,2 or 3 to target the correct timer
 
 | Channel Label                         | Channel Group ID | Channel ID                | Type     | 
 |---------------------------------------|------------------|---------------------------|----------| 
@@ -285,39 +288,17 @@ Charging options with date and time for preferred time windows and charging mode
 | Charging Window End Time Hour         | charge           | window-end-hour           | Number   | 
 | Charging Window End Time Minute       | charge           | window-end-minute         | Number   | 
 | Air Conditioning at Departure Time    | charge           | profile-climate           | Switch   | 
-| Timer 1: Enabled                      | charge           | timer1-enabled            | Switch   | 
-| Timer 1: Departure Time               | charge           | timer1-departure          | DateTime | 
-| Timer 1: Departure Time Hour          | charge           | timer1-departure-hour     | Number   | 
-| Timer 1: Departure Time Minute        | charge           | timer1-departure-minute   | Number   | 
-| Timer 1: Monday                       | charge           | timer1-day-mon            | Switch   | 
-| Timer 1: Tuesday                      | charge           | timer1-day-tue            | Switch   | 
-| Timer 1: Wednesday                    | charge           | timer1-day-wed            | Switch   | 
-| Timer 1: Thursday                     | charge           | timer1-day-thu            | Switch   | 
-| Timer 1: Friday                       | charge           | timer1-day-fri            | Switch   | 
-| Timer 1: Saturday                     | charge           | timer1-day-sat            | Switch   | 
-| Timer 1: Sunday                       | charge           | timer1-day-sun            | Switch   | 
-| Timer 2: Enabled                      | charge           | timer2-enabled            | Switch   | 
-| Timer 2: Departure Time               | charge           | timer2-departure          | DateTime | 
-| Timer 2: Departure Time Hour          | charge           | timer2-departure-hour     | Number   | 
-| Timer 2: Departure Time Minute        | charge           | timer2-departure-minute   | Number   | 
-| Timer 2: Monday                       | charge           | timer2-day-mon            | Switch   | 
-| Timer 2: Tuesday                      | charge           | timer2-day-tue            | Switch   | 
-| Timer 2: Wednesday                    | charge           | timer2-day-wed            | Switch   | 
-| Timer 2: Thursday                     | charge           | timer2-day-thu            | Switch   | 
-| Timer 2: Friday                       | charge           | timer2-day-fri            | Switch   | 
-| Timer 2: Saturday                     | charge           | timer2-day-sat            | Switch   | 
-| Timer 2: Sunday                       | charge           | timer2-day-sun            | Switch   | 
-| Timer 3: Enabled                      | charge           | timer3-enabled            | Switch   | 
-| Timer 3: Departure Time               | charge           | timer3-departure          | DateTime | 
-| Timer 3: Departure Time Hour          | charge           | timer3-departure-hour     | Number   | 
-| Timer 3: Departure Time Minute        | charge           | timer3-departure-minute   | Number   | 
-| Timer 3: Monday                       | charge           | timer3-day-mon            | Switch   | 
-| Timer 3: Tuesday                      | charge           | timer3-day-tue            | Switch   | 
-| Timer 3: Wednesday                    | charge           | timer3-day-wed            | Switch   | 
-| Timer 3: Thursday                     | charge           | timer3-day-thu            | Switch   | 
-| Timer 3: Friday                       | charge           | timer3-day-fri            | Switch   | 
-| Timer 3: Saturday                     | charge           | timer3-day-sat            | Switch   | 
-| Timer 3: Sunday                       | charge           | timer3-day-sun            | Switch   | 
+| Timer _X_: Enabled                    | charge           | timer_X_-enabled          | Switch   | 
+| Timer _X_: Departure Time             | charge           | timer_X_-departure        | DateTime | 
+| Timer _X_: Departure Time Hour        | charge           | timer_X_-departure-hour   | Number   | 
+| Timer _X_: Departure Time Minute      | charge           | timer_X_-departure-minute | Number   | 
+| Timer _X_: Monday                     | charge           | timer_X_-day-mon          | Switch   | 
+| Timer _X_: Tuesday                    | charge           | timer_X_-day-tue          | Switch   | 
+| Timer _X_: Wednesday                  | charge           | timer_X_-day-wed          | Switch   | 
+| Timer _X_: Thursday                   | charge           | timer_X_-day-thu          | Switch   | 
+| Timer _X_: Friday                     | charge           | timer_X_-day-fri          | Switch   | 
+| Timer _X_: Saturday                   | charge           | timer_X_-day-sat          | Switch   | 
+| Timer _X_: Sunday                     | charge           | timer_X_-day-sun          | Switch   | 
 | Override Timer: Enabled               | charge           | override-enabled          | Switch   | 
 | Override Timer: Departure Time        | charge           | override-departure        | DateTime | 
 | Override Timer: Departure Time Hour   | charge           | override-departure-hour   | Number   | 
@@ -440,6 +421,49 @@ The possible values are the same mentioned in [Thing Configuration](#thing-confi
 | Rendered Vehicle Image     | png                 | Image  | Read     |
 | Image Viewport             | view                | String | Write    |
 | Image Picture Size         | size                | Number | Write    |
+
+## Rule Actions
+
+## Charge Profile Action
+
+The Charge Profile is accessible and modifyable in rules via action. 
+Get the corresponding action from your car using the Thing ID
+
+* bmwconnecteddrive - don't change
+* bev_rex - (Thing UID)[#things] of your car
+* user - Thing ID of the (Bridge)[#bridge]
+* i3 - Thing ID of your Car
+
+```
+  val profile = getActions("chargeprofile", "bmwconnecteddrive:bev_rex:user:i3")
+```
+
+Like in the Charge Profile Channels 3 Timers are provided. Replace _X_ with 1, 2 or 3 to address the right timer.
+
+| Function                              | Parameters       | Returns                   | Description                                                | 
+|---------------------------------------|------------------|---------------------------|------------------------------------------------------------| 
+| getClimatizationEnabled               | void             | Boolean                   | Returns the enabled state of climatization                 | 
+| setClimatizationEnabled               | Boolean          | void                      | Sets the enabled state of climatization                    | 
+| getChargingMode                       | void             | String                    | Gets the charging-mode                                     | 
+| setChargingMode                       | String           | void                      | Sets the charging-mode                                     | 
+| getPreferredWindowStart               | void             | LocalTime                 | Returns the preferred charging-window start time           | 
+| setPreferredWindowStart               | LocalTime        | void                      | Sets the preferred charging-window start time              | 
+| getPreferredWindowEnd                 | void             | LocalTime                 | Returns the preferred charging-window end time             | 
+| setPreferredWindowEnd                 | LocalTime        | void                      | Sets the preferred charging-window end time                | 
+| getTimer_X_Enabled                    | void             | Boolean                   | Returns the enabled state of timer_X_                      | 
+| setTimer_X_Enabled                    | Boolean          | void                      | Returns the enabled state of timer_X_                      | 
+| getTimer_X_Departure                  | void             | LocalTime                 | Returns the departure time of timer_X_                     | 
+| setTimer_X_Departure                  | LocalTime        | void                      | Sets the timer_X_ departure time                           | 
+| getTimer_X_Days                       | void             | Set<DayOfWeek>            | Returns the days of week timer_X_ is enabled for           | 
+| setTimer_X_Days                       | Set<DayOfWeek>   | void                      | sets the days of week timer_X_ is enabled for              | 
+| getOverrideTimerEnabled               | void             | Boolean                   | Returns the enabled state of override timer                | 
+| setOverrideTimerEnabled               | Boolean          | void                      | Sets the enabled state of override timer                   | 
+| getOverrideTimerDeparture             | void             | LocalTime                 | Returns the departure time of override timer               | 
+| setOverrideTimerDeparture             | LocalTime        | void                      | Sets the override timer departure time                     | 
+| getOverrideTimerDays                  | void             | Set<DayOfWeek>            | Returns the days of week the overrideTimer is enabled for  | 
+| setOverrideTimerDays                  | Set<DayOfWeek>   | void                      | Sets the days of week the overrideTimer is enabled for     | 
+| cancel                                | void             | void                      | Sends the charging profile to the vehicle                  | 
+| send                                  | void             | void                      | Cancel current edit of charging profile                    | 
 
 
 ## Further Descriptions
@@ -586,10 +610,12 @@ String                  i3RearWindow              "Rear Window [%s]"            
 String                  i3Sunroof                 "Sunroof [%s]"                                <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#sunroof" }
 
 String                  i3ServiceName             "Service Name [%s]"                           <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#name" }
+String                  i3ServiceDetails          "Service Details [%s]"                        <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#details" }
 Number:Length           i3ServiceMileage          "Service Mileage [%d %unit%]"                 <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#mileage" }
 DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"                  <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#date" }
 
 String                  i3CCName                  "CheckControl Name [%s]"                      <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:check#name" }
+String                  i3CCDetails               "CheckControl Details [%s]"                   <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:check#details" }
 Number:Length           i3CCMileage               "CheckControl Mileage [%d %unit%]"            <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:check#mileage" }
 
 String                  i3DestName                "Destination [%s]"                            <house>         (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:destination#name" } 
@@ -783,6 +809,22 @@ sitemap BMW label="BMW" {
     Text    item=i3ImageSize 
   } 
 }
+```
+
+### Action example
+
+```
+  val profile = getActions("chargeprofile", "bmwconnecteddrive:bev_rex:user:i3")
+  val now = ZonedDateTime.now.toLocalTime
+  profile.setChargingMode("DELAYED_CHARGING")
+  profile.setTimer1Departure(now.minusHours(2))
+  profile.setTimer1Days(java.util.Set())
+  profile.setTimer1Enabled(true)
+  profile.setTimer2Enabled(false)
+  profile.setTimer3Enabled(false)
+  profile.setPreferredWindowStart(now.minusHours(6))
+  profile.setPreferredWindowEnd(now.minusHours(2))
+  profile.send()
 ```
 
 ## Credits

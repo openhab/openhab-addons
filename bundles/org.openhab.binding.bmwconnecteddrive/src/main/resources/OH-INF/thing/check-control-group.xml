@@ -8,6 +8,7 @@
 		<description>Show the current active CheckControl Messages</description>
 		<channels>
 			<channel id="name" typeId="checkcontrol-name-channel"/>
+			<channel id="details" typeId="checkcontrol-details-channel"/>
 			<channel id="mileage" typeId="checkcontrol-mileage-channel"/>
 		</channels>
 	</channel-group-type>

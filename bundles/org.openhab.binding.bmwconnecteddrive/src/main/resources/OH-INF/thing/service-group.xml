@@ -8,6 +8,7 @@
 		<description>All future Service schedules</description>
 		<channels>
 			<channel id="name" typeId="service-name-channel"/>
+			<channel id="details" typeId="service-details-channel"/>
 			<channel id="date" typeId="service-date-channel"/>
 			<channel id="mileage" typeId="service-mileage-channel"/>
 		</channels>

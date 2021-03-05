@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
@@ -139,11 +140,13 @@ public class VehicleChannelHandler extends BaseThingHandler {
         // add all elements to options
         checkControlList = ccl;
         List<StateOption> ccmDescriptionOptions = new ArrayList<>();
+        List<StateOption> ccmDetailsOptions = new ArrayList<>();
         List<StateOption> ccmMileageOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
         for (CCMMessage ccEntry : checkControlList) {
             ccmDescriptionOptions.add(new StateOption(Integer.toString(index), ccEntry.ccmDescriptionShort));
+            ccmDetailsOptions.add(new StateOption(Integer.toString(index), ccEntry.ccmDescriptionLong));
             ccmMileageOptions.add(new StateOption(Integer.toString(index), Integer.toString(ccEntry.ccmMileage)));
             if (selectedCC.equals(ccEntry.ccmDescriptionShort)) {
                 isSelectedElementIn = true;
@@ -151,6 +154,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
             index++;
         }
         setOptions(CHANNEL_GROUP_CHECK_CONTROL, NAME, ccmDescriptionOptions);
+        setOptions(CHANNEL_GROUP_CHECK_CONTROL, DETAILS, ccmDetailsOptions);
         setOptions(CHANNEL_GROUP_CHECK_CONTROL, MILEAGE, ccmMileageOptions);
 
         // if current selected item isn't anymore in the list select first entry
@@ -164,6 +168,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
             CCMMessage ccEntry = checkControlList.get(index);
             selectedCC = ccEntry.ccmDescriptionShort;
             updateChannel(CHANNEL_GROUP_CHECK_CONTROL, NAME, StringType.valueOf(ccEntry.ccmDescriptionShort));
+            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, DETAILS, StringType.valueOf(ccEntry.ccmDescriptionLong));
             updateChannel(CHANNEL_GROUP_CHECK_CONTROL, MILEAGE,
                     QuantityType.valueOf(Converter.round(ccEntry.ccmMileage),
                             imperial ? ImperialUnits.MILE : MetricPrefix.KILO(SIUnits.METRE)));
@@ -181,6 +186,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         // add all elements to options
         serviceList = sl;
         List<StateOption> serviceNameOptions = new ArrayList<>();
+        List<StateOption> serviceDetailsOptions = new ArrayList<>();
         List<StateOption> serviceDateOptions = new ArrayList<>();
         List<StateOption> serviceMileageOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
@@ -188,6 +194,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         for (CBSMessage serviceEntry : serviceList) {
             // create StateOption with "value = list index" and "label = human readable string"
             serviceNameOptions.add(new StateOption(Integer.toString(index), serviceEntry.getType()));
+            serviceDetailsOptions.add(new StateOption(Integer.toString(index), serviceEntry.getDescription()));
             serviceDateOptions.add(new StateOption(Integer.toString(index), serviceEntry.getDueDate()));
             serviceMileageOptions
                     .add(new StateOption(Integer.toString(index), Integer.toString(serviceEntry.cbsRemainingMileage)));
@@ -197,6 +204,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
             index++;
         }
         setOptions(CHANNEL_GROUP_SERVICE, NAME, serviceNameOptions);
+        setOptions(CHANNEL_GROUP_SERVICE, DETAILS, serviceDetailsOptions);
         setOptions(CHANNEL_GROUP_SERVICE, DATE, serviceDateOptions);
         setOptions(CHANNEL_GROUP_SERVICE, MILEAGE, serviceMileageOptions);
 
@@ -212,6 +220,8 @@ public class VehicleChannelHandler extends BaseThingHandler {
             selectedService = serviceEntry.cbsType;
             updateChannel(CHANNEL_GROUP_SERVICE, NAME,
                     StringType.valueOf(Converter.toTitleCase(serviceEntry.getType())));
+            updateChannel(CHANNEL_GROUP_SERVICE, DETAILS,
+                    StringType.valueOf(Converter.toTitleCase(serviceEntry.getDescription())));
             updateChannel(CHANNEL_GROUP_SERVICE, DATE,
                     DateTimeType.valueOf(Converter.getLocalDateTime(serviceEntry.getDueDate())));
             updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,

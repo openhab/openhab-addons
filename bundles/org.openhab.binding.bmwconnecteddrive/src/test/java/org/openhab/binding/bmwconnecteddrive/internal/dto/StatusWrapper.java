@@ -468,6 +468,29 @@ public class StatusWrapper {
                         break;
                 }
                 break;
+            case DETAILS:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                switch (gUid) {
+                    case CHANNEL_GROUP_SERVICE:
+                        wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_ENTRIES));
+                        if (!vStatus.cbsData.isEmpty()) {
+                            wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getDescription()));
+                        }
+                        assertEquals(wanted.toString(), st.toString(), "Service Name");
+                        break;
+                    case CHANNEL_GROUP_CHECK_CONTROL:
+                        wanted = StringType.valueOf(Constants.NO_ENTRIES);
+                        if (!vStatus.checkControlMessages.isEmpty()) {
+                            wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionLong);
+                        }
+                        assertEquals(wanted.toString(), st.toString(), "CheckControl Name");
+                        break;
+                    default:
+                        assertFalse(true, "Channel " + channelUID + " " + state + " not found");
+                        break;
+                }
+                break;
             case DATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;

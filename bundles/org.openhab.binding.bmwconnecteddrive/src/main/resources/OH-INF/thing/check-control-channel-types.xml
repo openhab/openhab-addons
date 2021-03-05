@@ -7,6 +7,10 @@
 		<item-type>String</item-type>
 		<label>CheckControl Description</label>
 	</channel-type>
+	<channel-type id="checkcontrol-details-channel">
+		<item-type>String</item-type>
+		<label>CheckControl Details</label>
+	</channel-type>
 	<channel-type id="checkcontrol-mileage-channel">
 		<item-type>Number:Length</item-type>
 		<label>Mileage Occurrence</label>

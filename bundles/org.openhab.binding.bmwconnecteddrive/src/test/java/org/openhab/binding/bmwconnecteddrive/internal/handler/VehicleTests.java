@@ -57,10 +57,10 @@ public class VehicleTests {
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 4;
     private static final int DOORS = 12;
-    private static final int CHECK_EMPTY = 2;
-    private static final int CHECK_AVAILABLE = 2;
-    private static final int SERVICE_AVAILABLE = 3;
-    private static final int SERVICE_EMPTY = 3;
+    private static final int CHECK_EMPTY = 3;
+    private static final int CHECK_AVAILABLE = 3;
+    private static final int SERVICE_AVAILABLE = 4;
+    private static final int SERVICE_EMPTY = 4;
     private static final int POSITION = 2;
 
     @Nullable

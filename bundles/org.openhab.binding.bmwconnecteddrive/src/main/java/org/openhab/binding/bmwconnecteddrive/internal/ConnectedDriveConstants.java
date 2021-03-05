@@ -104,6 +104,7 @@ public class ConnectedDriveConstants {
 
     // Generic Constants for several groups
     public static final String NAME = "name";
+    public static final String DETAILS = "details";
     public static final String DATE = "date";
     public static final String MILEAGE = "mileage";
     public static final String GPS = "gps";
