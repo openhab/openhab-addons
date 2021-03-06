@@ -516,6 +516,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         updateDestinations(dc.destinations);
                     }
                 } catch (JsonSyntaxException jse) {
+                    logger.debug("{}", jse.getMessage());
                 }
             }
             removeCallback(this);
@@ -576,6 +577,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         }
                     }
                 } catch (JsonSyntaxException jse) {
+                    logger.debug("{}", jse.getMessage());
                 }
             }
             removeCallback(this);
@@ -607,6 +609,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         }
                     }
                 } catch (JsonSyntaxException jse) {
+                    logger.debug("{}", jse.getMessage());
                 }
             }
             removeCallback(this);
@@ -662,6 +665,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         updatePosition(vStatus.position);
                     }
                 } catch (JsonSyntaxException jse) {
+                    logger.debug("{}", jse.getMessage());
                 }
             }
             removeCallback(this);
@@ -704,6 +708,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         vehicleStatusCallback.onResponse(vac.transform());
                     }
                 } catch (JsonSyntaxException jse) {
+                    logger.debug("{}", jse.getMessage());
                 }
             }
         }

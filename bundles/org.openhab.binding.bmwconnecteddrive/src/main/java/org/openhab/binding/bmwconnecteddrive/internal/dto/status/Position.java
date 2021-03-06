@@ -31,6 +31,6 @@ public class Position {
 
     @Override
     public String toString() {
-        return new StringBuilder(Float.toString(lat)).append(Constants.COMMA).append(Float.toString(lon)).toString();
+        return getCoordinates();
     }
 }

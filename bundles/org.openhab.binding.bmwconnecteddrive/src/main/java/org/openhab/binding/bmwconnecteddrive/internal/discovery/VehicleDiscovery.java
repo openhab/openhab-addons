@@ -108,8 +108,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         final AtomicBoolean foundVehicle = new AtomicBoolean(false);
                         bridge.getThing().getThings().forEach(vehicleThing -> {
                             Configuration c = vehicleThing.getConfiguration();
-                            if (c.containsKey("vin")) {
-                                String thingVIN = c.get("vin").toString();
+                            if (c.containsKey(ConnectedDriveConstants.VIN)) {
+                                String thingVIN = c.get(ConnectedDriveConstants.VIN).toString();
                                 if (vehicle.vin.equals(thingVIN)) {
                                     vehicleThing.setProperties(properties);
                                     foundVehicle.set(true);
@@ -120,7 +120,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         // Vehicle not found -> trigger discovery
                         if (!foundVehicle.get()) {
                             // Properties needed for functional THing
-                            properties.put("vin", vehicle.vin);
+                            properties.put(ConnectedDriveConstants.VIN, vehicle.vin);
                             properties.put("refreshInterval",
                                     Integer.toString(ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL));
                             properties.put("units", ConnectedDriveConstants.UNITS_AUTODETECT);
@@ -130,7 +130,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                             String vehicleLabel = vehicle.brand + " " + vehicle.model;
                             Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
                             thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                                    .withRepresentationProperty("vin").withLabel(vehicleLabel)
+                                    .withRepresentationProperty(ConnectedDriveConstants.VIN).withLabel(vehicleLabel)
                                     .withProperties(convertedProperties).build());
                         }
                     }

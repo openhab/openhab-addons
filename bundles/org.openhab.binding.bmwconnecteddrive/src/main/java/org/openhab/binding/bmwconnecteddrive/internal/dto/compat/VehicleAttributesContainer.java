@@ -23,6 +23,8 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusCo
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link VehicleAttributesContainer} Data Transfer Object
  *
@@ -101,7 +103,11 @@ public class VehicleAttributesContainer {
             }
         }
         vs.cbsData = cbsl;
-
-        return Converter.getGson().toJson(vsc);
+        String returnVal = Constants.EMPTY_JSON;
+        try {
+            returnVal = Converter.getGson().toJson(vsc);
+        } catch (JsonSyntaxException jse) {
+        }
+        return returnVal;
     }
 }

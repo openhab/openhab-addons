@@ -32,38 +32,29 @@ public class Destination {
     public String type;
     public String createdAt;
 
-    private String address = null;
-    private String coordinates = null;
-
     public String getAddress() {
-        if (address == null) {
-            StringBuilder buf = new StringBuilder();
-            if (street != null) {
-                buf.append(street);
-                if (streetNumber != null) {
-                    buf.append(SPACE).append(streetNumber);
-                }
-            }
-            if (city != null) {
-                if (buf.length() > 0) {
-                    buf.append(COMMA).append(SPACE).append(city);
-                } else {
-                    buf.append(city);
-                }
-            }
-            if (buf.length() == 0) {
-                address = UNDEF;
-            } else {
-                address = Converter.toTitleCase(buf.toString());
+        StringBuilder buf = new StringBuilder();
+        if (street != null) {
+            buf.append(street);
+            if (streetNumber != null) {
+                buf.append(SPACE).append(streetNumber);
             }
         }
-        return address;
+        if (city != null) {
+            if (buf.length() > 0) {
+                buf.append(COMMA).append(SPACE).append(city);
+            } else {
+                buf.append(city);
+            }
+        }
+        if (buf.length() == 0) {
+            return UNDEF;
+        } else {
+            return Converter.toTitleCase(buf.toString());
+        }
     }
 
     public String getCoordinates() {
-        if (coordinates == null) {
-            coordinates = new StringBuilder().append(lat).append(Constants.COMMA).append(lon).toString();
-        }
-        return coordinates;
+        return new StringBuilder().append(lat).append(Constants.COMMA).append(lon).toString();
     }
 }

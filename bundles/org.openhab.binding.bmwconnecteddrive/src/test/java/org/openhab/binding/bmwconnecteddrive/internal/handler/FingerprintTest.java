@@ -41,11 +41,11 @@ public class FingerprintTest {
         ConnectedDriveBridgeHandler bh = new ConnectedDriveBridgeHandler(b, hcf);
         // when(bh.getThing()).thenReturn(b);
 
-        bh.onResponse(Constants.EMPTY_VEHICLES);
-        assertEquals(Constants.EMPTY_VEHICLES, bh.getDiscoveryFingerprint(), "Empty Response");
+        bh.onResponse(Constants.EMPTY_JSON);
+        assertEquals(Constants.EMPTY_JSON, bh.getDiscoveryFingerprint(), "Empty Response");
 
         bh.onResponse(null);
-        assertEquals(Constants.EMPTY_VEHICLES, bh.getDiscoveryFingerprint(), "Empty Response");
+        assertEquals(Constants.EMPTY_JSON, bh.getDiscoveryFingerprint(), "Empty Response");
 
         String content = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
         bh.onResponse(content);

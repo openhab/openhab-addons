@@ -40,7 +40,7 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link ConnectedDriveBridgeHandler} is responsible for handling commands, which are
@@ -93,11 +93,16 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
 
     public String getDiscoveryFingerprint() {
         return troubleshootFingerprint.map(fingerprint -> {
-            VehiclesContainer container = Converter.getGson().fromJson(fingerprint, VehiclesContainer.class);
+            VehiclesContainer container = null;
+            try {
+                container = Converter.getGson().fromJson(fingerprint, VehiclesContainer.class);
+            } catch (JsonParseException jpe) {
+                logger.info("Cannot parse fingerprint {}", jpe.getMessage());
+            }
             if (container != null) {
                 if (container.vehicles != null) {
                     if (container.vehicles.isEmpty()) {
-                        return Constants.EMPTY_VEHICLES;
+                        return Constants.EMPTY_JSON;
                     } else {
                         container.vehicles.forEach(entry -> {
                             entry.vin = ANONYMOUS;
@@ -158,13 +163,14 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                         }
                         return Converter.getGson().toJson(container);
                     }
-                } catch (JsonSyntaxException jse) {
+                } catch (JsonParseException jpe) {
+                    logger.debug("Fingerprint parse exception {}", jpe.getMessage());
                 }
                 // Unparseable or not a VehiclesContainer:
                 return response;
             });
         } else {
-            troubleshootFingerprint = Optional.of(Constants.EMPTY_VEHICLES);
+            troubleshootFingerprint = Optional.of(Constants.EMPTY_JSON);
         }
         if (firstResponse) {
             logFingerPrint();

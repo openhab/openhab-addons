@@ -68,7 +68,7 @@ public class Constants {
 
     public static final String ANONYMOUS = "Anonymous";
     public static final int MILES_TO_FEET_FACTOR = 5280;
-    public static final String EMPTY_VEHICLES = "{}";
+    public static final String EMPTY_JSON = "{}";
 
     // Time Constants for DateTime channels
     public static final LocalDate EPOCH_DAY = LocalDate.ofEpochDay(0);

@@ -64,6 +64,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link VehicleChannelHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -334,7 +336,11 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateChargeProfileFromContent(String content) {
-        ChargeProfileWrapper.fromJson(content).ifPresent(this::updateChargeProfile);
+        try {
+            ChargeProfileWrapper.fromJson(content).ifPresent(this::updateChargeProfile);
+        } catch (JsonSyntaxException jse) {
+            logger.debug("Update charge profile parse exception {}", jse.getMessage());
+        }
     }
 
     protected void updateChargeProfile(ChargeProfileWrapper wrapper) {
@@ -430,11 +436,21 @@ public class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
                 DateTimeType.valueOf(Converter.getLocalDateTime(VehicleStatusUtils.getUpdateTime(vStatus))));
 
-        Doors doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
-        Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
+        Doors doorState = null;
+        try {
+            doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
+        } catch (JsonSyntaxException jse) {
+            logger.debug("Doors parse exception {}", jse.getMessage());
+        }
         if (doorState != null) {
             updateChannel(CHANNEL_GROUP_STATUS, DOORS, StringType.valueOf(VehicleStatusUtils.checkClosed(doorState)));
             updateDoors(doorState);
+        }
+        Windows windowState = null;
+        try {
+            windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
+        } catch (JsonSyntaxException jse) {
+            logger.debug("Windows parse exception {}", jse.getMessage());
         }
         if (windowState != null) {
             updateChannel(CHANNEL_GROUP_STATUS, WINDOWS,

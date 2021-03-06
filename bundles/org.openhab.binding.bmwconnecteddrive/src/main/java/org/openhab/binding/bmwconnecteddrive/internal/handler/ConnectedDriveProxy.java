@@ -290,7 +290,7 @@ public class ConnectedDriveProxy {
                 logger.debug("Authorization status {} reason {}", contentResponse.getStatus(),
                         contentResponse.getReason());
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException | JsonSyntaxException e) {
             logger.debug("Authorization exception: {}", e.getMessage(), e);
         }
     }

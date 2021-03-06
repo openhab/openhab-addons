@@ -34,6 +34,8 @@ public class ConnectedDriveConstants {
     public static final String UNITS_IMPERIAL = "IMPERIAL";
     public static final String UNITS_METRIC = "METRIC";
 
+    public static final String VIN = "vin";
+
     public static final int DEFAULT_IMAGE_SIZE = 1024;
     public static final int DEFAULT_REFRESH_INTERVAL = 5;
     public static final String DEFAULT_IMAGE_VIEWPORT = "FRONT";
