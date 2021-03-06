@@ -215,7 +215,8 @@ public class HomekitImpl implements Homekit {
                     networkInterface = InetAddress.getByName(settings.networkInterface);
                     for (JmDNS mdns : mdnsClient.getClientInstances()) {
                         if (mdns.getInetAddress().equals(networkInterface)) {
-                            logger.trace("Suitable mDNS client for IP {} found and will be used for HomeKit", networkInterface);
+                            logger.trace("Suitable mDNS client for IP {} found and will be used for HomeKit",
+                                    networkInterface);
                             homekitServer = new HomekitServer(mdns, settings.port);
                         }
                     }

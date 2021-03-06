@@ -26,6 +26,11 @@
 			<label>Thermostat Current Heating/Cooling Mapping</label>
 			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
 		</parameter-group>
+		<parameter name="name" type="text" required="false" groupName="core">
+			<label>Bridge name</label>
+			<description>Name of the HomeKit bridge</description>
+			<default>openHAB</default>
+		</parameter>
 		<parameter name="qrCode" type="text" required="false" groupName="core">
 			<label>HomeKit QR Code</label>
 			<context>qrcode</context>
