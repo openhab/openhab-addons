@@ -308,7 +308,6 @@
 /bundles/org.openhab.io.imperihome/ @pdegeus
 /bundles/org.openhab.io.neeo/ @tmrobert8
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
-/bundles/org.openhab.io.transport.modbus/ @ssalonen
 /bundles/org.openhab.persistence.dynamodb/ @ssalonen
 /bundles/org.openhab.persistence.influxdb/ @lujop
 /bundles/org.openhab.persistence.jdbc/ @openhab/add-ons-maintainers
