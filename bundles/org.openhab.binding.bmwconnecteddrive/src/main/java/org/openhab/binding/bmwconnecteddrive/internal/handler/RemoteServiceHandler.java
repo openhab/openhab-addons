@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
+
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -58,24 +60,29 @@ public class RemoteServiceHandler implements StringResponseCallback {
     }
 
     public enum RemoteService {
-        LIGHT_FLASH("LIGHT_FLASH"),
-        VEHICLE_FINDER("VEHICLE_FINDER"),
-        DOOR_LOCK("DOOR_LOCK"),
-        DOOR_UNLOCK("DOOR_UNLOCK"),
-        HORN("HORN_BLOW"),
-        AIR_CONDITIONING("CLIMATE_NOW"),
-        CHARGE_NOW("CHARGE_NOW"),
-        CHARGING_CONTROL("CHARGING_CONTROL");
+        LIGHT_FLASH(REMOTE_SERVICE_LIGHT_FLASH, "Flash Lights"),
+        VEHICLE_FINDER(REMOTE_SERVICE_VEHICLE_FINDER, "Vehicle Finder"),
+        DOOR_LOCK(REMOTE_SERVICE_DOOR_LOCK, "Door Lock"),
+        DOOR_UNLOCK(REMOTE_SERVICE_DOOR_UNLOCK, "Door Unlock"),
+        HORN_BLOW(REMOTE_SERVICE_HORN, "Horn Blow"),
+        CLIMATE_NOW(REMOTE_SERVICE_AIR_CONDITIONING, "Climate Control"),
+        CHARGE_NOW(REMOTE_SERVICE_CHARGE_NOW, "Start Charging"),
+        CHARGING_CONTROL(REMOTE_SERVICE_CHARGING_CONTROL, "Send Charging Profile");
 
-        private final String service;
+        private final String command;
+        private final String label;
 
-        RemoteService(String s) {
-            service = s;
+        RemoteService(final String command, final String label) {
+            this.command = command;
+            this.label = label;
         }
 
-        @Override
-        public String toString() {
-            return service;
+        public String getCommand() {
+            return command;
+        }
+
+        public String getLabel() {
+            return label;
         }
     }
 
@@ -106,10 +113,10 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 // only one service executing
                 return false;
             }
-            serviceExecuting = Optional.of(service.toString());
+            serviceExecuting = Optional.of(service.name());
         }
         final MultiMap<String> dataMap = new MultiMap<String>();
-        dataMap.add(SERVICE_TYPE, service.toString());
+        dataMap.add(SERVICE_TYPE, service.name());
         if (data.length > 0) {
             dataMap.add(DATA, data[0]);
         }

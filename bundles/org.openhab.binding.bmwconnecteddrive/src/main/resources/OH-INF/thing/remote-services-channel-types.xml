@@ -6,18 +6,6 @@
 	<channel-type id="remote-command-channel">
 		<item-type>String</item-type>
 		<label>Remote Command</label>
-		<command>
-			<options>
-				<option value="light">Flash Lights</option>
-				<option value="finder">Vehicle Finder</option>
-				<option value="lock">Door Lock</option>
-				<option value="unlock">Door Unlock</option>
-				<option value="horn">Horn Blow</option>
-				<option value="climate">Climate Control</option>
-				<option value="charge-now">Start Charging</option>
-				<option value="charge-control">Send Charging Profile</option>
-			</options>
-		</command>
 	</channel-type>
 	<channel-type id="remote-state-channel">
 		<item-type>String</item-type>

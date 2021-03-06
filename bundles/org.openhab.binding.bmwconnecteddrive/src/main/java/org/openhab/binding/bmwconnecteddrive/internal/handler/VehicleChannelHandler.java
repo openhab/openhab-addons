@@ -43,6 +43,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.RemoteServiceUtils;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -110,6 +111,8 @@ public class VehicleChannelHandler extends BaseThingHandler {
         isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
+
+        setOptions(CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_COMMAND, RemoteServiceUtils.getOptions(isElectric));
     }
 
     @Override

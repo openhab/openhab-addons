@@ -46,6 +46,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.RemoteServiceUtils;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -127,25 +128,16 @@ public class VehicleHandler extends VehicleChannelHandler {
                 remote.ifPresent(remot -> {
                     switch (serviceCommand) {
                         case REMOTE_SERVICE_LIGHT_FLASH:
-                            remot.execute(RemoteService.LIGHT_FLASH);
-                            break;
                         case REMOTE_SERVICE_AIR_CONDITIONING:
-                            remot.execute(RemoteService.AIR_CONDITIONING);
-                            break;
                         case REMOTE_SERVICE_DOOR_LOCK:
-                            remot.execute(RemoteService.DOOR_LOCK);
-                            break;
                         case REMOTE_SERVICE_DOOR_UNLOCK:
-                            remot.execute(RemoteService.DOOR_UNLOCK);
-                            break;
                         case REMOTE_SERVICE_HORN:
-                            remot.execute(RemoteService.HORN);
-                            break;
                         case REMOTE_SERVICE_VEHICLE_FINDER:
-                            remot.execute(RemoteService.VEHICLE_FINDER);
-                            break;
                         case REMOTE_SERVICE_CHARGE_NOW:
-                            remot.execute(RemoteService.CHARGE_NOW);
+                            RemoteServiceUtils.getRemoteService(serviceCommand)
+                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
+                                        logger.info("Remote service execution {} unknown", serviceCommand);
+                                    });
                             break;
                         case REMOTE_SERVICE_CHARGING_CONTROL:
                             sendChargeProfile(chargeProfileEdit);
