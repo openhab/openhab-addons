@@ -806,11 +806,11 @@ public class VehicleHandler extends VehicleChannelHandler {
     public Optional<ChargeProfileWrapper> getChargeProfileWrapper() {
         return chargeProfileCache.flatMap(cache -> {
             return ChargeProfileWrapper.fromJson(cache).map(wrapper -> {
-                logger.info("Charge Profile editing - start");
-                logger.info("{}", wrapper.getJson());
+                logger.debug("Charge Profile editing - start");
+                logger.debug("{}", wrapper.getJson());
                 return wrapper;
             }).or(() -> {
-                logger.info("cannot parse charging profile: {}", cache);
+                logger.debug("cannot parse charging profile: {}", cache);
                 return Optional.empty();
             });
         }).or(() -> {
@@ -821,7 +821,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     public void sendChargeProfile(Optional<ChargeProfileWrapper> profile) {
         profile.map(profil -> profil.getJson()).ifPresent(json -> {
-            logger.info("sending charging profile: {}", json);
+            logger.debug("sending charging profile: {}", json);
             chargeProfileSent = Optional.of(json);
             remote.ifPresent(rem -> rem.execute(RemoteService.CHARGING_CONTROL, json));
         });
