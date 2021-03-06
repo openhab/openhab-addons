@@ -274,8 +274,8 @@ Charging options with date and time for preferred time windows and charging mode
 
 * Channel Group ID is **charge**
 * Available for electric and hybrid vehicles
-* Read/Write access for UI. Use (Charge Profile Actions)[#charge_profile_ction] in rules
-* There are 3 Timers available. Replace _X_ with number 1,2 or 3 to target the correct timer
+* Read/Write access for UI. Use [Charge Profile Actions](#charge-profile-action) in rules
+* There are 3 timers available. Replace *X* with number 1,2 or 3 to target the correct timer
 
 | Channel Label                         | Channel Group ID | Channel ID                | Type     | 
 |---------------------------------------|------------------|---------------------------|----------| 
@@ -288,31 +288,31 @@ Charging options with date and time for preferred time windows and charging mode
 | Charging Window End Time Hour         | charge           | window-end-hour           | Number   | 
 | Charging Window End Time Minute       | charge           | window-end-minute         | Number   | 
 | Air Conditioning at Departure Time    | charge           | profile-climate           | Switch   | 
-| Timer _X_: Enabled                    | charge           | timer_X_-enabled          | Switch   | 
-| Timer _X_: Departure Time             | charge           | timer_X_-departure        | DateTime | 
-| Timer _X_: Departure Time Hour        | charge           | timer_X_-departure-hour   | Number   | 
-| Timer _X_: Departure Time Minute      | charge           | timer_X_-departure-minute | Number   | 
-| Timer _X_: Monday                     | charge           | timer_X_-day-mon          | Switch   | 
-| Timer _X_: Tuesday                    | charge           | timer_X_-day-tue          | Switch   | 
-| Timer _X_: Wednesday                  | charge           | timer_X_-day-wed          | Switch   | 
-| Timer _X_: Thursday                   | charge           | timer_X_-day-thu          | Switch   | 
-| Timer _X_: Friday                     | charge           | timer_X_-day-fri          | Switch   | 
-| Timer _X_: Saturday                   | charge           | timer_X_-day-sat          | Switch   | 
-| Timer _X_: Sunday                     | charge           | timer_X_-day-sun          | Switch   | 
+| Timer *X*: Enabled                    | charge           | timer*X*-enabled          | Switch   | 
+| Timer *X*: Departure Time             | charge           | timer*X*-departure        | DateTime | 
+| Timer *X*: Departure Time Hour        | charge           | timer*X*-departure-hour   | Number   | 
+| Timer *X*: Departure Time Minute      | charge           | timer*X*-departure-minute | Number   | 
+| Timer *X*: Monday                     | charge           | timer*X*-day-mon          | Switch   | 
+| Timer *X*: Tuesday                    | charge           | timer*X*-day-tue          | Switch   | 
+| Timer *X*: Wednesday                  | charge           | timer*X*-day-wed          | Switch   | 
+| Timer *X*: Thursday                   | charge           | timer*X*-day-thu          | Switch   | 
+| Timer *X*: Friday                     | charge           | timer*X*-day-fri          | Switch   | 
+| Timer *X*: Saturday                   | charge           | timer*X*-day-sat          | Switch   | 
+| Timer *X*: Sunday                     | charge           | timer*X*-day-sun          | Switch   | 
 | Override Timer: Enabled               | charge           | override-enabled          | Switch   | 
 | Override Timer: Departure Time        | charge           | override-departure        | DateTime | 
 | Override Timer: Departure Time Hour   | charge           | override-departure-hour   | Number   | 
 | Override Timer: Departure Time Minute | charge           | override-departure-minute | Number   | 
 
-The channel _profile_mode_ supports
+The channel _profile-mode_ supports
 
-* **IMMEDIATE_CHARGING**
-* **DELAYED_CHARGING**
+* *IMMEDIATE_CHARGING*
+* *DELAYED_CHARGING*
 
-The channel _profile-prefs supports
+The channel _profile-prefs_ supports
 
-* **NO_PRESELECTION**
-* **CHARGING_WINDOW**
+* *NO_PRESELECTION*
+* *CHARGING_WINDOW*
 
 #### Location
 
@@ -436,36 +436,36 @@ The possible values are the same mentioned in [Thing Configuration](#thing-confi
 
 ## Charge Profile Action
 
-The Charge Profile is accessible and modifyable in rules via action. 
+The Charge Profile is accessible and modifiable in rules via action. 
 Get the corresponding action from your car using the Thing ID
 
-* bmwconnecteddrive - don't change
-* bev_rex - (Thing UID)[#things] of your car
-* user - Thing ID of the (Bridge)[#bridge]
-* i3 - Thing ID of your Car
+* bmwconnecteddrive - Binding ID, don't change!
+* bev_rex - [Thing UID](#things) of your car
+* user - Thing ID of the [Bridge](#bridge)
+* i3 - Thing ID of your car
 
 ```
   val profile = getActions("chargeprofile", "bmwconnecteddrive:bev_rex:user:i3")
 ```
 
-Like in the Charge Profile Channels 3 Timers are provided. Replace _X_ with 1, 2 or 3 to address the right timer.
+Like in the Charge Profile Channels 3 Timers are provided. Replace *X* with 1, 2 or 3 to address the right timer.
 
 | Function                              | Parameters       | Returns                   | Description                                                | 
 |---------------------------------------|------------------|---------------------------|------------------------------------------------------------| 
 | getClimatizationEnabled               | void             | Boolean                   | Returns the enabled state of climatization                 | 
 | setClimatizationEnabled               | Boolean          | void                      | Sets the enabled state of climatization                    | 
-| getChargingMode                       | void             | String                    | Gets the charging-mode                                     | 
-| setChargingMode                       | String           | void                      | Sets the charging-mode                                     | 
+| getChargingMode                       | void             | String                    | Gets the charging-mode, see valid options below            | 
+| setChargingMode                       | String           | void                      | Sets the charging-mode, see valid options below            | 
 | getPreferredWindowStart               | void             | LocalTime                 | Returns the preferred charging-window start time           | 
 | setPreferredWindowStart               | LocalTime        | void                      | Sets the preferred charging-window start time              | 
 | getPreferredWindowEnd                 | void             | LocalTime                 | Returns the preferred charging-window end time             | 
 | setPreferredWindowEnd                 | LocalTime        | void                      | Sets the preferred charging-window end time                | 
-| getTimer_X_Enabled                    | void             | Boolean                   | Returns the enabled state of timer_X_                      | 
-| setTimer_X_Enabled                    | Boolean          | void                      | Returns the enabled state of timer_X_                      | 
-| getTimer_X_Departure                  | void             | LocalTime                 | Returns the departure time of timer_X_                     | 
-| setTimer_X_Departure                  | LocalTime        | void                      | Sets the timer_X_ departure time                           | 
-| getTimer_X_Days                       | void             | Set<DayOfWeek>            | Returns the days of week timer_X_ is enabled for           | 
-| setTimer_X_Days                       | Set<DayOfWeek>   | void                      | sets the days of week timer_X_ is enabled for              | 
+| getTimer*X*Enabled                    | void             | Boolean                   | Returns the enabled state of timer*X*                      | 
+| setTimer*X*Enabled                    | Boolean          | void                      | Returns the enabled state of timer*X*                      | 
+| getTimer*X*Departure                  | void             | LocalTime                 | Returns the departure time of timer*X*                     | 
+| setTimer*X*Departure                  | LocalTime        | void                      | Sets the timer*X* departure time                           | 
+| getTimer*X*Days                       | void             | Set<DayOfWeek>            | Returns the days of week timer*X* is enabled for           | 
+| setTimer*X*Days                       | Set<DayOfWeek>   | void                      | sets the days of week timer*X* is enabled for              | 
 | getOverrideTimerEnabled               | void             | Boolean                   | Returns the enabled state of override timer                | 
 | setOverrideTimerEnabled               | Boolean          | void                      | Sets the enabled state of override timer                   | 
 | getOverrideTimerDeparture             | void             | LocalTime                 | Returns the departure time of override timer               | 
@@ -477,8 +477,8 @@ Like in the Charge Profile Channels 3 Timers are provided. Replace _X_ with 1, 2
 
 Values for valid charging mode get/set
 
-* **IMMEDIATE_CHARGING**
-* **DELAYED_CHARGING**
+* *IMMEDIATE_CHARGING*
+* *DELAYED_CHARGING*
 
 
 ## Further Descriptions
