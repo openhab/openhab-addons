@@ -26,25 +26,25 @@ import org.openhab.core.types.StateOption;
 
 /**
  * Helper class for Remote Service Commands
- * 
- * @author Norbert Truchsess - edit & send of charge profile
+ *
+ * @author Norbert Truchsess - Initial contribution
  */
 @NonNullByDefault
 public class RemoteServiceUtils {
 
-    private static final Map<String, RemoteService> CommandService = Stream.of(RemoteService.values())
+    private static final Map<String, RemoteService> COMMAND_SERVICES = Stream.of(RemoteService.values())
             .collect(Collectors.toUnmodifiableMap(RemoteService::getCommand, service -> service));
 
-    private static final Set<RemoteService> ElectricServices = EnumSet.of(RemoteService.CHARGE_NOW,
+    private static final Set<RemoteService> ELECTRIC_SERVICES = EnumSet.of(RemoteService.CHARGE_NOW,
             RemoteService.CHARGING_CONTROL);
 
     public static Optional<RemoteService> getRemoteService(final String command) {
-        return Optional.ofNullable(CommandService.get(command));
+        return Optional.ofNullable(COMMAND_SERVICES.get(command));
     }
 
     public static List<StateOption> getOptions(final boolean isElectric) {
         return Stream.of(RemoteService.values())
-                .filter(service -> isElectric ? true : !ElectricServices.contains(service))
+                .filter(service -> isElectric ? true : !ELECTRIC_SERVICES.contains(service))
                 .map(service -> new StateOption(service.getCommand(), service.getLabel()))
                 .collect(Collectors.toUnmodifiableList());
     }
