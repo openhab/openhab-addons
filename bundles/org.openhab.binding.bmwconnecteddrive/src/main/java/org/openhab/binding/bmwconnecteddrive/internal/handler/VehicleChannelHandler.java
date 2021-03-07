@@ -339,11 +339,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateChargeProfileFromContent(String content) {
-        try {
-            ChargeProfileWrapper.fromJson(content).ifPresent(this::updateChargeProfile);
-        } catch (JsonSyntaxException jse) {
-            logger.debug("Update charge profile parse exception {}", jse.getMessage());
-        }
+        ChargeProfileWrapper.fromJson(content).ifPresent(this::updateChargeProfile);
     }
 
     protected void updateChargeProfile(ChargeProfileWrapper wrapper) {
