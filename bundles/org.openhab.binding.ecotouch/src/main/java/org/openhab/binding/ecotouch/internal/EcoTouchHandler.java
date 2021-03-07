@@ -82,7 +82,6 @@ public class EcoTouchHandler extends BaseThingHandler {
                 }
             }
         } catch (Exception e) {
-
         }
     }
 
@@ -96,8 +95,8 @@ public class EcoTouchHandler extends BaseThingHandler {
             // request a refresh of a channel
             try {
                 EcoTouchTags tag = EcoTouchTags.fromString(channelUID.getId());
-                String value_str = connector.getValue_str(tag.getTagName());
-                updateChannel(tag.getTagName(), value_str);
+                String valueStr = connector.getValue(tag.getTagName());
+                updateChannel(tag.getTagName(), valueStr);
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
             }
@@ -115,9 +114,9 @@ public class EcoTouchHandler extends BaseThingHandler {
                         if (command instanceof QuantityType) {
                             // convert from user unit to heat pump unit
                             QuantityType<?> value = (QuantityType<?>) command;
-                            QuantityType<?> raw_unit = value.toUnit(ecoTouchTag.getUnit());
-                            if (raw_unit != null) {
-                                int raw = raw_unit.intValue();
+                            QuantityType<?> rawUnit = value.toUnit(ecoTouchTag.getUnit());
+                            if (rawUnit != null) {
+                                int raw = rawUnit.intValue();
                                 raw *= ecoTouchTag.getDivisor();
                                 connector.setValue(ecoTouchTag.getTagName(), raw);
                             }
@@ -152,7 +151,7 @@ public class EcoTouchHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             try {
                 // try to get a single value
-                connector.getValue_str("A1");
+                connector.getValue("A1");
             } catch (IOException io) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
                 return;
@@ -179,7 +178,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                         if (linked)
                             tags.add(ecoTouchTag.getTagName());
                     }
-                    Map<String, String> result = connector.getValues_str(tags);
+                    Map<String, String> result = connector.getValues(tags);
 
                     Iterator<Map.Entry<String, String>> it = result.entrySet().iterator();
                     while (it.hasNext()) {

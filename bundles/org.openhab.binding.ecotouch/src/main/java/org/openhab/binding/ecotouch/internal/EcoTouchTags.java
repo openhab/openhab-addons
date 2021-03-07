@@ -1083,7 +1083,7 @@ public enum EcoTouchTags {
     TYPE_ECOVENT_CO2_VALUE {
         {
             command = "ecovent_CO2_value";
-            unit = PARTS_PER_MILLION; // FIXME
+            unit = PARTS_PER_MILLION;
             tagName = "3:HREG400008";
             type = Type.Float;
             divisor = 1;
@@ -1095,7 +1095,7 @@ public enum EcoTouchTags {
     TYPE_ECOVENT_MOISTURE_VALUE {
         {
             command = "ecovent_moisture_value";
-            unit = PARTS_PER_MILLION; // FIXME
+            unit = PARTS_PER_MILLION;
             tagName = "3:HREG400010";
             type = Type.Float;
             divisor = 1;
