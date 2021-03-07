@@ -46,11 +46,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EcoTouchHandler extends BaseThingHandler {
 
-    // List of Configuration constants
-    // public static final String IP = "ip";
-    // public static final String USERNAME = "username";
-    // public static final String PASSWORD = "password";
-
     private @Nullable EcoTouchConnector connector = null;
 
     private final Logger logger = LoggerFactory.getLogger(EcoTouchHandler.class);
@@ -93,6 +88,10 @@ public class EcoTouchHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (connector == null) {
+            // the binding was not initialized, yet
+            return;
+        }
         if (command instanceof RefreshType) {
             // request a refresh of a channel
             try {
@@ -117,18 +116,25 @@ public class EcoTouchHandler extends BaseThingHandler {
                             // convert from user unit to heat pump unit
                             QuantityType<?> value = (QuantityType<?>) command;
                             QuantityType<?> raw_unit = value.toUnit(ecoTouchTag.getUnit());
-                            int raw = raw_unit.intValue();
-                            raw *= ecoTouchTag.getDivisor();
-                            connector.setValue(ecoTouchTag.getTagName(), raw);
+                            if (raw_unit != null) {
+                                int raw = raw_unit.intValue();
+                                raw *= ecoTouchTag.getDivisor();
+                                connector.setValue(ecoTouchTag.getTagName(), raw);
+                            }
                         } else {
                             logger.debug("handleCommand: requires a QuantityType");
                         }
                     } else {
                         State state = (State) command;
-                        BigDecimal decimal = (state.as(DecimalType.class)).toBigDecimal();
-                        decimal = decimal.multiply(new BigDecimal(ecoTouchTag.getDivisor()));
-                        int raw = decimal.intValue();
-                        connector.setValue(ecoTouchTag.getTagName(), raw);
+                        DecimalType decimalType = state.as(DecimalType.class);
+                        if (decimalType != null) {
+                            BigDecimal decimal = decimalType.toBigDecimal();
+                            decimal = decimal.multiply(new BigDecimal(ecoTouchTag.getDivisor()));
+                            int raw = decimal.intValue();
+                            connector.setValue(ecoTouchTag.getTagName(), raw);
+                        } else {
+                            logger.debug("cannot convert {} to a DecimalType", state);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -143,10 +149,9 @@ public class EcoTouchHandler extends BaseThingHandler {
 
         connector = new EcoTouchConnector(config.ip, config.username, config.password);
 
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.INITIALIZING);
 
         scheduler.execute(() -> {
-            boolean thingReachable = true;
             try {
                 // try to get a single value
                 connector.getValue_str("A1");
@@ -154,19 +159,15 @@ public class EcoTouchHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
                 return;
             } catch (Exception e) {
-                thingReachable = false;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.toString());
+                return;
             }
 
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
         });
 
         // start refresh handler
         startAutomaticRefresh();
-
     }
 
     private void startAutomaticRefresh() {
@@ -188,9 +189,9 @@ public class EcoTouchHandler extends BaseThingHandler {
                         updateChannel(pair.getKey(), pair.getValue());
                     }
                 } catch (IOException io) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.toString());
                 } catch (Error e) {
                     // during thing creation, the following error is thrown:
                     // java.lang.NoSuchMethodError: 'org.openhab.binding.ecotouch.internal.EcoTouchTags[]
@@ -200,7 +201,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                 }
             };
 
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refresh, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 10, config.refresh, TimeUnit.SECONDS);
         }
     }
 

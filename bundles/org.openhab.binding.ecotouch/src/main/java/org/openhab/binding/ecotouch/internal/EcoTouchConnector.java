@@ -21,10 +21,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +40,12 @@ import org.slf4j.LoggerFactory;
  * @since 1.5.0
  */
 
+@NonNullByDefault
 public class EcoTouchConnector {
     private String ip;
     private String username;
     private String password;
+    @Nullable
     List<String> cookies;
     static Pattern responsePattern = Pattern.compile("#(.+)\\s+S_OK[^0-9-]+([0-9-]+)\\s+([0-9-.]+)");
 
@@ -71,15 +74,16 @@ public class EcoTouchConnector {
 
     private synchronized void trylogin(boolean force) throws Exception {
         if (force == false && cookies != null) {
+            // we've a login token already
             return;
         }
         login();
     }
 
-    private void login() throws Exception {
+    private void login() throws IOException {
         cookies = null;
         String url = null;
-        String line1 = null, line2 = null;
+        String line2 = null;
         String cause = null;
         try {
             url = "http://" + ip + "/cgi/login?username=" + URLEncoder.encode(username, "UTF-8") + "&password="
@@ -88,7 +92,7 @@ public class EcoTouchConnector {
             URLConnection connection = loginurl.openConnection();
             cookies = connection.getHeaderFields().get("Set-Cookie");
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            line1 = in.readLine();
+            in.readLine();
             line2 = in.readLine();
         } catch (MalformedURLException e) {
             cause = e.toString();
@@ -132,78 +136,25 @@ public class EcoTouchConnector {
      * @return value This value is a 16-bit integer.
      */
     public String getValue_str(String tag) throws Exception {
-        trylogin(false);
-
-        // request a value
-        String url = "http://" + ip + "/cgi/readTags?n=1&t1=" + tag;
-        StringBuilder body = null;
-        int loginAttempt = 0;
-        while (loginAttempt < 2) {
-            BufferedReader reader = null;
-            try {
-                URLConnection connection = new URL(url).openConnection();
-                if (cookies != null) {
-                    for (String cookie : cookies) {
-                        connection.addRequestProperty("Cookie", cookie.split(";", 2)[0]);
-                    }
-                }
-                InputStream response = connection.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(response));
-                body = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    body.append(line + "\n");
-                }
-                if (body.toString().contains("#" + tag)) {
-                    // succeeded
-                    break;
-                }
-                // s.th. went wrong; try to log in again
-                throw new Exception();
-            } catch (Exception e) {
-                logger.debug("getValue(): {}", e.toString());
-                if (loginAttempt == 0) {
-                    // try to login once
-                    trylogin(true);
-                }
-                loginAttempt++;
-            } finally {
-                if (reader != null)
-                    reader.close();
-            }
-        }
-
-        if (body == null || !body.toString().contains("#" + tag)) {
+        Map<String, String> result = getValues_str(Set.of(tag));
+        String value = result.get(tag);
+        if (value == null) {
             // failed
             logger.debug("Cannot get value for tag '{}' from Waterkotte EcoTouch.", tag);
             throw new Exception("invalid response from EcoTouch");
         }
 
-        // ok, the body now contains s.th. like
-        // #A30 S_OK
-        // 192 223
-
-        Matcher m = responsePattern.matcher(body.toString());
-        boolean b = m.find();
-        if (!b) {
-            // ill formatted response
-            logger.debug("ill formatted response: '{}'", body);
-            throw new Exception("invalid response from EcoTouch");
-        }
-
-        return m.group(3).trim();
+        return value;
     }
 
     /**
-     * Request a value from the heat pump
+     * Request multiple values from the heat pump
      * 
      * @param tags
      *            The registers to query (e.g. "A1")
-     * @return values These values are 16-bit integers.
+     * @return values A map of tags and their respective string values
      */
     public Map<String, String> getValues_str(Set<String> tags) throws Exception {
-        trylogin(false);
-
         final Integer maxNum = 100;
 
         Map<String, String> result = new HashMap<String, String>();
@@ -236,9 +187,10 @@ public class EcoTouchConnector {
      * 
      * @param url
      *            The URL to connect to
-     * @return values A map of tags and their respective integer values
+     * @return values A map of tags and their respective string values
      */
     private Map<String, String> getValues_str(String url) throws Exception {
+        trylogin(false);
         Map<String, String> result = new HashMap<String, String>();
         int loginAttempt = 0;
         while (loginAttempt < 2) {
@@ -371,6 +323,7 @@ public class EcoTouchConnector {
      * @return cookies: This includes the authentication token retrieved during
      *         log in.
      */
+    @Nullable
     public List<String> getCookies() {
         return cookies;
     }

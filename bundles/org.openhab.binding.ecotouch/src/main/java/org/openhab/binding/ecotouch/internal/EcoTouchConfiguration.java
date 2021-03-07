@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.ecotouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EcoTouchConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Sebastian Held - Initial contribution
  */
+@NonNullByDefault
 public class EcoTouchConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String ip;
-    public String username;
-    public String password;
-    public Integer refresh;
+    public String ip = "";
+    public String username = "";
+    public String password = "";
+    public Integer refresh = 60;
 }
