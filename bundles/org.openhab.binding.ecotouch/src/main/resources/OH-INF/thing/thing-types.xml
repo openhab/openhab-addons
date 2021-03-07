@@ -123,23 +123,23 @@
 		<config-description>
 			<parameter name="ip" type="text" required="true">
 				<context>network-address</context>
-				<label>Address of heat pump</label>
+				<label>Address of Heat Pump</label>
 				<description>Enter the IP address or the hostname of the EcoTouch display unit</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">
-				<label>Username for login</label>
+				<label>Username</label>
 				<description>Since Waterkotte Display software version 1.6.xx, the username default value is waterkotte. Prior to
 					that, the username default was admin</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
-				<label>Password for login</label>
+				<label>Password</label>
 				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
 					that, the password default was wtkadmin</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 				<default>60</default>
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>This is the refresh interval in seconds for all channels.</description>
 			</parameter>
 		</config-description>
@@ -269,23 +269,23 @@
 		<config-description>
 			<parameter name="ip" type="text" required="true">
 				<context>network-address</context>
-				<label>Address of heat pump</label>
+				<label>Address of Heat Pump</label>
 				<description>Enter the IP address or the hostname of the EcoTouch display unit</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">
-				<label>Username for login</label>
+				<label>Username</label>
 				<description>Since Waterkotte Display software version 1.6.xx, the username default value is waterkotte. Prior to
 					that, the username default was admin</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
-				<label>Password for login</label>
+				<label>Password</label>
 				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
 					that, the password default was wtkadmin</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 				<default>60</default>
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>This is the refresh interval in seconds for all channels.</description>
 			</parameter>
 		</config-description>
