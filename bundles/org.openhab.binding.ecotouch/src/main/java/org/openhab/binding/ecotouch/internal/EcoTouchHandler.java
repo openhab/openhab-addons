@@ -149,8 +149,6 @@ public class EcoTouchHandler extends BaseThingHandler {
 
         connector = new EcoTouchConnector(config.ip, config.username, config.password);
 
-        updateStatus(ThingStatus.INITIALIZING);
-
         scheduler.execute(() -> {
             try {
                 // try to get a single value
