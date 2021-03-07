@@ -79,11 +79,9 @@ public class EcoTouchHandler extends BaseThingHandler {
                     if (ecoTouchTag.getUnit() != ONE) {
                         // this is a quantity type
                         QuantityType<?> quantity = new QuantityType<>(value, ecoTouchTag.getUnit());
-                        logger.debug("refresh: {} = {}", ecoTouchTag.getTagName(), quantity);
                         updateState(channel, quantity);
                     } else {
                         DecimalType number = new DecimalType(value);
-                        logger.debug("refresh: {} = {}", ecoTouchTag.getTagName(), number);
                         updateState(channel, number);
                     }
                 }
@@ -95,7 +93,6 @@ public class EcoTouchHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand()");
         if (command instanceof RefreshType) {
             // request a refresh of a channel
             try {
@@ -107,7 +104,6 @@ public class EcoTouchHandler extends BaseThingHandler {
             }
         } else {
             // send command to heat pump
-            logger.debug("handleCommand() no refresh");
             try {
                 EcoTouchTags ecoTouchTag = EcoTouchTags.fromString(channelUID.getId());
                 if (ecoTouchTag == EcoTouchTags.TYPE_ADAPT_HEATING) {
@@ -143,7 +139,6 @@ public class EcoTouchHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
         config = getConfigAs(EcoTouchConfiguration.class);
 
         connector = new EcoTouchConnector(config.ip, config.username, config.password);
@@ -172,13 +167,11 @@ public class EcoTouchHandler extends BaseThingHandler {
         // start refresh handler
         startAutomaticRefresh();
 
-        logger.debug("Finished initializing!");
     }
 
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                logger.debug("startAutomaticRefresh");
                 try {
                     Set<String> tags = new HashSet<String>();
                     for (EcoTouchTags ecoTouchTag : EcoTouchTags.values()) {
@@ -187,9 +180,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                         if (linked)
                             tags.add(ecoTouchTag.getTagName());
                     }
-                    logger.debug("request: {}", tags);
                     Map<String, String> result = connector.getValues_str(tags);
-                    logger.debug("result: {}", result);
 
                     Iterator<Map.Entry<String, String>> it = result.entrySet().iterator();
                     while (it.hasNext()) {
@@ -199,7 +190,6 @@ public class EcoTouchHandler extends BaseThingHandler {
                 } catch (IOException io) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.getMessage());
                 } catch (Exception e) {
-                    logger.error("Exception occurred during execution: {}", e.toString());
                     updateStatus(ThingStatus.OFFLINE);
                 } catch (Error e) {
                     // during thing creation, the following error is thrown:

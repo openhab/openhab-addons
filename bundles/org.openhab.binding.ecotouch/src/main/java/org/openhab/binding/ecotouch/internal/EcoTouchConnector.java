@@ -70,17 +70,13 @@ public class EcoTouchConnector {
     }
 
     private synchronized void trylogin(boolean force) throws Exception {
-        logger.debug("trylogin: in");
         if (force == false && cookies != null) {
-            logger.debug("trylogin: out fast");
             return;
         }
         login();
-        logger.debug("trylogin: out normal");
     }
 
     private void login() throws Exception {
-        logger.debug("login");
         cookies = null;
         String url = null;
         String line1 = null, line2 = null;
@@ -96,10 +92,8 @@ public class EcoTouchConnector {
             line2 = in.readLine();
         } catch (MalformedURLException e) {
             cause = e.toString();
-            logger.debug("The URL '{}' is malformed: {}", url, cause);
         } catch (Exception e) {
             cause = e.toString();
-            logger.debug("Cannot log into Waterkotte EcoTouch: {}", cause);
         }
 
         if (line2 != null && line2.trim().equals("#E_USER_DONT_EXIST")) {
@@ -245,7 +239,6 @@ public class EcoTouchConnector {
      * @return values A map of tags and their respective integer values
      */
     private Map<String, String> getValues_str(String url) throws Exception {
-        logger.debug("getValues({})", url);
         Map<String, String> result = new HashMap<String, String>();
         int loginAttempt = 0;
         while (loginAttempt < 2) {
@@ -285,7 +278,6 @@ public class EcoTouchConnector {
                 // succeeded
                 break;
             } catch (Exception e) {
-                logger.debug("getValues(String): {}", e.toString());
                 if (loginAttempt == 0) {
                     // try to login once
                     trylogin(true);
@@ -314,7 +306,6 @@ public class EcoTouchConnector {
 
         // set value
         String url = "http://" + ip + "/cgi/writeTags?returnValue=true&n=1&t1=" + tag + "&v1=" + value;
-        logger.debug("setValue() url: '{}'", url);
         StringBuilder body = null;
         int loginAttempt = 0;
         while (loginAttempt < 2) {
@@ -340,7 +331,6 @@ public class EcoTouchConnector {
                 // s.th. went wrong; try to log in
                 throw new Exception();
             } catch (Exception e) {
-                logger.debug("setValue(): {}", e.toString());
                 if (loginAttempt == 0) {
                     // try to login once
                     trylogin(true);
