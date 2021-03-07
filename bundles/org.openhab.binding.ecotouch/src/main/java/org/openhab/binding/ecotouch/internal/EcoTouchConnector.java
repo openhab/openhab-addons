@@ -141,7 +141,7 @@ public class EcoTouchConnector {
         if (value == null) {
             // failed
             logger.debug("Cannot get value for tag '{}' from Waterkotte EcoTouch.", tag);
-            throw new Exception("invalid response from EcoTouch");
+            throw new EcoTouchException("invalid response from EcoTouch");
         }
 
         return value;
@@ -224,7 +224,7 @@ public class EcoTouchConnector {
 
                 if (result.isEmpty()) {
                     // s.th. went wrong; try to log in again
-                    throw new Exception();
+                    throw new EcoTouchException();
                 }
 
                 // succeeded
@@ -281,7 +281,7 @@ public class EcoTouchConnector {
                     break;
                 }
                 // s.th. went wrong; try to log in
-                throw new Exception();
+                throw new EcoTouchException();
             } catch (Exception e) {
                 if (loginAttempt == 0) {
                     // try to login once
@@ -297,7 +297,7 @@ public class EcoTouchConnector {
         if (body == null || !body.toString().contains("#" + tag)) {
             // failed
             logger.debug("Cannot get value for tag '{}' from Waterkotte EcoTouch.", tag);
-            throw new Exception("invalid response from EcoTouch");
+            throw new EcoTouchException("invalid response from EcoTouch");
         }
 
         // ok, the body now contains s.th. like
@@ -309,7 +309,7 @@ public class EcoTouchConnector {
         if (!b) {
             // ill formatted response
             logger.debug("ill formatted response: '{}'", body);
-            throw new Exception("invalid response from EcoTouch");
+            throw new EcoTouchException("invalid response from EcoTouch");
         }
 
         logger.debug("response: '{}'", body.toString());
