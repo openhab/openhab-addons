@@ -273,7 +273,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 } catch (ShellyApiException e) {
                     logger.debug("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
                 }
-            } else if (!devpeer.equals(ourpeer)) {
+            } else if (!devpeer.isEmpty() && !devpeer.equals(ourpeer)) {
                 logger.warn("{}: CoIoT peer in device settings does not point this to this host, disabling CoIoT",
                         thingName);
                 config.eventsCoIoT = autoCoIoT = false;
