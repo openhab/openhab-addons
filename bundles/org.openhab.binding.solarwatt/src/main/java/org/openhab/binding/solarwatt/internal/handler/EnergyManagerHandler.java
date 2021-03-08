@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.solarwatt.internal.handler;
 
-import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_PROPERTIES_GUID;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -35,7 +35,11 @@ import org.openhab.binding.solarwatt.internal.domain.model.Device;
 import org.openhab.binding.solarwatt.internal.domain.model.EnergyManager;
 import org.openhab.binding.solarwatt.internal.exception.SolarwattConnectionException;
 import org.openhab.core.cache.ExpiringCache;
-import org.openhab.core.thing.*;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -43,6 +47,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +65,10 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     private final EnergyManagerConnector connector;
     private final SolarwattChannelTypeProvider channelTypeProvider;
 
-    private final Map<String, ThingHandler> childHandlers = new HashMap<>();
     private @Nullable ExpiringCache<Map<String, Device>> devicesCache;
     private @Nullable ScheduledFuture<?> refreshJob;
+
+    private @Nullable ZoneId zoneId;
 
     /**
      * Guid of this energy manager itself.
@@ -107,7 +113,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Execute the desirec commands.
+     * Execute the desired commands.
      *
      * Only refresh is supported and relayed to all childs of this thing.
      *
@@ -140,7 +146,10 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             }
             @Nullable
             EnergyManager energyManager = (EnergyManager) devices.get(this.energyManagerGuid);
+
             if (energyManager != null) {
+                this.calculateUpdates(energyManager);
+
                 Map<String, String> properties = this.editProperties();
                 properties.put(THING_PROPERTIES_GUID, energyManager.getGuid());
                 this.updateProperties(properties);
@@ -154,6 +163,20 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
         }
     }
 
+    private void calculateUpdates(EnergyManager energyManager) {
+        @Nullable
+        State timezoneState = energyManager.getState(CHANNEL_IDTIMEZONE.getChannelName());
+        if (timezoneState != null) {
+            this.zoneId = ZoneId.of(timezoneState.toFullString());
+        }
+
+        BigDecimal timestamp = energyManager.getBigDecimalFromChannel(CHANNEL_TIMESTAMP.getChannelName());
+        if (timestamp.compareTo(BigDecimal.ONE) > 0) {
+            energyManager.addState(CHANNEL_DATETIME.getChannelName(),
+                    new DateTimeType(this.getFromMilliTimestamp(timestamp)));
+        }
+    }
+
     /**
      * Initial setup of the channels available for this thing.
      *
@@ -161,6 +184,8 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      */
     protected void initDeviceChannels(Device device) {
         this.logger.debug("{}: initDeviceChannels for device {}", this, this.getThing().getUID());
+
+        this.assertChannel(new SolarwattChannel(CHANNEL_DATETIME.getChannelName(), "time"));
 
         device.getSolarwattChannelSet().forEach((channelTag, solarwattChannel) -> {
             this.logger.trace("{}: {}", this.getThing().getUID(), solarwattChannel.getChannelName());
@@ -181,7 +206,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
         if (this.getThing().getChannel(channelUID) == null) {
             ThingBuilder thingBuilder = this.editThing();
             thingBuilder.withChannel(
-                    AbstractDeviceHandler.getChannelBuilder(solarwattChannel, channelUID, channelType).build());
+                    SimpleDeviceHandler.getChannelBuilder(solarwattChannel, channelUID, channelType).build());
 
             this.updateThing(thingBuilder.build());
         }
@@ -247,8 +272,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     public void dispose() {
         this.logger.debug("{} dispose", this);
 
-        this.childHandlers.clear();
-
         @Nullable
         ScheduledFuture<?> localRefreshJob = this.refreshJob;
         if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
@@ -257,23 +280,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
         }
 
         this.devicesCache = null;
-    }
-
-    @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        String childGuid = childThing.getProperties().get(THING_PROPERTIES_GUID);
-        if (childGuid != null) {
-            this.childHandlers.put(childGuid, childHandler);
-            this.logger.debug("Added handler for thing {}", childThing.getProperties().get(THING_PROPERTIES_GUID));
-        }
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childThing.getProperties().get(THING_PROPERTIES_GUID) != null) {
-            this.childHandlers.remove(childThing.getProperties().get(THING_PROPERTIES_GUID));
-            this.logger.debug("Removed handler for thing {}", childThing.getProperties().get(THING_PROPERTIES_GUID));
-        }
     }
 
     private synchronized void initRefresh(SolarwattConfiguration localConfig) {
@@ -312,6 +318,22 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Get a device for a specific guid.
+     *
+     * @param guid to search for
+     * @return device belonging to guid or null if not found.
+     */
+    public @Nullable Device getDeviceFromGuid(String guid) {
+        @Nullable
+        Map<String, Device> localDevices = this.getDevices();
+        if (localDevices != null && localDevices.containsKey(guid)) {
+            return localDevices.get(guid);
+        }
+
+        return null;
+    }
+
+    /**
      * Convert the energy manager millisecond timestamps to {@link ZonedDateTime}
      *
      * The energy manager is the only point that knows about the timezone and
@@ -333,9 +355,9 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
                         bigDecimals[1].multiply(BigDecimal.valueOf(1_000_000)).longValue());
 
                 @Nullable
-                ZoneId zoneId = energyManager.getZoneId();
-                if (zoneId != null) {
-                    return ZonedDateTime.ofInstant(instant, zoneId);
+                ZoneId localZoneID = this.zoneId;
+                if (localZoneID != null) {
+                    return ZonedDateTime.ofInstant(instant, localZoneID);
                 }
             }
         }
@@ -377,16 +399,14 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
 
     /**
      * Trigger an update on all child things of this bridge.
-     *
-     * The available child handlers are traced via childHandlerInitialized and childHandlerDisposed.
      */
     private void updateAllChildThings() {
         this.logger.trace("{} updateAllChildThings", this);
 
         this.getThing().getThings().forEach(childThing -> {
             try {
-                ThingHandler childHandler = this.childHandlers
-                        .get(childThing.getProperties().get(THING_PROPERTIES_GUID));
+                @Nullable
+                ThingHandler childHandler = childThing.getHandler();
                 if (childHandler != null) {
                     childHandler.handleCommand(new ChannelUID(childThing.getUID(), THING_PROPERTIES_GUID),
                             RefreshType.REFRESH);

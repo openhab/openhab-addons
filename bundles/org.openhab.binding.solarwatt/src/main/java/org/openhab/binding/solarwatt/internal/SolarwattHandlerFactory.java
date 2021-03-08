@@ -20,8 +20,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarwatt.internal.channel.SolarwattChannelTypeProvider;
-import org.openhab.binding.solarwatt.internal.handler.DeviceHandler;
 import org.openhab.binding.solarwatt.internal.handler.EnergyManagerHandler;
+import org.openhab.binding.solarwatt.internal.handler.LocationHandler;
+import org.openhab.binding.solarwatt.internal.handler.SimpleDeviceHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -73,9 +74,11 @@ public class SolarwattHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ENERGY_MANAGER.equals(thingTypeUID)) {
             // energy manager is a separate device as it is the bridge
             return new EnergyManagerHandler((Bridge) thing, this.channelTypeProvider, this.commonHttpClient);
+        } else if (THING_TYPE_LOCATION.equals(thingTypeUID)) {
+            return new LocationHandler(thing, this.channelTypeProvider);
         } else if (this.supportsThingType(thingTypeUID)) {
             // standard device handling
-            return new DeviceHandler(thing, this.channelTypeProvider);
+            return new SimpleDeviceHandler(thing, this.channelTypeProvider);
         }
 
         this.logger.trace("No matching handler for {} from {}", thingTypeUID, SUPPORTED_THING_TYPES_UIDS);

@@ -41,17 +41,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AbstractDeviceHandler} bundles everything related to generic talking to devices.
+ * The {@link SimpleDeviceHandler} bundles everything related to generic talking to devices.
  *
  * @author Sven Carstens - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractDeviceHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(AbstractDeviceHandler.class);
+public class SimpleDeviceHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(SimpleDeviceHandler.class);
 
     private final SolarwattChannelTypeProvider channelTypeProvider;
 
-    protected AbstractDeviceHandler(Thing thing, SolarwattChannelTypeProvider channelTypeProvider) {
+    public SimpleDeviceHandler(Thing thing, SolarwattChannelTypeProvider channelTypeProvider) {
         super(thing);
         this.channelTypeProvider = channelTypeProvider;
     }
@@ -61,6 +61,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
         if (bridgeHandler != null) {
             this.initDeviceChannels();
@@ -83,6 +84,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
         if (bridgeHandler != null) {
             if (command instanceof RefreshType) {
@@ -218,6 +220,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      * @return instance responsible for this handler
      */
     protected @Nullable EnergyManagerHandler getEnergyManagerHandler() {
+        @Nullable
         Bridge bridge = this.getBridge();
         if (bridge != null) {
             @Nullable
@@ -242,6 +245,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      * @return model with values
      */
     protected @Nullable Device getDevice() {
+        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
 
         if (bridgeHandler != null) {

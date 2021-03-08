@@ -18,10 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,16 +128,11 @@ public class Location extends Device {
         this.addWattHourQuantity(CHANNEL_WORK_OUT_FROM_STORAGE, deviceDTO, true);
         this.addWattHourQuantity(CHANNEL_WORK_RELEASED, deviceDTO, true);
 
-        // calculate direct consumption for display purposes
-        this.calculateDifferenceToState(CHANNEL_POWER_SELF_CONSUMED.getChannelName(),
-                CHANNEL_POWER_BUFFERED.getChannelName(), CHANNEL_POWER_DIRECT_CONSUMED.getChannelName(), "energy");
-        this.calculateDifferenceToState(CHANNEL_WORK_SELF_CONSUMED.getChannelName(),
-                CHANNEL_WORK_BUFFERED.getChannelName(), CHANNEL_WORK_DIRECT_CONSUMED.getChannelName(), "energy");
-
         // read IdDevicesMap to find out which devices are located/metered where
-        // to get the unmetered consumption we need to take Location.(Work|Power)Consumed
+        // to get the unmetered consumption we need for {@link LocationHandler} to take Location.(Work|Power)Consumed
         // and subtract the (Work|Power)(AC)In of the OUTER_CONSUMERs
         try {
+            @Nullable
             JsonObject rawDevicesMap = deviceDTO.getJsonObjectFromTag("IdDevicesMap");
             Gson gson = new GsonBuilder().create();
             this.devicesMap = gson.fromJson(rawDevicesMap, IdDevicesMap.class);
@@ -150,45 +142,14 @@ public class Location extends Device {
         }
     }
 
-    /**
-     * Helper to generate a new state calculated from the difference between two states.
-     *
-     * channelTarget = channelValue - channelSubtract
-     *
-     * @param channelValue left side of the subtraction
-     * @param channelSubtract right side of the subtration
-     * @param channelTarget where to put the nwe state
-     * @param category for the new state
-     */
-    private void calculateDifferenceToState(String channelValue, String channelSubtract, String channelTarget,
-            String category) {
-        State stateValue = this.stateValues.get(channelValue);
-        State stateSubtract = this.stateValues.get(channelSubtract);
-        if (stateValue != null && stateSubtract != null) {
-            @SuppressWarnings("rawtypes")
-            @Nullable
-            QuantityType quantityValue = stateValue.as(QuantityType.class);
-            @SuppressWarnings("rawtypes")
-            @Nullable
-            QuantityType quantitySubtract = stateSubtract.as(QuantityType.class);
-
-            if (quantityValue != null && quantitySubtract != null) {
-                @SuppressWarnings("rawtypes")
-                QuantityType quantityTarget = new QuantityType(
-                        quantityValue.toBigDecimal().subtract(quantitySubtract.toBigDecimal()),
-                        quantitySubtract.getUnit());
-                this.stateValues.put(channelTarget, quantityTarget);
-
-                if (!this.solarwattChannelSet.containsKey(channelTarget)) {
-                    this.solarwattChannelSet.put(channelTarget,
-                            new SolarwattChannel(channelTarget, quantitySubtract.getUnit(), category));
-                }
-            }
+    public IdDevicesMap getDevicesMap() {
+        @Nullable
+        IdDevicesMap returnDevicesMap = this.devicesMap;
+        if (returnDevicesMap != null) {
+            return returnDevicesMap;
         }
-    }
 
-    public @Nullable IdDevicesMap getDevicesMap() {
-        return this.devicesMap;
+        return new IdDevicesMap();
     }
 
     @Override

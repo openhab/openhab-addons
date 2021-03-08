@@ -20,7 +20,6 @@ import java.math.BigInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -90,10 +89,7 @@ public class GridFlow extends Device {
                         Units.PERCENT);
                 this.stateValues.put(CHANNEL_FEED_IN_LIMIT.getChannelName(), state);
 
-                if (!this.solarwattChannelSet.containsKey(CHANNEL_FEED_IN_LIMIT.getChannelName())) {
-                    this.solarwattChannelSet.put(CHANNEL_FEED_IN_LIMIT.getChannelName(),
-                            new SolarwattChannel(CHANNEL_FEED_IN_LIMIT.getChannelName(), Units.PERCENT, "status"));
-                }
+                this.addChannel(CHANNEL_FEED_IN_LIMIT.getChannelName(), Units.PERCENT, "status", false);
             }
         }
     }

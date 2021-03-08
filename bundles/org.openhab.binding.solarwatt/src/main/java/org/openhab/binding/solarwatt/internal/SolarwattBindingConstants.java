@@ -32,7 +32,6 @@ public class SolarwattBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ENERGY_MANAGER = new ThingTypeUID(BINDING_ID, "energymanager");
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "inverter");
     public static final ThingTypeUID THING_TYPE_LOCATION = new ThingTypeUID(BINDING_ID, "location");
     public static final ThingTypeUID THING_TYPE_BATTERYCONVERTER = new ThingTypeUID(BINDING_ID, "batteryconverter");
@@ -64,6 +63,7 @@ public class SolarwattBindingConstants {
     public static final SolarwattTag CHANNEL_MODE_STATION = new SolarwattTag("ModeStation");
     public static final SolarwattTag CHANNEL_CONNECTIVITY_STATUS = new SolarwattTag("ConnectivityStatus");
     public static final SolarwattTag CHANNEL_TIMESTAMP = new SolarwattTag("Timestamp");
+    public static final SolarwattTag CHANNEL_DATETIME = new SolarwattTag("Datetime");
     public static final SolarwattTag CHANNEL_IDTIMEZONE = new SolarwattTag("IdTimezone");
     public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_TOTAL = new SolarwattTag("FractionCPULoadTotal");
     public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_USER = new SolarwattTag("FractionCPULoadUser");
@@ -83,6 +83,7 @@ public class SolarwattBindingConstants {
     public static final SolarwattTag CHANNEL_POWER_BUFFERED_FROM_PRODUCERS = new SolarwattTag(
             "PowerBufferedFromProducers");
     public static final SolarwattTag CHANNEL_POWER_CONSUMED = new SolarwattTag("PowerConsumed");
+    public static final SolarwattTag CHANNEL_POWER_CONSUMED_UNMETERED = new SolarwattTag("PowerConsumedUnmetered");
     public static final SolarwattTag CHANNEL_POWER_CONSUMED_FROM_GRID = new SolarwattTag("PowerConsumedFromGrid");
     public static final SolarwattTag CHANNEL_POWER_CONSUMED_FROM_STORAGE = new SolarwattTag("PowerConsumedFromStorage");
     public static final SolarwattTag CHANNEL_POWER_CONSUMED_FROM_PRODUCERS = new SolarwattTag(
@@ -99,6 +100,7 @@ public class SolarwattBindingConstants {
     public static final SolarwattTag CHANNEL_WORK_BUFFERED_FROM_PRODUCERS = new SolarwattTag(
             "WorkBufferedFromProducers");
     public static final SolarwattTag CHANNEL_WORK_CONSUMED = new SolarwattTag("WorkConsumed");
+    public static final SolarwattTag CHANNEL_WORK_CONSUMED_UNMETERED = new SolarwattTag("WorkConsumedUnmetered");
     public static final SolarwattTag CHANNEL_WORK_CONSUMED_FROM_GRID = new SolarwattTag("WorkConsumedFromGrid");
     public static final SolarwattTag CHANNEL_WORK_CONSUMED_FROM_STORAGE = new SolarwattTag("WorkConsumedFromStorage");
     public static final SolarwattTag CHANNEL_WORK_CONSUMED_FROM_PRODUCERS = new SolarwattTag(
