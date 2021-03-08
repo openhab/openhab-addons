@@ -9,7 +9,7 @@ Because all status updates and commands have to go through the API, a permanent 
 
 ### Bridge
 
-The __Home Connect API__ is responsible for the communication with the Home Connect API. All devices use a bridge to execute commands and listen for updates. Without a working bridge the devices cannot communicate.
+The __Home Connect API__ (Bridge Type ID: api_bridge) is responsible for the communication with the Home Connect API. All devices use a bridge to execute commands and listen for updates. Without a working bridge the devices cannot communicate.
 
 ### Devices
 
@@ -39,8 +39,8 @@ After the bridge has been added and authorized, devices are discovered automatic
 
 ## Channels
 
-| Channel Type ID | Item Type    | Read only | Description  | Available on thing |
-| --------------- | ------------ | --------- | ------------ | ------------------ |
+| Channel Type ID | Item Type | Read only | Description | Available on thing |
+| --------------- | --------- | --------- | ----------- | ------------------ |
 | power_state | Switch | false | This setting describes the current power state of the home appliance. | dishwasher, oven, coffeemaker, hood, hob  | 
 | door_state | Contact | true | This status describes the door state of a home appliance. A status change is either triggered by the user operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking the door). | dishwasher, washer, washerdryer, dryer, oven, fridgefreezer | 
 | operation_state | String | true | This status describes the operation state of the home appliance. | dishwasher, washer, washerdryer, dryer, oven, hood, hob, coffeemaker | 
@@ -50,7 +50,7 @@ After the bridge has been added and authorized, devices are discovered automatic
 | selected_program_state | String | false | This state describes the selected program of the home appliance. | dishwasher, washer, washerdryer, dryer, oven, hob, coffeemaker | 
 | remaining_program_time_state | Number:Time | true | This status indicates the remaining program time of the home appliance. | dishwasher, washer, washerdryer, dryer, oven | 
 | elapsed_program_time | Number:Time | true | This status indicates the elapsed program time of the home appliance. | oven | 
-| program_progress_state | Number:Dimensionless | true | This status describes the program progress of the home appliance. | dishwasher, washer, washerdryer, dryer, oven, coffeemaker | 
+| program_progress_state | Number:Dimensionless | true | This status describes the program progress of the home appliance in percent. | dishwasher, washer, washerdryer, dryer, oven, coffeemaker | 
 | duration | Number:Time | true | This status describes the duration of the program of the home appliance. | oven | 
 | oven_current_cavity_temperature | Number:Temperature | true | This status describes the current cavity temperature of the home appliance. | oven | 
 | setpoint_temperature | Number:Temperature | false | This status describes the setpoint/target temperature of the home appliance. | oven | 
@@ -86,12 +86,12 @@ After the bridge has been added and authorized, devices are discovered automatic
 #### 1. Preconditions
 
 1. Please create an account at [Home Connect](https://www.home-connect.com/) and add your physical appliance to your account.
-2. Test the connection to your physical appliance via mobile app ([Apple App Store (iOS) ](https://itunes.apple.com/de/app/home-connect-app/id901397789?mt=8) or [Google Play Store (Android)](https://play.google.com/store/apps/details?id=com.bshg.homeconnect.android.release)).
+2. Test the connection to your physical appliance via mobile app ([Apple App Store (iOS)](https://itunes.apple.com/de/app/home-connect-app/id901397789?mt=8) or [Google Play Store (Android)](https://play.google.com/store/apps/details?id=com.bshg.homeconnect.android.release)).
 
 #### 2. Create Home Connect developer account
 
 1. Create an account at [https://developer.home-connect.com](https://developer.home-connect.com) and login.
-2. Please make sure you've added your associated Home Connect account email at [https://developer.home-connect.com/user/me/edit](https://developer.home-connect.com/user/me/edit). You should fill in your email address, which you use for the official Android or iOS app, at `Default Home Connect User Account for Testing`.  
+2. Please make sure you've added your associated Home Connect account email at <https://developer.home-connect.com/user/me/edit>. You should fill in your email address, which you use for the official Android or iOS app, at `Default Home Connect User Account for Testing`.  
 ![Screenshot Home Connect profile page](doc/home_connect_profile.png "Screenshot Home Connect profile page")
 
 3. Register / Create an application at [https://developer.home-connect.com/applications](https://developer.home-connect.com/applications)
@@ -122,7 +122,7 @@ The Home Connect bridge can be configured in the openHAB UI as follows:
     * __client id:__ your application client id
     * __client secret:__ your application client secret
     * __simulator:__ false
-5. Now navigate to the URL (`Redirct URI`) you've  added to your Home Connect application in the previous step (2.3). For example `http://192.168.178.80:8080/homeconnect`.
+5. Now navigate to the URL (`Redirct URI`) you've added to your Home Connect application in the previous step (2.3). For example `http://192.168.178.80:8080/homeconnect`.
 6. Please follow the steps shown to authenticate your binding. You can redo this step every time. For example if you have authentication problems, just start wizard again.  
 ![Screenshot Home Connect wizard page 1](doc/homeconnect_setup_1.png "Screenshot Home Connect wizard page 1")  
 ![Screenshot Home Connect wizard page 2](doc/homeconnect_setup_2.png "Screenshot Home Connect wizard page 2")  
@@ -284,7 +284,7 @@ Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect) and ask for
 
 ### Rate limit reached
 
-The Home Connect API enforces rate [limits](https://developer.home-connect.com/docs/general/ratelimiting) . If you have a lot of `429` response codes in your request log section (http(s)://[YOUROPENHAB]:[YOURPORT]/log/requests), please check the error response.
+The Home Connect API enforces rate [limits](https://developer.home-connect.com/docs/general/ratelimiting). If you have a lot of `429` response codes in your request log section (http(s)://[YOUROPENHAB]:[YOURPORT]/log/requests), please check the error response.
 
 
 ### Error message 'Program not supported', 'Unsupported operation' or 'SDK.Error.UnsupportedOption'
@@ -313,5 +313,5 @@ Not all appliance programs and program options are supported by the Home Connect
 
 You have two options to find the right HaID of your device.
 
-1. You can use the OpenHAB UI and start a scan. ![Screenshot OpenHAB UI Scan for new devices](doc/ui-scan-for-haid.png "Scan")
+1. You can use the openHAB UI and start a scan. ![Screenshot openHAB UI Scan for new devices](doc/ui-scan-for-haid.png "Scan")
 2. You can use Home Connect binding UI. Please have a look at the first API request. ![Screenshot Home Connect Binding UI](doc/binding-ui-haid.png "First request")
