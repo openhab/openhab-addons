@@ -105,7 +105,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private ItemRegistry itemRegistry;
     private @Nullable DynamoDbEnhancedAsyncClient client;
     private @Nullable DynamoDbAsyncClient lowLevelClient;
-    private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
+    private final static Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
     private boolean isProperlyConfigured;
     private @Nullable DynamoDBConfig dbConfig;
     private @Nullable DynamoDBTableNameResolver tableNameResolver;
@@ -631,8 +631,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             if (itemUnit != null) {
                 State convertedState = ((QuantityType<?>) state).toUnit(itemUnit);
                 if (convertedState == null) {
-                    LoggerFactory.getLogger(DynamoDBPersistenceService.class)
-                            .error("Unexpected unit conversion failure: {} to item unit {}", state, itemUnit);
+                    logger.error("Unexpected unit conversion failure: {} to item unit {}", state, itemUnit);
                     throw new IllegalArgumentException(
                             String.format("Unexpected unit conversion failure: %s to item unit %s", state, itemUnit));
                 }
