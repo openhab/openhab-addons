@@ -273,7 +273,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         DynamoDbEnhancedAsyncClient localClient = client;
         DynamoDBTableNameResolver localTableNameResolver = tableNameResolver;
         if (!ensureClient() || localClient == null || localTableNameResolver == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Client not ready");
         }
         ExpectedTableSchema expectedTableSchemaRevision = localTableNameResolver.getTableSchema();
         String tableName = localTableNameResolver.fromClass(dtoClass);
