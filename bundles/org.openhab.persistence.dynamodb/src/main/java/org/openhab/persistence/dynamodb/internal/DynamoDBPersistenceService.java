@@ -117,16 +117,12 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private static final String DYNAMODB_THREADPOOL_NAME = "dynamodbPersistenceService";
 
     private ItemRegistry itemRegistry;
-    @Nullable
-    private DynamoDbEnhancedAsyncClient client;
-    @Nullable
-    private DynamoDbAsyncClient lowLevelClient;
+    private @Nullable DynamoDbEnhancedAsyncClient client;
+    private @Nullable DynamoDbAsyncClient lowLevelClient;
     private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
     private boolean isProperlyConfigured;
-    @Nullable
-    private DynamoDBConfig dbConfig;
-    @Nullable
-    private DynamoDBTableNameResolver tableNameResolver;
+    private @Nullable DynamoDBConfig dbConfig;
+    private @Nullable DynamoDBTableNameResolver tableNameResolver;
     private final ExecutorService executor = ThreadPoolManager.getPool(DYNAMODB_THREADPOOL_NAME);
     private static final Duration TIMEOUT_API_CALL = Duration.ofSeconds(60);
     private static final Duration TIMEOUT_API_CALL_ATTEMPT = Duration.ofSeconds(5);
@@ -134,8 +130,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             2);
     private AwsCredentialsProvider credentialsProvider = new CredentialsProvider();
 
-    @Nullable
-    private URI endpointOverride;
+    private @Nullable URI endpointOverride;
 
     void overrideConfig(AwsRequestOverrideConfiguration.Builder config) {
         config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL)
