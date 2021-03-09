@@ -109,7 +109,7 @@
 		<parameter name="table" type="text" required="false">
 			<label>Table</label>
 			<description><![CDATA[Table name. <br />
-			 Specify this parameter over Table Prefix to use the new optimized table format.]]></description>
+			Specify this parameter over Table Prefix to use the new optimized table format.]]></description>
 			<default>openhab</default> <!-- set by default, preferring new schema format -->
 		</parameter>
 
