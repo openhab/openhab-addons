@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -31,7 +32,7 @@ public class PageOfInterestSubscriber<T> implements Subscriber<T> {
 
     private AtomicInteger skipped = new AtomicInteger();
     private int skip;
-    private @NonNullByDefault({}) Subscription subscription;
+    private @Nullable Subscription subscription;
     private int pageIndex;
     private int pageSize;
     private List<T> page;
@@ -53,22 +54,29 @@ public class PageOfInterestSubscriber<T> implements Subscriber<T> {
     }
 
     @Override
-    public void onSubscribe(@NonNullByDefault({}) Subscription subscription) {
+    public void onSubscribe(@Nullable Subscription subscription) {
         this.subscription = subscription;
-        subscription.request(pageSize * (pageIndex + 1));
+        if (subscription != null) {
+            subscription.request(pageSize * (pageIndex + 1));
+        }
     }
 
     @Override
     public void onNext(T t) {
+        Subscription localSubscription = subscription;
+        if (localSubscription == null) {
+            throw new IllegalStateException(
+                    "Subscriber API has been contract violated: expecting a non-null subscriber");
+        }
         if (future.isCancelled()) {
-            subscription.cancel();
+            localSubscription.cancel();
             onError(new InterruptedException());
         } else if (skipped.getAndIncrement() >= skip && page.size() < pageSize) {
             // We have skipped enough, start accumulating
             page.add(t);
             if (page.size() == pageSize) {
                 // We have the full page read
-                subscription.cancel();
+                localSubscription.cancel();
                 onComplete();
             }
         }
