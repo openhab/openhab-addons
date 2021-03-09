@@ -61,8 +61,6 @@ import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.awscore.AwsRequestOverrideConfiguration;
 import software.amazon.awssdk.core.async.SdkPublisher;
@@ -102,18 +100,6 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
     protected static final String CONFIG_URI = "persistence:dynamodb";
 
-    private class CredentialsProvider implements AwsCredentialsProvider {
-
-        @Override
-        public AwsCredentials resolveCredentials() {
-            DynamoDBConfig localDbConfig = dbConfig;
-            if (localDbConfig == null) {
-                throw new IllegalStateException("Dynamodb config is not ready, should not happen!");
-            }
-            return localDbConfig.getCredentials();
-        }
-    }
-
     private static final String DYNAMODB_THREADPOOL_NAME = "dynamodbPersistenceService";
 
     private ItemRegistry itemRegistry;
@@ -128,13 +114,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private static final Duration TIMEOUT_API_CALL_ATTEMPT = Duration.ofSeconds(5);
     private Map<Class<? extends DynamoDBItem<?>>, DynamoDbAsyncTable<? extends DynamoDBItem<?>>> tableCache = new ConcurrentHashMap<>(
             2);
-    private AwsCredentialsProvider credentialsProvider = new CredentialsProvider();
 
     private @Nullable URI endpointOverride;
 
     void overrideConfig(AwsRequestOverrideConfiguration.Builder config) {
-        config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL)
-                .credentialsProvider(credentialsProvider);
+        config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL);
     }
 
     void overrideConfig(ClientOverrideConfiguration.Builder config) {
