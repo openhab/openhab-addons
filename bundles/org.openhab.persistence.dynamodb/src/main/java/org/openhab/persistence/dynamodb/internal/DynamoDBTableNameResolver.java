@@ -160,18 +160,15 @@ public class DynamoDBTableNameResolver {
         CompletableFuture<@Nullable Boolean> tableSchemaStrings = tableIsPresent(lowLevelClient,
                 describeTableRequestMutator, executor, stringTableLegacy);
 
-        tableSchemaNumbers.thenAcceptBothAsync(tableSchemaStrings, (r1, r2) -> {
-            logger.trace("number & string present? {} {}", r1, r2);
-            boolean fullyResolved = r1 != null && r2 != null;
-            if (fullyResolved) {
-                @SuppressWarnings("null")
-                boolean br1 = r1;
-                @SuppressWarnings("null")
-                boolean br2 = r2;
-                // If old tables did not exist, we consider schema to be new
-                tableRevision = (br1 == false && br2 == false) ? ExpectedTableSchema.NEW : ExpectedTableSchema.LEGACY;
+        tableSchemaNumbers.thenAcceptBothAsync(tableSchemaStrings, (table1Present, table2Present) -> {
+            if (table1Present != null && table2Present != null) {
+                // Since the Booleans are not null, we know for sure whether table is present or not
+
+                // If old tables do not exist, we default to new table layout/schema
+                tableRevision = (!table1Present && !table2Present) ? ExpectedTableSchema.NEW
+                        : ExpectedTableSchema.LEGACY;
             }
-            resolved.complete(fullyResolved);
+            resolved.complete(table1Present != null && table2Present != null);
         }, executor).exceptionally(e -> {
             // should not happen as individual futures have exceptions handled
             logger.error("Unexpected error. BUG", e);
