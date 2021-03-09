@@ -9,7 +9,7 @@ The openHAB EcoTouch binding allows interaction with a [Waterkotte](https://www.
 | geo             | Waterkotte EcoTouch Geo + EcoVent                |
 | air             | Waterkotte EcoTouch Air + EcoVent                |
 
-This binding was tested with a Waterkotte DS 5027 Ai DS 5010.5Ai geothermal heat pump).
+This binding was tested with a Waterkotte DS 5027 Ai DS 5010.5Ai geothermal heat pump.
 
 ## Discovery
 
