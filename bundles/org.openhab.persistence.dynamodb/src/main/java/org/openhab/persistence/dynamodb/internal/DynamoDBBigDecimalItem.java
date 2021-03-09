@@ -82,7 +82,7 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
     }
 
     @Override
-    public <T> T accept(org.openhab.persistence.dynamodb.internal.DynamoDBItemVisitor<T> visitor) {
+    public <T> T accept(DynamoDBItemVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
