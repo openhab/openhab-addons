@@ -123,11 +123,10 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
     void overrideConfig(ClientOverrideConfiguration.Builder config) {
         DynamoDBConfig localDbConfig = dbConfig;
-        if (localDbConfig == null) {
-            return;
+        config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL);
+        if (localDbConfig != null) {
+            config.retryPolicy(localDbConfig.getRetryPolicy());
         }
-        config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL)
-                .retryPolicy(localDbConfig.getRetryPolicy());
     }
 
     @Activate
