@@ -52,9 +52,11 @@ In order to configure the persistence service, you need to configure two things:
 
 ### Table schema
 
-The DynamoDB persistence addon provides two different table schemas: "new" and "legacy". As the name implies, "legacy" is offered for backwards-compatibility purpose for old users who like to access the data that is already stored in DynamoDB. All users are adviced to transition to "new" table schema, which is more optimized.
+The DynamoDB persistence addon provides two different table schemas: "new" and "legacy".
+As the name implies, "legacy" is offered for backwards-compatibility purpose for old users who like to access the data that is already stored in DynamoDB.
+All users are advised to transition to "new" table schema, which is more optimized.
 
-At this moment there is no supported way to migrate date from old format to new.
+At this moment there is no supported way to migrate data from old format to new.
 
 #### New table schema
 
