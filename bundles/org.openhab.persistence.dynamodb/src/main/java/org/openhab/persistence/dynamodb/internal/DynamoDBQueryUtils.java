@@ -216,7 +216,7 @@ public class DynamoDBQueryUtils {
             dtoClass.getDeclaredConstructor().newInstance().accept(visitor);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(e);
         }
     }
 }

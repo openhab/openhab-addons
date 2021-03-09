@@ -607,10 +607,8 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                 if (firstGroupMemberItem.hasNext()) {
                     effectiveItem = firstGroupMemberItem.next();
                 } else {
-                    logger.warn(
-                            "GroupItem {} does not have children nor base item set, cannot determine underlying item type. Aborting!",
-                            item.getName());
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("GroupItem " + item.getName()
+                            + " does not have children nor base item set, cannot determine underlying item type. Aborting!");
                 }
             } else {
                 effectiveItem = baseItem;
@@ -647,9 +645,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            LoggerFactory.getLogger(DynamoDBPersistenceService.class).error("Could not copy item of type {}. Bug",
-                    item.getClass().getSimpleName(), e);
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(item.toString(), e);
         }
         State state = stateOverride == null ? item.getState() : stateOverride;
         if (state instanceof QuantityType<?> && itemTemplate instanceof NumberItem) {
