@@ -238,6 +238,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             if ("core:MeasuredValueType".equals(attr.getName()) && attr.getType() == TYPE_STRING) {
                 switch ((String) attr.getValue()) {
                     case "core:TemperatureInCelcius":
+                    case "core:TemperatureInCelsius":
                         units.put("Number:Temperature", SIUnits.CELSIUS);
                         break;
                     case "core:TemperatureInKelvin":
