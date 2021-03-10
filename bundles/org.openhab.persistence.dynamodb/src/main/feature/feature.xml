@@ -6,6 +6,7 @@
 		<feature>openhab-runtime-base</feature>
 		<feature dependency="true">openhab.tp-jackson</feature>
 		<feature dependency="true">openhab.tp-netty</feature>
+		<!-- netty-codec-http2 version has been aligned with the openhab.tp-netty feature -->
 		<bundle dependency="true">mvn:io.netty/netty-codec-http2/4.1.42.Final</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.dynamodb/${project.version}</bundle>
 		<configfile finalname="${openhab.conf}/services/dynamodb.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/dynamodb</configfile>
