@@ -22,11 +22,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.dto.Effect;
+import org.openhab.binding.lifx.internal.dto.PowerState;
+import org.openhab.binding.lifx.internal.dto.SignalStrength;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.listener.LifxLightStateListener;
-import org.openhab.binding.lifx.internal.protocol.Effect;
-import org.openhab.binding.lifx.internal.protocol.PowerState;
-import org.openhab.binding.lifx.internal.protocol.SignalStrength;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -34,7 +34,7 @@ import org.openhab.core.library.types.PercentType;
 /**
  * The {@link LifxLightState} stores the properties that represent the state of a light.
  *
- * @author Wouter Born - Extracted class from LifxLightHandler, added listener logic
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxLightState {
