@@ -25,7 +25,7 @@ import org.openhab.binding.lifx.internal.fields.MACAddress;
  * The {@link LifxSelectorContext} stores the context that is used for broadcast and unicast communications with a
  * light using a {@link Selector}.
  *
- * @author Wouter Born - Make selector logic reusable between discovery and handlers
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxSelectorContext {
