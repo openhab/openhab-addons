@@ -15,6 +15,8 @@ package org.openhab.persistence.dynamodb.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,8 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.persistence.FilterCriteria;
-
-import com.google.common.collect.Lists;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
@@ -127,7 +127,7 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
             // ... but it will be resolved automatically on query
             final DynamoDBPersistenceService maybeLegacyServiceFinal = maybeLegacyService;
             waitForAssert(() -> {
-                assertEquals(1, Lists.newArrayList(maybeLegacyServiceFinal.query(criteria)).size());
+                assertEquals(1, asList(maybeLegacyServiceFinal.query(criteria)).size());
                 // also the schema gets resolved
                 assertEquals(ExpectedTableSchema.LEGACY, maybeLegacyServiceTableNameResolver.getTableSchema());
             });
@@ -166,5 +166,13 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
             fail(e.getMessage());
             throw new IllegalStateException(); // Make compiler happy
         }
+    }
+
+    private static <T> List<T> asList(Iterable<T> iterable) {
+        var items = new ArrayList<T>();
+        for (T item : iterable) {
+            items.add(item);
+        }
+        return items;
     }
 }
