@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Supplies sequence numbers for packets in the range [0, 255].
  *
- * @author Wouter Born - Make selector logic reusable between discovery and handlers
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxSequenceNumberSupplier implements Supplier<Integer> {
