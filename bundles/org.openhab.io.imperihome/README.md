@@ -496,6 +496,14 @@ Switch MyShutterStop "Stop shutter" ["iss:room:Test", "iss:type:DevSwitch"]  { c
 
 Implement a Rule listening for the ON command on the switch to handle the stop action yourself.
 
+## Tagging in OH3
+ To tag items in OH3 without using txt files, Tags need to be added like so:
+ 1. Goto the item within Settings, and click Edit in the top right hand corner.
+ 2. In the Non-Semantic Tags field, simply add the tags to the item.
+ ![image](https://user-images.githubusercontent.com/6590153/110746488-ff983a00-8290-11eb-98d8-3b1b1d13ab29.png)
+
+ 
+
 ## Items example
 
 ```
