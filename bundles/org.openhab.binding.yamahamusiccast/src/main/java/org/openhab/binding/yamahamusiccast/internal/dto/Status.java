@@ -47,6 +47,9 @@ public class Status {
     private int sleep = 0;
 
     public String getResponseCode() {
+        if (responseCode == null) {
+            responseCode = "";
+        }
         return responseCode;
     }
 

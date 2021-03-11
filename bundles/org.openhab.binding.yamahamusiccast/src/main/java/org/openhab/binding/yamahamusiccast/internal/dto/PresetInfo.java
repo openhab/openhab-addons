@@ -29,6 +29,9 @@ public class PresetInfo {
     private JsonArray presetInfo;
 
     public String getResponseCode() {
+        if (responseCode == null) {
+            responseCode = "";
+        }
         return responseCode;
     }
 

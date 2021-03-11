@@ -19,51 +19,47 @@ UDP events are captured to reflect changes in the binding for
 - Shuffle
 - Play Time
 - Total Time
+- Musiccast Link
 
 ## Supported Things
 
-Each model (AV Receiver, ...) is a Thing. Things are linked to a Bridge for receiving UDP events.
+Each model (AV Receiver, ...) is a Thing (Thing Type ID: yamahamusiccast:device). Things are linked to a Bridge (Thing Type ID: yamahamusiccast:bridge) for receiving UDP events.
 
 ## Discovery
 
 No auto discovery
 
-## Binding Configuration
-
-N/A
-
 ## Thing Configuration
 
-| Parameter        | type    | description                                             | Advanced | Required      |
-|------------------|---------|---------------------------------------------------------|----------|---------------|
-| host             | String  | IP address of the Yamaha model (AVR, ...)               | false    | true          |
-| syncVolume       | Boolean | Sync volume across linked models (default=false)        | true     | false         |
-
+| Parameter          | Type    | Description                                             | Advanced | Required      |
+|--------------------|---------|---------------------------------------------------------|----------|---------------|
+| host               | String  | IP address of the Yamaha model (AVR, ...)               | false    | true          |
+| syncVolume         | Boolean | Sync volume across linked models (default=false)        | false    | false         |
+| defaultAfterMCLink | Boolean | Default Input value for client when MC Link is broken   | false    | false         |
 
 ## Channels
 
-| channel        | type   | description                                                        |
-|----------------|--------|--------------------------------------------------------------------|
-| power          | Switch | Power ON/OFF                                                       |
-| mute           | Switch | Mute ON/OFF                                                        |
-| volume         | Dimmer | Volume as % (recalculated based on Max Volume Model)               |
-| volumeAbs      | Number | Volume as absolute value                                           |
-| input          | String | See below for list                                                 |
-| soundProgram   | String | See below for list                                                 |
-| selectPreset   | String | Select Netradio/USB preset (fetched from Model)                    |
-| sleep          | Number | Fixed values for Sleep : 0/30/60/90/120                            |
-| mcServer       | String | Select your MusicCast Server or set to Standalone                  |
-| unlinkMCServer | Switch | Disband MusicCast Link on Master                                   |
-| recallScene    | Number | Select a scene (create your own dropdown list!)                    |
-| player         | Player | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                        |
-| artist         | String | Artist                                                             |
-| track          | String | Track                                                              |
-| album          | String | Album                                                              |
-| albumArt       | Image  | Album Art                                                          |
-| repeat         | String | Toggle Repeat. Available values: Off, One, All                     |
-| shuffle        | String | Toggle Shuffle. Availabel values: Off, On, Songs, Album            |
-| playTime       | String | Play time of current selection: radio, song, track, ...            |
-| totalTime      | String | Total time of current selection: radio, song, track, ...           |
+| channel        | type   | description                                                         |
+|----------------|--------|---------------------------------------------------------------------|
+| power          | Switch | Power ON/OFF                                                        |
+| mute           | Switch | Mute ON/OFF                                                         |
+| volume         | Dimmer | Volume as % (recalculated based on Max Volume Model)                |
+| volumeAbs      | Number | Volume as absolute value                                            |
+| input          | String | See below for list                                                  |
+| soundProgram   | String | See below for list                                                  |
+| selectPreset   | String | Select Netradio/USB preset (fetched from Model)                     |
+| sleep          | Number | Fixed values for Sleep : 0/30/60/90/120 in minutes                  |
+| recallScene    | Number | Select a scene (8 defaults scenes are foreseen)                     |
+| player         | Player | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                         |
+| artist         | String | Artist                                                              |
+| track          | String | Track                                                               |
+| album          | String | Album                                                               |
+| albumArt       | Image  | Album Art                                                           |
+| repeat         | String | Toggle Repeat. Available values: Off, One, All                      |
+| shuffle        | String | Toggle Shuffle. Available values: Off, On, Songs, Album             |
+| playTime       | String | Play time of current selection: radio, song, track, ...             |
+| totalTime      | String | Total time of current selection: radio, song, track, ...            |
+| mclinkStatus   | String | Select your Musiccast Server or set to Standalone, Server or Client |
 
 
 | Zones                | description                                          |
@@ -107,7 +103,7 @@ mono_movie / movie / enhanced / 2ch_stereo / 5ch_stereo / 7ch_stereo / 9ch_stere
 
 ```
 Bridge yamahamusiccast:bridge:bridge "YXC Bridge" {
-Thing yamahamusiccast:device:Living "YXC Living" [configHost="1.2.3.4"]
+Thing yamahamusiccast:device:Living "YXC Living" [host="1.2.3.4"]
 }
 ```
 
@@ -143,13 +139,14 @@ If not, a new group will be created.
 *Device A*: Living with IP 192.168.1.1
 *Device B*: Kitchen with IP 192.168.1.2
 
-Set **mcServer** to *Standalone* to remove the device/model from the current active group. The group will keep on exist with other devices/models.
-Use **unlinkMCServer** on the Thing which is currently set to master to disband the group.
+Set **mclinkStatus** to *Standalone* to remove the device/model from the current active group. The group will keep on exist with other devices/models.
+If the device/model is the server, the group will be disbanded.
 
 ```
-String YamahaMCServer "[%s]" {channel="yamahamusiccast:device:Living:main#mcServer"}
-Switch YamahaUnlinkMC "" {channel="yamahamusiccast:device:Living:main#unlinkMCServer"}
+Switch YamahaMCLinkStatus "" {channel="yamahamusiccast:device:Living:main#mclinkStatus"}
 ```
+
+During testing with the Yamaha Musiccast app, when removing a slave from the group, the status of the client remained *client* and **input** stayed on *mclink*. Only when changing input, the slave was set to *standalone*. Therefor you can set the parameter **defaultAfterMCLink** to an input value supported by your device to break the whole Musiccast Link in OH.
 
 #### How to use this in a rule?
 
@@ -158,9 +155,12 @@ The value which is sent to OH uses the format _IP***zone_.
 
 ```
 sendCommand(Kitchen_YamahaMCServer, "192.168.1.1***main")
+sendCommand(Kitchen_YamahaMCServer, "")
+sendCommand(Kitchen_YamahaMCServer, "server")
+sendCommand(Kitchen_YamahaMCServer, "client")
 ```
 
 ## Tested Models
 
 RX-D485 / WX-010 / WX-030 / ISX-80 / YSP-1600 / RX-A860 / R-N303D / EX-A1080 / WXA-050 / HTR-4068 (RX-V479)
-MusicCast 20 / WCX-50 / RX-V6A / YAS-306 / ISX-18D
+MusicCast 20 / WCX-50 / RX-V6A / YAS-306 / ISX-18D / WX-021 / YAS-408

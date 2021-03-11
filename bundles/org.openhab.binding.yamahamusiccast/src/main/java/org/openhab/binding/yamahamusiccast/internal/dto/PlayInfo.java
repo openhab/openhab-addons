@@ -53,6 +53,9 @@ public class PlayInfo {
     private int totalTime;
 
     public String getResponseCode() {
+        if (responseCode == null) {
+            responseCode = "";
+        }
         return responseCode;
     }
 

@@ -26,6 +26,9 @@ public class UdpMessage {
     private String deviceId;
 
     public String getDeviceId() {
+        if (deviceId == null) {
+            deviceId = "";
+        }
         return deviceId;
     }
 

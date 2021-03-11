@@ -31,6 +31,9 @@ public class DeviceInfo {
     private String deviceId;
 
     public String getResponseCode() {
+        if (responseCode == null) {
+            responseCode = "";
+        }
         return responseCode;
     }
 

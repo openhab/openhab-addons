@@ -31,79 +31,32 @@
 				<description>Sync Volume across linked Music Cast models</description>
 				<default>true</default>
 			</parameter>
+			<parameter name="defaultAfterMCLink" type="text">
+				<label>Default Value Afer MC Link</label>
+				<description>Default value for client when MC Link is broken</description>
+				<default>none</default>
+				<options>
+					<option value="none">None</option>
+					<option value="net_radio">Net Radio</option>
+				</options>
+			</parameter>
 		</config-description>
 	</thing-type>
 
 	<channel-group-type id="mainControls">
 		<label>Main Zone (default)</label>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="input" typeId="input"/>
-			<channel id="soundProgram" typeId="soundProgram"/>
-			<channel id="selectPreset" typeId="selectPreset"/>
-			<channel id="sleep" typeId="sleep"/>
-			<channel id="mcServer" typeId="mcServer"/>
-			<channel id="unlinkMCServer" typeId="unlinkMCServer"/>
-			<channel id="recallScene" typeId="recallScene"/>
-			<channel id="volumeAbs" typeId="volumeAbs"/>
-			<channel id="mclinkStatus" typeId="mclinkStatus"/>
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone2Controls">
 		<label>Zone 2</label>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="input" typeId="input"/>
-			<channel id="soundProgram" typeId="soundProgram"/>
-			<channel id="selectPreset" typeId="selectPreset"/>
-			<channel id="sleep" typeId="sleep"/>
-			<channel id="mcServer" typeId="mcServer"/>
-			<channel id="unlinkMCServer" typeId="unlinkMCServer"/>
-			<channel id="recallScene" typeId="recallScene"/>
-			<channel id="volumeAbs" typeId="volumeAbs"/>
-			<channel id="mclinkStatus" typeId="mclinkStatus"/>
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone3Controls">
 		<label>Zone 3</label>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="input" typeId="input"/>
-			<channel id="soundProgram" typeId="soundProgram"/>
-			<channel id="selectPreset" typeId="selectPreset"/>
-			<channel id="sleep" typeId="sleep"/>
-			<channel id="mcServer" typeId="mcServer"/>
-			<channel id="unlinkMCServer" typeId="unlinkMCServer"/>
-			<channel id="recallScene" typeId="recallScene"/>
-			<channel id="volumeAbs" typeId="volumeAbs"/>
-			<channel id="mclinkStatus" typeId="mclinkStatus"/>
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone4Controls">
 		<label>Zone 4</label>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="input" typeId="input"/>
-			<channel id="soundProgram" typeId="soundProgram"/>
-			<channel id="selectPreset" typeId="selectPreset"/>
-			<channel id="sleep" typeId="sleep"/>
-			<channel id="mcServer" typeId="mcServer"/>
-			<channel id="unlinkMCServer" typeId="unlinkMCServer"/>
-			<channel id="recallScene" typeId="recallScene"/>
-			<channel id="volumeAbs" typeId="volumeAbs"/>
-			<channel id="mclinkStatus" typeId="mclinkStatus"/>
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="playerControls">
@@ -121,22 +74,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Power channel</description>
-	</channel-type>
-	<channel-type id="mute">
-		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>Mute channel</description>
-	</channel-type>
-	<channel-type id="volume">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>Volume channel - percentage</description>
-		<state min="0" max="100"/>
-	</channel-type>
 	<channel-type id="volumeAbs">
 		<item-type>Number</item-type>
 		<label>Volume</label>
@@ -149,7 +86,7 @@
 	</channel-type>
 	<channel-type id="soundProgram">
 		<item-type>String</item-type>
-		<label>SoundProgram</label>
+		<label>Sound Program</label>
 		<description>SoundProgram channel</description>
 	</channel-type>
 	<channel-type id="selectPreset">
@@ -176,20 +113,22 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="mcServer">
-		<item-type>String</item-type>
-		<label>MusicCast Server</label>
-		<description>Select IP of device to be Server for MusicCast Link - v2</description>
-	</channel-type>
-	<channel-type id="unlinkMCServer">
-		<item-type>Switch</item-type>
-		<label>Deactivate MusicCast</label>
-		<description>Deactivate MusicCast Link on Server</description>
-	</channel-type>
 	<channel-type id="recallScene">
 		<item-type>Number</item-type>
 		<label>Scene Selection</label>
 		<description>Scene selection (if available)</description>
+		<state>
+			<options>
+				<option value="1">Scene 1</option>
+				<option value="2">Scene 2</option>
+				<option value="3">Scene 3</option>
+				<option value="4">Scene 4</option>
+				<option value="5">Scene 5</option>
+				<option value="6">Scene 6</option>
+				<option value="7">Scene 7</option>
+				<option value="8">Scene 8</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="artist">
 		<item-type>String</item-type>

@@ -24,4 +24,5 @@ public class YamahaMusiccastConfiguration {
 
     public @Nullable String host;
     public @Nullable Boolean syncVolume;
+    public @Nullable String defaultAfterMCLink;
 }
