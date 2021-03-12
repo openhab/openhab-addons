@@ -31,6 +31,7 @@ public class HomekitSettings {
     public String qrCode;
     public int startDelay = 30;
     public boolean useFahrenheitTemperature = false;
+    public boolean useOHmDNS = false;
     public String thermostatTargetModeHeat = "HeatOn";
     public String thermostatTargetModeCool = "CoolOn";
     public String thermostatTargetModeAuto = "Auto";
@@ -78,6 +79,8 @@ public class HomekitSettings {
             if (other.pin != null) {
                 return false;
             }
+        } else if (!useOHmDNS != other.useOHmDNS) {
+            return false;
         } else if (!pin.equals(other.pin)) {
             return false;
         } else if (!setupId.equals(other.setupId)) {
