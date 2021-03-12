@@ -10,7 +10,6 @@ Fragment-Host: org.openhab.binding.astro
 #
 -runbundles: \
 	javax.measure.unit-api;version='[1.0.0,1.0.1)',\
-	org.apache.commons.lang;version='[2.6.0,2.6.1)',\
 	org.apache.felix.configadmin;version='[1.9.8,1.9.9)',\
 	org.apache.felix.scr;version='[2.1.10,2.1.11)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
