@@ -23,14 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PhantomButtonConfig {
 
-    private int buttonNumber;
+    public int buttonNumber;
     public int system = 0;
 
     public int getButtonNumber() {
         return buttonNumber;
-    }
-
-    public void setButtonNumber(int buttonNumber) {
-        this.buttonNumber = buttonNumber;
     }
 }

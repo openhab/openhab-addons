@@ -60,14 +60,16 @@ public class DimmerHandler extends LutronHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         RS232Handler bridgeHandler = getRS232Handler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
         if (LutronBindingConstants.CHANNEL_LIGHTLEVEL.equals(channelUID.getId())) {
             if (command instanceof PercentType) {
                 int intensity = ((PercentType) command).intValue();
 
                 SetDimmerLevelCommand cmd = new SetDimmerLevelCommand(config.getZoneNumber(), intensity, config.system);
-                if (bridgeHandler != null) {
-                    bridgeHandler.sendCommand(cmd);
-                }
+                bridgeHandler.sendCommand(cmd);
 
                 updateInternalState(intensity);
             }
@@ -76,9 +78,7 @@ public class DimmerHandler extends LutronHandler {
                 OnOffType onOffCmd = (OnOffType) command;
 
                 SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCmd, config.system);
-                if (bridgeHandler != null) {
-                    bridgeHandler.sendCommand(cmd);
-                }
+                bridgeHandler.sendCommand(cmd);
 
                 updateInternalState(onOffCmd);
             }

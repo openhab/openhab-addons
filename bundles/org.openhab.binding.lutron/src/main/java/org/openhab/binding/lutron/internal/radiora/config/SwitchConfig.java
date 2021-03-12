@@ -23,14 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SwitchConfig {
 
-    private int zoneNumber;
+    public int zoneNumber;
     public int system = 0;
 
     public int getZoneNumber() {
         return zoneNumber;
-    }
-
-    public void setZoneNumber(int zoneNumber) {
-        this.zoneNumber = zoneNumber;
     }
 }
