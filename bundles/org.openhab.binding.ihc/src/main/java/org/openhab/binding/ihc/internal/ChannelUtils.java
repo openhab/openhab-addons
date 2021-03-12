@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.internal.config.ChannelParams;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.core.config.core.Configuration;
@@ -214,16 +213,16 @@ public class ChannelUtils {
 
     private static String createDescription(String name1, String name2, String name3, String name4) {
         String description = "";
-        if (StringUtils.isNotEmpty(name1)) {
+        if (name1 != null && !name1.isEmpty()) {
             description = name1;
         }
-        if (StringUtils.isNotEmpty(name2)) {
+        if (name2 != null && !name2.isEmpty()) {
             description += String.format(" - %s", name2);
         }
-        if (StringUtils.isNotEmpty(name3)) {
+        if (name3 != null && !name3.isEmpty()) {
             description += String.format(" - %s", name3);
         }
-        if (StringUtils.isNotEmpty(name4)) {
+        if (name4 != null && !name4.isEmpty()) {
             description += String.format(" - %s", name4);
         }
         return description;

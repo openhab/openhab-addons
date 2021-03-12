@@ -78,14 +78,13 @@ public class SimpleRequestBuilder {
      * @throws IllegalArgumentException if a requestClass is already chosen
      * @throws NullArgumentException if the requestClassKey is null
      */
-    public static SimpleRequestBuilder buildNewJsonRequest(String requestClassKey)
-            throws NullArgumentException, IllegalArgumentException {
+    public static SimpleRequestBuilder buildNewJsonRequest(String requestClassKey) throws IllegalArgumentException {
         return buildNewRequest(InterfaceKeys.JSON).addRequestClass(requestClassKey);
     }
 
     private SimpleRequestBuilder buildNewRequestInt(String interfaceKey) {
         if (interfaceKey == null) {
-            throw new NullArgumentException("interfaceKey");
+            throw new IllegalArgumentException("interfaceKey is null");
         }
         request = "/" + interfaceKey + "/";
         classIsChosen = false;

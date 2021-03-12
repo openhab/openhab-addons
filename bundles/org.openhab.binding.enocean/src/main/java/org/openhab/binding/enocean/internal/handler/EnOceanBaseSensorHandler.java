@@ -23,7 +23,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
@@ -135,7 +134,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     }
 
     protected void sendRequestResponse() {
-        throw new NotImplementedException("Sensor cannot send responses");
+        throw new UnsupportedOperationException("Sensor cannot send responses");
     }
 
     @Override

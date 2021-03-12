@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -120,14 +119,15 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
 
     private boolean isValidLocation() {
         boolean validLocation = false;
-        String locationType = getConfigAs(WeatherCompanyForecastConfig.class).locationType;
+        WeatherCompanyForecastConfig config = getConfigAs(WeatherCompanyForecastConfig.class);
+        String locationType = config.locationType;
         if (locationType == null) {
             return validLocation;
         }
         switch (locationType) {
             case CONFIG_LOCATION_TYPE_POSTAL_CODE:
-                String postalCode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).postalCode);
-                if (postalCode == null) {
+                String postalCode = config.postalCode;
+                if (postalCode == null || postalCode.isBlank()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Postal code is not set");
                 } else {
                     locationQueryString = "&postalKey=" + postalCode.replace(" ", "");
@@ -135,8 +135,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
                 }
                 break;
             case CONFIG_LOCATION_TYPE_GEOCODE:
-                String geocode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).geocode);
-                if (geocode == null) {
+                String geocode = config.geocode;
+                if (geocode == null || geocode.isBlank()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Geocode is not set");
                 } else {
                     locationQueryString = "&geocode=" + geocode.replace(" ", "");
@@ -144,8 +144,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
                 }
                 break;
             case CONFIG_LOCATION_TYPE_IATA_CODE:
-                String iataCode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).iataCode);
-                if (iataCode == null) {
+                String iataCode = config.iataCode;
+                if (iataCode == null || iataCode.isBlank()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IATA code is not set");
                 } else {
                     locationQueryString = "&iataCode=" + iataCode.replace(" ", "").toUpperCase();
@@ -160,15 +160,16 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
     }
 
     private void setLanguage() {
-        String language = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).language);
-        if (language == null) {
+        WeatherCompanyForecastConfig config = getConfigAs(WeatherCompanyForecastConfig.class);
+        String language = config.language;
+        if (language == null || language.isBlank()) {
             // Nothing in the thing config, so try to get a match from the openHAB locale
             String derivedLanguage = WeatherCompanyAbstractHandler.lookupLanguage(localeProvider.getLocale());
             languageQueryString = "&language=" + derivedLanguage;
             logger.debug("Language not set in thing config, using {}", derivedLanguage);
         } else {
             // Use what is set in the thing config
-            languageQueryString = "&language=" + language;
+            languageQueryString = "&language=" + language.trim();
         }
     }
 

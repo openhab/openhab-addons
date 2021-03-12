@@ -22,7 +22,7 @@ import java.util.Optional;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitConverter;
 import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapabilityDTO;
