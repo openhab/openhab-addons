@@ -84,14 +84,14 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initializing thing handler for thing {}", getThing().getUID());
+        logger.trace("initializing thing handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
         initializeThing(bridge != null ? bridge.getStatus() : null);
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
+        logger.trace("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
         initializeThing(bridgeStatusInfo.getStatus());
     }
 
