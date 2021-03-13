@@ -52,7 +52,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE));
 
-    private ExecutorService discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
+    private ExecutorService discoverySearchPool = scheduler;
     private OpenSprinklerApiFactory apiFactory;
 
     @Activate
