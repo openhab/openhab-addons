@@ -152,7 +152,7 @@
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="invert" type="boolean">
-				<label>Invert direction</label>
+				<label>Invert Direction</label>
 				<description>Invert rollershutter direction</description>
 				<default>false</default>
 				<advanced>true</advanced>
