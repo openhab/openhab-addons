@@ -15,6 +15,7 @@
 			<channel id="alarm_state" typeId="alarm_state"></channel>
 			<channel id="intrusion_state" typeId="intrusion_state"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 
