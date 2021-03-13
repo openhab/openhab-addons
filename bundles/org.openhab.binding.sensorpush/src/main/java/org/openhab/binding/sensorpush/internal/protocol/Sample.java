@@ -25,8 +25,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Sample {
 
-    // TODO Include altitude?
-    // public int altitude; // in feet
     /** Temperature in degrees F with 1 digit of precision */
     public @Nullable Float temperature;
     /** Relative humidity percentage with 1 digit of precision */
@@ -39,7 +37,7 @@ public class Sample {
     /** Vapor pressure deficit in kPa with 2 digits of precision */
     public @Nullable Float vpd;
     /** Timestamp in format 2021-02-25T21:01:37.000Z */
-    public @Nullable String observed; // TODO convert to DateTime?
+    public @Nullable String observed;
 
     public Sample() {
     }

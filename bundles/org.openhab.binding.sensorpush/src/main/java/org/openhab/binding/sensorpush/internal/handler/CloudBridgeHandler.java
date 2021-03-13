@@ -136,15 +136,19 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
     private synchronized void asyncInitialize() {
         authorize();
 
-        if (accessToken != null) { // TODO use better success criteria?
+        if (accessToken != null) {
             updateStatus(ThingStatus.ONLINE);
 
             pollSensors();
             pollSamples();
         }
 
-        logger.debug("Starting polling job with interval {} minutes", config.poll);
-        pollingJob = scheduler.scheduleWithFixedDelay(this::doPolling, config.poll, config.poll, TimeUnit.MINUTES);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob == null || pollingJob.isDone()) {
+            logger.debug("Starting polling job with interval {} minutes", config.poll);
+            this.pollingJob = scheduler.scheduleWithFixedDelay(this::doPolling, config.poll, config.poll,
+                    TimeUnit.MINUTES);
+        }
     }
 
     @Override
@@ -198,7 +202,6 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
      * expiration time.
      */
     private void authorize() {
-        // TODO: Add locking to prevent conflicting accesses to accessToken and accessTokenInfo
         AuthorizationResponse authResponse;
         AccessTokenResponse tokenResponse;
 
@@ -267,7 +270,6 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
             return;
         } catch (InterruptedException e) {
             logger.debug("Interrupted sending authorization request");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Auth request interrupted");
             return;
         } catch (ExecutionException e) {
             logger.debug("Execution exception sending authorization request: {}", e.getMessage());
@@ -297,7 +299,6 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
      * the cloud service.
      */
     private void doPolling() {
-        // TODO move and add locking for token variables
         if (accessToken == null || accessTokenInfo == null || tokenExpired(accessTokenInfo)) {
             authorize();
         }
@@ -308,6 +309,7 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         } else {
             pollSensorsRun = true;
         }
+
         pollSamples();
     }
 
@@ -429,8 +431,8 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
-
         accessToken = null;
         accessTokenInfo = null;
+        super.dispose();
     }
 }
