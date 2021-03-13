@@ -117,7 +117,7 @@ public class AndroidDebugBridgeDevice {
             if (packageActivityName.contains("/"))
                 return packageActivityName.split("/")[0];
         }
-        throw new AndroidDebugBridgeDeviceReadException("can read package name");
+        throw new AndroidDebugBridgeDeviceReadException("Unable to read package name");
     }
 
     public boolean isAwake()
@@ -137,7 +137,7 @@ public class AndroidDebugBridgeDevice {
                 logger.debug("Unable to parse device wake lock: {}", e.getMessage());
             }
         }
-        throw new AndroidDebugBridgeDeviceReadException("can read screen state");
+        throw new AndroidDebugBridgeDeviceReadException("Unable to read screen state");
     }
 
     public boolean isPlayingMedia(String currentApp)
@@ -175,12 +175,12 @@ public class AndroidDebugBridgeDevice {
         String lockResp = runAdbShell("dumpsys", "power", "|", "grep", "Locks", "|", "grep", "'size='");
         if (lockResp.contains("=")) {
             try {
-                return Integer.parseInt(lockResp.replace("\n", "").split("=")[1]);
+                return Integer.parseInt(lockResp.replace("\n", "").split("=")[1].trim());
             } catch (NumberFormatException e) {
                 logger.debug("Unable to parse device wake lock: {}", e.getMessage());
             }
         }
-        throw new AndroidDebugBridgeDeviceReadException("can read wake lock");
+        throw new AndroidDebugBridgeDeviceReadException("Unable to read wake lock");
     }
 
     private void setVolume(int stream, int volume)
