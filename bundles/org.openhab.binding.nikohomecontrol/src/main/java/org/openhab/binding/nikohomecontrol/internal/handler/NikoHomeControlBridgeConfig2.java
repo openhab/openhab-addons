@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link NikoHomeControlBridgeConfig2} is the extended config class for Niko Home Control II Bridges.
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 public class NikoHomeControlBridgeConfig2 extends NikoHomeControlBridgeConfig {
-    public String profile;
-    public String password;
+    public String profile = "";
+    public String password = "";
 }

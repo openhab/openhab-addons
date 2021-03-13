@@ -15,11 +15,11 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link NikoHomeControlEnergyMeterConfig} is the config class for Niko Home Control Thermostats.
+ * {@link NikoHomeControlActionBlindConfig} is the config class for Niko Home Control Blind Actions.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlEnergyMeterConfig {
-    public String energyMeterId = "";
+public class NikoHomeControlActionBlindConfig extends NikoHomeControlActionConfig {
+    public boolean invert;
 }
