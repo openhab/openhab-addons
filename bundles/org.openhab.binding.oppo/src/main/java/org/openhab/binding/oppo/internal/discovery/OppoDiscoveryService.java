@@ -148,7 +148,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                                 multiSocket.receive(receivePacket);
 
                                 String message = new String(receivePacket.getData(), StandardCharsets.US_ASCII).trim();
-                                if (message != null && message.length() > 0) {
+                                if (message.length() > 0) {
                                     messageReceive(message);
                                 }
                             } catch (SocketTimeoutException e) {
@@ -158,7 +158,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
 
                         multiSocket.close();
                     } catch (IOException e) {
-                        if (!e.getMessage().contains("No IP addresses bound to interface")) {
+                        if (e.getMessage() != null && !e.getMessage().contains("No IP addresses bound to interface")) {
                             logger.debug("OppoDiscoveryService IOException: {}", e.getMessage(), e);
                         }
                     }
