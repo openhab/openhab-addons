@@ -193,6 +193,7 @@
 		<label>Various</label>
 		<description>Miscellaneous information</description>
 		<channels>
+			<channel id="lastupdated" typeId="lastupdated"/>
 			<channel id="privacy" typeId="privacy"/>
 			<channel id="belt" typeId="belt"/>
 			<channel id="emergency" typeId="emergency"/>
@@ -341,6 +342,13 @@
 		<description>Strength of the position localization signal</description>
 		<category>MoveControl</category>
 		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="lastupdated">
+		<item-type>DateTime</item-type>
+		<label>Time of Last Update</label>
+		<description>Last time the results were updated on the server</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="privacy">
@@ -565,10 +573,11 @@
 	</channel-type>
 
 	<channel-type id="chargingNextDelayedTime">
-		<item-type>DateTime</item-type>
-		<label>Next Delayed Charging</label>
-		<description>Time when the next charging starts</description>
+		<item-type>Number:Time</item-type>
+		<label>Time Till Next Charging</label>
+		<description>Time till the next charging starts</description>
 		<category>Time</category>
+		<state pattern="%tT"/>
 	</channel-type>
 
 </thing:thing-descriptions>

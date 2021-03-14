@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -21,9 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class Air {
 
-    private @Nullable Double temp;
+    private @Nullable BigDecimal temp;
 
-    public @Nullable Double getTemp() {
+    public @Nullable BigDecimal getTemp() {
         return temp;
     }
 

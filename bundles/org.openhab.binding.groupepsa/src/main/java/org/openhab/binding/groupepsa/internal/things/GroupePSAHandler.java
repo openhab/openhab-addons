@@ -14,6 +14,7 @@ package org.openhab.binding.groupepsa.internal.things;
 
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -169,7 +170,7 @@ public class GroupePSAHandler extends BaseThingHandler {
     }
 
     private boolean isValidResult(VehicleStatus vehicle) {
-        return vehicle.getCreatedAt() != null;
+        return vehicle.getUpdatedAt() != null;
     }
 
     private boolean isConnected(VehicleStatus vehicle) {
@@ -177,7 +178,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         if (lastPosition == null)
             return false;
 
-        ZonedDateTime updatedAt = lastPosition.getUpdatedAt();
+        ZonedDateTime updatedAt = vehicle.getUpdatedAt();
         if (updatedAt == null)
             return false;
 
@@ -208,6 +209,9 @@ public class GroupePSAHandler extends BaseThingHandler {
             logger.trace("Vehicle: {}", vehicle);
 
             if (vehicle != null && isValidResult(vehicle)) {
+                logger.debug("Update vehicle state now: {}, lastupdate: {}", ZonedDateTime.now(),
+                        vehicle.getUpdatedAt());
+
                 updateChannelState(vehicle);
 
                 if (isConnected(vehicle)) {
@@ -295,6 +299,7 @@ public class GroupePSAHandler extends BaseThingHandler {
                     Units.PERCENT);
         }
 
+        updateState(CHANNEL_VARIOUS_LASTUPDATED, vehicle.getUpdatedAt());
         updateState(CHANNEL_VARIOUS_PRIVACY, vehicle.getPrivacy(), Privacy::getState);
         updateState(CHANNEL_VARIOUS_BELT, vehicle.getSafety(), Safety::getBeltWarning);
         updateState(CHANNEL_VARIOUS_EMERGENCY, vehicle.getSafety(), Safety::getECallTriggeringRequest);
@@ -333,10 +338,9 @@ public class GroupePSAHandler extends BaseThingHandler {
                             SIUnits.KILOMETRE_PER_HOUR);
 
                     updateState(CHANNEL_ELECTRIC_CHARGING_REMAININGTIME, energy, Energy::getCharging,
-                            Charging::getRemainingTime, x -> x.getSeconds(), Units.SECOND);
-
+                            Charging::getRemainingTime, x -> new BigDecimal(x.getSeconds()), Units.SECOND);
                     updateState(CHANNEL_ELECTRIC_CHARGING_NEXTDELAYEDTIME, energy, Energy::getCharging,
-                            Charging::getNextDelayedTime, x -> x.getSeconds(), Units.SECOND);
+                            Charging::getNextDelayedTime, x -> new BigDecimal(x.getSeconds()), Units.SECOND);
 
                 }
             }
@@ -373,7 +377,7 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     // Various update helper functions
 
-    protected <T extends Quantity<T>> void updateState(String channelID, @Nullable Number number, Unit<T> unit) {
+    protected <T extends Quantity<T>> void updateState(String channelID, @Nullable BigDecimal number, Unit<T> unit) {
         if (number != null) {
             updateState(channelID, new QuantityType<T>(number, unit));
         } else {
@@ -382,19 +386,20 @@ public class GroupePSAHandler extends BaseThingHandler {
     }
 
     protected <T1, T2 extends Quantity<T2>> void updateState(String channelID, final @Nullable T1 object,
-            Function<? super T1, @Nullable Number> mapper, Unit<T2> unit) {
+            Function<? super T1, @Nullable BigDecimal> mapper, Unit<T2> unit) {
         updateState(channelID, object != null ? mapper.apply(object) : null, unit);
     }
 
     protected <T1, T2, T3 extends Quantity<T3>> void updateState(String channelID, final @Nullable T1 object1,
-            Function<? super T1, @Nullable T2> mapper1, Function<? super T2, @Nullable Number> mapper2, Unit<T3> unit) {
+            Function<? super T1, @Nullable T2> mapper1, Function<? super T2, @Nullable BigDecimal> mapper2,
+            Unit<T3> unit) {
         final @Nullable T2 object2 = object1 != null ? mapper1.apply(object1) : null;
         updateState(channelID, object2 != null ? mapper2.apply(object2) : null, unit);
     }
 
     protected <T1, T2, T3, T4 extends Quantity<T4>> void updateState(String channelID, final @Nullable T1 object1,
             Function<? super T1, @Nullable T2> mapper1, Function<? super T2, @Nullable T3> mapper2,
-            Function<? super T3, @Nullable Number> mapper3, Unit<T4> unit) {
+            Function<? super T3, @Nullable BigDecimal> mapper3, Unit<T4> unit) {
         final @Nullable T2 object2 = object1 != null ? mapper1.apply(object1) : null;
         final @Nullable T3 object3 = object2 != null ? mapper2.apply(object2) : null;
         updateState(channelID, object3 != null ? mapper3.apply(object3) : null, unit);

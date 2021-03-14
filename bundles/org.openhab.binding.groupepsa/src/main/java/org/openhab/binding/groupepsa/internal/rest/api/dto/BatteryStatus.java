@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.groupepsa.internal.rest.api.dto;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -21,10 +23,10 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class BatteryStatus {
 
-    private @Nullable Double capacity;
+    private @Nullable BigDecimal capacity;
     private @Nullable Health health;
 
-    public @Nullable Double getCapacity() {
+    public @Nullable BigDecimal getCapacity() {
         return capacity;
     }
 
