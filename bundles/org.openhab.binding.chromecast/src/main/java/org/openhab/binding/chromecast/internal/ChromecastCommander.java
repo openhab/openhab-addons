@@ -219,7 +219,7 @@ public class ChromecastCommander {
         }
     }
 
-    void playMedia(@Nullable String title, @Nullable String url, @Nullable String mimeType) {
+    public void playMedia(@Nullable String title, @Nullable String url, @Nullable String mimeType) {
         try {
             if (chromeCast.isAppAvailable(MEDIA_PLAYER)) {
                 if (!chromeCast.isAppRunning(MEDIA_PLAYER)) {
