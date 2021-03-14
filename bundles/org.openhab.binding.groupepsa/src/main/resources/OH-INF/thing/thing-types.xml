@@ -22,7 +22,7 @@
 				<label>Brand</label>
 				<description>The brand of the car</description>
 				<options>
-					<option value="PEUGOT">Peugeot</option>
+					<option value="PEUGEOT">Peugeot</option>
 					<option value="CITROEN">Citroen</option>
 					<option value="DS">DS</option>
 					<option value="OPEL">Opel</option>
