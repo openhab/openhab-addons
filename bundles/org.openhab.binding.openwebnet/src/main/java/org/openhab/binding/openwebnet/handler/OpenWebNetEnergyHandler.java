@@ -62,13 +62,11 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initialize() thing={}", thing.getUID());
         super.initialize();
     }
 
     @Override
     public void dispose() {
-        logger.debug("dispose() thing={}", thing.getUID());
         super.dispose();
     }
 
@@ -78,7 +76,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         try {
             bridgeHandler.gateway.send(EnergyManagement.requestActivePower(deviceWhere.value()));
         } catch (OWNException e) {
-            logger.error("requestChannelState() OWNException thingUID={} channel={}: {}", thing.getUID(),
+            logger.warn("requestChannelState() OWNException thingUID={} channel={}: {}", thing.getUID(),
                     channel.getId(), e.getMessage());
         }
     }
@@ -95,7 +93,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
-        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
 
         if (msg.isCommand()) {
@@ -113,9 +110,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
      * @param msg the EnergyManagement message received
      * @throws FrameException
      */
-    // private void updateActivePower(EnergyManagement msg) {
     private void updateActivePower(BaseOpenMessage msg) {
-        logger.debug("updateActivePower() for thing: {}", thing.getUID());
         Integer activePower;
         try {
             activePower = Integer.parseInt(msg.getDimValues()[0]);
@@ -125,4 +120,4 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             updateState(CHANNEL_POWER, UnDefType.UNDEF);
         }
     }
-} // class
+}

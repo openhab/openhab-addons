@@ -43,6 +43,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lighting             | `1`         | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                       | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`         | `bus_automation`                        | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 | Energy Management    | `18`         | `bus_energy_meter`           | Energy Management  | Successfully tested: F520, F521 |
+
 ### For ZigBee (Radio)
 
 | Category             | WHO    | Thing Type IDs                    | Description                                                           | Status                               |

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_SERIAL_NO;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -288,11 +290,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.warn("discoverByActivation: null OpenWebNetDeviceDiscoveryService, ignoring msg={}", baseMsg);
             return;
         }
-        if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement) { // we
-                                                                                                                   // support
-                                                                                                                   // these
-                                                                                                                   // types
-                                                                                                                   // only
+        if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement) { // we support these types only
             BaseOpenMessage bmsg = baseMsg;
             if (baseMsg instanceof Lighting) {
                 What what = baseMsg.getWhat();
