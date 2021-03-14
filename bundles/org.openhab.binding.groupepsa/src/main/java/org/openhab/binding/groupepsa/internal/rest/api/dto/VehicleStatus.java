@@ -18,6 +18,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * @author Arjan Mels - Initial contribution
  */
@@ -32,6 +34,8 @@ public class VehicleStatus {
     private @Nullable Environment environment;
     private @Nullable Ignition ignition;
     private @Nullable Kinetic kinetic;
+    @SerializedName("timed.odometer")
+    private @Nullable Odometer odometer;
     private @Nullable Position lastPosition;
     private @Nullable Preconditionning preconditionning;
     private @Nullable Privacy privacy;
@@ -49,11 +53,11 @@ public class VehicleStatus {
 
     private static class Extension {
         private @Nullable Kinetic kinetic;
-        private @Nullable Odemeter odemeter;
+        private @Nullable Odometer odometer;
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("kinetic", kinetic).append("odemeter", odemeter).toString();
+            return new ToStringBuilder(this).append("kinetic", kinetic).append("odometer", odometer).toString();
         }
     }
 
@@ -71,32 +75,18 @@ public class VehicleStatus {
         }
     }
 
-    public @Nullable Odemeter getOdemeter() {
-        Embedded final_embedded = _embedded;
-
-        if (final_embedded != null) {
-            Extension final_extension = final_embedded.extension;
-            if (final_extension != null)
-                return final_extension.odemeter;
-            else
-                return null;
-        } else
+    public @Nullable Odometer getOdometer() {
+        if (odometer != null)
+            return odometer;
+        else {
+            Embedded final_embedded = _embedded;
+            if (final_embedded != null) {
+                final Extension final_extension = final_embedded.extension;
+                if (final_extension != null)
+                    return final_extension.odometer;
+            }
             return null;
-    }
-
-    public void setOdemeter(@Nullable Odemeter odemeter) {
-        Embedded res_embedded = _embedded;
-
-        if (res_embedded == null)
-            res_embedded = new Embedded();
-
-        Extension res_extension = res_embedded.extension;
-        if (res_extension == null)
-            res_extension = new Extension();
-
-        res_extension.odemeter = odemeter;
-        res_embedded.extension = res_extension;
-        _embedded = res_embedded;
+        }
     }
 
     public @Nullable ZonedDateTime getCreatedAt() {
@@ -148,7 +138,8 @@ public class VehicleStatus {
         return new ToStringBuilder(this).append("createdAt", createdAt).append("_embedded", _embedded)
                 .append("battery", battery).append("doorsState", doorsState).append("energy", energy)
                 .append("environment", environment).append("ignition", ignition).append("kinetic", kinetic)
-                .append("lastPosition", lastPosition).append("preconditionning", preconditionning)
-                .append("privacy", privacy).append("safety", safety).append("service", service).toString();
+                .append("odometer", odometer).append("lastPosition", lastPosition)
+                .append("preconditionning", preconditionning).append("privacy", privacy).append("safety", safety)
+                .append("service", service).toString();
     }
 }

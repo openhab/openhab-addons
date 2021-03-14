@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Arjan Mels - Initial contribution
  */
 @NonNullByDefault
-public class Odemeter {
+public class Odometer {
 
     private @Nullable ZonedDateTime createdAt;
     private @Nullable Double mileage;

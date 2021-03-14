@@ -23,8 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class GroupePSAConfiguration {
 
-    public @Nullable String id;
-    public @Nullable Integer pollingInterval;
+    private @Nullable String id;
+    private @Nullable Integer pollingInterval;
+    private @Nullable Integer onlineInterval;
 
     @Nullable
     public String getId() {
@@ -41,5 +42,13 @@ public class GroupePSAConfiguration {
 
     public void setPollingInterval(Integer pollingInterval) {
         this.pollingInterval = pollingInterval;
+    }
+
+    public @Nullable Integer getOnlineInterval() {
+        return onlineInterval;
+    }
+
+    public void setOnlineInterval(Integer onlineInterval) {
+        this.onlineInterval = onlineInterval;
     }
 }

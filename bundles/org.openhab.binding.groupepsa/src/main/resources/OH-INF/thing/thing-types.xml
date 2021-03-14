@@ -10,11 +10,6 @@
 		<description>The bridge to communicate with the PSA (Peugeot, Citroen, Vauxhall, Opel, DS) Web API for End-Users</description>
 		<category>WebService</category>
 
-		<properties>
-			<property name="modelId">ConnectedCar v4</property>
-			<property name="protocol">PSA Web API</property>
-		</properties>
-
 		<representation-property>vendor</representation-property>
 
 		<config-description>
@@ -31,7 +26,7 @@
 			</parameter>
 			<parameter name="userName" type="text" required="true">
 				<label>User Name</label>
-				<description>The user name for which the application key has been issued</description>
+				<description>The user name for the mypeugot/mycitroen/myds/myopel/myvauxhall website or app</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
@@ -46,14 +41,14 @@
 				<advanced>true</advanced>
 				<default>07364655-93cb-4194-8158-6b035ac2c24c</default>
 				<label>Client ID</label>
-				<description>The client ID for API access (see:
+				<description>The client ID for API access: can normally left at the default value. (see:
 					https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)</description>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="true">
 				<advanced>true</advanced>
 				<default>F2kK7lC5kF5qN7tM0wT8kE3cW1dP0wC5pI6vC0sQ5iP5cN8cJ8</default>
 				<label>Client Secret</label>
-				<description>The client secret for API access (see:
+				<description>The client secret for API access: can normally left at the default value. (see:
 					https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)</description>
 			</parameter>
 		</config-description>
@@ -90,12 +85,17 @@
 		<config-description>
 			<parameter name="id" type="text" required="true">
 				<label>ID</label>
-				<description>Vehicle API ID</description>
+				<description>Vehicle API ID (obtained automatically during discovery, not equal to the VIN)</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="min">
 				<label>Polling Interval</label>
-				<default>60</default>
-				<description>How often the available vehicles should be queried in minutes</description>
+				<default>5</default>
+				<description>How often this vehicle should be polled for updated information</description>
+			</parameter>
+			<parameter name="onlineInterval" type="integer" required="false" unit="min">
+				<label>Online Timeout</label>
+				<default>15</default>
+				<description>Timeout when the vehicle is considered offline</description>
 			</parameter>
 		</config-description>
 
@@ -107,7 +107,10 @@
 		<category>Energy</category>
 		<channels>
 			<channel id="current" typeId="current"/>
-			<channel id="voltage" typeId="voltage"/>
+			<channel id="voltage" typeId="level">
+				<label>Battery Level</label>
+				<description>Battery level</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

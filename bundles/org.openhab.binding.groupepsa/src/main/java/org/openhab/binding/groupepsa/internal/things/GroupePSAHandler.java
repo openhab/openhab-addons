@@ -66,7 +66,7 @@ import com.github.filosganga.geogson.model.positions.SinglePosition;
 @NonNullByDefault
 public class GroupePSAHandler extends BaseThingHandler {
     private static final long DEFAULT_POLLING_INTERVAL_M = TimeUnit.MINUTES.toMinutes(1);
-    private static final int ONLINE_CHECK_M = 15;
+    private static final long DEFAULT_ONLINE_INTERVAL_M = TimeUnit.MINUTES.toMinutes(60);
 
     private final Logger logger = LoggerFactory.getLogger(GroupePSAHandler.class);
 
@@ -75,6 +75,7 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> groupepsaPollingJob;
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
+    private long onlineIntervalM;
 
     @Override
     protected @Nullable Bridge getBridge() {
@@ -110,17 +111,22 @@ public class GroupePSAHandler extends BaseThingHandler {
         if (getBridgeHandler() != null) {
             GroupePSAConfiguration currentConfig = getConfigAs(GroupePSAConfiguration.class);
             final String id = currentConfig.getId();
-            final Integer pollingIntervalS = currentConfig.getPollingInterval();
+            final Integer pollingIntervalM = currentConfig.getPollingInterval();
+            final Integer onlineIntervalM = currentConfig.getOnlineInterval();
 
             if (id == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/conf-error-no-vehicle-id");
-            } else if (pollingIntervalS != null && pollingIntervalS < 1) {
+            } else if (pollingIntervalM != null && pollingIntervalM < 1) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/conf-error-invalid-polling-interval");
+            } else if (onlineIntervalM != null && onlineIntervalM < 1) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/conf-error-invalid-online-interval");
             } else {
                 this.id = id;
-                startGroupePSAPolling(pollingIntervalS);
+                this.onlineIntervalM = onlineIntervalM != null ? onlineIntervalM : DEFAULT_ONLINE_INTERVAL_M;
+                startGroupePSAPolling(pollingIntervalM);
             }
 
         } else {
@@ -175,7 +181,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         if (updatedAt == null)
             return false;
 
-        return updatedAt.isAfter(ZonedDateTime.now().minusMinutes(ONLINE_CHECK_M));
+        return updatedAt.isAfter(ZonedDateTime.now().minusMinutes(onlineIntervalM));
     }
 
     private synchronized void updateGroupePSAState() {
@@ -261,7 +267,7 @@ public class GroupePSAHandler extends BaseThingHandler {
                 Units.METRE_PER_SQUARE_SECOND);
         updateState(CHANNEL_MOTION_SPEED, vehicle.getKinetic(), Kinetic::getSpeed, SIUnits.KILOMETRE_PER_HOUR);
 
-        updateState(CHANNEL_MOTION_MILEAGE, vehicle.getOdemeter(), Odemeter::getMileage,
+        updateState(CHANNEL_MOTION_MILEAGE, vehicle.getOdometer(), Odometer::getMileage,
                 MetricPrefix.KILO(SIUnits.METRE));
 
         Position lastPosition = vehicle.getLastPosition();
@@ -269,10 +275,16 @@ public class GroupePSAHandler extends BaseThingHandler {
             Geometry<SinglePosition> geometry = lastPosition.getGeometry();
             if (geometry != null) {
                 SinglePosition position = (SinglePosition) geometry.positions();
-                updateState(CHANNEL_POSITION_POSITION,
-                        new PointType(new DecimalType(position.coordinates().getLat()),
-                                new DecimalType(position.coordinates().getLon()),
-                                new DecimalType(position.coordinates().getAlt())));
+                if (Double.isFinite(position.coordinates().getAlt())) {
+                    updateState(CHANNEL_POSITION_POSITION,
+                            new PointType(new DecimalType(position.coordinates().getLat()),
+                                    new DecimalType(position.coordinates().getLon()),
+                                    new DecimalType(position.coordinates().getAlt())));
+                } else {
+                    updateState(CHANNEL_POSITION_POSITION,
+                            new PointType(new DecimalType(position.coordinates().getLat()),
+                                    new DecimalType(position.coordinates().getLon())));
+                }
             } else {
                 updateState(CHANNEL_POSITION_POSITION, UnDefType.UNDEF);
             }
@@ -282,8 +294,6 @@ public class GroupePSAHandler extends BaseThingHandler {
             updateState(CHANNEL_POSITION_SIGNALSTRENGTH, lastPosition.getProperties(), Properties::getSignalQuality,
                     Units.PERCENT);
         }
-
-        updateState(CHANNEL_VARIOUS_PRIVACY, vehicle.getPrivacy(), Privacy::getState);
 
         updateState(CHANNEL_VARIOUS_PRIVACY, vehicle.getPrivacy(), Privacy::getState);
         updateState(CHANNEL_VARIOUS_BELT, vehicle.getSafety(), Safety::getBeltWarning);
