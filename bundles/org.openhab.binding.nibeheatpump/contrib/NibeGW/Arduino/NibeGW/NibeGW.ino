@@ -20,22 +20,28 @@
  *  27.6.2014   v1.02   Fixed compile error and added Ethernet initialization delay.
  *  29.6.2015   v2.00   Bidirectional support.
  *  18.2.2017   v3.00   Redesigned.
+ *  14.3.2021   v3.01   Fix Prodino build + fixed UDP issue + debug improvements
  */
 
 // ######### CONFIGURATION #######################
 
-#define VERSION                 "3.00"
+#define VERSION                 "3.01"
 
 // Enable if you use ProDiNo board
 //#define PRODINO_BOARD
+
 // Enable if ENC28J60 LAN module is used
 //#define TRANSPORT_ETH_ENC28J60
+
 // Enable if you use STM32 NUCLEO-F429ZI
 //#define STM32_F429ZI_BOARD
 
 
-// Enable debug printouts, listen printouts e.g. via netcat (nc -l -u 50000)
+// Enable debug printouts
 //#define ENABLE_DEBUG
+// Enable UDP debug printouts, listen printouts e.g. via netcat (nc -l -u 50000)
+//#define ENABLE_UDP_DEBUG
+
 #define VERBOSE_LEVEL           3
 
 #define BOARD_NAME              "Arduino NibeGW"
@@ -48,23 +54,23 @@
 
 #define TARGET_IP               192, 168, 1, 19
 #define TARGET_PORT             9999
-#define TARGER_DEBUG_PORT       50000
+#define TARGET_DEBUG_PORT       50000
 
 // Delay before initialize ethernet on startup in seconds
 #define ETH_INIT_DELAY          10
 
 // Used serial port and direction change pin for RS-485 port
 #ifdef PRODINO_BOARD
-#define RS485_PORT              Serial1
-#define RS485_DIRECTION_PIN     3
+ #define RS485_PORT              Serial1
+ #define RS485_DIRECTION_PIN     3
 #elif defined STM32_F429ZI_BOARD
-#include <HardwareSerial.h>
-HardwareSerial Serial1(PG9,PG14);
-#define RS485_PORT              Serial1
-#define RS485_DIRECTION_PIN     PF15
+ #include <HardwareSerial.h>
+ HardwareSerial Serial1(PG9,PG14);
+ #define RS485_PORT              Serial1
+ #define RS485_DIRECTION_PIN     PF15
 #else
-#define RS485_PORT              Serial
-#define RS485_DIRECTION_PIN     2
+ #define RS485_PORT              Serial
+ #define RS485_DIRECTION_PIN     2
 #endif
 
 #define ACK_MODBUS40            true
@@ -77,26 +83,26 @@ HardwareSerial Serial1(PG9,PG14);
 // ######### INCLUDES #######################
 
 #ifdef TRANSPORT_ETH_ENC28J60
-#include <UIPEthernet.h>
+ #include <UIPEthernet.h>
 #elif defined STM32_F429ZI_BOARD
-#include <LwIP.h>
-#include <STM32Ethernet.h>
-#include <EthernetUdp.h> 
+ #include <LwIP.h>
+ #include <STM32Ethernet.h>
+ #include <EthernetUdp.h>
+#elif defined PRODINO_BOARD
+ #include <SPI.h>
+ #include "KmpDinoEthernet.h"
+ #include "KMPCommon.h"
+ #include "Ethernet/utility/w5100.h"
 #else
-#include <SPI.h>
-#include <Ethernet.h>
-#include <EthernetUdp.h>
-#endif
-
-#ifdef PRODINO_BOARD
-#include "KmpDinoEthernet.h"
-#include "KMPCommon.h"
+ #include <SPI.h>
+ #include <Ethernet.h>
+ #include <EthernetUdp.h>
 #endif
 
 #ifdef STM32_F429ZI_BOARD
-#include <IWatchdog.h>
+ #include <IWatchdog.h>
 #else
-#include <avr/wdt.h>
+ #include <avr/wdt.h>
 #endif
 
 #include "NibeGw.h"
@@ -130,13 +136,13 @@ NibeGw nibegw(&RS485_PORT, RS485_DIRECTION_PIN);
 #define DEBUG_BUFFER_SIZE       80
 
 #ifdef ENABLE_DEBUG
-#define DEBUG_PRINT(level, message) if (verbose >= level) { debugPrint(message); }
-#define DEBUG_PRINTDATA(level, message, data) if (verbose >= level) { sprintf(debugBuf, message, data); debugPrint(debugBuf); }
-#define DEBUG_PRINTARRAY(level, data, len) if (verbose >= level) { for (int i = 0; i < len; i++) { sprintf(debugBuf, "%02X", data[i]); debugPrint(debugBuf); }}
+ #define DEBUG_PRINT(level, message) if (verbose >= level) { debugPrint(message); }
+ #define DEBUG_PRINTDATA(level, message, data) if (verbose >= level) { sprintf(debugBuf, message, data); debugPrint(debugBuf); }
+ #define DEBUG_PRINTARRAY(level, data, len) if (verbose >= level) { for (int i = 0; i < len; i++) { sprintf(debugBuf, "%02X", data[i]); debugPrint(debugBuf); }}
 #else
-#define DEBUG_PRINT(level, message)
-#define DEBUG_PRINTDATA(level, message, data)
-#define DEBUG_PRINTARRAY(level, data, len)
+ #define DEBUG_PRINT(level, message)
+ #define DEBUG_PRINTDATA(level, message, data)
+ #define DEBUG_PRINTARRAY(level, data, len)
 #endif
 
 #ifdef ENABLE_DEBUG
@@ -145,12 +151,14 @@ char debugBuf[DEBUG_BUFFER_SIZE];
 
 void debugPrint(char* data)
 {
+#ifdef ENABLE_UDP_DEBUG
   if (ethernetInitialized)
   {
-    udp.beginPacket(targetIp, TARGER_DEBUG_PORT);
+    udp.beginPacket(targetIp, TARGET_DEBUG_PORT);
     udp.write(data);
     udp.endPacket();
   }
+#endif
 
 #ifdef PRODINO_BOARD
   Serial.print(data);
@@ -191,6 +199,7 @@ void setup()
 #ifdef PRODINO_BOARD
   DinoInit();
   Serial.begin(115200, SERIAL_8N1);
+  delay(500);
 #endif
 
   DEBUG_PRINTDATA(0, "%s ", BOARD_NAME);
@@ -241,7 +250,8 @@ void loop()
       sprintf(debugBuf, "GW=%d.%d.%d.%d\n", gw[0], gw[1], gw[2], gw[3]);
       DEBUG_PRINT(0, debugBuf);
       sprintf(debugBuf, "TARGET IP=%d.%d.%d.%d\n", TARGET_IP);
-      DEBUG_PRINTDATA(0, "TARGET PORT=%d\n", BOARD_NAME);
+      DEBUG_PRINT(0, debugBuf);
+      DEBUG_PRINTDATA(0, "TARGET PORT=%d\n", TARGET_PORT);
       DEBUG_PRINTDATA(0, "ACK_MODBUS40=%s\n", ACK_MODBUS40 ? "true" : "false");
       DEBUG_PRINTDATA(0, "ACK_SMS40=%s\n", ACK_SMS40 ? "true" : "false");
       DEBUG_PRINTDATA(0, "ACK_RMU40=%s\n", ACK_RMU40 ? "true" : "false");
@@ -258,6 +268,9 @@ void loop()
 void initializeEthernet()
 {
   Ethernet.begin(mac, ip, gw, mask);
+#ifdef PRODINO_BOARD
+  W5100.setRetransmissionCount(1);
+#endif
   ethernetInitialized = true;
   udp.begin(TARGET_PORT);  
   udp4readCmnds.begin(INCOMING_PORT_READCMDS);
@@ -280,10 +293,13 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
   {
     if (token == READ_TOKEN)
     {
-      DEBUG_PRINT(2, "Read token received\n");
+      DEBUG_PRINT(2, "Read token received from nibe\n");
       int packetSize = udp4readCmnds.parsePacket();
       if (packetSize) {
         len = udp4readCmnds.read(data, packetSize);
+        DEBUG_PRINTDATA(2, "Send read command to nibe, len=%d: ", len);
+        DEBUG_PRINTARRAY(2, data, len)
+        DEBUG_PRINT(2, "\n");
 #ifdef TRANSPORT_ETH_ENC28J60
         udp4readCmnds.flush();
         udp4readCmnds.stop();
@@ -293,10 +309,13 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
     }
     else if (token == WRITE_TOKEN)
     {
-      DEBUG_PRINT(2, "Write token received\n");
+      DEBUG_PRINT(2, "Write token received from nibe\n");
       int packetSize = udp4writeCmnds.parsePacket();
       if (packetSize) {
         len = udp4writeCmnds.read(data, packetSize);
+        DEBUG_PRINTDATA(2, "Send write command to nibe, len=%d: ", len);
+        DEBUG_PRINTARRAY(2, data, len)
+        DEBUG_PRINT(2, "\n");
 #ifdef TRANSPORT_ETH_ENC28J60
         udp4writeCmnds.flush();
         udp4writeCmnds.stop();
@@ -315,11 +334,17 @@ void nibeDebugCallback(byte verbose, char* data)
 
 void sendUdpPacket(const byte * const data, int len)
 {
-  DEBUG_PRINTDATA(2, "Sending UDP packet, len=%d\n", len);
+#ifdef ENABLE_DEBUG
+  sprintf(debugBuf, "Sending UDP packet to %d.%d.%d.%d:", TARGET_IP);
+  DEBUG_PRINT(0, debugBuf);
+  DEBUG_PRINTDATA(2, "%d", TARGET_PORT);
+  DEBUG_PRINTDATA(2, ", len=%d: ", len);
   DEBUG_PRINTARRAY(2, data, len)
   DEBUG_PRINT(2, "\n");
+#endif
 
   udp.beginPacket(targetIp, TARGET_PORT);
   udp.write(data, len);
-  udp.endPacket();
+  int retval = udp.endPacket();
+  DEBUG_PRINTDATA(2, "UDP packet sent %s\n", retval == 0 ? "failed" : "succeed");
 }
