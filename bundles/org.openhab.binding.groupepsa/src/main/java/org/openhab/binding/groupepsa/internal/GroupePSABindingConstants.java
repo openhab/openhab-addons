@@ -30,7 +30,8 @@ public class GroupePSABindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
-    // Vechicle properties
+    // Vehicle properties
+    public static final String VEHICLE_ID = "id";
     public static final String VEHICLE_VIN = "vin";
     public static final String VEHICLE_VENDOR = "vendor";
     public static final String VEHICLE_MODEL = "model";

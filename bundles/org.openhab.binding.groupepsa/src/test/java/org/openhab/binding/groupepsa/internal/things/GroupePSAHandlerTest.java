@@ -15,6 +15,13 @@ package org.openhab.binding.groupepsa.internal.things;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
+
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpContentResponse;
@@ -29,7 +36,7 @@ import org.openhab.binding.groupepsa.internal.rest.api.GroupePSAConnectApi;
 import org.openhab.binding.groupepsa.internal.rest.exceptions.GroupePSACommunicationException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -38,6 +45,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
+
+import tec.uom.se.unit.Units;
 
 /**
  * The {@link GroupePSAHandlerTest} is responsible for testing the binding
@@ -61,9 +70,19 @@ public class GroupePSAHandlerTest {
     private @NonNullByDefault({}) @Mock OAuthFactory oAuthFactory;
     private @NonNullByDefault({}) @Mock HttpClient httpClient;
 
+    static String getResourceFileAsString(String fileName) throws GroupePSACommunicationException {
+        try (InputStream is = GroupePSAConnectApi.class.getResourceAsStream(fileName)) {
+            try (InputStreamReader isr = new InputStreamReader(is); BufferedReader reader = new BufferedReader(isr)) {
+                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
+        } catch (Exception e) {
+            throw new GroupePSACommunicationException(e);
+        }
+    }
+
     static HttpContentResponse createHttpResponse(String file) throws GroupePSACommunicationException {
         return new HttpContentResponse(new HttpResponse(null, null).status(200),
-                GroupePSAConnectApi.getResourceFileAsString("/" + file).getBytes(), "json", "UTF-8");
+                getResourceFileAsString("/" + file).getBytes(), "json", "UTF-8");
     }
 
     @BeforeEach
@@ -99,7 +118,7 @@ public class GroupePSAHandlerTest {
 
         // Setup thing mock
         Configuration thingConfig = new Configuration();
-        thingConfig.put("vin", "mock_vin");
+        thingConfig.put("id", "mock_id");
         doReturn(thingConfig).when(thing).getConfiguration();
         doReturn(new ThingUID("a:b:c")).when(thing).getUID();
 
@@ -141,6 +160,6 @@ public class GroupePSAHandlerTest {
 
         // check channel content
         verify(thingCallback).stateUpdated(eq(new ChannelUID("a:b:c:electric#charging_nextDelayedTime")),
-                eq(new DateTimeType("2019-08-24T14:15:22.000+0000")));
+                eq(new QuantityType<Time>(900, Units.SECOND)));
     }
 }

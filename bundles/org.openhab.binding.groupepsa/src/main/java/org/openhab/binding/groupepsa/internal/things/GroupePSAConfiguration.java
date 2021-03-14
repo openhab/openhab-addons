@@ -23,16 +23,16 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class GroupePSAConfiguration {
 
-    public @Nullable String vin;
+    public @Nullable String id;
     public @Nullable Integer pollingInterval;
 
     @Nullable
-    public String getVIN() {
-        return vin;
+    public String getId() {
+        return id;
     }
 
-    public void setVIN(String vin) {
-        this.vin = vin;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public @Nullable Integer getPollingInterval() {

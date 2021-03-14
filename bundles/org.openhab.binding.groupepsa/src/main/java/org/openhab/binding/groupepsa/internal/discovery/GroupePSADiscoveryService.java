@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.groupepsa.internal.GroupePSABindingConstants;
 import org.openhab.binding.groupepsa.internal.bridge.GroupePSABridgeHandler;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.Vehicle;
@@ -60,20 +61,15 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
             for (Vehicle vehicle : vehicles) {
                 ThingUID bridgeUID = bridgeHandler.getThing().getUID();
                 ThingTypeUID thingTypeUID = THING_TYPE_VEHICLE;
-                String vin = vehicle.getId();
-                if (vin != null) {
-                    ThingUID VehicleThingUid = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vin);
+                String id = vehicle.getId();
+                if (id != null) {
+                    ThingUID VehicleThingUid = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, id);
 
                     Map<String, Object> properties = new HashMap<>();
-                    properties.put(GroupePSABindingConstants.VEHICLE_VIN, vin);
-                    String brand = vehicle.getBrand();
-                    if (brand == null)
-                        brand = "Unknown";
-                    properties.put(GroupePSABindingConstants.VEHICLE_VENDOR, brand);
-                    String label = vehicle.getLabel();
-                    if (label == null)
-                        label = "Unknown";
-                    properties.put(GroupePSABindingConstants.VEHICLE_MODEL, label);
+                    putProperty(properties, GroupePSABindingConstants.VEHICLE_ID, id);
+                    putProperty(properties, GroupePSABindingConstants.VEHICLE_VIN, vehicle.getVin());
+                    putProperty(properties, GroupePSABindingConstants.VEHICLE_VIN, vehicle.getBrand());
+                    putProperty(properties, GroupePSABindingConstants.VEHICLE_VIN, vehicle.getLabel());
 
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(VehicleThingUid)
                             .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
@@ -87,5 +83,11 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService {
             logger.warn("No vehicles found", e);
             return;
         }
+    }
+
+    private void putProperty(Map<String, Object> properties, String key, @Nullable String value) {
+        if (value == null)
+            value = "Unknown";
+        properties.put(key, value);
     }
 }

@@ -25,6 +25,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Vehicle {
+    private @Nullable String id;
     private @Nullable String vin;
     private @Nullable String brand;
     private @Nullable String label;
@@ -34,6 +35,10 @@ public class Vehicle {
     private @Nullable ZonedDateTime updatedAt;
 
     public @Nullable String getId() {
+        return id;
+    }
+
+    public @Nullable String getVin() {
         return vin;
     }
 
@@ -59,7 +64,7 @@ public class Vehicle {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("createdAt", createdAt).append("updatedAt", createdAt)
+        return new ToStringBuilder(this).append("createdAt", createdAt).append("updatedAt", createdAt).append("id", id)
                 .append("vin", vin).append("brand", brand).append("label", label).append("engines", engines).toString();
     }
 }

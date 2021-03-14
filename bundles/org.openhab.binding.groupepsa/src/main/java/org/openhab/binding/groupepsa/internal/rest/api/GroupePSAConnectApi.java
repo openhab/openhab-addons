@@ -17,6 +17,7 @@ import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.A
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -103,8 +104,12 @@ public class GroupePSAConnectApi {
     }
 
     static Throwable getRootCause(Throwable e) {
-        while (e.getCause() != null)
-            e = e.getCause();
+        Throwable nextE;
+        do {
+            nextE = e.getCause();
+            if (nextE != null)
+                e = nextE;
+        } while (nextE != null);
         return e;
     }
 
@@ -177,13 +182,20 @@ public class GroupePSAConnectApi {
 
     public @Nullable List<Vehicle> getVehicles() throws GroupePSACommunicationException {
         ContentResponse response = executeRequest(getBaseUrl() + "/user");
-
         User user = parseResponse(response, User.class);
 
         if (user != null) {
             final List<Vehicle> vehicles = user.getVehicles();
-            if (vehicles != null)
-                return vehicles;
+            if (vehicles == null)
+                return null;
+            final List<Vehicle> vehiclesDetails = new LinkedList<>();
+            for (Vehicle vehicle : vehicles) {
+                ContentResponse responseDetails = executeRequest(getBaseUrl() + "/user/vehicles/" + vehicle.getId());
+                Vehicle vehicleDetails = parseResponse(responseDetails, Vehicle.class);
+                if (vehicleDetails != null)
+                    vehiclesDetails.add(vehicleDetails);
+            }
+            return vehiclesDetails;
         }
 
         return null;
@@ -200,6 +212,33 @@ public class GroupePSAConnectApi {
             status.setOdemeter(status_odometer.getOdemeter());
         else
             status = status_odometer;
+
+        // TODO: parse info from responses
+        try {
+            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/trips");
+        } catch (Throwable t) {
+            logger.info("/trips", t);
+        }
+        try {
+            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/alerts");
+        } catch (Throwable t) {
+            logger.info("/alerts", t);
+        }
+        try {
+            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/lastPosition");
+        } catch (Throwable t) {
+            logger.info("/lastPosition", t);
+        }
+        try {
+            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/maintenance");
+        } catch (Throwable t) {
+            logger.info("/maintenance", t);
+        }
+        try {
+            executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/telemetry");
+        } catch (Throwable t) {
+            logger.info("/telemetry", t);
+        }
 
         return status;
     }
