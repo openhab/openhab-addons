@@ -117,7 +117,10 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
     }
 
     private String getModelName(RemoteDevice device) {
-        return SonosXMLParser.extractModelName(device.getDetails().getModelDetails().getModelName());
+        // For Ikea SYMFONISK models, the model name now starts with "SYMFONISK" with recent firmwares
+        // We can no more use extractModelName as it deletes the first word ("Sonos" for all other devices)
+        return device.getDetails().getModelDetails().getModelName().toUpperCase().contains("SYMFONISK") ? "SYMFONISK"
+                : SonosXMLParser.extractModelName(device.getDetails().getModelDetails().getModelName());
     }
 
     private @Nullable String getSonosRoomName(RemoteDevice device) {
