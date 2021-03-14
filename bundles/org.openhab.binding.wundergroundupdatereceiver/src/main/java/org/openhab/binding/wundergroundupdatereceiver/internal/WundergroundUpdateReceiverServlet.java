@@ -18,6 +18,7 @@ import static org.openhab.binding.wundergroundupdatereceiver.internal.Wundergrou
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Instant;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -158,6 +159,10 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
         });
 
         resp.setStatus(HttpServletResponse.SC_OK);
+        resp.setContentType("text/html;charset=utf-8");
+        resp.setContentLength(7);
+        resp.setDateHeader("Date", Instant.now().toEpochMilli());
+        resp.setHeader("Connection", "close");
         PrintWriter writer = resp.getWriter();
         writer.write("success");
         writer.flush();
