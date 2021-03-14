@@ -11,7 +11,6 @@
   <name>openHAB Add-ons :: Bundles :: iCalendar Binding</name>
   <properties>
     <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
-    <jackson.version>2.10.3</jackson.version>
   </properties>
   <dependencies>
     <!-- own dependencies -->
@@ -20,6 +19,12 @@
       <artifactId>biweekly</artifactId>
       <version>0.6.4</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- dependencies of biweekly -->
     <dependency>

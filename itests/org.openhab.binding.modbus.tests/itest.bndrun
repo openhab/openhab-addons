@@ -27,8 +27,6 @@ Fragment-Host: org.openhab.binding.modbus
 #
 -runbundles: \
 	javax.measure.unit-api;version='[1.0.0,1.0.1)',\
-	org.apache.commons.io;version='[2.2.0,2.2.1)',\
-	org.apache.commons.lang;version='[2.6.0,2.6.1)',\
 	org.apache.felix.configadmin;version='[1.9.8,1.9.9)',\
 	org.apache.felix.scr;version='[2.1.10,2.1.11)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
@@ -76,5 +74,5 @@ Fragment-Host: org.openhab.binding.modbus
 	org.mockito.mockito-core;version='[3.7.0,3.7.1)',\
 	org.objenesis;version='[3.1.0,3.1.1)',\
 	org.mockito.junit-jupiter;version='[3.7.0,3.7.1)',\
-	biz.aQute.tester.junit-platform;version='[5.2.0,5.2.1)',\
-	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)'
+	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
+	biz.aQute.tester.junit-platform;version='[5.3.0,5.3.1)'

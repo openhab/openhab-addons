@@ -111,8 +111,12 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 break;
             case "1103": // roller_0: S, rollerPos, 0-100, unknown -1
                 int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min((int) value, SHELLY_MAX_ROLLER_POS));
+                logger.debug("{}: CoAP update roller position: control={}, position={}", thingName,
+                        SHELLY_MAX_ROLLER_POS - pos, pos);
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
                         toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
+                updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
+                        toQuantityType((double) pos, Units.PERCENT));
                 break;
             case "1105": // S, valvle, closed/opened/not_connected/failure/closing/opening/checking or unbknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE, getStringType(s.valueStr));
@@ -297,11 +301,15 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 break;
             case "3119": // Motion timestamp
                 // {"I":3119,"T":"S","D":"timestamp","U":"s","R":["U32","-1"],"L":1},
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
-                        getTimestamp(getString(profile.settings.timezone), (long) s.value));
+                if (s.value != 0) {
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
+                            getTimestamp(getString(profile.settings.timezone), (long) s.value));
+                }
                 break;
             case "3120": // motionActive
                 // {"I":3120,"T":"S","D":"motionActive","R":["0/1","-1"],"L":1},
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_ACT,
+                        getTimestamp(getString(profile.settings.timezone), (long) s.value));
                 break;
 
             case "6108": // A, gas, none/mild/heavy/test or unknown

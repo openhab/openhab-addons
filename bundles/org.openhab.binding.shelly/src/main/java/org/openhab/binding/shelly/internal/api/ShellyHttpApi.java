@@ -36,7 +36,9 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySendKeyLis
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySenseKeyCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLight;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
@@ -192,24 +194,26 @@ public class ShellyHttpApi {
                     .convert(getDouble(status.tmp.value));
             status.tmp.tF = status.tmp.units.equals(SHELLY_TEMP_FAHRENHEIT) ? status.tmp.value : f;
         }
-        if ((status.charger == null) && (status.externalPower != null)) {
+        if ((status.charger == null) && (profile.settings.externalPower != null)) {
             // SHelly H&T uses external_power, Sense uses charger
-            status.charger = status.externalPower != 0;
+            status.charger = profile.settings.externalPower != 0;
         }
-
         return status;
     }
 
-    public void setTimer(Integer index, String timerName, Double value) throws ShellyApiException {
+    public void setTimer(int index, String timerName, int value) throws ShellyApiException {
         String type = SHELLY_CLASS_RELAY;
         if (profile.isRoller) {
             type = SHELLY_CLASS_ROLLER;
         } else if (profile.isLight) {
             type = SHELLY_CLASS_LIGHT;
         }
-        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "="
-                + ((Integer) value.intValue()).toString();
+        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + value;
         request(uri);
+    }
+
+    public void setSleepTime(int value) throws ShellyApiException {
+        request(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
     }
 
     public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
@@ -226,6 +230,35 @@ public class ShellyHttpApi {
 
     public void setLightSetting(String parm, String value) throws ShellyApiException {
         request(SHELLY_URL_SETTINGS + "?" + parm + "=" + value);
+    }
+
+    public ShellySettingsLogin getLoginSettings() throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "/login", ShellySettingsLogin.class);
+    }
+
+    public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + user + "&password=" + password,
+                ShellySettingsLogin.class);
+    }
+
+    public ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "?coiot_enable=true&coiot_peer=" + peer, ShellySettingsLogin.class);
+    }
+
+    public String deviceReboot() throws ShellyApiException {
+        return callApi(SHELLY_URL_RESTART, String.class);
+    }
+
+    public String factoryReset() throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "?reset=true", String.class);
+    }
+
+    public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException {
+        return callApi("/ota?" + uri, ShellySettingsUpdate.class);
+    }
+
+    public String setCloud(boolean enabled) throws ShellyApiException {
+        return callApi("/settings/cloud/?enabled=" + (enabled ? "1" : "0"), String.class);
     }
 
     /**

@@ -13,7 +13,7 @@
 package org.openhab.binding.lifx.internal.handler;
 
 import static org.openhab.binding.lifx.internal.LifxBindingConstants.*;
-import static org.openhab.binding.lifx.internal.protocol.Product.Feature.*;
+import static org.openhab.binding.lifx.internal.LifxProduct.Feature.*;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.*;
 
 import java.net.InetSocketAddress;
@@ -38,18 +38,18 @@ import org.openhab.binding.lifx.internal.LifxLightOnlineStateUpdater;
 import org.openhab.binding.lifx.internal.LifxLightPropertiesUpdater;
 import org.openhab.binding.lifx.internal.LifxLightState;
 import org.openhab.binding.lifx.internal.LifxLightStateChanger;
+import org.openhab.binding.lifx.internal.LifxProduct;
+import org.openhab.binding.lifx.internal.dto.Effect;
+import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
+import org.openhab.binding.lifx.internal.dto.GetLightPowerRequest;
+import org.openhab.binding.lifx.internal.dto.GetRequest;
+import org.openhab.binding.lifx.internal.dto.GetTileEffectRequest;
+import org.openhab.binding.lifx.internal.dto.GetWifiInfoRequest;
+import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.PowerState;
+import org.openhab.binding.lifx.internal.dto.SignalStrength;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
-import org.openhab.binding.lifx.internal.protocol.Effect;
-import org.openhab.binding.lifx.internal.protocol.GetLightInfraredRequest;
-import org.openhab.binding.lifx.internal.protocol.GetLightPowerRequest;
-import org.openhab.binding.lifx.internal.protocol.GetRequest;
-import org.openhab.binding.lifx.internal.protocol.GetTileEffectRequest;
-import org.openhab.binding.lifx.internal.protocol.GetWifiInfoRequest;
-import org.openhab.binding.lifx.internal.protocol.Packet;
-import org.openhab.binding.lifx.internal.protocol.PowerState;
-import org.openhab.binding.lifx.internal.protocol.Product;
-import org.openhab.binding.lifx.internal.protocol.SignalStrength;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -90,7 +90,7 @@ public class LifxLightHandler extends BaseThingHandler {
     private static final Duration MAX_STATE_CHANGE_DURATION = Duration.ofSeconds(4);
 
     private final LifxChannelFactory channelFactory;
-    private @NonNullByDefault({}) Product product;
+    private @NonNullByDefault({}) LifxProduct product;
 
     private @Nullable PercentType powerOnBrightness;
     private @Nullable HSBType powerOnColor;
@@ -405,10 +405,10 @@ public class LifxLightHandler extends BaseThingHandler {
         return speed == null ? null : new Double(speed.toString());
     }
 
-    private Product getProduct() {
+    private LifxProduct getProduct() {
         Object propertyValue = getThing().getProperties().get(LifxBindingConstants.PROPERTY_PRODUCT_ID);
         if (propertyValue == null) {
-            return Product.getLikelyProduct(getThing().getThingTypeUID());
+            return LifxProduct.getLikelyProduct(getThing().getThingTypeUID());
         }
         try {
             // Without first conversion to double, on a very first thing creation from discovery inbox,
@@ -416,9 +416,9 @@ public class LifxLightHandler extends BaseThingHandler {
             // (e.g. 50.0 instead of 50)
             Double d = Double.parseDouble((String) propertyValue);
             long productID = d.longValue();
-            return Product.getProductFromProductID(productID);
+            return LifxProduct.getProductFromProductID(productID);
         } catch (IllegalArgumentException e) {
-            return Product.getLikelyProduct(getThing().getThingTypeUID());
+            return LifxProduct.getLikelyProduct(getThing().getThingTypeUID());
         }
     }
 

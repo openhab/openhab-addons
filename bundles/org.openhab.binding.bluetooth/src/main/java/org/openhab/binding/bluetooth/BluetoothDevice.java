@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Refactored class to use Integer instead of int, fixed bugs, diverse improvements
  * @author Connor Petty - Made most of the methods abstract
+ * @author Peter Rosenberg - Improve notifications
  */
 @NonNullByDefault
 public abstract class BluetoothDevice {
@@ -248,6 +249,15 @@ public abstract class BluetoothDevice {
      * @return true if the characteristic write is started successfully
      */
     public abstract boolean writeCharacteristic(BluetoothCharacteristic characteristic);
+
+    /**
+     * Returns if notification is enabled for the given characteristic.
+     *
+     * @param characteristic the {@link BluetoothCharacteristic} to check if notifications are enabled.
+     * @return true if notification is enabled, false if notification is disabled, characteristic is missing on device
+     *         or notifications are not supported.
+     */
+    public abstract boolean isNotifying(BluetoothCharacteristic characteristic);
 
     /**
      * Enables notifications for a characteristic. Only a single read or write operation can be requested at once.
