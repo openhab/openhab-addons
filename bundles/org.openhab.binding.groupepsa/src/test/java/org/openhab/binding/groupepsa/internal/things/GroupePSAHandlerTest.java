@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpContentResponse;
 import org.eclipse.jetty.client.HttpResponse;
@@ -48,7 +47,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class GroupePSAHandlerTest {
 
-    private @Nullable AutoCloseable closeable;
+    private @NonNullByDefault({}) AutoCloseable closeable;
 
     private @NonNullByDefault({}) GroupePSAConnectApi api;
     private @NonNullByDefault({}) GroupePSABridgeHandler bridgeHandler;
@@ -68,6 +67,7 @@ public class GroupePSAHandlerTest {
     }
 
     @BeforeEach
+    @SuppressWarnings("null")
     public void setUp() throws GroupePSACommunicationException {
         closeable = MockitoAnnotations.openMocks(this);
 
@@ -114,8 +114,7 @@ public class GroupePSAHandlerTest {
         // Free any resources, like open database connections, files etc.
         thingHandler.dispose();
         bridgeHandler.dispose();
-        if (closeable != null)
-            closeable.close();
+        closeable.close();
     }
 
     @Test
