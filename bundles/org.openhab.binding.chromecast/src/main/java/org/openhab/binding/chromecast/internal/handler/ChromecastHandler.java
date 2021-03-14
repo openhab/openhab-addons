@@ -13,6 +13,7 @@
 package org.openhab.binding.chromecast.internal.handler;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.openhab.binding.chromecast.internal.ChromecastCommander;
 import org.openhab.binding.chromecast.internal.ChromecastEventReceiver;
 import org.openhab.binding.chromecast.internal.ChromecastScheduler;
 import org.openhab.binding.chromecast.internal.ChromecastStatusUpdater;
+import org.openhab.binding.chromecast.internal.action.ChromecastActions;
 import org.openhab.binding.chromecast.internal.config.ChromecastConfig;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
@@ -39,6 +41,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -53,6 +56,7 @@ import su.litvak.chromecast.api.v2.ChromeCast;
  * @author Markus Rathgeb, Kai Kreuzer - Initial contribution
  * @author Daniel Walters - Online status fix, handle playuri channel and refactor play media code
  * @author Jason Holmes - Media Status. Refactor the monolith into separate classes.
+ * @author Scott Hanson - Added Actions.
  */
 @NonNullByDefault
 public class ChromecastHandler extends BaseThingHandler implements AudioSink {
@@ -203,6 +207,20 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
         } else {
             throw new IOException("Cannot set volume. No coordinator has been initialized.");
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(ChromecastActions.class);
+    }
+
+    public boolean playURL(String url, @Nullable String mediaType) {
+        Coordinator localCoordinator = coordinator;
+        if (localCoordinator != null) {
+            localCoordinator.commander.playMedia(null, url, mediaType);
+            return true;
+        }
+        return false;
     }
 
     private static class Coordinator {
