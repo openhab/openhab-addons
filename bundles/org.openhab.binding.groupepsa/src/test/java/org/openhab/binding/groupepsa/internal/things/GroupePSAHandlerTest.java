@@ -97,7 +97,7 @@ public class GroupePSAHandlerTest {
 
         // Setup API mock
         doReturn(createHttpResponse("dummy_user.json")).when(api).executeRequest(contains("user"), anyString());
-        doReturn(createHttpResponse("dummy_vehiclestatus2.json")).when(api).executeRequest(contains("status"),
+        doReturn(createHttpResponse("dummy_vehiclestatus3.json")).when(api).executeRequest(contains("status"),
                 anyString());
 
         // Setup bridge handler mock

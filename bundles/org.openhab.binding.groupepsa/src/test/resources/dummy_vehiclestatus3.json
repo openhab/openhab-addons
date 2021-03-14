@@ -1,0 +1,102 @@
+{
+	"lastPosition": {
+		"type": "Feature",
+		"geometry": {
+			"type": "Point",
+			"coordinates": [
+				12.1111111,
+				51.222222
+			]
+		},
+		"properties": {
+			"updatedAt": "2020-12-25T15:16:48Z",
+			"heading": 331,
+			"type": "Estimated"
+		}
+	},
+	"preconditionning": {
+		"airConditioning": {
+			"updatedAt": "2020-12-23T16:54:14Z",
+			"status": "Disabled",
+			"programs": [
+				{
+					"enabled": false,
+					"slot": 1,
+					"recurrence": "Daily",
+					"start": "PT6H15M",
+					"occurence": {
+						"day": [
+							"Mon",
+							"Tue",
+							"Wed",
+							"Thu",
+							"Fri"
+						]
+					}
+				},
+				{
+					"enabled": false,
+					"slot": 2,
+					"recurrence": "Daily",
+					"start": "PT8H",
+					"occurence": {
+						"day": [
+							"Mon",
+							"Tue",
+							"Wed",
+							"Thu",
+							"Fri"
+						]
+					}
+				}
+			]
+		}
+	},
+	"energy": [
+		{
+			"updatedAt": "2020-12-23T16:54:13Z",
+			"type": "Electric",
+			"level": 77,
+			"autonomy": 200,
+			"charging": {
+				"plugged": false,
+				"status": "Disconnected",
+				"remainingTime": "PT0S",
+				"chargingRate": 0,
+				"chargingMode": "No",
+				"nextDelayedTime": "PT5H"
+			}
+		}
+	],
+	"createdAt": "2020-12-25T15:16:48Z",
+	"battery": {
+		"voltage": 87,
+		"current": 0,
+		"createdAt": "2020-12-23T16:54:13Z"
+	},
+	"kinetic": {
+		"createdAt": "2020-12-25T15:16:48Z",
+		"moving": false
+	},
+	"privacy": {
+		"createdAt": "2020-12-25T15:16:43Z",
+		"state": "None"
+	},
+	"service": {
+		"type": "Electric",
+		"updatedAt": "2020-11-06T19:56:10Z"
+	},
+	"_links": {
+		"self": {
+			"href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/2226c492a5651186111331116154465178111455354e445911111932526a4e411126c422225532596d51335a474d7a4e7a677a5a574979595441314e3259314e4449354f444d31597a46695a47566b4d325535597a67784f5468694d7a426c4d3255314d444d314d32493159544d324e6a413d/status"
+		},
+		"vehicles": {
+			"href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/2226c492a5651186111331116154465178111455354e445911111932526a4e411126c422225532596d51335a474d7a4e7a677a5a574979595441314e3259314e4449354f444d31597a46695a47566b4d325535597a67784f5468694d7a426c4d3255314d444d314d32493159544d324e6a413d"
+		}
+	},
+	"timed.odometer": {
+		"createdAt": null,
+		"mileage": 1539
+	},
+	"updatedAt": "2020-12-25T15:16:48Z"
+}
