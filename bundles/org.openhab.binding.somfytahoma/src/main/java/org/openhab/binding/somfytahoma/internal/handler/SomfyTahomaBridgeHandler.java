@@ -17,7 +17,12 @@ import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstan
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -35,9 +40,25 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
-import org.openhab.binding.somfytahoma.internal.model.*;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaAction;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRegisterEventsResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatusResponse;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -105,6 +126,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * Id of registered events
      */
     private String eventsId = "";
+
+    private ExpiringCache<List<SomfyTahomaDevice>> cachedDevices = new ExpiringCache<>(Duration.ofSeconds(30),
+            this::getDevices);
 
     // Gson & parser
     private final Gson gson = new Gson();
@@ -329,6 +353,16 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         SomfyTahomaDevice[] response = invokeCallToURL(SETUP_URL + "devices", "", HttpMethod.GET,
                 SomfyTahomaDevice[].class);
         return response != null ? List.of(response) : List.of();
+    }
+
+    public synchronized @Nullable SomfyTahomaDevice getCachedDevice(String url) {
+        List<SomfyTahomaDevice> devices = cachedDevices.getValue();
+        for (SomfyTahomaDevice device : devices) {
+            if (url.equals(device.getDeviceURL())) {
+                return device;
+            }
+        }
+        return null;
     }
 
     private void getTahomaUpdates() {
