@@ -14,9 +14,6 @@ package org.openhab.binding.groupepsa.internal.rest.api;
 
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.API_URL;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -24,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -102,18 +98,14 @@ public class GroupePSAConnectApi {
         return API_URL;
     }
 
-    public static String getResourceFileAsString(String fileName) throws GroupePSACommunicationException {
-        try (InputStream is = GroupePSAConnectApi.class.getResourceAsStream(fileName)) {
-            try (InputStreamReader isr = new InputStreamReader(is); BufferedReader reader = new BufferedReader(isr)) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            }
-        } catch (Exception e) {
-            throw new GroupePSACommunicationException(e);
-        }
-    }
-
     private ContentResponse executeRequest(final String uri) throws GroupePSACommunicationException {
         return executeRequest(uri, "application/hal+json");
+    }
+
+    static Throwable getRootCause(Throwable e) {
+        while (e.getCause() != null)
+            e = e.getCause();
+        return e;
     }
 
     public ContentResponse executeRequest(final String uri, final String accept)
@@ -143,7 +135,8 @@ public class GroupePSAConnectApi {
             logger.trace("HttpResponse Content: {}", response.getContentAsString());
             return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new GroupePSACommunicationException(e);
+            throw new GroupePSACommunicationException("Unable to perform Http Request: " + getRootCause(e).getMessage(),
+                    e);
         }
     }
 
@@ -178,7 +171,7 @@ public class GroupePSAConnectApi {
         try {
             return gson.fromJson(response.getContentAsString(), type);
         } catch (JsonSyntaxException e) {
-            throw new GroupePSACommunicationException(e);
+            throw new GroupePSACommunicationException("Error in received JSON: " + getRootCause(e).getMessage(), e);
         }
     }
 
@@ -198,10 +191,10 @@ public class GroupePSAConnectApi {
 
     public @Nullable VehicleStatus getVehicleStatus(String vin) throws GroupePSACommunicationException {
         ContentResponse response_odometer = executeRequest(
-                getBaseUrl() + "/vehicle/" + vin + "/status?extension=odometer");
+                getBaseUrl() + "/user/vehicles/" + vin + "/status?extension=odometer");
         VehicleStatus status_odometer = parseResponse(response_odometer, VehicleStatus.class);
 
-        ContentResponse response = executeRequest(getBaseUrl() + "/vehicle/" + vin + "/status?extension=kinetic");
+        ContentResponse response = executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/status?extension=kinetic");
         VehicleStatus status = parseResponse(response, VehicleStatus.class);
         if (status != null && status_odometer != null)
             status.setOdemeter(status_odometer.getOdemeter());

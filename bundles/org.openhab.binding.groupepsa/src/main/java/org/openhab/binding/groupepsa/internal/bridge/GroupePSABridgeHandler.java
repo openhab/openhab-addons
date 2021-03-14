@@ -166,6 +166,12 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    static Throwable getRootCause(Throwable e) {
+        while (e.getCause() != null)
+            e = e.getCause();
+        return e;
+    }
+
     public String authenticate() throws GroupePSACommunicationException {
         try {
             AccessTokenResponse result = oAuthService.getAccessTokenResponse();
@@ -175,7 +181,7 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
             }
             return result.getAccessToken();
         } catch (OAuthException | IOException | OAuthResponseException e) {
-            throw new GroupePSACommunicationException("Unable to authenticate", e);
+            throw new GroupePSACommunicationException("Unable to authenticate: " + getRootCause(e).getMessage(), e);
         }
     }
 
