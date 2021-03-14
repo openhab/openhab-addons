@@ -47,7 +47,7 @@ public class ChromecastActions implements ThingActions {
 
         final ChromecastHandler handler = this.handler;
         if (handler == null) {
-            logger.info("Handler is null, cannot play.");
+            logger.warn("Handler is null, cannot play.");
             return false;
         } else {
             return handler.playURL(url, null);
@@ -65,7 +65,7 @@ public class ChromecastActions implements ThingActions {
 
         final ChromecastHandler handler = this.handler;
         if (handler == null) {
-            logger.info("Handler is null, cannot tweet.");
+            logger.warn("Handler is null, cannot tweet.");
             return false;
         } else {
             return handler.playURL(url, mediaType);
