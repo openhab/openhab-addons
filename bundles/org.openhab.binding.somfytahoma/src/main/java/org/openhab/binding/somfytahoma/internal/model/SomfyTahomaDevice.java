@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SomfyTahomaDevice} holds information about a device bound
@@ -66,5 +67,19 @@ public class SomfyTahomaDevice {
 
     public List<SomfyTahomaState> getAttributes() {
         return attributes;
+    }
+
+    public @Nullable SomfyTahomaState getState(String stateName, @Nullable Integer stateType) {
+        return getState(states, stateName, stateType);
+    }
+
+    public static @Nullable SomfyTahomaState getState(List<SomfyTahomaState> states, String stateName,
+            @Nullable Integer stateType) {
+        for (SomfyTahomaState state : states) {
+            if (stateName.equals(state.getName()) && (stateType == null || stateType == state.getType())) {
+                return state;
+            }
+        }
+        return null;
     }
 }
