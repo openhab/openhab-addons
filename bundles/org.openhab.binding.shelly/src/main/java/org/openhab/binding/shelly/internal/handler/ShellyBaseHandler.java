@@ -799,8 +799,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         try {
             ShellyVersionDTO version = new ShellyVersionDTO();
             if (version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", prf.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate,
-                        prf.fwId, SHELLY_API_MIN_FWVERSION));
+                logger.info("{}: {}", prf.hostname,
+                        messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate, prf.fwId));
             } else {
                 if ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWVERSION) < 0) && !profile.isMotion) {
                     logger.warn("{}: {}", prf.hostname, messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate,

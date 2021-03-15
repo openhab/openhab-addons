@@ -19,14 +19,16 @@ You could also [report a bug or request a feature](https://github.com/openhab/op
 The Shelly App usually displays the installed firmware and also provide the function to upgrade the device with new firmware.
 However, if this doesn't work (sometimes there are issues) you could use the [Shelly Firmware Archi Link Generator](http://archive.shelly-faq.de), which provides download links to current, but also archived firmware files for all devices. 
 
+|Version|Notes                                                                                             |
+|-------|--------------------------------------------------------------------------------------------------|
+|1.5.7  |Minimum supported version. Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices). The binding displays a WARNING in the log if the firmware is older.|
+|1.6.x  |First stable CoIoT implementation. AutoCoIoT is enabled when firmware version >= 1.6 is detected. |
+|1.7.x  |Add additional status update values, fixes various issues                                         |
+|1.8.0  |Brings CoIoT version 2, which fixes a lot issues and gaps of version 1.                           |
+|1.9.2  |Various improvements, roller favorites, CoAP fixes                                                |
 
-From time to time the [Changelog](https://shelly-api-docs.shelly.cloud/?fbclid=IwAR23ukCi_3aBSTPRHYUIcpr0pLi0vcyL0fF0PnJQdFvkkc8_Zo5LkAcli_A#changelog) gets updated, but you have to check the Shelly Support forum on latest releases.
 
-There are different options to perform the upgrade
-
-### Using Shelly Manager
-
-You could use the [Shelly Manager](doc/ShellyManager.md) integrated feature to check installed version, upgrade to latest release or beta version, or pick one from the archive - alle within a single Ui!
+There are 3 options available to perform the upgrade
 
 ### Using Shelly Web UI or Smartphone App
 
