@@ -59,7 +59,7 @@ The thermostat information that is retrieved is available as these channels:
 | fan_status             | Number               | Indicates the current fan status of the HVAC system                                                                                |
 | override               | Number               | Indicates if the normal program set-point has been manually overridden                                                             |
 | hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely                                                          |
-| remote_temp            | Number               | Override the internal temperature as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
+| remote_temp            | Number:Temperature   | Override the internal temperature as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
 | day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)                                                                |
 | hour                   | Number               | The current hour of the day reported by the thermostat  (24 hr)                                                                    |
 | minute                 | Number               | The current minute past the hour reported by the thermostat                                                                        |
@@ -149,7 +149,7 @@ Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { ch
 Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
-Number Therm_Rtemp     "Remote Temperature [%s]"                        { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
+Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>     { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
 
 // A virtual switch used to trigger a rule to send a json command to the thermostat
 Switch Therm_mysetting   "Send my preferred setting"
