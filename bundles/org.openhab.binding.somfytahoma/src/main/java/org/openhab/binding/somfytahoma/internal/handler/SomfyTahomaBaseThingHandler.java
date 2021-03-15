@@ -393,7 +393,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private @Nullable SomfyTahomaState getStatusState(List<SomfyTahomaState> states) {
-        return SomfyTahomaDevice.getState(states, STATUS_STATE, TYPE_STRING);
+        return getState(states, STATUS_STATE, TYPE_STRING);
     }
 
     private void updateThingStatus(@Nullable SomfyTahomaState state) {
@@ -471,5 +471,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             temperature = ((DecimalType) command).toBigDecimal();
         }
         return temperature;
+    }
+
+    public static @Nullable SomfyTahomaState getState(List<SomfyTahomaState> states, String stateName,
+            @Nullable Integer stateType) {
+        for (SomfyTahomaState state : states) {
+            if (stateName.equals(state.getName()) && (stateType == null || stateType == state.getType())) {
+                return state;
+            }
+        }
+        return null;
     }
 }
