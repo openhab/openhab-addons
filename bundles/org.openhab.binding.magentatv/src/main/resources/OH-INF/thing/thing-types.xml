@@ -20,6 +20,7 @@
 			</channel-group>
 		</channel-groups>
 
+		<representation-property>macAddress</representation-property>
 
 		<config-description uri="thing-type:magentatv:receiver">
 			<parameter name="ipAddress" type="text">

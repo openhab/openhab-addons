@@ -264,7 +264,6 @@ public class MagentaTVOAuth {
 
     private Properties initHttpHeader() {
         Properties httpHeader = new Properties();
-        // httpHeader.setProperty(HttpHeader.USER_AGENT.toString(), OAUTH_USER_AGENT);
         httpHeader.setProperty(HttpHeader.ACCEPT.toString(), "*/*");
         httpHeader.setProperty(HttpHeader.ACCEPT_LANGUAGE.toString(), "en-US,en;q=0.9,de;q=0.8");
         httpHeader.setProperty(HttpHeader.CACHE_CONTROL.toString(), "no-cache");

@@ -20,10 +20,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.network.MagentaTVOAuth;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
@@ -32,7 +29,6 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +45,6 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
 
     private final Logger logger = LoggerFactory.getLogger(MagentaTVConsoleHandler.class);
     private final MagentaTVOAuth oauth;
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    private @Nullable ClientBuilder injectedClientBuilder;
 
     @Activate
     public MagentaTVConsoleHandler(@Reference HttpClientFactory httpClientFactory) {
