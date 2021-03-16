@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;

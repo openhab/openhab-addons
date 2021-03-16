@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
@@ -89,7 +88,7 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
      */
     @Override
     public void stateChanged(String channelId, State newState) {
-        if (StringUtils.isEmpty(channelId)) {
+        if (channelId == null || channelId.isEmpty()) {
             return;
         }
 
@@ -117,7 +116,7 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
      * @param channelId the channel id to remove state
      */
     public void removeState(String channelId) {
-        if (StringUtils.isEmpty(channelId)) {
+        if (channelId == null || channelId.isEmpty()) {
             return;
         }
         state.remove(channelId);

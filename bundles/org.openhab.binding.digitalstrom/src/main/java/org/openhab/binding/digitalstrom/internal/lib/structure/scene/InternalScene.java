@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.listener.SceneStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneTypes;
@@ -71,7 +70,7 @@ public class InternalScene {
             this.zoneID = zoneID;
         }
         this.internalSceneID = this.zoneID + "-" + this.groupID + "-" + this.sceneID;
-        if (StringUtils.isBlank(sceneName)) {
+        if (sceneName == null || sceneName.isBlank()) {
             this.sceneName = this.internalSceneID;
         } else {
             this.sceneName = sceneName;

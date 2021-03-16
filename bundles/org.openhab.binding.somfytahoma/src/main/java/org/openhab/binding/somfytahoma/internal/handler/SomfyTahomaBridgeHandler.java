@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -181,7 +180,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     public synchronized void login() {
         String url;
 
-        if (StringUtils.isEmpty(thingConfig.getEmail()) || StringUtils.isEmpty(thingConfig.getPassword())) {
+        if (thingConfig.getEmail().isEmpty() || thingConfig.getPassword().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Can not access device as username and/or password are null");
             return;
@@ -575,7 +574,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             throws InterruptedException, ExecutionException, TimeoutException {
         logger.trace("Sending {} to url: {} with data: {}", method.asString(), url, urlParameters);
         Request request = sendRequestBuilder(url, method);
-        if (StringUtils.isNotEmpty(urlParameters)) {
+        if (!urlParameters.isEmpty()) {
             request = request.content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8");
         }
 

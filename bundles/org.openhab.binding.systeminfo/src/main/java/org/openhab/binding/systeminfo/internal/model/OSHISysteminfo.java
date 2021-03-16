@@ -14,7 +14,7 @@ package org.openhab.binding.systeminfo.internal.model;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;

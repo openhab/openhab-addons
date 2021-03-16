@@ -21,16 +21,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.GeneralDeviceInformation;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.providers.DsDeviceThingTypeProvider;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -126,10 +127,8 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
             if (thingUID != null) {
                 Map<String, Object> properties = new HashMap<>(1);
                 properties.put(DigitalSTROMBindingConstants.DEVICE_DSID, device.getDSID().getValue());
-                String deviceName = null;
-                if (StringUtils.isNotBlank(device.getName())) {
-                    deviceName = device.getName();
-                } else {
+                String deviceName = device.getName();
+                if (deviceName == null || deviceName.isBlank()) {
                     // if no name is set, the dSID will be used as name
                     deviceName = device.getDSID().getValue();
                 }

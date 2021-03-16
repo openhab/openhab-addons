@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
@@ -276,7 +275,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 squeezeBoxServerHandler.playUrl(mac, command.toString());
                 break;
             case CHANNEL_SYNC:
-                if (StringUtils.isBlank(command.toString())) {
+                if (command.toString().isBlank()) {
                     squeezeBoxServerHandler.unSyncPlayer(mac);
                 } else {
                     squeezeBoxServerHandler.syncPlayer(mac, command.toString());
@@ -444,7 +443,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     private RawType downloadImage(String mac, String url) {
         // Only get the image if this is my PlayerHandler instance
         if (isMe(mac)) {
-            if (StringUtils.isNotEmpty(url)) {
+            if (url != null && !url.isEmpty()) {
                 String sanitizedUrl = sanitizeUrl(url);
                 RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
                     logger.debug("Trying to download the content of URL {}", sanitizedUrl);

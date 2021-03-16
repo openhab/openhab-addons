@@ -12,7 +12,6 @@
  */
 package org.openhab.io.imperihome.internal.model.device;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -54,7 +53,8 @@ public class RainDevice extends AbstractNumericValueDevice {
             }
 
             NumericValueParam accumParam = new NumericValueParam(ParamType.ACCUMULATION, valueParam.getUnit(), null);
-            if (StringUtils.isEmpty(accumParam.getUnit())) {
+            String unit = accumParam.getUnit();
+            if (unit == null || unit.isBlank()) {
                 accumParam.setUnit("mm");
             }
 
@@ -67,7 +67,7 @@ public class RainDevice extends AbstractNumericValueDevice {
     public void stateUpdated(Item item, State newState) {
         super.stateUpdated(item, newState);
 
-        DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
+        DecimalType value = item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.RAIN_VALUE, getUnit(), value));
     }
 }

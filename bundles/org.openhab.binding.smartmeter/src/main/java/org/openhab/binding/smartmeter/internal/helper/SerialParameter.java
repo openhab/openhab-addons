@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.smartmeter.internal.helper;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.serial.SerialPort;
 

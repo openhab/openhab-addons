@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.pioneeravr.internal.protocol;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrCommand;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionException;
 
@@ -72,7 +71,7 @@ public class ParameterizedCommand extends SimpleCommand {
                     "The parameter of the command " + super.getCommand() + " must not be null.");
         }
 
-        if (StringUtils.isNotEmpty(parameterPattern) && !parameter.matches(parameterPattern)) {
+        if (parameterPattern != null && !parameterPattern.isEmpty() && !parameter.matches(parameterPattern)) {
             throw new AvrConnectionException("The parameter value " + parameter + " of the command "
                     + super.getCommand() + " does not match the pattern " + parameterPattern);
         }

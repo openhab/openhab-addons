@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -84,7 +83,7 @@ public class KM200Device {
     }
 
     public Boolean isConfigured() {
-        return StringUtils.isNotBlank(ip4Address) && cryptKeyPriv.length > 0;
+        return !ip4Address.isBlank() && cryptKeyPriv.length > 0;
     }
 
     public String getIP4Address() {

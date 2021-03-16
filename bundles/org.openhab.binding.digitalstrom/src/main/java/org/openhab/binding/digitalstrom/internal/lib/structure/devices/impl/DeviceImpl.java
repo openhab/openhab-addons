@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.GeneralLibConstance;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
@@ -1695,7 +1694,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
                         short sceneID = Short.parseShort((String) key
                                 .subSequence(DigitalSTROMBindingConstants.DEVICE_SCENE.length(), key.length()));
                         sceneSave = propertries.get(key);
-                        if (StringUtils.isNotBlank(sceneSave)) {
+                        if (sceneSave != null && !sceneSave.isBlank()) {
                             logger.debug("Find saved scene configuration for device with dSID {} and sceneID {}", dsid,
                                     key);
                             String[] sceneParm = sceneSave.replace(" ", "").split(",");

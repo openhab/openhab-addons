@@ -15,7 +15,7 @@ package org.openhab.binding.bosesoundtouch.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.openhab.core.types.StateOption;
 
 import com.google.gson.annotations.Expose;

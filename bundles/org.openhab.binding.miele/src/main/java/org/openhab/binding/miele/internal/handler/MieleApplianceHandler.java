@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceOperation;

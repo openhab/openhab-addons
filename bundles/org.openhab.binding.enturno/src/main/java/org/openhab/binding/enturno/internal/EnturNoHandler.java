@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -95,14 +94,15 @@ public class EnturNoHandler extends BaseThingHandler {
 
         logger.debug("Stop place id: {}", stopId);
         boolean configValid = true;
-        if (StringUtils.trimToNull(stopId) == null) {
+        if (stopId == null || stopId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-stopId");
             configValid = false;
         }
 
-        logger.debug("Line code: {}", config.getLineCode());
-        if (StringUtils.trimToNull(config.getLineCode()) == null) {
+        String lineCode = config.getLineCode();
+        logger.debug("Line code: {}", lineCode);
+        if (lineCode == null || lineCode.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-lineCode");
             configValid = false;

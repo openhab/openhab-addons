@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
@@ -244,8 +243,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                                 : new StringType("-"));
             }
             if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
-                updateState(SLAVES_CHANNEL,
-                        new StringType(StringUtils.join(((Sink) device).getCombinedSinkNames(), ",")));
+                updateState(SLAVES_CHANNEL, new StringType(String.join(",", ((Sink) device).getCombinedSinkNames())));
             }
         }
     }

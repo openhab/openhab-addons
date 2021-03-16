@@ -20,10 +20,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ThingUID;
@@ -178,7 +178,7 @@ public class NeeoDeviceKeys {
             sb.append("[");
             sb.append(entry.getKey());
             sb.append("=");
-            sb.append(StringUtils.join(entries.toArray()));
+            sb.append(entries.stream().map(Object::toString).collect(Collectors.joining()));
             sb.append("]");
         }
 
