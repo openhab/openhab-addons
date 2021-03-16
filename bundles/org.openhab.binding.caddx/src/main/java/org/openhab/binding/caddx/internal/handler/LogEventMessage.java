@@ -72,15 +72,15 @@ public class LogEventMessage {
                 }
 
                 switch (logEventType.zud) {
-                    case None:
+                    case NONE:
                         break;
-                    case Zone:
+                    case ZONE:
                         sb.append(" Zone ").append(Integer.parseInt(zud) + 1);
                         break;
-                    case User:
+                    case USER:
                         sb.append(" User ").append(Integer.parseInt(zud) + 1);
                         break;
-                    case Device:
+                    case DEVICE:
                         sb.append(" Device ").append(zud);
                         break;
                 }
