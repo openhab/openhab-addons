@@ -102,7 +102,7 @@ The controller thing has the following parameters:
 | port            | Port number of the light panels contoller. Default is 16021                           |
 | authToken       | The authentication token received from the controller after successful pairing.       |
 | refreshInterval | Interval in seconds to refresh the state of the light panels settings. Default is 60. |
-| deviceType      | Defines the type `lightpanels` (triangle) or `canvas` (square or hexagon)                 |
+| deviceType      | Defines the type `lightpanels` (triangle) or `canvas` (square or hexagon)             |
 
 The lightpanel thing has the following parameters:
 
