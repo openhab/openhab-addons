@@ -28,8 +28,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.AudioPlayer;
 import org.openhab.binding.omnilink.internal.SystemType;
+import org.openhab.binding.omnilink.internal.TemperatureFormat;
 import org.openhab.binding.omnilink.internal.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.internal.discovery.OmnilinkDiscoveryService;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -93,7 +95,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private @Nullable ScheduledFuture<?> eventPollingJob;
     private final int autoReconnectPeriod = 60;
     private Optional<AudioPlayer> audioPlayer = Optional.empty();
-    private @Nullable SystemType systemType = null;
+    private Optional<SystemType> systemType = Optional.empty();
     private final Gson gson = new Gson();
     private int eventLogNumber = 0;
 
@@ -306,28 +308,23 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     theThing.map(Thing::getHandler)
                             .ifPresent(theHandler -> ((ZoneHandler) theHandler).handleStatus(zoneStatus));
                 } else if (status instanceof ExtendedAreaStatus) {
-                    final SystemType systemType = this.systemType;
                     ExtendedAreaStatus areaStatus = (ExtendedAreaStatus) status;
                     int areaNumber = areaStatus.getNumber();
 
-                    if (systemType != null) {
-                        logger.debug("Received status update for Area: {}, status: {}", areaNumber, areaStatus);
-                        Optional<Thing> theThing;
-                        switch (systemType) {
-                            case OMNI:
-                                theThing = getChildThing(THING_TYPE_OMNI_AREA, areaNumber);
-                                break;
+                    logger.debug("Received status update for Area: {}, status: {}", areaNumber, areaStatus);
+                    systemType.ifPresent(t -> {
+                        Optional<Thing> theThing = Optional.empty();
+                        switch (t) {
                             case LUMINA:
                                 theThing = getChildThing(THING_TYPE_LUMINA_AREA, areaNumber);
                                 break;
-                            default:
-                                theThing = Optional.empty();
+                            case OMNI:
+                                theThing = getChildThing(THING_TYPE_OMNI_AREA, areaNumber);
+                                break;
                         }
                         theThing.map(Thing::getHandler)
                                 .ifPresent(theHandler -> ((AbstractAreaHandler) theHandler).handleStatus(areaStatus));
-                    } else {
-                        logger.debug("Received null System Type!");
-                    }
+                    });
                 } else if (status instanceof ExtendedAccessControlReaderLockStatus) {
                     ExtendedAccessControlReaderLockStatus lockStatus = (ExtendedAccessControlReaderLockStatus) status;
                     int lockNumber = lockStatus.getNumber();
