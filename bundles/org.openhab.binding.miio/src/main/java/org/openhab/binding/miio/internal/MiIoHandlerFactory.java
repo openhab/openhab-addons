@@ -29,6 +29,7 @@ import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -54,6 +55,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private static final String THING_HANDLER_THREADPOOL_NAME = "thingHandler";
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
+    private final HttpClientFactory httpClientFactory;
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
     private CloudConnector cloudConnector;
     private ChannelTypeRegistry channelTypeRegistry;
@@ -62,9 +64,11 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(MiIoHandlerFactory.class);
 
     @Activate
-    public MiIoHandlerFactory(@Reference ChannelTypeRegistry channelTypeRegistry,
+    public MiIoHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
             @Reference BasicChannelTypeProvider basicChannelTypeProvider, Map<String, Object> properties) {
+        this.httpClientFactory = httpClientFactory;
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.basicChannelTypeProvider = basicChannelTypeProvider;
@@ -113,6 +117,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
         }
-        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector);
+        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector,
+                httpClientFactory.getCommonHttpClient());
     }
 }

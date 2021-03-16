@@ -8,31 +8,41 @@
 		<label>Unsupported Xiaomi Mi Device</label>
 
 		<channel-groups>
-			<channel-group id="network" typeId="network"/>
-			<channel-group id="actions" typeId="miioactions"/>
+			<channel-group id="network" typeId="network" />
+			<channel-group id="actions" typeId="miioactions" />
 		</channel-groups>
 
 		<properties>
 			<property name="vendor">Xiaomi</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:miio:config"/>
+		<config-description-ref uri="thing-type:miio:config" />
 	</thing-type>
 
 	<channel-group-type id="miioactions">
 		<label>Actions</label>
 		<channels>
-			<channel id="power" typeId="power"/>
-			<channel id="commands" typeId="commands"/>
-			<channel id="rpc" typeId="rpc"/>
-			<channel id="testcommands" typeId="testcommands"/>
+			<channel id="power" typeId="power" />
+			<channel id="commands" typeId="commands" />
+			<channel id="rpc" typeId="rpc" />
+			<channel id="testcommands" typeId="testcommands" />
+			<channel id="testmiot" typeId="testmiot" />
+
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="testcommands">
 		<item-type>Switch</item-type>
 		<label>(experimental)Execute test to find supported channels</label>
-		<description>(experimental)Execute test for all known properties to find channels supported by your device.</description>
+		<description>Execute test for all known properties to find channels supported by your device. Check your log, share your results.</description>
 		<category>settings</category>
 	</channel-type>
+
+	<channel-type id="testmiot">
+		<item-type>Switch</item-type>
+		<label>(experimental) Create experimental support for new MIOT protocol devices</label>
+		<description>Create experimental support for MIOT protocol devices based on the online specification. Check your log, share your results.</description>
+		<category>settings</category>
+	</channel-type>
+
 </thing:thing-descriptions>

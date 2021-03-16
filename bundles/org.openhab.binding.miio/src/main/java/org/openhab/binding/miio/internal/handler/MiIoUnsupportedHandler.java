@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoDevices;
@@ -41,6 +42,7 @@ import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.miot.MiotParser;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -67,6 +69,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
 
     private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
     private static final Gson GSONP = new GsonBuilder().setPrettyPrinting().create();
+    private final HttpClient httpClient;
 
     private final Logger logger = LoggerFactory.getLogger(MiIoUnsupportedHandler.class);
     private final MiIoBindingConfiguration conf = getConfigAs(MiIoBindingConfiguration.class);
@@ -84,8 +87,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     });
 
     public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            CloudConnector cloudConnector) {
+            CloudConnector cloudConnector, HttpClient httpClientFactory) {
         super(thing, miIoDatabaseWatchService, cloudConnector);
+        this.httpClient = httpClientFactory;
     }
 
     @Override
@@ -111,6 +115,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         if (channelUID.getId().equals(CHANNEL_TESTCOMMANDS)) {
             executeExperimentalCommands();
+        }
+        if (channelUID.getId().equals(CHANNEL_TESTMIOT)) {
+            executeCreateMiotTestFile();
         }
     }
 
@@ -187,6 +194,47 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         this.lastCommand = lastCommand;
         sb.append("\r\n");
         logger.info("{}", sb.toString());
+    }
+
+    // TODO: This is WORK IN PROGRESS... not functional yet
+    private void executeCreateMiotTestFile() {
+        LinkedHashMap<String, MiIoBasicChannel> channelList = collectProperties(conf.model);
+        try {
+            MiotParser miotParser;
+            miotParser = MiotParser.parse(model, httpClient);
+            logger.info("urn: ", miotParser.getUrn());
+            logger.info("{}", miotParser.getUrnData());
+
+            MiIoBasicDevice device = miotParser.getDevice();
+
+            sendCommand(MiIoCommand.MIIO_INFO);
+            sb = new StringBuilder();
+            logger.info("Start experimental creation of database file based on MIOT spec for device '{}'. ",
+                    miDevice.toString());
+            sb.append("Info for ");
+            sb.append(conf.model);
+            sb.append("\r\n");
+            sb.append("Properties: ");
+            int lastCommand = -1;
+            for (String c : channelList.keySet()) {
+                MiIoBasicChannel ch = channelList.get(c);
+                String cmd = ch.getChannelCustomRefreshCommand().isBlank() ? ("get_prop[" + c + "]")
+                        : ch.getChannelCustomRefreshCommand();
+                sb.append(c);
+                sb.append(" -> ");
+                lastCommand = sendCommand(cmd);
+                sb.append(lastCommand);
+                sb.append(", ");
+                testChannelList.put(lastCommand, channelList.get(c));
+            }
+            this.lastCommand = lastCommand;
+            sb.append("\r\n");
+            logger.info("{}", sb.toString());
+        } catch (Exception e) {
+            logger.debug("Error while creating experimental miot db file for {}", conf.model);
+        } finally {
+
+        }
     }
 
     private LinkedHashMap<String, MiIoBasicChannel> collectProperties(@Nullable String model) {
