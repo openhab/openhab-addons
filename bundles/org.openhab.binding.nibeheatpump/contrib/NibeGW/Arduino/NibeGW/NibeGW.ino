@@ -39,17 +39,18 @@
 
 // Enable debug printouts
 //#define ENABLE_DEBUG
+
 // Enable UDP debug printouts, listen printouts e.g. via netcat (nc -l -u 50000)
 //#define ENABLE_UDP_DEBUG
 
-#define VERBOSE_LEVEL           3
+#define VERBOSE_LEVEL           1
 
 #define BOARD_NAME              "Arduino NibeGW"
 #define BOARD_MAC               { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
 #define BOARD_IP                { 192, 168, 1, 50 }
 #define GATEWAY_IP              { 192, 168, 1, 1 }
 #define NETWORK_MASK            { 255, 255, 255, 0 }
-#define INCOMING_PORT_READCMDS  TARGET_PORT
+#define INCOMING_PORT_READCMDS  9999
 #define INCOMING_PORT_WRITECMDS 10000
 
 #define TARGET_IP               192, 168, 1, 19
@@ -57,7 +58,7 @@
 #define TARGET_DEBUG_PORT       50000
 
 // Delay before initialize ethernet on startup in seconds
-#define ETH_INIT_DELAY          10
+#define ETH_INIT_DELAY          5
 
 // Used serial port and direction change pin for RS-485 port
 #ifdef PRODINO_BOARD
@@ -126,7 +127,6 @@ boolean ethernetInitialized = false;
 // Target IP address and port where Nibe UDP packets are send
 IPAddress targetIp(TARGET_IP);
 EthernetUDP udp;
-EthernetUDP udp4readCmnds;
 EthernetUDP udp4writeCmnds;
 
 NibeGw nibegw(&RS485_PORT, RS485_DIRECTION_PIN);
@@ -199,7 +199,6 @@ void setup()
 #ifdef PRODINO_BOARD
   DinoInit();
   Serial.begin(115200, SERIAL_8N1);
-  delay(500);
 #endif
 
   DEBUG_PRINTDATA(0, "%s ", BOARD_NAME);
@@ -234,32 +233,9 @@ void loop()
     } while (nibegw.messageStillOnProgress());
   }
 
-  if (!ethernetInitialized)
+  if (!ethernetInitialized && now >= ETH_INIT_DELAY)
   {
-    if (now >= ETH_INIT_DELAY)
-    {
-      DEBUG_PRINT(1, "Initializing Ethernet\n");
-      initializeEthernet();
-#ifdef ENABLE_DEBUG
-      DEBUG_PRINTDATA(0, "%s ", BOARD_NAME);
-      DEBUG_PRINTDATA(0, "version %s\n", VERSION);
-      sprintf(debugBuf, "MAC=%02X:%02X:%02X:%02X:%02X:%02X\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-      DEBUG_PRINT(0, debugBuf);
-      sprintf(debugBuf, "IP=%d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
-      DEBUG_PRINT(0, debugBuf);
-      sprintf(debugBuf, "GW=%d.%d.%d.%d\n", gw[0], gw[1], gw[2], gw[3]);
-      DEBUG_PRINT(0, debugBuf);
-      sprintf(debugBuf, "TARGET IP=%d.%d.%d.%d\n", TARGET_IP);
-      DEBUG_PRINT(0, debugBuf);
-      DEBUG_PRINTDATA(0, "TARGET PORT=%d\n", TARGET_PORT);
-      DEBUG_PRINTDATA(0, "ACK_MODBUS40=%s\n", ACK_MODBUS40 ? "true" : "false");
-      DEBUG_PRINTDATA(0, "ACK_SMS40=%s\n", ACK_SMS40 ? "true" : "false");
-      DEBUG_PRINTDATA(0, "ACK_RMU40=%s\n", ACK_RMU40 ? "true" : "false");
-      DEBUG_PRINTDATA(0, "SEND_ACK=%s\n", SEND_ACK ? "true" : "false");
-      DEBUG_PRINTDATA(0, "ETH_INIT_DELAY=%d\n", ETH_INIT_DELAY);
-      DEBUG_PRINTDATA(0, "RS485_DIRECTION_PIN=%d\n", RS485_DIRECTION_PIN);
-#endif
-    }
+    initializeEthernet();
   }
 }
 
@@ -267,14 +243,37 @@ void loop()
 
 void initializeEthernet()
 {
+  DEBUG_PRINT(1, "Initializing Ethernet\n");
   Ethernet.begin(mac, ip, gw, mask);
 #ifdef PRODINO_BOARD
   W5100.setRetransmissionCount(1);
 #endif
   ethernetInitialized = true;
-  udp.begin(TARGET_PORT);  
-  udp4readCmnds.begin(INCOMING_PORT_READCMDS);
+  udp.begin(INCOMING_PORT_READCMDS); 
   udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
+
+#ifdef ENABLE_DEBUG
+  DEBUG_PRINTDATA(0, "%s ", BOARD_NAME);
+  DEBUG_PRINTDATA(0, "version %s\n", VERSION);
+  sprintf(debugBuf, "MAC=%02X:%02X:%02X:%02X:%02X:%02X\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  DEBUG_PRINT(0, debugBuf);
+  sprintf(debugBuf, "IP=%d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
+  DEBUG_PRINT(0, debugBuf);
+  sprintf(debugBuf, "GW=%d.%d.%d.%d\n", gw[0], gw[1], gw[2], gw[3]);
+  DEBUG_PRINT(0, debugBuf);
+  sprintf(debugBuf, "TARGET IP=%d.%d.%d.%d\n", TARGET_IP);
+  DEBUG_PRINT(0, debugBuf);
+  DEBUG_PRINTDATA(0, "TARGET PORT=%d\n", TARGET_PORT);
+  DEBUG_PRINTDATA(0, "INCOMING_PORT_READCMDS=%d\n", INCOMING_PORT_READCMDS);
+  DEBUG_PRINTDATA(0, "INCOMING_PORT_WRITECMDS=%d\n", INCOMING_PORT_WRITECMDS);
+  DEBUG_PRINTDATA(0, "TARGET PORT=%d\n", TARGET_PORT);
+  DEBUG_PRINTDATA(0, "ACK_MODBUS40=%s\n", ACK_MODBUS40 ? "true" : "false");
+  DEBUG_PRINTDATA(0, "ACK_SMS40=%s\n", ACK_SMS40 ? "true" : "false");
+  DEBUG_PRINTDATA(0, "ACK_RMU40=%s\n", ACK_RMU40 ? "true" : "false");
+  DEBUG_PRINTDATA(0, "SEND_ACK=%s\n", SEND_ACK ? "true" : "false");
+  DEBUG_PRINTDATA(0, "ETH_INIT_DELAY=%d\n", ETH_INIT_DELAY);
+  DEBUG_PRINTDATA(0, "RS485_DIRECTION_PIN=%d\n", RS485_DIRECTION_PIN);
+#endif
 }
 
 void nibeCallbackMsgReceived(const byte* const data, int len)
@@ -293,13 +292,14 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
   {
     if (token == READ_TOKEN)
     {
-      DEBUG_PRINT(2, "Read token received from nibe\n");
+      DEBUG_PRINT(3, "Read token received from nibe\n");
       int packetSize = udp4readCmnds.parsePacket();
       if (packetSize) {
-        len = udp4readCmnds.read(data, packetSize);
-        DEBUG_PRINTDATA(2, "Send read command to nibe, len=%d: ", len);
-        DEBUG_PRINTARRAY(2, data, len)
-        DEBUG_PRINT(2, "\n");
+        len = udp.read(data, packetSize);
+        DEBUG_PRINTDATA(2, "Send read command to nibe, len=%d, ", len);
+        DEBUG_PRINT(1, " data in: ");
+        DEBUG_PRINTARRAY(1, data, len)
+        DEBUG_PRINT(1, "\n");
 #ifdef TRANSPORT_ETH_ENC28J60
         udp4readCmnds.flush();
         udp4readCmnds.stop();
@@ -309,13 +309,14 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
     }
     else if (token == WRITE_TOKEN)
     {
-      DEBUG_PRINT(2, "Write token received from nibe\n");
+      DEBUG_PRINT(3, "Write token received from nibe\n");
       int packetSize = udp4writeCmnds.parsePacket();
       if (packetSize) {
         len = udp4writeCmnds.read(data, packetSize);
-        DEBUG_PRINTDATA(2, "Send write command to nibe, len=%d: ", len);
-        DEBUG_PRINTARRAY(2, data, len)
-        DEBUG_PRINT(2, "\n");
+        DEBUG_PRINTDATA(2, "Send write command to nibe, len=%d, ", len);
+        DEBUG_PRINT(1, " data in: ");
+        DEBUG_PRINTARRAY(1, data, len)
+        DEBUG_PRINT(1, "\n");
 #ifdef TRANSPORT_ETH_ENC28J60
         udp4writeCmnds.flush();
         udp4writeCmnds.stop();
@@ -336,15 +337,16 @@ void sendUdpPacket(const byte * const data, int len)
 {
 #ifdef ENABLE_DEBUG
   sprintf(debugBuf, "Sending UDP packet to %d.%d.%d.%d:", TARGET_IP);
-  DEBUG_PRINT(0, debugBuf);
+  DEBUG_PRINT(2, debugBuf);
   DEBUG_PRINTDATA(2, "%d", TARGET_PORT);
-  DEBUG_PRINTDATA(2, ", len=%d: ", len);
-  DEBUG_PRINTARRAY(2, data, len)
-  DEBUG_PRINT(2, "\n");
+  DEBUG_PRINTDATA(2, ", len=%d, ", len);
+  DEBUG_PRINT(1, "data out: ");
+  DEBUG_PRINTARRAY(1, data, len)
+  DEBUG_PRINT(1, "\n");
 #endif
 
   udp.beginPacket(targetIp, TARGET_PORT);
   udp.write(data, len);
   int retval = udp.endPacket();
-  DEBUG_PRINTDATA(2, "UDP packet sent %s\n", retval == 0 ? "failed" : "succeed");
+  DEBUG_PRINTDATA(3, "UDP packet sent %s\n", retval == 0 ? "failed" : "succeed");
 }
