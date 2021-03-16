@@ -61,16 +61,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-    }
-
-    @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
         try {
