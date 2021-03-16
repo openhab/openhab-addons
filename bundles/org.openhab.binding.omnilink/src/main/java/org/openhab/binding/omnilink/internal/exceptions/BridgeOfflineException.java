@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.omnilink.internal.handler;
+package org.openhab.binding.omnilink.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -21,9 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Craig Hamilton - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("serial")
 public class BridgeOfflineException extends Exception {
-    private static final long serialVersionUID = -9081729691518514097L;
-
     public BridgeOfflineException(Exception e) {
         super(e);
     }
