@@ -412,11 +412,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
                         case LUMINA:
                             thingUID = new ThingUID(THING_TYPE_LUMINA_AREA, bridgeUID, thingID);
                             break;
-                        case OMNI:
-                            thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
-                            break;
                         default:
-                            throw new IllegalStateException("Unknown System Type");
+                            thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
                     }
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                             .withProperty(THING_PROPERTIES_NUMBER, thingID)
@@ -424,7 +421,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
                             .build();
                     thingDiscovered(discoveryResult);
                 }, () -> {
-                    throw new IllegalStateException("Unknown System Type");
+                    logger.warn("Unknown System Type");
                 });
 
                 areas.add(areaProperties);
