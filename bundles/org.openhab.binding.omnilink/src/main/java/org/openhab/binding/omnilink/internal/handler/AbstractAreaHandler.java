@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.omnilink.internal.AreaAlarm;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
