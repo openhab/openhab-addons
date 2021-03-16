@@ -61,9 +61,9 @@ public class NanoleafCommandExtension extends AbstractConsoleCommandExtension {
                                     NanoleafControllerHandler nanoleafControllerHandler = (NanoleafControllerHandler) handler;
                                     String layout = nanoleafControllerHandler.getLayout();
                                     console.println("Layout of Nanoleaf controller '" + thing.getUID().getAsString()
-                                            + "' with label '" + thing.getLabel() + "':\n");
+                                            + "' with label '" + thing.getLabel() + "':" + System.lineSeparator());
                                     console.println(layout);
-                                    console.println("\n");
+                                    console.println(System.lineSeparator());
                                 }
                             }
                         });

@@ -128,7 +128,7 @@ public class Layout {
                         view += "      ";
                     }
                 }
-                view += "\n";
+                view += System.lineSeparator();
             }
 
             return view;
