@@ -390,7 +390,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
                 int thingNumber = areaProperties.getNumber();
                 String thingName = areaProperties.getName();
                 String thingID = Integer.toString(thingNumber);
-                ThingUID thingUID = null;
 
                 /*
                  * It seems that for simple OmniLink Controller configurations there
@@ -406,22 +405,27 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
 
                 Map<String, Object> properties = Map.of(THING_PROPERTIES_NAME, thingName);
 
-                switch (systemType.get()) {
-                    case LUMINA:
-                        thingUID = new ThingUID(THING_TYPE_LUMINA_AREA, bridgeUID, thingID);
-                        break;
-                    case OMNI:
-                        thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
-                        break;
-                    default:
-                        throw new IllegalStateException("Unknown System Type");
-                }
-
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withProperty(THING_PROPERTIES_NUMBER, thingID)
-                        .withRepresentationProperty(THING_PROPERTIES_NUMBER).withBridge(bridgeUID).withLabel(thingName)
-                        .build();
-                thingDiscovered(discoveryResult);
+                final String name = thingName;
+                systemType.ifPresentOrElse(t -> {
+                    ThingUID thingUID = null;
+                    switch (t) {
+                        case LUMINA:
+                            thingUID = new ThingUID(THING_TYPE_LUMINA_AREA, bridgeUID, thingID);
+                            break;
+                        case OMNI:
+                            thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
+                            break;
+                        default:
+                            throw new IllegalStateException("Unknown System Type");
+                    }
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withProperty(THING_PROPERTIES_NUMBER, thingID)
+                            .withRepresentationProperty(THING_PROPERTIES_NUMBER).withBridge(bridgeUID).withLabel(name)
+                            .build();
+                    thingDiscovered(discoveryResult);
+                }, () -> {
+                    throw new IllegalStateException("Unknown System Type");
+                });
 
                 areas.add(areaProperties);
             }

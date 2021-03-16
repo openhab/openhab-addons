@@ -312,19 +312,19 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     int areaNumber = areaStatus.getNumber();
 
                     logger.debug("Received status update for Area: {}, status: {}", areaNumber, areaStatus);
-                    Optional<Thing> theThing;
-                    switch (systemType.get()) {
-                        case OMNI:
-                            theThing = getChildThing(THING_TYPE_OMNI_AREA, areaNumber);
-                            break;
-                        case LUMINA:
-                            theThing = getChildThing(THING_TYPE_LUMINA_AREA, areaNumber);
-                            break;
-                        default:
-                            theThing = Optional.empty();
-                    }
-                    theThing.map(Thing::getHandler)
-                            .ifPresent(theHandler -> ((AbstractAreaHandler) theHandler).handleStatus(areaStatus));
+                    systemType.ifPresent(t -> {
+                        Optional<Thing> theThing = Optional.empty();
+                        switch (t) {
+                            case LUMINA:
+                                theThing = getChildThing(THING_TYPE_LUMINA_AREA, areaNumber);
+                                break;
+                            case OMNI:
+                                theThing = getChildThing(THING_TYPE_OMNI_AREA, areaNumber);
+                                break;
+                        }
+                        theThing.map(Thing::getHandler)
+                                .ifPresent(theHandler -> ((AbstractAreaHandler) theHandler).handleStatus(areaStatus));
+                    });
                 } else if (status instanceof ExtendedAccessControlReaderLockStatus) {
                     ExtendedAccessControlReaderLockStatus lockStatus = (ExtendedAccessControlReaderLockStatus) status;
                     int lockNumber = lockStatus.getNumber();
