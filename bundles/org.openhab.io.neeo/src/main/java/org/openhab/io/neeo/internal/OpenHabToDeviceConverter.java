@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -101,8 +101,9 @@ class OpenHabToDeviceConverter {
                         .getChannelType(channel.getChannelTypeUID());
 
                 NeeoCapabilityType type = NeeoCapabilityType.EXCLUDE;
-                if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOBINDING_BINDING_ID, thingUID.getBindingId())) {
-                    if (StringUtils.startsWithIgnoreCase(thingUID.getAsString(), NeeoConstants.NEEOBINDING_DEVICE_ID)) {
+                if (NeeoConstants.NEEOBINDING_BINDING_ID.equalsIgnoreCase(thingUID.getBindingId())) {
+                    if (thingUID.getAsString().toLowerCase()
+                            .startsWith(NeeoConstants.NEEOBINDING_DEVICE_ID.toLowerCase())) {
                         // all device channels are currently macros - so buttons are appropriate
                         type = NeeoCapabilityType.BUTTON;
                     } else {
@@ -127,7 +128,7 @@ class OpenHabToDeviceConverter {
             return null;
         }
 
-        if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOBINDING_BINDING_ID, thing.getUID().getBindingId())) {
+        if (NeeoConstants.NEEOBINDING_BINDING_ID.equalsIgnoreCase(thing.getUID().getBindingId())) {
             final Map<String, String> properties = thing.getProperties();
             /** The following properties have matches in org.openhab.binding.neeo.NeeoDeviceHandler.java */
             String neeoType = properties.get("Type");
@@ -145,7 +146,7 @@ class OpenHabToDeviceConverter {
             final NeeoDeviceTiming timing = new NeeoDeviceTiming(standbyDelay, switchDelay, shutDownDelay);
 
             final String dc = properties.get("Device Capabilities");
-            final String[] deviceCapabilities = StringUtils.isEmpty(dc) ? new String[0] : StringUtils.split(dc, ',');
+            final String[] deviceCapabilities = dc == null || dc.isEmpty() ? new String[0] : StringUtils.split(dc, ',');
 
             try {
                 return new NeeoDevice(new NeeoThingUID(thing.getUID()), 0,
@@ -174,9 +175,9 @@ class OpenHabToDeviceConverter {
      * @param value a possibly null, possibly empty value to parse
      * @return an Integer or null if not a number
      */
-    @Nullable
-    private static Integer parseInteger(String value) {
-        if (StringUtils.isEmpty(value)) {
+
+    private static @Nullable Integer parseInteger(String value) {
+        if (value.isEmpty()) {
             return null;
         }
         try {
@@ -194,7 +195,7 @@ class OpenHabToDeviceConverter {
      */
     @Nullable
     List<NeeoDeviceChannel> getNeeoDeviceChannel(String itemName) {
-        if (StringUtils.isEmpty(itemName)) {
+        if (itemName.isEmpty()) {
             return null;
         }
 

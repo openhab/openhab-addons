@@ -18,7 +18,6 @@ import java.net.SocketException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -98,7 +97,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
 
     @Override
     public void socketDidChangeLabel(Socket socket, String label) {
-        if (!StringUtils.isBlank(label)) {
+        if (label != null && !label.isBlank()) {
             logger.debug("Updating thing label to {}", label);
             thing.setLabel(label);
         }

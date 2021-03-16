@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.buienradar.internal.buienradarapi.BuienradarPredictionAPI;
 import org.openhab.binding.buienradar.internal.buienradarapi.Prediction;
@@ -81,7 +80,7 @@ public class BuienradarHandler extends BaseThingHandler {
         this.config = getConfigAs(BuienradarConfiguration.class);
 
         boolean configValid = true;
-        if (StringUtils.trimToNull(config.location) == null) {
+        if (config.location == null || config.location.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
             configValid = false;

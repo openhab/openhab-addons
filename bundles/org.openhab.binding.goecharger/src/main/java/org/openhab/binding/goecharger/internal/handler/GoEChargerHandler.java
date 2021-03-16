@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.Energy;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
