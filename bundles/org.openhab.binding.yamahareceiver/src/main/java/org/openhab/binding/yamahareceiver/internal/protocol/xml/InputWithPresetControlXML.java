@@ -18,8 +18,8 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
 
 import java.io.IOException;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
@@ -116,7 +116,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
                 String value = getNodeContentOrDefault(itemNode, "Param", String.valueOf(i));
 
                 // For RX-V3900 when a preset slot is not used, this is how it looks
-                if (StringUtils.isEmpty(title) && "Not Used".equalsIgnoreCase(value)) {
+                if (title.isEmpty() && "Not Used".equalsIgnoreCase(value)) {
                     continue;
                 }
 
@@ -130,7 +130,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
         String presetValue = getNodeContentOrEmpty(response, preset.getPath());
 
         // fall back to second method of obtaining current preset (works for Tuner on RX-V3900)
-        if (StringUtils.isEmpty(presetValue)) {
+        if (presetValue.isEmpty()) {
             try {
                 Node presetResponse = getResponse(con, wrInput(preset.apply(GET_PARAM)), inputElement);
                 presetValue = getNodeContentOrEmpty(presetResponse, preset.getPath());
@@ -146,7 +146,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
     }
 
     private int convertToPresetNumber(String presetValue) {
-        if (StringUtils.isNotEmpty(presetValue)) {
+        if (!presetValue.isEmpty()) {
             if (StringUtils.isNumeric(presetValue)) {
                 return Integer.parseInt(presetValue);
             } else {

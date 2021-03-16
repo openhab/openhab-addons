@@ -14,11 +14,11 @@ package org.openhab.binding.russound.internal.rio.zone;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.binding.russound.internal.rio.AbstractRioProtocol;
@@ -529,7 +529,7 @@ class RioZoneProtocol extends AbstractRioProtocol
      * @return a non-null {@link Runnable} that should be run after the call
      */
     Runnable setZoneFavorites(String favJson) {
-        if (StringUtils.isEmpty(favJson)) {
+        if (favJson.isEmpty()) {
             return () -> {
             };
         }
@@ -550,7 +550,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                     final boolean favValid = fav.isValid();
                     final String favName = fav.getName();
 
-                    if (!StringUtils.equals(myFav.getName(), favName) || myFav.isValid() != favValid) {
+                    if (!Objects.equals(myFav.getName(), favName) || myFav.isValid() != favValid) {
                         myFav.setName(favName);
                         myFav.setValid(favValid);
                         if (favValid) {
@@ -923,7 +923,7 @@ class RioZoneProtocol extends AbstractRioProtocol
      */
     @Override
     public void responseReceived(String response) {
-        if (StringUtils.isEmpty(response)) {
+        if (response == null || response.isEmpty()) {
             return;
         }
 

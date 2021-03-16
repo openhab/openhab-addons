@@ -24,7 +24,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.UrlEncoded;
@@ -94,7 +93,7 @@ public class Enigma2Client {
         } catch (ParserConfigurationException e) {
             logger.warn("Failed setting parser features against XXE attacks!", e);
         }
-        if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
+        if (user != null && !user.isEmpty() && password != null && !password.isEmpty()) {
             this.host = "http://" + user + ":" + password + "@" + host;
         } else {
             this.host = "http://" + host;

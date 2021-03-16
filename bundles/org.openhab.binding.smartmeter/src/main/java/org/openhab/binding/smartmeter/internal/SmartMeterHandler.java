@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -92,32 +92,27 @@ public class SmartMeterHandler extends BaseThingHandler {
         cancelRead();
 
         SmartMeterConfiguration config = getConfigAs(SmartMeterConfiguration.class);
-        logger.debug("config port = {}", config.port);
 
-        boolean validConfig = true;
-        String errorMsg = null;
+        String port = config.port;
+        logger.debug("config port = {}", port);
 
-        if (StringUtils.trimToNull(config.port) == null) {
-            errorMsg = "Parameter 'port' is mandatory and must be configured";
-            validConfig = false;
-        }
-
-        if (validConfig) {
+        if (port == null || port.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Parameter 'port' is mandatory and must be configured");
+        } else {
             byte[] pullSequence = config.initMessage == null ? null
                     : HexUtils.hexToBytes(StringUtils.deleteWhitespace(config.initMessage));
             int baudrate = config.baudrate == null ? Baudrate.AUTO.getBaudrate()
                     : Baudrate.fromString(config.baudrate).getBaudrate();
             this.conformity = config.conformity == null ? Conformity.NONE : Conformity.valueOf(config.conformity);
             this.smlDevice = MeterDeviceFactory.getDevice(serialPortManagerSupplier, config.mode,
-                    this.thing.getUID().getAsString(), config.port, pullSequence, baudrate, config.baudrateChangeDelay);
+                    this.thing.getUID().getAsString(), port, pullSequence, baudrate, config.baudrateChangeDelay);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "Waiting for messages from device");
 
             smlDevice.addValueChangeListener(channelTypeProvider);
 
             updateOBISValue();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
     }
 
