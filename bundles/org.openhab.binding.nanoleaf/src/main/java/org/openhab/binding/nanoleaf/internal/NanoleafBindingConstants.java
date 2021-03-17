@@ -27,7 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class NanoleafBindingConstants {
 
-    private static final String BINDING_ID = "nanoleaf";
+    public static final String BINDING_ID = "nanoleaf";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
@@ -44,7 +44,6 @@ public class NanoleafBindingConstants {
     public static final String CONFIG_PANEL_ID = "id";
 
     // List of controller channels
-    public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
     public static final String CHANNEL_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
@@ -53,12 +52,10 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_RHYTHM_STATE = "rhythmState";
     public static final String CHANNEL_RHYTHM_ACTIVE = "rhythmActive";
     public static final String CHANNEL_RHYTHM_MODE = "rhythmMode";
-    public static final String CHANNEL_PANEL_LAYOUT = "panelLayout";
 
     // List of light panel channels
-    public static final String CHANNEL_PANEL_COLOR = "panelColor";
-    public static final String CHANNEL_PANEL_SINGLE_TAP = "singleTap";
-    public static final String CHANNEL_PANEL_DOUBLE_TAP = "doubleTap";
+    public static final String CHANNEL_PANEL_COLOR = "color";
+    public static final String CHANNEL_PANEL_TAP = "tap";
 
     // Nanoleaf OpenAPI URLs
     public static final String API_V1_BASE_URL = "/api/v1";
