@@ -505,7 +505,8 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INCOMING,
                         new QuantityType<>(bdTempIncoming, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HUMIDITY, new QuantityType<>(iHumidity, Units.PERCENT));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_CO2, new DecimalType(iCo2));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_CO2,
+                        new QuantityType<>(iHumidity, Units.PARTS_PER_MILLION));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_CELLSTATE, new DecimalType(iCellstate));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_YEARS, new DecimalType(iUptimeYears));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(iUptimeHours));
