@@ -126,6 +126,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private String eventsId = "";
 
+    private Map<String, SomfyTahomaDevice> devicePlaces = new HashMap<>();
+
     private ExpiringCache<List<SomfyTahomaDevice>> cachedDevices = new ExpiringCache<>(Duration.ofSeconds(30),
             this::getDevices);
 
@@ -345,13 +347,19 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable SomfyTahomaSetup getSetup() {
-        return invokeCallToURL(TAHOMA_API_URL + "setup", "", HttpMethod.GET, SomfyTahomaSetup.class);
+        SomfyTahomaSetup setup = invokeCallToURL(TAHOMA_API_URL + "setup", "", HttpMethod.GET, SomfyTahomaSetup.class);
+        if (setup != null) {
+            saveDevicePlaces(setup.getDevices());
+        }
+        return setup;
     }
 
     public List<SomfyTahomaDevice> getDevices() {
         SomfyTahomaDevice[] response = invokeCallToURL(SETUP_URL + "devices", "", HttpMethod.GET,
                 SomfyTahomaDevice[].class);
-        return response != null ? List.of(response) : List.of();
+        List<SomfyTahomaDevice> devices = response != null ? List.of(response) : List.of();
+        saveDevicePlaces(devices);
+        return devices;
     }
 
     public synchronized @Nullable SomfyTahomaDevice getCachedDevice(String url) {
@@ -362,6 +370,18 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             }
         }
         return null;
+    }
+
+    private void saveDevicePlaces(List<SomfyTahomaDevice> devices) {
+        devicePlaces.clear();
+        for (SomfyTahomaDevice device : devices) {
+            if (!device.getPlaceOID().isEmpty()) {
+                SomfyTahomaDevice newDevice = new SomfyTahomaDevice();
+                newDevice.setPlaceOID(device.getPlaceOID());
+                newDevice.setWidget(device.getWidget());
+                devicePlaces.put(device.getDeviceURL(), newDevice);
+            }
+        }
     }
 
     private void getTahomaUpdates() {
@@ -646,6 +666,20 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         retryFutures.add(scheduler.schedule(() -> {
             repeatSendCommandInternal(io, command, params, url, retries);
         }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS));
+    }
+
+    public void sendCommandToSameDevicesInPlace(String io, String command, String params, String url) {
+        SomfyTahomaDevice device = devicePlaces.get(io);
+        if (device != null && !device.getPlaceOID().isEmpty()) {
+            devicePlaces.forEach((deviceUrl, devicePlace) -> {
+                if (device.getPlaceOID().equals(devicePlace.getPlaceOID())
+                        && device.getWidget().equals(devicePlace.getWidget())) {
+                    sendCommand(deviceUrl, command, params, url);
+                }
+            });
+        } else {
+            sendCommand(io, command, params, url);
+        }
     }
 
     private String getThingLabelByURL(String io) {
