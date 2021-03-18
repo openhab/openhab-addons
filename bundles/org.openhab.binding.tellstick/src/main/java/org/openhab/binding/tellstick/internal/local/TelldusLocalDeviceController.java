@@ -13,6 +13,7 @@
 package org.openhab.binding.tellstick.internal.local;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -221,7 +222,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
             case JNA.CLibrary.TELLSTICK_DIM:
                 dimValue = new BigDecimal(((TellstickLocalDeviceDTO) device).getStatevalue());
                 dimValue = dimValue.multiply(new BigDecimal(100));
-                dimValue = dimValue.divide(new BigDecimal(255), 0, BigDecimal.ROUND_HALF_UP);
+                dimValue = dimValue.divide(new BigDecimal(255), 0, RoundingMode.HALF_UP);
                 break;
             default:
                 logger.warn("Could not handle {} for {}", (((TellstickLocalDeviceDTO) device).getState()), device);

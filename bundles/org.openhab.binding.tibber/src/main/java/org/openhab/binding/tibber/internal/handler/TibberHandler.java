@@ -69,7 +69,7 @@ public class TibberHandler extends BaseThingHandler {
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
     private final Logger logger = LoggerFactory.getLogger(TibberHandler.class);
     private final Properties httpHeader = new Properties();
-    private final SslContextFactory sslContextFactory = new SslContextFactory(true);
+    private final SslContextFactory sslContextFactory = new SslContextFactory.Client(true);
     private final Executor websocketExecutor = ThreadPoolManager.getPool("tibber.websocket");
     private TibberConfiguration tibberConfig = new TibberConfiguration();
     private @Nullable TibberWebSocketListener socket;
