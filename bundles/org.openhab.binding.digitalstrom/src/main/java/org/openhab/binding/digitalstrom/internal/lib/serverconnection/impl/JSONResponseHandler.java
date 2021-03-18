@@ -63,7 +63,7 @@ public class JSONResponseHandler {
     public static JsonObject toJsonObject(String jsonResponse) {
         if (jsonResponse != null && !jsonResponse.trim().equals("")) {
             try {
-                return (JsonObject) new JsonParser().parse(jsonResponse);
+                return (JsonObject) JsonParser.parseString(jsonResponse);
             } catch (JsonParseException e) {
                 LOGGER.error("An JsonParseException occurred by parsing jsonRequest: {}", jsonResponse, e);
             }

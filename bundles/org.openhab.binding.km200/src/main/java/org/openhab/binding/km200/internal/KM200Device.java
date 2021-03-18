@@ -40,7 +40,6 @@ import com.google.gson.JsonParser;
 public class KM200Device {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
-    private final JsonParser jsonParser = new JsonParser();
     private final KM200Cryption comCryption;
     private final KM200Comm<KM200Device> deviceCommunicator;
 
@@ -360,7 +359,7 @@ public class KM200Device {
                     logger.debug("{}: SERVICE NOT AVAILABLE", service);
                     return null;
                 } else {
-                    nodeRoot = (JsonObject) jsonParser.parse(decodedData);
+                    nodeRoot = (JsonObject) JsonParser.parseString(decodedData);
                 }
             } else {
                 logger.debug("Get empty reply");

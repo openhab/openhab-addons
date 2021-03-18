@@ -77,7 +77,6 @@ public class EnturNoConnection {
     private final EnturNoHandler handler;
     private final HttpClient httpClient;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson gson = new Gson();
 
     public EnturNoConnection(EnturNoHandler handler, HttpClient httpClient) {
@@ -168,7 +167,7 @@ public class EnturNoConnection {
     }
 
     private String getErrorMessage(String response) {
-        JsonObject jsonResponse = parser.parse(response).getAsJsonObject();
+        JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         if (jsonResponse.has(PROPERTY_MESSAGE)) {
             return jsonResponse.get(PROPERTY_MESSAGE).getAsString();
         }
