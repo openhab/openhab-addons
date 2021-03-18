@@ -82,7 +82,6 @@ public class KeContactHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
 
-    protected final JsonParser parser = new JsonParser();
     private final KeContactTransceiver transceiver;
 
     private ScheduledFuture<?> pollingJob;
@@ -236,7 +235,7 @@ public class KeContactHandler extends BaseThingHandler {
         }
 
         try {
-            JsonObject readObject = parser.parse(response).getAsJsonObject();
+            JsonObject readObject = JsonParser.parseString(response).getAsJsonObject();
 
             for (Entry<String, JsonElement> entry : readObject.entrySet()) {
                 switch (entry.getKey()) {
