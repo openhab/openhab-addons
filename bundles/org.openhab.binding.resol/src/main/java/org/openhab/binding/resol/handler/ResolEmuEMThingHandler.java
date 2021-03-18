@@ -207,7 +207,7 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
         if (dev != null) {
             if (chID.startsWith(CHANNEL_TEMP)) {
                 dev.setResistorValueByNrAndPt1000Temperatur(channel, value);
-                updateState(channelUID, new DecimalType(value));
+                updateState(channelUID, new QuantityType<>(value, SIUnits.CELSIUS));
             } else if (chID.startsWith(CHANNEL_SWITCH)) {
                 if (intValue == 0) {
                     /* switch is open => 1 megaohm */
@@ -224,11 +224,11 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
             } else if (chID.startsWith(CHANNEL_TEMP_ADJUST)) {
                 basValues[channel - 1].temperatureOffset = value;
                 updateBas(channel);
-                updateState(channelUID, new DecimalType(value));
+                updateState(channelUID, new QuantityType<>(value, SIUnits.CELSIUS));
             } else if (chID.startsWith(CHANNEL_MODE)) {
                 basValues[channel - 1].mode = intValue;
                 updateBas(channel);
-                updateState(channelUID, new DecimalType(intValue));
+                updateState(channelUID, new QuantityType<>(intValue, Units.ONE));
             } else {
                 /* set resistor value for Open Connection, 1 megaohm */
                 dev.setResistorValueByNr(channel, 1000000000);

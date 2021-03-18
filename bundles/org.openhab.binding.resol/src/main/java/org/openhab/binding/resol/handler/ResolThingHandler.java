@@ -14,10 +14,8 @@ package org.openhab.binding.resol.handler;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,8 +24,9 @@ import org.openhab.binding.resol.internal.ResolBindingConstants;
 import org.openhab.binding.resol.internal.ResolStateDescriptionOptionProvider;
 import org.openhab.binding.resol.internal.providers.ResolChannelTypeProvider;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -112,60 +111,6 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         return bridgeHandler;
     }
 
-    protected void setChannelValue(String channelId, String value) {
-        Channel channel = getThing().getChannel(channelId);
-        if (channel == null) {
-            logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
-        } else if (!"String".contentEquals(Objects.requireNonNullElse(channel.getAcceptedItemType(), ""))) {
-            logger.trace("Channel '{}:{}' expected to have a String type for parameters '{}'",
-                    getThing().getUID().getId(), channelId, value.toString());
-        } else {
-            this.updateState(channelId, new StringType(value));
-        }
-    }
-
-    protected void setChannelValue(String channelId, long value) {
-        Channel channel = getThing().getChannel(channelId);
-        if (channel == null) {
-            logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
-        } else if (!"Number".contentEquals(Objects.requireNonNullElse(channel.getAcceptedItemType(), ""))) {
-            logger.trace("Channel '{}:{}' expected to have a String type for parameters '{}'",
-                    getThing().getUID().getId(), channelId, value);
-        } else {
-            this.updateState(channelId, new StringType(Long.toString(value)));
-        }
-    }
-
-    protected void setChannelValue(String channelId, Date value) {
-        Channel channel = getThing().getChannel(channelId);
-        if (channel == null) {
-            logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
-        } else if (!"DateTime".equals(channel.getAcceptedItemType())) {
-            logger.trace("Channel '{}:{}' expected to have a DateTime type for parameters '{}'",
-                    getThing().getUID().getId(), channelId, value.toString());
-        } else {
-            synchronized (DATE_FORMAT) {
-                this.updateState(channelId, new DateTimeType(DATE_FORMAT.format(value)));
-            }
-        }
-    }
-
-    protected void setChannelValue(String channelId, double value) {
-        Channel channel = getThing().getChannel(channelId);
-        if (channel == null) {
-            logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
-            return;
-        }
-
-        String itmType = channel.getAcceptedItemType();
-        if (itmType != null && itmType.startsWith("Number")) {
-            this.updateState(channelId, new DecimalType(value));
-        } else {
-            logger.warn("ItemType '{}' for channel '{}' not matching parameter type double",
-                    channel.getAcceptedItemType(), channelId);
-        }
-    }
-
     @Override
     protected void packetReceived(Specification spec, Language lang, Packet packet) {
         PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(new Packet[] { packet });
@@ -248,7 +193,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
             if (pfv.getEnumVariant() != null) {
                 /* update the enum / State channel */
-                setChannelValue(channelId, pfv.getRawValueLong());
+                this.updateState(channelId, new StringType(Long.toString(pfv.getRawValueLong())));
 
             } else {
                 switch (pfv.getPacketFieldSpec().getType()) {
@@ -257,7 +202,25 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                         if (dd != null) {
                             if (!isSpecialValue(dd)) {
                                 /* only set the value if no error occurred */
-                                setChannelValue(channelId, dd.doubleValue());
+
+                                String str = pfv.formatText();
+                                if (str.endsWith("RH")) {
+                                    /* unit %RH for relative humidity is not known in openHAB UoM, so we remove it */
+                                    str = str.substring(0, str.length() - 2);
+                                }
+                                if (str.endsWith("Ω")) {
+                                    QuantityType<?> q = new QuantityType<>(dd, Units.OHM);
+                                    this.updateState(channelId, q);
+                                } else {
+                                    try {
+                                        QuantityType<?> q = new QuantityType<>(str);
+                                        this.updateState(channelId, q);
+                                    } catch (IllegalArgumentException e) {
+                                        logger.debug("unit of '{}' unknown in openHAB", str);
+                                        QuantityType<?> q = new QuantityType<>(dd.toString());
+                                        this.updateState(channelId, q);
+                                    }
+                                }
                             }
                         }
                         /*
@@ -267,15 +230,25 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                          */
                         break;
                     case DateTime:
-                        setChannelValue(channelId, pfv.getRawValueDate());
+                        synchronized (DATE_FORMAT) {
+                            DateTimeType d = new DateTimeType(DATE_FORMAT.format(pfv.getRawValueDate()));
+                            this.updateState(channelId, d);
+                        }
                         break;
                     case WeekTime:
                     case Time:
                     default:
                         Bridge b = getBridge();
                         if (b != null) {
-                            setChannelValue(channelId, pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(),
-                                    ((ResolBridgeHandler) b).getLocale()));
+                            String value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(),
+                                    ((ResolBridgeHandler) b).getLocale());
+                            try {
+                                QuantityType<?> q = new QuantityType<>(value);
+                                this.updateState(channelId, q);
+                            } catch (IllegalArgumentException e) {
+                                this.updateState(channelId, new StringType(value));
+                                logger.debug("unit of '{}' unknown in openHAB, using string", value);
+                            }
                         }
                 }
             }
