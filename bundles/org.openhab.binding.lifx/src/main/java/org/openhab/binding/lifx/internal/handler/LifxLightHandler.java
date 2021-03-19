@@ -402,7 +402,7 @@ public class LifxLightHandler extends BaseThingHandler {
 
         Configuration configuration = channel.getConfiguration();
         Object speed = configuration.get(parameter);
-        return speed == null ? null : new Double(speed.toString());
+        return speed == null ? null : Double.valueOf(speed.toString());
     }
 
     private LifxProduct getProduct() {
@@ -414,7 +414,7 @@ public class LifxLightHandler extends BaseThingHandler {
             // Without first conversion to double, on a very first thing creation from discovery inbox,
             // the product type is incorrectly parsed, as framework passed it as a floating point number
             // (e.g. 50.0 instead of 50)
-            Double d = Double.parseDouble((String) propertyValue);
+            Double d = Double.valueOf((String) propertyValue);
             long productID = d.longValue();
             return LifxProduct.getProductFromProductID(productID);
         } catch (IllegalArgumentException e) {

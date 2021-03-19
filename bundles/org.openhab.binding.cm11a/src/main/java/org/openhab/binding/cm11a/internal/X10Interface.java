@@ -357,7 +357,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
      */
     public static boolean validateAddress(String address) {
         return (!(address.length() < 2 || address.length() > 3
-                || !HOUSE_CODES.containsKey(new Character(address.charAt(0)))
+                || !HOUSE_CODES.containsKey(Character.valueOf(address.charAt(0)))
                 || !DEVICE_CODES.containsKey(Integer.parseInt(address.substring(1)))));
     }
 
