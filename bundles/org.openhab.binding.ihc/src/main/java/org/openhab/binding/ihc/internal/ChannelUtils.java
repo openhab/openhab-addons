@@ -202,7 +202,7 @@ public class ChannelUtils {
                 ChannelUID channelUID = new ChannelUID(thing.getUID(), group + resourceId);
                 ChannelTypeUID type = new ChannelTypeUID(BINDING_ID, channelType);
                 Configuration configuration = new Configuration();
-                configuration.put(PARAM_RESOURCE_ID, new Integer(resourceId));
+                configuration.put(PARAM_RESOURCE_ID, Integer.valueOf(resourceId));
 
                 Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withConfiguration(configuration)
                         .withLabel(description).withType(type).build();
