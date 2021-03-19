@@ -14,7 +14,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="zoneControls" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -45,7 +45,7 @@
 		<description>Control a 2014 Pioneer AVR (SC-LX87, SC-LX77, SC-LX57, SC-2023, SC-1223, VSX-1123, VSX-923) over IP </description>
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="controls2014" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -82,7 +82,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="controls2015" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -119,7 +119,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="controls2016" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -156,7 +156,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="controls2017" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -191,7 +191,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="controls2018" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -226,7 +226,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="controls2019" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -261,7 +261,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="controls2020" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -298,7 +298,7 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="zoneControls" id="zone1"/>
 			<channel-group typeId="zoneControls" id="zone2"/>
 			<channel-group typeId="zoneControls" id="zone3"/>
@@ -325,10 +325,10 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
-            <channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
 			<channel-group typeId="zone1Controls" id="zone1"/>
 			<channel-group typeId="zone2Controls" id="zone2"/>
-            <channel-group typeId="zone3Controls" id="zone3"/>
+			<channel-group typeId="zone3Controls" id="zone3"/>
 		</channel-groups>
 
 		<config-description>
@@ -341,19 +341,19 @@
 		</config-description>
 	</thing-type>
 
-    <channel-group-type id="displayInformationGroup">
-        <label>Display</label>
-        <channels>
-            <channel id="displayInformation" typeId="displayInformationChannel"/>
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="MCACCMemoryGroup">
-        <label>MCACC Memory</label>
-        <channels>
-            <channel id="MCACCMemory" typeId="setMCACCMemoryChannel"/>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="displayInformationGroup">
+		<label>Display</label>
+		<channels>
+			<channel id="displayInformation" typeId="displayInformationChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="MCACCMemoryGroup">
+		<label>MCACC Memory</label>
+		<channels>
+			<channel id="MCACCMemory" typeId="setMCACCMemoryChannel"/>
+		</channels>
+	</channel-group-type>
 
 	<channel-group-type id="zoneControls">
 		<label>Zone Controls</label>
@@ -1394,22 +1394,22 @@
 		<description>Display the effective listening mode</description>
 		<state readOnly="true"/>
 	</channel-type>
-	
+
 	<channel-type id="setMCACCMemoryChannel">
-        <item-type>String</item-type>
-        <label>MCACC Memory</label>
-        <description>Set the MCACC Memory profile</description>
-        <state>
-            <options>
-                <option value="0000">MCACC MEMORY (cyclic)</option>
-                <option value="0001">MEMORY 1</option>
-                <option value="0002">MEMORY 2</option>
-                <option value="0003">MEMORY 3</option>
-                <option value="0004">MEMORY 4</option>
-                <option value="0005">MEMORY 5</option>
-                <option value="0006">MEMORY 6</option>
-            </options>
-        </state>
-    </channel-type>
+		<item-type>String</item-type>
+		<label>MCACC Memory</label>
+		<description>Set the MCACC Memory profile</description>
+		<state>
+			<options>
+				<option value="0000">MCACC MEMORY (cyclic)</option>
+				<option value="0001">MEMORY 1</option>
+				<option value="0002">MEMORY 2</option>
+				<option value="0003">MEMORY 3</option>
+				<option value="0004">MEMORY 4</option>
+				<option value="0005">MEMORY 5</option>
+				<option value="0006">MEMORY 6</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>
