@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="moonraker"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="printer_3d">
+		<label>Printer 3D</label>
+		<description>3D Printer controlled by Klipper</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="toolhead" typeId="toolhead"/>
+			<channel-group id="gcode_move" typeId="gcode_move"/>
+			<channel-group id="file_info" typeId="file_info"/>
+			<channel-group id="mcu" typeId="mcu"/>
+			<channel-group id="firmware_retraction" typeId="firmware_retraction"/>
+			<channel-group id="extruder" typeId="extruder">
+				<label>Extruder</label>
+			</channel-group>
+			<channel-group id="extruder1" typeId="extruder">
+				<label>2nd Extruder</label>
+			</channel-group>
+			<channel-group id="extruder2" typeId="extruder">
+				<label>3rd Extruder</label>
+			</channel-group>
+			<channel-group id="extruder3" typeId="extruder">
+				<label>4th Extruder</label>
+			</channel-group>
+			<channel-group id="heater_bed" typeId="heater">
+				<label>Bed</label>
+			</channel-group>
+			<channel-group id="fan" typeId="fan">
+				<label>Part Cooling Fan</label>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="software_version"></property>
+			<property name="cpu_info"></property>
+			<property name="hostname"></property>
+			<property name="klipper_path"></property>
+			<property name="config_file"></property>
+			<property name="python_path"></property>
+			<property name="log_file"></property>
+			<property name="plugins"></property>
+			<property name="failed_plugins"></property>
+			<property name="registered_directories"></property>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Moonraker server address (ipv4, ipv6 or hostname)</description>
+				<default>localhost</default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535" required="true">
+				<label>Port</label>
+				<description>Moonraker server port number</description>
+				<default>7125</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="apikey" type="text" required="false">
+				<label>API Key</label>
+				<description>Moonraker API key</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="general">
+		<label>General</label>
+		<description>General 3d printer</description>
+		<channels>
+			<channel id="state" typeId="text">
+				<label>State</label>
+			</channel>
+			<channel id="state_message" typeId="text">
+				<label>State Message</label>
+			</channel>
+			<channel id="emergency_stop" typeId="system.power">
+				<label>Emergency Stop</label>
+			</channel>
+			<channel id="firmware_restart" typeId="switch_advanced">
+				<label>Klippy &amp; Firmware Restart</label>
+			</channel>
+			<channel id="restart" typeId="switch_advanced">
+				<label>Klippy Restart</label>
+			</channel>
+			<channel id="server_restart" typeId="switch_advanced">
+				<label>Moonraker Restart</label>
+			</channel>
+			<channel id="gcode_command" typeId="command_advanced">
+				<label>Gcode Command</label>
+			</channel>
+			<channel id="gcode_response" typeId="text_advanced">
+				<label>Gcode Response</label>
+			</channel>
+			<channel id="print_file" typeId="command_advanced">
+				<label>Print File</label>
+			</channel>
+			<channel id="pause" typeId="switch_advanced">
+				<label>Pause Print</label>
+			</channel>
+			<channel id="resume" typeId="switch_advanced">
+				<label>Resume Print</label>
+			</channel>
+			<channel id="cancel" typeId="switch_advanced">
+				<label>Cancel Print</label>
+			</channel>
+			<channel id="webhooks__state" typeId="text_advanced">
+				<label>Webhooks State</label>
+			</channel>
+			<channel id="webhooks__state_message" typeId="text_advanced">
+				<label>Webhooks State Message</label>
+			</channel>
+			<channel id="print_stats__state" typeId="text_advanced">
+				<label>Print Stats State</label>
+			</channel>
+			<channel id="print_stats__message" typeId="text_advanced">
+				<label>Print State State Message</label>
+			</channel>
+			<channel id="idle_timeout__state" typeId="text_advanced">
+				<label>Idle Timeout State</label>
+			</channel>
+			<channel id="idle_timeout__printing_time" typeId="time">
+				<label>Print Time</label>
+			</channel>
+			<channel id="print_stats__total_duration" typeId="time">
+				<label>Total Time</label>
+			</channel>
+			<channel id="print_stats__print_duration" typeId="time">
+				<label>Print Time</label>
+			</channel>
+			<channel id="print_stats__filament_used" typeId="length">
+				<label>Filament Used</label>
+			</channel>
+			<channel id="print_stats__filename" typeId="text">
+				<label>File Name</label>
+			</channel>
+			<channel id="virtual_sdcard__progress" typeId="progress">
+				<label>Printing Progress</label>
+			</channel>
+			<channel id="virtual_sdcard__is_active" typeId="bool">
+				<label>Printing from file</label>
+			</channel>
+			<channel id="virtual_sdcard__file_position" typeId="bytes_advanced">
+				<label>File Position</label>
+			</channel>
+			<channel id="display_status__message" typeId="text">
+				<label>Display Message</label>
+			</channel>
+			<channel id="display_status__progress" typeId="progress">
+				<label>Display Progress</label>
+			</channel>
+			<channel id="pause_resume__is_paused" typeId="bool">
+				<label>Paused</label>
+			</channel>
+			<channel id="probe__last_z_result" typeId="position_advanced">
+				<label>Last Probe Result</label>
+			</channel>
+			<channel id="probe__last_query" typeId="bool_advanced">
+				<label>Last Probe Time</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="toolhead">
+		<label>Toolhead</label>
+		<description>Toolhead related information</description>
+		<category>Move</category>
+		<channels>
+			<channel id="homed_axes" typeId="text_advanced">
+				<label>Homed axes</label>
+			</channel>
+			<channel id="print_time" typeId="time">
+				<label>Print Time</label>
+			</channel>
+			<channel id="estimated_print_time" typeId="time">
+				<label>Estimated Print Time</label>
+			</channel>
+			<channel id="extruder" typeId="text">
+				<label>Selected Extruder</label>
+			</channel>
+			<channel id="position__x" typeId="position">
+				<label>Absolute Position X</label>
+			</channel>
+			<channel id="position__y" typeId="position">
+				<label>Absolute Position Y</label>
+			</channel>
+			<channel id="position__z" typeId="position">
+				<label>Absolute Position Z</label>
+			</channel>
+			<channel id="axis_minimum__x" typeId="position_advanced">
+				<label>Axis Minimum X</label>
+			</channel>
+			<channel id="axis_minimum__y" typeId="position_advanced">
+				<label>Axis Minimum Y</label>
+			</channel>
+			<channel id="axis_minimum__z" typeId="position_advanced">
+				<label>Axis Minimum Z</label>
+			</channel>
+			<channel id="axis_maximum__x" typeId="position_advanced">
+				<label>Axis Maximum X</label>
+			</channel>
+			<channel id="axis_maximum__y" typeId="position_advanced">
+				<label>Axis Maximum Y</label>
+			</channel>
+			<channel id="axis_maximum__z" typeId="position_advanced">
+				<label>Axis Maximum Z</label>
+			</channel>
+			<channel id="max_velocity" typeId="speed_advanced">
+				<label>Maximum Velocity</label>
+			</channel>
+			<channel id="max_accel" typeId="acceleration_advanced">
+				<label>Maximum Acceleration</label>
+			</channel>
+			<channel id="max_accel_to_decel" typeId="acceleration_advanced">
+				<label>Maximim Acceleration to Deceleration</label>
+			</channel>
+			<channel id="square_corner_velocity" typeId="speed_advanced">
+				<label>Square Corner Velocity</label>
+				<description>Maximum velocity for 90 degree corner</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="gcode_move">
+		<label>GCode</label>
+		<description>Gcode movement related information</description>
+		<category>Move</category>
+		<channels>
+			<channel id="speed" typeId="speed">
+				<label>Current Speed</label>
+			</channel>
+			<channel id="speed_factor" typeId="factor">
+				<label>Speed Factor</label>
+			</channel>
+			<channel id="extrude_factor" typeId="factor">
+				<label>Extrude Factor</label>
+			</channel>
+			<channel id="absolute_coordinates" typeId="bool_advanced">
+				<label>Absolute Coordinates</label>
+			</channel>
+			<channel id="absolute_extrude" typeId="bool_advanced">
+				<label>Absolute Extrude</label>
+			</channel>
+			<channel id="gcode_position__x" typeId="position">
+				<label>Gcode Position X</label>
+			</channel>
+			<channel id="gcode_position__y" typeId="position">
+				<label>Gcode Position Y</label>
+			</channel>
+			<channel id="gcode_position__z" typeId="position">
+				<label>Gcode Position Z</label>
+			</channel>
+			<channel id="position__x" typeId="position">
+				<label>Position X</label>
+			</channel>
+			<channel id="position__y" typeId="position">
+				<label>Position Y</label>
+			</channel>
+			<channel id="position__z" typeId="position">
+				<label>Position Z</label>
+			</channel>
+			<channel id="homing_origin__x" typeId="position_advanced">
+				<label>Homing Origin X</label>
+			</channel>
+			<channel id="homing_origin__y" typeId="position_advanced">
+				<label>Homing Origin Y</label>
+			</channel>
+			<channel id="homing_origin__z" typeId="position_advanced">
+				<label>Homing Origin Z</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="file_info">
+		<label>File Information</label>
+		<description>Information about current file</description>
+		<category>Text</category>
+		<channels>
+			<channel id="filename" typeId="text_advanced">
+				<label>File Name</label>
+			</channel>
+			<channel id="modified" typeId="date">
+				<label>File Modification Date</label>
+			</channel>
+			<channel id="size" typeId="bytes">
+				<label>File Size</label>
+			</channel>
+			<channel id="slicer" typeId="text_advanced">
+				<label>Slicer</label>
+			</channel>
+			<channel id="slicer_version" typeId="text_advanced">
+				<label>Slicer Version</label>
+			</channel>
+			<channel id="layer_height" typeId="length_in_mm">
+				<label>Layer Height</label>
+			</channel>
+			<channel id="first_layer_height" typeId="length_in_mm">
+				<label>First Layer Height</label>
+			</channel>
+			<channel id="object_height" typeId="length_in_mm">
+				<label>Object Height</label>
+			</channel>
+			<channel id="first_layer_bed_temp" typeId="temperature_advanced">
+				<label>First Layer Bed Temperature</label>
+			</channel>
+			<channel id="first_layer_extr_temp" typeId="temperature_advanced">
+				<label>First Layer Extruder Temperature</label>
+			</channel>
+			<channel id="estimated_time" typeId="time">
+				<label>Estimated Print Time</label>
+			</channel>
+			<channel id="filament_total" typeId="length">
+				<label>Total Filament Length</label>
+			</channel>
+			<channel id="gcode_start_byte" typeId="bytes_advanced">
+				<label>Gcode start byte</label>
+			</channel>
+			<channel id="gcode_end_byte" typeId="bytes_advanced">
+				<label>Gcode end byte</label>
+			</channel>
+			<channel id="thumbnail" typeId="thumbnail">
+				<label>Thumbnail</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+
+	<channel-group-type id="mcu">
+		<label>MCU</label>
+		<description>Microcontroller information</description>
+		<channels>
+			<channel id="bytes_read" typeId="bytes_advanced">
+				<label>Bytes Read</label>
+			</channel>
+			<channel id="bytes_write" typeId="bytes_advanced">
+				<label>Bytes Written</label>
+			</channel>
+			<channel id="bytes_retransmit" typeId="bytes_advanced">
+				<label>Bytes Retransmitted</label>
+			</channel>
+			<channel id="bytes_invalid" typeId="bytes_advanced">
+				<label>Invalid Bytes</label>
+			</channel>
+			<channel id="freq" typeId="frequency_advanced">
+				<label>Frequency</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="firmware_retraction">
+		<label>Firmware Retraction</label>
+		<description>Firmware Retraction information</description>
+		<category>Move</category>
+		<channels>
+			<channel id="retract_length" typeId="length_in_mm_advanced">
+				<label>Retract Length</label>
+			</channel>
+			<channel id="retract_speed" typeId="speed_advanced">
+				<label>Retract Speed</label>
+			</channel>
+			<channel id="unretract_extra_length" typeId="length_in_mm_advanced">
+				<label>Unretract Extra Length</label>
+			</channel>
+			<channel id="unretract_speed" typeId="speed_advanced">
+				<label>Unretract Speed</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="output_pin">
+		<label>Output Pin</label>
+		<description>Output Pin</description>
+		<channels>
+			<channel id="value" typeId="bool_advanced">
+				<label>Output Pin</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="gcode_button">
+		<label>Input Pin</label>
+		<description>Input Pin</description>
+		<channels>
+			<channel id="text" typeId="bool_advanced">
+				<label>Input Pin</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="extruder">
+		<label>Extruder</label>
+		<description>Extruder</description>
+		<category>Heating</category>
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="target" typeId="target"/>
+			<channel id="power" typeId="power"/>
+			<channel id="pressure_advance" typeId="pressure_advance"/>
+			<channel id="smooth_time" typeId="time_in_ms_advanced">
+				<label>Smoothing time for pressure advance</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="heater">
+		<label>Heater</label>
+		<description>Heater</description>
+		<category>Heating</category>
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="target" typeId="target"/>
+			<channel id="power" typeId="power"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="temperature_sensor">
+		<label>Temperature Sensor</label>
+		<description>Temperature Sensor</description>
+		<category>Heating</category>
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="measured_min_temp" typeId="temperature_advanced">
+				<label>Minimum Temperature</label>
+			</channel>
+			<channel id="measured_max_temp" typeId="temperature_advanced">
+				<label>Maximum Temperature</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fan">
+		<label>Fan</label>
+		<description>Fan</description>
+		<category>Wind</category>
+		<channels>
+			<channel id="speed" typeId="fanspeed"/>
+			<channel id="rpm" typeId="rpm_advanced"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="temperature_fan">
+		<label>Fan</label>
+		<description>Fan</description>
+		<category>Wind</category>
+		<channels>
+			<channel id="speed" typeId="fanspeed"/>
+			<channel id="rpm" typeId="rpm_advanced"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="target" typeId="target"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="filament_sensor">
+		<label>Filament Sensor</label>
+		<description>Filament Sensor</description>
+		<category>Flow</category>
+		<channels>
+			<channel id="enabled" typeId="bool_advanced">
+				<label>Enabled</label>
+			</channel>
+			<channel id="filament_detected" typeId="bool">
+				<label>Filament Detected</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="bed_mesh">
+		<label>Bed Mesh</label>
+		<description>Bed Mesh</description>
+		<category>MoveControl</category>
+		<channels>
+			<channel id="profile_name" typeId="text">
+				<label>Profile Name</label>
+			</channel>
+			<channel id="mesh_min__x" typeId="position">
+				<label>Mesh minimum coordinates</label>
+			</channel>
+			<channel id="mesh_min__y" typeId="position">
+				<label>Mesh minimum coordinates</label>
+			</channel>
+			<channel id="mesh_max__x" typeId="position">
+				<label>Mesh maximum coordinates</label>
+			</channel>
+			<channel id="mesh_max__y" typeId="position">
+				<label>Mesh maximum coordinates</label>
+			</channel>
+			<channel id="probed_matrix" typeId="text">
+				<label>Probed Matrix</label>
+			</channel>
+			<channel id="mesh_matrix" typeId="text">
+				<label>Interpolated Matrix</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="power_device">
+		<label>Power Device</label>
+		<description>Power Device</description>
+		<category>Dwitch</category>
+		<channels>
+			<channel id="status" typeId="text_advanced">
+				<label>Status</label>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<label>Power</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="temperature_advanced" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="target">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Setpoint</label>
+		<category>Heating</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Heating Power</label>
+		<category>Heating</category>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="factor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Factor</label>
+		<category>Number</category>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="fanspeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fan Speed</label>
+		<category>Heating</category>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="rpm_advanced" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Fan Speed</label>
+		<category>Heating</category>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="frequency_advanced" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="progress">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Progress</label>
+		<category>Time</category>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="bytes">
+		<item-type>Number:DataAmount</item-type>
+		<label>Amount</label>
+		<category>Number</category>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="bytes_advanced" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Amount</label>
+		<category>Number</category>
+		<state pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="pressure_advance" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pressure Advance</label>
+		<category>Pressure</category>
+		<state pattern="%.2f"></state>
+	</channel-type>
+
+	<channel-type id="time">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<category>Time</category>
+		<state pattern="%tT"></state>
+	</channel-type>
+
+	<channel-type id="date">
+		<item-type>Number:Time</item-type>
+		<label>Date</label>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="time_advanced" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<category>Time</category>
+		<state pattern="%tT"></state>
+	</channel-type>
+
+	<channel-type id="time_in_ms">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<category>Time</category>
+		<state pattern="%tQ ms"></state>
+	</channel-type>
+
+	<channel-type id="time_in_ms_advanced" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<category>Time</category>
+		<state pattern="%tQ ms"></state>
+	</channel-type>
+
+	<channel-type id="text">
+		<item-type>String</item-type>
+		<label>State</label>
+		<category>Text</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="text_advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>State</label>
+		<category>Text</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="command_advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<category>Text</category>
+	</channel-type>
+
+	<channel-type id="position">
+		<item-type>Number:Length</item-type>
+		<label>Position</label>
+		<category>MoveControl</category>
+		<state pattern="%.2f mm" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="position_advanced" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Position</label>
+		<category>MoveControl</category>
+		<state pattern="%.2f mm" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="speed">
+		<item-type>Number:Speed</item-type>
+		<label>Speed</label>
+		<category>Motion</category>
+		<state pattern="%.0f mm/s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="speed_advanced" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Speed</label>
+		<category>Motion</category>
+		<state pattern="%.0f mm/s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="length">
+		<item-type>Number:Length</item-type>
+		<label>Length</label>
+		<category>Number</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="length_in_mm">
+		<item-type>Number:Length</item-type>
+		<label>Length</label>
+		<category>Number</category>
+		<state pattern="%.2f mm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="length_in_mm_advanced" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Length</label>
+		<category>Number</category>
+		<state pattern="%.2f mm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="acceleration_advanced" advanced="true">
+		<item-type>Number:Acceleration</item-type>
+		<label>Acceleration</label>
+		<category>Motion</category>
+		<state pattern="%.0f mm/s²" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bool">
+		<item-type>Contact</item-type>
+		<label>Boolean</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bool_advanced" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Boolean</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switch_advanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="thumbnail">
+		<item-type>Image</item-type>
+		<label>Thumbnail</label>
+	</channel-type>
+
+</thing:thing-descriptions>
