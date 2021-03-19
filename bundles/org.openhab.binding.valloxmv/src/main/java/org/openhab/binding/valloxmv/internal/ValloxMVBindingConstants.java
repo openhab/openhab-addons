@@ -98,6 +98,11 @@ public class ValloxMVBindingConstants {
     public static final String CHANNEL_HUMIDITY = "humidity";
 
     /**
+     * Current CO2 of the air flow exhausting the building.
+     */
+    public static final String CHANNEL_CO2 = "co2";
+
+    /**
      * Current cell state (0=heat recovery, 1=cool recovery, 2=bypass, 3=defrosting).
      */
     public static final String CHANNEL_CELLSTATE = "cellstate";
