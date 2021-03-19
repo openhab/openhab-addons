@@ -40,14 +40,14 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 
 | Channel Type ID    | Item Type            | Writable | Description                                                                                       |
 |--------------------|----------------------| :------: |---------------------------------------------------------------------------------------------------|
-| temperature        | Number:Temperature   | &#9744; | Current measured temperature.                                                                     |
-| temperature-rating | String               | &#9744; | Rating of the currently measured temperature.                                                     |
-| humidity           | Number:Dimensionless | &#9744; | Current measured humidity.                                                                        |
-| humidity-rating    | String               | &#9744; | Rating of current measured humidity.                                                              |
+| temperature        | Number:Temperature   | &#9744; | Current measured temperature. |
+| temperature-rating | String               | &#9744; | Rating of the currently measured temperature. |
+| humidity           | Number:Dimensionless | &#9744; | Current measured humidity (0 to 100). |
+| humidity-rating    | String               | &#9744; | Rating of current measured humidity. |
 | purity             | Number:Dimensionless | &#9744; | Purity of the air (ppm). Range from 500 to 5500 ppm. A higher value indicates a higher pollution. |
-| purity-rating      | String               | &#9744; | Rating of current measured purity.                                                                |
-| air-description    | String               | &#9744; | Overall description of the air quality.                                                           |
-| combined-rating    | String               | &#9744; | Combined rating of the air quality.                                                               |
+| purity-rating      | String               | &#9744; | Rating of current measured purity. |
+| air-description    | String               | &#9744; | Overall description of the air quality. |
+| combined-rating    | String               | &#9744; | Combined rating of the air quality. |
 
 ### Door/Window contact
 
@@ -100,6 +100,17 @@ A virtual device which controls up to six Bosch Smart Home radiator thermostats 
 |----------------------|--------------------| :------: |-------------------------------|
 | temperature          | Number:Temperature | &#9744; | Current measured temperature. |
 | setpoint-temperature | Number:Temperature | &#9745; | Desired temperature.          |
+
+### Wall Thermostat
+
+Display of the current room temperature as well as the relative humidity in the room.
+
+**Thing Type ID**: `wall-thermostat`
+
+| Channel Type ID       | Item Type            | Writable | Description                                    |
+|-----------------------|----------------------| :------: |------------------------------------------------|
+| temperature           | Number:Temperature   | &#9744; | Current measured temperature. |
+| humidity              | Number:Dimensionless | &#9744; | Current measured humidity (0 to 100). |
 
 ## Limitations
 
