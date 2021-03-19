@@ -106,7 +106,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     public VenstarThermostatHandler(Thing thing) {
         super(thing);
-        httpClient = new HttpClient(new SslContextFactory(true));
+        httpClient = new HttpClient(new SslContextFactory.Client(true));
         gson = new GsonBuilder().registerTypeAdapter(VenstarSystemState.class, new VenstarSystemStateSerializer())
                 .registerTypeAdapter(VenstarSystemMode.class, new VenstarSystemModeSerializer()).create();
 
