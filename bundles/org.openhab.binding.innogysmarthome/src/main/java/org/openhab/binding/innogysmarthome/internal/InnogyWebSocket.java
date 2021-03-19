@@ -149,7 +149,7 @@ public class InnogyWebSocket {
     }
 
     WebSocketClient startWebSocketClient() throws Exception {
-        WebSocketClient client = new WebSocketClient(new SslContextFactory());
+        WebSocketClient client = new WebSocketClient(new SslContextFactory.Client());
         client.setMaxIdleTimeout(this.maxIdleTimeout);
         client.start();
         return client;
