@@ -24,7 +24,6 @@ import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 /**
@@ -47,11 +46,6 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * Class of service state
      */
     private final Class<TState> stateClass;
-
-    /**
-     * gson instance to convert a class to json string and back.
-     */
-    private final Gson gson = new Gson();
 
     /**
      * Bridge to use for communication from/to the device
@@ -176,7 +170,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      */
     public void onStateUpdate(JsonElement stateData) {
         @Nullable
-        TState state = gson.fromJson(stateData, this.stateClass);
+        TState state = BoschSHCServiceState.fromJson(stateData, this.stateClass);
         if (state == null) {
             this.logger.warn("Received invalid, expected type {}", this.stateClass.getName());
             return;

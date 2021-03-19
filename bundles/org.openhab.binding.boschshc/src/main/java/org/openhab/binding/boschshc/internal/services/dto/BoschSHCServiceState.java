@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.boschshc.internal.services.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,14 +24,42 @@ import com.google.gson.annotations.SerializedName;
  * @author Christian Oeing - Initial contribution
  */
 public class BoschSHCServiceState {
+    /**
+     * gson instance to convert a class to json string and back.
+     */
+    private static final Gson gson = new Gson();
+
+    /**
+     * State type. Initialized when first instance is created.
+     */
+    private static @Nullable String stateType = null;
+
     @SerializedName("@type")
     private final String type;
 
     protected BoschSHCServiceState(String type) {
         this.type = type;
+
+        if (stateType == null) {
+            stateType = type;
+        }
     }
 
     public String getType() {
         return type;
+    }
+
+    protected boolean isValid() {
+        return stateType.equals(this.type);
+    }
+
+    public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(JsonElement json,
+            Class<TState> stateClass) {
+        var state = gson.fromJson(json, stateClass);
+        if (state == null || !state.isValid()) {
+            return null;
+        }
+
+        return state;
     }
 }
