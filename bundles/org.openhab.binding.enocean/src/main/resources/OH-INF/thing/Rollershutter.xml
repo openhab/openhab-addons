@@ -13,10 +13,9 @@
 		<description>Rollershutter like Eltako FSB14/61/71 or NodOn SIN-2-RS-01 (EEP: A5-37, D2-05)</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="senderIdOffset" type="integer" required="false" min="1" max="127">
 				<label>Sender Id</label>
@@ -28,7 +27,7 @@
 				<description>Time in seconds after a refresh is triggered, 0 to disable</description>
 				<default>300</default>
 			</parameter>
-			<parameter name="sendingEEPId" type="text">
+			<parameter name="sendingEEPId" type="text" required="true">
 				<label>EEP for Sending Commands</label>
 				<options>
 					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
@@ -37,13 +36,12 @@
 				</options>
 				<default>A5_3F_7F_EltakoFSB</default>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 			<parameter name="broadcastMessages" type="boolean">
 				<label>Send Broadcast Messages</label>
 				<default>true</default>
 			</parameter>
-			<parameter name="receivingEEPId" type="text" multiple="true">
+			<parameter name="receivingEEPId" type="text" multiple="true" required="true">
 				<label>EEP for Receiving States</label>
 				<options>
 					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
@@ -53,7 +51,6 @@
 				</options>
 				<multipleLimit>4</multipleLimit>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 			<parameter name="suppressRepeating" type="boolean">
 				<label>Suppress Repeating of Messages</label>
