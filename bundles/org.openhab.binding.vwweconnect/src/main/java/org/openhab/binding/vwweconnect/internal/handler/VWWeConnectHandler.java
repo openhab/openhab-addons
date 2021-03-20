@@ -17,8 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vwweconnect.internal.DeviceStatusListener;
 import org.openhab.binding.vwweconnect.internal.VWWeConnectSession;
 import org.openhab.binding.vwweconnect.internal.VehicleConfiguration;
-import org.openhab.binding.vwweconnect.internal.model.BaseVehicle;
-import org.openhab.binding.vwweconnect.internal.model.Vehicle;
+import org.openhab.binding.vwweconnect.internal.dto.BaseVehicleDTO;
+import org.openhab.binding.vwweconnect.internal.dto.VehicleDTO;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -65,7 +65,7 @@ public class VWWeConnectHandler extends BaseThingHandler implements DeviceStatus
             VWWeConnectSession session = getSession();
             if (session != null && vin != null) {
                 // In the mean time update vehicle with current status of session
-                BaseVehicle thing = session.getVWWeConnectThing(vin);
+                BaseVehicleDTO thing = session.getVWWeConnectThing(vin);
                 if (thing != null) {
                     update(thing);
                 }
@@ -143,7 +143,7 @@ public class VWWeConnectHandler extends BaseThingHandler implements DeviceStatus
                     VWWeConnectSession session = getSession();
                     String vin = config.vin;
                     if (session != null && vin != null) {
-                        BaseVehicle vehicle = session.getVWWeConnectThing(vin);
+                        BaseVehicleDTO vehicle = session.getVWWeConnectThing(vin);
                         if (vehicle != null) {
                             update(vehicle);
                             session.registerDeviceStatusListener(this);
@@ -156,11 +156,11 @@ public class VWWeConnectHandler extends BaseThingHandler implements DeviceStatus
     }
 
     @Override
-    public void onDeviceStateChanged(@Nullable BaseVehicle vehicle) {
+    public void onDeviceStateChanged(@Nullable BaseVehicleDTO vehicle) {
         logger.trace("onDeviceStateChanged on vehicle: {}", vehicle);
         if (vehicle != null) {
-            if (vehicle instanceof Vehicle) {
-                Vehicle theVehicle = (Vehicle) vehicle;
+            if (vehicle instanceof VehicleDTO) {
+                VehicleDTO theVehicle = (VehicleDTO) vehicle;
                 if (config.vin != null && config.vin.equals((theVehicle.getCompleteVehicleJson().getVin()))) {
                     update(theVehicle);
                 }
@@ -170,17 +170,17 @@ public class VWWeConnectHandler extends BaseThingHandler implements DeviceStatus
         }
     }
 
-    public synchronized void update(BaseVehicle thing) {
+    public synchronized void update(BaseVehicleDTO thing) {
         logger.debug("Update on base class. {}", thing);
     }
 
     @Override
-    public void onDeviceRemoved(@Nullable BaseVehicle thing) {
+    public void onDeviceRemoved(@Nullable BaseVehicleDTO thing) {
         logger.trace("onDeviceRemoved on thing: {}", thing);
     }
 
     @Override
-    public void onDeviceAdded(@Nullable BaseVehicle thing) {
+    public void onDeviceAdded(@Nullable BaseVehicleDTO thing) {
         logger.trace("onDeviceAdded on thing: {}", thing);
     }
 }

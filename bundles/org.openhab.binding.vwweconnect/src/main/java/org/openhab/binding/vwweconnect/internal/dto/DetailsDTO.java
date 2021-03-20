@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vwweconnect.internal.model;
+package org.openhab.binding.vwweconnect.internal.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -28,12 +28,12 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class Details {
+public class DetailsDTO {
 
-    private VehicleDetails vehicleDetails = new VehicleDetails();
-    private @Nullable String errorCode;
+    private VehicleDetailsDTO vehicleDetails = new VehicleDetailsDTO();
+    private String errorCode = "";
 
-    public VehicleDetails getVehicleDetails() {
+    public VehicleDetailsDTO getVehicleDetails() {
         return vehicleDetails;
     }
 
@@ -43,33 +43,44 @@ public class Details {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("vehicleDetails", vehicleDetails).append("errorCode", errorCode)
-                .toString();
+        return "DetailsDTO [vehicleDetails=" + vehicleDetails + ", errorCode=" + errorCode + "]";
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(errorCode).append(vehicleDetails).toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + errorCode.hashCode();
+        result = prime * result + vehicleDetails.hashCode();
+        return result;
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof Details)) {
+        if (obj == null) {
             return false;
         }
-        Details rhs = ((Details) other);
-        return new EqualsBuilder().append(errorCode, rhs.errorCode).append(vehicleDetails, rhs.vehicleDetails)
-                .isEquals();
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetailsDTO other = (DetailsDTO) obj;
+        if (!errorCode.equals(other.errorCode)) {
+            return false;
+        }
+        if (!vehicleDetails.equals(other.vehicleDetails)) {
+            return false;
+        }
+        return true;
     }
 
-    public class VehicleDetails {
+    public class VehicleDetailsDTO {
 
         private List<String> lastConnectionTimeStamp = new ArrayList<>();
-        private double distanceCovered = BaseVehicle.UNDEFINED;
-        private double range = BaseVehicle.UNDEFINED;
+        private double distanceCovered = BaseVehicleDTO.UNDEFINED;
+        private double range = BaseVehicleDTO.UNDEFINED;
         private @Nullable String serviceInspectionData;
         private @Nullable String oilInspectionData;
         private boolean showOil;
@@ -129,10 +140,10 @@ public class Details {
             if (other == this) {
                 return true;
             }
-            if (!(other instanceof VehicleDetails)) {
+            if (!(other instanceof VehicleDetailsDTO)) {
                 return false;
             }
-            VehicleDetails rhs = ((VehicleDetails) other);
+            VehicleDetailsDTO rhs = ((VehicleDetailsDTO) other);
             return new EqualsBuilder().append(oilInspectionData, rhs.oilInspectionData)
                     .append(distanceCovered, rhs.distanceCovered).append(range, rhs.range)
                     .append(serviceInspectionData, rhs.serviceInspectionData)

@@ -222,8 +222,7 @@ public class VWWeConnectBridgeHandler extends BaseBridgeHandler {
             } else {
                 logger.debug("VWWeConnectBridgeHandler - Refresh thread session is null, let's re-initialize!");
                 dispose();
-                SslContextFactory sslFactory = new SslContextFactory(true);
-                this.httpClient = new HttpClient(sslFactory);
+                this.httpClient = new HttpClient(new SslContextFactory.Client());
                 this.httpClient.setFollowRedirects(false);
                 try {
                     this.httpClient.start();

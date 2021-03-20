@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vwweconnect.internal.model;
+package org.openhab.binding.vwweconnect.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class BaseVehicle {
+public class BaseVehicleDTO {
     public static final int UNDEFINED = -1;
 
     protected @Nullable String status;
@@ -64,11 +64,11 @@ public class BaseVehicle {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof BaseVehicle)) {
+        if (!(obj instanceof BaseVehicleDTO)) {
             return false;
         }
 
-        BaseVehicle other = (BaseVehicle) obj;
+        BaseVehicleDTO other = (BaseVehicleDTO) obj;
 
         if (status == null) {
             if (other.status != null) {

@@ -20,9 +20,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vwweconnect.internal.VWWeConnectSession;
+import org.openhab.binding.vwweconnect.internal.dto.BaseVehicleDTO;
+import org.openhab.binding.vwweconnect.internal.dto.VehicleDTO;
 import org.openhab.binding.vwweconnect.internal.handler.VWWeConnectBridgeHandler;
-import org.openhab.binding.vwweconnect.internal.model.BaseVehicle;
-import org.openhab.binding.vwweconnect.internal.model.Vehicle;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -60,9 +60,9 @@ public class VWWeConnectDiscoveryService extends AbstractDiscoveryService
         if (vwWeConnectBridgeHandler != null) {
             VWWeConnectSession session = vwWeConnectBridgeHandler.getSession();
             if (session != null) {
-                HashMap<String, BaseVehicle> vwWeConnectThings = session.getVWWeConnectThings();
-                for (Map.Entry<String, BaseVehicle> entry : vwWeConnectThings.entrySet()) {
-                    BaseVehicle thing = entry.getValue();
+                HashMap<String, BaseVehicleDTO> vwWeConnectThings = session.getVWWeConnectThings();
+                for (Map.Entry<String, BaseVehicleDTO> entry : vwWeConnectThings.entrySet()) {
+                    BaseVehicleDTO thing = entry.getValue();
                     if (thing != null) {
                         logger.info("Thing: {}", thing);
                         onThingAddedInternal(thing);
@@ -72,10 +72,10 @@ public class VWWeConnectDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void onThingAddedInternal(BaseVehicle thing) {
+    private void onThingAddedInternal(BaseVehicleDTO thing) {
         logger.debug("VWWeConnectDiscoveryService:OnThingAddedInternal");
-        if (thing instanceof Vehicle) {
-            Vehicle theVehicle = (Vehicle) thing;
+        if (thing instanceof VehicleDTO) {
+            VehicleDTO theVehicle = (VehicleDTO) thing;
             String vin = theVehicle.getCompleteVehicleJson().getVin();
             if (vin != null) {
                 ThingUID thingUID = new ThingUID(VEHICLE_THING_TYPE, bridgeUID, vin);

@@ -18,16 +18,13 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.vwweconnect.internal.handler.VWWeConnectBridgeHandler;
 import org.openhab.binding.vwweconnect.internal.handler.VehicleHandler;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,25 +39,7 @@ import org.slf4j.LoggerFactory;
 public class VWWeConnectHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(VWWeConnectHandlerFactory.class);
-    private static final boolean DEBUG = true;
-
     private @NonNullByDefault({}) HttpClient httpClient;
-
-    @Activate
-    public VWWeConnectHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        logger.debug("VWWeConnectHandlerFactory this: {}", this);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-        if (DEBUG) {
-            SslContextFactory sslFactory = new SslContextFactory(true);
-            this.httpClient = new HttpClient(sslFactory);
-            this.httpClient.setFollowRedirects(false);
-            try {
-                this.httpClient.start();
-            } catch (Exception e) {
-                logger.error("Exception: {}", e.getMessage());
-            }
-        }
-    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -69,13 +48,19 @@ public class VWWeConnectHandlerFactory extends BaseThingHandlerFactory {
 
     public VWWeConnectHandlerFactory() {
         super();
+        this.httpClient = new HttpClient(new SslContextFactory.Client());
+        this.httpClient.setFollowRedirects(false);
+        try {
+            this.httpClient.start();
+        } catch (Exception e) {
+            logger.error("Exception: {}", e.getMessage());
+        }
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         logger.debug("createHandler this: {}", thing);
         final ThingHandler thingHandler;
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (VWWeConnectBindingConstants.BRIDGE_THING_TYPE.equals(thing.getThingTypeUID())) {
             logger.debug("Create VWWeConnectBridgeHandler");
             thingHandler = new VWWeConnectBridgeHandler((Bridge) thing, httpClient);

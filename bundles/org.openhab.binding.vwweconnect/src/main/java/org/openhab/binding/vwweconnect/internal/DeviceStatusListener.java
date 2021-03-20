@@ -13,7 +13,7 @@
 package org.openhab.binding.vwweconnect.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.vwweconnect.internal.model.BaseVehicle;
+import org.openhab.binding.vwweconnect.internal.dto.BaseVehicleDTO;
 
 /**
  * The {@link DeviceStatusListener} is notified when a device status has changed
@@ -31,7 +31,7 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing that was changed.
      */
-    void onDeviceStateChanged(BaseVehicle thing);
+    void onDeviceStateChanged(BaseVehicleDTO thing);
 
     /**
      * This method us called whenever a device is removed.
@@ -39,7 +39,7 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing that is removed
      */
-    void onDeviceRemoved(BaseVehicle thing);
+    void onDeviceRemoved(BaseVehicleDTO thing);
 
     /**
      * This method us called whenever a device is added.
@@ -47,5 +47,5 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing which is added.
      */
-    void onDeviceAdded(BaseVehicle thing);
+    void onDeviceAdded(BaseVehicleDTO thing);
 }

@@ -14,25 +14,25 @@ package org.openhab.binding.vwweconnect.internal.wrapper;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.vwweconnect.internal.model.Location.Position;
+import org.openhab.binding.vwweconnect.internal.dto.LocationDTO.PositionDTO;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.types.State;
 
 /**
  * The {@link VehiclePositionWrapper} stores provides utility functions
- * over a {@link Position} provided by the rest API
+ * over a {@link PositionDTO} provided by the rest API
  *
  * @author Jan Gustafsson - Initial contribution
  */
 @NonNullByDefault
 public class VehiclePositionWrapper {
-    private final Position position;
+    private final PositionDTO position;
 
-    public VehiclePositionWrapper(Position position) {
+    public VehiclePositionWrapper(PositionDTO position) {
         this.position = position;
     }
 
-    private State getPositionAsState(Position details) {
+    private State getPositionAsState(PositionDTO details) {
         return new PointType(details.getLat() + "," + details.getLng());
     }
 

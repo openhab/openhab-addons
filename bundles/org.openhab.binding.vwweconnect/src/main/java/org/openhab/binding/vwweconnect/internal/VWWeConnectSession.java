@@ -39,15 +39,15 @@ import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.openhab.binding.vwweconnect.internal.model.BaseVehicle;
-import org.openhab.binding.vwweconnect.internal.model.Details;
-import org.openhab.binding.vwweconnect.internal.model.EManager;
-import org.openhab.binding.vwweconnect.internal.model.HeaterStatus;
-import org.openhab.binding.vwweconnect.internal.model.Location;
-import org.openhab.binding.vwweconnect.internal.model.Status;
-import org.openhab.binding.vwweconnect.internal.model.Trips;
-import org.openhab.binding.vwweconnect.internal.model.Vehicle;
-import org.openhab.binding.vwweconnect.internal.model.Vehicle.CompleteVehicleJson;
+import org.openhab.binding.vwweconnect.internal.dto.BaseVehicleDTO;
+import org.openhab.binding.vwweconnect.internal.dto.DetailsDTO;
+import org.openhab.binding.vwweconnect.internal.dto.EManagerDTO;
+import org.openhab.binding.vwweconnect.internal.dto.HeaterStatusDTO;
+import org.openhab.binding.vwweconnect.internal.dto.LocationDTO;
+import org.openhab.binding.vwweconnect.internal.dto.StatusDTO;
+import org.openhab.binding.vwweconnect.internal.dto.TripsDTO;
+import org.openhab.binding.vwweconnect.internal.dto.VehicleDTO;
+import org.openhab.binding.vwweconnect.internal.dto.VehicleDTO.CompleteVehicleJsonDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 @NonNullByDefault
 public class VWWeConnectSession {
 
-    private final HashMap<String, BaseVehicle> vwWeConnectThings = new HashMap<String, BaseVehicle>();
+    private final HashMap<String, BaseVehicleDTO> vwWeConnectThings = new HashMap<String, BaseVehicleDTO>();
     private final Logger logger = LoggerFactory.getLogger(VWWeConnectSession.class);
     private final Gson gson = new GsonBuilder().create();
     private final List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
@@ -86,7 +86,6 @@ public class VWWeConnectSession {
     private @Nullable String password = "";
 
     private static final int RETRIES = 3;
-    private static int count = 0;
 
     public VWWeConnectSession(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -130,11 +129,11 @@ public class VWWeConnectSession {
         return deviceStatusListeners.add(deviceStatusListener);
     }
 
-    public @Nullable BaseVehicle getVWWeConnectThing(String vin) {
+    public @Nullable BaseVehicleDTO getVWWeConnectThing(String vin) {
         return vwWeConnectThings.get(vin);
     }
 
-    public HashMap<String, BaseVehicle> getVWWeConnectThings() {
+    public HashMap<String, BaseVehicleDTO> getVWWeConnectThings() {
         return vwWeConnectThings;
     }
 
@@ -689,7 +688,7 @@ public class VWWeConnectSession {
         }
     }
 
-    private void notifyListeners(BaseVehicle thing) {
+    private void notifyListeners(BaseVehicleDTO thing) {
         for (DeviceStatusListener listener : deviceStatusListeners) {
             listener.onDeviceStateChanged(thing);
         }
@@ -697,7 +696,7 @@ public class VWWeConnectSession {
 
     private boolean updateStatus() {
         logger.debug("VWWeConnectSession:updateStatus");
-        return updateVehicleStatus(Vehicle.class);
+        return updateVehicleStatus(VehicleDTO.class);
     }
 
     private DocumentContext getContext(String content, String path) {
@@ -756,9 +755,8 @@ public class VWWeConnectSession {
         return context;
     }
 
-    private synchronized boolean updateVehicleStatus(Class<? extends Vehicle> jsonClass) {
+    private synchronized boolean updateVehicleStatus(Class<? extends VehicleDTO> jsonClass) {
         Fields fields = null;
-        String content = null;
         String url = null;
 
         DocumentContext context = getFullyLoadedCars();
@@ -787,51 +785,83 @@ public class VWWeConnectSession {
 
             // Query API for vehicle details for this VIN
             url = SESSION_BASE + dashboardUrl + VEHICLE_DETAILS + vin;
-            Vehicle vehicle = postJSONVWWeConnectAPI(url, fields, Vehicle.class);
+            VehicleDTO vehicle = postJSONVWWeConnectAPI(url, fields, VehicleDTO.class);
+            // String vehicleDetailsJson =
+            // "{\"errorCode\":\"0\",\"completeVehicleJson\":{\"vin\":\"WVWZZZ3CZJE017435\",\"name\":\"PASSAT Var.
+            // GTEBMHY\",\"expired\":false,\"model\":\"PASSAT Var.
+            // GTEBMHY\",\"modelCode\":\"3G56YY\",\"modelYear\":\"2018\",\"imageUrl\":\"https://media.volkswagen.com/Vilma/V/3G5/2018/Front_Right/0684b85bc04ca83f2338156d6be9ee41d6f17deeee6030a248eb92ce4b2650b8.png\",\"vehicleSpecificFallbackImageUrl\":null,\"modelSpecificFallbackImageUrl\":null,\"defaultImageUrl\":\"/portal/delegate/vehicle-image/WVWZZZ3CZJE017435\",\"vehicleBrand\":\"v\",\"enrollmentDate\":\"20170721\",\"deviceOCU1\":false,\"deviceOCU2\":true,\"deviceMIB\":true,\"engineTypeCombustian\":false,\"engineTypeHybridOCU1\":false,\"engineTypeHybridOCU2\":true,\"engineTypeElectric\":false,\"engineTypeCNG\":false,\"engineTypeDefault\":false,\"stpStatus\":\"DISABLED\",\"windowstateSupported\":true,\"dashboardUrl\":\"/portal/delegate/dashboard/WVWZZZ3CZJE017435\",\"vhrRequested\":false,\"vsrRequested\":false,\"vhrConfigAvailable\":true,\"verifiedByDealer\":false,\"vhr2\":false,\"roleEnabled\":true,\"isEL2Vehicle\":false,\"workshopMode\":false,\"hiddenUserProfiles\":false,\"mobileKeyActivated\":null,\"enrollmentType\":\"PIN\",\"ocu3Low\":false,\"blacklisted\":false,\"packageServices\":[{\"packageServiceId\":\"NET.500.013.L\",\"propertyKeyReference\":\"NET.500.013\",\"packageServiceName\":\"Notruf-Service\",\"trackingName\":\"Notruf-Service\",\"activationDate\":\"29.07.2017\",\"expirationDate\":\"29.07.2027\",\"expired\":false,\"expireInAMonth\":false,\"packageType\":\"ss\",\"enrollmentPackageType\":\"ec\"},{\"packageServiceId\":\"NET.500.011.L\",\"propertyKeyReference\":\"NET.500.011\",\"packageServiceName\":\"Security
+            // & Service Basic\",\"trackingName\":\"Security & Service
+            // Basic\",\"activationDate\":\"29.07.2017\",\"expirationDate\":\"29.07.2027\",\"expired\":false,\"expireInAMonth\":false,\"packageType\":\"ss\",\"enrollmentPackageType\":\"ss\"},{\"packageServiceId\":\"NET.500.002.C\",\"propertyKeyReference\":\"NET.500.002\",\"packageServiceName\":\"Guide
+            // & Inform Basic\",\"trackingName\":\"Guide & Inform
+            // Basic\",\"activationDate\":\"29.07.2017\",\"expirationDate\":\"29.07.2020\",\"expired\":false,\"expireInAMonth\":false,\"packageType\":\"gi\",\"enrollmentPackageType\":\"gi\"},{\"packageServiceId\":\"NET.500.012.C\",\"propertyKeyReference\":\"NET.500.012\",\"packageServiceName\":\"Security
+            // & Service Plus\",\"trackingName\":\"Security & Service
+            // Plus\",\"activationDate\":\"29.07.2017\",\"expirationDate\":\"29.07.2020\",\"expired\":false,\"expireInAMonth\":false,\"packageType\":\"ss\",\"enrollmentPackageType\":\"ss\"}],\"fullyEnrolled\":true,\"secondaryUser\":false,\"fleet\":false,\"touareg\":false,\"iceSupported\":true,\"flightMode\":false,\"esimCompatible\":false,\"dkyenabled\":false,\"smartCardKeyActivated\":null,\"defaultCar\":true,\"vwConnectPowerLayerAvailable\":false,\"selected\":true}}";
+            // VehicleDTO vehicle = gson.fromJson(vehicleDetailsJson, VehicleDTO.class);
             logger.debug("API Response ({})", vehicle);
 
             // Query API for more specific vehicle details
             url = SESSION_BASE + dashboardUrl + VEHICLE_DETAILS_SPECIFIC;
-            Details vehicleDetails = postJSONVWWeConnectAPI(url, fields, Details.class);
-            logger.debug("API Response ({})", vehicleDetails);
+            DetailsDTO vehicleDetailsSpecific = postJSONVWWeConnectAPI(url, fields, DetailsDTO.class);
+            // String vehicleDetailsSpecificJson =
+            // "{\"vehicleDetails\":{\"lastConnectionTimeStamp\":[\"01.05.2020\",\"08:13\"],\"distanceCovered\":\"56.020\",\"range\":\"424\",\"serviceInspectionData\":\"253
+            // Tag(e) / 25.900 km\",\"oilInspectionData\":\"253 Tag(e) / 10.900
+            // km\",\"showOil\":true,\"showService\":true,\"flightMode\":false},\"errorCode\":\"0\"}";
+            // DetailsDTO vehicleDetailsSpecific = gson.fromJson(vehicleDetailsSpecificJson, DetailsDTO.class);
+            logger.debug("API Response ({})", vehicleDetailsSpecific);
 
             // Query API for trip statistics
             url = SESSION_BASE + dashboardUrl + TRIP_STATISTICS;
-            Trips trips = postJSONVWWeConnectAPI(url, fields, Trips.class);
+            TripsDTO trips = postJSONVWWeConnectAPI(url, fields, TripsDTO.class);
+            // String tripsJson =
+            // "{\"errorCode\":\"0\",\"rtsViewModel\":{\"daysInMonth\":31,\"firstWeekday\":4,\"month\":5,\"year\":2020,\"firstTripYear\":2019,\"tripStatistics\":[{\"aggregatedStatistics\":{\"tripId\":648825820,\"averageElectricConsumption\":29.399999999999995,\"averageFuelConsumption\":0.0,\"averageCngConsumption\":null,\"averageSpeed\":32.0,\"tripDuration\":5,\"tripLength\":3.0,\"timestamp\":\"01.05.2020\",\"tripDurationFormatted\":\"0:05\",\"recuperation\":null,\"averageAuxiliaryConsumption\":null,\"totalElectricConsumption\":29.399999999999995,\"longFormattedTimestamp\":null},\"tripStatistics\":[{\"tripId\":648825820,\"averageElectricConsumption\":29.4,\"averageFuelConsumption\":0.0,\"averageCngConsumption\":null,\"averageSpeed\":32.0,\"tripDuration\":5,\"tripLength\":3.0,\"timestamp\":\"Heute,
+            // 08:12\",\"tripDurationFormatted\":\"0:05\",\"recuperation\":null,\"averageAuxiliaryConsumption\":null,\"totalElectricConsumption\":null,\"longFormattedTimestamp\":\"Fahrt
+            // beendet: Fr, 01.05.2020,
+            // 08:12\"}]},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\"longTermData\":{\"tripId\":574769138,\"averageElectricConsumption\":2.8,\"averageFuelConsumption\":7.1,\"averageCngConsumption\":null,\"averageSpeed\":52.0,\"tripDuration\":3186,\"tripLength\":2777.0,\"timestamp\":\"Heute,
+            // 08:12\",\"tripDurationFormatted\":\"53:06\",\"recuperation\":null,\"averageAuxiliaryConsumption\":null,\"totalElectricConsumption\":null,\"longFormattedTimestamp\":\"Fahrt
+            // beendet: Fr, 01.05.2020,
+            // 08:12\"},\"cyclicData\":null,\"serviceConfiguration\":{\"electric_consumption\":false,\"triptype_short\":true,\"auxiliary_consumption\":false,\"fuel_overall_consumption\":true,\"triptype_cyclic\":true,\"electric_overall_consumption\":true,\"triptype_long\":true,\"cng_overall_consumption\":false,\"recuperation\":false},\"tripFromLastRefuelAvailable\":true}}";
+            // TripsDTO trips = gson.fromJson(tripsJson, TripsDTO.class);
             logger.trace("API Response ({})", trips);
 
             // Query API for homeLocation status
             url = SESSION_BASE + dashboardUrl + VEHICLE_LOCATION;
-            Location location = postJSONVWWeConnectAPI(url, fields, Location.class);
+            LocationDTO location = postJSONVWWeConnectAPI(url, fields, LocationDTO.class);
+            // String locationJson = "{\"errorCode\":\"0\",\"position\":{\"lat\":49.286106,\"lng\":8.724732}}";
+            // LocationDTO location = gson.fromJson(locationJson, LocationDTO.class);
             logger.debug("API Response ({})", location);
 
             // Query API for vehicle status
             url = SESSION_BASE + dashboardUrl + VEHICLE_STATUS;
-            Status vehicleStatus = postJSONVWWeConnectAPI(url, fields, Status.class);
+            StatusDTO vehicleStatus = postJSONVWWeConnectAPI(url, fields, StatusDTO.class);
+            // String vehicleStatusJson = "{\"errorCode\":\"2\",\"timerCount\":3}";
+            // StatusDTO vehicleStatus = gson.fromJson(vehicleStatusJson, StatusDTO.class);
             logger.debug("API Response ({})", vehicleStatus);
 
-            EManager eManager = null;
-            HeaterStatus vehicleHeaterStatus = null;
+            EManagerDTO eManager = null;
+            HeaterStatusDTO vehicleHeaterStatus = null;
 
             if (vehicle != null) {
-                CompleteVehicleJson vehicleJSON = vehicle.getCompleteVehicleJson();
+                CompleteVehicleJsonDTO vehicleJSON = vehicle.getCompleteVehicleJson();
                 // Query API for electric vehicle status if engine type electric/hybrid
                 if (vehicleJSON.getEngineTypeElectric() || vehicleJSON.getEngineTypeHybridOCU1()
                         || vehicleJSON.getEngineTypeHybridOCU2()) {
                     url = SESSION_BASE + dashboardUrl + EMANAGER_GET_EMANAGER;
-                    eManager = postJSONVWWeConnectAPI(url, fields, EManager.class);
+                    eManager = postJSONVWWeConnectAPI(url, fields, EManagerDTO.class);
+                    // String eManagerJson =
+                    // "{\"errorCode\":\"0\",\"EManager\":{\"rbc\":{\"status\":{\"batteryPercentage\":90,\"chargingState\":\"OFF\",\"chargingRemaningHour\":\"\",\"chargingRemaningMinute\":\"\",\"chargingReason\":\"INVALID\",\"pluginState\":\"DISCONNECTED\",\"lockState\":\"UNLOCKED\",\"extPowerSupplyState\":\"UNAVAILABLE\",\"range\":\"7\",\"electricRange\":34,\"combustionRange\":390,\"combinedRange\":424,\"rlzeUp\":false},\"settings\":{\"chargerMaxCurrent\":16,\"maxAmpere\":16,\"maxCurrentReduced\":false}},\"rpc\":{\"status\":{\"climatisationState\":\"OFF\",\"climatisationRemaningTime\":10,\"windowHeatingStateFront\":\"OFF\",\"windowHeatingStateRear\":\"OFF\",\"climatisationReason\":null,\"windowHeatingAvailable\":true},\"settings\":{\"targetTemperature\":\"21\",\"climatisationWithoutHVPower\":true,\"electric\":true},\"climaterActionState\":\"AVAILABLE\",\"auAvailable\":false},\"rdt\":{\"status\":{\"timers\":[{\"timerId\":1,\"timerProfileId\":2,\"timerStatus\":\"NOT_EXPIRED\",\"timerChargeScheduleStatus\":\"IDLE\",\"timerClimateScheduleStatus\":\"IDLE\",\"timerExpStatusTimestamp\":\"01.05.2020\",\"timerProgrammedStatus\":\"NOT_PROGRAMMED\",\"schedule\":{\"type\":2,\"start\":{\"hours\":16,\"minutes\":30},\"end\":{\"hours\":null,\"minutes\":null},\"index\":null,\"daypicker\":[\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"N\"],\"startDateActive\":\"01.05.2020\",\"endDateActive\":null},\"startDateActive\":\"01.05.2020\",\"timeRangeActive\":\"16:30\"},{\"timerId\":2,\"timerProfileId\":1,\"timerStatus\":\"NOT_EXPIRED\",\"timerChargeScheduleStatus\":\"IDLE\",\"timerClimateScheduleStatus\":\"IDLE\",\"timerExpStatusTimestamp\":\"01.05.2020\",\"timerProgrammedStatus\":\"NOT_PROGRAMMED\",\"schedule\":{\"type\":2,\"start\":{\"hours\":7,\"minutes\":15},\"end\":{\"hours\":null,\"minutes\":null},\"index\":null,\"daypicker\":[\"Y\",\"Y\",\"N\",\"N\",\"Y\",\"N\",\"N\"],\"startDateActive\":\"01.05.2020\",\"endDateActive\":null},\"startDateActive\":\"01.05.2020\",\"timeRangeActive\":\"07:15\"},{\"timerId\":3,\"timerProfileId\":2,\"timerStatus\":\"NOT_EXPIRED\",\"timerChargeScheduleStatus\":\"IDLE\",\"timerClimateScheduleStatus\":\"IDLE\",\"timerExpStatusTimestamp\":\"01.05.2020\",\"timerProgrammedStatus\":\"NOT_PROGRAMMED\",\"schedule\":{\"type\":2,\"start\":{\"hours\":7,\"minutes\":50},\"end\":{\"hours\":null,\"minutes\":null},\"index\":null,\"daypicker\":[\"N\",\"N\",\"Y\",\"Y\",\"N\",\"N\",\"N\"],\"startDateActive\":\"01.05.2020\",\"endDateActive\":null},\"startDateActive\":\"01.05.2020\",\"timeRangeActive\":\"07:50\"}],\"profiles\":[{\"profileId\":1,\"profileName\":\"Zuhause\",\"timeStamp\":\"01.05.2020\",\"charging\":true,\"climatisation\":true,\"targetChargeLevel\":100,\"nightRateActive\":false,\"nightRateTimeStart\":\"22:00\",\"nightRateTimeEnd\":\"06:00\",\"chargeMaxCurrent\":10,\"heaterSource\":\"ELECTRIC\"},{\"profileId\":2,\"profileName\":\"Firma\",\"timeStamp\":\"01.05.2020\",\"charging\":true,\"climatisation\":true,\"targetChargeLevel\":100,\"nightRateActive\":false,\"nightRateTimeStart\":\"22:00\",\"nightRateTimeEnd\":\"06:00\",\"chargeMaxCurrent\":32,\"heaterSource\":\"ELECTRIC\"}]},\"settings\":{\"minChargeLimit\":100,\"lowerLimitMax\":100},\"auxHeatingAllowed\":false,\"auxHeatingEnabled\":false},\"actionPending\":false,\"rdtAvailable\":true}}";
+                    // eManager = gson.fromJson(eManagerJson, EManagerDTO.class);
                     logger.debug("API Response ({})", eManager);
                 } else {
                     // Query API for vehicle heating status for all other vehicles types
                     url = SESSION_BASE + dashboardUrl + GET_HEATER_STATUS;
-                    vehicleHeaterStatus = postJSONVWWeConnectAPI(url, fields, HeaterStatus.class);
+                    vehicleHeaterStatus = postJSONVWWeConnectAPI(url, fields, HeaterStatusDTO.class);
                     logger.debug("API Response ({})", vehicleHeaterStatus);
                 }
             }
 
             if (vehicle != null) {
-                if (vehicleDetails != null) {
-                    vehicle.setVehicleDetails(vehicleDetails);
+                if (vehicleDetailsSpecific != null) {
+                    vehicle.setVehicleDetails(vehicleDetailsSpecific);
                 } else {
                     logger.warn("Vehicle details is null!");
                 }
@@ -861,7 +891,7 @@ public class VWWeConnectSession {
                     logger.debug("No electric/hybrid vehicle");
                 }
 
-                BaseVehicle oldObj = vwWeConnectThings.get(vin);
+                BaseVehicleDTO oldObj = vwWeConnectThings.get(vin);
                 if (oldObj == null || !oldObj.equals(vehicle)) {
                     vwWeConnectThings.put(vin, vehicle);
                 }
@@ -916,38 +946,42 @@ public class VWWeConnectSession {
             if (httpResponse != null) {
                 content = httpResponse.getContentAsString();
                 logger.debug(content);
-                Status status;
+                StatusDTO status;
                 String requestStatus = null;
                 try {
-                    status = gson.fromJson(content, Status.class);
-                    requestStatus = status.getVehicleStatusData().getRequestStatus();
-                    // Check for progress of Vehicle report
-                    long start = System.currentTimeMillis();
-                    while (requestStatus != null && requestStatus.equals(REQUEST_IN_PROGRESS)) {
-                        try {
-                            long currentTime = System.currentTimeMillis();
-                            logger.debug("Time: {}", new Timestamp(currentTime));
-                            long elapsedTime = currentTime - start;
-                            if (elapsedTime > MAX_WAIT_MILLIS) {
-                                logger.debug("Wait timeout, request status: {}",
-                                        status.getVehicleStatusData().getRequestStatus());
-                                break;
-                            } else {
-                                Thread.sleep(2 * SLEEP_TIME_MILLIS);
-                                httpResponse = postJSONVWWeConnectAPI(url, fields, referer, xCsrfToken);
-                                if (httpResponse != null) {
-                                    content = httpResponse.getContentAsString();
-                                    logger.debug("Status JSON {}, Vehicle status: {}", content, status);
-                                    status = gson.fromJson(content, Status.class);
-                                    requestStatus = status.getVehicleStatusData().getRequestStatus();
+                    status = gson.fromJson(content, StatusDTO.class);
+                    if (status != null) {
+                        requestStatus = status.getVehicleStatusData().getRequestStatus();
+                        // Check for progress of Vehicle report
+                        long start = System.currentTimeMillis();
+                        while (requestStatus != null && requestStatus.equals(REQUEST_IN_PROGRESS)) {
+                            try {
+                                long currentTime = System.currentTimeMillis();
+                                logger.debug("Time: {}", new Timestamp(currentTime));
+                                long elapsedTime = currentTime - start;
+                                if (elapsedTime > MAX_WAIT_MILLIS) {
+                                    logger.debug("Wait timeout, request status: {}",
+                                            status.getVehicleStatusData().getRequestStatus());
+                                    break;
+                                } else {
+                                    Thread.sleep(2 * SLEEP_TIME_MILLIS);
+                                    httpResponse = postJSONVWWeConnectAPI(url, fields, referer, xCsrfToken);
+                                    if (httpResponse != null) {
+                                        content = httpResponse.getContentAsString();
+                                        logger.debug("Status JSON {}, Vehicle status: {}", content, status);
+                                        status = gson.fromJson(content, StatusDTO.class);
+                                        if (status != null) {
+                                            requestStatus = status.getVehicleStatusData().getRequestStatus();
+                                        }
+                                    }
                                 }
+                            } catch (InterruptedException e) {
+                                logger.warn("Exception caught: {}", e.getMessage(), e);
                             }
-                        } catch (InterruptedException e) {
-                            logger.warn("Exception caught: {}", e.getMessage(), e);
                         }
-                    }
-                    if (requestStatus != null && requestStatus.equals(REQUEST_SUCCESSFUL)) {
-                        return true;
+                        if (requestStatus != null && requestStatus.equals(REQUEST_SUCCESSFUL)) {
+                            return true;
+                        }
                     }
                 } catch (JsonSyntaxException e) {
                     logger.warn("Exception caught {} while parsing JSON response {} for request {}", e.getMessage(),
