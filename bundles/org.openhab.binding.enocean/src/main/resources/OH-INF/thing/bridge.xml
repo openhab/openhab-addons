@@ -15,12 +15,11 @@
 		</channels>
 
 		<config-description>
-			<parameter name="path" type="text">
+			<parameter name="path" type="text" required="true">
 				<label>Path</label>
 				<description>Path to the EnOcean gateway</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="espVersion" type="text">
+			<parameter name="espVersion" type="text" required="true">
 				<advanced>true</advanced>
 				<label>ESP version of received and transmitting messages</label>
 				<options>
@@ -28,7 +27,6 @@
 					<option value="ESP2">ESP2</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 				<default>ESP3</default>
 			</parameter>
 			<parameter name="enableSmack" type="boolean">

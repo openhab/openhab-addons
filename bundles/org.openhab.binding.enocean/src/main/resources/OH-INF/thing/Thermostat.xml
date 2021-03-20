@@ -13,18 +13,16 @@
 		<description>Sensor and actuator to control radiator thermostats</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="senderIdOffset" type="integer" required="false" min="1" max="127">
 				<label>Sender Id</label>
 				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be
 					determined by bridge</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>
 				<options>
@@ -33,9 +31,8 @@
 				</options>
 				<default>"A5_20_04"</default>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
-			<parameter name="sendingEEPId" type="text">
+			<parameter name="sendingEEPId" type="text" required="true">
 				<label>EEP for Sending Commands</label>
 				<options>
 					<option value="A5_20_04">Heating radiator valve actuating drive with feed and room temperature measurement, local set
@@ -43,7 +40,6 @@
 				</options>
 				<default>"A5_20_04"</default>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 			<parameter name="broadcastMessages" type="boolean">
 				<label>Send Broadcast Messages</label>
