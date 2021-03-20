@@ -13,12 +13,11 @@
 		<description>Sensor which send temperature data (EEP: A5-02)</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by panel</description>
 				<options>
@@ -49,7 +48,6 @@
 					<option value="A5_02_30">A5-02-30 temperature sensor range [-40;62.3]</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 			<parameter name="receivingSIGEEP" type="boolean">
 				<label>Receive Battery Status Signal Messages</label>
