@@ -387,12 +387,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
     }
 
     private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID, @Nullable String place) {
-        deviceDiscovered(null, device, thingTypeUID, place);
-    }
-
-    private void deviceDiscovered(@Nullable String otherLabel, SomfyTahomaDevice device, ThingTypeUID thingTypeUID,
-            @Nullable String place) {
-        String label = otherLabel != null ? otherLabel : device.getLabel();
+        String label = device.getLabel();
         if (place != null && !place.isBlank()) {
             label += " (" + place + ")";
         }
