@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.electroluxair.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ElectroluxAirConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class ElectroluxAirConfiguration {
     public static final String DEVICE_ID_LABEL = "deviceId";
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.electroluxair.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class ElectroluxAirBridgeConfiguration {
     public @Nullable String username;
     public @Nullable String password;

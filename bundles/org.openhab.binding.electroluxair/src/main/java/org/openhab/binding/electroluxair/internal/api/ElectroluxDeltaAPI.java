@@ -226,10 +226,10 @@ public class ElectroluxDeltaAPI {
                     logger.warn("TimeoutException error in get");
                 }
             }
+            throw new ElectroluxAirException("Failed to fetch from API!");
         } catch (JsonSyntaxException | ElectroluxAirException | ExecutionException e) {
             throw new ElectroluxAirException(e);
         }
-        return "";
     }
 
     private String getAppliances() throws ElectroluxAirException {
