@@ -54,7 +54,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private HttpClientFactory httpClientFactory;
     private Optional<VehicleDiscovery> discoveryService = Optional.empty();
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
-    private Optional<ConnectedDriveConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
 
@@ -72,14 +71,9 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     public void initialize() {
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
-        configuration = Optional.of(getConfigAs(ConnectedDriveConfiguration.class));
-        configuration.ifPresentOrElse(config -> {
-            proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, config));
-            // give the system some time to create all predefined Vehicles
-            initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
-        }, () -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        });
+        proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, getConfigAs(ConnectedDriveConfiguration.class)));
+        // give the system some time to create all predefined Vehicles
+        initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
     }
 
     @Override
