@@ -115,7 +115,7 @@ public enum HeatpumpType {
             }
         }
 
-        logger.info("Unknown heatpump type code {}", code);
+        logger.warn("Unknown heatpump type code {}", code);
         return TYPE_UNKNOWN;
     }
 

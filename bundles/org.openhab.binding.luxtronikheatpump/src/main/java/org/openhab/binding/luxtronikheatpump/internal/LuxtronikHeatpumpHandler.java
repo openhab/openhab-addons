@@ -56,13 +56,15 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LuxtronikHeatpumpHandler.class);
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
-    private static final int RETRY_INTERVAL = 60;
+    private static final int RETRY_INTERVAL_SEC = 60;
     private boolean tiggerChannelUpdate = false;
     private final LuxtronikTranslationProvider translationProvider;
+    private final LuxtronikHeatpumpConfiguration config;
 
     public LuxtronikHeatpumpHandler(Thing thing, LuxtronikTranslationProvider translationProvider) {
         super(thing);
         this.translationProvider = translationProvider;
+        config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
     }
 
     @Override
@@ -76,8 +78,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     }
 
     public void setStatusConnectionError() {
-        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
-
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "couldn't establish network connection [host '" + config.ipAddress + "']");
     }
@@ -104,7 +104,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
-        if (channel.isWritable().equals(Boolean.FALSE)) {
+        if (!channel.isWritable()) {
             logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
             return;
         }
@@ -191,8 +191,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
-
         if (!config.isValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "At least one mandatory configuration field is empty");
@@ -202,16 +200,14 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         synchronized (scheduledFutures) {
-            logger.debug("try to connect to the heat pump every {} seconds to update the status", RETRY_INTERVAL);
-            ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0, RETRY_INTERVAL,
-                    TimeUnit.SECONDS);
+            logger.debug("try to connect to the heat pump every {} seconds to update the status", RETRY_INTERVAL_SEC);
+            ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0,
+                    RETRY_INTERVAL_SEC, TimeUnit.SECONDS);
             scheduledFutures.add(future);
         }
     }
 
     private void internalInitialize() {
-        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
-
         // connect to heatpump and check if values can be fetched
         HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
 
@@ -246,14 +242,10 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing thing {}", getThing().getUID());
         stopJobs();
-        logger.debug("Thing {} disposed", getThing().getUID());
     }
 
     private void updateChannels(HeatpumpConnector connector) {
-        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
-
         Integer[] visibilityValues = connector.getVisibilities();
         Integer[] heatpumpValues = connector.getValues();
         Integer[] heatpumpParams = connector.getParams();
@@ -275,12 +267,12 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         // create list with available channels
         for (HeatpumpChannel channel : HeatpumpChannel.values()) {
             Integer channelId = channel.getChannelId();
-            int length = channel.isWritable() == Boolean.TRUE ? heatpumpParams.length : heatpumpValues.length;
+            int length = channel.isWritable() ? heatpumpParams.length : heatpumpValues.length;
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID,
                     channel.getCommand());
-            if ((channelId != null && length <= channelId) || (config.showAllChannels == Boolean.FALSE
-                    && channel.isVisible(visibilityValues).equals(Boolean.FALSE))) {
+            if ((channelId != null && length <= channelId)
+                    || (config.showAllChannels == Boolean.FALSE && !channel.isVisible(visibilityValues))) {
                 logger.debug("Hiding channel {}", channel.getCommand());
             } else {
                 channelList.add(callback.createChannelBuilder(channelUID, channelTypeUID).build());
@@ -293,8 +285,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     }
 
     private void restartJobs() {
-        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
-
         logger.debug("Restarting jobs for thing {}", getThing().getUID());
 
         stopJobs();
@@ -330,7 +320,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
      * @param value
      */
     private boolean sendParamToHeatpump(int param, int value) {
-        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
         HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
 
         try {

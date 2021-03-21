@@ -273,6 +273,7 @@ The following channels are also writable:
 Below you can find some example textual configuration for a heatpump with some basic functionallity. This can be extended/adjusted according to your needs and depending on the availability of channels (see list above).
 
 _heatpump.things:_
+
 ```
 Thing luxtronikheatpump:heatpump:heatpump "Heatpump" [
     ipAddress="192.168.178.12",
@@ -282,6 +283,7 @@ Thing luxtronikheatpump:heatpump:heatpump "Heatpump" [
 ```
 
 _heatpump.items:_
+
 ```
 Group    gHeatpump   "Heatpump"   <temperature>
 
@@ -301,6 +303,7 @@ Number HeatPump_warmwater_temperature   "Hot water temperature [%.1f]"  (gHeatpu
 ```
 
 _heatpump.sitemap:_
+
 ```
 sitemap heatpump label="Heatpump" {
     Frame label="Heatpump" {
@@ -320,9 +323,9 @@ sitemap heatpump label="Heatpump" {
 
 ## Development Notes
 
-This binding was initially based on the [Novelan/Luxtronik Heat Pump Binding](https://v2.openhab.org/addons/bindings/novelanheatpump1/) for OpenHAB 1.
+This binding was initially based on the [Novelan/Luxtronik Heat Pump Binding](https://v2.openhab.org/addons/bindings/novelanheatpump1/) for openHAB 1.
 
-Luxtronik control units have an internal webserver which serves an Java applet. This applet can be used to configure some parts of the heat pump. The applet itselves uses a socket connection to fetch and send data to the heatpump.
+Luxtronik control units have an internal webserver which serves a Java applet. This applet can be used to configure some parts of the heat pump. The applet itselves uses a socket connection to fetch and send data to the heatpump.
 This socket is also used by this binding. To get some more information on how this socket works you can check out other Luxtronik tools like [Luxtronik2 for NodeJS](https://github.com/coolchip/luxtronik2).
 
 A detailed parameter descriptions for the Java Webinterface can be found in the [Loxwiki](https://www.loxwiki.eu/display/LOX/Java+Webinterface)

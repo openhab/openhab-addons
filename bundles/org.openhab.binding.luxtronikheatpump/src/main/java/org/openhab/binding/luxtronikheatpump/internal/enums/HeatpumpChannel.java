@@ -1297,11 +1297,11 @@ public enum HeatpumpChannel {
     private String command;
     private Class<? extends Item> itemClass;
     private @Nullable Unit<?> unit;
-    private Boolean isParameter;
+    private boolean isParameter;
     private @Nullable HeatpumpVisibility requiredVisibility;
 
     private HeatpumpChannel(@Nullable Integer channelId, String command, Class<? extends Item> itemClass,
-            @Nullable Unit<?> unit, Boolean isParameter, @Nullable HeatpumpVisibility requiredVisibility) {
+            @Nullable Unit<?> unit, boolean isParameter, @Nullable HeatpumpVisibility requiredVisibility) {
         this.channelId = channelId;
         this.command = command;
         this.itemClass = itemClass;
@@ -1326,7 +1326,7 @@ public enum HeatpumpChannel {
         return unit;
     }
 
-    public Boolean isWritable() {
+    public boolean isWritable() {
         return isParameter == Boolean.TRUE;
     }
 
@@ -1334,20 +1334,20 @@ public enum HeatpumpChannel {
         return requiredVisibility;
     }
 
-    public Boolean isVisible(Integer[] visibilityValues) {
+    public boolean isVisible(Integer[] visibilityValues) {
         HeatpumpVisibility visiblity = getVisibility();
 
         if (visiblity == null) {
-            return Boolean.TRUE;
+            return true;
         }
 
         int code = visiblity.getCode();
 
-        if (visibilityValues.length < code || visibilityValues[code].equals(1)) {
-            return Boolean.TRUE;
+        if (visibilityValues.length < code || visibilityValues[code] == 1) {
+            return true;
         }
 
-        return Boolean.FALSE;
+        return false;
     }
 
     public static HeatpumpChannel fromString(String heatpumpCommand) throws InvalidChannelException {

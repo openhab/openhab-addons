@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.luxtronikheatpump</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: LuxtronikHeatpump Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Luxtronik Heatpump Binding</name>
 
 </project>
