@@ -26,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link OpenWebNetBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Massimo Valla - Initial contribution
+ * @author Andrea Conte - Energy management
  */
 
 @NonNullByDefault
@@ -52,6 +53,8 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_DIMMER = "Dimmer";
     public static final ThingTypeUID THING_TYPE_BUS_AUTOMATION = new ThingTypeUID(BINDING_ID, "bus_automation");
     public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
+    public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
+    public static final String THING_LABEL_BUS_ENERGY_METER = "Energy Meter";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -76,9 +79,14 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> AUTOMATION_SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ZB_AUTOMATION, THING_TYPE_BUS_AUTOMATION));
 
+    // ## Energy Management
+    public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_BUS_ENERGY_METER));
+
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
-            .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
+            .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
+                    ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
             .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
 
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = new HashSet<>(
@@ -94,8 +102,12 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_SWITCH_01 = "switch_01";
     public static final String CHANNEL_SWITCH_02 = "switch_02";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
+
     // automation
     public static final String CHANNEL_SHUTTER = "shutter";
+
+    // energy management
+    public static final String CHANNEL_POWER = "power";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";
