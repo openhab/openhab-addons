@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageContext;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
 import org.openhab.binding.caddx.internal.action.CaddxPanelActions;
@@ -88,7 +89,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
                 return;
             }
 
-            bridgeHandler.sendCommand(cmd, data);
+            bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
             lastRefreshTime = System.currentTimeMillis();
         } else {
             logger.debug("Unknown command {}", command);
@@ -140,7 +141,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         // build map of log message channels to event numbers
         HashMap<String, String> map = new HashMap<String, String>();
         map.put(pointer, CaddxBindingConstants.PANEL_LOG_MESSAGE_N_0);
-        bridgeHandler.sendCommand(CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, pointer);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, pointer);
         panelLogMessagesMap = map;
     }
 
@@ -190,7 +191,8 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
                 }
 
                 map.put(Integer.toString(eventNumber), "panel_log_message_n_" + i);
-                bridgeHandler.sendCommand(CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, Integer.toString(eventNumber));
+                bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST,
+                        Integer.toString(eventNumber));
             }
 
             communicatorStackPointer = null;
@@ -216,7 +218,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, sb.toString());
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, sb.toString());
     }
 
     private void sendSecondaryCommand(String function) {
@@ -230,7 +232,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, sb.toString());
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, sb.toString());
     }
 
     public void turnOffAnySounderOrAlarm(String pin) {
