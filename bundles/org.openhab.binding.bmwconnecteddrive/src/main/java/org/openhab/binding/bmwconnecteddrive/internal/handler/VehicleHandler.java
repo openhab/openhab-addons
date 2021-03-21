@@ -774,7 +774,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 editTimeout = Optional.of(scheduler.schedule(() -> {
                     editTimeout = Optional.empty();
                     chargeProfileEdit = Optional.empty();
-                    chargeProfileCache.ifPresent(content -> updateChargeProfileFromContent(content));
+                    chargeProfileCache.ifPresent(this::updateChargeProfileFromContent);
                 }, 5, TimeUnit.MINUTES));
             } else {
                 logger.info("unexpected command {} not processed", command.toFullString());
@@ -791,7 +791,7 @@ public class VehicleHandler extends VehicleChannelHandler {
             chargeProfileCache = Optional.of(sent);
             chargeProfileSent = Optional.empty();
             chargeProfileEdit = Optional.empty();
-            chargeProfileCache.ifPresent(content -> updateChargeProfileFromContent(content));
+            chargeProfileCache.ifPresent(this::updateChargeProfileFromContent);
         });
     }
 
