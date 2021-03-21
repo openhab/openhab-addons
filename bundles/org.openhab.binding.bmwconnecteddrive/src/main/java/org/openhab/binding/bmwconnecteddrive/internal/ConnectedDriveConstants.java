@@ -36,8 +36,8 @@ public class ConnectedDriveConstants {
 
     public static final String VIN = "vin";
 
-    public static final int DEFAULT_IMAGE_SIZE = 1024;
-    public static final int DEFAULT_REFRESH_INTERVAL = 5;
+    public static final int DEFAULT_IMAGE_SIZE_PX = 1024;
+    public static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
     public static final String DEFAULT_IMAGE_VIEWPORT = "FRONT";
 
     // See constants from bimmer-connected

@@ -55,6 +55,6 @@ public class Destination {
     }
 
     public String getCoordinates() {
-        return new StringBuilder().append(lat).append(Constants.COMMA).append(lon).toString();
+        return lat + Constants.COMMA + lon;
     }
 }

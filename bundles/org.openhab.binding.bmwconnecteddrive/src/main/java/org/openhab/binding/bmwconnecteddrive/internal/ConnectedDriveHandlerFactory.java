@@ -14,9 +14,6 @@ package org.openhab.binding.bmwconnecteddrive.internal;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.BMWConnectedDriveOptionProvider;
@@ -48,7 +45,6 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
     private final BMWConnectedDriveOptionProvider optionProvider;
-    private static final List<VehicleHandler> VEHICLE_HANDLER_REGISTRY = new ArrayList<VehicleHandler>();
     private boolean imperial = false;
 
     @Activate
@@ -73,20 +69,8 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
             return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
             VehicleHandler vh = new VehicleHandler(thing, optionProvider, thingTypeUID.getId(), imperial);
-            VEHICLE_HANDLER_REGISTRY.add(vh);
             return vh;
         }
         return null;
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof VehicleHandler) {
-            VEHICLE_HANDLER_REGISTRY.remove(thingHandler);
-        }
-    }
-
-    public static List<VehicleHandler> getHandlerRegistry() {
-        return VEHICLE_HANDLER_REGISTRY;
     }
 }

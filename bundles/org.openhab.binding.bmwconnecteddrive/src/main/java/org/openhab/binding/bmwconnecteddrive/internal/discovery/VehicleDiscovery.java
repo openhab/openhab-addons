@@ -122,9 +122,10 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                             // Properties needed for functional THing
                             properties.put(ConnectedDriveConstants.VIN, vehicle.vin);
                             properties.put("refreshInterval",
-                                    Integer.toString(ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL));
+                                    Integer.toString(ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
                             properties.put("units", ConnectedDriveConstants.UNITS_AUTODETECT);
-                            properties.put("imageSize", Integer.toString(ConnectedDriveConstants.DEFAULT_IMAGE_SIZE));
+                            properties.put("imageSize",
+                                    Integer.toString(ConnectedDriveConstants.DEFAULT_IMAGE_SIZE_PX));
                             properties.put("imageViewport", ConnectedDriveConstants.DEFAULT_IMAGE_VIEWPORT);
 
                             String vehicleLabel = vehicle.brand + " " + vehicle.model;
@@ -176,28 +177,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
     }
 
     @Override
-    public int getScanTimeout() {
-        return DISCOVERY_TIMEOUT;
-    }
-
-    @Override
-    public boolean isBackgroundDiscoveryEnabled() {
-        return false;
-    }
-
-    @Override
     protected void startScan() {
         bridgeHandler.ifPresent(ConnectedDriveBridgeHandler::requestVehicles);
-    }
-
-    @Override
-    public void abortScan() {
-        // nothing to abort
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
     }
 
     @Override

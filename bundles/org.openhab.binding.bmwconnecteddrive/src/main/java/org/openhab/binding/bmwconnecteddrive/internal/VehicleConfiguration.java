@@ -30,7 +30,7 @@ public class VehicleConfiguration {
     /**
      * Data refresh rate in minutes
      */
-    public int refreshInterval = ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL;
+    public int refreshInterval = ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL_MINUTES;
 
     /**
      * Either Auto Detect Miles units (UK & US) or select Format directly
@@ -43,7 +43,7 @@ public class VehicleConfiguration {
     /**
      * image size - width & length (square)
      */
-    public int imageSize = ConnectedDriveConstants.DEFAULT_IMAGE_SIZE;
+    public int imageSize = ConnectedDriveConstants.DEFAULT_IMAGE_SIZE_PX;
 
     /**
      * image viewport defined as options in thing xml
