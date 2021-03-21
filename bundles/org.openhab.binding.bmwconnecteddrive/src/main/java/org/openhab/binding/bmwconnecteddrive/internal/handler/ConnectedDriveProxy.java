@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpField;
@@ -138,7 +139,7 @@ public class ConnectedDriveProxy {
         req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
             @Override
-            public void onComplete(org.eclipse.jetty.client.api.Result result) {
+            public void onComplete(Result result) {
                 if (result.getResponse().getStatus() != 200) {
                     NetworkError error = new NetworkError();
                     error.url = completeUrl;
