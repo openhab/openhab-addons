@@ -350,6 +350,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     commFailureCount++;
                     return;
                 }
+                updateStatus(ThingStatus.ONLINE);
             } catch (HaywardException e) {
                 logger.debug("Hayward Connection thing: Exception during poll: {}", e.getMessage());
             } catch (InterruptedException e) {
