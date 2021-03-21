@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Energy Management Central Unit (BTicino F52x) -->
+	<thing-type id="bus_energy_meter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Energy Meter</label>
+		<description>A OpenWebNet BUS/SCS Energy Meter. BTicino models: F52x</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-F52x</property>
+			<property name="ownDeviceType">1830</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Address</label>
+				<description>Example: 5N with N=[1-255]</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>
