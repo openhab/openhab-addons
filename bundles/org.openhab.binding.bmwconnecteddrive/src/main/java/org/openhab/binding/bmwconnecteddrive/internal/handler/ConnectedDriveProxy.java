@@ -155,8 +155,10 @@ public class ConnectedDriveProxy {
                 } else {
                     if (callback instanceof StringResponseCallback) {
                         ((StringResponseCallback) callback).onResponse(getContentAsString());
-                    } else {
+                    } else if (callback instanceof ByteResponseCallback) {
                         ((ByteResponseCallback) callback).onResponse(getContent());
+                    } else {
+                        logger.error("unexpected reponse type {}", callback.getClass().getName());
                     }
                 }
             }
