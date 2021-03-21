@@ -31,7 +31,7 @@ If the request fails, all daily forecast channel groups will be removed from the
 
 ::: tip Note
 The product will retire on 1st April 2021, please find UV data in the One Call API.
-One Call API includes current, hourly forecast for 7 days and 5 days historical UV data.
+One Call API includes current, hourly forecast for 7 days and 5 days historical UV data. One Call API is [only available to OH3](https://community.openhab.org/t/openweathermap-binding-enable-one-call-api-channels/112997) at the moment.
 :::
 
 The third thing `uvindex` supports the [current UV Index](https://openweathermap.org/api/uvi#current) and [forecasted UV Index](https://openweathermap.org/api/uvi#forecast) for a specific location.
