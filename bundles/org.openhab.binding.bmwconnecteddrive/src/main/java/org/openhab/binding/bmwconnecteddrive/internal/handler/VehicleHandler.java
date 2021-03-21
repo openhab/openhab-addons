@@ -418,11 +418,7 @@ public class VehicleHandler extends VehicleChannelHandler {
             }
         }
         // if cache is empty give it a try one time to collected Troubleshoot data
-        if (lastTripCache.isEmpty() || allTripsCache.isEmpty() || destinationCache.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return lastTripCache.isEmpty() || allTripsCache.isEmpty() || destinationCache.isEmpty();
     }
 
     public void updateRemoteExecutionStatus(@Nullable String service, @Nullable String status) {
