@@ -426,8 +426,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                 && ExecutionState.EXECUTED.name().equals(status)) {
             saveChargeProfileSent();
         }
-        updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType.valueOf(Converter.toTitleCase(
-                new StringBuilder(service == null ? "-" : service).append(" ").append(status).toString())));
+        updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType
+                .valueOf(Converter.toTitleCase((service == null ? "-" : service) + Constants.SPACE + status)));
     }
 
     public Optional<VehicleConfiguration> getConfiguration() {
