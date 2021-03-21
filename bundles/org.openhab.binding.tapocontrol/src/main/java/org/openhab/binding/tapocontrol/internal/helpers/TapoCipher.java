@@ -32,9 +32,9 @@ public class TapoCipher {
     protected static final String CIPHER_CHARSET = "UTF-8";
 
     @Nullable
-    private Cipher enc_cipher;
+    private Cipher encodeCipher;
     @Nullable
-    private Cipher dec_cipher;
+    private Cipher decodeCipher;
     @Nullable
     private MimeEncode mimeEncode;
 
@@ -45,15 +45,15 @@ public class TapoCipher {
         mimeEncode = new MimeEncode();
         SecretKeySpec secretKeySpec = new SecretKeySpec(bArr, CIPHER_ALGORITHM);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(bArr2);
-        this.enc_cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-        this.enc_cipher.init(1, secretKeySpec, ivParameterSpec);
-        this.dec_cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-        this.dec_cipher.init(2, secretKeySpec, ivParameterSpec);
+        this.encodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+        this.encodeCipher.init(1, secretKeySpec, ivParameterSpec);
+        this.decodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+        this.decodeCipher.init(2, secretKeySpec, ivParameterSpec);
     }
 
     public String encode(String str) throws Exception {
         byte[] doFinal;
-        doFinal = this.enc_cipher.doFinal(str.getBytes(CIPHER_CHARSET));
+        doFinal = this.encodeCipher.doFinal(str.getBytes(CIPHER_CHARSET));
         String encrypted = mimeEncode.encodeToString(doFinal);
         return encrypted.replace("\r\n", "");
     }
@@ -61,7 +61,7 @@ public class TapoCipher {
     public String decode(String str) throws Exception {
         byte[] data = mimeEncode.decode(str.getBytes(CIPHER_CHARSET));
         byte[] doFinal;
-        doFinal = this.dec_cipher.doFinal(data);
+        doFinal = this.decodeCipher.doFinal(data);
         return new String(doFinal);
     }
 }

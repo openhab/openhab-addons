@@ -48,30 +48,16 @@ public class PayloadBuilder {
      * Add Parameter
      *
      * @param name parameter name
-     * @param value parameter value (String)
+     * @param value parameter value (typeOf Bool,Number or String)
      */
-    public void addParameter(String name, String value) {
-        this.parameters.addProperty(name, value);
-    }
-
-    /**
-     * Add Parameter
-     *
-     * @param name parameter name
-     * @param value parameter value (Number)
-     */
-    public void addParameter(String name, Integer value) {
-        this.parameters.addProperty(name, value);
-    }
-
-    /**
-     * Add Parameter
-     *
-     * @param name parameter name
-     * @param value parameter value (Bool)
-     */
-    public void addParameter(String name, Boolean value) {
-        this.parameters.addProperty(name, value);
+    public void addParameter(String name, Object value) {
+        if (value instanceof Boolean) {
+            this.parameters.addProperty(name, (Boolean) value);
+        } else if (value instanceof Number) {
+            this.parameters.addProperty(name, (Number) value);
+        } else {
+            this.parameters.addProperty(name, value.toString());
+        }
     }
 
     /**

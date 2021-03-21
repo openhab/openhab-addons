@@ -34,6 +34,8 @@ public class TapoCredentials {
     private String encodedEmail = "";
     private String publicKey = "";
     private String privateKey = "";
+    private String username = "";
+    private String password = "";
 
     /**
      * INIT CLASS
@@ -62,10 +64,12 @@ public class TapoCredentials {
      */
     public void setCredectials(String eMail, String password) {
         try {
+            this.username = eMail;
+            this.password = password;
             encryptCredentials(eMail, password);
             createKeyPair();
         } catch (Exception e) {
-            logger.trace("error init credential class '{}'", e.toString());
+            logger.warn("error init credential class '{}'", e.toString());
         }
     }
 
@@ -93,6 +97,7 @@ public class TapoCredentials {
      *
      */
     public void createKeyPair() throws NoSuchAlgorithmException {
+        logger.trace("generating new keypair");
         KeyPairGenerator instance = KeyPairGenerator.getInstance("RSA");
         instance.initialize(1024, new SecureRandom());
         KeyPair generateKeyPair = instance.generateKeyPair();
@@ -141,12 +146,28 @@ public class TapoCredentials {
     }
 
     /**
+     * RETURN PASSWORD
+     *
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * RETURN Username (E-MAIL)
+     *
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
      * RETURN PRIVATE-KEY
      * 
      * @return String -----BEGIN PRIVATE KEY-----\n%s\n-----END PRIVATE KEY-----
      */
     public String getPrivateKey() {
-        return String.format("-----BEGIN PRIVATE KEY-----\n%s\n-----END PRIVATE KEY-----\n", privateKey);
+        return String.format("-----BEGIN PRIVATE KEY-----%n%s%n-----END PRIVATE KEY-----%n", privateKey);
     }
 
     /**
@@ -155,7 +176,7 @@ public class TapoCredentials {
      * @return String -----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----
      */
     public String getPublicKey() {
-        return String.format("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", publicKey);
+        return String.format("-----BEGIN PUBLIC KEY-----%n%s%n-----END PUBLIC KEY-----%n", publicKey);
     }
 
     /**

@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.tapocontrol.internal.api;
 
-//import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.tapocontrol.internal.helpers.PayloadBuilder;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * Handler class for TAPO Smart Home device cloud-connections.
@@ -26,86 +31,107 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TapoCloudApi {
-    public static final String HTTP_HEADER_AUTH = "Authorization";
-    public static final String HTTP_AUTH_TYPE_BASIC = "Basic";
-    public static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
-
+    private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(TapoCloudApi.class);
-    private final HttpClient httpClient;
+    private final TapoHttp tapoHttp;
+    private String token = "";
 
     /**
      * INIT CLASS
      * 
      */
     public TapoCloudApi() {
-        this.httpClient = new HttpClient();
+        this.tapoHttp = new TapoHttp();
+        this.tapoHttp.setSSL(true);
     }
 
     /**
-     * Initializes a connection to the given url.
-     *
-     * @param ipAddress ip address of the connection
-     * @return ResponseContent of HTTP Request
+     * LOGIN TO CLOUD (get Token)
+     * 
+     * @param username unencrypted username
+     * @param password unencrypted password
+     * @return true if login was successfull
      */
-    /*
-     * private ContentResponse QueryCloud(String url, String payload) {
-     * logger.trace("query tapo cloud '{}'", url);
-     * 
-     * Request request = httpClient.POST(url);
-     * request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON);
-     * request.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-     * request.content(new StringContentProvider(payload), CONTENT_TYPE_JSON);
-     * 
-     * ContentResponse response = request.send();
-     * String res = new String(response.getContent());
-     * 
-     * logger.trace("{}: HTTP Response {}: {}", "TAPO_CLOUD_CONNECT", response.getStatus(), res);
-     * 
-     * httpClient.stop();
-     * 
-     * return res;
-     * 
-     * return null;
-     * }
-     */
+    public Boolean login(String username, String password) {
+        this.token = getToken(username, password, TAPO_TERMINAL_UUID);
+        return this.token != "";
+    }
 
     /**
-     * Query token from tapo-cloud
-     *
-     * @param ipAddress ip address of the connection
-     */
-    /*
-     * private getToken( email, password, terminalUUID ){
-     * String url = TAPO_CLOUD_URL;
-     * String payload = {
-     * "method": "login",
-     * "params": {
-     * "appType": "Tapo_Ios",
-     * "cloudUserName": email,
-     * "cloudPassword": password,
-     * "terminalUUID": terminalUUID
-     * };
+     * GET TOKEN FROM TAPO-CLOUD
      * 
-     * String json = QueryCloud( url, payload );
-     * String token = ['result']['token'];
-     * return token;
-     * }
+     * @param email
+     * @param password
+     * @param terminalUUID
+     * @return
      */
+    private String getToken(String email, String password, String terminalUUID) {
+        String token = "";
+
+        /* create login payload */
+        PayloadBuilder plBuilder = new PayloadBuilder();
+        plBuilder.method = "login";
+        plBuilder.addParameter("appType", TAPO_APP_TYPE);
+        plBuilder.addParameter("cloudUserName", email);
+        plBuilder.addParameter("cloudPassword", password);
+        plBuilder.addParameter("terminalUUID", terminalUUID);
+        String payload = plBuilder.getPayload();
+
+        tapoHttp.url = TAPO_CLOUD_URL;
+        tapoHttp.request = payload;
+        TapoHttpResponse response = tapoHttp.send();
+
+        /* work with response */
+        if (response.responseIsOK()) {
+            String rBody = response.getResponseBody();
+            JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
+            try {
+                token = jsonObject.getAsJsonObject("result").get("token").getAsString();
+            } catch (Exception e) {
+                logger.trace("enexpected json-response '{}'", rBody);
+            }
+        } else {
+            logger.warn("invalid response while login");
+            token = "";
+        }
+        return token;
+    }
+
     /**
-     * Query types from tapo-cloud
-     *
-     * @param ipAddress ip address of the connection
-     */
-    /*
-     * public GetDevices(){
      * 
-     * String url = TAPO_CLOUD_URL + "?token=" + getToken( CONFIG_EMAIL, CONFIG_PASS );
-     * String payload ={
-     * "method": "getDeviceList",
-     * };
-     * 
-     * String json = QueryCloud( url, payload );
-     * return json;
-     * }
+     * @return JsonArray with deviceList
      */
+    public JsonArray getDeviceList() {
+        /* create payload */
+        PayloadBuilder plBuilder = new PayloadBuilder();
+        plBuilder.method = "getDeviceList";
+        String payload = plBuilder.getPayload();
+
+        tapoHttp.url = TAPO_CLOUD_URL + "?token=" + token;
+        tapoHttp.request = payload;
+        TapoHttpResponse response = tapoHttp.send();
+
+        /* work with response */
+        if (response.responseIsOK()) {
+            String rBody = response.getResponseBody();
+            try {
+                JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
+                /* get errocode (0=success) */
+                Integer errorCode = jsonObject.get("error_code").getAsInt();
+                if (errorCode == 0) {
+                    JsonObject result = jsonObject.getAsJsonObject("result");
+                    return result.getAsJsonArray("deviceList");
+                } else {
+                    /* return errorcode from device */
+                    // tapoError.raiseError(errorCode, "device answers with errorcode");
+                    logger.trace("device answers with errorcode '{}'", rBody);
+                }
+            } catch (Exception e) {
+                logger.trace("enexpected json-response '{}'", rBody);
+            }
+        } else {
+            logger.trace("response error '{}'", response.getResponseBody());
+        }
+        return new JsonArray();
+    }
 }

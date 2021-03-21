@@ -50,7 +50,7 @@ public class TapoSmartPlug extends TapoDevice {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand '{}' for channelUID {}", command.toString(), channelUID.getId());
+        logger.debug("({}) handleCommand '{}' for channelUID {}", uid, command.toString(), channelUID.getId());
         Boolean refreshInfo = false;
 
         /* perform actions */

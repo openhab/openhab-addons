@@ -17,7 +17,9 @@ import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstan
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -28,6 +30,26 @@ import org.openhab.core.library.types.StringType;
  */
 @NonNullByDefault
 public class TapoUtils {
+
+    /************************************
+     * CALCULATION UTILS
+     ***********************************/
+    /**
+     * Limit Value between limits
+     * 
+     * @param value Integer
+     * @param lowerLimit
+     * @param upperLimit
+     * @return
+     */
+    public static Integer limitVal(@Nullable Integer value, Integer lowerLimit, Integer upperLimit) {
+        if (value == null || value < lowerLimit) {
+            return lowerLimit;
+        } else if (value > upperLimit) {
+            return upperLimit;
+        }
+        return value;
+    }
 
     /************************************
      * TYPE UTILS
@@ -79,11 +101,36 @@ public class TapoUtils {
     }
 
     /**
-     * Return DecimalType from Longe
+     * Return DecimalType from Long
      * 
      * @param numVal
      */
     public static DecimalType getDecimalTypel(@Nullable Long numVal) {
         return new DecimalType((numVal != null ? numVal : 0));
+    }
+
+    /**
+     * 
+     * @param numVal value 0-100
+     * @return PercentType
+     */
+    public static PercentType getPercentType(@Nullable Integer numVal) {
+        Integer val = limitVal(numVal, 0, 100);
+        return new PercentType(val);
+    }
+
+    /**
+     * Return HSBType from integers
+     * 
+     * @param hue integer hue-color
+     * @param saturation integer saturation
+     * @param brightness integer brightness
+     * @returnvHSBType
+     */
+    public static HSBType getHSBType(Integer hue, Integer saturation, Integer brightness) {
+        DecimalType h = new DecimalType(hue);
+        PercentType s = new PercentType(saturation);
+        PercentType b = new PercentType(brightness);
+        return new HSBType(h, s, b);
     }
 }

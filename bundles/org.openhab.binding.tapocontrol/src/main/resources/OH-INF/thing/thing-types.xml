@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- THINGS -->
-	<!-- P100 THING-TYPE -->
+	<!-- P100 THING-TYPE (SOCKET) -->
 	<thing-type id="P100">
 		<label>P100 SmartPlug</label>
 		<description>Tapo Plug device with relay</description>
@@ -17,6 +17,35 @@
 
 		<config-description-ref uri="thing-type:tapo:device"/>
 	</thing-type>
+
+	<!-- L510E THING-TYPE (WHITE-LIGHT-BULB) -->
+	<thing-type id="L510_Series">
+		<label>L510 Series White-Light-Bulb</label>
+		<description>Tapo Smart White Light Bulb</description>
+		<channel-groups>
+			<channel-group id="actuator" typeId="lightBulb"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
+		<representation-property>deviceName</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+
+	<!-- L530E THING-TYPE (COLOR-LIGHT-BULB) -->
+	<thing-type id="L530_Series">
+		<label>L530 Series Color-Light-Bulb</label>
+		<description>Tapo Smart Multicolor Light Bulb</description>
+		<channel-groups>
+			<channel-group id="actuator" typeId="colorBulb"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
+		<representation-property>deviceName</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+
+
+
 
 
 	<!-- CHANNEL GROUP TYPES -->
@@ -39,13 +68,26 @@
 		</channels>
 	</channel-group-type>
 
-	<!--Dimmer Channel Type -->
-	<channel-group-type id="lightbulb">
-		<label>LightBulb</label>
-		<description>Tapo Light Bulb</description>
+	<!--Light-Bulb Channel Type -->
+	<channel-group-type id="lightBulb">
+		<label>Light Bulb</label>
+		<description>Tapo Smart Light Bulb</description>
 		<channels>
-			<channel id="output" typeId="outputChannel"/>
+			<channel id="output" typeId="lightOn"/>
 			<channel id="brightness" typeId="dimmerChannel"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
+		</channels>
+	</channel-group-type>
+
+	<!--Color Channel Type -->
+	<channel-group-type id="colorBulb">
+		<label>Color Light Bulb</label>
+		<description>Tapo Multicolor Smart Light Bulb</description>
+		<channels>
+			<channel id="output" typeId="lightOn"/>
+			<channel id="brightness" typeId="dimmerChannel"/>
+			<channel id="color" typeId="colorChannel"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
 		</channels>
 	</channel-group-type>
 
@@ -60,13 +102,40 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<!-- OuputState Channel Type -->
+	<!-- LightOn/Off Channel Type -->
+	<channel-type id="lightOn">
+		<item-type>Switch</item-type>
+		<label>Light On</label>
+		<description>Switches the light on/off</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- Dimmer Channel Type -->
 	<channel-type id="dimmerChannel">
-		<item-type>Number:Percent</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness</description>
 		<category>LightBulb</category>
 		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- Color Channel Type -->
+	<channel-type id="colorChannel">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color</description>
+		<category>ColorLight</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- Color Temperature -->
+	<channel-type id="colorTemperature">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<description>This channel supports adjusting the color temperature from 2700K to 6500K.</description>
+		<category>LightBulb</category>
+		<state min="2500" max="6500" pattern="%d K"/>
 	</channel-type>
 
 
@@ -88,4 +157,23 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+
+
+	<!-- ADVANCED SETTING CHANNELS -->
+	<!-- device led -->
+	<channel-type id="led" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch Led</label>
+		<description>Switch the Smart Home device led on or off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- fade light -->
+	<channel-type id="fade" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Fade Light</label>
+		<description>Make the light darker or lighter slowly</description>
+		<category>Switch</category>
+	</channel-type>
+
 </thing:thing-descriptions>

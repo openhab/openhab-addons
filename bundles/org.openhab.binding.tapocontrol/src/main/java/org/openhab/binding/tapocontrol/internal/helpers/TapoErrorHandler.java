@@ -14,7 +14,7 @@ package org.openhab.binding.tapocontrol.internal.helpers;
 
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoErrorConstants.*;
 
-import java.util.HashMap;
+import java.lang.reflect.Field;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -32,20 +32,38 @@ public class TapoErrorHandler {
     private String errorMessage = "";
     private String infoMessage = "";
     private Gson gson = new Gson();
-    private HashMap<Integer, String> codeMap = new HashMap<Integer, String>();
 
     /**
-     * Set ErrorMessages
+     * GET ERROR-MESSAGE
+     * 
+     * @param errCode error Number (or constant ERR_CODE )
+     * @return error-message if set constant ERR_CODE_MSG. if not name of ERR_CODE is returned
      */
-    private void setErrorMessages() {
-        codeMap.put(ERROR_API_KEY_LENGTH, ERROR_API_KEY_LENGTH_MSG);
-        codeMap.put(ERROR_API_CREDENTIALS, ERROR_API_CREDENTIALS_MSG);
-        codeMap.put(ERROR_API_REQUEST, ERROR_API_REQUEST_MSG);
-        codeMap.put(ERROR_JSON_FORMAT, ERROR_JSON_FORMAT_MSG);
-        codeMap.put(ERROR_RESPONSE, ERROR_RESPONSE_MSG);
-        codeMap.put(ERROR_COOKIE, ERROR_COOKIE_MSG);
-        codeMap.put(ERROR_LOGIN, ERROR_LOGIN_MSG);
-        codeMap.put(ERROR_DEVICE_OFFLINE, ERROR_DEVICE_OFFLINE_MSG);
+    private String getErrorMessage(Integer errCode) {
+        Field[] fields = TapoErrorConstants.class.getDeclaredFields();
+        /* loop ErrorConstants and search for code in value */
+        for (Field f : fields) {
+            String constName = f.getName();
+            try {
+                Integer val = (Integer) f.get(this);
+                if (val.equals(errCode)) {
+                    /* get constan named by errorcode and _MSG (ERR_CODE_MSG) */
+                    try {
+                        String msg = TapoErrorConstants.class.getDeclaredField(constName + "_MSG").get(null).toString();
+                        if (msg.length() > 2) {
+                            return msg;
+                        } else {
+                            return constName;
+                        }
+                    } catch (Exception e) {
+                        return constName;
+                    }
+                }
+            } catch (Exception e) {
+                // next loop
+            }
+        }
+        return errCode.toString();
     }
 
     /**
@@ -53,7 +71,6 @@ public class TapoErrorHandler {
      *
      */
     public TapoErrorHandler() {
-        setErrorMessages();
     }
 
     /**
@@ -62,7 +79,6 @@ public class TapoErrorHandler {
      * @param errorCode error code (number)
      */
     public TapoErrorHandler(Integer errorCode) {
-        setErrorMessages();
         raiseError(errorCode);
     }
 
@@ -73,7 +89,6 @@ public class TapoErrorHandler {
      * @param infoMessage optional info-message
      */
     public TapoErrorHandler(Integer errorCode, String infoMessage) {
-        setErrorMessages();
         raiseError(errorCode, infoMessage);
     }
 
@@ -83,7 +98,6 @@ public class TapoErrorHandler {
      * @param exception Exception
      */
     public TapoErrorHandler(Exception ex) {
-        setErrorMessages();
         raiseError(ex);
     }
 
@@ -92,10 +106,6 @@ public class TapoErrorHandler {
      * Private Functions
      *
      ************************************/
-    private String getMessageFromMap(Integer errorCode) {
-        return getValueOrDefault(codeMap.get(errorCode), errorCode.toString());
-    }
-
     private static <T> T getValueOrDefault(T value, T defaultValue) {
         return value == null ? defaultValue : value;
     }
@@ -123,7 +133,7 @@ public class TapoErrorHandler {
      */
     public void raiseError(Integer errorCode, String infoMessage) {
         this.errorCode = errorCode;
-        this.errorMessage = getMessageFromMap(errorCode);
+        this.errorMessage = getErrorMessage(errorCode);
         this.infoMessage = infoMessage;
     }
 
@@ -173,6 +183,16 @@ public class TapoErrorHandler {
     }
 
     /**
+     * Get Error Message directly by error-number
+     * 
+     * @param errorCode
+     * @return error message
+     */
+    public String getMessage(Integer errorCode) {
+        return getErrorMessage(errorCode);
+    }
+
+    /**
      * Get Info Message
      * 
      * @return error extended info
@@ -193,7 +213,7 @@ public class TapoErrorHandler {
     /**
      * Get JSON-Object with errror
      * 
-     * @return
+     * @return JsonObject with error-informations
      */
     public JsonObject getJson() {
         JsonObject json;

@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class TapoDevice extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TapoDevice.class);
+    protected final String uid;
     protected @NonNullByDefault({}) TapoConnector connector;
     protected @NonNullByDefault({}) TapoControlConfiguration config;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -57,6 +58,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     public TapoDevice(Thing thing, TapoCredentials credentials) {
         super(thing);
+        this.uid = getThing().getUID().getAsString();
         this.credentials = credentials;
     }
 
@@ -65,9 +67,9 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        logger.trace("initialize thing-device");
+        logger.debug("initialize thing-device ({})", uid);
         String ipAddress = getThing().getConfiguration().get(CONFIG_DEVICE_IP).toString();
-        this.connector = new TapoConnector(ipAddress, credentials);
+        this.connector = new TapoConnector(getThing().getUID(), ipAddress, credentials);
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
@@ -133,20 +135,24 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * Check Device Connection and Login
+     * Connection will only be checked if device no configuration error
      * 
      * @return true if is connected
      */
     protected Boolean checkDeviceConnection() {
-        if (this.connector.isOnline(true)) {
-            /* try to login if not */
-            if (this.connector.loggedIn()) {
-                updateStatus(ThingStatus.ONLINE);
-                return true;
+        ThingStatusDetail deviceState = getThing().getStatusInfo().getStatusDetail();
+        if (deviceState != ThingStatusDetail.CONFIGURATION_ERROR) {
+            if (this.connector.isOnline(true)) {
+                /* try to login if not */
+                if (this.connector.loggedIn()) {
+                    updateStatus(ThingStatus.ONLINE);
+                    return true;
+                } else {
+                    return connect();
+                }
             } else {
-                return connect();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
         }
         return false;
     }
@@ -178,17 +184,17 @@ public abstract class TapoDevice extends BaseThingHandler {
         Boolean loginSuccess = false;
 
         try {
-            loginSuccess = connector.login(); // <background task with long running initialization here>
+            loginSuccess = connector.login();
             if (loginSuccess) {
-                updateStatus(ThingStatus.ONLINE);
                 TapoDeviceInfo deviceInfo = connector.queryInfo();
-                devicePropertiesChanged(deviceInfo);
-                if (!isThingModel(deviceInfo.getModel())) {
+                if (isThingModel(deviceInfo.getModel())) {
+                    updateStatus(ThingStatus.ONLINE);
+                    devicePropertiesChanged(deviceInfo);
+                } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "wrong device found: " + deviceInfo.getModel());
                     return false;
                 }
-                devicePropertiesChanged(deviceInfo);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
             }
@@ -205,9 +211,14 @@ public abstract class TapoDevice extends BaseThingHandler {
      * @return
      */
     protected Boolean isThingModel(String model) {
-        ThingTypeUID foundType = new ThingTypeUID(BINDING_ID, model);
-        ThingTypeUID expectedType = getThing().getThingTypeUID();
-        return expectedType.equals(foundType);
+        try {
+            ThingTypeUID foundType = new ThingTypeUID(BINDING_ID, model);
+            ThingTypeUID expectedType = getThing().getThingTypeUID();
+            return expectedType.equals(foundType);
+        } catch (Exception e) {
+            logger.warn("({}) verify thing model throws : {}", uid, e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -222,6 +233,19 @@ public abstract class TapoDevice extends BaseThingHandler {
         if (CHANNEL_GROUP_THING_SET.contains(thingTypeUID) && group.length() > 0) {
             return group + "#" + channel;
         }
+        return channel;
+    }
+
+    /**
+     * Get Channel from ChannelID
+     * 
+     * @param channelID String channelID
+     * @return String channel-name
+     */
+    protected String getChannelFromID(ChannelUID channelID) {
+        String channel = channelID.getIdWithoutGroup();
+        channel = channel.replace(CHANNEL_GROUP_ACTUATOR + "#", "");
+        channel = channel.replace(CHANNEL_GROUP_DEVICE + "#", "");
         return channel;
     }
 

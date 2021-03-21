@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tapocontrol.internal.device.TapoSmartBulb;
 import org.openhab.binding.tapocontrol.internal.device.TapoSmartPlug;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.core.thing.Thing;
@@ -39,8 +40,9 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tapocontrol")
 @NonNullByDefault
 public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
-
     private final Logger logger = LoggerFactory.getLogger(TapoControlHandlerFactory.class);
+    private @Nullable TapoDisoveryService discoveryService;
+
     private TapoCredentials credentials;
 
     @Activate // @Reference TapoCredentials credentials,
@@ -53,6 +55,9 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
 
         if (username != null && password != null) {
             credentials.setCredectials(username, password);
+            // registerDisoveryService();
+        } else {
+            logger.warn("credentials not set");
         }
     }
 
@@ -70,12 +75,33 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+
         if (SUPPORTED_SMART_PLUG_UIDS.contains(thingTypeUID)) {
-            logger.trace("returns new TapoSmartPlug()");
+            logger.trace("returns new TapoSmartPLUG '{}'", thingTypeUID.toString());
             return new TapoSmartPlug(thing, credentials);
+        } else if (SUPPORTED_SMART_BULB_UIDS.contains(thingTypeUID)) {
+            logger.trace("returns new TapoSmartBULB '{}'", thingTypeUID.toString());
+            return new TapoSmartBulb(thing, credentials);
         } else {
             logger.error("ThingHandler not found for {}", thingTypeUID);
         }
         return null;
+    }
+
+    /**
+     * Register Disovery Service
+     */
+    protected synchronized void registerDisoveryService() {
+        logger.trace("registering discovery service");
+        this.discoveryService = new TapoDisoveryService(this.credentials);
+        this.discoveryService.startScan();
+    }
+
+    /**
+     * Unregister Discovery Service
+     */
+    protected void unregisterDisoveryService() {
+        logger.trace("unregistering discovery service");
+        this.discoveryService.abortScan();
     }
 }

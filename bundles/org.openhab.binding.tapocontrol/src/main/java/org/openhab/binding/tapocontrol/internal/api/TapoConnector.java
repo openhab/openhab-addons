@@ -18,6 +18,7 @@ import static org.openhab.binding.tapocontrol.internal.helpers.TapoErrorConstant
 import java.net.InetAddress;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.HashMap;
 
 import javax.crypto.Cipher;
 
@@ -30,6 +31,7 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoCipher;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoHttpResponse;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,28 +46,34 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class TapoConnector {
     private final Logger logger = LoggerFactory.getLogger(TapoConnector.class);
-    private final TapoErrorHandler tapoError = new TapoErrorHandler();
+    private final TapoErrorHandler tapoError;
+    private final String uid;
     private TapoHttp tapoHttp;
     private Gson gson;
     private TapoCredentials credentials;
     private TapoCipher tapoCipher;
+    private TapoDeviceInfo deviceInfo;
     private String ipAddress = "";
     private String token = "";
     private String cookie = "";
     private String deviceURL = "";
-    private Integer errorCode = 0;
+    private Long lastQuery = 0L;
+    private Long lastSent = 0L;
 
     /**
      * INIT CLASS
      *
      * @param config TapoControlConfiguration class
      */
-    public TapoConnector(String ipAddress, TapoCredentials credentials) {
+    public TapoConnector(ThingUID thingUID, String ipAddress, TapoCredentials credentials) {
         this.credentials = credentials;
         this.tapoCipher = new TapoCipher();
         this.gson = new Gson();
         this.tapoHttp = new TapoHttp();
+        this.tapoError = new TapoErrorHandler();
+        this.deviceInfo = new TapoDeviceInfo();
         setIpAddress(ipAddress);
+        this.uid = thingUID.getAsString();
     }
 
     /***********************************
@@ -90,26 +98,26 @@ public class TapoConnector {
         String payload = plBuilder.getPayload();
 
         /* send request (perform login) */
-        logger.debug("create handhsake with payload: {}", payload.toString());
+        logger.debug("({}) create handhsake with payload: {}", uid, payload.toString());
         tapoHttp.url = deviceURL;
         tapoHttp.setRequest(payload);
 
         try {
             TapoHttpResponse response = tapoHttp.send();
-
             String rBody = response.getResponseBody();
             JsonObject jsonObj = gson.fromJson(rBody, JsonObject.class);
+            logger.trace("({}) received awnser: {}", uid, rBody);
             try {
                 encryptedKey = jsonObj.getAsJsonObject("result").get("key").getAsString();
             } catch (Exception e) {
-                // TODO: handle exception
+                logger.warn("({}) could not create handshake '{}'", uid, rBody);
             }
 
             setCipher(encryptedKey);
             this.cookie = response.getResponseHeader("Set-Cookie").split(";")[0];
             return true;
         } catch (Exception ex) {
-            logger.warn("Something went wrong: {}", ex.getMessage());
+            logger.warn("({}) Something went wrong: {}", uid, ex.getMessage());
             tapoError.raiseError(ex, "could not create handshake");
             this.cookie = "";
             return false;
@@ -123,7 +131,7 @@ public class TapoConnector {
      * @return true if success
      */
     private Boolean setCipher(String key) {
-        logger.debug("Will try to decode the following key: {} ", key);
+        logger.debug("({}) Will try to decode the following key: {} ", uid, key);
 
         MimeEncode mimeEncode = new MimeEncode();
 
@@ -142,7 +150,7 @@ public class TapoConnector {
             this.tapoCipher = new TapoCipher(bArr, bArr2);
             return true;
         } catch (Exception ex) {
-            logger.warn("Something went wrong: {}", ex.getMessage());
+            logger.warn("({}) Something went wrong: {}", uid, ex.getMessage());
             tapoError.raiseError(ex);
             return false;
         }
@@ -177,14 +185,14 @@ public class TapoConnector {
      * @return true if success
      */
     public boolean login() {
-        logger.debug("sending login");
+        logger.debug("({}) sending login", uid);
 
         String securePassthroughPayload = "";
         tapoError.reset(); // reset ErrorHandler
 
         /* ping device */
         if (!pingDevice()) {
-            tapoError.raiseError(ERROR_DEVICE_OFFLINE, "device offline while login");
+            tapoError.raiseError(ERR_DEVICE_OFFLINE, "device offline while login");
             logout();
             return false;
         }
@@ -192,7 +200,7 @@ public class TapoConnector {
         /* create handschake (cookie) */
         this.createHandshake();
 
-        if (cookie != "") {
+        if (!cookie.isBlank()) {
             try {
                 /* encrypt login credentials */
                 PayloadBuilder plBuilder = new PayloadBuilder();
@@ -208,7 +216,7 @@ public class TapoConnector {
                 plBuilder.addParameter("request", encryptedPayload);
                 securePassthroughPayload = plBuilder.getPayload();
             } catch (Exception ex) {
-                logger.debug("error building payload '{}'", ex.toString());
+                logger.debug("({}) error building payload '{}'", uid, ex.toString());
                 tapoError.raiseError(ex, "error building payload for login request");
                 return false;
             }
@@ -224,22 +232,30 @@ public class TapoConnector {
                 String rBody = response.getResponseBody();
                 String decryptedResponse = this.decryptResponse(rBody);
                 JsonObject jsonObject = gson.fromJson(decryptedResponse, JsonObject.class);
+                logger.trace("({}) received result: {}", uid, decryptedResponse);
+                /* get errocode (0=success) */
                 try {
-                    this.token = jsonObject.getAsJsonObject("result").get("token").getAsString();
+                    Integer errorCode = jsonObject.get("error_code").getAsInt();
+                    if (errorCode == 0) {
+                        /* return result if set / else request was successfull */
+                        this.token = jsonObject.getAsJsonObject("result").get("token").getAsString();
+                    } else {
+                        /* return errorcode from device */
+                        tapoError.raiseError(errorCode, "could not get token");
+                        logger.debug("({}) login recieved errorCode {} - {}", uid, errorCode, tapoError.getMessage());
+                    }
                 } catch (Exception e) {
-                    this.errorCode = Integer
-                            .parseInt(jsonObject.getAsJsonObject("result").get("error_code").getAsString());
-                    logger.trace("enexpected json-response '{}'", decryptedResponse);
-                    tapoError.raiseError(errorCode, "could not get token");
+                    tapoError.raiseError(e, "could not get token");
+                    logger.debug("({}) unexpected json-response '{}'", uid, decryptedResponse);
                 }
             } else {
-                logger.warn("invalid response while login");
-                tapoError.raiseError(ERROR_RESPONSE, "invalid response while login");
+                logger.debug("({}) invalid response while login", uid);
+                tapoError.raiseError(ERR_HTTP_RESPONSE, "invalid response while login");
                 this.token = "";
             }
         } else {
-            logger.debug("cookie not set while login");
-            tapoError.raiseError(ERROR_COOKIE, "cookie not set while login");
+            logger.debug("({}) cookie not set while login", uid);
+            tapoError.raiseError(ERR_COOKIE, "cookie not set while login");
             this.token = "";
         }
         return this.loggedIn();
@@ -254,7 +270,7 @@ public class TapoConnector {
     @Nullable
     protected JsonObject sendPayload(PayloadBuilder plBuilder) {
         String payload = plBuilder.getPayload();
-        logger.trace("sending payload '{}'", payload);
+        logger.trace("({}) sending payload '{}'", uid, payload);
         tapoError.reset(); // reset ErrorHandler
 
         String securePassthroughPayload = "";
@@ -271,7 +287,7 @@ public class TapoConnector {
                 plBuilder.addParameter("request", encryptedPayload);
                 securePassthroughPayload = plBuilder.getPayload();
             } catch (Exception ex) {
-                logger.debug("error building payload '{}'", ex.toString());
+                logger.debug("({}) error building payload '{}'", uid, ex.toString());
                 tapoError.raiseError(ex, "error building payload for send command");
                 return tapoError.getJson();
             }
@@ -290,6 +306,7 @@ public class TapoConnector {
                     /* decrypt response */
                     String decryptedResponse = decryptResponse(rBody);
                     jsonObject = gson.fromJson(decryptedResponse, JsonObject.class);
+                    logger.trace("({}) received result: {}", uid, decryptedResponse);
                     /* get errocode (0=success) */
                     Integer errorCode = jsonObject.get("error_code").getAsInt();
                     if (errorCode == 0) {
@@ -302,13 +319,17 @@ public class TapoConnector {
                     } else {
                         /* return errorcode from device */
                         tapoError.raiseError(errorCode, "device answers with errorcode");
+                        logger.debug("({}) device answers with errorcode {} - {}", uid, errorCode,
+                                tapoError.getMessage());
                         return jsonObject;
                     }
                 } catch (Exception e) {
+                    logger.debug("({}) sendPayload exception {}", uid, e.toString());
                     tapoError.raiseError(e);
                 }
             } else {
-                tapoError.raiseError(ERROR_RESPONSE);
+                logger.debug("({}) sendPayload response NOK {}", uid, response.getResponseStatus());
+                tapoError.raiseError(ERR_HTTP_RESPONSE);
             }
         }
         return tapoError.getJson();
@@ -321,43 +342,29 @@ public class TapoConnector {
      * @param value Value to send to control
      * @return true if sent successfull ( no error returned )
      */
-    public Boolean setDeviceInfo(String name, String value) {
-        logger.debug("building command '{}' '{}'", name, value);
-
+    public Boolean setDeviceInfo(String name, Object value) {
         /* encrypt command payload */
         PayloadBuilder plBuilder = new PayloadBuilder();
         plBuilder.method = "set_device_info";
         plBuilder.addParameter(name, value);
+        this.lastSent = System.currentTimeMillis();
         return sendPayload(plBuilder).has("success");
     }
 
     /**
      * set Device Info
      *
-     * @param name Name of command to send
-     * @param value Value to send to control
+     * @param map HashMap<String, Object> (name, value of parameter)
      * @return true if sent successfull ( no error returned )
      */
-    public Boolean setDeviceInfo(String name, Boolean value) {
+    public Boolean setDeviceInfos(HashMap<String, Object> map) {
         /* encrypt command payload */
         PayloadBuilder plBuilder = new PayloadBuilder();
         plBuilder.method = "set_device_info";
-        plBuilder.addParameter(name, value);
-        return sendPayload(plBuilder).has("success");
-    }
-
-    /**
-     * set Device Info
-     *
-     * @param name Name of command to send
-     * @param value Value to send to control
-     * @return true if sent successfull ( no error returned )
-     */
-    public Boolean setDeviceInfo(String name, Integer value) {
-        /* encrypt command payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = "set_device_info";
-        plBuilder.addParameter(name, value);
+        for (HashMap.Entry<String, Object> entry : map.entrySet()) {
+            plBuilder.addParameter(entry.getKey(), entry.getValue());
+        }
+        this.lastSent = System.currentTimeMillis();
         return sendPayload(plBuilder).has("success");
     }
 
@@ -367,16 +374,21 @@ public class TapoConnector {
      * @return tapo device info object
      */
     public TapoDeviceInfo queryInfo() {
-        /* encrypt command payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = "get_device_info";
-        JsonObject result = sendPayload(plBuilder);
-
-        if (result.has("device_id")) {
-            return new TapoDeviceInfo(result);
-        } else {
-            return new TapoDeviceInfo();
+        /* skip query if last query was < MIN_GAP */
+        Long now = System.currentTimeMillis();
+        if (!tapoHttp.isBusy() && now > lastQuery + TAPO_REFRESH_MIN_GAP_MS) {
+            this.lastQuery = now;
+            /* encrypt command payload */
+            PayloadBuilder plBuilder = new PayloadBuilder();
+            plBuilder.method = "get_device_info";
+            JsonObject result = sendPayload(plBuilder);
+            if (result.has("device_id")) {
+                this.deviceInfo = new TapoDeviceInfo(result);
+            } else {
+                this.deviceInfo = new TapoDeviceInfo();
+            }
         }
+        return deviceInfo;
     }
 
     /**
@@ -387,16 +399,16 @@ public class TapoConnector {
      */
     protected Boolean checkConnection(Boolean raiseError) {
         if (!pingDevice()) {
-            logger.trace("device is offline");
+            logger.trace("({}) device is offline", uid);
             if (raiseError) {
-                tapoError.raiseError(ERROR_DEVICE_OFFLINE);
+                tapoError.raiseError(ERR_DEVICE_OFFLINE);
             }
             return false;
         }
         if (!loggedIn()) {
-            logger.trace("not logged-in");
+            logger.trace("({}) not logged-in", uid);
             if (raiseError) {
-                tapoError.raiseError(ERROR_LOGIN);
+                tapoError.raiseError(ERR_LOGIN);
             }
             return false;
         }
@@ -407,6 +419,7 @@ public class TapoConnector {
      * perform logout (dispose cookie)
      */
     public void logout() {
+        logger.trace("logout");
         this.token = "";
         this.cookie = "";
     }
@@ -438,12 +451,7 @@ public class TapoConnector {
      * @return true if logged in
      */
     public Boolean loggedIn() {
-        if (isOnline()) {
-            return this.token != "";
-        } else {
-            logout();
-            return false;
-        }
+        return loggedIn(false);
     }
 
     /**
@@ -453,13 +461,13 @@ public class TapoConnector {
      * @return true if logged in
      */
     public Boolean loggedIn(Boolean raiseError) {
-        if (loggedIn()) {
+        if (!this.token.isBlank()) {
             return true;
         } else {
+            logger.trace("({}) not logged in (no ping)", uid);
             if (raiseError) {
-                tapoError.raiseError(ERROR_LOGIN);
+                tapoError.raiseError(ERR_LOGIN);
             }
-            logout();
             return false;
         }
     }
@@ -470,7 +478,7 @@ public class TapoConnector {
      * @return true if device is online
      */
     public Boolean isOnline() {
-        return pingDevice();
+        return isOnline(false);
     }
 
     /**
@@ -483,8 +491,9 @@ public class TapoConnector {
         if (pingDevice()) {
             return true;
         } else {
+            logger.trace("({})  device is offline (no ping)", uid);
             if (raiseError) {
-                tapoError.raiseError(ERROR_DEVICE_OFFLINE);
+                tapoError.raiseError(ERR_DEVICE_OFFLINE);
             }
             logout();
             return false;

@@ -21,6 +21,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,8 @@ public class TapoHttp {
     public TapoHttpResponse response = new TapoHttpResponse();
 
     private final Logger logger = LoggerFactory.getLogger(TapoHttp.class);
-    private HttpClient httpClient = new HttpClient();;
+    private HttpClient httpClient = new HttpClient();
+    private Boolean isSSL = false;
 
     /**
      * Init Class
@@ -60,8 +62,8 @@ public class TapoHttp {
      * @param request (encoded) request to send to device
      */
     public TapoHttp(String url, String request) {
+        setUrl(url);
         setConfig();
-        this.url = url;
         this.request = request;
     }
 
@@ -73,8 +75,8 @@ public class TapoHttp {
      * @param cookie cookie header craeted by handshake
      */
     public TapoHttp(String url, String request, String cookie) {
+        setUrl(url);
         setConfig();
-        this.url = url;
         this.request = request;
         this.cookie = cookie;
     }
@@ -94,8 +96,10 @@ public class TapoHttp {
      * @return true on success
      */
     public TapoHttpResponse send() {
-        logger.trace("sending HTTP '{}'' to {}", this.request, this.url);
+        logger.trace("({}) sending HTTP '{}''", this.url, this.request);
         try {
+            setSSL(url.startsWith("https://")); // (re)setURL cause of (non)SSL Url
+
             this.httpClient.start();
 
             Request httpRequest = httpClient.newRequest(url).method(HttpMethod.POST.toString());
@@ -112,11 +116,14 @@ public class TapoHttp {
 
             ContentResponse httpResponse = httpRequest.send();
             this.response = new TapoHttpResponse(httpResponse);
-
-            this.httpClient.stop();
         } catch (Exception ex) {
-            logger.trace("HTTP-Request send returned exception: ", ex);
+            logger.trace("({}) HTTP-Request returned exception: {} ", url, ex.toString());
             this.response = new TapoHttpResponse("POST", url);
+        }
+        try {
+            this.httpClient.stop();
+        } catch (Exception e) {
+            // no error will be raised here
         }
         return this.response;
     }
@@ -163,6 +170,22 @@ public class TapoHttp {
         this.cookie = cookie;
     }
 
+    /**
+     * Enable or Disable SSL
+     * 
+     * @param enabled
+     */
+    public void setSSL(Boolean enabled) {
+        if (this.isSSL != enabled) {
+            this.isSSL = enabled;
+            if (enabled) {
+                this.httpClient = new HttpClient(new SslContextFactory.Client(true));
+            } else {
+                this.httpClient = new HttpClient();
+            }
+        }
+    }
+
     /***********************************
      *
      * GET RESULTS
@@ -171,5 +194,9 @@ public class TapoHttp {
 
     public TapoHttpResponse response() {
         return this.response;
+    }
+
+    public Boolean isBusy() {
+        return this.httpClient.isRunning();
     }
 }
