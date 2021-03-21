@@ -291,7 +291,7 @@ public class ConnectedDriveProxy {
                         contentResponse.getReason());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Authorization exception: {}", e.getMessage(), e);
+            logger.debug("Authorization exception: {}", e.getMessage());
         }
     }
 
