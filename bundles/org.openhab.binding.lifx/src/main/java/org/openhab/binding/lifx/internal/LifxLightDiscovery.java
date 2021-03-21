@@ -298,9 +298,11 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
                     light.label = ((StateLabelResponse) packet).getLabel().trim();
                 } else if (packet instanceof StateVersionResponse) {
                     try {
-                        light.product = LifxProduct
+                        LifxProduct product = LifxProduct
                                 .getProductFromProductID(((StateVersionResponse) packet).getProduct());
+                        light.product = product;
                         light.productVersion = ((StateVersionResponse) packet).getVersion();
+                        light.supportedProduct = product.isLight();
                     } catch (IllegalArgumentException e) {
                         logger.debug("Discovered an unsupported light ({}): {}", light.macAddress.getAsLabel(),
                                 e.getMessage());
@@ -309,7 +311,7 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
                 }
             }
 
-            if (light != null && light.isDataComplete()) {
+            if (light != null && light.supportedProduct && light.isDataComplete()) {
                 try {
                     thingDiscovered(createDiscoveryResult(light));
                 } catch (IllegalArgumentException e) {
