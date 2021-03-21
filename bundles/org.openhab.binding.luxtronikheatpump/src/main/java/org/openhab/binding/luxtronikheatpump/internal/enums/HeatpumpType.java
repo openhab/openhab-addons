@@ -101,7 +101,6 @@ public enum HeatpumpType {
 
     private final String name;
     private final Integer code;
-    private static final Logger logger = LoggerFactory.getLogger(HeatpumpType.class);
 
     private HeatpumpType(Integer code, String name) {
         this.code = code;
@@ -115,7 +114,9 @@ public enum HeatpumpType {
             }
         }
 
+        Logger logger = LoggerFactory.getLogger(HeatpumpType.class);
         logger.warn("Unknown heatpump type code {}", code);
+
         return TYPE_UNKNOWN;
     }
 

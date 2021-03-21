@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpCoolingOperationMode;
@@ -59,12 +61,12 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     private static final int RETRY_INTERVAL_SEC = 60;
     private boolean tiggerChannelUpdate = false;
     private final LuxtronikTranslationProvider translationProvider;
-    private final LuxtronikHeatpumpConfiguration config;
+    private LuxtronikHeatpumpConfiguration config;
 
     public LuxtronikHeatpumpHandler(Thing thing, LuxtronikTranslationProvider translationProvider) {
         super(thing);
         this.translationProvider = translationProvider;
-        config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
+        config = new LuxtronikHeatpumpConfiguration();
     }
 
     @Override
@@ -110,7 +112,14 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         }
 
         if (command instanceof QuantityType) {
-            command = new DecimalType(((QuantityType<?>) command).floatValue());
+            QuantityType<?> value = (QuantityType<?>) command;
+
+            Unit<?> unit = channel.getUnit();
+            if (unit != null) {
+                value = value.toUnit(unit);
+            }
+
+            command = new DecimalType(value.floatValue());
         }
 
         if (command instanceof OnOffType) {
@@ -191,6 +200,8 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
+
         if (!config.isValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "At least one mandatory configuration field is empty");
@@ -200,7 +211,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         synchronized (scheduledFutures) {
-            logger.debug("try to connect to the heat pump every {} seconds to update the status", RETRY_INTERVAL_SEC);
             ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0,
                     RETRY_INTERVAL_SEC, TimeUnit.SECONDS);
             scheduledFutures.add(future);
@@ -223,11 +233,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         // When thing is initialized the first time or and update was triggered, set the available channels
         if (thing.getProperties().isEmpty() || tiggerChannelUpdate) {
-            try {
-                updateChannels(connector);
-            } catch (Exception e) {
-                logger.debug("Failed updating channels: {}", e.getMessage());
-            }
+            updateChannels(connector);
         }
 
         setStatusOnline();
@@ -285,8 +291,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     }
 
     private void restartJobs() {
-        logger.debug("Restarting jobs for thing {}", getThing().getUID());
-
         stopJobs();
 
         synchronized (scheduledFutures) {
@@ -296,13 +300,11 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(channelUpdaterJob, 0, config.refresh,
                         TimeUnit.SECONDS);
                 scheduledFutures.add(future);
-                logger.debug("Scheduled {} every {} seconds", channelUpdaterJob, config.refresh);
             }
         }
     }
 
     private void stopJobs() {
-        logger.debug("Stopping scheduled jobs for thing {}", getThing().getUID());
         synchronized (scheduledFutures) {
             for (ScheduledFuture<?> future : scheduledFutures) {
                 if (!future.isDone()) {

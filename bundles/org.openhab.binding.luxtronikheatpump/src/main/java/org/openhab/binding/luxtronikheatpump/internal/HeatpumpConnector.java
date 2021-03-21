@@ -39,7 +39,7 @@ public class HeatpumpConnector {
     private static final int SOCKET_PARAM_READ_VALUES = 3004;
     private static final int SOCKET_PARAM_READ_VISIBILITIES = 3005;
 
-    static final Logger logger = LoggerFactory.getLogger(HeatpumpConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(HeatpumpConnector.class);
 
     private String serverIp;
     private int serverPort;

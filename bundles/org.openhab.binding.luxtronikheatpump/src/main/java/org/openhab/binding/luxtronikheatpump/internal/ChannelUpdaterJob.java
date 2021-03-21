@@ -102,7 +102,6 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
                 if (value != null) {
                     handleEventType(value, channel);
                 }
-
             } catch (Exception e) {
                 // an exception should actually not occur, but is catched nevertheless in case it does
                 // this ensures the remaining channels are updated even if one fails for some reason
@@ -118,7 +117,6 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
     private @Nullable State convertValueToState(Integer rawValue, Class<? extends Item> itemClass,
             @Nullable Unit<?> unit) {
-
         if (itemClass == SwitchItem.class) {
             return (rawValue == 0) ? OnOffType.OFF : OnOffType.ON;
         }
@@ -182,15 +180,15 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     }
 
     private String getSoftwareVersion(Integer[] heatpumpValues) {
-        String softwareVersion = "";
+        StringBuffer softwareVersion = new StringBuffer("");
 
         for (int i = 81; i <= 90; i++) {
             if (heatpumpValues[i] > 0) {
-                softwareVersion += Character.toString(heatpumpValues[i]);
+                softwareVersion.append(Character.toString(heatpumpValues[i]));
             }
         }
 
-        return softwareVersion;
+        return softwareVersion.toString();
     }
 
     private String transformIpAddress(int ip) {
@@ -264,11 +262,13 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             return returnValue;
         }
 
-        returnValue += String.format("%02d:", value / 3600);
-        value %= 3600;
-        returnValue += String.format("%02d:", value / 60);
-        value %= 60;
-        returnValue += String.format("%02d", value);
+        int intVal = value;
+
+        returnValue += String.format("%02d:", intVal / 3600);
+        intVal %= 3600;
+        returnValue += String.format("%02d:", intVal / 60);
+        intVal %= 60;
+        returnValue += String.format("%02d", intVal);
         return returnValue;
     }
 }

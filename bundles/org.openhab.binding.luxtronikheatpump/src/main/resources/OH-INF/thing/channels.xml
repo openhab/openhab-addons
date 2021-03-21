@@ -151,7 +151,7 @@
 
 	<channel-type id="EVUin" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Input "EVU Lock"</label>
+		<label>Input "Utility Lock"</label>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -471,7 +471,7 @@
 				<option value="0">Heating</option>
 				<option value="1">Hot water</option>
 				<option value="2">Swimming pool / Photovoltaics</option>
-				<option value="3">EVU</option>
+				<option value="3">Utility lock</option>
 				<option value="4">Defrost</option>
 				<option value="5">No requirement</option>
 				<option value="6">Heating ext. energy source</option>
@@ -1086,7 +1086,7 @@
 
 	<channel-type id="Switchoff_file_Time0">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 0 in Mmemory</label>
+		<label>Timestamp Shutdown 0 in Memory</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1636,7 +1636,7 @@
 				<option value="9">Stop</option>
 				<option value="10">Manual</option>
 				<option value="11">Simulation Start</option>
-				<option value="12">EVU lock</option>
+				<option value="12">Utility lock</option>
 			</options>
 		</state>
 	</channel-type>

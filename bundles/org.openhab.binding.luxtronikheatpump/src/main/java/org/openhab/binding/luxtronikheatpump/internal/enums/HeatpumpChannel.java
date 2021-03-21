@@ -1351,7 +1351,6 @@ public enum HeatpumpChannel {
     }
 
     public static HeatpumpChannel fromString(String heatpumpCommand) throws InvalidChannelException {
-
         for (HeatpumpChannel c : HeatpumpChannel.values()) {
 
             if (c.getCommand().equals(heatpumpCommand)) {
