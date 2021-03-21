@@ -14,7 +14,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants.*;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -120,14 +119,14 @@ public class ConnectedDriveProxy {
         }
         final Request req;
         final String encoded = params == null || params.isEmpty() ? null
-                : UrlEncoded.encode(params, Charset.defaultCharset(), false);
+                : UrlEncoded.encode(params, StandardCharsets.UTF_8, false);
         final String completeUrl;
 
         if (post) {
             completeUrl = url;
             req = httpClient.POST(url);
             if (encoded != null) {
-                req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, encoded, Charset.defaultCharset()));
+                req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, encoded, StandardCharsets.UTF_8));
             }
         } else {
             completeUrl = encoded == null ? url : url + Constants.QUESTION + encoded;
@@ -259,7 +258,7 @@ public class ConnectedDriveProxy {
         dataMap.add(USERNAME, configuration.userName);
         dataMap.add(PASSWORD, configuration.password);
         req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
-                UrlEncoded.encode(dataMap, Charset.defaultCharset(), false), Charset.defaultCharset()));
+                UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
         try {
             ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             // Status needs to be 302 - Response is stored in Header
