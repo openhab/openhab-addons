@@ -16,10 +16,9 @@
 			<channel id="switch" typeId="switch"/>
 		</channels>
 		<config-description>
-			<parameter name="dmxid" type="text">
+			<parameter name="dmxid" type="text" required="true">
 				<label>DMX Channel Configuration</label>
 				<description>Format is channel[,channel, ...] or channel[/width]</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="fadetime" type="integer" min="0">
 				<label>Fade Time</label>
@@ -36,7 +35,6 @@
 				<description>Format is "value[, value, ...]". If less values than channels are defined, they are reused from the
 					beginning.
 				</description>
-				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="turnoffvalue" type="text">
@@ -49,7 +47,6 @@
 			<parameter name="dynamicturnonvalue" type="boolean">
 				<label>Dynamic Turn-On Value</label>
 				<description>If enabled, values are stored on OFF command and restored on ON command</description>
-				<required>false</required>
 				<default>false</default>
 			</parameter>
 		</config-description>
