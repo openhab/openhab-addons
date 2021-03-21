@@ -197,8 +197,9 @@ public class EcoTouchConnector {
             BufferedReader reader = null;
             try {
                 URLConnection connection = new URL(url).openConnection();
-                if (cookies != null) {
-                    for (String cookie : cookies) {
+                var localCookies = cookies;
+                if (localCookies != null) {
+                    for (String cookie : localCookies) {
                         connection.addRequestProperty("Cookie", cookie.split(";", 2)[0]);
                     }
                 }
@@ -264,8 +265,9 @@ public class EcoTouchConnector {
             BufferedReader reader = null;
             try {
                 URLConnection connection = new URL(url).openConnection();
-                if (cookies != null) {
-                    for (String cookie : cookies) {
+                var localCookies = cookies;
+                if (localCookies != null) {
+                    for (String cookie : localCookies) {
                         connection.addRequestProperty("Cookie", cookie.split(";", 2)[0]);
                     }
                 }

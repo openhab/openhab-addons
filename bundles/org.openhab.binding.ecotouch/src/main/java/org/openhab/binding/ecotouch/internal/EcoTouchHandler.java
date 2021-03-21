@@ -87,7 +87,8 @@ public class EcoTouchHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (connector == null) {
+        var localConnector = connector;
+        if (localConnector == null) {
             // the binding was not initialized, yet
             return;
         }
@@ -95,9 +96,11 @@ public class EcoTouchHandler extends BaseThingHandler {
             // request a refresh of a channel
             try {
                 EcoTouchTags tag = EcoTouchTags.fromString(channelUID.getId());
-                String valueStr = connector.getValue(tag.getTagName());
-                updateChannel(tag.getTagName(), valueStr);
-                updateStatus(ThingStatus.ONLINE);
+                if (tag != null) {
+                    String valueStr = localConnector.getValue(tag.getTagName());
+                    updateChannel(tag.getTagName(), valueStr);
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } catch (Exception e) {
             }
         } else {
@@ -108,7 +111,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                     // this type needs special treatment
                     QuantityType<?> value = (QuantityType<?>) command;
                     int raw = Math.round(value.floatValue() * 2 + 4);
-                    connector.setValue(ecoTouchTag.getTagName(), raw);
+                    localConnector.setValue(ecoTouchTag.getTagName(), raw);
                 } else {
                     if (ecoTouchTag.getUnit() != ONE) {
                         if (command instanceof QuantityType) {
@@ -118,7 +121,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                             if (rawUnit != null) {
                                 int raw = rawUnit.intValue();
                                 raw *= ecoTouchTag.getDivisor();
-                                connector.setValue(ecoTouchTag.getTagName(), raw);
+                                localConnector.setValue(ecoTouchTag.getTagName(), raw);
                             }
                         } else {
                             logger.debug("handleCommand: requires a QuantityType");
@@ -130,7 +133,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                             BigDecimal decimal = decimalType.toBigDecimal();
                             decimal = decimal.multiply(new BigDecimal(ecoTouchTag.getDivisor()));
                             int raw = decimal.intValue();
-                            connector.setValue(ecoTouchTag.getTagName(), raw);
+                            localConnector.setValue(ecoTouchTag.getTagName(), raw);
                         } else {
                             logger.debug("cannot convert {} to a DecimalType", state);
                         }
@@ -146,12 +149,23 @@ public class EcoTouchHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(EcoTouchConfiguration.class);
 
-        connector = new EcoTouchConnector(config.ip, config.username, config.password);
+        var localConfig = config;
+        if (localConfig == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
+
+        connector = new EcoTouchConnector(localConfig.ip, localConfig.username, localConfig.password);
 
         scheduler.execute(() -> {
             try {
                 // try to get a single value
-                connector.getValue("A1");
+                var localConnector = connector;
+                if (localConnector == null) {
+                    updateStatus(ThingStatus.OFFLINE);
+                    return;
+                }
+                localConnector.getValue("A1");
             } catch (IOException io) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
                 return;
@@ -168,7 +182,8 @@ public class EcoTouchHandler extends BaseThingHandler {
     }
 
     private void startAutomaticRefresh() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        var localRefreshJob = refreshJob;
+        if (localRefreshJob == null || localRefreshJob.isCancelled()) {
             Runnable runnable = () -> {
                 try {
                     Set<String> tags = new HashSet<String>();
@@ -178,12 +193,15 @@ public class EcoTouchHandler extends BaseThingHandler {
                         if (linked)
                             tags.add(ecoTouchTag.getTagName());
                     }
-                    Map<String, String> result = connector.getValues(tags);
+                    var localConnector = connector;
+                    if (localConnector != null) {
+                        Map<String, String> result = localConnector.getValues(tags);
 
-                    Iterator<Map.Entry<String, String>> it = result.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String, String> pair = it.next();
-                        updateChannel(pair.getKey(), pair.getValue());
+                        Iterator<Map.Entry<String, String>> it = result.entrySet().iterator();
+                        while (it.hasNext()) {
+                            Map.Entry<String, String> pair = it.next();
+                            updateChannel(pair.getKey(), pair.getValue());
+                        }
                     }
                 } catch (IOException io) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
@@ -198,17 +216,21 @@ public class EcoTouchHandler extends BaseThingHandler {
                 }
             };
 
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 10, config.refresh, TimeUnit.SECONDS);
+            var localConfig = config;
+            if (localConfig != null)
+                refreshJob = scheduler.scheduleWithFixedDelay(runnable, 10, localConfig.refresh, TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void dispose() {
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        var localRefreshJob = refreshJob;
+        if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
+            localRefreshJob.cancel(true);
+            localRefreshJob = null;
         }
-        if (connector != null)
-            connector.logout();
+        var localConnector = connector;
+        if (localConnector != null)
+            localConnector.logout();
     }
 }
