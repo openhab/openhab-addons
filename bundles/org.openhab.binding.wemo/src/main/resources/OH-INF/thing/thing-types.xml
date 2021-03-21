@@ -13,10 +13,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
 			</parameter>
 
 		</config-description>
@@ -43,10 +42,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -60,10 +58,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -78,10 +75,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -106,10 +102,9 @@
 		</properties>
 
 		<config-description>
-			<parameter name="deviceID" type="text">
+			<parameter name="deviceID" type="text" required="true">
 				<label>Device ID</label>
 				<description>The device ID identifies one certain WeMo light.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -124,10 +119,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -149,10 +143,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" min="15" max="180">
 				<label>Polling Interval</label>
@@ -179,10 +172,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
 			</parameter>
 
 		</config-description>
