@@ -81,6 +81,16 @@ public class PlayerItemConverter extends AbstractTransformingItemConverter {
 
     @Override
     public State toState(String string) {
+        if (string.equals(channelConfig.playValue)) {
+            return PlayPauseType.PLAY;
+        } else if (string.equals(channelConfig.pauseValue)) {
+            return PlayPauseType.PAUSE;
+        } else if (string.equals(channelConfig.rewindValue)) {
+            return RewindFastforwardType.REWIND;
+        } else if (string.equals(channelConfig.fastforwardValue)) {
+            return RewindFastforwardType.FASTFORWARD;
+        }
+
         return UnDefType.UNDEF;
     }
 }

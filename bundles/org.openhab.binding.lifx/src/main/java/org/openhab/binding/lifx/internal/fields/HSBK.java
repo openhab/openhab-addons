@@ -21,7 +21,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 
 /**
- * @author Wouter Born - Add support for MultiZone light control
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class HSBK {

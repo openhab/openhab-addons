@@ -117,7 +117,13 @@ public class AndroidDebugBridgeDevice {
             if (packageActivityName.contains("/"))
                 return packageActivityName.split("/")[0];
         }
-        throw new AndroidDebugBridgeDeviceReadException("can read package name");
+        throw new AndroidDebugBridgeDeviceReadException("Unable to read package name");
+    }
+
+    public boolean isAwake()
+            throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        String devicesResp = runAdbShell("dumpsys", "activity", "|", "grep", "mWakefulness");
+        return devicesResp.contains("mWakefulness=Awake");
     }
 
     public boolean isScreenOn() throws InterruptedException, AndroidDebugBridgeDeviceException,
@@ -125,12 +131,13 @@ public class AndroidDebugBridgeDevice {
         String devicesResp = runAdbShell("dumpsys", "power", "|", "grep", "'Display Power'");
         if (devicesResp.contains("=")) {
             try {
-                return devicesResp.split("=")[1].equals("ON");
+                var state = devicesResp.split("=")[1].trim();
+                return state.equals("ON");
             } catch (NumberFormatException e) {
                 logger.debug("Unable to parse device wake lock: {}", e.getMessage());
             }
         }
-        throw new AndroidDebugBridgeDeviceReadException("can read screen state");
+        throw new AndroidDebugBridgeDeviceReadException("Unable to read screen state");
     }
 
     public boolean isPlayingMedia(String currentApp)
@@ -168,12 +175,12 @@ public class AndroidDebugBridgeDevice {
         String lockResp = runAdbShell("dumpsys", "power", "|", "grep", "Locks", "|", "grep", "'size='");
         if (lockResp.contains("=")) {
             try {
-                return Integer.parseInt(lockResp.replace("\n", "").split("=")[1]);
+                return Integer.parseInt(lockResp.replace("\n", "").split("=")[1].trim());
             } catch (NumberFormatException e) {
                 logger.debug("Unable to parse device wake lock: {}", e.getMessage());
             }
         }
-        throw new AndroidDebugBridgeDeviceReadException("can read wake lock");
+        throw new AndroidDebugBridgeDeviceReadException("Unable to read wake lock");
     }
 
     private void setVolume(int stream, int volume)

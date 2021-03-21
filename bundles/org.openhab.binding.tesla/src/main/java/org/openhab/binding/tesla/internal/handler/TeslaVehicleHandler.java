@@ -137,7 +137,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected ScheduledFuture<?> slowStateJob;
 
     private final Gson gson = new Gson();
-    private final JsonParser parser = new JsonParser();
 
     public TeslaVehicleHandler(Thing thing, ClientBuilder clientBuilder) {
         super(thing);
@@ -711,7 +710,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     return null;
                 }
 
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
                 Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
 
                 for (Vehicle vehicle : vehicleArray) {
@@ -831,7 +830,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     default: {
-                        jsonObject = parser.parse(result).getAsJsonObject();
+                        jsonObject = JsonParser.parseString(result).getAsJsonObject();
                         break;
                     }
                 }

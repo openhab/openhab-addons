@@ -53,6 +53,10 @@
 			<channel id="sleeptimer" typeId="sleeptimer"/>
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
+			<!-- Extended SONOS channels -->
+			<channel id="batterycharging" typeId="batterycharging"/>
+			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="microphone" typeId="microphone"/>
 		</channels>
 
 		<properties>

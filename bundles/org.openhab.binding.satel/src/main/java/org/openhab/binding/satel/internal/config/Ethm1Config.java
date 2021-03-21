@@ -25,7 +25,7 @@ public class Ethm1Config extends SatelBridgeConfig {
 
     public static final String HOST = "host";
 
-    private @Nullable String host;
+    private String host = "";
     private int port;
     private @Nullable String encryptionKey;
 
@@ -33,8 +33,7 @@ public class Ethm1Config extends SatelBridgeConfig {
      * @return IP or hostname of the bridge
      */
     public String getHost() {
-        final String host = this.host;
-        return host == null ? "" : host;
+        return host;
     }
 
     /**

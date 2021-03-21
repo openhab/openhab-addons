@@ -18,10 +18,11 @@ Automatic discovery is not supported.
 
 The binding has the following configuration options:
 
-| Parameter   | Name         | Description                                                                                                            | Required | Default value |
-|-------------|--------------|------------------------------------------------------------------------------------------------------------------------|----------|---------------|
-| port        | TCP Port     | TCP port of the FTP server                                                                                             | no       | 2121          |
-| idleTimeout | Idle timeout | The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled. | no       | 60            |
+| Parameter    | Name          | Description                                                                                                                                                                                                                                                                                                               | Required | Default value |
+|--------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| port         | TCP Port      | TCP port of the FTP server                                                                                                                                                                                                                                                                                                | no       | 2121          |
+| idleTimeout  | Idle timeout  | The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled.                                                                                                                                                                                                    | no       | 60            |
+| passivePorts | Passive Ports | A string of passive ports, can contain a single port (as an integer), multiple ports seperated by commas (e.g. 123,124,125) or ranges of ports, including open ended ranges (e.g. 123-125, 30000-, -1023). Combinations for single ports and ranges is also supported. Empty (default) allows all ports as passive ports. | no       |               |
 
 ## Thing Configuration
 

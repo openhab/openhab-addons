@@ -69,6 +69,7 @@
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.boschshc</module>
     <module>org.openhab.binding.bosesoundtouch</module>
+    <module>org.openhab.binding.broadlinkthermostat</module>
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
@@ -107,6 +108,7 @@
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feican</module>
     <module>org.openhab.binding.fmiweather</module>
+    <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.foobot</module>
     <module>org.openhab.binding.freebox</module>
@@ -188,6 +190,7 @@
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.e3dc</module>
+    <module>org.openhab.binding.modbus.sbc</module>
     <module>org.openhab.binding.modbus.studer</module>
     <module>org.openhab.binding.modbus.sunspec</module>
     <module>org.openhab.binding.modbus.stiebeleltron</module>
@@ -199,6 +202,7 @@
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
+    <module>org.openhab.binding.myq</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
@@ -236,6 +240,7 @@
     <module>org.openhab.binding.paradoxalarm</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
+    <module>org.openhab.binding.pilight</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pixometer</module>
     <module>org.openhab.binding.pjlinkdevice</module>
@@ -284,6 +289,7 @@
     <module>org.openhab.binding.sonyprojector</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
+    <module>org.openhab.binding.surepetcare</module>
     <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.tacmi</module>

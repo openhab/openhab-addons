@@ -8,35 +8,30 @@
 		<label>KNX FT1.2 Interface</label>
 		<description>This is a serial interface for accessing the KNX bus</description>
 		<config-description>
-			<parameter name="serialPort" type="text">
+			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port </context>
 				<label>Serial Port</label>
 				<description>The serial port to use for connecting to the KNX bus</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="readingPause" type="integer">
+			<parameter name="readingPause" type="integer" required="true">
 				<label>Reading Pause</label>
 				<description>Time in milliseconds of how long should be paused between two read requests to the bus during
 					initialization</description>
-				<required>true</required>
 				<default>50</default>
 			</parameter>
-			<parameter name="responseTimeout" type="integer">
+			<parameter name="responseTimeout" type="integer" required="true">
 				<label>Response Timeout</label>
 				<description>Seconds to wait for a response from the KNX bus</description>
-				<required>true</required>
 				<default>10</default>
 			</parameter>
-			<parameter name="readRetriesLimit" type="integer">
+			<parameter name="readRetriesLimit" type="integer" required="true">
 				<label>Read Retries Limit</label>
 				<description>Limits the read retries while initialization from the KNX bus</description>
-				<required>true</required>
 				<default>3</default>
 			</parameter>
-			<parameter name="autoReconnectPeriod" type="integer">
+			<parameter name="autoReconnectPeriod" type="integer" required="true">
 				<label>Auto Reconnect Period</label>
 				<description>Seconds between connect retries when KNX link has been lost, 0 means never retry</description>
-				<required>true</required>
 				<default>0</default>
 			</parameter>
 		</config-description>

@@ -25,7 +25,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
@@ -442,7 +441,7 @@ public class PulseaudioClient {
         sendRawCommand(CMD_UNLOAD_MODULE + " " + combinedSink.getModule().getId());
         // 2. add new combined-sink with same name and all slaves
         sendRawCommand(CMD_LOAD_MODULE + " " + MODULE_COMBINE_SINK + " sink_name=" + combinedSink.getPaName()
-                + " slaves=" + StringUtils.join(slaves, ","));
+                + " slaves=" + String.join(",", slaves));
         // 3. update internal data structure because the combined sink has a new number + other slaves
         update();
     }
@@ -533,7 +532,7 @@ public class PulseaudioClient {
         }
         // add new combined-sink with same name and all slaves
         sendRawCommand(CMD_LOAD_MODULE + " " + MODULE_COMBINE_SINK + " sink_name=" + combinedSinkName + " slaves="
-                + StringUtils.join(slaves, ","));
+                + String.join(",", slaves));
         // update internal data structure because the combined sink is new
         update();
     }

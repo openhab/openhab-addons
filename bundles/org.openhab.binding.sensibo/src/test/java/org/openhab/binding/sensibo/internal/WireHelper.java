@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -54,8 +54,7 @@ public class WireHelper {
         final String json = new String(WireHelper.class.getResourceAsStream(jsonClasspathName).readAllBytes(),
                 StandardCharsets.UTF_8);
 
-        final JsonParser parser = new JsonParser();
-        final JsonObject o = parser.parse(json).getAsJsonObject();
+        final JsonObject o = JsonParser.parseString(json).getAsJsonObject();
         assertEquals("success", o.get("status").getAsString());
 
         return gson.fromJson(o.get("result"), type);

@@ -40,7 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.bigassfan.internal.BigAssFanConfig;
 import org.openhab.binding.bigassfan.internal.utils.BigAssFanConverter;
 import org.openhab.core.common.ThreadPoolManager;
@@ -668,7 +667,7 @@ public class BigAssFanHandler extends BaseThingHandler {
         }
 
         private void processMessage(String incomingMessage) {
-            if (StringUtils.isEmpty(incomingMessage)) {
+            if (incomingMessage == null || incomingMessage.isEmpty()) {
                 return;
             }
 
@@ -742,11 +741,11 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         private boolean isMe(String idFromDevice) {
             // Check match on MAC address
-            if (StringUtils.equalsIgnoreCase(idFromDevice, macAddress)) {
+            if (macAddress.equalsIgnoreCase(idFromDevice)) {
                 return true;
             }
             // Didn't match MAC address, check match for label
-            if (StringUtils.equalsIgnoreCase(idFromDevice, label)) {
+            if (label.equalsIgnoreCase(idFromDevice)) {
                 return true;
             }
             return false;

@@ -14,6 +14,8 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -44,8 +46,11 @@ public class SomfyTahomaZwaveHeatingSystemHandler extends SomfyTahomaBaseThingHa
             return;
         } else {
             if (TARGET_TEMPERATURE.equals(channelUID.getId())) {
-                String param = "[" + command.toString() + "]";
-                sendCommand("setTargetTemperature", param);
+                BigDecimal temperature = toTemperature(command);
+                if (temperature != null) {
+                    String param = "[" + temperature.toPlainString() + "]";
+                    sendCommand("setTargetTemperature", param);
+                }
             }
         }
     }

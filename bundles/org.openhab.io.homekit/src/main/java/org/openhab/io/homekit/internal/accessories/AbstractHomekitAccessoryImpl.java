@@ -218,18 +218,30 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * 
      * @param characteristicType characteristicType to identify item
      * @param map mapping to update
+     * @param customEnumList list to store custom state enumeration
      */
     @NonNullByDefault
-    protected void updateMapping(HomekitCharacteristicType characteristicType, Map<?, String> map) {
+    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
+            @Nullable List<T> customEnumList) {
         getCharacteristic(characteristicType).ifPresent(c -> {
             final Map<String, Object> configuration = c.getConfiguration();
             if (configuration != null) {
-                map.replaceAll((k, current_value) -> {
-                    final Object new_value = configuration.get(current_value);
-                    return (new_value instanceof String) ? (String) new_value : current_value;
+                map.forEach((k, current_value) -> {
+                    final Object new_value = configuration.get(k.toString());
+                    if (new_value instanceof String) {
+                        map.put(k, (String) new_value);
+                        if (customEnumList != null) {
+                            customEnumList.add(k);
+                        }
+                    }
                 });
             }
         });
+    }
+
+    @NonNullByDefault
+    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
+        updateMapping(characteristicType, map, null);
     }
 
     /**
@@ -288,6 +300,15 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 ImperialUnits.FAHRENHEIT);
     }
 
+    /**
+     * create boolean reader with ON state mapped to trueOnOffValue or trueOpenClosedValue depending of item type
+     * 
+     * @param characteristicType characteristic id
+     * @param trueOnOffValue ON value for switch
+     * @param trueOpenClosedValue ON value for contact
+     * @return boolean readed
+     * @throws IncompleteAccessoryException
+     */
     @NonNullByDefault
     protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType,
             OnOffType trueOnOffValue, OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
@@ -295,5 +316,21 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 getItem(characteristicType, GenericItem.class)
                         .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
                 trueOnOffValue, trueOpenClosedValue);
+    }
+
+    /**
+     * create boolean reader with default ON/OFF mapping considering inverted flag
+     * 
+     * @param characteristicType characteristic id
+     * @return boolean reader
+     * @throws IncompleteAccessoryException
+     */
+    @NonNullByDefault
+    protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType)
+            throws IncompleteAccessoryException {
+        final HomekitTaggedItem taggedItem = getCharacteristic(characteristicType)
+                .orElseThrow(() -> new IncompleteAccessoryException(characteristicType));
+        return new BooleanItemReader(taggedItem.getItem(), taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
     }
 }

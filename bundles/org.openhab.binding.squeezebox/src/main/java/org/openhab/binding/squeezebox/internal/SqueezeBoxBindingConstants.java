@@ -68,4 +68,5 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_MODEL = "model";
     public static final String CHANNEL_FAVORITES_PLAY = "playFavorite";
     public static final String CHANNEL_RATE = "rate";
+    public static final String CHANNEL_SLEEP = "sleep";
 }

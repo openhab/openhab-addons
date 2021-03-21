@@ -55,9 +55,9 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
         }
     }
 
-    public File getTextToSpeechAsFile(String apiKey, String text, String locale, String audioFormat)
+    public File getTextToSpeechAsFile(String apiKey, String text, String locale, String voice, String audioFormat)
             throws IOException {
-        String fileNameInCache = getUniqueFilenameForText(text, locale);
+        String fileNameInCache = getUniqueFilenameForText(text, locale, voice);
         // check if in cache
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioFormat.toLowerCase());
         if (audioFileInCache.exists()) {
@@ -65,7 +65,7 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
         }
 
         // if not in cache, get audio data and put to cache
-        try (InputStream is = super.getTextToSpeech(apiKey, text, locale, audioFormat);
+        try (InputStream is = super.getTextToSpeech(apiKey, text, locale, voice, audioFormat);
                 FileOutputStream fos = new FileOutputStream(audioFileInCache)) {
             copyStream(is, fos);
             // write text to file for transparency too
@@ -89,7 +89,7 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
      *
      * Sample: "en-US_00a2653ac5f77063bc4ea2fee87318d3"
      */
-    private String getUniqueFilenameForText(String text, String locale) {
+    private String getUniqueFilenameForText(String text, String locale, String voice) {
         try {
             byte[] bytesOfMessage = text.getBytes(StandardCharsets.UTF_8);
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -101,7 +101,12 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
             while (hashtext.length() < 32) {
                 hashtext = "0" + hashtext;
             }
-            return locale + "_" + hashtext;
+            String filename = locale + "_";
+            if (!DEFAULT_VOICE.equals(voice)) {
+                filename += voice + "_";
+            }
+            filename += hashtext;
+            return filename;
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
             logger.error("Could not create MD5 hash for '{}'", text, ex);
