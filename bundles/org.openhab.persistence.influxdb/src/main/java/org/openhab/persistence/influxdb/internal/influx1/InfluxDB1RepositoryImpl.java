@@ -15,6 +15,7 @@ package org.openhab.persistence.influxdb.internal.influx1;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V1;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V1;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -42,8 +43,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
  *
- * @author Joan Pujol Espinar - Initial contribution. Most code has been moved from
- *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService} where it was in previous version
+ * @author Joan Pujol Espinar - Initial contribution. Most code has been moved
+ *         from
+ *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService}
+ *         where it was in previous version
  */
 @NonNullByDefault
 public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
@@ -178,12 +181,15 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                         if (columns != null) {
                             Integer timestampColumn = null;
                             Integer valueColumn = null;
+                            Integer itemNameColumn = null;
                             for (int i = 0; i < columns.size(); i++) {
                                 String columnName = columns.get(i);
                                 if (columnName.equals(COLUMN_TIME_NAME_V1)) {
                                     timestampColumn = i;
                                 } else if (columnName.equals(COLUMN_VALUE_NAME_V1)) {
                                     valueColumn = i;
+                                } else if (columnName.equals(TAG_ITEM_NAME)) {
+                                    itemNameColumn = i;
                                 }
                             }
                             if (valueColumn == null || timestampColumn == null) {
@@ -193,6 +199,9 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                                 Double rawTime = (Double) valuess.get(i).get(timestampColumn);
                                 Instant time = Instant.ofEpochMilli(rawTime.longValue());
                                 Object value = valuess.get(i).get(valueColumn);
+                                if (itemNameColumn != null) {
+                                    itemName = (String) valuess.get(i).get(itemNameColumn);
+                                }
                                 logger.trace("adding historic item {}: time {} value {}", itemName, time, value);
                                 rows.add(new InfluxRow(time, itemName, value));
                             }
