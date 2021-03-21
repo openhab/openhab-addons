@@ -15,6 +15,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,6 +50,8 @@ public class RemoteServiceHandler implements StringResponseCallback {
     private static final int GIVEUP_COUNTER = 6;
     private static final int STATE_UPDATE_SEC = HTTPConstants.HTTP_TIMEOUT_SEC + 1; // regular timeout + 1sec
     private int counter = 0;
+
+    private Optional<ScheduledFuture<?>> stateJob = Optional.empty();
 
     public enum ExecutionState {
         READY,
@@ -140,6 +143,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
             }, () -> {
                 logger.warn("No Service executed to get state");
             });
+            stateJob = Optional.empty();
         }
     }
 
@@ -167,7 +171,14 @@ public class RemoteServiceHandler implements StringResponseCallback {
             }
         }
         // schedule even if no result is present until retries exceeded
-        handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
+        synchronized (this) {
+            stateJob.ifPresent(job -> {
+                if (!job.isDone()) {
+                    job.cancel(true);
+                }
+            });
+            stateJob = Optional.of(handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS));
+        }
     }
 
     @Override
@@ -182,5 +193,16 @@ public class RemoteServiceHandler implements StringResponseCallback {
     private void reset() {
         serviceExecuting = Optional.empty();
         counter = 0;
+    }
+
+    public void cancel() {
+        synchronized (this) {
+            stateJob.ifPresent(action -> {
+                if (!action.isDone()) {
+                    action.cancel(true);
+                }
+                stateJob = Optional.empty();
+            });
+        }
     }
 }
