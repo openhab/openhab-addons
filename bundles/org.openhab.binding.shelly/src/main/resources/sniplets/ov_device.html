@@ -35,8 +35,11 @@
                             <tr><td>MAC Address</td><td>${macAddress}</td></tr>
                             <tr><td>Discoverable</td><td>${discoverable}</td></tr>
                             <tr><td>WiFi Auto Recovery</td><td>${wifiAutoRecovery}</td></tr>
+                            <tr><td>WiFi AP Roaming</td><td>${apRoamingMode}</td></tr>
+                            <tr><td>WiFi AP Threshold</td><td>${apRoamingTreshold}</td></tr>
                             <tr><td>Timezone</td><td>${deviceTimezone}</td></tr>
                             <tr><td>Time Server</td><td>${sntpServer}</td></tr>
+                            <tr><td>Debug Mode</td><td>${debugMode}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -56,6 +59,20 @@
 	                <a href="${uri}/overview?action=refresh&uid=${uid}">
 	                    <img src="${uri}/images/refresh.png" class="icon"/>
 	                </a>
+                </div>
+            </td>
+            <td>
+                <div title="Reset Device Statistic">
+                    <a href="${uri}/action?action=reset_stat&uid=${uid}">
+                        <img src="${uri}/images/resetstat.png" class="icon"/>
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div title="Check for new firmware">
+                    <a href="${uri}/action?action=otacheck&uid=${uid}">
+                        <img src="${uri}/images/otacheck.png" class="icon"/>
+                    </a>
                 </div>
             </td>
             <td><a href="http://${deviceIp}" title="${displayName}" target="_blank">${deviceIp}</a></td>

@@ -33,6 +33,7 @@ public class ShellyManagerConstants {
     public static final String SHELLY_MGR_ACTION_URI = SHELLY_MANAGER_URI + "/action";
     public static final String SHELLY_MGR_OTA_URI = SHELLY_MANAGER_URI + "/ota";
 
+    public static final String ACTION_REFRESH = "refresh";
     public static final String ACTION_RESTART = "restart";
     public static final String ACTION_PROTECT = "protect";
     public static final String ACTION_SETCOIOT_PEER = "setcoiotpeer";
@@ -43,6 +44,16 @@ public class ShellyManagerConstants {
     public static final String ACTION_DISCLOUD = "discloud";
     public static final String ACTION_RES_STATS = "reset_stat";
     public static final String ACTION_RESET = "reset";
+    public static final String ACTION_RESSTA = "resetsta";
+    public static final String ACTION_ENWIFIREC = "enwifirec";
+    public static final String ACTION_DISWIFIREC = "diswifirec";
+    public static final String ACTION_ENAPROAMING = "enaproaming";
+    public static final String ACTION_DISAPROAMING = "disaproaming";
+    public static final String ACTION_OTACHECK = "otacheck";
+    public static final String ACTION_ENDEBUG = "endebug";
+    public static final String ACTION_DISDEBUG = "disdebug";
+    public static final String ACTION_GETDEB = "getdebug";
+    public static final String ACTION_GETDEB1 = "getdebug1";
     public static final String ACTION_NONE = "-";
 
     public static final String TEMPLATE_PATH = "sniplets/";
@@ -62,13 +73,14 @@ public class ShellyManagerConstants {
     public static final String ATTRIBUTE_CSS_HEADER = "cssHeader";
     public static final String ATTRIBUTE_CSS_FOOTER = "cssFooter";
     public static final String ATTRIBUTE_URI = "uri";
-    public static final String ATTRIBUTE_REFRESH = "refreshTimer";
     public static final String ATTRIBUTE_UID = "uid";
-    public static final String ATTRIBUTE_TOTAL_DEV = "totalDevices";
+    public static final String ATTRIBUTE_REFRESH = "refreshTimer";
     public static final String ATTRIBUTE_MESSAGE = "message";
+    public static final String ATTRIBUTE_TOTAL_DEV = "totalDevices";
     public static final String ATTRIBUTE_STATUS_ICON = "iconStatus";
     public static final String ATTRIBUTE_DISPLAY_NAME = "displayName";
     public static final String ATTRIBUTE_DEV_STATUS = "deviceStatus";
+    public static final String ATTRIBUTE_DEBUG_MODE = "debugMode";
     public static final String ATTRIBUTE_FIRMWARE_SEL = "firmwareSelection";
     public static final String ATTRIBUTE_ACTION_LIST = "actionList";
     public static final String ATTRIBUTE_VERSION = "version";
@@ -86,6 +98,8 @@ public class ShellyManagerConstants {
     public static final String ATTRIBUTE_ACTIONS_SKIPPED = "actionsSkipped";
     public static final String ATTRIBUTE_DISCOVERABLE = "discoverable";
     public static final String ATTRIBUTE_WIFI_RECOVERY = "wifiAutoRecovery";
+    public static final String ATTRIBUTE_APR_MODE = "apRoamingMode";
+    public static final String ATTRIBUTE_APR_TRESHOLD = "apRoamingThreshold";
     public static final String ATTRIBUTE_MAX_ITEMP = "maxInternalTemp";
     public static final String ATTRIBUTE_TIMEZONE = "deviceTimezone";
     public static final String ATTRIBUTE_PWD_PROTECT = "passwordProtected";
@@ -100,8 +114,6 @@ public class ShellyManagerConstants {
     public static final String URLPARM_UPDATE = "update";
     public static final String URLPARM_CONNECTION = "connection";
     public static final String URLPARM_URL = "url";
-
-    public static final String ACTION_REFRESH = "refresh";
 
     public static final String FILTER_ONLINE = "online";
     public static final String FILTER_INACTIVE = "inactive";

@@ -128,16 +128,27 @@ When hovering with the mouse over the status icon or the device name you'll get 
 The Shelly Manager provides the following actions when the Thing is ONLINE. 
 They are available in the dropdown list in column Actions.
 
-|Action              |Description                                                                      |
-|--------------------|---------------------------------------------------------------------------------| 
-|Reset Statistics    |Resets device statistic and clear the last alarm                                 |
-|Restart             |Restart the device and reconnect to WiFi                                         |
-|Protect             |Use binding's default credentials to protect device access with user and password|
-|Set CoIoT Peer      |Disable CoIoT Multicast and set openHAB system as receiver for CoIoT updates     |
-|Set CoIoT Multicast |Disable CoIoT Multicast and set openHAB system as receiver for CoIoT updates     |
-|Enable Cloud        |Enable the Shelly Cloud connectivity                                             |
-|Disable Cloud       |Disable the Shelly Cloud connectivity (takes about 15sec to become active)       |
-|Reset               |Performs **firmware reset**; Attention: The device will lose its configuration   |
+|Action               |Description                                                                      |
+|---------------------|---------------------------------------------------------------------------------| 
+|Reset Statistics     |Resets device statistic and clear the last alarm                                 |
+|Restart              |Restart the device and reconnect to WiFi                                         |
+|Protect              |Use binding's default credentials to protect device access with user and password|
+|Set CoIoT Peer       |Disable CoIoT Multicast and set openHAB system as receiver for CoIoT updates     |
+|Set CoIoT Multicast  |Disable CoIoT Multicast and set openHAB system as receiver for CoIoT updates     |
+|Enable Cloud         |Enable the Shelly Cloud connectivity                                             |
+|Disable Cloud        |Disable the Shelly Cloud connectivity (takes about 15sec to become active)       |
+|Reconnect WiFi       |Sensor devices only: Clears the STA/AP list and reconnects to strongest AP       |
+|Enable WiFi Roaming  |The device will connect to the strongest AP when roadming is enabled             |
+|Disable WiFi Roaming |Disable Access Point Roaming, device will periodically search for better APs     |
+|Enable WiFi Recovery |Enables auto-restart if device detects persistent WiFi connectivity issues       |
+|Disable WiFi Recovery|Disables device auto-restart ion persistent WiFi connectivity issues             |
+|Factory Reset        |Performs a **factory reset**; Attention: The device will lose its configuration  |
+|Enable Device Debug  |Enables on-device debug log - activate only when requested by Allterco support   |
+|Get Debug Log        |Retrieve and display device debug output                                         |
+|Get Debug Log1       |Retrieve and display 2nd device debug output                                     |
+|Factory Reset        |Performs **firmware reset**; Attention: The device will lose its configuration   |
+
+Note: Various actions available only for certain devices or when using a minimum firmware version.
 
 ![](images/manager/overview_actions.png)
 

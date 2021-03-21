@@ -242,8 +242,13 @@ public class ShellyManagerPage {
         addAttribute(properties, th, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
         addAttribute(properties, th, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER);
 
+        properties.put(ATTRIBUTE_DEBUG_MODE, getOption(profile.settings.debug_enable));
         properties.put(ATTRIBUTE_DISCOVERABLE, String.valueOf(getBool(profile.settings.discoverable)));
         properties.put(ATTRIBUTE_WIFI_RECOVERY, String.valueOf(getBool(profile.settings.wifiRecoveryReboot)));
+        properties.put(ATTRIBUTE_APR_MODE,
+                profile.settings.apRoaming != null ? getOption(profile.settings.apRoaming.enabled) : "n/a");
+        properties.put(ATTRIBUTE_APR_TRESHOLD,
+                profile.settings.apRoaming != null ? getOption(profile.settings.apRoaming.threshold) : "n/a");
         properties.put(ATTRIBUTE_PWD_PROTECT,
                 profile.auth ? "enabled, user=" + getString(profile.settings.login.username) : "disabled");
         properties.put(ATTRIBUTE_TIMEZONE,
@@ -530,6 +535,20 @@ public class ShellyManagerPage {
 
     protected static String getDeviceName(Map<String, String> properties) {
         return getString(properties.get(PROPERTY_DEV_NAME));
+    }
+
+    protected static String getOption(@Nullable Boolean option) {
+        if (option == null) {
+            return "n/a";
+        }
+        return option ? "enabled" : "disabled";
+    }
+
+    protected static String getOption(@Nullable Integer option) {
+        if (option == null) {
+            return "n/a";
+        }
+        return option.toString();
     }
 
     protected static String getDisplayName(Map<String, String> properties) {

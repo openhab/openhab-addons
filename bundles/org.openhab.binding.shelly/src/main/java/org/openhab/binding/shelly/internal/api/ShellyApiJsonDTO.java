@@ -543,7 +543,9 @@ public class ShellyApiJsonDTO {
         @SerializedName("wifi_sta1")
         public ShellySettingsWiFiNetwork wifiSta1;
         @SerializedName("wifirecovery_reboot_enabled")
-        public Boolean wifiRecoveryReboot;
+        public Boolean wifiRecoveryReboot; // FW 1.10+
+        @SerializedName("ap_roaming")
+        public ShellyApRoaming apRoaming; // FW 1.10+
 
         public ShellySettingsMqtt mqtt; // not used for now
         public ShellySettingsSntp sntp; // not used for now
@@ -563,6 +565,7 @@ public class ShellyApiJsonDTO {
         public ShellySensorSleepMode sleepMode; // FW 1.6
         @SerializedName("external_power")
         public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
+        public Boolean debug_enable; // FW 1.10+
 
         public String timezone;
         public Double lat;
@@ -889,6 +892,15 @@ public class ShellyApiJsonDTO {
         public Boolean positioning; // true when calibration was performed
         @SerializedName("current_pos")
         public Integer currentPos; // current position 0..100, 100=open
+    }
+
+    public class ShellyOtaCheckResult {
+        public String status;
+    }
+
+    public class ShellyApRoaming {
+        public Boolean enabled;
+        public Integer threshold;
     }
 
     public class ShellySensorSleepMode {

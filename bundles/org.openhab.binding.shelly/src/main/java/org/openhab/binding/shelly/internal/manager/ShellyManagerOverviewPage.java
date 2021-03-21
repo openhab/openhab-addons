@@ -75,8 +75,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         TreeMap<String, ShellyManagerInterface> sortedMap = new TreeMap<>();
         for (Map.Entry<String, ShellyManagerInterface> th : getThingHandlers().entrySet()) { // sort by Device Name
             ShellyManagerInterface handler = th.getValue();
-            String deviceName = getDisplayName(handler.getThing().getProperties());
-            sortedMap.put(deviceName, handler);
+            sortedMap.put(getDisplayName(handler.getThing().getProperties()), handler);
         }
 
         html = loadHTML(HEADER_HTML, properties);
@@ -92,8 +91,11 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
                 if (action.equals(ACTION_REFRESH) && (uidParm.isEmpty() || uidParm.equals(uid))) {
                     // Refresh thing status, this is asynchronosly and takes 0-3sec
-                    // so we force a page reload after 5sec
                     th.requestUpdates(1, true);
+                } else if (action.equals(ACTION_RES_STATS) && (uidParm.isEmpty() || uidParm.equals(uid))) {
+                    th.resetStats();
+                } else if (action.equals(ACTION_OTACHECK) && (uidParm.isEmpty() || uidParm.equals(uid))) {
+                    th.resetStats();
                 }
 
                 Map<String, String> warnings = getStatusWarnings(th);
@@ -103,7 +105,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                     fillProperties(properties, uid, handler.getValue());
                     String deviceType = getDeviceType(properties);
 
-                    properties.put(ATTRIBUTE_DISPLAY_NAME, handler.getKey());
+                    properties.put(ATTRIBUTE_DISPLAY_NAME, getDisplayName(properties));
                     properties.put(ATTRIBUTE_DEV_STATUS, fillDeviceStatus(warnings));
                     if (!warnings.isEmpty() && (status != ThingStatus.UNKNOWN)) {
                         properties.put(ATTRIBUTE_STATUS_ICON, ICON_ATTENTION);

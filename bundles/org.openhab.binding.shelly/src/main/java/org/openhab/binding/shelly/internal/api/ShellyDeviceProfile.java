@@ -29,6 +29,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsIn
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,7 @@ public class ShellyDeviceProfile {
 
     public String thingName = "";
     public String deviceType = "";
+    public boolean extFeatures = false;
 
     public String settingsJson = "";
     public ShellySettingsGlobal settings = new ShellySettingsGlobal();
@@ -127,6 +129,8 @@ public class ShellyDeviceProfile {
         fwDate = substringBefore(settings.fw, "/");
         fwVersion = extractFwVersion(settings.fw);
         fwId = substringAfter(settings.fw, "@");
+        ShellyVersionDTO version = new ShellyVersionDTO();
+        extFeatures = version.compare(fwVersion, SHELLY_API_FW_110) >= 0;
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
@@ -330,7 +334,7 @@ public class ShellyDeviceProfile {
             Matcher matcher = VERSION_PATTERN.matcher(version);
             if (matcher.find()) {
                 // e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
-                return matcher.group(0);
+                return matcher.group(0).replace("/v.1.", "/v1."); // stupid: There are FW marked v.1.10
             }
         }
         return "";

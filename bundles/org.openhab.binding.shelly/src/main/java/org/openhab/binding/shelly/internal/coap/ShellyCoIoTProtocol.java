@@ -22,6 +22,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
@@ -50,6 +51,7 @@ public class ShellyCoIoTProtocol {
     protected final String thingName;
     protected final ShellyBaseHandler thingHandler;
     protected final ShellyDeviceProfile profile;
+    protected final ShellyHttpApi api;
     protected final Map<String, CoIotDescrBlk> blkMap;
     protected final Map<String, CoIotDescrSen> sensorMap;
     private final Gson gson = new GsonBuilder().create();
@@ -68,6 +70,7 @@ public class ShellyCoIoTProtocol {
         this.blkMap = blkMap;
         this.sensorMap = sensorMap;
         this.profile = thingHandler.getProfile();
+        this.api = thingHandler.getApi();
     }
 
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,

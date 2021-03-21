@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_SERVICE_NAME;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.SHELLY_COIOT_MCAST;
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -25,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
@@ -135,9 +137,9 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     }
 
                     String peer = getString(profile.settings.coiot.peer);
-                    boolean mcast = peer.isEmpty();
-                    String newPeer = mcast ? "" : localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT;
-                    String displayPeer = mcast ? "Multicast" : newPeer;
+                    boolean mcast = peer.isEmpty() || peer.equalsIgnoreCase(SHELLY_COIOT_MCAST);
+                    String newPeer = mcast ? localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT : SHELLY_COIOT_MCAST;
+                    String displayPeer = mcast ? newPeer : "Multicast";
 
                     if (profile.isMotion && action.equalsIgnoreCase(ACTION_SETCOIOT_MCAST)) {
                         // feature not available
@@ -148,18 +150,22 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     if (!update.equalsIgnoreCase("yes")) {
                         message = getMessageP("coiot.current-peer", MCMESSAGE, mcast ? "Multicast" : peer)
                                 + getMessageP("coiot.new-peer", MCINFO, displayPeer)
-                                + getMessageP(mcast ? "coiot.mode-mcast" : "coiot.mode-peer", MCMESSAGE);
+                                + getMessageP(mcast ? "coiot.mode-peer" : "coiot.mode-mcast", MCMESSAGE);
                         actionUrl = buildActionUrl(uid, action);
                     } else {
-                        api.setCoIoTPeer(newPeer);
-                        th.requestUpdates(1, true);
-                        if (!profile.isMotion) {
-                            refreshTimer = 5; // Motion doesn't support Multicast, so no restart required
-                        } else {
-                            // The device needs a restart after changing the peer mode
-                            message = getMessageP("action.restart.info", MCINFO);
-                            actionUrl = buildActionUrl(uid, ACTION_RESTART);
-                        }
+                        new Thread(() -> { // schedule asynchronous reboot
+                            try {
+                                api.setCoIoTPeer(newPeer);
+                                api.deviceReboot();
+                            } catch (ShellyApiException e) {
+                                // maybe the device restarts before returning the http response
+                            }
+                            setRestarted(th, uid); // refresh after reboot
+                        }).start();
+
+                        // The device needs a restart after changing the peer mode
+                        message = getMessageP("action.restart.info", MCINFO);
+                        refreshTimer = 30;
                     }
                     break;
                 case ACTION_ENCLOUD:
@@ -177,12 +183,99 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                         new Thread(() -> { // schedule asynchronous reboot
                             try {
                                 api.factoryReset();
+                                setRestarted(th, uid);
                             } catch (ShellyApiException e) {
                                 // maybe the device restarts before returning the http response
                             }
-                            setRestarted(th, uid);
                         }).start();
                         message = getMessageP("action.reset.confirm", MCINFO, serviceName);
+                        refreshTimer = 5;
+                    }
+                    break;
+                case ACTION_OTACHECK:
+                    try {
+                        ShellyOtaCheckResult result = api.checkForUpdate();
+                        message = getMessage("action.checkupd." + result.status);
+                    } catch (ShellyApiException e) {
+                        // maybe the device restarts before returning the http response
+                        message = getMessageP("action.checkupd.failed", e.toString());
+                    }
+                    refreshTimer = 3;
+                    break;
+                case ACTION_ENDEBUG:
+                case ACTION_DISDEBUG:
+                    boolean enable = action.equalsIgnoreCase(ACTION_ENDEBUG);
+                    if (!update.equalsIgnoreCase("yes")) {
+                        message = getMessage(enable ? "action.debug-enable" : "action.debug-disable");
+                        actionUrl = buildActionUrl(uid, action);
+                    } else {
+                        new Thread(() -> { // schedule asynchronous reboot
+                            try {
+                                api.setDebug(enable);
+                            } catch (ShellyApiException e) {
+                                // maybe the device restarts before returning the http response
+                            }
+                        }).start();
+
+                        message = getMessage("action.debug-confirm", enable ? "enabled" : "disabled");
+                        refreshTimer = 3;
+                    }
+                    break;
+                case ACTION_RESSTA:
+                    if (!update.equalsIgnoreCase("yes")) {
+                        message = getMessage("action.resetsta-info");
+                        actionUrl = buildActionUrl(uid, action);
+                    } else {
+                        try {
+                            String result = api.resetStaCache();
+                            message = getMessage("action.resetsta-confirm");
+                        } catch (ShellyApiException e) {
+                            message = getMessageP("action.resetsta-failed", e.toString());
+                        }
+                        refreshTimer = 10;
+                    }
+                    break;
+                case ACTION_ENWIFIREC:
+                case ACTION_DISWIFIREC:
+                    enable = action.equalsIgnoreCase(ACTION_ENWIFIREC);
+                    if (!update.equalsIgnoreCase("yes")) {
+                        message = getMessage(enable ? "action.setwifirec-enable" : "action.setwifirec-disable");
+                        actionUrl = buildActionUrl(uid, action);
+                    } else {
+                        try {
+                            String result = api.setWiFiRecovery(enable);
+                            message = getMessage("action.setwifirec-confirm", enable ? "enabled" : "disabled");
+                        } catch (ShellyApiException e) {
+                            message = getMessage("action.setwifirec-failed", e.toString());
+                        }
+                        refreshTimer = 3;
+                    }
+                    break;
+
+                case ACTION_ENAPROAMING:
+                case ACTION_DISAPROAMING:
+                    enable = action.equalsIgnoreCase(ACTION_ENAPROAMING);
+                    if (!update.equalsIgnoreCase("yes")) {
+                        message = getMessage(enable ? "action.aproaming-enable" : "action.aproaming-disable");
+                        actionUrl = buildActionUrl(uid, action);
+                    } else {
+                        try {
+                            String result = api.setApRoaming(enable);
+                            message = getMessage("action.aproaming-confirm", enable ? "enabled" : "disabled");
+                        } catch (ShellyApiException e) {
+                            message = getMessage("action.aproaming-failed", e.toString());
+                        }
+                        refreshTimer = 3;
+                    }
+                    break;
+
+                case ACTION_GETDEB:
+                case ACTION_GETDEB1:
+                    try {
+                        message = api.getDebugLog(action.equalsIgnoreCase(ACTION_GETDEB) ? "log" : "log1");
+                        message = message.replaceAll("[\r]", "").replaceAll("[\r\n]", "<br>");
+                    } catch (ShellyApiException e) {
+                        message = getMessage("action.getdebug-failed", e.toString());
                     }
                     break;
                 case ACTION_NONE:
@@ -213,16 +306,41 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
         list.put(ACTION_RESTART, "Reboot Device");
         list.put(ACTION_PROTECT, "Protect Device");
 
-        if ((profile.settings.coiot != null) && (profile.settings.coiot.peer != null)) {
-            list.put(ACTION_SETCOIOT_PEER, "Set CoIoT Peer");
-            if (!profile.isMotion) {
-                list.put(ACTION_SETCOIOT_MCAST, "Set CoIoT Multicast");
-            }
+        if ((profile.settings.coiot != null) && (profile.settings.coiot.peer != null) && !profile.isMotion) {
+            boolean mcast = profile.settings.coiot.peer.isEmpty()
+                    || profile.settings.coiot.peer.equalsIgnoreCase(SHELLY_COIOT_MCAST);
+            list.put(mcast ? ACTION_SETCOIOT_PEER : ACTION_SETCOIOT_MCAST,
+                    mcast ? "Set CoIoT Peer Mode" : "Set CoIoT Multicast Mode");
+        }
+        if (profile.isSensor && !profile.isMotion && (profile.settings.wifiSta != null)
+                && profile.settings.wifiSta.enabled) {
+            // FW 1.10+: Reset STA list, force WiFi rescan and connect to stringest AP
+            list.put(ACTION_RESSTA, "Reconnect WiFi");
+        }
+        if (profile.settings.apRoaming != null) {
+            list.put(!profile.settings.apRoaming.enabled ? ACTION_ENAPROAMING : ACTION_DISAPROAMING,
+                    !profile.settings.apRoaming.enabled ? "Enable WiFi Roaming" : "Disable WiFi Roaming");
+        }
+        if (profile.settings.wifiRecoveryReboot != null) {
+            list.put(!profile.settings.wifiRecoveryReboot ? ACTION_ENWIFIREC : ACTION_DISWIFIREC,
+                    !profile.settings.wifiRecoveryReboot ? "Enable WiFi Recovery" : "Disable WiFi Recovery");
         }
 
         boolean set = (profile.settings.cloud != null) && profile.settings.cloud.enabled;
         list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
+
         list.put(ACTION_RESET, "-Factory Reset");
+        if (profile.extFeatures) {
+            list.put(ACTION_OTACHECK, "Check for Update");
+            boolean debug_enable = getBool(profile.settings.debug_enable);
+            list.put(!debug_enable ? ACTION_ENDEBUG : ACTION_DISDEBUG,
+                    !debug_enable ? "Enable Debug" : "Disable Debug");
+            if (debug_enable) {
+                list.put(ACTION_GETDEB, "Get Debug log");
+                list.put(ACTION_GETDEB1, "Get Debug log1");
+            }
+        }
+
         return list;
     }
 
@@ -233,6 +351,6 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
     private void setRestarted(ShellyManagerInterface th, String uid) {
         th.setThingOffline(ThingStatusDetail.GONE, "offline.status-error-restarted");
-        scheduleUpdate(th, uid + "_upgrade", 20); // wait 20s before refresh
+        scheduleUpdate(th, uid + "_upgrade", 25); // wait 25s before refresh
     }
 }
