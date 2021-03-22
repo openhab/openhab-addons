@@ -36,7 +36,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  *
  * @author Norbert Truchsess - Initial contribution
  */
-@ThingActionsScope(name = "bmwconnecteddrive")
+@ThingActionsScope(name = "chargeprofile")
 @NonNullByDefault
 public class ChargeProfileActions implements ThingActions {
 
