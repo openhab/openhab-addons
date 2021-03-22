@@ -217,41 +217,37 @@ public class VehicleHandler extends VehicleChannelHandler {
         callbackCounter = Optional.of(new ArrayList<ResponseCallback>());
         updateStatus(ThingStatus.UNKNOWN);
         final VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
-        if (config != null) {
-            configuration = Optional.of(config);
-            scheduler.execute(() -> {
-                Bridge bridge = getBridge();
-                if (bridge != null) {
-                    BridgeHandler handler = bridge.getHandler();
-                    if (handler != null) {
-                        bridgeHandler = Optional.of(((ConnectedDriveBridgeHandler) handler));
-                        proxy = ((ConnectedDriveBridgeHandler) handler).getProxy();
-                        remote = proxy.map(prox -> prox.getRemoteServiceHandler(this));
-                    } else {
-                        logger.debug("Bridge Handler null");
-                    }
+        configuration = Optional.of(config);
+        scheduler.execute(() -> {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                BridgeHandler handler = bridge.getHandler();
+                if (handler != null) {
+                    bridgeHandler = Optional.of(((ConnectedDriveBridgeHandler) handler));
+                    proxy = ((ConnectedDriveBridgeHandler) handler).getProxy();
+                    remote = proxy.map(prox -> prox.getRemoteServiceHandler(this));
                 } else {
-                    logger.debug("Bridge null");
+                    logger.debug("Bridge Handler null");
                 }
+            } else {
+                logger.debug("Bridge null");
+            }
 
-                // get Image after init with config values
-                synchronized (imageProperties) {
-                    imageProperties = new ImageProperties(config.imageViewport, config.imageSize);
-                }
-                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf((config.imageViewport)));
-                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE, new DecimalType((config.imageSize)));
+            // get Image after init with config values
+            synchronized (imageProperties) {
+                imageProperties = new ImageProperties(config.imageViewport, config.imageSize);
+            }
+            updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf((config.imageViewport)));
+            updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE, new DecimalType((config.imageSize)));
 
-                // check imperial setting is different to AutoDetect
-                if (!UNITS_AUTODETECT.equals(config.units)) {
-                    imperial = UNITS_IMPERIAL.equals(config.units);
-                }
+            // check imperial setting is different to AutoDetect
+            if (!UNITS_AUTODETECT.equals(config.units)) {
+                imperial = UNITS_IMPERIAL.equals(config.units);
+            }
 
-                // start update schedule
-                startSchedule(config.refreshInterval);
-            });
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        }
+            // start update schedule
+            startSchedule(config.refreshInterval);
+        });
     }
 
     private void startSchedule(int interval) {
@@ -424,11 +420,7 @@ public class VehicleHandler extends VehicleChannelHandler {
             }
         }
         // if cache is empty give it a try one time to collected Troubleshoot data
-        if (lastTripCache.isEmpty() || allTripsCache.isEmpty() || destinationCache.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return lastTripCache.isEmpty() || allTripsCache.isEmpty() || destinationCache.isEmpty();
     }
 
     public void updateRemoteExecutionStatus(@Nullable String service, @Nullable String status) {
@@ -436,8 +428,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                 && ExecutionState.EXECUTED.name().equals(status)) {
             saveChargeProfileSent();
         }
-        updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType.valueOf(Converter.toTitleCase(
-                new StringBuilder(service == null ? "-" : service).append(" ").append(status).toString())));
+        updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType
+                .valueOf(Converter.toTitleCase((service == null ? "-" : service) + Constants.SPACE + status)));
     }
 
     public Optional<VehicleConfiguration> getConfiguration() {
