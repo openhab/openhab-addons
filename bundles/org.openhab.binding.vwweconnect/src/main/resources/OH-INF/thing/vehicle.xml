@@ -438,7 +438,7 @@
 		<item-type>Number:Speed</item-type>
 		<label>Average Speed</label>
 		<description>Indicates the average speed in km/h</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="location">

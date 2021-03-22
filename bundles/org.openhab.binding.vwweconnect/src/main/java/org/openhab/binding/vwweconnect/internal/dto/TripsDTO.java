@@ -219,10 +219,10 @@ public class TripsDTO {
         private double tripLength = BaseVehicleDTO.UNDEFINED;
         private String timestamp = "";
         private String tripDurationFormatted = "";
-        private @Nullable Object recuperation = new Object();
+        private boolean recuperation;
         private double averageAuxiliaryConsumption = BaseVehicleDTO.UNDEFINED;
         private double totalElectricConsumption = BaseVehicleDTO.UNDEFINED;
-        private String longFormattedTimestamp = "";
+        private @Nullable String longFormattedTimestamp = "";
 
         public int getTripId() {
             return tripId;
@@ -272,7 +272,7 @@ public class TripsDTO {
             return totalElectricConsumption;
         }
 
-        public String getLongFormattedTimestamp() {
+        public @Nullable String getLongFormattedTimestamp() {
             return longFormattedTimestamp;
         }
 
@@ -303,9 +303,9 @@ public class TripsDTO {
             result = prime * result + (int) (temp ^ (temp >>> 32));
             temp = Double.doubleToLongBits(averageSpeed);
             result = prime * result + (int) (temp ^ (temp >>> 32));
-            result = prime * result + longFormattedTimestamp.hashCode();
-            Object recuperation2 = recuperation;
-            result = prime * result + ((recuperation2 == null) ? 0 : recuperation2.hashCode());
+            String longFormattedTimestamp2 = longFormattedTimestamp;
+            result = prime * result + ((longFormattedTimestamp2 == null) ? 0 : longFormattedTimestamp2.hashCode());
+            result = prime * result + (recuperation ? 1231 : 1247);
             result = prime * result + timestamp.hashCode();
             temp = Double.doubleToLongBits(totalElectricConsumption);
             result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -348,10 +348,10 @@ public class TripsDTO {
             if (Double.doubleToLongBits(averageSpeed) != Double.doubleToLongBits(other.averageSpeed)) {
                 return false;
             }
-            if (!longFormattedTimestamp.equals(other.longFormattedTimestamp)) {
+            if (longFormattedTimestamp != null && !longFormattedTimestamp.equals(other.longFormattedTimestamp)) {
                 return false;
             }
-            if (recuperation != null && other.recuperation != null && !recuperation.equals(other.recuperation)) {
+            if (recuperation != other.recuperation) {
                 return false;
             }
             if (!timestamp.equals(other.timestamp)) {

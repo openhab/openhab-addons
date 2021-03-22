@@ -163,16 +163,16 @@ public class VehicleDTO extends BaseVehicleDTO {
     }
 
     public class CompleteVehicleJsonDTO {
-        private String vin = "";
+        private @Nullable String vin = "";
         private String name = "";
         private boolean expired;
         private String model = "";
         private String modelCode = "";
         private String modelYear = "";
-        private String imageUrl = "";
-        private @Nullable Object vehicleSpecificFallbackImageUrl = new Object();
-        private @Nullable Object modelSpecificFallbackImageUrl = new Object();
-        private String defaultImageUrl = "";
+        private @Nullable String imageUrl = "";
+        private @Nullable String vehicleSpecificFallbackImageUrl = "";
+        private @Nullable String modelSpecificFallbackImageUrl = "";
+        private @Nullable String defaultImageUrl = "";
         private String vehicleBrand = "";
         private String enrollmentDate = "";
         private boolean deviceOCU1;
@@ -196,7 +196,7 @@ public class VehicleDTO extends BaseVehicleDTO {
         private boolean isEL2Vehicle;
         private boolean workshopMode;
         private boolean hiddenUserProfiles;
-        private @Nullable Object mobileKeyActivated = new Object();
+        private boolean mobileKeyActivated;
         private String enrollmentType = "";
         private boolean ocu3Low;
         private @Nullable List<PackageServiceDTO> packageServices = new ArrayList<>();
@@ -208,12 +208,12 @@ public class VehicleDTO extends BaseVehicleDTO {
         private boolean flightMode;
         private boolean esimCompatible;
         private boolean dkyenabled;
-        private @Nullable Object smartCardKeyActivated = new Object();
+        private boolean smartCardKeyActivated;
         private boolean selected;
         private boolean defaultCar;
         private boolean vwConnectPowerLayerAvailable;
 
-        public String getVin() {
+        public @Nullable String getVin() {
             return vin;
         }
 
@@ -237,7 +237,7 @@ public class VehicleDTO extends BaseVehicleDTO {
             return modelYear;
         }
 
-        public String getImageUrl() {
+        public @Nullable String getImageUrl() {
             return imageUrl;
         }
 
@@ -249,7 +249,7 @@ public class VehicleDTO extends BaseVehicleDTO {
             return modelSpecificFallbackImageUrl;
         }
 
-        public String getDefaultImageUrl() {
+        public @Nullable String getDefaultImageUrl() {
             return defaultImageUrl;
         }
 
@@ -449,7 +449,8 @@ public class VehicleDTO extends BaseVehicleDTO {
             result = prime * result + getEnclosingInstance().hashCode();
             result = prime * result + dashboardUrl.hashCode();
             result = prime * result + (defaultCar ? 1231 : 1237);
-            result = prime * result + defaultImageUrl.hashCode();
+            String defaultImageUrl2 = defaultImageUrl;
+            result = prime * result + ((defaultImageUrl2 == null) ? 0 : defaultImageUrl2.hashCode());
             result = prime * result + (deviceMIB ? 1231 : 1237);
             result = prime * result + (deviceOCU1 ? 1231 : 1237);
             result = prime * result + (deviceOCU2 ? 1231 : 1237);
@@ -469,10 +470,10 @@ public class VehicleDTO extends BaseVehicleDTO {
             result = prime * result + (fullyEnrolled ? 1231 : 1237);
             result = prime * result + (hiddenUserProfiles ? 1231 : 1237);
             result = prime * result + (iceSupported ? 1231 : 1237);
-            result = prime * result + imageUrl.hashCode();
+            String imageUrl2 = imageUrl;
+            result = prime * result + ((imageUrl2 == null) ? 0 : imageUrl2.hashCode());
             result = prime * result + (isEL2Vehicle ? 1231 : 1237);
-            Object mobileKeyActivated2 = mobileKeyActivated;
-            result = prime * result + ((mobileKeyActivated2 == null) ? 0 : mobileKeyActivated2.hashCode());
+            result = prime * result + (mobileKeyActivated ? 1231 : 1237);
             result = prime * result + model.hashCode();
             result = prime * result + modelCode.hashCode();
             Object modelSpecificFallbackImageUrl2 = modelSpecificFallbackImageUrl;
@@ -486,9 +487,7 @@ public class VehicleDTO extends BaseVehicleDTO {
             result = prime * result + (roleEnabled ? 1231 : 1237);
             result = prime * result + (secondaryUser ? 1231 : 1237);
             result = prime * result + (selected ? 1231 : 1237);
-            Object smartCardKeyActivated2 = smartCardKeyActivated;
-            result = prime * result + ((smartCardKeyActivated2 == null) ? 0 : smartCardKeyActivated2.hashCode());
-            result = prime * result + stpStatus.hashCode();
+            result = prime * result + (smartCardKeyActivated ? 1231 : 1237);
             result = prime * result + (touareg ? 1231 : 1237);
             result = prime * result + vehicleBrand.hashCode();
             Object vehicleSpecificFallbackImageUrl2 = vehicleSpecificFallbackImageUrl;
@@ -498,7 +497,8 @@ public class VehicleDTO extends BaseVehicleDTO {
             result = prime * result + (vhr2 ? 1231 : 1237);
             result = prime * result + (vhrConfigAvailable ? 1231 : 1237);
             result = prime * result + (vhrRequested ? 1231 : 1237);
-            result = prime * result + vin.hashCode();
+            String vin2 = vin;
+            result = prime * result + ((vin2 == null) ? 0 : vin2.hashCode());
             result = prime * result + (vsrRequested ? 1231 : 1237);
             result = prime * result + (vwConnectPowerLayerAvailable ? 1231 : 1237);
             result = prime * result + (windowstateSupported ? 1231 : 1237);
@@ -524,7 +524,7 @@ public class VehicleDTO extends BaseVehicleDTO {
             if (defaultCar != other.defaultCar) {
                 return false;
             }
-            if (!defaultImageUrl.equals(other.defaultImageUrl)) {
+            if (defaultImageUrl != null && !defaultImageUrl.equals(other.defaultImageUrl)) {
                 return false;
             }
             if (deviceMIB != other.deviceMIB) {
@@ -584,18 +584,13 @@ public class VehicleDTO extends BaseVehicleDTO {
             if (iceSupported != other.iceSupported) {
                 return false;
             }
-            if (!imageUrl.equals(other.imageUrl)) {
+            if (imageUrl != null && !imageUrl.equals(other.imageUrl)) {
                 return false;
             }
             if (isEL2Vehicle != other.isEL2Vehicle) {
                 return false;
             }
-            Object mobileKeyActivated2 = mobileKeyActivated;
-            if (mobileKeyActivated2 == null) {
-                if (other.mobileKeyActivated != null) {
-                    return false;
-                }
-            } else if (!mobileKeyActivated2.equals(other.mobileKeyActivated)) {
+            if (mobileKeyActivated != other.mobileKeyActivated) {
                 return false;
             }
             if (!model.equals(other.model)) {
@@ -638,12 +633,7 @@ public class VehicleDTO extends BaseVehicleDTO {
             if (selected != other.selected) {
                 return false;
             }
-            Object smartCardKeyActivated2 = smartCardKeyActivated;
-            if (smartCardKeyActivated2 == null) {
-                if (other.smartCardKeyActivated != null) {
-                    return false;
-                }
-            } else if (!smartCardKeyActivated2.equals(other.smartCardKeyActivated)) {
+            if (smartCardKeyActivated != other.smartCardKeyActivated) {
                 return false;
             }
             if (!stpStatus.equals(other.stpStatus)) {
@@ -675,7 +665,7 @@ public class VehicleDTO extends BaseVehicleDTO {
             if (vhrRequested != other.vhrRequested) {
                 return false;
             }
-            if (!vin.equals(other.vin)) {
+            if (vin != null && !vin.equals(other.vin)) {
                 return false;
             }
             if (vsrRequested != other.vsrRequested) {

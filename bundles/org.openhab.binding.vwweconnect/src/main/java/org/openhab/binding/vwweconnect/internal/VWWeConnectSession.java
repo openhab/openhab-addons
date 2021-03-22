@@ -833,7 +833,8 @@ public class VWWeConnectSession {
             // Query API for vehicle status
             url = SESSION_BASE + dashboardUrl + VEHICLE_STATUS;
             StatusDTO vehicleStatus = postJSONVWWeConnectAPI(url, fields, StatusDTO.class);
-            // String vehicleStatusJson = "{\"errorCode\":\"2\",\"timerCount\":3}";
+            // String vehicleStatusJson =
+            // "{\"errorCode\":\"0\",\"vehicleStatusData\":{\"windowStatusSupported\":true,\"carRenderData\":{\"parkingLights\":2,\"hood\":3,\"doors\":{\"left_front\":3,\"right_front\":3,\"left_back\":3,\"right_back\":3,\"trunk\":3,\"number_of_doors\":4},\"windows\":{\"left_front\":3,\"right_front\":3,\"left_back\":3,\"right_back\":3},\"sunroof\":3,\"roof\":0},\"lockData\":{\"left_front\":2,\"right_front\":2,\"left_back\":2,\"right_back\":2,\"trunk\":2},\"headerData\":null,\"requestStatus\":null,\"lockDisabled\":false,\"unlockDisabled\":false,\"rluDisabled\":true,\"hideCngFuelLevel\":false,\"adBlueEnabled\":false,\"adBlueLevel\":null,\"showAdBlueNotification\":false,\"rluMibDeactivated\":false,\"totalRange\":424,\"primaryEngineRange\":390,\"fuelRange\":390,\"cngRange\":null,\"batteryRange\":34,\"fuelLevel\":68,\"cngFuelLevel\":null,\"batteryLevel\":90,\"sliceRootPath\":\"https://images.portal.volkswagen-we.com/slices/passat_variant_phev/passat_variant_phev\"}}";
             // StatusDTO vehicleStatus = gson.fromJson(vehicleStatusJson, StatusDTO.class);
             logger.debug("API Response ({})", vehicleStatus);
 

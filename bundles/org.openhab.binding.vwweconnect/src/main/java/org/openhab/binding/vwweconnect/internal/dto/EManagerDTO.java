@@ -877,7 +877,7 @@ public class EManagerDTO {
             private String chargingState = "";
             private String chargingRemaningHour = "";
             private String chargingRemaningMinute = "";
-            private String chargingReason = "";
+            private @Nullable String chargingReason = "";
             private String pluginState = "";
             private String lockState = "";
             private String extPowerSupplyState = "";
@@ -911,7 +911,7 @@ public class EManagerDTO {
                 return BaseVehicleDTO.UNDEFINED;
             }
 
-            public String getChargingReason() {
+            public @Nullable String getChargingReason() {
                 return chargingReason;
             }
 
@@ -963,7 +963,8 @@ public class EManagerDTO {
                 int result = 1;
                 result = prime * result + getEnclosingInstance().hashCode();
                 result = prime * result + batteryPercentage;
-                result = prime * result + chargingReason.hashCode();
+                String chargingReason2 = chargingReason;
+                result = prime * result + ((chargingReason2 == null) ? 0 : chargingReason2.hashCode());
                 result = prime * result + chargingRemaningHour.hashCode();
                 result = prime * result + chargingRemaningMinute.hashCode();
                 result = prime * result + chargingState.hashCode();
@@ -998,7 +999,7 @@ public class EManagerDTO {
                 if (batteryPercentage != other.batteryPercentage) {
                     return false;
                 }
-                if (!chargingReason.equals(other.chargingReason)) {
+                if (chargingReason != null && !chargingReason.equals(other.chargingReason)) {
                     return false;
                 }
                 if (!chargingRemaningHour.equals(other.chargingRemaningHour)) {

@@ -15,9 +15,6 @@ package org.openhab.binding.vwweconnect.internal.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -121,34 +118,82 @@ public class DetailsDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("lastConnectionTimeStamp", lastConnectionTimeStamp)
-                    .append("distanceCovered", distanceCovered).append("range", range)
-                    .append("serviceInspectionData", serviceInspectionData)
-                    .append("oilInspectionData", oilInspectionData).append("showOil", showOil)
-                    .append("showService", showService).append("flightMode", flightMode).toString();
+            return "VehicleDetailsDTO [lastConnectionTimeStamp=" + lastConnectionTimeStamp + ", distanceCovered="
+                    + distanceCovered + ", range=" + range + ", serviceInspectionData=" + serviceInspectionData
+                    + ", oilInspectionData=" + oilInspectionData + ", showOil=" + showOil + ", showService="
+                    + showService + ", flightMode=" + flightMode + "]";
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(oilInspectionData).append(distanceCovered).append(range)
-                    .append(serviceInspectionData).append(lastConnectionTimeStamp).append(showOil).append(flightMode)
-                    .append(showService).toHashCode();
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getEnclosingInstance().hashCode();
+            long temp;
+            temp = Double.doubleToLongBits(distanceCovered);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            result = prime * result + (flightMode ? 1231 : 1237);
+            result = prime * result + lastConnectionTimeStamp.hashCode();
+            String oilInspectionData2 = oilInspectionData;
+            result = prime * result + ((oilInspectionData2 == null) ? 0 : oilInspectionData2.hashCode());
+            temp = Double.doubleToLongBits(range);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            String serviceInspectionData2 = serviceInspectionData;
+            result = prime * result + ((serviceInspectionData2 == null) ? 0 : serviceInspectionData2.hashCode());
+            result = prime * result + (showOil ? 1231 : 1237);
+            result = prime * result + (showService ? 1231 : 1237);
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof VehicleDetailsDTO)) {
+            if (obj == null) {
                 return false;
             }
-            VehicleDetailsDTO rhs = ((VehicleDetailsDTO) other);
-            return new EqualsBuilder().append(oilInspectionData, rhs.oilInspectionData)
-                    .append(distanceCovered, rhs.distanceCovered).append(range, rhs.range)
-                    .append(serviceInspectionData, rhs.serviceInspectionData)
-                    .append(lastConnectionTimeStamp, rhs.lastConnectionTimeStamp).append(showOil, rhs.showOil)
-                    .append(flightMode, rhs.flightMode).append(showService, rhs.showService).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            VehicleDetailsDTO other = (VehicleDetailsDTO) obj;
+            if (Double.doubleToLongBits(distanceCovered) != Double.doubleToLongBits(other.distanceCovered)) {
+                return false;
+            }
+            if (flightMode != other.flightMode) {
+                return false;
+            }
+            if (!lastConnectionTimeStamp.equals(other.lastConnectionTimeStamp)) {
+                return false;
+            }
+            if (oilInspectionData == null) {
+                if (other.oilInspectionData != null) {
+                    return false;
+                }
+            } else if (oilInspectionData != null && !oilInspectionData.equals(other.oilInspectionData)) {
+                return false;
+            }
+            if (Double.doubleToLongBits(range) != Double.doubleToLongBits(other.range)) {
+                return false;
+            }
+            if (serviceInspectionData == null) {
+                if (other.serviceInspectionData != null) {
+                    return false;
+                }
+            } else if (serviceInspectionData != null && !serviceInspectionData.equals(other.serviceInspectionData)) {
+                return false;
+            }
+            if (showOil != other.showOil) {
+                return false;
+            }
+            if (showService != other.showService) {
+                return false;
+            }
+            return true;
+        }
+
+        private DetailsDTO getEnclosingInstance() {
+            return DetailsDTO.this;
         }
     }
 }
