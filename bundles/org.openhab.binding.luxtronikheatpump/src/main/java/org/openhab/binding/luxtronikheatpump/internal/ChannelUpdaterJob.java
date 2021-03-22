@@ -214,13 +214,13 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
         if (row1 != null && row1 == 3) {
             // 3 means error state
-            state = getStateTranslation("ERROR_NrX", error);
+            state = getStateTranslation("errorCodeX", error);
         } else {
-            state = getStateTranslation("HauptMenuStatus_Zeile1", row1);
+            state = getStateTranslation("menuStateLine1", row1);
         }
 
-        var longState = String.format("%s - %s %s - %s", state, getStateTranslation("HauptMenuStatus_Zeile2", row2),
-                formatHours(time), getStateTranslation("HauptMenuStatus_Zeile3", row3));
+        var longState = String.format("%s - %s %s - %s", state, getStateTranslation("menuStateLine2", row2),
+                formatHours(time), getStateTranslation("menuStateLine3", row3));
 
         handleEventType((State) new StringType(longState), HeatpumpChannel.CHANNEL_HEATPUMP_STATUS);
     }
