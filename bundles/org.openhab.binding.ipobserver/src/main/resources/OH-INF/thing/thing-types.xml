@@ -4,6 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+<<<<<<< HEAD
 	<thing-type id="weatherstation">
 		<label>Weather Station</label>
 		<description>Use for any weather station sold under multiple brands that come with an IP Observer unit.</description>
@@ -219,4 +220,31 @@
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
+=======
+	<!-- Sample Thing Type -->
+	<thing-type id="sample">
+		<label>IpObserver Binding Thing</label>
+		<description>Sample thing for IpObserver Binding</description>
+
+		<channels>
+			<channel id="channel1" typeId="sample-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="config1" type="text" required="true">
+				<label>Sample Parameter</label>
+				<description>This is a sample text configuration parameter</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="sample-channel">
+		<item-type>ipobserverItem</item-type>
+		<label>IpObserver Binding Channel</label>
+		<description>Sample channel for IpObserver Binding</description>
+	</channel-type>
+
+>>>>>>> ipObserver creation
 </thing:thing-descriptions>
