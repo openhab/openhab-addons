@@ -268,6 +268,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     @Override
     public void dispose() {
         refreshJob.ifPresent(job -> job.cancel(true));
+        editTimeout.ifPresent(job -> job.cancel(true));
+        remote.ifPresent(RemoteServiceHandler::cancel);
     }
 
     public void getData() {
