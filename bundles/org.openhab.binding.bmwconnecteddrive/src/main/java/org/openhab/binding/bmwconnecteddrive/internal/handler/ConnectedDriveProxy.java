@@ -14,7 +14,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants.*;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpField;
@@ -120,14 +120,14 @@ public class ConnectedDriveProxy {
         }
         final Request req;
         final String encoded = params == null || params.isEmpty() ? null
-                : UrlEncoded.encode(params, Charset.defaultCharset(), false);
+                : UrlEncoded.encode(params, StandardCharsets.UTF_8, false);
         final String completeUrl;
 
         if (post) {
             completeUrl = url;
             req = httpClient.POST(url);
             if (encoded != null) {
-                req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, encoded, Charset.defaultCharset()));
+                req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, encoded, StandardCharsets.UTF_8));
             }
         } else {
             completeUrl = encoded == null ? url : url + Constants.QUESTION + encoded;
@@ -139,7 +139,7 @@ public class ConnectedDriveProxy {
         req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
             @Override
-            public void onComplete(org.eclipse.jetty.client.api.Result result) {
+            public void onComplete(Result result) {
                 if (result.getResponse().getStatus() != 200) {
                     NetworkError error = new NetworkError();
                     error.url = completeUrl;
@@ -155,8 +155,10 @@ public class ConnectedDriveProxy {
                 } else {
                     if (callback instanceof StringResponseCallback) {
                         ((StringResponseCallback) callback).onResponse(getContentAsString());
-                    } else {
+                    } else if (callback instanceof ByteResponseCallback) {
                         ((ByteResponseCallback) callback).onResponse(getContent());
+                    } else {
+                        logger.error("unexpected reponse type {}", callback.getClass().getName());
                     }
                 }
             }
@@ -259,7 +261,7 @@ public class ConnectedDriveProxy {
         dataMap.add(USERNAME, configuration.userName);
         dataMap.add(PASSWORD, configuration.password);
         req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
-                UrlEncoded.encode(dataMap, Charset.defaultCharset(), false), Charset.defaultCharset()));
+                UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
         try {
             ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             // Status needs to be 302 - Response is stored in Header
@@ -291,7 +293,7 @@ public class ConnectedDriveProxy {
                         contentResponse.getReason());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Authorization exception: {}", e.getMessage(), e);
+            logger.debug("Authorization exception: {}", e.getMessage());
         }
     }
 
