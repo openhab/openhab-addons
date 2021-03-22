@@ -283,7 +283,7 @@ public class ShellyHttpApi {
     }
 
     public String setApRoaming(boolean enable) throws ShellyApiException { // FW 1.10+: Enable AP Roadming
-        return callApi(SHELLY_URL_SETTINGS + "/ap?ap_roaming_enabled=" + (enable ? "true" : "false"), String.class);
+        return callApi(SHELLY_URL_SETTINGS + "?ap_roaming_enabled=" + (enable ? "true" : "false"), String.class);
     }
 
     public String resetStaCache() throws ShellyApiException { // FW 1.10+: Reset cached STA/AP list and to a rescan

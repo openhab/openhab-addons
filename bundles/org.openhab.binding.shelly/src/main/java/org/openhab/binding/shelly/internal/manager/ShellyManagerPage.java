@@ -251,8 +251,9 @@ public class ShellyManagerPage {
                 profile.settings.apRoaming != null ? getOption(profile.settings.apRoaming.threshold) : "n/a");
         properties.put(ATTRIBUTE_PWD_PROTECT,
                 profile.auth ? "enabled, user=" + getString(profile.settings.login.username) : "disabled");
+        String tz = getString(profile.settings.timezone);
         properties.put(ATTRIBUTE_TIMEZONE,
-                getString(profile.settings.timezone) + ", auto-detect: " + getBool(profile.settings.tzautodetect));
+                (tz.isEmpty() ? "n/a" : tz) + ", auto-detect: " + getBool(profile.settings.tzautodetect));
         properties.put(ATTRIBUTE_ACTIONS_SKIPPED,
                 profile.status.astats != null ? String.valueOf(profile.status.astats.skipped) : "n/a");
         properties.put(ATTRIBUTE_MAX_ITEMP, stats.maxInternalTemp > 0 ? stats.maxInternalTemp + " °C" : "n/a");
