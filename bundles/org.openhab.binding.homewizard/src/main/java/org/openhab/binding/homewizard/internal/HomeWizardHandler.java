@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homewizard.data.P1Payload;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -44,11 +43,11 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class HomeWizardHandler extends BaseThingHandler {
 
-    private HomeWizardConfiguration config = new HomeWizardConfiguration();
-    private @Nullable ScheduledFuture<?> pollingJob;
-
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
+
+    private HomeWizardConfiguration config = new HomeWizardConfiguration();
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private String apiURL = "";
     private String meterModel = "";
@@ -104,7 +103,7 @@ public class HomeWizardHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         var job = pollingJob;
-        if (job != null && !job.isCancelled()) {
+        if (job != null) {
             job.cancel(true);
         }
         pollingJob = null;
@@ -117,9 +116,10 @@ public class HomeWizardHandler extends BaseThingHandler {
         final String result;
 
         try {
-            result = HttpUtil.executeUrl("GET", apiURL, 750);
+            result = HttpUtil.executeUrl("GET", apiURL, 30000);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to query P1 Meter");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Unable to query P1 Meter: %s", e.getMessage()));
             return;
         }
 
