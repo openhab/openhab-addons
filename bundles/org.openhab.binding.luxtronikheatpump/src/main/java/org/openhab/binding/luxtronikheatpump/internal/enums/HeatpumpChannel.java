@@ -338,7 +338,7 @@ public enum HeatpumpChannel {
      * Operating hours compressor 1
      * (original: Betriebsstunden Verdichter 1)
      */
-    CHANNEL_ZAEHLER_BETRZEITVD1(56, "operatingHoursCompressor1", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITVD1(56, "operationTimeCompressor1", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDVD1),
 
     /**
@@ -352,7 +352,7 @@ public enum HeatpumpChannel {
      * Operating hours compressor 2
      * (original: Betriebsstunden Verdichter 2)
      */
-    CHANNEL_ZAEHLER_BETRZEITVD2(58, "operatingHoursCompressor2", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITVD2(58, "operationTimeCompressor2", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDVD2),
 
     /**
@@ -366,49 +366,49 @@ public enum HeatpumpChannel {
      * Operating hours Second heat generator 1
      * (original: Betriebsstunden Zweiter Wärmeerzeuger 1)
      */
-    CHANNEL_ZAEHLER_BETRZEITZWE1(60, "operatingHoursSecondHeatGenerator1", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITZWE1(60, "operationTimeSecondHeatGenerator1", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDZWE1),
 
     /**
      * Operating hours Second heat generator 2
      * (original: Betriebsstunden Zweiter Wärmeerzeuger 2)
      */
-    CHANNEL_ZAEHLER_BETRZEITZWE2(61, "operatingHoursSecondHeatGenerator2", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITZWE2(61, "operationTimeSecondHeatGenerator2", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDZWE2),
 
     /**
      * Operating hours Second heat generator 3
      * (original: Betriebsstunden Zweiter Wärmeerzeuger 3)
      */
-    CHANNEL_ZAEHLER_BETRZEITZWE3(62, "operatingHoursSecondHeatGenerator3", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITZWE3(62, "operationTimeSecondHeatGenerator3", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDZWE3),
 
     /**
      * Operating hours heat pump
      * (original: Betriebsstunden Wärmepumpe)
      */
-    CHANNEL_ZAEHLER_BETRZEITWP(63, "operatingHoursHeatPump", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITWP(63, "operationTimeHeatPump", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDWP),
 
     /**
      * Operating hours heating
      * (original: Betriebsstunden Heizung)
      */
-    CHANNEL_ZAEHLER_BETRZEITHZ(64, "operatingHoursHeating", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITHZ(64, "operationTimeHeating", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDHZ),
 
     /**
      * Operating hours hot water
      * (original: Betriebsstunden Warmwasser)
      */
-    CHANNEL_ZAEHLER_BETRZEITBW(65, "operatingHoursHotWater", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITBW(65, "operationTimeHotWater", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDBW),
 
     /**
      * Operating hours cooling
      * (original: Betriebsstunden Kühlung)
      */
-    CHANNEL_ZAEHLER_BETRZEITKUE(66, "operatingHoursCooling", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITKUE(66, "operationTimeCooling", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDKUE),
 
     /**
@@ -706,7 +706,7 @@ public enum HeatpumpChannel {
      * Swimming pool operating hours
      * (original: Betriebsstunden Schwimmbad)
      */
-    CHANNEL_ZAEHLER_BETRZEITSW(145, "operatingHoursSwimmingPool", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITSW(145, "operationTimeSwimmingPool", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDSW),
 
     /**
@@ -801,7 +801,7 @@ public enum HeatpumpChannel {
      * Operating hours solar
      * (original: Betriebstundenzähler Solar)
      */
-    CHANNEL_ZAEHLER_BETRZEITSOLAR(161, "operatingHoursSolar", NumberItem.class, Units.SECOND, false,
+    CHANNEL_ZAEHLER_BETRZEITSOLAR(161, "operationTimeSolar", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.SOLAR),
 
     /**

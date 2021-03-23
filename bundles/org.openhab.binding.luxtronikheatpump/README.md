@@ -88,17 +88,17 @@ The following channels are holding read only values:
 | outputSwimmingPoolPump | Switch | x | Output "Swimming pool pump" |
 | outputMixingCircuit2Closed | Switch | x | Output "Mixing circuit 2 Closed" |
 | outputMixingCircuit2Open | Switch | x | Output "Mixing circuit 2 Open" |
-| operatingHoursCompressor1 | Number:Time |   | Operating hours compressor 1 |
+| operationTimeCompressor1 | Number:Time |   | Operation hours compressor 1 |
 | pulsesCompressor1 | Number:Dimensionless |   | Pulses compressor 1 |
-| operatingHoursCompressor2 | Number:Time | x | Operating hours compressor 2 |
+| operationTimeCompressor2 | Number:Time | x | Operation hours compressor 2 |
 | pulsesCompressor2 | Number:Dimensionless | x | Pulses compressor 2 |
-| operatingHoursSecondHeatGenerator1 | Number:Time | x | Pulses Compressor operating hours Second heat generator 1 |
-| operatingHoursSecondHeatGenerator2 | Number:Time | x | Pulses Compressor operating hours Second heat generator 2 |
-| operatingHoursSecondHeatGenerator3 | Number:Time | x | Pulses Compressor operating hours Second heat generator 3 |
-| operatingHoursHeatPump | Number:Time |   | Operating hours heat pump |
-| operatingHoursHeating | Number:Time |   | Operating hours heating |
-| operatingHoursHotWater | Number:Time |   | Operating hours hot water |
-| operatingHoursCooling | Number:Time |   | Operating hours cooling |
+| operationTimeSecondHeatGenerator1 | Number:Time | x | Operation hours Second heat generator 1 |
+| operationTimeSecondHeatGenerator2 | Number:Time | x | Operation hours Second heat generator 2 |
+| operationTimeSecondHeatGenerator3 | Number:Time | x | Operation hours Second heat generator 3 |
+| operationTimeHeatPump | Number:Time |   | Operation hours heat pump |
+| operationTimeHeating | Number:Time |   | Operation hours heating |
+| operationTimeHotWater | Number:Time |   | Operation hours hot water |
+| operationTimeCooling | Number:Time |   | Operation hours cooling |
 | runningTimeHeatPump | Number:Time | x | Heat pump running since |
 | runningTimeSecondHeatGenerator1 | Number:Time | x | Second heat generator 1 running since |
 | runningTimeSecondHeatGenerator2 | Number:Time | x | Second heat generator 2 running since |
@@ -163,7 +163,7 @@ The following channels are holding read only values:
 | temperatureRoomStation2 | Number:Temperature | x | Room temperature room station 2 |
 | temperatureRoomStation3 | Number:Temperature | x | Room temperature room station 3 |
 | iconTimeSwitchSwimmingPool | Number | x | Time switch swimming pool icon |
-| operatingHoursSwimmingPool | Number:Time | x | Swimming pool operating hours |
+| operationTimeSwimmingPool | Number:Time | x | Operation hours swimming pool |
 | coolingRelease | Switch | x | Release cooling |
 | inputAnalog | Number:ElectricPotential | x | Analog input signal |
 | iconCirculationPump | Number | x | Circulation pumps icon |
@@ -177,7 +177,7 @@ The following channels are holding read only values:
 | timeLockSecondHotGasCompressor | Number:Time | x | Lock second compressor hot gas |
 | temperatureSupplyAir | Number:Temperature | x | Supply air temperature |
 | temperatureExhaustAir | Number:Temperature | x | Exhaust air temperature |
-| operatingHoursSolar | Number:Time | x | Operating hours solar |
+| operationTimeSolar | Number:Time | x | Operating hours solar |
 | outputAnalog3 | Number:ElectricPotential | x | Analog output 3 |
 | outputAnalog4 | Number:ElectricPotential | x | Analog output 4 |
 | outputSupplyAirFan | Number:ElectricPotential | x | Supply air fan (defrost function) |
@@ -290,9 +290,9 @@ Group    gHeatpump   "Heatpump"   <temperature>
 Number:Temperature HeatPump_Temp_Outside   "Temperature outside [%.1f °C]"   <temperature> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:temperatureOutside" }
 Number:Temperature HeatPump_Temp_Outside_Avg     "Avg. temperature outside [%.1f °C]"  <temperature> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:temperatureOutsideMean" }
 
-Number:Time HeatPump_Hours_Heatpump  "Operating hours [%d h]"  <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:operatingHoursHeatPump" }
-Number:Time HeatPump_Hours_Heating   "Operating hours heating [%d h]"  <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:operatingHoursHeating" }
-Number:Time HeatPump_Hours_Warmwater "Operating hours hot water [%d h]" <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:operatingHoursHotWater" }
+Number:Time HeatPump_Hours_Heatpump  "Operating hours [%d h]"  <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:operationTimeHeatPump" }
+Number:Time HeatPump_Hours_Heating   "Operating hours heating [%d h]"  <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:operationTimeHeating" }
+Number:Time HeatPump_Hours_Warmwater "Operating hours hot water [%d h]" <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:operationTimeHotWater" }
 
 String HeatPump_State_Ext   "State [%s]"   (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:menuStateFull" }
 

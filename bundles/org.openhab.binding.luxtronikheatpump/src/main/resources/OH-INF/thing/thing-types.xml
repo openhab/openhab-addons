@@ -53,17 +53,17 @@
 			<channel id="outputSwimmingPoolPump" typeId="outputSwimmingPoolPump"/>
 			<channel id="outputMixingCircuit2Closed" typeId="outputMixingCircuit2Closed"/>
 			<channel id="outputMixingCircuit2Open" typeId="outputMixingCircuit2Open"/>
-			<channel id="operatingHoursCompressor1" typeId="operatingHoursCompressor1"/>
+			<channel id="operationTimeCompressor1" typeId="operationTimeCompressor1"/>
 			<channel id="pulsesCompressor1" typeId="pulsesCompressor1"/>
-			<channel id="operatingHoursCompressor2" typeId="operatingHoursCompressor2"/>
+			<channel id="operationTimeCompressor2" typeId="operationTimeCompressor2"/>
 			<channel id="pulsesCompressor2" typeId="pulsesCompressor2"/>
-			<channel id="operatingHoursSecondHeatGenerator1" typeId="operatingHoursSecondHeatGenerator1"/>
-			<channel id="operatingHoursSecondHeatGenerator2" typeId="operatingHoursSecondHeatGenerator2"/>
-			<channel id="operatingHoursSecondHeatGenerator3" typeId="operatingHoursSecondHeatGenerator3"/>
-			<channel id="operatingHoursHeatPump" typeId="operatingHoursHeatPump"/>
-			<channel id="operatingHoursHeating" typeId="operatingHoursHeating"/>
-			<channel id="operatingHoursHotWater" typeId="operatingHoursHotWater"/>
-			<channel id="operatingHoursCooling" typeId="operatingHoursCooling"/>
+			<channel id="operationTimeSecondHeatGenerator1" typeId="operationTimeSecondHeatGenerator1"/>
+			<channel id="operationTimeSecondHeatGenerator2" typeId="operationTimeSecondHeatGenerator2"/>
+			<channel id="operationTimeSecondHeatGenerator3" typeId="operationTimeSecondHeatGenerator3"/>
+			<channel id="operationTimeHeatPump" typeId="operationTimeHeatPump"/>
+			<channel id="operationTimeHeating" typeId="operationTimeHeating"/>
+			<channel id="operationTimeHotWater" typeId="operationTimeHotWater"/>
+			<channel id="operationTimeCooling" typeId="operationTimeCooling"/>
 			<channel id="runningTimeHeatPump" typeId="runningTimeHeatPump"/>
 			<channel id="runningTimeSecondHeatGenerator1" typeId="runningTimeSecondHeatGenerator1"/>
 			<channel id="runningTimeSecondHeatGenerator2" typeId="runningTimeSecondHeatGenerator2"/>
@@ -128,7 +128,7 @@
 			<channel id="temperatureRoomStation2" typeId="temperatureRoomStation2"/>
 			<channel id="temperatureRoomStation3" typeId="temperatureRoomStation3"/>
 			<channel id="iconTimeSwitchSwimmingPool" typeId="iconTimeSwitchSwimmingPool"/>
-			<channel id="operatingHoursSwimmingPool" typeId="operatingHoursSwimmingPool"/>
+			<channel id="operationTimeSwimmingPool" typeId="operationTimeSwimmingPool"/>
 			<channel id="coolingRelease" typeId="coolingRelease"/>
 			<channel id="inputAnalog" typeId="inputAnalog"/>
 			<channel id="iconCirculationPump" typeId="iconCirculationPump"/>
@@ -142,7 +142,7 @@
 			<channel id="timeLockSecondHotGasCompressor" typeId="timeLockSecondHotGasCompressor"/>
 			<channel id="temperatureSupplyAir" typeId="temperatureSupplyAir"/>
 			<channel id="temperatureExhaustAir" typeId="temperatureExhaustAir"/>
-			<channel id="operatingHoursSolar" typeId="operatingHoursSolar"/>
+			<channel id="operationTimeSolar" typeId="operationTimeSolar"/>
 			<channel id="outputAnalog3" typeId="outputAnalog3"/>
 			<channel id="outputAnalog4" typeId="outputAnalog4"/>
 			<channel id="outputSupplyAirFan" typeId="outputSupplyAirFan"/>

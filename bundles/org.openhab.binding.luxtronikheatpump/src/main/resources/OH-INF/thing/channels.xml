@@ -6,112 +6,112 @@
 
 	<channel-type id="temperatureHeatingCircuitFlow">
 		<item-type>Number:Temperature</item-type>
-		<label>Flow temperature heating circuit</label>
+		<label>Flow Temp. heating circuit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatingCircuitReturn">
 		<item-type>Number:Temperature</item-type>
-		<label>Return Temperature Heating Circuit</label>
+		<label>Return Temp. Heating Circuit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatingCircuitReturnTarget">
 		<item-type>Number:Temperature</item-type>
-		<label>Return Setpoint Heating Circuit</label>
+		<label>Return Temp. Target Heating Circuit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureBufferTankReturn" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Return Temperature in Buffer Tank</label>
+		<label>Return Temp. in Buffer Tank</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHotGas" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Gas Temperature</label>
+		<label>Hot Gas Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOutside">
 		<item-type>Number:Temperature</item-type>
-		<label>Outside Temperature</label>
+		<label>Outside Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOutsideMean">
 		<item-type>Number:Temperature</item-type>
-		<label>Average Temperature Outside over 24 h (Heating Limit Function)</label>
+		<label>Avg. Temp. Outside over 24 h (Heating Limit Func.)</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHotWater">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Actual Temperature</label>
+		<label>Hot Water Actual Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHotWaterTarget">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Target Temperature</label>
+		<label>Hot Water Target Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatSourceInlet" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Heat Source Inlet Temperature</label>
+		<label>Heat Source Inlet Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatSourceOutlet" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Heat Source Outlet Temperature</label>
+		<label>Heat Source Outlet Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit1Flow" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Mixing Circuit 1 Flow Temperature</label>
+		<label>Mixing Circuit 1 Flow Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit1FlowTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Mixing Circuit 1 Flow target Temperature</label>
+		<label>Mixing Circuit 1 Flow Target Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureRoomStation" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Room Station 1</label>
+		<label>Temp. Room Station 1</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit2Flow" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Mixing Circuit 2 Flow Temperature</label>
+		<label>Mixing Circuit 2 Flow Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit2FlowTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Mixing Circuit 2 Flow Target Temperature</label>
+		<label>Mixing Circuit 2 Flow Target Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -132,7 +132,7 @@
 
 	<channel-type id="temperatureExternalEnergySource" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Sensor External Energy Source</label>
+		<label>Sensor Ext. Energy Source</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -145,7 +145,7 @@
 
 	<channel-type id="inputHotWaterThermostat" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Input "Domestic Hot Water Whermostat"</label>
+		<label>Input "Domestic Hot Water Thermostat"</label>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -253,13 +253,13 @@
 
 	<channel-type id="outputControlSignalAdditionalHeating" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Output "Control Signal Additional Heating"</label>
+		<label>Output "Control Signal add. Heating"</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outputFaultSignalAdditionalHeating" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Output "Control Signal Additional Heating/Fault Signal"</label>
+		<label>Output "Control Signal add. Heating/Fault Signal"</label>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -299,9 +299,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursCompressor1">
+	<channel-type id="operationTimeCompressor1">
 		<item-type>Number:Time</item-type>
-		<label>Operating Hours Compressor 1</label>
+		<label>Operation Time Compressor 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -312,9 +312,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursCompressor2" advanced="true">
+	<channel-type id="operationTimeCompressor2" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Operating Hours Compressor 2</label>
+		<label>Operation Time Compressor 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -325,72 +325,72 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursSecondHeatGenerator1" advanced="true">
+	<channel-type id="operationTimeSecondHeatGenerator1" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Pulses Compressor Operating Hours Second Heat Generator 1</label>
+		<label>Operation Time Second Heat Generator 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursSecondHeatGenerator2" advanced="true">
+	<channel-type id="operationTimeSecondHeatGenerator2" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Pulses Compressor Operating Hours Second Heat Generator 2</label>
+		<label>Operation Time Second Heat Generator 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursSecondHeatGenerator3" advanced="true">
+	<channel-type id="operationTimeSecondHeatGenerator3" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Pulses Compressor Operating Hours Second Heat Generator 3</label>
+		<label>Operation Time Second Heat Generator 3</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursHeatPump">
+	<channel-type id="operationTimeHeatPump">
 		<item-type>Number:Time</item-type>
-		<label>Operating Hours Heat Pump</label>
+		<label>Operation Time Heat Pump</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursHeating">
+	<channel-type id="operationTimeHeating">
 		<item-type>Number:Time</item-type>
-		<label>Operating Hours Heating</label>
+		<label>Operation Time Heating</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursHotWater">
+	<channel-type id="operationTimeHotWater">
 		<item-type>Number:Time</item-type>
-		<label>Operating Hours Hot Water</label>
+		<label>Operation Time Hot Water</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursCooling">
+	<channel-type id="operationTimeCooling">
 		<item-type>Number:Time</item-type>
-		<label>Operating Hours Cooling</label>
+		<label>Operation Time Cooling</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runningTimeHeatPump" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Heat Pump Running Since</label>
+		<label>Runtime Heat Pump</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runningTimeSecondHeatGenerator1" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Second Heat Generator 1 Running Since</label>
+		<label>Runtime Second Heat Generator 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runningTimeSecondHeatGenerator2" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Second Heat Generator 2 Running Since</label>
+		<label>Runtime Second Heat Generator 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -439,7 +439,7 @@
 
 	<channel-type id="thermalDisinfectionRunningTime" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Thermal Disinfection Running Since</label>
+		<label>Runtime Thermal Disinfection</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1176,7 +1176,7 @@
 
 	<channel-type id="menuStateTime" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Status Time Line 2</label>
+		<label>Status Time</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1195,7 +1195,7 @@
 
 	<channel-type id="bakeoutProgramTemperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Bakeout Program</label>
+		<label>Temp. Bakeout Program</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1265,7 +1265,7 @@
 
 	<channel-type id="currentTimestamp" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Current Time of the Heat Pump</label>
+		<label>Current Time of Heat Pump</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1278,14 +1278,14 @@
 
 	<channel-type id="temperatureMixingCircuit3FlowTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Mixing Circuit 3 Flow Set Temperature</label>
+		<label>Mixing Circuit 3 Flow Temp. Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit3Flow" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Mixing Circuit 3 Flow Temperature</label>
+		<label>Mixing Circuit 3 Flow Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1317,14 +1317,14 @@
 
 	<channel-type id="temperatureRoomStation2" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Room Station 2</label>
+		<label>Temp. Room Station 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureRoomStation3" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Room Station 3</label>
+		<label>Temp. Room Station 3</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1335,9 +1335,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursSwimmingPool" advanced="true">
+	<channel-type id="operationTimeSwimmingPool" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Swimming Pool Operating Hours</label>
+		<label>Operation Time Swimming Pool</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1419,21 +1419,21 @@
 
 	<channel-type id="temperatureSupplyAir" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Supply Air Temperature</label>
+		<label>Supply Air Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureExhaustAir" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Exhaust Air Temperature</label>
+		<label>Exhaust Air Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operatingHoursSolar" advanced="true">
+	<channel-type id="operationTimeSolar" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Operating Hours Solar</label>
+		<label>Operation Time Solar</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1525,21 +1525,21 @@
 
 	<channel-type id="temperatureSuctionEvaporator" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Suction Evaporator</label>
+		<label>Temp. Suction Evaporator</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureSuctionCompressor" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Suction Compressor</label>
+		<label>Temp. Suction Compressor</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureCompressorHeating" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Compressor Heating</label>
+		<label>Temp. Compressor Heating</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1594,7 +1594,7 @@
 
 	<channel-type id="temperatureSafetyLimitFloorHeating" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Safety Tempearture Limiter Floor Heating</label>
+		<label>Safety Temp. Limiter Floor Heating</label>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1614,7 +1614,7 @@
 
 	<channel-type id="temperatureFlowTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Flow Set Point</label>
+		<label>Temp. Flow Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1655,14 +1655,14 @@
 
 	<channel-type id="temperatureCompressorEVI" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Compressor Temperature EVI</label>
+		<label>Compressor Temp. EVI</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureIntakeEVI" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Intake Temperature EVI</label>
+		<label>Intake Temp. EVI</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1683,14 +1683,14 @@
 
 	<channel-type id="temperatureCondensation" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Condensation Temperature</label>
+		<label>Condensation Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureLiquidEEV" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Liquid Temperature EEV</label>
+		<label>Liquid Temp. EEV</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1718,35 +1718,35 @@
 
 	<channel-type id="temperatureHotGas2" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Gas Temperature Sensor 2</label>
+		<label>Hot Gas Temp. Sensor 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatSourceInlet2" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Sensor Heat Source Inlet 2</label>
+		<label>Temp. Sensor Heat Source Inlet 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureIntakeEvaporator2" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Intake Temperature Evaporator 2</label>
+		<label>Intake Temp. Evaporator 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureIntakeCompressor2" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Intake Temperature Compressor 2</label>
+		<label>Intake Temp. Compressor 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureCompressor2Heating" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Compressor 2 Heating</label>
+		<label>Temp. Compressor 2 Heating</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1928,21 +1928,21 @@
 
 	<channel-type id="temperatureRoom" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Actual Value</label>
+		<label>Room Temp. Actual Value</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureRoomTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Set Point</label>
+		<label>Room Temp. Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHotWaterTop" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Domestic Water Top</label>
+		<label>Temp. Domestic Water Top</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1956,14 +1956,14 @@
 
 	<channel-type id="temperatureHeatingParallelShift">
 		<item-type>Number:Temperature</item-type>
-		<label>Heating Temperature (Parallel Shift)</label>
+		<label>Heating Temp. (Parallel Shift)</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="-10" max="10" step="0.5"></state>
 	</channel-type>
 
 	<channel-type id="temperatureTargetHotWater_2">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Temperature</label>
+		<label>Hot Water Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
 	</channel-type>
@@ -1998,37 +1998,37 @@
 
 	<channel-type id="thermalDisinfectionMonday" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Thermal Disinfection (Monday)</label>
+		<label>Thermal Disinfection (Mon)</label>
 	</channel-type>
 
 	<channel-type id="thermalDisinfectionTuesday" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Thermal Disinfection (Tuesday)</label>
+		<label>Thermal Disinfection (Tue)</label>
 	</channel-type>
 
 	<channel-type id="thermalDisinfectionWednesday" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Thermal Disinfection (Wednesday)</label>
+		<label>Thermal Disinfection (Wed)</label>
 	</channel-type>
 
 	<channel-type id="thermalDisinfectionThursday" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Thermal Disinfection (Thursday)</label>
+		<label>Thermal Disinfection (Thu)</label>
 	</channel-type>
 
 	<channel-type id="thermalDisinfectionFriday" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Thermal Disinfection (Firday)</label>
+		<label>Thermal Disinfection (Fri)</label>
 	</channel-type>
 
 	<channel-type id="thermalDisinfectionSaturday" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Thermal Disinfection (Saturday)</label>
+		<label>Thermal Disinfection (Sat)</label>
 	</channel-type>
 
 	<channel-type id="thermalDisinfectionSunday" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Thermal Disinfection (Sunday)</label>
+		<label>Thermal Disinfection (Sun)</label>
 	</channel-type>
 
 	<channel-type id="thermalDisinfectionPermanent" advanced="true">
