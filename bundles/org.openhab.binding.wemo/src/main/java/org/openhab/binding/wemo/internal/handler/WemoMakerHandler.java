@@ -215,13 +215,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                         stringParser = "<data>" + stringParser + "</data>";
 
                         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                        // see
-                        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-                        dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                        dbf.setXIncludeAware(false);
-                        dbf.setExpandEntityReferences(false);
                         DocumentBuilder db = dbf.newDocumentBuilder();
                         InputSource is = new InputSource();
                         is.setCharacterStream(new StringReader(stringParser));
@@ -246,60 +239,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                             switch (attributeName) {
                                 case "Switch":
                                     State relayState = attributeValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
-                                    if (relayState != null) {
-                if (wemoHttpCaller != null) {
-                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        try {
-                            String stringParser = substringBetween(wemoCallResponse, "<attributeList>",
-                                    "</attributeList>");
-                            logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
-                            logger.trace("'{}'", stringParser);
-
-                            // Due to Belkins bad response formatting, we need to run this twice.
-                            stringParser = unescapeXml(stringParser);
-                            stringParser = unescapeXml(stringParser);
-                            logger.trace("Maker response '{}' for device '{}' received", stringParser,
-                                    getThing().getUID());
-
-                            stringParser = "<data>" + stringParser + "</data>";
-
-                            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                            DocumentBuilder db = dbf.newDocumentBuilder();
-                            InputSource is = new InputSource();
-                            is.setCharacterStream(new StringReader(stringParser));
-
-                            Document doc = db.parse(is);
-                            NodeList nodes = doc.getElementsByTagName("attribute");
-
-                            // iterate the attributes
-                            for (int i = 0; i < nodes.getLength(); i++) {
-                                Element element = (Element) nodes.item(i);
-
-                                NodeList deviceIndex = element.getElementsByTagName("name");
-                                Element line = (Element) deviceIndex.item(0);
-                                String attributeName = getCharacterDataFromElement(line);
-                                logger.trace("attributeName: {}", attributeName);
-
-                                NodeList deviceID = element.getElementsByTagName("value");
-                                line = (Element) deviceID.item(0);
-                                String attributeValue = getCharacterDataFromElement(line);
-                                logger.trace("attributeValue: {}", attributeValue);
-
-                                switch (attributeName) {
-                                    case "Switch":
-                                        State relayState = attributeValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
-                                        logger.debug("New relayState '{}' for device '{}' received", relayState,
-                                                getThing().getUID());
-                                        updateState(CHANNEL_RELAY, relayState);
-                                        break;
-                                    case "Sensor":
-                                        State sensorState = attributeValue.equals("1") ? OnOffType.OFF : OnOffType.ON;
-                                        logger.debug("New sensorState '{}' for device '{}' received", sensorState,
-                                                getThing().getUID());
-                                        updateState(CHANNEL_SENSOR, sensorState);
-                                        break;
-                                }
                                     logger.debug("New relayState '{}' for device '{}' received", relayState,
                                             getThing().getUID());
                                     updateState(CHANNEL_RELAY, relayState);

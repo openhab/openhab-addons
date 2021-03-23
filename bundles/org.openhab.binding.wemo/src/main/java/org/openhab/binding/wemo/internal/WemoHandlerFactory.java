@@ -44,6 +44,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +62,10 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHandlerFactory.class);
 
-    private UpnpIOService upnpIOService;
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = WemoBindingConstants.SUPPORTED_THING_TYPES;
+
+    private UpnpIOService upnpIOService;
+    private @Nullable WemoHttpCallFactory wemoHttpCallFactory;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -76,12 +79,23 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
         this.upnpIOService = upnpIOService;
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setWemoHttpCallFactory(WemoHttpCallFactory wemoHttpCallFactory) {
+        this.wemoHttpCallFactory = wemoHttpCallFactory;
+    }
+
+    public void unsetWemoHttpCallFactory(WemoHttpCallFactory wemoHttpCallFactory) {
+        this.wemoHttpCallFactory = null;
+    }
+
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("Trying to create a handler for ThingType '{}", thingTypeUID);
 
-        WemoHttpCall wemoHttpcaller = new WemoHttpCall();
+        WemoHttpCallFactory wemoHttpCallFactory = this.wemoHttpCallFactory;
+        WemoHttpCall wemoHttpcaller = wemoHttpCallFactory == null ? new WemoHttpCall()
+                : wemoHttpCallFactory.createHttpCall();
 
         if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_BRIDGE)) {
             logger.debug("Creating a WemoBridgeHandler for thing '{}' with UDN '{}'", thing.getUID(),

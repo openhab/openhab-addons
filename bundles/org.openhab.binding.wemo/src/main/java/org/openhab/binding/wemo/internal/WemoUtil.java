@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,8 @@ import org.openhab.core.io.net.http.HttpUtil;
  */
 @NonNullByDefault
 public class WemoUtil {
+
+    public static BiFunction<String, Integer, Boolean> serviceAvailableFunction = WemoUtil::servicePing;
 
     public static String substringBefore(@Nullable String string, String pattern) {
         if (string != null) {
@@ -123,34 +126,24 @@ public class WemoUtil {
     public static @Nullable String getWemoURL(URL descriptorURL, String actionService) {
         int portCheckStart = 49151;
         int portCheckStop = 49157;
-        String wemoURL = null;
-        String host = null;
         String port = null;
-        host = substringBetween(descriptorURL.toString(), "://", ":");
+        String host = substringBetween(descriptorURL.toString(), "://", ":");
         for (int i = portCheckStart; i < portCheckStop; i++) {
-            try {
-                boolean portFound = servicePing(host, i);
-                if (portFound) {
-                    port = String.valueOf(i);
-                    break;
-                }
-            } catch (Exception e) {
+            if (serviceAvailableFunction.apply(host, i)) {
+                port = String.valueOf(i);
+                break;
             }
         }
-        if (port != null) {
-            wemoURL = "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
-            return wemoURL;
-        }
-        return null;
+        return port == null ? null : "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
     }
 
     private static boolean servicePing(String host, int port) {
         try {
             HttpUtil.executeUrl("GET", "http://" + host + ":" + port, 250);
+            return true;
         } catch (IOException e) {
             return false;
         }
-        return true;
     }
 
     private static Map<String, String> buildBuiltinXMLEntityMap() {
