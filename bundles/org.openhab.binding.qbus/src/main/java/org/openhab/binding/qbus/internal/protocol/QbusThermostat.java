@@ -17,8 +17,6 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusThermostatHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusThermostat} class represents the thermostat Qbus communication object. It contains all
@@ -123,11 +121,7 @@ public final class QbusThermostat {
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withMode(mode);
         QbusCommunication comm = this.qComm;
         if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command mode for thermostat {}, {}", this.id, e.getMessage());
-            }
+            comm.sendMessage(qCmd);
         }
     }
 
@@ -142,11 +136,7 @@ public final class QbusThermostat {
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withSetPoint(setpoint);
         QbusCommunication comm = this.qComm;
         if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command setpoitn for thermostat {}, {}", this.id, e.getMessage());
-            }
+            comm.sendMessage(qCmd);
         }
     }
 }
