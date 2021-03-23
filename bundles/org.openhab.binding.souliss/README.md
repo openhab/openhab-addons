@@ -157,7 +157,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 ## Manual Things Configuration
 
 If after discovery your thing is not listed you can add it manually.
-You have to choice it from disponible items. 
+You have to choose it from the available things. 
 Firts gateway, after items!
 To configure Gateway you can leave default value on Thing ID and write your value on "IP or Host Name" and "Gateway port".
 
