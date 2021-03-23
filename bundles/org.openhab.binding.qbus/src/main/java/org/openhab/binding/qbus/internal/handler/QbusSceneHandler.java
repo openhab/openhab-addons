@@ -14,8 +14,8 @@ package org.openhab.binding.qbus.internal.handler;
 
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.CHANNEL_SCENE;
 
+import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +28,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusSceneHandler} is responsible for handling commands, which are
@@ -39,13 +41,13 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusSceneHandler extends QbusGlobalHandler {
 
-    protected @Nullable QbusThingsConfig config;
+    private final Logger logger = LoggerFactory.getLogger(QbusSceneHandler.class);
+
+    protected @Nullable QbusThingsConfig sceneConfig = new QbusThingsConfig();
 
     private @Nullable Integer sceneId;
 
     private @Nullable String sn;
-
-    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusSceneHandler(Thing thing) {
         super(thing);
@@ -56,37 +58,117 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      */
     @Override
     public void initialize() {
-        setConfig();
-        sceneId = getId();
+        readConfig();
 
-        QbusCommunication qComm = getCommunication("Scene", sceneId);
-        if (qComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No communication with Qbus Bridge!");
-            return;
-        }
-
-        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Scene", sceneId);
-        if (qBridgeHandler == null) {
-            return;
-        }
+        this.sceneId = getId();
 
         setSN();
 
-        Map<Integer, QbusScene> sceneComm = qComm.getScene();
+        scheduler.submit(() -> {
+            QbusCommunication controllerComm;
 
-        if (sceneComm != null) {
-            QbusScene qScene = sceneComm.get(sceneId);
-            if (qScene != null) {
-                qScene.setThingHandler(this);
+            if (this.sceneId != null) {
+                controllerComm = getCommunication("Scene", this.sceneId);
+            } else {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "ID for SCENE no set! " + this.sceneId);
+                return;
+            }
+
+            if (controllerComm == null) {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "ID for SCENE not known in controller " + this.sceneId);
+                return;
+            }
+
+            Map<Integer, QbusScene> sceneCommLocal = controllerComm.getScene();
+
+            QbusScene outputLocal = sceneCommLocal.get(this.sceneId);
+
+            if (outputLocal == null) {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Bridge could not initialize SCENE ID " + this.sceneId);
+                return;
+            }
+
+            outputLocal.setThingHandler(this);
+
+            QbusBridgeHandler qBridgeHandler = getBridgeHandler("Scene", this.sceneId);
+
+            if ((qBridgeHandler != null) && (qBridgeHandler.getStatus() == ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Error while initializing the thing.");
+                thingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Bridge offline for SCENE ID " + this.sceneId);
             }
+        });
+    }
+
+    /**
+     * Handle the status update from the thing
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        QbusCommunication qComm = getCommunication("Scene", this.sceneId);
+
+        if (qComm == null) {
+            thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "ID for SCENE not known in controller " + this.sceneId);
+            return;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Error while initializing the thing.");
+            Map<Integer, QbusScene> sceneComm = qComm.getScene();
+            QbusScene qScene = sceneComm.get(this.sceneId);
+
+            if (qScene == null) {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "ID for SCENE not known in controller " + this.sceneId);
+                return;
+            } else {
+                scheduler.submit(() -> {
+                    if (!qComm.communicationActive()) {
+                        restartCommunication(qComm, "Scene", this.sceneId);
+                    }
+
+                    if (qComm.communicationActive()) {
+                        switch (channelUID.getId()) {
+                            case CHANNEL_SCENE:
+                                try {
+                                    handleSwitchCommand(qScene, channelUID, command);
+                                } catch (IOException e) {
+                                    String message = e.getMessage();
+                                    logger.warn("Error on executing Scene for scene ID {}. IOException: {}",
+                                            this.sceneId, message);
+                                } catch (InterruptedException e) {
+                                    String message = e.getMessage();
+                                    logger.warn("Error on executing Scene for scene ID {}. Interruptedexception {}",
+                                            this.sceneId, message);
+                                }
+                                break;
+
+                            default:
+                                thingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "Unknown Channel " + channelUID.getId());
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Executes the scene command
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    void handleSwitchCommand(QbusScene qScene, ChannelUID channelUID, Command command)
+            throws InterruptedException, IOException {
+        String snr = getSN();
+        if (snr != null) {
+            if (command instanceof OnOffType) {
+                if (command == OnOffType.OFF) {
+                    qScene.execute(0, snr);
+                } else {
+                    qScene.execute(100, snr);
+                }
+            }
         }
     }
 
@@ -96,133 +178,40 @@ public class QbusSceneHandler extends QbusGlobalHandler {
      * @return the serial nr
      */
     public @Nullable String getSN() {
-        return this.sn;
+        return sn;
     }
 
     /**
      * Sets the serial number of the controller
      */
     public void setSN() {
-        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Scene", sceneId);
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Scene", this.sceneId);
         if (qBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No communication with Qbus Bridge!");
+            thingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No communication with Qbus Bridge for SCENE " + this.sceneId);
             return;
         }
-        this.sn = qBridgeHandler.getSn();
-    }
-
-    /**
-     * Handle the status update from the thing
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        QbusCommunication qComm = getCommunication("Scene", sceneId);
-
-        if (qComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to execute command for Scene " + sceneId);
-            return;
-        }
-
-        Map<Integer, QbusScene> sceneComm = qComm.getScene();
-
-        if (sceneComm != null) {
-            QbusScene qScene = sceneComm.get(sceneId);
-            if (qScene == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Bridge communication not initialized when trying to execute command for Scene " + sceneId);
-                return;
-            } else {
-                scheduler.submit(() -> {
-                    if (!qComm.communicationActive()) {
-                        restartCommunication(qComm, "Scene", sceneId);
-                    }
-
-                    if (qComm.communicationActive()) {
-                        switch (channelUID.getId()) {
-                            case CHANNEL_SCENE:
-                                handleSwitchCommand(qScene, channelUID, command);
-                                break;
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    /**
-     * Method to update state of channel, called from Qbus Scene.
-     */
-    public void handleStateUpdate(QbusScene qScene) {
-        Integer sceneState = qScene.getState();
-        if (sceneState != null) {
-            updateState(CHANNEL_SCENE, (sceneState == 0) ? OnOffType.OFF : OnOffType.ON);
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    /**
-     *
-     * @param message
-     */
-    public void thingOffline(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
-    }
-
-    /**
-     * Executes the scene command
-     */
-    void handleSwitchCommand(QbusScene qScene, ChannelUID channelUID, Command command) {
-        String snr = getSN();
-        if (command instanceof OnOffType) {
-            if (command == OnOffType.OFF) {
-                if (snr != null) {
-                    qScene.execute(0, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + sceneId);
-                }
-            } else {
-                if (snr != null) {
-                    qScene.execute(100, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + sceneId);
-                }
-            }
-        }
+        sn = qBridgeHandler.getSn();
     }
 
     /**
      * Read the configuration
      */
-    protected synchronized void setConfig() {
-        final ScheduledFuture<?> localPollingJob = this.pollingJob;
-
-        if (localPollingJob != null) {
-            localPollingJob.cancel(true);
-        }
-
-        if (localPollingJob == null || localPollingJob.isCancelled()) {
-            this.config = getConfig().as(QbusThingsConfig.class);
-        }
-        this.config = getConfig().as(QbusThingsConfig.class);
+    protected synchronized void readConfig() {
+        sceneConfig = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
      * Returns the Id from the configuration
      *
-     * @return sceneId
+     * @return outputId
      */
     public @Nullable Integer getId() {
-        QbusThingsConfig sceneConfig = this.config;
-        if (sceneConfig != null) {
-            if (sceneConfig.sceneId != null) {
-                return sceneConfig.sceneId;
-            } else {
-                return 0;
-            }
+        QbusThingsConfig localConfig = sceneConfig;
+        if (localConfig != null) {
+            return localConfig.sceneId;
         } else {
-            return 0;
+            return null;
         }
     }
 }

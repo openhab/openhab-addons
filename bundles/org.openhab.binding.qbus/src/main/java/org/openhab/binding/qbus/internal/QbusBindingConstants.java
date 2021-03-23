@@ -36,6 +36,7 @@ public class QbusBindingConstants {
     public static final String CONFIG_HOST_NAME = "addr";
     public static final String CONFIG_PORT = "port";
     public static final String CONFIG_SN = "sn";
+    public static final String CONFIG_SERVERCHECK = "serverCheck";
 
     // generic thing types
     public static final ThingTypeUID THING_TYPE_CO2 = new ThingTypeUID(BINDING_ID, "co2");

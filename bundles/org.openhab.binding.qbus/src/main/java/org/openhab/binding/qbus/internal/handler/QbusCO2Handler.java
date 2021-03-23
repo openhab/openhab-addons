@@ -16,7 +16,6 @@ import static org.openhab.binding.qbus.internal.QbusBindingConstants.CHANNEL_CO2
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,11 +40,11 @@ import org.openhab.core.types.Command;
 public class QbusCO2Handler extends QbusGlobalHandler {
     protected @Nullable QbusThingsConfig config;
 
+    protected @Nullable QbusThingsConfig co2Config = new QbusThingsConfig();
+
     private @Nullable Integer co2Id;
 
     private @Nullable String sn;
-
-    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusCO2Handler(Thing thing) {
         super(thing);
@@ -56,38 +55,50 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      */
     @Override
     public void initialize() {
-        setConfig();
-        co2Id = getId();
+        readConfig();
 
-        QbusCommunication qComm = getCommunication("CO2", co2Id);
-        if (qComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No communication with Qbus Bridge!");
-            return;
-        }
-
-        QbusBridgeHandler qBridgeHandler = getBridgeHandler("CO2", co2Id);
-        if (qBridgeHandler == null) {
-            return;
-        }
+        this.co2Id = getId();
 
         setSN();
 
-        Map<Integer, QbusCO2> co2Comm = qComm.getCo2();
+        scheduler.submit(() -> {
+            QbusCommunication controllerComm;
 
-        if (co2Comm != null) {
-            QbusCO2 qCo2 = co2Comm.get(co2Id);
-            if (qCo2 != null) {
-                qCo2.setThingHandler(this);
-                handleStateUpdate(qCo2);
+            if (this.co2Id != null) {
+                controllerComm = getCommunication("CO2", this.co2Id);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Error while initializing the thing.");
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "ID for CO2 no set! " + this.co2Id);
+                return;
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Error while initializing the thing.");
-        }
+
+            if (controllerComm == null) {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "ID for CO2 not known in controller " + this.co2Id);
+                return;
+            }
+
+            Map<Integer, QbusCO2> co2CommLocal = controllerComm.getCo2();
+
+            QbusCO2 outputLocal = co2CommLocal.get(this.co2Id);
+
+            if (outputLocal == null) {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge could not initialize CO2 ID " + this.co2Id);
+                return;
+            }
+
+            outputLocal.setThingHandler(this);
+            handleStateUpdate(outputLocal);
+
+            QbusBridgeHandler qBridgeHandler = getBridgeHandler("CO2", this.co2Id);
+
+            if (qBridgeHandler != null) {
+                if (qBridgeHandler.getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                            "Bridge offline for CO2 ID " + this.co2Id);
+                }
+            }
+        });
     }
 
     /**
@@ -95,25 +106,23 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        QbusCommunication qComm = getCommunication("CO2", co2Id);
+        QbusCommunication qComm = getCommunication("CO2", this.co2Id);
+
         if (qComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to execute command for CO2 " + co2Id);
+            thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "ID for CO2 not known in controller " + this.co2Id);
             return;
-        }
+        } else {
+            Map<Integer, QbusCO2> co2Comm = qComm.getCo2();
 
-        Map<Integer, QbusCO2> co2Comm = qComm.getCo2();
+            QbusCO2 qCo2 = co2Comm.get(this.co2Id);
 
-        if (co2Comm != null) {
-            QbusCO2 qCo2 = co2Comm.get(co2Id);
             if (qCo2 == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Bridge communication not initialized when trying to execute command for CO2 " + co2Id);
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "ID for CO2 not known in controller " + this.co2Id);
                 return;
             } else {
                 scheduler.submit(() -> {
                     if (!qComm.communicationActive()) {
-                        restartCommunication(qComm, "CO2", co2Id);
+                        restartCommunication(qComm, "CO2", this.co2Id);
                     }
 
                     if (qComm.communicationActive()) {
@@ -121,8 +130,13 @@ public class QbusCO2Handler extends QbusGlobalHandler {
                             handleStateUpdate(qCo2);
                             return;
                         }
-                    }
 
+                        switch (channelUID.getId()) {
+                            default:
+                                thingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "Unknown Channel " + channelUID.getId());
+                        }
+                    }
                 });
             }
         }
@@ -135,7 +149,6 @@ public class QbusCO2Handler extends QbusGlobalHandler {
         Integer co2State = qCo2.getState();
         if (co2State != null) {
             updateState(CHANNEL_CO2, new DecimalType(co2State));
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -145,52 +158,40 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      * @return the serial nr
      */
     public @Nullable String getSN() {
-        return this.sn;
+        return sn;
     }
 
     /**
      * Sets the serial number of the controller
      */
     public void setSN() {
-        QbusBridgeHandler qBridgeHandler = getBridgeHandler("CO2", co2Id);
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("CO2", this.co2Id);
         if (qBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No communication with Qbus Bridge!");
+            thingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No communication with Qbus Bridge for CO2 " + this.co2Id);
             return;
         }
-        this.sn = qBridgeHandler.getSn();
+        sn = qBridgeHandler.getSn();
     }
 
     /**
      * Read the configuration
      */
-    protected synchronized void setConfig() {
-        final ScheduledFuture<?> localPollingJob = this.pollingJob;
-
-        if (localPollingJob != null) {
-            localPollingJob.cancel(true);
-        }
-
-        if (localPollingJob == null || localPollingJob.isCancelled()) {
-            this.config = getConfig().as(QbusThingsConfig.class);
-        }
+    protected synchronized void readConfig() {
+        co2Config = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
      * Returns the Id from the configuration
      *
-     * @return co2Id
+     * @return outputId
      */
     public @Nullable Integer getId() {
-        QbusThingsConfig co2Config = this.config;
-        if (co2Config != null) {
-            if (co2Config.co2Id != null) {
-                return co2Config.co2Id;
-            } else {
-                return 0;
-            }
+        QbusThingsConfig localConfig = this.co2Config;
+        if (localConfig != null) {
+            return localConfig.co2Id;
         } else {
-            return 0;
+            return null;
         }
     }
 }

@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.qbus.internal.protocol;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusSceneHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusScene} class represents the action Qbus Scene output.
@@ -27,24 +27,33 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusScene {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusScene.class);
-
     private @Nullable QbusCommunication qComm;
 
     public @Nullable QbusSceneHandler thingHandler;
 
     private @Nullable Integer state;
 
-    private String id;
+    private Integer id;
 
-    QbusScene(String id) {
+    QbusScene(Integer id) {
         this.id = id;
     }
 
     /**
-     * This method sets a pointer to the qComm Scene of class {@link QbusCommuncation}.
+     * This method should be called if the ThingHandler for the thing corresponding to this scene is initialized.
+     * It keeps a record of the thing handler in this object so the thing can be updated when
+     * the scene output receives an update from the Qbus client.
+     *
+     * @param handler
+     */
+    public void setThingHandler(QbusSceneHandler handler) {
+        this.thingHandler = handler;
+    }
+
+    /**
+     * This method sets a pointer to the qComm SCENE of class {@link QbusCommuncation}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
-     * Qbus IP-interface when..
+     * Qbus client.
      *
      * @param qComm
      */
@@ -53,34 +62,27 @@ public final class QbusScene {
     }
 
     /**
-     * Sends action to Qbus.
+     * Get the value of the Scene.
+     *
+     * @return Scene value
      */
-    public void execute(int value, String sn) {
-        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeScene").withId(this.id).withState(value);
-        QbusCommunication comm = qComm;
-        if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command for scene {}, {}", this.id, e.getMessage());
-            }
-        }
-    }
-
-    public void setThingHandler(QbusSceneHandler handler) {
-        this.thingHandler = handler;
+    public @Nullable Integer getState() {
+        return this.state;
     }
 
     /**
-     * Get state of bistabiel.
-     *
-     * @return bistabiel state
+     * Sends Scene state to Qbus.
+     * 
+     * @param value
+     * @param sn
+     * @throws InterruptedException
+     * @throws IOException
      */
-    public @Nullable Integer getState() {
-        if (this.state != null) {
-            return this.state;
-        } else {
-            return null;
+    public void execute(int value, String sn) throws InterruptedException, IOException {
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeScene").withId(this.id).withState(value);
+        QbusCommunication comm = qComm;
+        if (comm != null) {
+            comm.sendMessage(qCmd);
         }
     }
 }

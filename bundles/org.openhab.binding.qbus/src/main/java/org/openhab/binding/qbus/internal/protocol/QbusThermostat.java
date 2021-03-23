@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.qbus.internal.protocol;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusThermostatHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusThermostat} class represents the thermostat Qbus communication object. It contains all
@@ -29,43 +29,23 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusThermostat {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusThermostat.class);
-
     private @Nullable QbusCommunication qComm;
 
-    private String id;
+    private Integer id;
     private double measured = 0.0;
     private double setpoint = 0.0;
-    private Integer mode = 0;
+    private @Nullable Integer mode;
 
     private @Nullable QbusThermostatHandler thingHandler;
 
-    QbusThermostat(String id) {
+    QbusThermostat(Integer id) {
         this.id = id;
-    }
-
-    /**
-     * Update all values of the thermostat
-     *
-     * @param measured current temperature in 1°C multiples
-     * @param setpoint the setpoint temperature in 1°C multiples
-     * @param mode 0="Manueel", 1="Vorst", 2="Economisch", 3="Comfort", 4="Nacht"
-     */
-    public void updateState(Double measured, Double setpoint, Integer mode) {
-        setMeasured(measured);
-        setSetpoint(setpoint);
-        setMode(mode);
-
-        QbusThermostatHandler handler = thingHandler;
-        if (handler != null) {
-            handler.handleStateUpdate(this);
-        }
     }
 
     /**
      * This method should be called if the ThingHandler for the thing corresponding to the termostat is initialized.
      * It keeps a record of the thing handler in this object so the thing can be updated when
-     * the thermostat receives an update from the Qbus IP-interface.
+     * the thermostat receives an update from the Qbus client.
      *
      * @param handler
      */
@@ -74,9 +54,9 @@ public final class QbusThermostat {
     }
 
     /**
-     * This method sets a pointer to the qComm object of class {@link QbusCommuncation}.
+     * This method sets a pointer to the qComm THERMOSTAT of class {@link QbusCommuncation}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
-     * Qbus IP-interface when..
+     * Qbus client.
      *
      * @param qComm
      */
@@ -85,91 +65,78 @@ public final class QbusThermostat {
     }
 
     /**
-     * Get measured temperature.
+     * Update all values of the Thermostat
      *
-     * @return measured temperature in 0.5°C multiples
+     * @param measured current temperature in 1°C multiples
+     * @param setpoint the setpoint temperature in 1°C multiples
+     * @param mode 0="Manual", 1="Freeze", 2="Economic", 3="Comfort", 4="Night"
      */
-    public double getMeasured() {
-        return this.measured;
-    }
-
-    /**
-     * Set measured temperature.
-     *
-     * @param measured
-     */
-    private void setMeasured(Double measured) {
+    public void updateState(Double measured, Double setpoint, Integer mode) {
         this.measured = measured;
-    }
-
-    /**
-     * Get setpoint
-     *
-     * @return the setpoint temperature in 0.5°C multiples
-     */
-    public double getSetpoint() {
-        return this.setpoint;
-    }
-
-    /**
-     * Set setpoint temperature.
-     *
-     * @param setpoint
-     */
-    private void setSetpoint(Double setpoint) {
         this.setpoint = setpoint;
-    }
-
-    /**
-     * Get the thermostat mode.
-     *
-     * @return the mode: 0="Manueel", 1="Vorst", 2="Economisch", 3="Comfort", 4="Nacht"
-     */
-    public Integer getMode() {
-        return mode;
-    }
-
-    /**
-     * Set the thermostat
-     *
-     * mode: 0="Manueel", 1="Vorst", 2="Economisch", 3="Comfort", 4="Nacht"
-     */
-    private void setMode(Integer mode) {
         this.mode = mode;
-    }
 
-    /**
-     * Sends thermostat mode to Qbus.
-     *
-     * @param mode
-     * @param sn
-     */
-    public void executeMode(int mode, String sn) {
-        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withMode(mode);
-        QbusCommunication comm = qComm;
-        if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command mode for thermostat {}, {}", this.id, e.getMessage());
-            }
+        QbusThermostatHandler handler = this.thingHandler;
+        if (handler != null) {
+            handler.handleStateUpdate(this);
         }
     }
 
     /**
-     * Sends setpoint to Qbus.
+     * Get measured temperature of the Thermostat.
      *
-     * @param d
+     * @return measured temperature in 0.5°C multiples
      */
-    public void executeSetpoint(double d, String sn) {
-        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withSetPoint(setpoint);
-        QbusCommunication comm = qComm;
+    public @Nullable Double getMeasured() {
+        return this.measured;
+    }
+
+    /**
+     * Get setpoint temperature of the Thermostat.
+     *
+     * @return the setpoint temperature in 0.5°C multiples
+     */
+    public @Nullable Double getSetpoint() {
+        return this.setpoint;
+    }
+
+    /**
+     * Get the Thermostat mode.
+     *
+     * @return the mode: 0="Manual", 1="Freeze", 2="Economic", 3="Comfort", 4="Night"
+     */
+    public @Nullable Integer getMode() {
+        return this.mode;
+    }
+
+    /**
+     * Sends Thermostat mode to Qbus.
+     *
+     * @param mode
+     * @param sn
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public void executeMode(int mode, String sn) throws InterruptedException, IOException {
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withMode(mode);
+        QbusCommunication comm = this.qComm;
         if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command setpoitn for thermostat {}, {}", this.id, e.getMessage());
-            }
+            comm.sendMessage(qCmd);
+        }
+    }
+
+    /**
+     * Sends Thermostat setpoint to Qbus.
+     *
+     * @param setpoint
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void executeSetpoint(double setpoint, String sn) throws InterruptedException, IOException {
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withSetPoint(setpoint);
+        QbusCommunication comm = this.qComm;
+        if (comm != null) {
+            comm.sendMessage(qCmd);
         }
     }
 }

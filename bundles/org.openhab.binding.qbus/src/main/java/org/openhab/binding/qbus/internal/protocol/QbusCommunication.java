@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -42,10 +44,10 @@ import com.google.gson.JsonParseException;
 
 /**
  * The {@link QbusCommunication} class is able to do the following tasks with Qbus
- * systems:
+ * CTD controllers:
  * <ul>
  * <li>Start and stop TCP socket connection with Qbus Server.
- * <li>Read all the outputs and their status information from the Qbus Controller.
+ * <li>Read all the outputs and their status from the Qbus Controller.
  * <li>Execute Qbus commands.
  * <li>Listen to events from Qbus.
  * </ul>
@@ -72,7 +74,7 @@ public final class QbusCommunication extends BaseThingHandler {
     private @Nullable BufferedReader qIn;
 
     private boolean listenerStopped;
-    private boolean qEventsRunning;
+    private boolean qbusListenerRunning;
 
     private Gson gsonOut = new Gson();
     private Gson gsonIn;
@@ -80,6 +82,7 @@ public final class QbusCommunication extends BaseThingHandler {
     private @Nullable String ctd;
     private boolean ctdConnected;
 
+    private List<Map<String, String>> outputs = new ArrayList<>();
     private final Map<Integer, QbusBistabiel> bistabiel = new HashMap<>();
     private final Map<Integer, QbusScene> scene = new HashMap<>();
     private final Map<Integer, QbusDimmer> dimmer = new HashMap<>();
@@ -92,11 +95,22 @@ public final class QbusCommunication extends BaseThingHandler {
 
     private @Nullable QbusBridgeHandler bridgeCallBack;
 
+    /**
+     * Starts main communication thread.
+     * <ul>
+     * <li>Connect to Qbus server
+     * <li>Requests outputs
+     * <li>Start listener
+     * </ul>
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public synchronized void startCommunication() throws IOException, InterruptedException {
         QbusBridgeHandler handler = bridgeCallBack;
         ctdConnected = false;
 
-        if (qEventsRunning) {
+        if (qbusListenerRunning) {
             throw new IOException("Previous listening thread is still active.");
         }
 
@@ -112,8 +126,6 @@ public final class QbusCommunication extends BaseThingHandler {
             qSocket = socket;
             qOut = new PrintWriter(socket.getOutputStream(), true);
             qIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            logger.debug("Connected via local port {} from thread {}", socket.getLocalPort(),
-                    Thread.currentThread().getId());
         } else {
             return;
         }
@@ -124,19 +136,21 @@ public final class QbusCommunication extends BaseThingHandler {
         // Connect to Qbus server
         connect();
 
-        // If Qbus Client is connected then initialize and start listening for incoming commands, else put Bridge
-        // offline
-        if (ctdConnected) {
-            initialize();
-            threadExecutor.execute(() -> {
-                try {
-                    qEvents();
-                } catch (IOException e) {
-                    logger.debug("Could not start thread {} ", e.getMessage());
-                }
-            });
-        } else {
-            handler.bridgeOffline("No communication with Qbus client");
+        // Then start thread to listen to incoming updates from Qbus.
+        threadExecutor.execute(() -> {
+            try {
+                qbusListener();
+            } catch (IOException e) {
+                String msg = e.getMessage();
+                logger.warn("Could not start listening thread, IOException: {}", msg);
+            } catch (InterruptedException e) {
+                String msg = e.getMessage();
+                logger.warn("Could not start listening thread, InterruptedException: {}", msg);
+            }
+        });
+
+        if (!ctdConnected) {
+            handler.bridgePending("Waiting for CTD to come online...");
         }
     }
 
@@ -159,24 +173,21 @@ public final class QbusCommunication extends BaseThingHandler {
             }
         }
 
+        BufferedReader reader = this.qIn;
+        if (reader != null) {
+            reader.close();
+        }
+
+        PrintWriter writer = this.qOut;
+        if (writer != null) {
+            writer.close();
+        }
+
         qSocket = null;
-
-        PrintWriter qbusOut = this.qOut;
-        if (qbusOut != null) {
-            qbusOut.close();
-        }
-
-        BufferedReader qbusIn = this.qIn;
-        try {
-            if (qbusIn != null) {
-                qbusIn.close();
-            }
-        } catch (IOException e) {
-            logger.debug("Error on closing reader {} ", e.getMessage());
-        }
-
+        qbusListenerRunning = false;
         ctdConnected = false;
-        logger.debug("Communication stopped from thread {}", Thread.currentThread().getId());
+
+        logger.trace("Communication stopped from thread {}", Thread.currentThread().getId());
     }
 
     /**
@@ -185,18 +196,553 @@ public final class QbusCommunication extends BaseThingHandler {
      * @throws InterruptedException
      * @throws IOException
      */
-
     public synchronized void restartCommunication() throws InterruptedException, IOException {
         stopCommunication();
 
-        logger.debug("Qbus: restart communication from thread {}", Thread.currentThread().getId());
+        startCommunication();
+    }
+
+    /**
+     * Thread that handles incoming messages from Qbus client.
+     * <p>
+     * The thread listens to the TCP socket opened at instantiation of the {@link QbusCommunication} class
+     * and interprets all incomming json messages. It triggers state updates for active channels linked to the
+     * Qbus outputs. It is started after initialization of the communication.
+     *
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     *
+     *
+     */
+    private void qbusListener() throws IOException, InterruptedException {
+        String qMessage;
+
+        listenerStopped = false;
+        qbusListenerRunning = true;
+
+        BufferedReader reader = this.qIn;
+
+        if (reader == null) {
+            throw new IOException("Bufferreader for incoming messages not initialized.");
+        }
 
         try {
-            startCommunication();
-        } catch (InterruptedException | IOException e) {
-            String message = e.toString();
-            logger.debug("Could not start the communication with the server. {}", message);
+            while (!Thread.currentThread().isInterrupted() && ((qMessage = reader.readLine()) != null)) {
+                readMessage(qMessage);
+
+            }
+        } catch (IOException e) {
+            if (!listenerStopped) {
+                qbusListenerRunning = false;
+                // the IO has stopped working, so we need to close cleanly and try to restart
+                restartCommunication();
+                return;
+            }
+        } finally {
+            qbusListenerRunning = false;
         }
+
+        if (!listenerStopped) {
+            qbusListenerRunning = false;
+
+            QbusBridgeHandler handler = bridgeCallBack;
+
+            if (handler != null) {
+                ctdConnected = false;
+                handler.bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, "No communication with Qbus server");
+            }
+        }
+
+        qbusListenerRunning = false;
+        logger.trace("Event listener thread stopped on thread {}", Thread.currentThread().getId());
+    };
+
+    /**
+     * Called by other methods to send json data to Qbus.
+     *
+     * @param qMessage
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    synchronized void sendMessage(Object qMessage) throws InterruptedException, IOException {
+        PrintWriter writer = qOut;
+        String json = gsonOut.toJson(qMessage);
+
+        if (writer != null) {
+            writer.println(json);
+            // Delay after sending data to improve scene execution
+            TimeUnit.MILLISECONDS.sleep(250);
+        }
+
+        if ((writer == null) || (writer.checkError())) {
+            logger.warn("Error sending message, trying to restart communication");
+
+            restartCommunication();
+
+            // retry sending after restart
+            writer = qOut;
+            if (writer != null) {
+                writer.println(json);
+            }
+            if ((writer == null) || (writer.checkError())) {
+                logger.warn("Error resending message");
+
+            }
+        }
+    }
+
+    /**
+     * Method that interprets all feedback from Qbus Server application and calls appropriate handling methods.
+     * <ul>
+     * <li>Get request & update states for Bistabiel/Timers/Intervals/Mono outputs
+     * <li>Get request & update states for the Scenes
+     * <li>Get request & update states for Dimmers 1T and 2T
+     * <li>Get request & update states for Shutters
+     * <li>Get request & update states for Thermostats
+     * <li>Get request & update states for CO2
+     * </ul>
+     *
+     * @param qMessage message read from Qbus.
+     * @throws InterruptedException
+     * @throws IOException
+     *
+     */
+    private void readMessage(String qMessage) {
+        String sn = null;
+        String cmd = "";
+        String ctd = null;
+        Integer id = null;
+        Integer state = null;
+        Integer mode = null;
+        Double setpoint = null;
+        Double measured = null;
+        Integer slats = null;
+
+        QbusMessageBase qMessageGson;
+        try {
+            qMessageGson = gsonIn.fromJson(qMessage, QbusMessageBase.class);
+
+            if (qMessageGson != null) {
+                ctd = qMessageGson.getSn();
+                cmd = qMessageGson.getCmd();
+                id = qMessageGson.getId();
+                state = qMessageGson.getState();
+                mode = qMessageGson.getMode();
+                setpoint = qMessageGson.getSetPoint();
+                measured = qMessageGson.getMeasured();
+                slats = qMessageGson.getSlatState();
+            }
+        } catch (JsonParseException e) {
+            String msg = e.getMessage();
+            logger.trace("Not acted on unsupported json {} : {}", qMessage, msg);
+            return;
+        }
+
+        QbusBridgeHandler handler = bridgeCallBack;
+
+        if (handler != null) {
+            sn = handler.getSn();
+        }
+
+        if (sn != null && ctd != null) {
+            try {
+                if (sn.equals(ctd) && qMessageGson != null) { // Check if commands are for this Bridge
+                    // Handle all outputs from Qbus
+                    if ("returnOutputs".equals(cmd)) {
+                        outputs = ((QbusMessageListMap) qMessageGson).getOutputs();
+
+                        for (Map<String, String> ctdOutputs : outputs) {
+
+                            String ctdType = ctdOutputs.get("type");
+                            String ctdIdStr = ctdOutputs.get("id");
+                            Integer ctdId = null;
+
+                            if (ctdIdStr != null) {
+                                ctdId = Integer.parseInt(ctdIdStr);
+                            } else {
+                                return;
+                            }
+
+                            if (ctdType != null) {
+                                String ctdState = ctdOutputs.get("state");
+                                String ctdMmode = ctdOutputs.get("regime");
+                                String ctdSetpoint = ctdOutputs.get("setpoint");
+                                String ctdMeasured = ctdOutputs.get("measured");
+                                String ctdSlats = ctdOutputs.get("slats");
+
+                                Integer ctdStateI = null;
+                                if (ctdState != null) {
+                                    ctdStateI = Integer.parseInt(ctdState);
+                                }
+
+                                Integer ctdSlatsI = null;
+                                if (ctdSlats != null) {
+                                    ctdSlatsI = Integer.parseInt(ctdSlats);
+                                }
+
+                                Integer ctdMmodeI = null;
+                                if (ctdMmode != null) {
+                                    ctdMmodeI = Integer.parseInt(ctdMmode);
+                                }
+
+                                Double ctdSetpointD = null;
+                                if (ctdSetpoint != null) {
+                                    ctdSetpointD = Double.parseDouble(ctdSetpoint);
+                                }
+
+                                Double ctdMeasuredD = null;
+                                if (ctdMeasured != null) {
+                                    ctdMeasuredD = Double.parseDouble(ctdMeasured);
+                                }
+
+                                if (ctdState != null) {
+                                    if (ctdType.equals("bistabiel")) {
+                                        QbusBistabiel output = new QbusBistabiel(ctdId);
+                                        if (!bistabiel.containsKey(ctdId)) {
+                                            output.setQComm(this);
+                                            output.updateState(ctdStateI);
+                                            bistabiel.put(ctdId, output);
+                                        } else {
+                                            output.updateState(ctdStateI);
+                                        }
+                                    } else if (ctdType.equals("dimmer")) {
+                                        QbusDimmer output = new QbusDimmer(ctdId);
+                                        if (!dimmer.containsKey(ctdId)) {
+                                            output.setQComm(this);
+                                            output.updateState(ctdStateI);
+                                            dimmer.put(ctdId, output);
+                                        } else {
+                                            output.updateState(ctdStateI);
+                                        }
+                                    } else if (ctdType.equals("CO2")) {
+                                        QbusCO2 output = new QbusCO2();
+                                        if (!co2.containsKey(ctdId)) {
+                                            output.updateState(ctdStateI);
+                                            co2.put(ctdId, output);
+                                        } else {
+                                            output.updateState(ctdStateI);
+                                        }
+                                    } else if (ctdType.equals("scene")) {
+                                        QbusScene output = new QbusScene(ctdId);
+                                        if (!scene.containsKey(ctdId)) {
+                                            output.setQComm(this);
+                                            scene.put(ctdId, output);
+                                        }
+                                    } else if (ctdType.equals("rol")) {
+                                        QbusRol output = new QbusRol(ctdId);
+                                        if (!rol.containsKey(ctdId)) {
+                                            output.setQComm(this);
+                                            output.updateState(ctdStateI);
+                                            if (ctdSlats != null) {
+                                                output.updateSlats(ctdSlatsI);
+                                            }
+                                            rol.put(ctdId, output);
+                                        } else {
+                                            output.updateState(ctdStateI);
+                                            if (ctdSlats != null) {
+                                                output.updateSlats(ctdSlatsI);
+                                            }
+                                        }
+                                    }
+                                } else if (ctdMeasuredD != null && ctdSetpointD != null && ctdMmodeI != null) {
+                                    if (ctdType.equals("thermostat")) {
+                                        QbusThermostat output = new QbusThermostat(ctdId);
+                                        if (!thermostat.containsKey(ctdId)) {
+                                            output.setQComm(this);
+                                            output.updateState(ctdMeasuredD, ctdSetpointD, ctdMmodeI);
+                                            thermostat.put(ctdId, output);
+                                        } else {
+                                            output.updateState(ctdMeasuredD, ctdSetpointD, ctdMmodeI);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Handle update commands from Qbus
+                    } else if ("updateBistabiel".equals(cmd)) {
+                        if (id != null && state != null) {
+                            updateBistabiel(id, state);
+                        }
+                    } else if ("updateDimmer".equals(cmd)) {
+                        if (id != null && state != null) {
+                            updateDimmer(id, state);
+                        }
+                    } else if ("updateDimmer".equals(cmd)) {
+                        if (id != null && state != null) {
+                            updateDimmer(id, state);
+                        }
+                    } else if ("updateCo2".equals(cmd)) {
+                        if (id != null && state != null) {
+                            updateCO2(id, state);
+                        }
+                    } else if ("updateThermostat".equals(cmd)) {
+                        if (id != null && measured != null && setpoint != null && mode != null) {
+                            updateThermostat(id, mode, setpoint, measured);
+                        }
+                    } else if ("updateRol02p".equals(cmd)) {
+                        if (id != null && state != null) {
+                            updateRol(id, state);
+                        }
+                    } else if ("updateRol02pSlat".equals(cmd)) {
+                        if (id != null && state != null && slats != null) {
+                            updateRolSlats(id, state, slats);
+                        }
+                        // Incomming commands from Qbus server to verify the client connection
+                    } else if ("noconnection".equals(cmd)) {
+                        eventDisconnect();
+                    } else if ("connected".equals(cmd)) {
+                        // threadExecutor.execute(() -> {
+                        try {
+                            requestOutputs();
+                        } catch (InterruptedException e) {
+                            String msg = e.getMessage();
+                            logger.warn("Could not request outputs. InterruptedException: {}", msg);
+                        } catch (IOException e) {
+                            String msg = e.getMessage();
+                            logger.warn("Could not request outputs. IOException: {}", msg);
+                        }
+                    }
+                }
+            } catch (JsonParseException e) {
+                String msg = e.getMessage();
+                logger.warn("Not acted on unsupported json {}, {}", qMessage, msg);
+            }
+        }
+    }
+
+    /**
+     * Initialize the communication object
+     */
+    @Override
+    public void initialize() {
+    }
+
+    /**
+     * Initial connection to Qbus Server to open a communication channel
+     *
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    private void connect() throws InterruptedException, IOException {
+        String snr = getSN();
+
+        if (snr != null) {
+            QbusMessageCmd qCmd = new QbusMessageCmd(snr, "openHAB");
+
+            sendMessage(qCmd);
+
+            BufferedReader reader = qIn;
+
+            if (reader == null) {
+                throw new IOException("Cannot read from socket, reader not connected.");
+            }
+            readMessage(reader.readLine());
+
+        } else {
+            QbusBridgeHandler handler = bridgeCallBack;
+            if (handler != null) {
+                handler.bridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "No serial nr defined");
+            }
+        }
+    }
+
+    /**
+     * Send a request for all available outputs and initializes them via readMessage
+     *
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    private void requestOutputs() throws InterruptedException, IOException {
+        String snr = getSN();
+        QbusBridgeHandler handler = bridgeCallBack;
+
+        if (snr != null) {
+            QbusMessageCmd qCmd = new QbusMessageCmd(snr, "all");
+            sendMessage(qCmd);
+
+            BufferedReader reader = qIn;
+            if (reader == null) {
+                throw new IOException("Cannot read from socket, reader not connected.");
+            }
+            readMessage(reader.readLine());
+            ctdConnected = true;
+
+            if (handler != null) {
+                handler.bridgeOnline();
+            }
+
+        } else {
+            if (handler != null) {
+                handler.bridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "No serial nr defined");
+            }
+        }
+    }
+
+    /**
+     * Event on incoming Bistabiel/Timer/Mono/Interval updates
+     *
+     * @param id
+     * @param state
+     */
+    private void updateBistabiel(Integer id, Integer state) {
+        QbusBistabiel qBistabiel = this.bistabiel.get(id);
+
+        if (qBistabiel != null) {
+            qBistabiel.updateState(state);
+        } else {
+            logger.trace("Bistabiel in controller not known {}", id);
+        }
+    }
+
+    /**
+     * Event on incoming Dimmer updates
+     *
+     * @param id
+     * @param state
+     */
+    private void updateDimmer(Integer id, Integer state) {
+        QbusDimmer qDimmer = this.dimmer.get(id);
+
+        if (qDimmer != null) {
+            qDimmer.updateState(state);
+        } else {
+            logger.trace("Dimmer in controller not known {}", id);
+        }
+    }
+
+    /**
+     * Event on incoming thermostat updates
+     *
+     * @param id
+     * @param mode
+     * @param sp
+     * @param ct
+     */
+    private void updateThermostat(Integer id, int mode, double sp, double ct) {
+        QbusThermostat qThermostat = this.thermostat.get(id);
+
+        if (qThermostat != null) {
+            qThermostat.updateState(ct, sp, mode);
+        } else {
+            logger.trace("Thermostat in controller not known {}", id);
+        }
+    }
+
+    /**
+     * Event on incoming CO2 updates
+     *
+     * @param id
+     * @param state
+     */
+    private void updateCO2(Integer id, Integer state) {
+        QbusCO2 qCO2 = this.co2.get(id);
+
+        if (qCO2 != null) {
+            qCO2.updateState(state);
+        } else {
+            logger.trace("CO2 in controller not known {}", id);
+        }
+    }
+
+    /**
+     * Event on incoming screen updates
+     *
+     * @param id
+     * @param state
+     */
+    private void updateRol(Integer id, Integer state) {
+        QbusRol qRol = this.rol.get(id);
+
+        if (qRol != null) {
+            qRol.updateState(state);
+        } else {
+            logger.trace("ROL02P in controller not known {}", id);
+        }
+    }
+
+    /**
+     * Event on incoming screen with slats updates
+     *
+     * @param id
+     * @param state
+     * @param slats
+     */
+    private void updateRolSlats(Integer id, Integer state, Integer slats) {
+        QbusRol qRol = this.rol.get(id);
+
+        if (qRol != null) {
+            qRol.updateState(state);
+            qRol.updateSlats(slats);
+        } else {
+            logger.trace("ROL02P with slats in controller not known {}", id);
+        }
+    }
+
+    /**
+     * Put Bridge offline when there is no connection from the QbusClient
+     *
+     */
+    private void eventDisconnect() {
+        QbusBridgeHandler handler = bridgeCallBack;
+
+        if (handler != null) {
+            handler.bridgePending("Waiting for CTD connection");
+        }
+    }
+
+    /**
+     * Return all Bistabiel/Timers/Mono/Intervals in the Qbus Controller.
+     *
+     * @return
+     */
+    public Map<Integer, QbusBistabiel> getBistabiel() {
+        return this.bistabiel;
+    }
+
+    /**
+     * Return all Scenes in the Qbus Controller
+     *
+     * @return
+     */
+    public Map<Integer, QbusScene> getScene() {
+        return this.scene;
+    }
+
+    /**
+     * Return all Dimmers outputs in the Qbus Controller.
+     *
+     * @return
+     */
+    public Map<Integer, QbusDimmer> getDimmer() {
+        return this.dimmer;
+    }
+
+    /**
+     * Return all rollershutter/screen outputs in the Qbus Controller.
+     *
+     * @return
+     */
+    public Map<Integer, QbusRol> getRol() {
+        return this.rol;
+    }
+
+    /**
+     * Return all Thermostats outputs in the Qbus Controller.
+     *
+     * @return
+     */
+    public Map<Integer, QbusThermostat> getThermostat() {
+        return this.thermostat;
+    }
+
+    /**
+     * Return all CO2 outputs in the Qbus Controller.
+     *
+     * @return
+     */
+    public Map<Integer, QbusCO2> getCo2() {
+        return this.co2;
     }
 
     /**
@@ -213,721 +759,8 @@ public final class QbusCommunication extends BaseThingHandler {
      *
      * @return True if active
      */
-
     public boolean clientConnected() {
         return ctdConnected;
-    }
-
-    /**
-     * Runnable that handles incomming communication from Qbus server.
-     * <p>
-     * The thread listens to the TCP socket opened at instantiation of the {@link QbusCommunication} class
-     * and interprets all incomming json messages. It triggers state updates for active channels linked to the
-     * Qbus outputs. It is started after initialization of the communication.
-     *
-     * @return
-     * @throws IOException
-     *
-     */
-    private void qEvents() throws IOException {
-        String qMessage;
-
-        listenerStopped = false;
-        qEventsRunning = true;
-
-        BufferedReader reader = this.qIn;
-
-        if (reader == null) {
-            throw new IOException("Bufferreader for incoming messages not initialized.");
-        }
-
-        while (!Thread.currentThread().isInterrupted() && ((qMessage = reader.readLine()) != null)) {
-            readMessage(qMessage);
-        }
-
-        if (!listenerStopped) {
-            qEventsRunning = false;
-
-            QbusBridgeHandler handler = bridgeCallBack;
-
-            if (handler != null) {
-                ctdConnected = false;
-                handler.bridgeOffline("No communication with Qbus server");
-            }
-        }
-
-        qEventsRunning = false;
-        logger.trace("Event listener thread stopped on thread {}", Thread.currentThread().getId());
-    };
-
-    /**
-     * Called by other methods to send json data to Qbus.
-     *
-     * @param qMessage
-     * @throws InterruptedException
-     */
-    synchronized void sendMessage(Object qMessage) throws InterruptedException {
-        PrintWriter writer = qOut;
-        String json = gsonOut.toJson(qMessage);
-        QbusBridgeHandler handler = bridgeCallBack;
-
-        if (writer != null) {
-            writer.println(json);
-            // Delay after sending data to improve scene execution
-            TimeUnit.MILLISECONDS.sleep(250);
-
-        }
-        if ((writer == null) || (writer.checkError())) {
-            logger.warn("Error sending message, trying to restart communication");
-            try {
-                restartCommunication();
-            } catch (IOException e) {
-                if (handler != null) {
-                    handler.bridgeOffline("No communication with Qbus server. " + e.toString());
-                }
-            }
-            // retry sending after restart
-            writer = qOut;
-            if (writer != null) {
-                writer.println(json);
-            }
-            if ((writer == null) || (writer.checkError())) {
-                logger.warn("Error resending message");
-
-            }
-        }
-    }
-
-    /**
-     * Called by other methods to Qbus server and read response
-     */
-    private void sendAndReadMessage(String command) throws IOException, InterruptedException {
-        String snr = getSN();
-        if (snr != null) {
-            QbusMessageCmd qCmd = new QbusMessageCmd(snr, command);
-
-            sendMessage(qCmd);
-
-            BufferedReader reader = qIn;
-            if (reader == null) {
-                throw new IOException("Cannot read from socket, reader not connected.");
-            }
-            readMessage(reader.readLine());
-        } else {
-            QbusBridgeHandler handler = bridgeCallBack;
-            if (handler != null) {
-                handler.bridgeOffline("No serial nr defined");
-            }
-        }
-    }
-
-    /**
-     * Method that interprets all feedback from Qbus Server application and calls appropriate handling methods.
-     *
-     * @param qMessage message read from Qbus.
-     */
-    private void readMessage(String qMessage) {
-        String cmd = "";
-        String ctd = "";
-        String sn = null;
-        QbusMessageBase qMessageGson;
-
-        qMessageGson = gsonIn.fromJson(qMessage, QbusMessageBase.class);
-        if (qMessageGson != null) {
-            ctd = qMessageGson.getSn();
-            cmd = qMessageGson.getCmd();
-        }
-
-        QbusBridgeHandler handler = bridgeCallBack;
-
-        if (handler != null) {
-            sn = handler.getSn();
-        }
-
-        if (sn != null && ctd != null) {
-            try {
-                if (Integer.parseInt(sn) == Integer.parseInt(ctd) && qMessageGson != null) {
-                    // Get the compatible outputs from the Qbus server
-                    if ("returnBistabiel".equals(cmd)) {
-                        cmdListBistabiel(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if ("returnDimmer".equals(cmd)) {
-                        cmdListDimmers(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if (("returnThermostat").equals(cmd)) {
-                        cmdListThermostat(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if (("returnScene").equals(cmd)) {
-                        cmdListScenes(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if (("returnCo2").equals(cmd)) {
-                        cmdListCo2(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if (("returnRol02p").equals(cmd)) {
-                        cmdListRol(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if (("returnSlat").equals(cmd)) {
-                        cmdListRolSlats(((QbusMessageListMap) qMessageGson).getOutputs());
-                    }
-
-                    // Incoming commands from Qbus Client to openHAB (event)
-                    else if ("updateBistabiel".equals(cmd)) {
-                        updateBistabiel(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if ("updateDimmer".equals(cmd)) {
-                        updateDimmer(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if ("updateThermostat".equals(cmd)) {
-                        updateThermostat(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if ("updateCo2".equals(cmd)) {
-                        updateCO2(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if ("updateRol02p".equals(cmd)) {
-                        updateRol(((QbusMessageListMap) qMessageGson).getOutputs());
-                    } else if ("updateRol02pSlat".equals(cmd)) {
-                        updateRolSlats(((QbusMessageListMap) qMessageGson).getOutputs());
-                    }
-
-                    // Incomming commands from Qbus server to verify the client connection
-                    else if ("disconnect".equals(cmd)) {
-                        eventDisconnect();
-                    } else if ("notConnected".equals(cmd)) {
-                        noConnection();
-                    } else if ("connected".equals(cmd)) {
-                        connection();
-                    }
-                }
-
-            } catch (JsonParseException e) {
-                logger.warn("Not acted on unsupported json {}", qMessage);
-            }
-        }
-    }
-
-    /**
-     * After setting up the communication with the Qbus Server, send all initialization messages.
-     * <p>
-     * First send connect to connect with the Qbus Server application
-     * Get request for Bistabiel/Timers/Intervals/Mono outputs
-     * Get request for the Scenes
-     * Get request for Dimmers 1T and 2T
-     * Get request for Shutters
-     * Get request for Thermostats
-     * Get request for CO2
-     */
-    @Override
-    public void initialize() {
-        QbusBridgeHandler handler = bridgeCallBack;
-
-        if (bridgeCallBack != null) {
-            if (ctdConnected) {
-                try {
-                    sendAndReadMessage("getBistabiel");
-                    sendAndReadMessage("getScene");
-                    sendAndReadMessage("getDimmer");
-                    sendAndReadMessage("getRol02p");
-                    sendAndReadMessage("getRol02pSlat");
-                    sendAndReadMessage("getThermostat");
-                    sendAndReadMessage("getCo2");
-                } catch (IOException e) {
-                    String message = e.toString();
-                    if (handler != null) {
-                        handler.bridgeOffline("Could not request outputs from client. {}" + message);
-                    } else {
-                        logger.debug("Could not request outputs from client. {}", message);
-                    }
-                } catch (InterruptedException e) {
-                    String message = e.toString();
-                    if (handler != null) {
-                        handler.bridgeOffline("Could not request outputs from client. {}" + message);
-                    } else {
-                        logger.debug("Could not request outputs from client. {}", message);
-                    }
-                }
-
-            } else {
-                ctdConnected = false;
-
-                if (handler != null) {
-                    handler.bridgeOffline("No communication with Qbus client");
-                }
-
-                return;
-            }
-        } else {
-            logger.trace("Initialization error");
-        }
-    }
-
-    public @Nullable String getSN() {
-        return this.ctd;
-    }
-
-    public void setSN() {
-        QbusBridgeHandler qBridgeHandler = bridgeCallBack;
-        if (qBridgeHandler != null) {
-            this.ctd = qBridgeHandler.getSn();
-        }
-    }
-
-    /**
-     * Initial connection to Qbus Server to open a communication channel
-     *
-     * @throws IOException
-     *
-     */
-    private void connect() throws InterruptedException, IOException {
-        String snr = getSN();
-
-        if (snr != null) {
-            QbusMessageCmd qCmd = new QbusMessageCmd(snr, "openHAB");
-
-            sendMessage(qCmd);
-            BufferedReader reader = qIn;
-
-            if (reader == null) {
-                throw new IOException("Cannot read from socket, reader not connected.");
-            }
-            readMessage(reader.readLine());
-        } else {
-            QbusBridgeHandler handler = bridgeCallBack;
-            if (handler != null) {
-                handler.bridgeOffline("No serial nr defined");
-            }
-        }
-
-        return;
-    }
-
-    /**
-     * Get all the Bistabiel/Timer/Mono/Interval outputs from the Qbus client
-     *
-     * @param data
-     */
-    private void cmdListBistabiel(@Nullable List<Map<String, String>> outputs) {
-        if (outputs != null) {
-            for (Map<String, String> bistabiel : outputs) {
-                String idStr = bistabiel.get("id");
-                String stateStr = bistabiel.get("state");
-                if (idStr != null && stateStr != null) {
-                    int id = Integer.parseInt(idStr);
-                    Integer state = Integer.parseInt(stateStr);
-                    QbusBistabiel qBistabiel = new QbusBistabiel(idStr);
-                    if (!this.bistabiel.containsKey(id)) {
-                        qBistabiel.setState(state);
-                        qBistabiel.setQComm(this);
-                        this.bistabiel.put(id, qBistabiel);
-                        qBistabiel.setState(state);
-                    } else {
-                        qBistabiel.setState(state);
-                    }
-                } else {
-                    logger.debug("Error in json for BistabBistabiel/Timers/Monos/Intervals");
-                }
-            }
-        }
-    }
-
-    /**
-     * Get all the scenes from the Qbus server
-     *
-     * @param outputs
-     */
-    private void cmdListScenes(@Nullable List<Map<String, String>> outputs) {
-        if (outputs != null) {
-            for (Map<String, String> scene : outputs) {
-                String idStr = scene.get("id");
-                if (idStr != null) {
-                    int id = Integer.parseInt(idStr);
-                    QbusScene qScene = new QbusScene(idStr);
-                    qScene.setQComm(this);
-                    this.scene.put(id, qScene);
-                } else {
-                    logger.debug("Error in json for Scenes");
-                }
-            }
-        }
-    }
-
-    /**
-     * Get all the Dimmer outputs from the Qbus client
-     *
-     * @param outputs
-     */
-    private void cmdListDimmers(@Nullable List<Map<String, String>> outputs) {
-        if (outputs != null) {
-            for (Map<String, String> dimmer : outputs) {
-                String idStr = dimmer.get("id");
-                String stateStr = dimmer.get("state");
-                if (idStr != null && stateStr != null) {
-                    int id = Integer.parseInt(idStr);
-                    Integer state = Integer.parseInt(stateStr);
-                    QbusDimmer qDimmer = new QbusDimmer(idStr);
-                    if (!this.dimmer.containsKey(id)) {
-                        qDimmer.setQComm(this);
-                        this.dimmer.put(id, qDimmer);
-                        qDimmer.updateState(state);
-                    } else {
-                        qDimmer.updateState(state);
-                    }
-                } else {
-                    logger.debug("Error in json for Dimmer");
-                }
-            }
-        }
-    }
-
-    /**
-     * Get all the screens with slat control outputs from the Qbus client
-     *
-     * @param data
-     */
-    private void cmdListRol(@Nullable List<Map<String, String>> outputs) {
-        if (outputs != null) {
-            for (Map<String, String> rol : outputs) {
-                String idStr = rol.get("id");
-                String stateStr = rol.get("state");
-                if (idStr != null && stateStr != null) {
-                    int id = Integer.parseInt(idStr);
-                    Integer rolpos = Integer.valueOf(stateStr);
-                    QbusRol qRol = new QbusRol(idStr);
-                    if (!this.rol.containsKey(id)) {
-                        qRol.setQComm(this);
-                        this.rol.put(id, qRol);
-                        qRol.setState(rolpos);
-                    } else {
-                        qRol.setState(rolpos);
-                    }
-                } else {
-                    logger.debug("Error in json for ROL02P");
-                }
-            }
-        }
-    }
-
-    /**
-     * Get all the screen outputs from the Qbus client
-     *
-     * @param data
-     */
-    private void cmdListRolSlats(@Nullable List<Map<String, String>> outputs) {
-        if (outputs != null) {
-            for (Map<String, String> rol : outputs) {
-                String idStr = rol.get("id");
-                String rolPos = rol.get("rolPos");
-                String slatPos = rol.get("slatPos");
-                if (idStr != null && rolPos != null && slatPos != null) {
-                    int id = Integer.parseInt(idStr);
-                    Integer rolpos = Integer.parseInt(rolPos);
-                    Integer rolposslats = Integer.parseInt(slatPos);
-                    QbusRol qRol = new QbusRol(idStr);
-                    if (!this.rol.containsKey(id)) {
-                        qRol.setQComm(this);
-                        this.rol.put(id, qRol);
-                        qRol.setState(rolpos);
-                        qRol.setSlats(rolposslats);
-                    } else {
-                        qRol.setState(rolpos);
-                        qRol.setSlats(rolposslats);
-                    }
-                } else {
-                    logger.debug("Error in json for ROL02P_Slats");
-                }
-            }
-        }
-    }
-
-    /**
-     * Get all the CO2 outputs from the Qbus client
-     *
-     * @param data
-     */
-    private void cmdListCo2(@Nullable List<Map<String, String>> outputs) {
-        if (outputs != null) {
-            for (Map<String, String> co2 : outputs) {
-                String idStr = co2.get("id");
-                String stateStr = co2.get("state");
-                if (idStr != null && stateStr != null) {
-                    int id = Integer.parseInt(idStr);
-                    int state = Integer.parseInt(stateStr);
-                    QbusCO2 qCO2 = new QbusCO2();
-                    if (!this.co2.containsKey(id)) {
-                        this.co2.put(id, qCO2);
-                        qCO2.setState(state);
-                    } else {
-                        qCO2.setState(state);
-                    }
-                } else {
-                    logger.debug("Error in json for CO2");
-                }
-
-            }
-        }
-    }
-
-    /**
-     * Get all the Thermostat outputs from the Qbus client
-     *
-     * @param data
-     */
-    private void cmdListThermostat(@Nullable List<Map<String, String>> outputs) {
-        if (outputs != null) {
-            for (Map<String, String> thermostat : outputs) {
-                String idStr = thermostat.get("id");
-                String measuredStr = thermostat.get("measured");
-                String setpointStr = thermostat.get("SetPoint");
-                String modeStr = thermostat.get("Mode");
-                if (idStr != null && measuredStr != null && setpointStr != null && modeStr != null) {
-                    int id = Integer.parseInt(idStr);
-                    Double measured = Double.valueOf(measuredStr);
-                    Double setpoint = Double.valueOf(setpointStr);
-                    Integer mode = Integer.valueOf(modeStr);
-                    QbusThermostat qThermostat = new QbusThermostat(idStr);
-                    if (!this.thermostat.containsKey(id)) {
-                        qThermostat.updateState(measured, setpoint, mode);
-                        qThermostat.setQComm(this);
-                        this.thermostat.put(id, qThermostat);
-                    } else {
-                        qThermostat.updateState(measured, setpoint, mode);
-                    }
-                } else {
-                    logger.debug("Error in json for Thermostats");
-                }
-            }
-        }
-    }
-
-    /**
-     * Event on incoming Bistabiel/Timer/Mono/Interval updates
-     *
-     * @param data
-     */
-    private void updateBistabiel(List<Map<String, String>> output) {
-        for (Map<String, String> bistabiel : output) {
-            String idStr = bistabiel.get("id");
-            String stateStr = bistabiel.get("state");
-            if (idStr != null && stateStr != null) {
-                int id = Integer.parseInt(idStr);
-                int state = Integer.parseInt(stateStr);
-                QbusBistabiel qBistabiel = this.bistabiel.get(id);
-                if (qBistabiel != null) {
-                    if (!this.bistabiel.containsKey(id)) {
-                        logger.warn("Bistabiel in controller not known {}", id);
-                        return;
-                    }
-                    logger.debug("Event execute bistabiel {} with state {}", id, state);
-                    qBistabiel.setState(state);
-                }
-            }
-        }
-    }
-
-    /**
-     * Event on incoming Dimmer updates
-     *
-     * @param data
-     */
-    private void updateDimmer(List<Map<String, String>> data) {
-        for (Map<String, String> dimmer : data) {
-            String idStr = dimmer.get("id");
-            String stateStr = dimmer.get("state");
-            if (idStr != null && stateStr != null) {
-                int id = Integer.valueOf(idStr);
-                int value = Integer.valueOf(stateStr);
-                QbusDimmer qDimmer = this.dimmer.get(id);
-                if (!this.dimmer.containsKey(id)) {
-                    logger.warn("Dimmer in controller not known {}", id);
-                    return;
-                }
-                if (qDimmer != null) {
-                    logger.debug("Event execute dimmer {} with state {}", id, value);
-                    qDimmer.setState(value);
-                }
-            }
-        }
-    }
-
-    /**
-     * Event on incoming screen updates
-     *
-     * @param data
-     */
-    private void updateRol(List<Map<String, String>> data) {
-        for (Map<String, String> rol : data) {
-            String idStr = rol.get("id");
-            String posStr = rol.get("value1Str");
-            if (idStr != null && posStr != null) {
-                int id = Integer.valueOf(idStr);
-                int pos = Integer.valueOf(posStr);
-                QbusRol qRol = this.rol.get(id);
-                if (!this.rol.containsKey(id)) {
-                    logger.warn("Rol02p in controller not known {}", id);
-                    return;
-                }
-                if (qRol != null) {
-                    logger.debug("Event execute Rol02P {} with pos {}", id, pos);
-                    qRol.setState(pos);
-                }
-
-            }
-        }
-    }
-
-    /**
-     * Event on incoming screen with slats updates
-     *
-     * @param data
-     */
-    private void updateRolSlats(List<Map<String, String>> data) {
-        for (Map<String, String> rol : data) {
-            String idStr = rol.get("id");
-            String posStr = rol.get("pos");
-            String slatsStr = rol.get("slats");
-            if (idStr != null && posStr != null && slatsStr != null) {
-                int id = Integer.valueOf(idStr);
-                int pos = Integer.valueOf(posStr);
-                int slats = Integer.valueOf(slatsStr);
-                QbusRol qRol = this.rol.get(id);
-                if (!this.rol.containsKey(id)) {
-                    logger.warn("Rol02p in controller not known {}", id);
-                    return;
-                }
-                if (qRol != null) {
-                    logger.debug("Event execute ROL02P_Slats {} with pos {} and slats {}", id, pos, slats);
-                    qRol.setState(pos);
-                    qRol.setSlats(slats);
-                }
-            }
-        }
-    }
-
-    /**
-     * Event on incoming thermostat updates
-     *
-     * @param data
-     */
-    private void updateThermostat(List<Map<String, String>> data) {
-        for (Map<String, String> thermostat : data) {
-            String idStr = thermostat.get("id");
-            String measuredStr = thermostat.get("measured");
-            String setpointdStr = thermostat.get("setpoint");
-            String modedStr = thermostat.get("mode");
-            if (idStr != null && measuredStr != null && setpointdStr != null && modedStr != null) {
-                int id = Integer.valueOf(idStr);
-                Double measured = Double.valueOf(measuredStr);
-                Double setpoint = Double.valueOf(setpointdStr);
-                Integer mode = Integer.valueOf(modedStr);
-                QbusThermostat qThermostat = this.thermostat.get(id);
-                if (!this.thermostat.containsKey(id)) {
-                    logger.warn("Thermostat in controller not known {}", id);
-                    return;
-                }
-                if (qThermostat != null) {
-                    logger.debug("Event execute thermostat {} with measured {}, setpoint {}, mode {}", id, measured,
-                            setpoint, mode);
-                    qThermostat.updateState(measured, setpoint, mode);
-                }
-            }
-        }
-    }
-
-    /**
-     * Event on incoming CO2 updates
-     *
-     * @param data
-     */
-    private void updateCO2(List<Map<String, String>> data) {
-        for (Map<String, String> co2 : data) {
-            String idStr = co2.get("id");
-            String value1Str = co2.get("value1Str");
-            if (idStr != null && value1Str != null) {
-                int id = Integer.valueOf(idStr);
-                int value1 = Integer.valueOf(value1Str);
-                QbusCO2 qCO2 = this.co2.get(id);
-                if (!this.co2.containsKey(id)) {
-                    logger.warn("Co2 in controller not known {}", id);
-                    return;
-                }
-                if (qCO2 != null) {
-                    logger.debug("Event execute co2 {} with state {}", id, value1);
-                    qCO2.setState(value1);
-                }
-            }
-        }
-    }
-
-    /**
-     * Put Bridge offline when QbusClient disconnects
-     */
-    private void eventDisconnect() {
-        ctdConnected = false;
-        QbusBridgeHandler handler = bridgeCallBack;
-        if (handler != null) {
-            handler.bridgeOffline("No communication with Qbus client");
-        }
-    }
-
-    /**
-     * Put Bridge offline when there is no connection from the QbusClient
-     */
-    private void noConnection() {
-        ctdConnected = false;
-        QbusBridgeHandler handler = bridgeCallBack;
-        if (handler != null) {
-            handler.bridgeOffline("No communication with Qbus client");
-        }
-    }
-
-    /**
-     * Set connection state true if there is a connection from QbusClient
-     */
-    private void connection() {
-        ctdConnected = true;
-    }
-
-    /**
-     * Return all Bistabiel/Timers/Mono/Intervals in the Qbus Controller.
-     *
-     * @return
-     */
-    public @Nullable Map<Integer, QbusBistabiel> getBistabiel() {
-        return this.bistabiel;
-    }
-
-    /**
-     * Return all Scenes in the Qbus Controller
-     *
-     * @return
-     */
-    public @Nullable Map<Integer, QbusScene> getScene() {
-        return this.scene;
-    }
-
-    /**
-     * Return all Dimmers in the Qbus Controller.
-     *
-     * @return
-     */
-    public @Nullable Map<Integer, QbusDimmer> getDimmer() {
-        return this.dimmer;
-    }
-
-    /**
-     * Return all rollershutter outûts in the Qbus Controller.
-     *
-     * @return
-     */
-    public @Nullable Map<Integer, QbusRol> getRol() {
-        return this.rol;
-    }
-
-    /**
-     * Return all Thermostats in the Qbus Controller.
-     *
-     * @return
-     */
-    public @Nullable Map<Integer, QbusThermostat> getThermostat() {
-        return this.thermostat;
-    }
-
-    /**
-     * Return all CO2 in the Qbus Controller.
-     *
-     * @return
-     */
-    public @Nullable Map<Integer, QbusCO2> getCo2() {
-        return this.co2;
     }
 
     /**
@@ -935,6 +768,26 @@ public final class QbusCommunication extends BaseThingHandler {
      */
     public void setBridgeCallBack(QbusBridgeHandler bridgeCallBack) {
         this.bridgeCallBack = bridgeCallBack;
+    }
+
+    /**
+     * Get the serial number of the CTD as configured in the Bridge.
+     *
+     * @return serial number of controller
+     */
+    public @Nullable String getSN() {
+        return this.ctd;
+    }
+
+    /**
+     * Sets the serial number of the CTD, as configured in the Bridge.
+     */
+    public void setSN() {
+        QbusBridgeHandler qBridgeHandler = bridgeCallBack;
+
+        if (qBridgeHandler != null) {
+            this.ctd = qBridgeHandler.getSn();
+        }
     }
 
     @Override

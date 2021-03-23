@@ -26,6 +26,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -42,11 +43,9 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable QbusCommunication qbusComm;
 
-    protected @Nullable QbusConfiguration config;
+    protected @Nullable QbusConfiguration bridgeConfig = new QbusConfiguration();
 
     private @Nullable ScheduledFuture<?> refreshTimer;
-
-    private @Nullable ScheduledFuture<?> pollingJob;
 
     private final Logger logger = LoggerFactory.getLogger(QbusBridgeHandler.class);
 
@@ -63,7 +62,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
 
         InetAddress addr;
         Integer port = getPort();
-        Integer refresh = getRefresh();
+        Integer serverCheck = getServerCheck();
 
         if (port == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -85,8 +84,8 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                     "Incorrect ip address set for Qbus Server");
         }
 
-        if (refresh != null) {
-            this.setupRefreshTimer(refresh);
+        if (serverCheck != null) {
+            this.setupRefreshTimer(serverCheck);
         }
     }
 
@@ -108,42 +107,69 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      */
     private void createCommunicationObject(InetAddress addr, int port) {
         scheduler.submit(() -> {
-
             setQbusCommunication(new QbusCommunication(thing));
 
             QbusCommunication qbusCommunication = getQbusCommunication();
 
             setBridgeCallBack();
-            if (qbusCommunication != null) {
-                try {
-                    qbusCommunication.startCommunication();
-                } catch (InterruptedException | IOException e) {
-                    bridgeOffline("Communication could not be established " + e.getMessage());
-                    return;
-                }
 
-                if (!qbusCommunication.communicationActive()) {
-                    bridgeOffline("No communication with Qbus Server");
-                    return;
-                }
+            Integer serverCheck = getServerCheck();
+            String sn = getSn();
+            if (serverCheck != null) {
+                if (sn != null) {
+                    if (qbusCommunication != null) {
+                        try {
+                            qbusCommunication.startCommunication();
+                        } catch (InterruptedException e) {
+                            String msg = e.getMessage();
+                            bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Communication wit Qbus server could not be established, will try to reconnect every "
+                                            + serverCheck + " minutes. InterruptedException: " + msg);
+                            return;
+                        } catch (IOException e) {
+                            String msg = e.getMessage();
+                            bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Communication wit Qbus server could not be established, will try to reconnect every "
+                                            + serverCheck + " minutes. IOException: " + msg);
+                            return;
+                        }
 
-                if (!qbusCommunication.clientConnected()) {
-                    bridgeOffline("No communication with Qbus Client");
-                    return;
+                        if (!qbusCommunication.communicationActive()) {
+                            bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "No communication with Qbus Server, will try to reconnect every " + serverCheck
+                                            + " minutes");
+                            return;
+                        }
+
+                        if (!qbusCommunication.clientConnected()) {
+                            bridgePending("Waiting for Qbus client to come online");
+                            return;
+                        }
+
+                    }
                 }
             }
-
-            updateStatus(ThingStatus.ONLINE);
-
         });
     }
 
     /**
-     * Take bridge offline when error in communication with Qbus server. This method can also be
-     * called directly from {@link QbusCommunication} object.
+     * Updates offline status off the Bridge when an error occurs.
+     *
+     * @param status
+     * @param detail
+     * @param message
      */
-    public void bridgeOffline(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+    public void bridgeOffline(ThingStatusDetail detail, String message) {
+        updateStatus(ThingStatus.OFFLINE, detail, message);
+    }
+
+    /**
+     * Updates pending status off the Bridge (usualay when Qbus client id not connected)
+     *
+     * @param message
+     */
+    public void bridgePending(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING, message);
     }
 
     /**
@@ -154,13 +180,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Schedule future communication refresh.
+     * Initializes a timer that check the communication with Qbus server/client and tries to re-establish communication.
      *
-     * @param interval_config Time before refresh in minutes.
+     * @param refreshInterval Time before refresh in minutes.
      */
-
     private void setupRefreshTimer(int refreshInterval) {
         ScheduledFuture<?> timer = refreshTimer;
+
         if (timer != null) {
             timer.cancel(true);
             refreshTimer = null;
@@ -170,43 +196,30 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        // This timer will check connection with server and client periodically
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
             QbusCommunication comm = getCommunication();
+            Integer serverCheck = getServerCheck();
 
             if (comm != null) {
-                if (!comm.communicationActive()) {
-                    // Disconnected from Qbus Server, try to reconnect
-                    try {
-                        comm.restartCommunication();
-                    } catch (InterruptedException e) {
-                        bridgeOffline("No connection with Qbus Server " + e.toString());
-                    } catch (IOException e) {
-                        bridgeOffline("No connection with Qbus Server " + e.toString());
-                    }
+                if (serverCheck != null) {
                     if (!comm.communicationActive()) {
-                        bridgeOffline("No connection with Qbus Server");
-                        return;
-                    }
-                } else {
-                    // Controller disconnected from Qbus client, try to reconnect controller
-                    if (!comm.clientConnected()) {
+                        // Disconnected from Qbus Server, restart communication
                         try {
-                            comm.restartCommunication();
+                            comm.startCommunication();
                         } catch (InterruptedException e) {
-                            bridgeOffline("No connection with Qbus Server " + e.toString());
+                            String msg = e.getMessage();
+                            bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Communication wit Qbus server could not be established, will try to reconnect every "
+                                            + serverCheck + " minutes. InterruptedException: " + msg);
                         } catch (IOException e) {
-                            bridgeOffline("No connection with Qbus Server " + e.toString());
-                        }
-                        if (!comm.clientConnected()) {
-                            bridgeOffline("No connection with Qbus Client");
-                            return;
+                            String msg = e.getMessage();
+                            bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Communication wit Qbus server could not be established, will try to reconnect every "
+                                            + serverCheck + " minutes. IOException: " + msg);
                         }
                     }
                 }
             }
-            updateStatus(ThingStatus.ONLINE);
-
         }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
     }
 
@@ -237,18 +250,59 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Reconnect to Qbus server if controller is offline
+     */
+    public void ctdOffline() {
+        bridgePending("Waiting for CTD connection");
+    }
+
+    /**
+     * Get BridgeCommunication
+     *
+     * @return BridgeCommunication
+     */
+    public @Nullable QbusCommunication getQbusCommunication() {
+        if (this.qbusComm != null) {
+            return this.qbusComm;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Sets BridgeCommunication
+     *
+     * @param BridgeCommunication
+     */
+    void setQbusCommunication(QbusCommunication comm) {
+        this.qbusComm = comm;
+    }
+
+    /**
+     * Gets the status off the Bridge
+     *
+     * @return
+     */
+    public ThingStatus getStatus() {
+        return thing.getStatus();
+    }
+
+    /**
+     * Gets the status off the Bridge
+     *
+     * @return
+     */
+    public ThingStatusDetail getStatusDetails() {
+        ThingStatusInfo status = thing.getStatusInfo();
+        ThingStatusDetail detail = status.getStatusDetail();
+        return detail;
+    }
+
+    /**
      * Sets the configuration parameters
      */
     protected void readConfig() {
-        final ScheduledFuture<?> localPollingJob = this.pollingJob;
-
-        if (localPollingJob != null) {
-            localPollingJob.cancel(true);
-        }
-
-        if (localPollingJob == null || localPollingJob.isCancelled()) {
-            this.config = getConfig().as(QbusConfiguration.class);
-        }
+        bridgeConfig = getConfig().as(QbusConfiguration.class);
     }
 
     /**
@@ -266,13 +320,10 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the ip address
      */
     public @Nullable String getAddress() {
-        QbusConfiguration bridgeConfig = this.config;
-        if (bridgeConfig != null) {
-            if (bridgeConfig.addr != null) {
-                return bridgeConfig.addr;
-            } else {
-                return "";
-            }
+        QbusConfiguration localConfig = this.bridgeConfig;
+
+        if (localConfig != null) {
+            return localConfig.addr;
         } else {
             return null;
         }
@@ -284,13 +335,10 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public @Nullable Integer getPort() {
-        QbusConfiguration bridgeConfig = this.config;
-        if (bridgeConfig != null) {
-            if (bridgeConfig.port != null) {
-                return bridgeConfig.port;
-            } else {
-                return 0;
-            }
+        QbusConfiguration localConfig = this.bridgeConfig;
+
+        if (localConfig != null) {
+            return localConfig.port;
         } else {
             return null;
         }
@@ -302,13 +350,10 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @return the serial nr of the controller
      */
     public @Nullable String getSn() {
-        QbusConfiguration bridgeConfig = this.config;
-        if (bridgeConfig != null) {
-            if (bridgeConfig.sn != null) {
-                return bridgeConfig.sn;
-            } else {
-                return "";
-            }
+        QbusConfiguration localConfig = this.bridgeConfig;
+
+        if (localConfig != null) {
+            return localConfig.sn;
         } else {
             return null;
         }
@@ -319,14 +364,11 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @return the refresh interval
      */
-    public @Nullable Integer getRefresh() {
-        QbusConfiguration bridgeConfig = this.config;
-        if (bridgeConfig != null) {
-            if (bridgeConfig.refresh != null) {
-                return bridgeConfig.refresh;
-            } else {
-                return 0;
-            }
+    public @Nullable Integer getServerCheck() {
+        QbusConfiguration localConfig = this.bridgeConfig;
+
+        if (localConfig != null) {
+            return localConfig.serverCheck;
         } else {
             return null;
         }
@@ -334,27 +376,5 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    /**
-     * Get state of bistabiel.
-     *
-     * @return bistabiel state
-     */
-    public @Nullable QbusCommunication getQbusCommunication() {
-        if (this.qbusComm != null) {
-            return this.qbusComm;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Sets state of bistabiel.
-     *
-     * @param bistabiel state
-     */
-    void setQbusCommunication(QbusCommunication comm) {
-        this.qbusComm = comm;
     }
 }

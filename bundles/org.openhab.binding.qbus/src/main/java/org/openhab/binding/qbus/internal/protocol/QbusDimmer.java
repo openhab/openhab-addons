@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.qbus.internal.protocol;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusDimmerHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusDimmer} class represents the action Qbus Dimmer output.
@@ -27,38 +27,22 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusDimmer {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusDimmer.class);
-
     private @Nullable QbusCommunication qComm;
 
-    private String id;
+    private Integer id;
 
     private @Nullable Integer state;
 
     private @Nullable QbusDimmerHandler thingHandler;
 
-    QbusDimmer(String id) {
+    QbusDimmer(Integer id) {
         this.id = id;
-    }
-
-    /**
-     * Update all values of the dimmer
-     *
-     * @param state
-     */
-    public void updateState(Integer state) {
-        setState(state);
-
-        QbusDimmerHandler handler = thingHandler;
-        if (handler != null) {
-            handler.handleStateUpdate(this);
-        }
     }
 
     /**
      * This method should be called if the ThingHandler for the thing corresponding to this dimmer is initialized.
      * It keeps a record of the thing handler in this object so the thing can be updated when
-     * the dimmer receives an update from the Qbus IP-interface.
+     * the dimmer receives an update from the Qbus client.
      *
      * @param handler
      */
@@ -69,7 +53,7 @@ public final class QbusDimmer {
     /**
      * This method sets a pointer to the qComm Dimmer of class {@link QbusCommuncation}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
-     * Qbus IP-interface when..
+     * Qbus client.
      *
      * @param qComm
      */
@@ -78,20 +62,29 @@ public final class QbusDimmer {
     }
 
     /**
-     * Get state of dimmer.
+     * Update the value of the dimmer
      *
-     * @return dimmer state
+     * @param state
      */
-    public @Nullable Integer getState() {
-        if (this.state != null) {
-            return this.state;
-        } else {
-            return null;
+    public void updateState(@Nullable Integer state) {
+        this.state = state;
+        QbusDimmerHandler handler = this.thingHandler;
+        if (handler != null) {
+            handler.handleStateUpdate(this);
         }
     }
 
     /**
-     * Sets state of Dimmer.
+     * Get the state of dimmer.
+     *
+     * @return dimmer state
+     */
+    public @Nullable Integer getState() {
+        return this.state;
+    }
+
+    /**
+     * Sets the state of Dimmer.
      *
      * @param dimmer state
      */
@@ -104,17 +97,16 @@ public final class QbusDimmer {
     }
 
     /**
-     * Sends Dimmer state to Qbus.
+     * Sends the dimmer state to Qbus.
+     *
+     * @throws IOException
+     * @throws InterruptedException
      */
-    public void execute(int percent, String sn) {
+    public void execute(int percent, String sn) throws InterruptedException, IOException {
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeDimmer").withId(this.id).withState(percent);
-        QbusCommunication comm = qComm;
+        QbusCommunication comm = this.qComm;
         if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command for dimmer {}, {}", this.id, e.getMessage());
-            }
+            comm.sendMessage(qCmd);
         }
     }
 }
