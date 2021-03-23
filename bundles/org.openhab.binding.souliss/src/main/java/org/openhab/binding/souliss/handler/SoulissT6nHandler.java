@@ -32,7 +32,6 @@ import org.openhab.core.types.PrimitiveType;
 @NonNullByDefault
 public class SoulissT6nHandler extends SoulissGenericHandler {
 
-    // private Logger logger = LoggerFactory.getLogger(SoulissT6nHandler.class);
     private float fSetPointValue;
 
     public SoulissT6nHandler(Thing thing) {

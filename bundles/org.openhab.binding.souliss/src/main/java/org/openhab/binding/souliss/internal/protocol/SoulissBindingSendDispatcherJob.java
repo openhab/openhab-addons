@@ -229,12 +229,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                         // traduce il comando inviato con lo stato previsto e
                         // poi fa il confronto con lo stato attuale
                         if (logger.isDebugEnabled() && typ != null) {
-                            // String s1 = ((OnOffType) typ.getExpectedState(sCmd)).toFullString();
-                            // String s1 = Integer.toHexString(
-                            // (int) ((SoulissT11Handler) typ.getThing().getHandler()).getFeedbackState());
-                            // String sStateMemoria = s1.length() < 2 ? "0x0" + s1.toUpperCase() : "0x" +
-                            // s1.toUpperCase();
-                            //
                             sCmd = Integer.toHexString(packetsList.get(i).packet.getData()[j]);
                             // comando inviato
                             sCmd = sCmd.length() < 2 ? "0x0" + sCmd.toUpperCase() : "0x" + sCmd.toUpperCase();
@@ -244,12 +238,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                             logger.debug(
                                     "Compare. Node: {} Slot: {} Node Name: {} Command: {} Expected Souliss State: {} - Actual OH item State: {}",
                                     node, iSlot, typ.getLabel(), sCmd, sExpected, typ.getRawState());
-
-                            // logger.debug(
-                            // "Compare. Node: {} Slot: {} Typical: {} Command: {} EXPECTED: {} - IN MEMORY: {}",
-                            // node, iSlot, Integer.toHexString(typ.getType()), sCmd,
-                            // expectedState(typ.getType(), packetsList.get(i).packet.getData()[j]),
-                            // sStateMemoria);
                         }
 
                         if (typ != null && checkExpectedState(typ.getRawState(), bExpected)) {
@@ -320,10 +308,8 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         }
 
         Iterator<Thing> thingsIterator;
-        if (gateway != null /* && gateway.ipAddressOnLAN != null */
-                && (byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3]) == lastByteGatewayIP) {
+        if (gateway != null && (byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3]) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
-            // boolean bFound = false;
             Thing typ = null;
             while (thingsIterator.hasNext()) {
                 typ = thingsIterator.next();
@@ -411,7 +397,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
 
                 if (packetsList.size() > 0 && tFlag) {
                     tPrec = System.currentTimeMillis();
-                    // SocketAndPacket sp = packetsList.remove(0);
 
                     // estratto il primo elemento della lista
                     SoulissBindingSocketAndPacketStruct sp = packetsList.get(iPacket);

@@ -38,11 +38,9 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SoulissT18Handler extends SoulissGenericHandler {
 
-    // private Logger logger = LoggerFactory.getLogger(SoulissT18Handler.class);
     byte t1nRawState;
     @Nullable
     Configuration gwConfigurationMap;
-    // HSBType hsbState = HSBType.WHITE;
     byte xSleepTime = 0;
 
     @Override

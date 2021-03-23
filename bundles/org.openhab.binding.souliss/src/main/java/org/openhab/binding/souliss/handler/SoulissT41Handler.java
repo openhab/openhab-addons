@@ -40,7 +40,6 @@ public class SoulissT41Handler extends SoulissGenericHandler {
 
     @Nullable
     Configuration gwConfigurationMap;
-    // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
     byte t4nRawState;
 
     public SoulissT41Handler(Thing thing) {
@@ -97,8 +96,6 @@ public class SoulissT41Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
                     this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
                     break;
-                // case SoulissBindingConstants.T41_REARMOFF_MESSAGE_CHANNEL:
-                // this.updateState(SoulissBindingConstants.T4n_REARMALARM_CHANNEL, OnOffType.OFF);
             }
         }
         // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off

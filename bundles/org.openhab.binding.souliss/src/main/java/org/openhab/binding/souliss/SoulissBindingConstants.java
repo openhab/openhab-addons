@@ -37,8 +37,6 @@ public final class SoulissBindingConstants {
     public static final long SERVER_CICLE_IN_MILLIS = 10;
     public static final long SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS = 10;
 
-    // public static final int PING_resendTimeoutInSeconds = 5;
-
     // List of all Thing Type UIDs
     public static final ThingTypeUID GATEWAY_THING_TYPE = new ThingTypeUID(BINDING_ID, "gateway");
 
@@ -50,7 +48,6 @@ public final class SoulissBindingConstants {
     public static final String T18 = "t18";
     public static final String T19 = "t19";
     public static final String T1A = "t1a";
-    // public static final String LYT = "lyt";
     public static final String T21 = "t21";
     public static final String T22 = "t22";
     public static final String T31 = "t31";
@@ -82,7 +79,6 @@ public final class SoulissBindingConstants {
     public static final ThingTypeUID T18_THING_TYPE = new ThingTypeUID(BINDING_ID, T18);
     public static final ThingTypeUID T19_THING_TYPE = new ThingTypeUID(BINDING_ID, T19);
     public static final ThingTypeUID T1A_THING_TYPE = new ThingTypeUID(BINDING_ID, T1A);
-    // public static final ThingTypeUID LYT_THING_TYPE = new ThingTypeUID(BINDING_ID, LYT);
     public static final ThingTypeUID T21_THING_TYPE = new ThingTypeUID(BINDING_ID, T21);
     public static final ThingTypeUID T22_THING_TYPE = new ThingTypeUID(BINDING_ID, T22);
     public static final ThingTypeUID T31_THING_TYPE = new ThingTypeUID(BINDING_ID, T31);

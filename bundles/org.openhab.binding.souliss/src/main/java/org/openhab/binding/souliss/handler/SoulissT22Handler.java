@@ -40,7 +40,6 @@ import org.openhab.core.types.RefreshType;
 public class SoulissT22Handler extends SoulissGenericHandler {
     @Nullable
     Configuration gwConfigurationMap;
-    // private Logger logger = LoggerFactory.getLogger(SoulissT22Handler.class);
     byte t2nRawState;
 
     public SoulissT22Handler(Thing thing) {
@@ -61,7 +60,6 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ROLLERSHUTTER_CHANNEL:
-                    // updateState(channelUID, T2nState);
                     break;
             }
         } else {

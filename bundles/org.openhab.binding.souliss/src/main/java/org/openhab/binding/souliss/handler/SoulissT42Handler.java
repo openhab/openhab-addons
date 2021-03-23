@@ -37,8 +37,6 @@ import org.openhab.core.types.PrimitiveType;
 public class SoulissT42Handler extends SoulissGenericHandler {
     @Nullable
     Configuration gwConfigurationMap;
-
-    // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
     byte t4nRawState;
 
     public SoulissT42Handler(Thing thing) {

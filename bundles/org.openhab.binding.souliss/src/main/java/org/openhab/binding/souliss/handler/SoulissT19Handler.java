@@ -84,11 +84,8 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
                     if (command instanceof PercentType) {
                         updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL, (PercentType) command);
-                        // updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                        /// PercentType.valueOf(hsbState.getBrightness().toString()));
                         commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_SET,
                                 (byte) (((PercentType) command).shortValue() * 255.00 / 100.00));
-                        // Short.parseShort(String.valueOf(Math.round((dimmerValue / 255.00) * 100)))
                     } else if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
                             commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);

@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissBindingUDPServerJob implements Runnable {
 
-    // protected DatagramSocket socket = null;
     @Nullable
     protected BufferedReader in = null;
     protected boolean bExit = false;

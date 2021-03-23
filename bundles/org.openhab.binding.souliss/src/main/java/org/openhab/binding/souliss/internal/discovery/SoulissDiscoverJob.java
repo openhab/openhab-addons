@@ -40,16 +40,12 @@ public class SoulissDiscoverJob implements Runnable {
      */
     public interface DiscoverResult {
         static boolean IS_GATEWAY_DETECTED = false;
-        // @Nullable
-        // Bridge bridge = null;
 
         void gatewayDetected(InetAddress addr, String id);
 
         void thingDetectedTypicals(byte lastByteGatewayIP, byte typical, byte node, byte slot);
 
         void thingDetectedActionMessages(String sTopicNumber, String sTopicVariant);
-
-        // ThingUID getGatewayUID();
     }
 
     @Nullable

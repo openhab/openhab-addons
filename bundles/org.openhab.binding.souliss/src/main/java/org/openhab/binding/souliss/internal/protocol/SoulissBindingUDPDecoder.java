@@ -176,7 +176,6 @@ public class SoulissBindingUDPDecoder {
         Bridge gw = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
 
         if (gw != null) {
-            // SoulissGatewayHandler gateway = null;
             SoulissGatewayHandler gwHandler = (SoulissGatewayHandler) gw.getHandler();
             if (gwHandler != null) {
                 gwHandler.gatewayDetected();
@@ -330,18 +329,14 @@ public class SoulissBindingUDPDecoder {
     private void decodeDBStructRequest(byte lastByteGatewayIP, ArrayList<Byte> mac) {
         try {
             int nodes = mac.get(5);
-            // int maxnodes = mac.get(6);
             int maxTypicalXnode = mac.get(7);
-            // int maxrequests = mac.get(8);
 
             Bridge bridge = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
             if (bridge != null) {
                 SoulissGatewayHandler gateway = (SoulissGatewayHandler) bridge.getHandler();
                 if (gateway != null) {
                     gateway.setNodes(nodes);
-                    // gateway.setMaxnodes(maxnodes);
                     gateway.setMaxTypicalXnode(maxTypicalXnode);
-                    // gateway.setMaxrequests(maxrequests);
 
                     // db Struct Answer from lastByteGatewayIP
                     gateway.dbStructAnswerReceived();
@@ -377,7 +372,6 @@ public class SoulissBindingUDPDecoder {
                 List<Thing> listaThings = gateway.getThing().getThings();
                 ThingHandler handler = null;
                 for (Thing thing : listaThings) {
-                    // if (thingGeneric != null) {
                     handler = thing.getHandler();
                     if (handler != null) {
                         int tgtnode = i - 5;
@@ -387,7 +381,6 @@ public class SoulissBindingUDPDecoder {
                     } else {
                         logger.debug("decode Healthy Request Warning. Thing handler is null");
                     }
-                    // }
                 }
             }
         } else {
