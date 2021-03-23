@@ -72,8 +72,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private int nodes;
     private int maxTypicalXnode;
     private int countPingKo = 0;
-    // private int maxnodes = 0;
-    // private int maxrequests = 0;
 
     public SoulissGatewayHandler(Bridge _bridge) {
         super(_bridge);
@@ -228,9 +226,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        // if (ipAddressOnLAN != null) {
         SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
-        // udpServerDefaultPortRunnableClass = null;
         logger.debug("Gateway handler removing");
         // }
     }
@@ -238,10 +234,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     @Override
     public void thingUpdated(Thing thing) {
         logger.debug("Thing Updated: {}", thing.getThingTypeUID());
-        // if (ipAddressOnLAN != null) {
         SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
-        // .removeGateway((byte) (Byte.parseByte((ipAddressOnLAN.split("\\.")[3]) & (byte) 0xFF));
-        // }
         this.thing = thing;
     }
 
@@ -313,8 +306,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void sendSubscription() {
-        // logger.debug("Sending subscription packet");
-        if ( /* ipAddressOnLAN != null && */ ipAddressOnLAN.length() > 0) {
+        if (ipAddressOnLAN.length() > 0) {
             soulissCommands.sendSUBSCRIPTIONframe(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
                     nodeIndex, userIndex, getNodes());
         }

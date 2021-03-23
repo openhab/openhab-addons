@@ -155,7 +155,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     @Nullable
     public String getGatewayIP() {
-        // return ((SoulissGatewayHandler) thingRegistry.get(thingGeneric.getBridgeUID()).getHandler()).ipAddressOnLAN;
         Bridge bridge = getBridge();
         if (bridge != null) {
             if (bridge.getHandler() != null) {

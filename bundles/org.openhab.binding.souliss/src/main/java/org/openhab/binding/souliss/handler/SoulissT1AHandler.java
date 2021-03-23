@@ -33,7 +33,6 @@ import org.openhab.core.types.Command;
 public class SoulissT1AHandler extends SoulissGenericHandler {
     @Nullable
     Configuration gwConfigurationMap;
-    // private Logger logger = LoggerFactory.getLogger(SoulissT1AHandler.class);
     byte t1nRawState;
 
     public SoulissT1AHandler(Thing thing) {

@@ -28,11 +28,6 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class SoulissDatagramSocketFactory {
-    // static DatagramSocket soulissDatagramSocket;
-    // static DatagramSocket soulissDatagramSocket_port230;
-
-    // public static Integer serverPort;
-    // private final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
 
     public static @Nullable DatagramSocket getSocketDatagram(Logger logger) {
         return getSocketDatagram(0, logger);
