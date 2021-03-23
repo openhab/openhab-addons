@@ -53,9 +53,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
     @Nullable
     private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
-    // @Nullable
-    // private ThingUID gatewayUID;
-    // private ScheduledFuture<?> schedulerFuture;
     @Nullable
     private DatagramSocket datagramSocket;
     @Nullable
@@ -70,7 +67,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         SoulissBindingNetworkParameters.discoverResult = this;
         // open socket
-        // Version version = FrameworkUtil.getBundle(getClass()).getVersion();
         String sSymbolicName = FrameworkUtil.getBundle(getClass()).getSymbolicName();
         Version bindingVersion = FrameworkUtil.getBundle(getClass()).getVersion();
 
@@ -126,9 +122,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         String label = "Souliss Gateway " + (Byte.parseByte(id) & 0xFF);
         Map<String, Object> properties = new TreeMap<>();
-        // properties.put(SoulissBindingConstants.CONFIG_ID, id);
         properties.put(SoulissBindingConstants.CONFIG_IP_ADDRESS, addr.getHostAddress());
-        // SoulissBindingNetworkParameters.ipAddressOnLAN = addr.getHostAddress();
         ThingUID gatewayUID = new ThingUID(SoulissBindingConstants.GATEWAY_THING_TYPE,
                 Integer.toString((Byte.parseByte(id) & 0xFF)));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withLabel(label)
@@ -166,11 +160,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         }
         super.stopScan();
     }
-
-    // @Override
-    // public ThingUID getGatewayUID() {
-    // return gatewayUID;
-    // }
 
     @Override
     public void thingDetectedActionMessages(String TopicNumber, String sTopicVariant) {

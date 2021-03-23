@@ -110,8 +110,6 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                     if (command instanceof PercentType) {
                         updateState(SoulissBindingConstants.LED_COLOR_CHANNEL,
                                 gethsb(t1nRawStateRedByte1, t1nRawStateGreenByte2, t1nRawStateBluByte3));
-                        // updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                        /// PercentType.valueOf(hsbState.getBrightness().toString()));
                         commandSendRgb(SoulissBindingProtocolConstants.SOULISS_T1N_SET,
                                 (byte) (hsbState.getRed().shortValue() * (255.00 / 100)),
                                 (byte) (hsbState.getGreen().shortValue() * (255.00 / 100)),

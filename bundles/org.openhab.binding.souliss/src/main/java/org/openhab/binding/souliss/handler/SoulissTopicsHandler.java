@@ -31,8 +31,6 @@ import org.openhab.core.types.PrimitiveType;
 @NonNullByDefault
 public class SoulissTopicsHandler extends SoulissGenericActionMessage implements TypicalCommonMethods {
 
-    // private Logger logger = LoggerFactory.getLogger(SoulissTopicsHandler.class);
-    // private DecimalType setPointValue = DecimalType.ZERO;
     private float fSetPointValue;
 
     public SoulissTopicsHandler(Thing pThing) {
