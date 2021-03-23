@@ -21,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - added Shutter Control, ThermostatHandler
+ * @author Christian Oeing - Added WallThermostatHandler
  */
 @NonNullByDefault
 public class BoschSHCBindingConstants {
@@ -37,6 +38,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
+    public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
