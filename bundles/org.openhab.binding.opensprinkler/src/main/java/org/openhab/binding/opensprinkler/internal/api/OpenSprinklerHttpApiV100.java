@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -380,7 +381,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             }
             ContentResponse response;
             try {
-                response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET).send();
+                response = withGeneralProperties(httpClient.newRequest(location)).timeout(5, TimeUnit.SECONDS)
+                        .method(HttpMethod.GET).send();
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
             }
