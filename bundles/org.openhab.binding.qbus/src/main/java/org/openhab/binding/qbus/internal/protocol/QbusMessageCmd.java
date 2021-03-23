@@ -35,7 +35,7 @@ class QbusMessageCmd extends QbusMessageBase {
         this.cmd = cmd;
     }
 
-    QbusMessageCmd withId(String id) {
+    QbusMessageCmd withId(Integer id) {
         this.setId(id);
         return this;
     }

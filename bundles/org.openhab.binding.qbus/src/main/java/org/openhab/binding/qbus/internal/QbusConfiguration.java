@@ -27,5 +27,5 @@ public class QbusConfiguration {
     public @Nullable String addr;
     public @Nullable Integer port;
     public @Nullable String sn;
-    public @Nullable Integer refresh;
+    public @Nullable Integer serverCheck;
 }

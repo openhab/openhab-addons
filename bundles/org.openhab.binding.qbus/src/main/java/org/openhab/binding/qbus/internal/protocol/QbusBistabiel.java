@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.qbus.internal.protocol;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusBistabielHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusBistabiel} class represents the Qbus BISTABIEL output.
@@ -27,24 +27,22 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusBistabiel {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusBistabiel.class);
-
     private @Nullable QbusCommunication qComm;
 
-    private String id;
+    private Integer id;
 
     private @Nullable Integer state;
 
     private @Nullable QbusBistabielHandler thingHandler;
 
-    QbusBistabiel(String id) {
+    QbusBistabiel(Integer id) {
         this.id = id;
     }
 
     /**
      * This method should be called if the ThingHandler for the thing corresponding to this bistabiel is initialized.
      * It keeps a record of the thing handler in this object so the thing can be updated when
-     * the bistable output receives an update from the Qbus IP-interface.
+     * the bistable output receives an update from the Qbus client.
      *
      * @param handler
      */
@@ -55,7 +53,7 @@ public final class QbusBistabiel {
     /**
      * This method sets a pointer to the qComm BISTABIEL of class {@link QbusCommuncation}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
-     * Qbus IP-interface when..
+     * Qbus client.
      *
      * @param qComm
      */
@@ -64,24 +62,11 @@ public final class QbusBistabiel {
     }
 
     /**
-     * Get state of bistabiel.
+     * Update the value of the Bistabiel.
      *
-     * @return bistabiel state
+     * @param state
      */
-    public @Nullable Integer getState() {
-        if (this.state != null) {
-            return this.state;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Sets state of bistabiel.
-     *
-     * @param bistabiel state
-     */
-    void setState(int state) {
+    void updateState(@Nullable Integer state) {
         this.state = state;
         QbusBistabielHandler handler = this.thingHandler;
         if (handler != null) {
@@ -90,13 +75,25 @@ public final class QbusBistabiel {
     }
 
     /**
-     * Sends bistabiel to Qbus.
+     * Get the value of the Bistabiel.
      *
-     * @throws InterruptedException
+     * @return
      */
-    public void execute(int value, String sn) {
+    public @Nullable Integer getState() {
+        return this.state;
+    }
+
+    /**
+     * Sends Bistabiel state to Qbus.
+     *
+     * @param value
+     * @param sn
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public void execute(int value, String sn) throws InterruptedException, IOException {
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeBistabiel").withId(this.id).withState(value);
-        QbusCommunication comm = qComm;
+        QbusCommunication comm = this.qComm;
         if (comm != null) {
             try {
                 comm.sendMessage(qCmd);

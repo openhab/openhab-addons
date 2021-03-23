@@ -30,10 +30,12 @@ abstract class QbusMessageBase {
 
     private @Nullable String ctd;
     protected @Nullable String cmd;
-    protected @Nullable String id;
+    protected @Nullable String type;
+    protected @Nullable Integer id;
     protected @Nullable Integer state;
     protected @Nullable Integer mode;
     protected @Nullable Double setpoint;
+    protected @Nullable Double measured;
     protected @Nullable Integer slatState;
 
     @Nullable
@@ -41,8 +43,8 @@ abstract class QbusMessageBase {
         return this.ctd;
     }
 
-    void setSn(String cTD) {
-        this.ctd = cTD;
+    void setSn(String ctd) {
+        this.ctd = ctd;
     }
 
     @Nullable
@@ -55,11 +57,20 @@ abstract class QbusMessageBase {
     }
 
     @Nullable
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Nullable
+    public String getType() {
+        return type;
+    }
+
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -88,6 +99,15 @@ abstract class QbusMessageBase {
 
     public void setSetPoint(Double setpoint) {
         this.setpoint = setpoint;
+    }
+
+    @Nullable
+    public Double getMeasured() {
+        return measured;
+    }
+
+    public void setMeasured(Double measured) {
+        this.measured = measured;
     }
 
     @Nullable

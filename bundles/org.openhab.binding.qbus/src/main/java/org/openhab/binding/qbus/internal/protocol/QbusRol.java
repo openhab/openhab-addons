@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.qbus.internal.protocol;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusRolHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusRol} class represents the action Qbus Shutter/Slats output.
@@ -27,11 +27,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusRol {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusRol.class);
-
     private @Nullable QbusCommunication qComm;
 
-    private String id;
+    private Integer id;
 
     private @Nullable Integer state;
 
@@ -39,7 +37,7 @@ public final class QbusRol {
 
     private @Nullable QbusRolHandler thingHandler;
 
-    QbusRol(String id) {
+    QbusRol(Integer id) {
         this.id = id;
     }
 
@@ -47,7 +45,7 @@ public final class QbusRol {
      * This method should be called if the ThingHandler for the thing corresponding to this Shutter/Slats is
      * initialized.
      * It keeps a record of the thing handler in this object so the thing can be updated when
-     * the shutter/slat receives an update from the Qbus IP-interface.
+     * the shutter/slat receives an update from the Qbus client.
      *
      * @param qbusRolHandler
      */
@@ -67,38 +65,12 @@ public final class QbusRol {
     }
 
     /**
-     * Get state of shutter.
+     * Update the value of the Shutter.
      *
-     * @return shutter state
+     * @param Shutter value
      */
-    public @Nullable Integer getState() {
-        if (this.state != null) {
-            return this.state;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Get state of slats.
-     *
-     * @return slats state
-     */
-    public @Nullable Integer getStateSlats() {
-        if (this.slats != null) {
-            return this.slats;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Sets state of Shutter.
-     *
-     * @param shutter state
-     */
-    public void setState(Integer stat) {
-        this.state = stat;
+    public void updateState(@Nullable Integer state) {
+        this.state = state;
         QbusRolHandler handler = this.thingHandler;
         if (handler != null) {
             handler.handleStateUpdate(this);
@@ -106,11 +78,11 @@ public final class QbusRol {
     }
 
     /**
-     * Sets state of Slats.
+     * Update the value of the Slats.
      *
-     * @param slats state
+     * @param Slat value
      */
-    public void setSlats(Integer Slats) {
+    public void updateSlats(@Nullable Integer Slats) {
         this.slats = Slats;
         QbusRolHandler handler = this.thingHandler;
         if (handler != null) {
@@ -119,25 +91,45 @@ public final class QbusRol {
     }
 
     /**
-     * Sends shutter to Qbus.
+     * Get the value of the Shutter.
+     *
+     * @return shutter value
      */
-    public void execute(int value, String sn) {
+    public @Nullable Integer getState() {
+        return this.state;
+    }
+
+    /**
+     * Get the value of the Slats.
+     *
+     * @return slats value
+     */
+    public @Nullable Integer getStateSlats() {
+        return this.slats;
+    }
+
+    /**
+     * Sends shutter state to Qbus.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void execute(int value, String sn) throws InterruptedException, IOException {
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeStore").withId(this.id).withState(value);
         QbusCommunication comm = qComm;
         if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command for store {}, {}", this.id, e.getMessage());
-            }
+            comm.sendMessage(qCmd);
         }
     }
 
     /**
-     * Sends slats to Qbus.
+     * Sends slats state to Qbus.
+     *
+     * @throws IOException
+     * @throws InterruptedException
      */
-    public void executeSlats(int value, String sn) {
-        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeSlats").withId(this.id).withSlatState(value);
+    public void executeSlats(int value, String sn) throws InterruptedException, IOException {
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeSlats").withId(this.id).withState(value);
         QbusCommunication comm = qComm;
         if (comm != null) {
             try {

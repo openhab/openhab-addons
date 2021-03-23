@@ -24,10 +24,11 @@
 				<default>8447</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh Interval</label>
-				<description>Refresh interval for connection with Qbus server (min), default 10. If set to 0 or left empty, no
-					refresh will be scheduled</description>
+			<parameter name="serverCheck" type="integer" required="false">
+				<label>Server Check</label>
+				<description>Time to check communication with Qbus Server (min), default 10. If set to 0 or left empty, no
+					refresh
+					will be scheduled</description>
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>

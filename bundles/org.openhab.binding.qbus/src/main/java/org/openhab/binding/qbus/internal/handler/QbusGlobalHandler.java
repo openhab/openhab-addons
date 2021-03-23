@@ -23,8 +23,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusGlobalHandler} is used in other handlers, to share the functions.
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public abstract class QbusGlobalHandler extends BaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(QbusGlobalHandler.class);
 
     public QbusGlobalHandler(Thing thing) {
         super(thing);
@@ -92,20 +88,27 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
             qComm.restartCommunication();
         } catch (InterruptedException e) {
             String message = e.toString();
-            logger.debug("Error on stopping communication.{} ", message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         } catch (IOException e) {
             String message = e.toString();
-            logger.debug("Error on stopping communication.{} ", message);
-        }
-
-        if (!qComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication socket error");
-            return;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
 
         QbusBridgeHandler qBridgeHandler = getBridgeHandler(type, globalId);
-        if (qBridgeHandler != null) {
+
+        if (qBridgeHandler != null && qComm.communicationActive()) {
             qBridgeHandler.bridgeOnline();
+        } else {
+            thingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Communication socket error");
         }
+    }
+
+    /**
+     * Put thing offline
+     *
+     * @param message
+     */
+    public void thingOffline(ThingStatusDetail detail, String message) {
+        updateStatus(ThingStatus.OFFLINE, detail, message);
     }
 }

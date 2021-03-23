@@ -16,8 +16,8 @@ import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.library.types.UpDownType.DOWN;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
+import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +32,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusRolHandler} is responsible for handling commands, which are
@@ -43,13 +45,13 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class QbusRolHandler extends QbusGlobalHandler {
 
-    protected @Nullable QbusThingsConfig config;
+    private final Logger logger = LoggerFactory.getLogger(QbusRolHandler.class);
+
+    protected @Nullable QbusThingsConfig rolConfig = new QbusThingsConfig();
 
     private @Nullable Integer rolId;
 
     private @Nullable String sn;
-
-    private @Nullable ScheduledFuture<?> pollingJob;
 
     public QbusRolHandler(Thing thing) {
         super(thing);
@@ -60,60 +62,52 @@ public class QbusRolHandler extends QbusGlobalHandler {
      */
     @Override
     public void initialize() {
-        setConfig();
-        rolId = getId();
+        readConfig();
 
-        QbusCommunication qComm = getCommunication("Screen/Store", rolId);
-        if (qComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No communication with Qbus Bridge!");
-            return;
-        }
-
-        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Screen/Store", rolId);
-        if (qBridgeHandler == null) {
-            return;
-        }
+        this.rolId = getId();
 
         setSN();
 
-        Map<Integer, QbusRol> rolComm = qComm.getRol();
+        scheduler.submit(() -> {
+            QbusCommunication controllerComm;
 
-        if (rolComm != null) {
-            QbusRol qRol = rolComm.get(rolId);
-            if (qRol != null) {
-                qRol.setThingHandler(this);
-                handleStateUpdate(qRol);
+            if (this.rolId != null) {
+                controllerComm = getCommunication("Screen/Store", this.rolId);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Error while initializing the thing.");
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "ID for Screen/Store no set! " + this.rolId);
+                return;
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Error while initializing the thing.");
-        }
-    }
 
-    /**
-     * Returns the serial number of the controller
-     *
-     * @return the serial nr
-     */
-    public @Nullable String getSN() {
-        return this.sn;
-    }
+            if (controllerComm == null) {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "ID for Screen/Store not known in controller " + this.rolId);
+                return;
+            }
 
-    /**
-     * Sets the serial number of the controller
-     */
-    public void setSN() {
-        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Screen/Store", rolId);
-        if (qBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No communication with Qbus Bridge!");
-            return;
-        }
-        this.sn = qBridgeHandler.getSn();
+            Map<Integer, QbusRol> rolCommLocal = controllerComm.getRol();
+
+            QbusRol outputLocal = rolCommLocal.get(this.rolId);
+
+            if (outputLocal == null) {
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Bridge could not initialize Screen/Store ID " + this.rolId);
+                return;
+            }
+
+            outputLocal.setThingHandler(this);
+            handleStateUpdate(outputLocal);
+
+            QbusBridgeHandler qBridgeHandler = getBridgeHandler("Screen/Store", this.rolId);
+
+            if (qBridgeHandler != null) {
+                if (qBridgeHandler.getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                            "Bridge offline for SCREEN/STORE ID " + this.rolId);
+                }
+            }
+        });
     }
 
     /**
@@ -121,26 +115,25 @@ public class QbusRolHandler extends QbusGlobalHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        QbusCommunication qComm = getCommunication("Screen/Store", rolId);
+        QbusCommunication qComm = getCommunication("Screen/Store", this.rolId);
 
         if (qComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to execute command for Screen/Store " + rolId);
+            thingOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                    "ID for ROLLERSHUTTER/SCREEN not known in controller " + this.rolId);
             return;
-        }
+        } else {
+            Map<Integer, QbusRol> rolComm = qComm.getRol();
 
-        Map<Integer, QbusRol> rolComm = qComm.getRol();
+            QbusRol qRol = rolComm.get(this.rolId);
 
-        if (rolComm != null) {
-            QbusRol qRol = rolComm.get(rolId);
             if (qRol == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Bridge communication not initialized when trying to execute command for ROL " + rolId);
+                thingOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "ID for ROLLERSHUTTER/SCREEN not known in controller " + this.rolId);
                 return;
             } else {
                 scheduler.submit(() -> {
                     if (!qComm.communicationActive()) {
-                        restartCommunication(qComm, "Screen/Store", rolId);
+                        restartCommunication(qComm, "Screen/Store", this.rolId);
                     }
 
                     if (qComm.communicationActive()) {
@@ -151,11 +144,32 @@ public class QbusRolHandler extends QbusGlobalHandler {
 
                         switch (channelUID.getId()) {
                             case CHANNEL_ROLLERSHUTTER:
-                                handleScreenposCommand(qRol, command);
+                                try {
+                                    handleScreenposCommand(qRol, command);
+                                } catch (IOException e) {
+                                    String message = e.getMessage();
+                                    logger.warn("Error on executing Rollershutter for screen ID {}. IOException: {}",
+                                            this.rolId, message);
+                                } catch (InterruptedException e) {
+                                    String message = e.toString();
+                                    logger.warn(
+                                            "Error on executing Rollershutter for screen ID {}. Interruptedexception {}",
+                                            this.rolId, message);
+                                }
                                 break;
 
                             case CHANNEL_SLATS:
-                                handleSlatsposCommand(qRol, command);
+                                try {
+                                    handleSlatsposCommand(qRol, command);
+                                } catch (IOException e) {
+                                    String message = e.getMessage();
+                                    logger.warn("Error on executing Slats for screen ID {}. IOException: {}",
+                                            this.rolId, message);
+                                } catch (InterruptedException e) {
+                                    String message = e.toString();
+                                    logger.warn("Error on executing Slats for screen ID {}. Interruptedexception {}",
+                                            this.rolId, message);
+                                }
                                 break;
                         }
                     }
@@ -165,76 +179,49 @@ public class QbusRolHandler extends QbusGlobalHandler {
     }
 
     /**
-     *
-     * @param message
-     */
-    public void thingOffline(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
-    }
-
-    /**
      * Executes the command for screen up/down position
+     *
+     * @throws IOException
+     * @throws InterruptedException
      */
-    private void handleScreenposCommand(QbusRol qRol, Command command) {
+    private void handleScreenposCommand(QbusRol qRol, Command command) throws InterruptedException, IOException {
         String snr = getSN();
-        if (command instanceof UpDownType) {
-            UpDownType upDown = (UpDownType) command;
-            if (upDown == DOWN) {
-                if (snr != null) {
+        if (snr != null) {
+            if (command instanceof UpDownType) {
+                UpDownType upDown = (UpDownType) command;
+                if (upDown == DOWN) {
                     qRol.execute(0, snr);
                 } else {
-                    thingOffline("No serial number configured for  " + rolId);
-                }
-            } else {
-                if (snr != null) {
                     qRol.execute(100, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + rolId);
                 }
-            }
-        } else if (command instanceof IncreaseDecreaseType) {
-            IncreaseDecreaseType inc = (IncreaseDecreaseType) command;
-            int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
-            Integer currentValue = qRol.getState();
-            int newValue;
-            int sendValue;
-            if (currentValue != null) {
-                if (inc == IncreaseDecreaseType.INCREASE) {
-                    newValue = currentValue + stepValue;
-                    // round down to step multiple
-                    newValue = newValue - newValue % stepValue;
-                    sendValue = newValue > 100 ? 100 : newValue;
-                    if (snr != null) {
+            } else if (command instanceof IncreaseDecreaseType) {
+                IncreaseDecreaseType inc = (IncreaseDecreaseType) command;
+                int stepValue = ((Number) getConfig().get(CONFIG_STEP_VALUE)).intValue();
+                Integer currentValue = qRol.getState();
+                int newValue;
+                int sendValue;
+                if (currentValue != null) {
+                    if (inc == IncreaseDecreaseType.INCREASE) {
+                        newValue = currentValue + stepValue;
+                        // round down to step multiple
+                        newValue = newValue - newValue % stepValue;
+                        sendValue = newValue > 100 ? 100 : newValue;
                         qRol.execute(sendValue, snr);
                     } else {
-                        thingOffline("No serial number configured for  " + rolId);
-                    }
-                } else {
-                    newValue = currentValue - stepValue;
-                    // round up to step multiple
-                    newValue = newValue + newValue % stepValue;
-                    sendValue = newValue > 100 ? 100 : newValue;
-                    if (snr != null) {
+                        newValue = currentValue - stepValue;
+                        // round up to step multiple
+                        newValue = newValue + newValue % stepValue;
+                        sendValue = newValue > 100 ? 100 : newValue;
                         qRol.execute(sendValue, snr);
-                    } else {
-                        thingOffline("No serial number configured for  " + rolId);
                     }
                 }
-            }
-        } else if (command instanceof PercentType) {
-            PercentType p = (PercentType) command;
-            int pp = p.intValue();
-            if (p == PercentType.ZERO) {
-                if (snr != null) {
+            } else if (command instanceof PercentType) {
+                PercentType p = (PercentType) command;
+                int pp = p.intValue();
+                if (p == PercentType.ZERO) {
                     qRol.execute(0, snr);
                 } else {
-                    thingOffline("No serial number configured for  " + rolId);
-                }
-            } else {
-                if (snr != null) {
                     qRol.execute(pp, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + rolId);
                 }
             }
         }
@@ -242,64 +229,45 @@ public class QbusRolHandler extends QbusGlobalHandler {
 
     /**
      * Executes the command for screen slats position
+     *
+     * @throws IOException
+     * @throws InterruptedException
      */
-    private void handleSlatsposCommand(QbusRol qRol, Command command) {
+    private void handleSlatsposCommand(QbusRol qRol, Command command) throws InterruptedException, IOException {
         String snr = getSN();
-        if (command instanceof UpDownType) {
-            if (command == DOWN) {
-                if (snr != null) {
+        if (snr != null) {
+            if (command instanceof UpDownType) {
+                if (command == DOWN) {
                     qRol.executeSlats(0, snr);
                 } else {
-                    thingOffline("No serial number configured for  " + rolId);
-                }
-            } else {
-                if (snr != null) {
                     qRol.executeSlats(100, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + rolId);
                 }
-            }
-        } else if (command instanceof IncreaseDecreaseType) {
-            int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
-            Integer currentValue = qRol.getState();
-            int newValue;
-            int sendValue;
-            if (currentValue != null) {
-                if (command == IncreaseDecreaseType.INCREASE) {
-                    newValue = currentValue + stepValue;
-                    // round down to step multiple
-                    newValue = newValue - newValue % stepValue;
-                    sendValue = newValue > 100 ? 100 : newValue;
-                    if (snr != null) {
+            } else if (command instanceof IncreaseDecreaseType) {
+                int stepValue = ((Number) getConfig().get(CONFIG_STEP_VALUE)).intValue();
+                Integer currentValue = qRol.getState();
+                int newValue;
+                int sendValue;
+                if (currentValue != null) {
+                    if (command == IncreaseDecreaseType.INCREASE) {
+                        newValue = currentValue + stepValue;
+                        // round down to step multiple
+                        newValue = newValue - newValue % stepValue;
+                        sendValue = newValue > 100 ? 100 : newValue;
                         qRol.executeSlats(sendValue, snr);
                     } else {
-                        thingOffline("No serial number configured for  " + rolId);
-                    }
-                } else {
-                    newValue = currentValue - stepValue;
-                    // round up to step multiple
-                    newValue = newValue + newValue % stepValue;
-                    sendValue = newValue > 100 ? 100 : newValue;
-                    if (snr != null) {
+                        newValue = currentValue - stepValue;
+                        // round up to step multiple
+                        newValue = newValue + newValue % stepValue;
+                        sendValue = newValue > 100 ? 100 : newValue;
                         qRol.executeSlats(sendValue, snr);
-                    } else {
-                        thingOffline("No serial number configured for  " + rolId);
                     }
                 }
-            }
-        } else if (command instanceof PercentType) {
-            int percentToInt = ((PercentType) command).intValue();
-            if (command == PercentType.ZERO) {
-                if (snr != null) {
+            } else if (command instanceof PercentType) {
+                int percentToInt = ((PercentType) command).intValue();
+                if (command == PercentType.ZERO) {
                     qRol.executeSlats(0, snr);
                 } else {
-                    thingOffline("No serial number configured for  " + rolId);
-                }
-            } else {
-                if (snr != null) {
                     qRol.executeSlats(percentToInt, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + rolId);
                 }
             }
         }
@@ -314,45 +282,52 @@ public class QbusRolHandler extends QbusGlobalHandler {
 
         if (rolState != null) {
             updateState(CHANNEL_ROLLERSHUTTER, new PercentType(rolState));
-            updateStatus(ThingStatus.ONLINE);
         }
         if (slatState != null) {
             updateState(CHANNEL_SLATS, new PercentType(slatState));
-            updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    /**
+     * Returns the serial number of the controller
+     *
+     * @return the serial nr
+     */
+    public @Nullable String getSN() {
+        return sn;
+    }
+
+    /**
+     * Sets the serial number of the controller
+     */
+    public void setSN() {
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Screen/Store", this.rolId);
+        if (qBridgeHandler == null) {
+            thingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No communication with Qbus Bridge for ROLLERSHUTTER/SCREEN " + this.rolId);
+            return;
+        }
+        sn = qBridgeHandler.getSn();
     }
 
     /**
      * Read the configuration
      */
-    protected synchronized void setConfig() {
-        final ScheduledFuture<?> localPollingJob = this.pollingJob;
-
-        if (localPollingJob != null) {
-            localPollingJob.cancel(true);
-        }
-
-        if (localPollingJob == null || localPollingJob.isCancelled()) {
-            this.config = getConfig().as(QbusThingsConfig.class);
-        }
-        this.config = getConfig().as(QbusThingsConfig.class);
+    protected synchronized void readConfig() {
+        rolConfig = getConfig().as(QbusThingsConfig.class);
     }
 
     /**
      * Returns the Id from the configuration
      *
-     * @return rolId
+     * @return outputId
      */
     public @Nullable Integer getId() {
-        QbusThingsConfig rolConfig = this.config;
-        if (rolConfig != null) {
-            if (rolConfig.rolId != null) {
-                return rolConfig.rolId;
-            } else {
-                return 0;
-            }
+        QbusThingsConfig localConfig = rolConfig;
+        if (localConfig != null) {
+            return localConfig.rolId;
         } else {
-            return 0;
+            return null;
         }
     }
 }

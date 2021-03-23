@@ -30,6 +30,9 @@ public final class QbusCO2 {
 
     private @Nullable QbusCO2Handler thingHandler;
 
+    QbusCO2() {
+    }
+
     /**
      * This method should be called if the ThingHandler for the thing corresponding to this CO2 is initialized.
      * It keeps a record of the thing handler in this object so the thing can be updated when
@@ -42,26 +45,33 @@ public final class QbusCO2 {
     }
 
     /**
+     * This method sets a pointer to the qComm CO2 of class {@link QbusCommuncation}.
+     * This is then used to be able to call back the sendCommand method in this class to send a command to the
+     * Qbus client.
+     *
+     * @param qComm
+     */
+    // public void setQComm(QbusCommunication qComm) {
+    // this.qComm = qComm;
+    // }
+
+    /**
      * Get state of CO2.
      *
      * @return CO2 state
      */
     public @Nullable Integer getState() {
-        if (this.state != null) {
-            return this.state;
-        } else {
-            return null;
-        }
+        return this.state;
     }
 
     /**
-     * Sets state of CO2.
+     * Update the value of the CO2.
      *
-     * @param CO2 state
+     * @param CO2 value
      */
-    public void setState(Integer co2) {
-        this.state = co2;
-        QbusCO2Handler handler = thingHandler;
+    void updateState(@Nullable Integer state) {
+        this.state = state;
+        QbusCO2Handler handler = this.thingHandler;
         if (handler != null) {
             handler.handleStateUpdate(this);
         }
