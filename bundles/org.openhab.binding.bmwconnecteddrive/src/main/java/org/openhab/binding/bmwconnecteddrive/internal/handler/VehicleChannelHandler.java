@@ -58,7 +58,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
@@ -75,7 +74,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Norbert Truchsess - edit & send of charge profile
  */
 @NonNullByDefault
-public class VehicleChannelHandler extends BaseThingHandler {
+public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(VehicleChannelHandler.class);
     protected boolean imperial = false;
     protected boolean hasFuel = false;
@@ -113,14 +112,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
         isHybrid = hasFuel && isElectric;
 
         setOptions(CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_COMMAND, RemoteServiceUtils.getOptions(isElectric));
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    @Override
-    public void initialize() {
     }
 
     private void setOptions(final String group, final String id, List<StateOption> options) {

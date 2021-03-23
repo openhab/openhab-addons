@@ -17,12 +17,22 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributes;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributesContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleMessages;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -200,5 +210,83 @@ public class Converter {
         } catch (NumberFormatException nfe) {
         }
         return index;
+    }
+
+    public static String transformLegacyStatus(@Nullable VehicleAttributesContainer vac) {
+        if (vac != null) {
+            if (vac.attributesMap != null && vac.vehicleMessages != null) {
+                VehicleAttributes attributesMap = vac.attributesMap;
+                VehicleMessages vehicleMessages = vac.vehicleMessages;
+                // create target objects
+                VehicleStatusContainer vsc = new VehicleStatusContainer();
+                VehicleStatus vs = new VehicleStatus();
+                vsc.vehicleStatus = vs;
+
+                vs.mileage = attributesMap.mileage;
+                vs.doorLockState = attributesMap.doorLockState;
+
+                vs.doorDriverFront = attributesMap.doorDriverFront;
+                vs.doorDriverRear = attributesMap.doorDriverRear;
+                vs.doorPassengerFront = attributesMap.doorPassengerFront;
+                vs.doorPassengerRear = attributesMap.doorPassengerRear;
+                vs.hood = attributesMap.hoodState;
+                vs.trunk = attributesMap.trunkState;
+
+                vs.windowDriverFront = attributesMap.winDriverFront;
+                vs.windowDriverRear = attributesMap.winDriverRear;
+                vs.windowPassengerFront = attributesMap.winPassengerFront;
+                vs.windowPassengerRear = attributesMap.winPassengerRear;
+                vs.sunroof = attributesMap.sunroofState;
+
+                vs.remainingFuel = attributesMap.remainingFuel;
+                vs.remainingRangeElectric = attributesMap.beRemainingRangeElectricKm;
+                vs.remainingRangeElectricMls = attributesMap.beRemainingRangeElectricMile;
+                vs.remainingRangeFuel = attributesMap.beRemainingRangeFuelKm;
+                vs.remainingRangeFuelMls = attributesMap.beRemainingRangeFuelMile;
+                vs.remainingFuel = attributesMap.remainingFuel;
+                vs.chargingLevelHv = attributesMap.chargingLevelHv;
+                vs.chargingStatus = attributesMap.chargingHVStatus;
+                vs.lastChargingEndReason = attributesMap.lastChargingEndReason;
+
+                vs.updateTime = attributesMap.updateTimeConverted;
+
+                Position p = new Position();
+                p.lat = attributesMap.gpsLat;
+                p.lon = attributesMap.gpsLon;
+                p.heading = attributesMap.heading;
+                vs.position = p;
+
+                final List<CCMMessage> ccml = new ArrayList<CCMMessage>();
+                if (vehicleMessages != null) {
+                    if (vehicleMessages.ccmMessages != null) {
+                        vehicleMessages.ccmMessages.forEach(entry -> {
+                            CCMMessage ccmM = new CCMMessage();
+                            ccmM.ccmDescriptionShort = entry.text;
+                            ccmM.ccmDescriptionLong = Constants.HYPHEN;
+                            ccmM.ccmMileage = entry.unitOfLengthRemaining;
+                            ccml.add(ccmM);
+                        });
+                    }
+                }
+                vs.checkControlMessages = ccml;
+
+                final List<CBSMessage> cbsl = new ArrayList<CBSMessage>();
+                if (vehicleMessages != null) {
+                    if (vehicleMessages.cbsMessages != null) {
+                        vehicleMessages.cbsMessages.forEach(entry -> {
+                            CBSMessage cbsm = new CBSMessage();
+                            cbsm.cbsType = entry.text;
+                            cbsm.cbsDescription = entry.description;
+                            cbsm.cbsDueDate = entry.date;
+                            cbsm.cbsRemainingMileage = entry.unitOfLengthRemaining;
+                            cbsl.add(cbsm);
+                        });
+                    }
+                }
+                vs.cbsData = cbsl;
+                return Converter.getGson().toJson(vsc);
+            }
+        }
+        return Constants.EMPTY_JSON;
     }
 }

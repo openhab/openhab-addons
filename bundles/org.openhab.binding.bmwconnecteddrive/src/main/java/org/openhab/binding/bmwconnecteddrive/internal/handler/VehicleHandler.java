@@ -136,14 +136,14 @@ public class VehicleHandler extends VehicleChannelHandler {
                         case REMOTE_SERVICE_CHARGE_NOW:
                             RemoteServiceUtils.getRemoteService(serviceCommand)
                                     .ifPresentOrElse(service -> remot.execute(service), () -> {
-                                        logger.info("Remote service execution {} unknown", serviceCommand);
+                                        logger.debug("Remote service execution {} unknown", serviceCommand);
                                     });
                             break;
                         case REMOTE_SERVICE_CHARGING_CONTROL:
                             sendChargeProfile(chargeProfileEdit);
                             break;
                         default:
-                            logger.info("Remote service execution {} unknown", serviceCommand);
+                            logger.debug("Remote service execution {} unknown", serviceCommand);
                             break;
                     }
                 });
@@ -690,9 +690,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 try {
                     VehicleAttributesContainer vac = Converter.getGson().fromJson(content,
                             VehicleAttributesContainer.class);
-                    if (vac != null) {
-                        vehicleStatusCallback.onResponse(vac.transform());
-                    }
+                    vehicleStatusCallback.onResponse(Converter.transformLegacyStatus(vac));
                 } catch (JsonSyntaxException jse) {
                     logger.debug("{}", jse.getMessage());
                 }
@@ -771,7 +769,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     chargeProfileCache.ifPresent(this::updateChargeProfileFromContent);
                 }, 5, TimeUnit.MINUTES));
             } else {
-                logger.info("unexpected command {} not processed", command.toFullString());
+                logger.debug("unexpected command {} not processed", command.toFullString());
             }
         });
     }
@@ -805,7 +803,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 return Optional.empty();
             });
         }).or(() -> {
-            logger.info("No ChargeProfile recieved so far - cannot start editing");
+            logger.debug("No ChargeProfile recieved so far - cannot start editing");
             return Optional.empty();
         });
     }

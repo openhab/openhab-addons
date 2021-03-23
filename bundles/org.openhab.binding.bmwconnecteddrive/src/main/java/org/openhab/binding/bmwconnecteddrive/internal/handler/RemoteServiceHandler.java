@@ -44,14 +44,20 @@ import com.google.gson.JsonSyntaxException;
 public class RemoteServiceHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(RemoteServiceHandler.class);
 
-    // after 60 retries the state update will give up
     private static final String SERVICE_TYPE = "serviceType";
     private static final String DATA = "data";
+    // after 6 retries the state update will give up
     private static final int GIVEUP_COUNTER = 6;
     private static final int STATE_UPDATE_SEC = HTTPConstants.HTTP_TIMEOUT_SEC + 1; // regular timeout + 1sec
-    private int counter = 0;
 
+    private final ConnectedDriveProxy proxy;
+    private final VehicleHandler handler;
+    private final String serviceExecutionAPI;
+    private final String serviceExecutionStateAPI;
+
+    private int counter = 0;
     private Optional<ScheduledFuture<?>> stateJob = Optional.empty();
+    private Optional<String> serviceExecuting = Optional.empty();
 
     public enum ExecutionState {
         READY,
@@ -88,13 +94,6 @@ public class RemoteServiceHandler implements StringResponseCallback {
             return label;
         }
     }
-
-    private final ConnectedDriveProxy proxy;
-    private final VehicleHandler handler;
-    private Optional<String> serviceExecuting = Optional.empty();
-
-    private final String serviceExecutionAPI;
-    private final String serviceExecutionStateAPI;
 
     public RemoteServiceHandler(VehicleHandler vehicleHandler, ConnectedDriveProxy connectedDriveProxy) {
         handler = vehicleHandler;
@@ -158,9 +157,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
                         handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), status);
                         if (ExecutionState.EXECUTED.name().equals(status)) {
                             // refresh loop ends - update of status handled in the normal refreshInterval. Earlier
-                            // update
-                            // doesn't
-                            // show better results!
+                            // update doesn't show better results!
                             reset();
                             return;
                         }

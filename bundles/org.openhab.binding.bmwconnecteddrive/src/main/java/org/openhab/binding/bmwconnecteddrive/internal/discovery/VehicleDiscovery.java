@@ -18,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -104,36 +103,30 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                             properties.put("vehicleChargeControl", Converter.toTitleCase(vehicle.model));
                         }
 
-                        // Check now if a thing with the same VIN exists
-                        final AtomicBoolean foundVehicle = new AtomicBoolean(false);
+                        // Update Properties for already created Things
                         bridge.getThing().getThings().forEach(vehicleThing -> {
                             Configuration c = vehicleThing.getConfiguration();
                             if (c.containsKey(ConnectedDriveConstants.VIN)) {
                                 String thingVIN = c.get(ConnectedDriveConstants.VIN).toString();
                                 if (vehicle.vin.equals(thingVIN)) {
                                     vehicleThing.setProperties(properties);
-                                    foundVehicle.set(true);
                                 }
                             }
                         });
 
-                        // Vehicle not found -> trigger discovery
-                        if (!foundVehicle.get()) {
-                            // Properties needed for functional THing
-                            properties.put(ConnectedDriveConstants.VIN, vehicle.vin);
-                            properties.put("refreshInterval",
-                                    Integer.toString(ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
-                            properties.put("units", ConnectedDriveConstants.UNITS_AUTODETECT);
-                            properties.put("imageSize",
-                                    Integer.toString(ConnectedDriveConstants.DEFAULT_IMAGE_SIZE_PX));
-                            properties.put("imageViewport", ConnectedDriveConstants.DEFAULT_IMAGE_VIEWPORT);
+                        // Properties needed for functional THing
+                        properties.put(ConnectedDriveConstants.VIN, vehicle.vin);
+                        properties.put("refreshInterval",
+                                Integer.toString(ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
+                        properties.put("units", ConnectedDriveConstants.UNITS_AUTODETECT);
+                        properties.put("imageSize", Integer.toString(ConnectedDriveConstants.DEFAULT_IMAGE_SIZE_PX));
+                        properties.put("imageViewport", ConnectedDriveConstants.DEFAULT_IMAGE_VIEWPORT);
 
-                            String vehicleLabel = vehicle.brand + " " + vehicle.model;
-                            Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
-                            thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                                    .withRepresentationProperty(ConnectedDriveConstants.VIN).withLabel(vehicleLabel)
-                                    .withProperties(convertedProperties).build());
-                        }
+                        String vehicleLabel = vehicle.brand + " " + vehicle.model;
+                        Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                                .withRepresentationProperty(ConnectedDriveConstants.VIN).withLabel(vehicleLabel)
+                                .withProperties(convertedProperties).build());
                     }
                 });
             });

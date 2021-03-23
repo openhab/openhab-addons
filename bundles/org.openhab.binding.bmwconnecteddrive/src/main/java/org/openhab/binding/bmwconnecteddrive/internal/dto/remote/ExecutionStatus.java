@@ -21,8 +21,4 @@ public class ExecutionStatus {
     public String serviceType;// ": "DOOR_UNLOCK",
     public String status;// ": "EXECUTED",
     public String eventId;// ": "5639303536333926DA7B9400@bmw.de",
-    // public String extendedStatus;// ": {
-    // public String newDoorStatus;// ": "INVALID",
-    // public String oldDoorStatus;// ": "INVALID",
-    // public String result;// ": "STATUS_NOT_CHANGED"
 }

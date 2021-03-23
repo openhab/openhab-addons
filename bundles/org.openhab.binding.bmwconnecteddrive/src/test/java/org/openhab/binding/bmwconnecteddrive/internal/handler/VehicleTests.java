@@ -380,7 +380,7 @@ public class VehicleTests {
         setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(),
+        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
                 STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION,
                 Optional.empty()));
     }
@@ -391,7 +391,7 @@ public class VehicleTests {
         setup(VehicleType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(),
+        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
                 STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION,
                 Optional.empty()));
     }
@@ -402,7 +402,7 @@ public class VehicleTests {
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(),
+        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
                 STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
     }
 
@@ -412,7 +412,7 @@ public class VehicleTests {
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(),
+        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
                 STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
     }
 }

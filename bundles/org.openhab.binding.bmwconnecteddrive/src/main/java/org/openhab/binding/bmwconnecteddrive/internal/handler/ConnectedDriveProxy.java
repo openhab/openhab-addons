@@ -114,7 +114,7 @@ public class ConnectedDriveProxy {
             } else if (url.endsWith(vehicleStatusAPI)) {
                 ((StringResponseCallback) callback).onResponse(Injector.getStatus());
             } else {
-                logger.info("Simulation of {} not supported", url);
+                logger.debug("Simulation of {} not supported", url);
             }
             return;
         }
@@ -221,6 +221,11 @@ public class ConnectedDriveProxy {
         return retVal == null ? Constants.INVALID : retVal;
     }
 
+    private String getAuthorizationValue() {
+        final String retVal = BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region);
+        return retVal == null ? Constants.INVALID : retVal;
+    }
+
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {
         return new RemoteServiceHandler(vehicleHandler, this);
     }
@@ -250,8 +255,8 @@ public class ConnectedDriveProxy {
         final Request req = authHttpClient.POST(legacyAuthUri);
 
         req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
-        req.header(HttpHeader.HOST, BimmerConstants.SERVER_MAP.get(configuration.region));
-        req.header(HttpHeader.AUTHORIZATION, BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
+        req.header(HttpHeader.HOST, getRegionServer());
+        req.header(HttpHeader.AUTHORIZATION, getAuthorizationValue());
         req.header(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
         req.header(HttpHeader.REFERER, BimmerConstants.REFERER_URL);
 

@@ -73,6 +73,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         updateStatus(ThingStatus.UNKNOWN);
         proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, getConfigAs(ConnectedDriveConfiguration.class)));
         // give the system some time to create all predefined Vehicles
+        // check with API call if bridge is online
         initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
     }
 
@@ -90,30 +91,30 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
             VehiclesContainer container = null;
             try {
                 container = Converter.getGson().fromJson(fingerprint, VehiclesContainer.class);
-            } catch (JsonParseException jpe) {
-                logger.info("Cannot parse fingerprint {}", jpe.getMessage());
-            }
-            if (container != null) {
-                if (container.vehicles != null) {
-                    if (container.vehicles.isEmpty()) {
-                        return Constants.EMPTY_JSON;
-                    } else {
-                        container.vehicles.forEach(entry -> {
-                            entry.vin = ANONYMOUS;
-                            entry.breakdownNumber = ANONYMOUS;
-                            if (entry.dealer != null) {
-                                Dealer d = entry.dealer;
-                                d.city = ANONYMOUS;
-                                d.country = ANONYMOUS;
-                                d.name = ANONYMOUS;
-                                d.phone = ANONYMOUS;
-                                d.postalCode = ANONYMOUS;
-                                d.street = ANONYMOUS;
-                            }
-                        });
-                        return Converter.getGson().toJson(container);
+                if (container != null) {
+                    if (container.vehicles != null) {
+                        if (container.vehicles.isEmpty()) {
+                            return Constants.EMPTY_JSON;
+                        } else {
+                            container.vehicles.forEach(entry -> {
+                                entry.vin = ANONYMOUS;
+                                entry.breakdownNumber = ANONYMOUS;
+                                if (entry.dealer != null) {
+                                    Dealer d = entry.dealer;
+                                    d.city = ANONYMOUS;
+                                    d.country = ANONYMOUS;
+                                    d.name = ANONYMOUS;
+                                    d.phone = ANONYMOUS;
+                                    d.postalCode = ANONYMOUS;
+                                    d.street = ANONYMOUS;
+                                }
+                            });
+                            return Converter.getGson().toJson(container);
+                        }
                     }
                 }
+            } catch (JsonParseException jpe) {
+                logger.debug("Cannot parse fingerprint {}", jpe.getMessage());
             }
             // Not a VehiclesContainer or Vehicles is empty so deliver fingerprint as it is
             return fingerprint;
