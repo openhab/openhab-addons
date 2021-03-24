@@ -13,7 +13,7 @@
 	</channel-type>
 	<channel-type id="service-date-channel">
 		<item-type>DateTime</item-type>
-		<label>Service Date </label>
+		<label>Service Date</label>
 	</channel-type>
 	<channel-type id="service-mileage-channel">
 		<item-type>Number:Length</item-type>

@@ -322,7 +322,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     private void logFingerPrint() {
         final String vin = configuration.map(config -> config.vin).orElse("");
-        logger.debug("###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - BEGIN ######");
+        logger.debug("###### Vehicle Troubleshoot Fingerprint Data - BEGIN ######");
         logger.debug("### Discovery Result ###");
         bridgeHandler.ifPresent(handler -> {
             logger.debug("{}", handler.getDiscoveryFingerprint());
@@ -403,7 +403,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         }, () -> {
             logger.debug("### Range Map Empty ###");
         });
-        logger.debug("###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - END ######");
+        logger.debug("###### Vehicle Troubleshoot Fingerprint Data - END ######");
     }
 
     /**
@@ -446,7 +446,6 @@ public class VehicleHandler extends VehicleChannelHandler {
      * @author Bernd Weymann
      *
      */
-    @NonNullByDefault({})
     public class ChargeProfilesCallback implements StringResponseCallback {
         @Override
         public void onResponse(@Nullable String content) {
@@ -470,7 +469,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    @NonNullByDefault({})
     public class RangeMapCallback implements StringResponseCallback {
         @Override
         public void onResponse(@Nullable String content) {
@@ -489,7 +487,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    @NonNullByDefault({})
     public class DestinationsCallback implements StringResponseCallback {
 
         @Override
@@ -519,7 +516,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    @NonNullByDefault({})
     public class ImageCallback implements ByteResponseCallback {
         @Override
         public void onResponse(byte[] content) {
@@ -548,7 +544,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    @NonNullByDefault({})
     public class AllTripsCallback implements StringResponseCallback {
         @Override
         public void onResponse(@Nullable String content) {
@@ -580,7 +575,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    @NonNullByDefault({})
     public class LastTripCallback implements StringResponseCallback {
         @Override
         public void onResponse(@Nullable String content) {
@@ -615,28 +609,13 @@ public class VehicleHandler extends VehicleChannelHandler {
     /**
      * The VehicleStatus is supported by all Vehicle Types so it's used to reflect the Thing Status
      */
-    @NonNullByDefault({})
     public class VehicleStatusCallback implements StringResponseCallback {
         private ThingStatus thingStatus = ThingStatus.UNKNOWN;
-
-        /**
-         * Vehicle Status is supported by all Vehicles so callback result is used to report Thing Status.
-         * If valid content is delivered in onResponse Thing goes online while onError Thing goes offline
-         *
-         * @param status
-         * @param detail
-         * @param reason
-         */
-        private void setThingStatus(ThingStatus status, ThingStatusDetail detail, String reason) {
-            if (thingStatus != status) {
-                updateStatus(status, detail, reason);
-            }
-        }
 
         @Override
         public void onResponse(@Nullable String content) {
             if (content != null) {
-                setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, Constants.EMPTY);
+                updateStatus(ThingStatus.ONLINE);
                 vehicleStatusCache = Optional.of(content);
                 try {
                     VehicleStatusContainer status = Converter.getGson().fromJson(content, VehicleStatusContainer.class);
@@ -682,7 +661,6 @@ public class VehicleHandler extends VehicleChannelHandler {
      * I figured out that only one API was working for this Vehicle. So this backward compatible Callback is introduced.
      * The delivered data is converted into the origin dto object so no changes in previous functional code needed
      */
-    @NonNullByDefault({})
     public class LegacyVehicleStatusCallback implements StringResponseCallback {
         @Override
         public void onResponse(@Nullable String content) {

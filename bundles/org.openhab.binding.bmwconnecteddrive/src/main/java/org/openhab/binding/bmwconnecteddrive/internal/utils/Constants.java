@@ -19,7 +19,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -44,6 +49,7 @@ public class Constants {
     public static final String NULL_DATE = "1900-01-01T00:00:00";
     public static final String NULL_TIME = "00:00";
     public static final int INT_UNDEF = -1;
+    public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
 
     // Services to query
     public static final String SERVICES_SUPPORTED = "servicesSupported";

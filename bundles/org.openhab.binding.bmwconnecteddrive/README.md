@@ -63,7 +63,7 @@ Basically 3 types of information are registered as properties
 In the right picture can see in *Services Activated* e.g. the *DoorLock* and *DoorUnlock* services are mentioned. 
 This ensures channel group [Remote Services](#remote-services) is supporting door lock and unlock remote control.
 
-In  *Services Supported* the entry *LastDestination* is mentioned.
+In *Services Supported* the entry *LastDestination* is mentioned.
 So it's valid to connect channel group [Last Destinations](#destinations) in order to display and select the last navigation destinations.
 
 | Property Key       | Property Value      |  Supported Channel Groups    |
@@ -531,7 +531,7 @@ are anonymized.
 You'll find the fingerprint in the logs with the command
 
 ```
-grep "BMW ConnectedDrive Binding" openhab.log
+grep "Troubleshoot Fingerprint Data" openhab.log
 ```
 
 After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!

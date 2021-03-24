@@ -52,8 +52,6 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -165,9 +163,8 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             selectedCC = ccEntry.ccmDescriptionShort;
             updateChannel(CHANNEL_GROUP_CHECK_CONTROL, NAME, StringType.valueOf(ccEntry.ccmDescriptionShort));
             updateChannel(CHANNEL_GROUP_CHECK_CONTROL, DETAILS, StringType.valueOf(ccEntry.ccmDescriptionLong));
-            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, MILEAGE,
-                    QuantityType.valueOf(Converter.round(ccEntry.ccmMileage),
-                            imperial ? ImperialUnits.MILE : MetricPrefix.KILO(SIUnits.METRE)));
+            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, MILEAGE, QuantityType.valueOf(
+                    Converter.round(ccEntry.ccmMileage), imperial ? ImperialUnits.MILE : Constants.KILOMETRE_UNIT));
         }
     }
 
@@ -223,7 +220,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                     DateTimeType.valueOf(Converter.getLocalDateTime(serviceEntry.getDueDate())));
             updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
                     QuantityType.valueOf(Converter.round(serviceEntry.cbsRemainingMileage),
-                            imperial ? ImperialUnits.MILE : MetricPrefix.KILO(SIUnits.METRE)));
+                            imperial ? ImperialUnits.MILE : Constants.KILOMETRE_UNIT));
         }
     }
 
@@ -273,11 +270,11 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateAllTrips(AllTrips allTrips) {
         QuantityType<Length> qtTotalElectric = QuantityType
-                .valueOf(Converter.round(allTrips.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE));
+                .valueOf(Converter.round(allTrips.totalElectricDistance.userTotal), Constants.KILOMETRE_UNIT);
         QuantityType<Length> qtLongestElectricRange = QuantityType
-                .valueOf(Converter.round(allTrips.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE));
-        QuantityType<Length> qtDistanceSinceCharge = QuantityType.valueOf(
-                Converter.round(allTrips.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE));
+                .valueOf(Converter.round(allTrips.chargecycleRange.userHigh), Constants.KILOMETRE_UNIT);
+        QuantityType<Length> qtDistanceSinceCharge = QuantityType
+                .valueOf(Converter.round(allTrips.chargecycleRange.userCurrentChargeCycle), Constants.KILOMETRE_UNIT);
 
         updateChannel(CHANNEL_GROUP_LIFETIME, TOTAL_DRIVEN_DISTANCE,
                 imperial ? Converter.getMiles(qtTotalElectric) : qtTotalElectric);
@@ -310,7 +307,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_LAST_TRIP, DURATION, QuantityType.valueOf(trip.duration, Units.MINUTE));
 
         QuantityType<Length> qtTotalDistance = QuantityType.valueOf(Converter.round(trip.totalDistance),
-                MetricPrefix.KILO(SIUnits.METRE));
+                Constants.KILOMETRE_UNIT);
         updateChannel(CHANNEL_GROUP_LAST_TRIP, DISTANCE,
                 imperial ? Converter.getMiles(qtTotalDistance) : qtTotalDistance);
 
@@ -418,7 +415,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_MILEAGE,
                 QuantityType.valueOf(Converter.round(VehicleStatusUtils.getNextServiceMileage(vStatus)),
-                        imperial ? ImperialUnits.MILE : MetricPrefix.KILO(SIUnits.METRE)));
+                        imperial ? ImperialUnits.MILE : Constants.KILOMETRE_UNIT));
         // CheckControl Active?
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
                 StringType.valueOf(Converter.toTitleCase(VehicleStatusUtils.checkControlActive(vStatus))));
@@ -454,9 +451,9 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         if (isElectric) {
             totalRange += vStatus.remainingRangeElectric;
             QuantityType<Length> qtElectricRange = QuantityType.valueOf(vStatus.remainingRangeElectric,
-                    MetricPrefix.KILO(SIUnits.METRE));
-            QuantityType<Length> qtElectricRadius = QuantityType.valueOf(
-                    Converter.guessRangeRadius(vStatus.remainingRangeElectric), MetricPrefix.KILO(SIUnits.METRE));
+                    Constants.KILOMETRE_UNIT);
+            QuantityType<Length> qtElectricRadius = QuantityType
+                    .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeElectric), Constants.KILOMETRE_UNIT);
 
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_ELECTRIC,
                     imperial ? Converter.getMiles(qtElectricRange) : qtElectricRange);
@@ -466,26 +463,26 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         if (hasFuel) {
             totalRange += vStatus.remainingRangeFuel;
             QuantityType<Length> qtFuelRange = QuantityType.valueOf(vStatus.remainingRangeFuel,
-                    MetricPrefix.KILO(SIUnits.METRE));
+                    Constants.KILOMETRE_UNIT);
             QuantityType<Length> qtFuelRadius = QuantityType
-                    .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeFuel), MetricPrefix.KILO(SIUnits.METRE));
+                    .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeFuel), Constants.KILOMETRE_UNIT);
 
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_FUEL, imperial ? Converter.getMiles(qtFuelRange) : qtFuelRange);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_FUEL,
                     imperial ? Converter.getMiles(qtFuelRadius) : qtFuelRadius);
         }
         if (isHybrid) {
-            QuantityType<Length> qtHybridRange = QuantityType.valueOf(totalRange, MetricPrefix.KILO(SIUnits.METRE));
+            QuantityType<Length> qtHybridRange = QuantityType.valueOf(totalRange, Constants.KILOMETRE_UNIT);
             QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(totalRange),
-                    MetricPrefix.KILO(SIUnits.METRE));
+                    Constants.KILOMETRE_UNIT);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_HYBRID,
                     imperial ? Converter.getMiles(qtHybridRange) : qtHybridRange);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID,
                     imperial ? Converter.getMiles(qtHybridRadius) : qtHybridRadius);
         }
 
-        updateChannel(CHANNEL_GROUP_RANGE, MILEAGE, QuantityType.valueOf(vStatus.mileage,
-                imperial ? ImperialUnits.MILE : MetricPrefix.KILO(SIUnits.METRE)));
+        updateChannel(CHANNEL_GROUP_RANGE, MILEAGE,
+                QuantityType.valueOf(vStatus.mileage, imperial ? ImperialUnits.MILE : Constants.KILOMETRE_UNIT));
         if (isElectric) {
             updateChannel(CHANNEL_GROUP_RANGE, SOC, QuantityType.valueOf(vStatus.chargingLevelHv, Units.PERCENT));
         }

@@ -27,11 +27,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -48,7 +47,6 @@ import com.google.gson.Gson;
 public class LifetimeWrapper {
     private static final Gson GSON = new Gson();
     private static final Unit<Length> MILES = ImperialUnits.MILE;
-    private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
 
     private AllTrips allTrips;
     private boolean imperial;
@@ -112,7 +110,7 @@ public class LifetimeWrapper {
                     assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle / Converter.MILES_TO_KM_RATIO,
                             qt.floatValue(), 0.1, "Distance since charging");
                 } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(Constants.KILOMETRE_UNIT, qt.getUnit(), "KM");
                     assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle, qt.floatValue(), 0.1,
                             "Distance since charging");
                 }
@@ -125,7 +123,7 @@ public class LifetimeWrapper {
                     assertEquals(allTrips.chargecycleRange.userHigh / Converter.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
                             "Longest Distance");
                 } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(Constants.KILOMETRE_UNIT, qt.getUnit(), "KM");
                     assertEquals(allTrips.chargecycleRange.userHigh, qt.floatValue(), 0.1, "Longest Distance");
                 }
                 break;
@@ -137,7 +135,7 @@ public class LifetimeWrapper {
                     assertEquals(allTrips.totalElectricDistance.userTotal / Converter.MILES_TO_KM_RATIO,
                             qt.floatValue(), 0.1, "Total Electric Distance");
                 } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(Constants.KILOMETRE_UNIT, qt.getUnit(), "KM");
                     assertEquals(allTrips.totalElectricDistance.userTotal, qt.floatValue(), 0.1,
                             "Total Electric Distance");
                 }

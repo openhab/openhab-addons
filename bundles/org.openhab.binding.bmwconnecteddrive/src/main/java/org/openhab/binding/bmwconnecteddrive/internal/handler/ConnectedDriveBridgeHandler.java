@@ -122,10 +122,10 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     }
 
     private void logFingerPrint() {
-        logger.debug("###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - BEGIN ######");
+        logger.debug("###### Discovery Troubleshoot Fingerprint Data - BEGIN ######");
         logger.debug("### Discovery Result ###");
         logger.debug("{}", getDiscoveryFingerprint());
-        logger.debug("###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - END ######");
+        logger.debug("###### Discovery Troubleshoot Fingerprint Data - END ######");
     }
 
     /**

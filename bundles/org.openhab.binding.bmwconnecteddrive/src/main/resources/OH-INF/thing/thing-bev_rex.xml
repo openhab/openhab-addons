@@ -27,6 +27,8 @@
 			<channel-group id="image" typeId="image-values"/>
 		</channel-groups>
 
+		<representation-property>vin</representation-property>
+
 		<config-description>
 			<parameter name="vin" type="text" required="true">
 				<label>Vehicle Identification Number (VIN)</label>

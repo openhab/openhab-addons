@@ -38,8 +38,6 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -56,7 +54,7 @@ import com.google.gson.Gson;
 @SuppressWarnings("null")
 public class StatusWrapper {
     private static final Gson GSON = new Gson();
-    private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
+    private static final Unit<Length> KILOMETRE = Constants.KILOMETRE_UNIT;
     private static final double ALLOWED_MILE_CONVERSION_DEVIATION = 1.5;
     private static final double ALLOWED_KM_ROUND_DEVIATION = 0.1;
 

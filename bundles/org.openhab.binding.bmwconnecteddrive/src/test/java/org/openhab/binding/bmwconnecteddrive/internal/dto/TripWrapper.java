@@ -27,12 +27,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -49,7 +48,6 @@ import com.google.gson.Gson;
 public class TripWrapper {
     private static final Gson GSON = new Gson();
     private static final Unit<Length> MILES = ImperialUnits.MILE;
-    private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
 
     private LastTrip lastTrip;
     private boolean imperial;
@@ -127,7 +125,7 @@ public class TripWrapper {
                             "Distance");
 
                 } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(Constants.KILOMETRE_UNIT, qt.getUnit(), "KM");
                     assertEquals(lastTrip.totalDistance, qt.floatValue(), 0.1, "Distance");
                 }
                 break;
