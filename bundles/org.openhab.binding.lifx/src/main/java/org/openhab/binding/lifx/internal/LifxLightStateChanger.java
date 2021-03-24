@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.LifxProduct.Features;
 import org.openhab.binding.lifx.internal.dto.AcknowledgementResponse;
 import org.openhab.binding.lifx.internal.dto.ApplicationRequest;
 import org.openhab.binding.lifx.internal.dto.Effect;
@@ -74,7 +75,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     private final Logger logger = LoggerFactory.getLogger(LifxLightStateChanger.class);
 
     private final String logId;
-    private final LifxProduct product;
+    private final Features features;
     private final Duration fadeTime;
     private final LifxLightState pendingLightState;
     private final ScheduledExecutorService scheduler;
@@ -104,7 +105,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
 
     public LifxLightStateChanger(LifxLightContext context, LifxLightCommunicationHandler communicationHandler) {
         this.logId = context.getLogId();
-        this.product = context.getProduct();
+        this.features = context.getFeatures();
         this.fadeTime = context.getConfiguration().getFadeTime();
         this.pendingLightState = context.getPendingLightState();
         this.scheduler = context.getScheduler();
@@ -371,7 +372,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     }
 
     private void getZonesIfZonesAreSet() {
-        if (product.hasFeature(MULTIZONE)) {
+        if (features.hasFeature(MULTIZONE)) {
             List<PendingPacket> pending = pendingPacketsMap.get(SetColorZonesRequest.TYPE);
             if (pending == null || pending.isEmpty()) {
                 GetColorZonesRequest zoneColorPacket = new GetColorZonesRequest();
