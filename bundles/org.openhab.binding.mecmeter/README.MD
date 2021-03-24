@@ -22,7 +22,7 @@ The thing has a few configuration parameters:
 
 | Parameter       | Description                                                           |
 |-----------------|-----------------------------------------------------------------------|
-| password        | User-defined password during initializing the Power Meter.            |
+| password        | User-defined password during initializing the Power Meter. Mandatory. |
 | ip              | The IP address of the meter. Mandatory.                               |
 | refreshInterval | Refresh interval in second. Optional, the default value is 5 seconds. |
 
