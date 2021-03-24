@@ -66,7 +66,6 @@ public class ShellyDeviceProfile {
     public String hwRev = "";
     public String hwBatchId = "";
     public String mac = "";
-    public String fwId = "";
     public String fwVersion = "";
     public String fwDate = "";
 
@@ -128,7 +127,6 @@ public class ShellyDeviceProfile {
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(settings.fw, "/");
         fwVersion = extractFwVersion(settings.fw);
-        fwId = substringAfter(settings.fw, "@");
         ShellyVersionDTO version = new ShellyVersionDTO();
         extFeatures = version.compare(fwVersion, SHELLY_API_FW_110) >= 0;
         discoverable = (settings.discoverable == null) || settings.discoverable;
@@ -318,7 +316,8 @@ public class ShellyDeviceProfile {
 
         logger.trace("{}: Checking for trigger, button-type[{}] is {}", thingName, idx, btnType);
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
-                || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON);
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);
     }
 
     public int getRollerFav(int id) {
@@ -331,10 +330,13 @@ public class ShellyDeviceProfile {
 
     public static String extractFwVersion(@Nullable String version) {
         if (version != null) {
-            Matcher matcher = VERSION_PATTERN.matcher(version);
+            // fix version e.g. 20210319-122304/v.1.10-Dimmer1-gfd4cc10 (with v.1. instead of v1.)
+            String vers = version.replace("/v.1.10-", "/v1.10.0-");
+
+            // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
+            Matcher matcher = VERSION_PATTERN.matcher(vers);
             if (matcher.find()) {
-                // e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
-                return matcher.group(0).replace("/v.1.", "/v1."); // stupid: There are FW marked v.1.10
+                return matcher.group(0);
             }
         }
         return "";

@@ -246,9 +246,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
         tmpPrf.auth = devInfo.auth; // missing in /settings
 
-        logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {} ({})",
-                thingName, tmpPrf.hostname, tmpPrf.deviceType, tmpPrf.hwRev, tmpPrf.hwBatchId, tmpPrf.fwVersion,
-                tmpPrf.fwDate, tmpPrf.fwId);
+        logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {}", thingName,
+                tmpPrf.hostname, tmpPrf.deviceType, tmpPrf.hwRev, tmpPrf.hwBatchId, tmpPrf.fwVersion, tmpPrf.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, tmpPrf.hostname, tmpPrf.settingsJson);
         logger.debug("{}: Device "
                 + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
@@ -397,9 +396,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 // Get profile, if refreshSettings == true reload settings from device
                 logger.trace("{}: Updating status (refreshSettings={})", thingName, refreshSettings);
                 ShellySettingsStatus status = api.getStatus();
-                profile = getProfile(refreshSettings || checkRestarted(status));
+                boolean restarted = checkRestarted(status);
+                profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
                 profile.updateFromStatus(status);
+                if (restarted) {
+                    logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
+                    stats.restarts++;
+                    postEvent(ALARM_TYPE_RESTARTED, true);
+                }
 
                 // If status update was successful the thing must be online
                 setThingOnline();
@@ -572,9 +577,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private boolean checkRestarted(ShellySettingsStatus status) {
         if (profile.isInitialized() && (status.uptime < stats.lastUptime || !profile.status.update.oldVersion.isEmpty()
                 && !status.update.oldVersion.equals(profile.status.update.oldVersion))) {
-            logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
-            stats.restarts++;
-            postEvent(ALARM_TYPE_RESTARTED, true);
             updateProperties(profile, status);
             return true;
         }
@@ -800,12 +802,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         try {
             ShellyVersionDTO version = new ShellyVersionDTO();
             if (version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", prf.hostname,
-                        messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate, prf.fwId));
+                logger.info("{}: {}", prf.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
             } else {
                 if ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWVERSION) < 0) && !profile.isMotion) {
-                    logger.warn("{}: {}", prf.hostname, messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate,
-                            prf.fwId, SHELLY_API_MIN_FWVERSION));
+                    logger.warn("{}: {}", prf.hostname,
+                            messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, SHELLY_API_MIN_FWVERSION));
                 }
             }
             if (bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
@@ -1142,8 +1143,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (profile.isInitialized()) {
             properties.put(PROPERTY_MODEL_ID, getString(profile.settings.device.type));
             properties.put(PROPERTY_MAC_ADDRESS, profile.mac);
-            properties.put(PROPERTY_FIRMWARE_VERSION,
-                    profile.fwVersion + "/" + profile.fwDate + "(" + profile.fwId + ")");
+            properties.put(PROPERTY_FIRMWARE_VERSION, profile.fwVersion + "/" + profile.fwDate);
             properties.put(PROPERTY_DEV_MODE, profile.mode);
             properties.put(PROPERTY_NUM_RELAYS, String.valueOf(profile.numRelays));
             properties.put(PROPERTY_NUM_ROLLERS, String.valueOf(profile.numRollers));

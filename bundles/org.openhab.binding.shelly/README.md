@@ -265,15 +265,19 @@ The following trigger types are sent:
 
 |Event Type         |Description                                                                                                    |
 |-------------------|---------------------------------------------------------------------------------------------------------------|
-|SHORT_PRESSED      |The button was pressed once for a short time                                                                   |
-|DOUBLE_PRESSED     |The button was pressed twice with short delay                                                                  |
-|TRIPLE_PRESSED     |The button was pressed three times with short delay                                                            |
-|LONG_PRESSED       |The button was pressed for a longer time                                                                       |
-|SHORT_LONG_PRESSED |A short followed by a long button push                                                                         |
-|LONG_SHORT_PRESSED |A long followed by a short button push                                                                         |
+|SHORT_PRESSED      |The button was pressed once for a short time (lastEvent=S)                                                     |
+|DOUBLE_PRESSED     |The button was pressed twice with short delay (lastEvent=SS)                                                   |
+|TRIPLE_PRESSED     |The button was pressed three times with short delay (lastEvent=SSS)                                            |
+|LONG_PRESSED       |The button was pressed for a longer time (lastEvent=L)                                                         |
+|SHORT_LONG_PRESSED |A short followed by a long button push (lastEvent=SL)                                                          |
+|LONG_SHORT_PRESSED |A long followed by a short button push (lastEvent=LS)                                                          |
  
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events. 
+
+If you want to use those events triggering a rule:
+- If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
+- For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event 
 
 ### Alarms
 
