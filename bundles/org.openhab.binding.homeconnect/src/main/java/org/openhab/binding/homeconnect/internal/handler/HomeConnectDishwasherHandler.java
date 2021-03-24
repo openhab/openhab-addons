@@ -12,38 +12,10 @@
  */
 package org.openhab.binding.homeconnect.internal.handler;
 
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_ACTIVE_PROGRAM_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_PROGRAM_PROGRESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMAINING_PROGRAM_TIME_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_CONTROL_ACTIVE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_START_ALLOWANCE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_SELECTED_PROGRAM_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_ACTIVE_PROGRAM;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_BRIGHTNESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_CUSTOM_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_PROGRAM_PROGRESS;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMAINING_PROGRAM_TIME;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_ACTIVE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_START_ALLOWED;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_SELECTED_PROGRAM;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_POWER_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_POWER_ON;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
@@ -79,7 +51,7 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
     }
 
     @Override
-    protected void configureChannelUpdateHandlers(ConcurrentHashMap<String, ChannelUpdateHandler> handlers) {
+    protected void configureChannelUpdateHandlers(Map<String, ChannelUpdateHandler> handlers) {
         // register default update handlers
         handlers.put(CHANNEL_DOOR_STATE, defaultDoorStateChannelUpdateHandler());
         handlers.put(CHANNEL_POWER_STATE, defaultPowerStateChannelUpdateHandler());
@@ -92,7 +64,7 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
     }
 
     @Override
-    protected void configureEventHandlers(ConcurrentHashMap<String, EventHandler> handlers) {
+    protected void configureEventHandlers(Map<String, EventHandler> handlers) {
         // register default event handlers
         handlers.put(EVENT_DOOR_STATE, defaultDoorStateEventHandler());
         handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE));

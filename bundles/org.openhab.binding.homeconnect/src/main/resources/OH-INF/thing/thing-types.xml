@@ -10,16 +10,16 @@
 		<description>This bridge represents the gateway to the Home Connect API.</description>
 		<config-description>
 			<parameter name="clientId" type="text" required="true">
-				<label>Client id</label>
+				<label>Client Id</label>
 				<description>Application client id</description>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="true">
-				<label>Client secret</label>
+				<label>Client Secret</label>
 				<description>Application client secret</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="simulator" type="boolean" required="true">
-				<label>Use simulator environment</label>
+				<label>Use Simulator Environment</label>
 				<description>Use simulated environment at https://developer.home-connect.com/simulator/</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -128,7 +128,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="api_bridge"/>
 		</supported-bridge-type-refs>
-		<label>Washer Dryer combination</label>
+		<label>Washer Dryer Combination</label>
 		<description>Home Connect connected combined washer dryer appliance.</description>
 		<channels>
 			<channel id="door_state" typeId="door_state"/>
@@ -295,7 +295,7 @@
 	<!-- Channel types -->
 	<channel-type id="basic_actions_state">
 		<item-type>String</item-type>
-		<label>Program actions</label>
+		<label>Program Actions</label>
 		<state>
 			<options>
 				<option value="start">Start program</option>
@@ -374,7 +374,7 @@
 	</channel-type>
 	<channel-type id="remaining_program_time_state">
 		<item-type>Number:Time</item-type>
-		<label>Remaining program time</label>
+		<label>Remaining Program Time</label>
 		<description>This status indicates the remaining program time of the home appliance.</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -404,7 +404,7 @@
 	</channel-type>
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
-		<label>Selected duration</label>
+		<label>Selected Duration</label>
 		<description>This status describes the duration of the program of the home appliance.</description>
 		<state pattern="%d %unit%" step="60" min="60"/>
 	</channel-type>
@@ -455,7 +455,7 @@
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos1">
 		<item-type>String</item-type>
-		<label>i-Dos 1 dosing level</label>
+		<label>i-Dos 1 Dosing Level</label>
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
 			supports i-Dos)</description>
 		<state>
@@ -469,7 +469,7 @@
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos2">
 		<item-type>String</item-type>
-		<label>i-Dos 2 dosing level</label>
+		<label>i-Dos 2 Dosing Level</label>
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
 			supports i-Dos)</description>
 		<state>
@@ -483,7 +483,7 @@
 	</channel-type>
 	<channel-type id="setpoint_temperature_refrigerator">
 		<item-type>Number:Temperature</item-type>
-		<label>Refrigerator temperature</label>
+		<label>Refrigerator Temperature</label>
 		<description>Target temperature of the refrigerator compartment (Range depends on appliance - common range 2 to 8°C).</description>
 		<state step="1" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -495,14 +495,14 @@
 	</channel-type>
 	<channel-type id="super_mode_refrigerator">
 		<item-type>Switch</item-type>
-		<label>Refrigerator super mode</label>
+		<label>Refrigerator Super Mode</label>
 		<description>The setting has no impact on setpoint temperatures but will make the fridge compartment cool to the
 			lowest possible temperature until it is disabled manually by the customer or by the HA because of a timeout.</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="super_mode_freezer">
 		<item-type>Switch</item-type>
-		<label>Freezer super mode</label>
+		<label>Freezer Super Mode</label>
 		<description>This setting has no impact on setpoint temperatures but will make the freezer compartment cool to the
 			lowest possible temperature until it is disabled manually by the customer or by the home appliance because of
 			a
@@ -511,13 +511,13 @@
 	</channel-type>
 	<channel-type id="dryer_drying_target">
 		<item-type>String</item-type>
-		<label>Drying target</label>
+		<label>Drying Target</label>
 		<description>Specifies the desired dryness setting.</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="hood_venting_level">
 		<item-type>String</item-type>
-		<label>Venting level</label>
+		<label>Venting Level</label>
 		<description>Current venting level of the hood.</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -529,143 +529,143 @@
 	</channel-type>
 	<channel-type id="hood_program_state">
 		<item-type>String</item-type>
-		<label>Program actions</label>
+		<label>Program Actions</label>
 		<description>Start hood program.</description>
 	</channel-type>
 	<channel-type id="functional_light_state">
 		<item-type>Switch</item-type>
-		<label>Functional light state</label>
+		<label>Functional Light State</label>
 		<description>This setting describes the current functional light state of the home appliance.</description>
 	</channel-type>
 	<channel-type id="functional_light_brightness_state">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Functional light brightness</label>
+		<label>Functional Light Brightness</label>
 		<description>This setting describes the brightness state of the functional light.</description>
 		<state readOnly="false" min="10" max="100" step="1" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ambient_light_state">
 		<item-type>Switch</item-type>
-		<label>Ambient light state</label>
+		<label>Ambient Light State</label>
 		<description>This setting describes the current ambient light state of the home appliance.</description>
 	</channel-type>
 	<channel-type id="ambient_light_brightness_state">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Ambient light brightness</label>
+		<label>Ambient Light Brightness</label>
 		<description>This setting describes the brightness state of the ambient light.</description>
 		<state readOnly="false" min="10" max="100" step="1" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ambient_light_color_state">
 		<item-type>String</item-type>
-		<label>Ambient light color</label>
+		<label>Ambient Light Color</label>
 		<description>This setting describes the color state of the ambient light.</description>
 		<state readOnly="false">
 			<options>
 				<option value="BSH.Common.EnumType.AmbientLightColor.CustomColor">Custom Color</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color1"> Color 1</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color2"> Color 2</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color3"> Color 3</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color4"> Color 4</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color5"> Color 5</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color6"> Color 6</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color7"> Color 7</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color8"> Color 8</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color9"> Color 9</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color10"> Color 10</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color11"> Color 11</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color12"> Color 12</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color13"> Color 13</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color14"> Color 14</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color15"> Color 15</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color16"> Color 16</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color17"> Color 17</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color18"> Color 18</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color19"> Color 19</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color20"> Color 20</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color21"> Color 21</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color22"> Color 22</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color23"> Color 23</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color24"> Color 24</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color25"> Color 25</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color26"> Color 26</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color27"> Color 27</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color28"> Color 28</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color29"> Color 29</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color30"> Color 30</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color31"> Color 31</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color32"> Color 32</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color33"> Color 33</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color34"> Color 34</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color35"> Color 35</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color36"> Color 36</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color37"> Color 37</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color38"> Color 38</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color39"> Color 39</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color40"> Color 40</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color41"> Color 41</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color42"> Color 42</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color43"> Color 43</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color44"> Color 44</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color45"> Color 45</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color46"> Color 46</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color47"> Color 47</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color48"> Color 48</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color49"> Color 49</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color50"> Color 50</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color51"> Color 51</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color52"> Color 52</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color53"> Color 53</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color54"> Color 54</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color55"> Color 55</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color56"> Color 56</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color57"> Color 57</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color58"> Color 58</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color59"> Color 59</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color60"> Color 60</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color61"> Color 61</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color62"> Color 62</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color63"> Color 63</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color64"> Color 64</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color65"> Color 65</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color66"> Color 66</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color67"> Color 67</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color68"> Color 68</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color69"> Color 69</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color70"> Color 70</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color71"> Color 71</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color72"> Color 72</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color73"> Color 73</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color74"> Color 74</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color75"> Color 75</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color76"> Color 76</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color77"> Color 77</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color78"> Color 78</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color79"> Color 79</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color80"> Color 80</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color81"> Color 81</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color82"> Color 82</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color83"> Color 83</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color84"> Color 84</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color85"> Color 85</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color86"> Color 86</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color87"> Color 87</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color88"> Color 88</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color89"> Color 89</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color90"> Color 90</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color91"> Color 91</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color92"> Color 92</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color93"> Color 93</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color94"> Color 94</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color95"> Color 95</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color96"> Color 96</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color97"> Color 97</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color98"> Color 98</option>
-				<option value="BSH.Common.EnumType.AmbientLightColor.Color99"> Color 99</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color1">Color 1</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color2">Color 2</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color3">Color 3</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color4">Color 4</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color5">Color 5</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color6">Color 6</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color7">Color 7</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color8">Color 8</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color9">Color 9</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color10">Color 10</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color11">Color 11</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color12">Color 12</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color13">Color 13</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color14">Color 14</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color15">Color 15</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color16">Color 16</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color17">Color 17</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color18">Color 18</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color19">Color 19</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color20">Color 20</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color21">Color 21</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color22">Color 22</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color23">Color 23</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color24">Color 24</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color25">Color 25</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color26">Color 26</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color27">Color 27</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color28">Color 28</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color29">Color 29</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color30">Color 30</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color31">Color 31</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color32">Color 32</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color33">Color 33</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color34">Color 34</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color35">Color 35</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color36">Color 36</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color37">Color 37</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color38">Color 38</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color39">Color 39</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color40">Color 40</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color41">Color 41</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color42">Color 42</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color43">Color 43</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color44">Color 44</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color45">Color 45</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color46">Color 46</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color47">Color 47</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color48">Color 48</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color49">Color 49</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color50">Color 50</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color51">Color 51</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color52">Color 52</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color53">Color 53</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color54">Color 54</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color55">Color 55</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color56">Color 56</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color57">Color 57</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color58">Color 58</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color59">Color 59</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color60">Color 60</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color61">Color 61</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color62">Color 62</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color63">Color 63</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color64">Color 64</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color65">Color 65</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color66">Color 66</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color67">Color 67</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color68">Color 68</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color69">Color 69</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color70">Color 70</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color71">Color 71</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color72">Color 72</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color73">Color 73</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color74">Color 74</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color75">Color 75</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color76">Color 76</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color77">Color 77</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color78">Color 78</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color79">Color 79</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color80">Color 80</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color81">Color 81</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color82">Color 82</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color83">Color 83</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color84">Color 84</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color85">Color 85</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color86">Color 86</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color87">Color 87</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color88">Color 88</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color89">Color 89</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color90">Color 90</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color91">Color 91</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color92">Color 92</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color93">Color 93</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color94">Color 94</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color95">Color 95</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color96">Color 96</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color97">Color 97</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color98">Color 98</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color99">Color 99</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="ambient_light_custom_color_state">
 		<item-type>Color</item-type>
-		<label>Ambient light custom color</label>
+		<label>Ambient Light Custom Color</label>
 		<description>This setting describes the custom color state of the ambient light.</description>
 		<category>Colorpicker</category>
 		<tags>

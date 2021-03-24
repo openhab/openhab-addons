@@ -41,7 +41,6 @@ import org.openhab.binding.homeconnect.internal.client.model.Event;
 import org.openhab.binding.homeconnect.internal.configuration.ApiBridgeConfiguration;
 import org.openhab.binding.homeconnect.internal.discovery.HomeConnectDiscoveryService;
 import org.openhab.binding.homeconnect.internal.servlet.HomeConnectServlet;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -56,8 +55,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +68,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HomeConnectBridgeHandler extends BaseBridgeHandler {
 
-    private static final int REINITIALIZATION_DELAY = 120;
+    private static final int REINITIALIZATION_DELAY_SEC = 120;
     private static final String CLIENT_SECRET = "clientSecret";
     private static final String CLIENT_ID = "clientId";
 
@@ -110,10 +107,6 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
-        String openHabVersion = OpenHAB.getVersion();
-        logger.debug("Initialize bridge {} (Bundle: {}, openHAB: {})", getThing().getLabel(), version.toString(),
-                openHabVersion);
         // let the bridge configuration servlet know about this handler
         homeConnectServlet.addBridgeHandler(this);
 
@@ -154,7 +147,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (OAuthException | IOException | OAuthResponseException | CommunicationException
                     | AuthorizationException e) {
-                ZonedDateTime nextReinitializeDateTime = ZonedDateTime.now().plusSeconds(REINITIALIZATION_DELAY);
+                ZonedDateTime nextReinitializeDateTime = ZonedDateTime.now().plusSeconds(REINITIALIZATION_DELAY_SEC);
 
                 String infoMessage = String.format(
                         "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",
@@ -170,7 +163,6 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Dispose bridge {}", getThing().getLabel());
         stopReinitializer();
         cleanup(true);
     }
@@ -192,7 +184,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 return entry.getKey() + ": " + entry.getValue();
             }).collect(Collectors.toList());
 
-            logger.info("Update bridge configuration. bridge={}, parameters={}", getThing().getLabel(), parameters);
+            logger.debug("Update bridge configuration. bridge={}, parameters={}", getThing().getLabel(), parameters);
 
             validateConfigurationParameters(configurationParameters);
             Configuration configuration = editConfiguration();
@@ -202,7 +194,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
 
             // invalidate oAuth credentials
             try {
-                logger.info("Clear oAuth credential store. bridge={}", getThing().getLabel());
+                logger.debug("Clear oAuth credential store. bridge={}", getThing().getLabel());
                 oAuthClientService.remove();
             } catch (OAuthException e) {
                 logger.error("Could not clear oAuth credentials. bridge={}", getThing().getLabel(), e);
@@ -307,7 +299,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
             this.reinitializationFuture = scheduler.schedule(() -> {
                 cleanup(false);
                 initialize();
-            }, HomeConnectBridgeHandler.REINITIALIZATION_DELAY, TimeUnit.SECONDS);
+            }, HomeConnectBridgeHandler.REINITIALIZATION_DELAY_SEC, TimeUnit.SECONDS);
         }
     }
 

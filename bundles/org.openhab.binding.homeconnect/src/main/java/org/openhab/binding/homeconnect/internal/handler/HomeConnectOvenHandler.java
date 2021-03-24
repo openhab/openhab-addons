@@ -12,52 +12,19 @@
  */
 package org.openhab.binding.homeconnect.internal.handler;
 
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_ACTIVE_PROGRAM_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_DURATION;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_ELAPSED_PROGRAM_TIME;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_OVEN_CURRENT_CAVITY_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_PROGRAM_PROGRESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMAINING_PROGRAM_TIME_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_CONTROL_ACTIVE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_START_ALLOWANCE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_SELECTED_PROGRAM_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_ACTIVE_PROGRAM;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_DURATION;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_ELAPSED_PROGRAM_TIME;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_OVEN_CAVITY_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_PROGRAM_PROGRESS;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMAINING_PROGRAM_TIME;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_ACTIVE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_START_ALLOWED;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_SELECTED_PROGRAM;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPERATION_STATE_INACTIVE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPERATION_STATE_READY;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_DURATION;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_OPERATION_RUN;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_POWER_ON;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_POWER_STANDBY;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.core.library.unit.Units.SECOND;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.IncommensurableException;
 import javax.measure.UnconvertibleException;
-import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -105,7 +72,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void configureChannelUpdateHandlers(ConcurrentHashMap<String, ChannelUpdateHandler> handlers) {
+    protected void configureChannelUpdateHandlers(Map<String, ChannelUpdateHandler> handlers) {
         // register default update handlers
         handlers.put(CHANNEL_OPERATION_STATE, defaultOperationStateChannelUpdateHandler());
         handlers.put(CHANNEL_POWER_STATE, defaultPowerStateChannelUpdateHandler());
@@ -140,7 +107,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void configureEventHandlers(ConcurrentHashMap<String, EventHandler> handlers) {
+    protected void configureEventHandlers(Map<String, EventHandler> handlers) {
         // register default SSE event handlers
         handlers.put(EVENT_DOOR_STATE, defaultDoorStateEventHandler());
         handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE));
@@ -208,8 +175,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
                             && command instanceof QuantityType) {
                         // set setpoint temperature
                         if (CHANNEL_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
-                            @SuppressWarnings("unchecked")
-                            QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command);
+                            QuantityType<?> quantity = (QuantityType<?>) command;
 
                             try {
                                 String value;
@@ -224,15 +190,21 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
                                             "Converting target setpoint temperature from {}{} to °C value. haId={}",
                                             quantity.intValue(), quantity.getUnit().toString(), getThingHaId());
                                     unit = "°C";
-                                    value = String.valueOf(quantity.getUnit().getConverterToAny(SIUnits.CELSIUS)
-                                            .convert(quantity).intValue());
+                                    var celsius = quantity.toUnit(SIUnits.CELSIUS);
+                                    if (celsius == null) {
+                                        logger.warn("Converting setpoint temperature to celsius failed! quantity={}",
+                                                quantity);
+                                        value = "-6";
+                                    } else {
+                                        value = String.valueOf(celsius.intValue());
+                                    }
                                     logger.debug("{}{}", value, unit);
                                 }
 
                                 logger.debug("Set setpoint temperature to {} {}. haId={}", value, unit, getThingHaId());
                                 apiClient.setProgramOptions(getThingHaId(), OPTION_SETPOINT_TEMPERATURE, value, unit,
                                         true, false);
-                            } catch (IncommensurableException | UnconvertibleException e) {
+                            } catch (UnconvertibleException e) {
                                 logger.warn("Could not set setpoint! haId={}, error={}", getThingHaId(),
                                         e.getMessage());
                             }

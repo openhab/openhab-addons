@@ -1,4 +1,4 @@
-/* globals Chart:false, feather:false */
+/* globals Chart:false, feather:false, Plotly:false, requests:false */
 
 (function () {
     'use strict'
@@ -22,13 +22,13 @@
         subTitle.text(thingId);
         modal.modal('handleUpdate');
 
-        let jqxhr = $.get( 'appliances?thingId=' + thingId + '&action=' + action, function(data) {
-            responseBodyElement.text(JSON.stringify(data,null,'\t'));
+        let jqxhr = $.get('appliances?thingId=' + thingId + '&action=' + action, function (data) {
+            responseBodyElement.text(JSON.stringify(data, null, '\t'));
         });
-        jqxhr.fail(function(data) {
-            responseBodyElement.text(JSON.stringify(data,null,'\t'));
+        jqxhr.fail(function (data) {
+            responseBodyElement.text(JSON.stringify(data, null, '\t'));
         })
-        jqxhr.always(function() {
+        jqxhr.always(function () {
             modal.modal('handleUpdate');
         });
     })
@@ -52,18 +52,18 @@
         inputPath.val('/api/homeappliances/' + haId + '/programs/active')
         modal.modal('handleUpdate');
 
-        submit.click(function() {
+        submit.click(function () {
             responseBodyElement.text('Loading...');
-            let jqxhr = $.post( 'appliances?thingId=' + thingId + '&action=put-raw&path=' + inputPath.val(),
-                                inputBody.val(), function(data) {
-                responseBodyElement.text(JSON.stringify(data,null,'\t'));
-                responseTitle.show();
-            });
-            jqxhr.fail(function(data) {
-                responseBodyElement.text(JSON.stringify(data,null,'\t'));
+            let jqxhr = $.post('appliances?thingId=' + thingId + '&action=put-raw&path=' + inputPath.val(),
+                               inputBody.val(), function (data) {
+                    responseBodyElement.text(JSON.stringify(data, null, '\t'));
+                    responseTitle.show();
+                });
+            jqxhr.fail(function (data) {
+                responseBodyElement.text(JSON.stringify(data, null, '\t'));
                 responseTitle.show();
             })
-            jqxhr.always(function() {
+            jqxhr.always(function () {
                 modal.modal('handleUpdate');
             });
         });
@@ -87,17 +87,17 @@
         inputPath.val('/api/homeappliances/' + haId + '/programs')
         modal.modal('handleUpdate');
 
-        submit.click(function() {
+        submit.click(function () {
             responseBodyElement.text('Loading...');
-            let jqxhr = $.post( 'appliances?thingId=' + thingId + '&action=get-raw&path=' + inputPath.val(), function(data) {
-                    responseBodyElement.text(JSON.stringify(data,null,'\t'));
-                    responseTitle.show();
-                });
-            jqxhr.fail(function(data) {
-                responseBodyElement.text(JSON.stringify(data,null,'\t'));
+            let jqxhr = $.post('appliances?thingId=' + thingId + '&action=get-raw&path=' + inputPath.val(), function (data) {
+                responseBodyElement.text(JSON.stringify(data, null, '\t'));
+                responseTitle.show();
+            });
+            jqxhr.fail(function (data) {
+                responseBodyElement.text(JSON.stringify(data, null, '\t'));
                 responseTitle.show();
             })
-            jqxhr.always(function() {
+            jqxhr.always(function () {
                 modal.modal('handleUpdate');
             });
         });
@@ -160,30 +160,30 @@
         location.reload();
     });
 
-    $('.request-chart').each(function(index, element) {
+    $('.request-chart').each(function (index, element) {
         var bridgeId = $(this).data('bridge-id');
         var chartElement = element;
 
-        function makeplot(bridgeId, chartElement) {
+        function makeplot (bridgeId, chartElement) {
             Plotly.d3.csv('requests?bridgeId=' + bridgeId + '&action=request-csv', function (data) {
                 processData(data, chartElement)
             });
         }
 
-        function processData(allRows, chartElement) {
+        function processData (allRows, chartElement) {
             console.log(allRows);
             var x = [], y = [], standardDeviation = [];
 
             for (var i = 0; i < allRows.length; i++) {
                 var row = allRows[i];
-                x.push( row['time'] );
-                y.push( row['requests'] );
+                x.push(row['time']);
+                y.push(row['requests']);
             }
-            console.log( 'X',x, 'Y',y, 'SD',standardDeviation );
-            makePlotly( x, y, standardDeviation, chartElement );
+            console.log('X', x, 'Y', y, 'SD', standardDeviation);
+            makePlotly(x, y, standardDeviation, chartElement);
         }
 
-        function makePlotly( x, y, standard_deviation, chartElement ){
+        function makePlotly (x, y, standard_deviation, chartElement){
             var traces = [{
                 x: x,
                 y: y,
@@ -211,7 +211,7 @@
                                displayModeBar: false,
                                responsive: true
                            });
-        };
+        }
 
         makeplot(bridgeId, chartElement);
     });

@@ -12,21 +12,12 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
-import static io.github.bucket4j.Bandwidth.classic;
-import static io.github.bucket4j.Refill.intervally;
-
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -39,9 +30,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
 
 /**
  * okHttp helper.
@@ -56,24 +44,8 @@ public class HttpHelper {
     private static final int OAUTH_EXPIRE_BUFFER = 10;
     private static final JsonParser JSON_PARSER = new JsonParser();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Bucket BUCKET = Bucket4j.builder()
-            // allows 50 tokens per minute (added 10 second buffer)
-            .addLimit(classic(50, intervally(50, Duration.ofSeconds(70))).withInitialTokens(40))
-            // but not often then 50 tokens per second
-            .addLimit(classic(10, intervally(10, Duration.ofSeconds(1)))).build();
-    private static @Nullable String lastAccessToken = null;
 
-    public static ContentResponse sendRequest(Request request)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        if (HttpMethod.GET.name().equals(request.getMethod())) {
-            try {
-                BUCKET.asScheduler().consume(1);
-            } catch (InterruptedException e) {
-                LoggerFactory.getLogger(HttpHelper.class).error("Rate limiting error! error={}", e.getMessage());
-            }
-        }
-        return request.send();
-    }
+    private static @Nullable String lastAccessToken = null;
 
     public static String formatJsonBody(@Nullable String jsonString) {
         if (jsonString == null) {
@@ -116,11 +88,9 @@ public class HttpHelper {
                 throw new AuthorizationException("No access token available!");
             }
         } catch (IOException e) {
-            @Nullable
             String errorMessage = e.getMessage();
             throw new CommunicationException(errorMessage != null ? errorMessage : "IOException", e);
         } catch (OAuthException | OAuthResponseException e) {
-            @Nullable
             String errorMessage = e.getMessage();
             throw new AuthorizationException(errorMessage != null ? errorMessage : "oAuth exception", e);
         }

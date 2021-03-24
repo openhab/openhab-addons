@@ -12,26 +12,16 @@
  */
 package org.openhab.binding.homeconnect.internal.discovery;
 
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.BINDING_ID;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.DISCOVERABLE_DEVICE_THING_TYPES_UIDS;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.HA_ID;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_COFFEE_MAKER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_COOKTOP;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_DISHWASHER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_DRYER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_FRIDGE_FREEZER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_HOOD;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_OVEN;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_WASHER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_WASHER_DRYER;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
+import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
+import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.client.model.HomeAppliance;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -58,7 +48,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectDiscoveryService.class);
 
-    private @NonNullByDefault({}) HomeConnectBridgeHandler bridgeHandler;
+    private @Nullable HomeConnectBridgeHandler bridgeHandler;
 
     /**
      * Construct an {@link HomeConnectDiscoveryService}.
@@ -69,7 +59,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
+    public void setThingHandler(ThingHandler handler) {
         if (handler instanceof HomeConnectBridgeHandler) {
             this.bridgeHandler = (HomeConnectBridgeHandler) handler;
         }
@@ -98,8 +88,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
                 if (thingTypeUID != null) {
                     logger.debug("Found {} ({}).", appliance.getHaId(), appliance.getType().toUpperCase());
 
-                    Map<String, Object> properties = new HashMap<>();
-                    properties.put(HA_ID, appliance.getHaId());
+                    Map<String, Object> properties = Map.of(HA_ID, appliance.getHaId());
                     String name = appliance.getBrand() + " " + appliance.getName() + " (" + appliance.getHaId() + ")";
 
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder
@@ -113,7 +102,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
                             appliance.getType());
                 }
             }
-        } catch (Exception e) {
+        } catch (CommunicationException | AuthorizationException e) {
             logger.debug("Exception during scan.", e);
         }
         logger.debug("Finished device scan.");

@@ -24,12 +24,10 @@ import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstan
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FRIDGE_SUPER_MODE;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.measure.IncommensurableException;
 import javax.measure.UnconvertibleException;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
@@ -66,7 +64,7 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
     }
 
     @Override
-    protected void configureChannelUpdateHandlers(ConcurrentHashMap<String, ChannelUpdateHandler> handlers) {
+    protected void configureChannelUpdateHandlers(Map<String, ChannelUpdateHandler> handlers) {
         // register default update handlers
         handlers.put(CHANNEL_DOOR_STATE, defaultDoorStateChannelUpdateHandler());
 
@@ -127,7 +125,7 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
     }
 
     @Override
-    protected void configureEventHandlers(ConcurrentHashMap<String, EventHandler> handlers) {
+    protected void configureEventHandlers(Map<String, EventHandler> handlers) {
         // register default event handlers
         handlers.put(EVENT_DOOR_STATE, defaultDoorStateEventHandler());
         handlers.put(EVENT_FREEZER_SUPER_MODE, defaultBooleanEventHandler(CHANNEL_FREEZER_SUPER_MODE));
@@ -154,8 +152,7 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
                 if (apiClient.isPresent() && command instanceof QuantityType
                         && (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())
                                 || CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId()))) {
-                    @SuppressWarnings("unchecked")
-                    QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command);
+                    QuantityType<?> quantity = (QuantityType<?>) command;
 
                     String value;
                     String unit;
@@ -168,8 +165,13 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
                         logger.debug("Converting target setpoint temperature from {}{} to °C value. thing={}, haId={}",
                                 quantity.intValue(), quantity.getUnit().toString(), getThingLabel(), getThingHaId());
                         unit = "°C";
-                        value = String.valueOf(
-                                quantity.getUnit().getConverterToAny(SIUnits.CELSIUS).convert(quantity).intValue());
+                        var celsius = quantity.toUnit(SIUnits.CELSIUS);
+                        if (celsius == null) {
+                            logger.warn("Converting setpoint temperature to celsius failed! quantity={}", quantity);
+                            value = "-6";
+                        } else {
+                            value = String.valueOf(celsius.intValue());
+                        }
                         logger.debug("{}{}", value, unit);
                     }
 
@@ -203,7 +205,7 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
                         command.toFullString(), getThingHaId(), e.getMessage());
 
                 handleAuthenticationError(e);
-            } catch (IncommensurableException | UnconvertibleException e) {
+            } catch (UnconvertibleException e) {
                 logger.debug("Could not set setpoint! haId={}, error={}", getThingHaId(), e.getMessage());
             }
         }

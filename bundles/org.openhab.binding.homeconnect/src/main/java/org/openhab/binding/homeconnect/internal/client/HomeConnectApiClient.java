@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
+import static io.github.bucket4j.Bandwidth.classic;
+import static io.github.bucket4j.Refill.intervally;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.binding.homeconnect.internal.client.HttpHelper.*;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +62,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+
 /**
  * Client for Home Connect API.
  *
@@ -71,7 +77,7 @@ public class HomeConnectApiClient {
     private static final String BSH_JSON_V1 = "application/vnd.bsh.sdk.v1+json";
     private static final String BASE = "/api/homeappliances";
     private static final String BASE_PATH = BASE + "/";
-    private static final int REQUEST_TIMEOUT = 30;
+    private static final int REQUEST_TIMEOUT_SEC = 30;
     private static final int VALUE_TYPE_STRING = 0;
     private static final int VALUE_TYPE_INT = 1;
     private static final int VALUE_TYPE_BOOLEAN = 2;
@@ -84,6 +90,7 @@ public class HomeConnectApiClient {
     private final OAuthClientService oAuthClientService;
     private final CircularQueue<ApiRequest> communicationQueue;
     private final JsonParser jsonParser;
+    private final Bucket bucket;
 
     public HomeConnectApiClient(HttpClient httpClient, OAuthClientService oAuthClientService, boolean simulated,
             @Nullable List<ApiRequest> apiRequestHistory) {
@@ -97,6 +104,11 @@ public class HomeConnectApiClient {
         if (apiRequestHistory != null) {
             communicationQueue.addAll(apiRequestHistory);
         }
+        bucket = Bucket4j.builder()
+                // allows 50 tokens per minute (added 10 second buffer)
+                .addLimit(classic(50, intervally(50, Duration.ofSeconds(70))).withInitialTokens(40))
+                // but not often then 50 tokens per second
+                .addLimit(classic(10, intervally(10, Duration.ofSeconds(1)))).build();
     }
 
     /**
@@ -955,7 +967,7 @@ public class HomeConnectApiClient {
                 }
             });
         } catch (Exception e) {
-            logger.error("Could not parse available programs response! haId={}, error={}", haId, e.getMessage());
+            logger.warn("Could not parse available programs response! haId={}, error={}", haId, e.getMessage());
         }
 
         return result;
@@ -1030,7 +1042,7 @@ public class HomeConnectApiClient {
             throws AuthorizationException, CommunicationException {
         return client.newRequest(apiUrl + path)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(oAuthClientService))
-                .header(HttpHeaders.ACCEPT, BSH_JSON_V1).method(method).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
+                .header(HttpHeaders.ACCEPT, BSH_JSON_V1).method(method).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     private void trackAndLogApiRequest(@Nullable String haId, Request request, @Nullable String requestBody,
@@ -1096,5 +1108,17 @@ public class HomeConnectApiClient {
 
         return new HomeConnectResponse(response.getStatus(), headers,
                 responseBody != null ? formatJsonBody(responseBody) : null);
+    }
+
+    private ContentResponse sendRequest(Request request)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        if (HttpMethod.GET.name().equals(request.getMethod())) {
+            try {
+                bucket.asScheduler().consume(1);
+            } catch (InterruptedException e) {
+                logger.warn("Rate limiting error! error={}", e.getMessage());
+            }
+        }
+        return request.send();
     }
 }

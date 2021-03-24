@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ApiBridgeConfiguration {
 
-    private @NonNullByDefault({}) String clientId;
-    private @NonNullByDefault({}) String clientSecret;
+    private String clientId = "";
+    private String clientSecret = "";
     private boolean simulator;
 
     public String getClientId() {

@@ -139,7 +139,6 @@ public class HomeConnectEventSourceClient {
     public synchronized void unregisterEventListener(HomeConnectEventListener eventListener, boolean immediate,
             boolean completed) {
         if (eventSourceConnections.containsKey(eventListener)) {
-            @Nullable
             SseEventSource eventSource = eventSourceConnections.get(eventListener);
             if (eventSource != null) {
                 closeEventSource(eventSource, immediate, completed);

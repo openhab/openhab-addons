@@ -14,70 +14,13 @@ package org.openhab.binding.homeconnect.internal.handler;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_ACTIVE_PROGRAM_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_FUNCTIONAL_LIGHT_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_HOOD_ACTIONS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_HOOD_INTENSIVE_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_HOOD_VENTING_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_LOCAL_CONTROL_ACTIVE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_CONTROL_ACTIVE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_START_ALLOWANCE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_AUTOMATIC;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_DELAYED_SHUT_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_STOP;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_VENTING_1;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_VENTING_2;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_VENTING_3;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_VENTING_4;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_VENTING_5;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_VENTING_INTENSIVE_1;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_VENTING_INTENSIVE_2;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_ACTIVE_PROGRAM;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_BRIGHTNESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_CUSTOM_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_AMBIENT_LIGHT_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FUNCTIONAL_LIGHT_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_HOOD_INTENSIVE_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_HOOD_VENTING_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_LOCAL_CONTROL_ACTIVE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_ACTIVE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_START_ALLOWED;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPERATION_STATE_INACTIVE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPERATION_STATE_RUN;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_HOOD_INTENSIVE_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_HOOD_VENTING_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.PROGRAM_HOOD_AUTOMATIC;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.PROGRAM_HOOD_DELAYED_SHUT_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.PROGRAM_HOOD_VENTING;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_01;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_02;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_03;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_04;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_05;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_INTENSIVE_STAGE_1;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_INTENSIVE_STAGE_2;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_INTENSIVE_STAGE_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_POWER_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_POWER_ON;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.core.library.unit.Units.PERCENT;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -126,7 +69,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void configureChannelUpdateHandlers(ConcurrentHashMap<String, ChannelUpdateHandler> handlers) {
+    protected void configureChannelUpdateHandlers(Map<String, ChannelUpdateHandler> handlers) {
         // register default update handlers
         handlers.put(CHANNEL_OPERATION_STATE, defaultOperationStateChannelUpdateHandler());
         handlers.put(CHANNEL_POWER_STATE, defaultPowerStateChannelUpdateHandler());
@@ -159,7 +102,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void configureEventHandlers(ConcurrentHashMap<String, EventHandler> handlers) {
+    protected void configureEventHandlers(Map<String, EventHandler> handlers) {
         // register default SSE event handlers
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));

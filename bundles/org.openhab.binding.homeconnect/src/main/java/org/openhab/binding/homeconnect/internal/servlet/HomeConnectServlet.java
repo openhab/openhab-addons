@@ -128,7 +128,7 @@ public class HomeConnectServlet extends HttpServlet {
 
         // register servlet
         try {
-            logger.info("Initialize Home Connect configuration servlet ({})", SERVLET_PATH);
+            logger.debug("Initialize Home Connect configuration servlet ({})", SERVLET_PATH);
             httpService.registerServlet(SERVLET_PATH, this, null, httpService.createDefaultHttpContext());
             httpService.registerResources(ASSETS_PATH, "assets", null);
         } catch (NamespaceException e) {
@@ -138,10 +138,10 @@ public class HomeConnectServlet extends HttpServlet {
                 httpService.registerServlet(SERVLET_PATH, this, null, httpService.createDefaultHttpContext());
                 httpService.registerResources(ASSETS_PATH, "assets", null);
             } catch (ServletException | NamespaceException ex) {
-                logger.error("Could not register Home Connect servlet! ({})", SERVLET_PATH, ex);
+                logger.warn("Could not register Home Connect servlet! ({})", SERVLET_PATH, ex);
             }
         } catch (ServletException e) {
-            logger.error("Could not register Home Connect servlet! ({})", SERVLET_PATH, e);
+            logger.warn("Could not register Home Connect servlet! ({})", SERVLET_PATH, e);
         }
 
         // setup template engine
@@ -157,13 +157,8 @@ public class HomeConnectServlet extends HttpServlet {
 
     @Deactivate
     protected void dispose() {
-        try {
-            logger.info("Unregister Home Connect configuration servlet ({}).", SERVLET_PATH);
-            httpService.unregister(SERVLET_PATH);
-            httpService.unregister(ASSETS_PATH);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Could not unregister Home Connect servlet. Failed wth {}", e.getMessage());
-        }
+        httpService.unregister(SERVLET_PATH);
+        httpService.unregister(ASSETS_PATH);
     }
 
     @Override

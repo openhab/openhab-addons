@@ -54,9 +54,9 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class HomeConnectEventSourceListener {
     private static final String EMPTY_DATA = "\"\"";
-    private static final int SSE_MONITOR_INITIAL_DELAY = 1;
-    private static final int SSE_MONITOR_INTERVAL = 5; // in min
-    private static final int SSE_MONITOR_BROKEN_CONNECTION_TIMEOUT = 3; // in min
+    private static final int SSE_MONITOR_INITIAL_DELAY_MIN = 1;
+    private static final int SSE_MONITOR_INTERVAL_MIN = 5;
+    private static final int SSE_MONITOR_BROKEN_CONNECTION_TIMEOUT_MIN = 3;
 
     private final String haId;
     private final HomeConnectEventListener eventListener;
@@ -81,16 +81,12 @@ public class HomeConnectEventSourceListener {
     }
 
     public void onEvent(InboundSseEvent inboundEvent) {
-        @Nullable
         String id = inboundEvent.getId();
-        @Nullable
         String type = inboundEvent.getName();
-        @Nullable
         String data = inboundEvent.readData();
 
         lastEventReceived = now();
 
-        @Nullable
         EventType eventType = valueOfType(type);
         if (eventType != null) {
             mapEventSourceEventToEvent(haId, eventType, data).forEach(event -> {
@@ -145,6 +141,7 @@ public class HomeConnectEventSourceListener {
                     logger.debug(
                             "Event source listener connection failure due to unauthorized exception : wait 5 seconds... haId={}",
                             haId);
+
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e1) {
@@ -162,8 +159,8 @@ public class HomeConnectEventSourceListener {
         return scheduler.scheduleWithFixedDelay(() -> {
             logger.trace("Check event source connection ({}). Last event package received at {}.", haId,
                     lastEventReceived);
-            if (lastEventReceived != null
-                    && ChronoUnit.MINUTES.between(lastEventReceived, now()) > SSE_MONITOR_BROKEN_CONNECTION_TIMEOUT) {
+            if (lastEventReceived != null && ChronoUnit.MINUTES.between(lastEventReceived,
+                    now()) > SSE_MONITOR_BROKEN_CONNECTION_TIMEOUT_MIN) {
                 logger.warn("Dead event source connection detected ({}).", haId);
 
                 client.unregisterEventListener(eventListener);
@@ -175,7 +172,7 @@ public class HomeConnectEventSourceListener {
                 }
                 stopMonitor();
             }
-        }, SSE_MONITOR_INITIAL_DELAY, SSE_MONITOR_INTERVAL, TimeUnit.MINUTES);
+        }, SSE_MONITOR_INITIAL_DELAY_MIN, SSE_MONITOR_INTERVAL_MIN, TimeUnit.MINUTES);
     }
 
     public void stopMonitor() {

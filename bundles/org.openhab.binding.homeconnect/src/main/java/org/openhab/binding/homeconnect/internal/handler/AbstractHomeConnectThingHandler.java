@@ -22,6 +22,7 @@ import static org.openhab.core.thing.ThingStatus.*;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -79,10 +80,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler implements HomeConnectEventListener {
 
-    private static final int CACHE_TTL = 2; // in seconds
-    private static final int OFFLINE_MONITOR_1_DELAY = 30; // in min
-    private static final int OFFLINE_MONITOR_2_DELAY = 4; // in min
-    private static final int EVENT_LISTENER_CONNECT_RETRY_DELAY = 10; // in min
+    private static final int CACHE_TTL_SEC = 2;
+    private static final int OFFLINE_MONITOR_1_DELAY_MIN = 30;
+    private static final int OFFLINE_MONITOR_2_DELAY_MIN = 4;
+    private static final int EVENT_LISTENER_CONNECT_RETRY_DELAY_MIN = 10;
 
     private @Nullable String operationState;
     private @Nullable ScheduledFuture<?> reinitializationFuture1;
@@ -103,7 +104,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         eventHandlers = new ConcurrentHashMap<>();
         channelUpdateHandlers = new ConcurrentHashMap<>();
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
-        expiringStateMap = new ExpiringStateMap(Duration.ofSeconds(CACHE_TTL));
+        expiringStateMap = new ExpiringStateMap(Duration.ofSeconds(CACHE_TTL_SEC));
         accessible = new AtomicBoolean(false);
 
         configureEventHandlers(eventHandlers);
@@ -115,13 +116,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         logger.debug("Initialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
 
         if (!getBridgeHandler().isPresent()) {
-            logger.debug("Update status to OFFLINE (BRIDGE_UNINITIALIZED). thing={}, haId={}", getThingLabel(),
-                    getThingHaId());
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
         } else if (isBridgeOffline()) {
-            logger.debug("Bridge is offline ({}), skip initialization of thing handler. haId={}", getThingLabel(),
-                    getThingHaId());
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             accessible.set(false);
         } else {
@@ -139,7 +136,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void dispose() {
-        logger.debug("Dispose thing handler ({}). haId={}", getThingLabel(), getThingHaId());
         stopRetryRegistering();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
@@ -209,7 +205,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 resetChannelsOnOfflineEvent();
                 resetProgramStateChannels();
             } catch (CommunicationException e) {
-                logger.info("Could not handle command {}. API communication problem! error={}, haId={}",
+                logger.debug("Could not handle command {}. API communication problem! error={}, haId={}",
                         command.toFullString(), e.getMessage(), getThingHaId());
             } catch (AuthorizationException e) {
                 logger.debug("Could not handle command {}. Authorization problem! error={}, haId={}",
@@ -362,14 +358,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @return true if ready
      */
     protected boolean isThingReadyToHandleCommand() {
-        @Nullable
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            logger.debug("BridgeHandler not found. Cannot handle command without bridge. thing={}, haId={}",
-                    getThingLabel(), getThingHaId());
-            return false;
-        }
-
         if (isBridgeOffline()) {
             logger.debug("Bridge is OFFLINE. Ignore command. thing={}, haId={}", getThingLabel(), getThingHaId());
             return false;
@@ -470,8 +458,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      *
      * @param handlers channel update handlers
      */
-    protected abstract void configureChannelUpdateHandlers(
-            final ConcurrentHashMap<String, ChannelUpdateHandler> handlers);
+    protected abstract void configureChannelUpdateHandlers(final Map<String, ChannelUpdateHandler> handlers);
 
     /**
      * Configure event handlers. Classes which extend {@link AbstractHomeConnectThingHandler} must implement
@@ -479,7 +466,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      *
      * @param handlers Server-Sent-Event handlers
      */
-    protected abstract void configureEventHandlers(final ConcurrentHashMap<String, EventHandler> handlers);
+    protected abstract void configureEventHandlers(final Map<String, EventHandler> handlers);
 
     /**
      * Update all channels via API.
@@ -487,7 +474,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      */
     protected void updateChannels() {
         if (isBridgeOffline()) {
-            logger.warn("Bridge handler not found or offline. Stopping update of channels. thing={}, haId={}",
+            logger.debug("Bridge handler not found or offline. Stopping update of channels. thing={}, haId={}",
                     getThingLabel(), getThingHaId());
         } else if (isThingOffline()) {
             logger.debug("{} offline. Stopping update of channels. haId={}", getThing().getLabel(), getThingHaId());
@@ -511,15 +498,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             return;
         }
 
-        if (isBridgeOffline()) {
-            logger.debug("BridgeHandler not found or offline. Stopping update of channel {}. thing={}, haId={}",
-                    channelUID, getThingLabel(), getThingHaId());
-            return;
-        }
-
-        if (isThingOffline()) {
-            logger.debug("{} offline. Stopping update of channel {}. haId={}", getThing().getLabel(), channelUID,
-                    getThingHaId());
+        if (!isThingReadyToHandleCommand()) {
             return;
         }
 
@@ -699,7 +678,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     updateStatus(ONLINE);
                 }
                 accessible.set(true);
-            } catch (CommunicationException | RuntimeException e) {
+            } catch (CommunicationException e) {
                 logger.debug(
                         "Update status to OFFLINE. Home Connect service is not reachable or a problem occurred!  thing={}, haId={}, error={}.",
                         getThingLabel(), getThingHaId(), e.getMessage());
@@ -717,8 +696,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             }
         });
         if (!apiClient.isPresent()) {
-            logger.debug("Update status to OFFLINE (BRIDGE_UNINITIALIZED). thing={}, haId={}", getThingLabel(),
-                    getThingHaId());
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
         }
@@ -1227,7 +1204,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     private synchronized void scheduleOfflineMonitor1() {
         this.reinitializationFuture1 = scheduler.schedule(() -> {
-            if (isBridgeOnline() && isThingOffline()) {
+            if (isThingReadyToHandleCommand()) {
                 logger.debug("Offline monitor 1: Check if thing is ONLINE. thing={}, haId={}", getThingLabel(),
                         getThingHaId());
                 refreshThingStatus();
@@ -1241,7 +1218,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             } else {
                 scheduleOfflineMonitor1();
             }
-        }, AbstractHomeConnectThingHandler.OFFLINE_MONITOR_1_DELAY, TimeUnit.MINUTES);
+        }, AbstractHomeConnectThingHandler.OFFLINE_MONITOR_1_DELAY_MIN, TimeUnit.MINUTES);
     }
 
     private synchronized void stopOfflineMonitor1() {
@@ -1269,7 +1246,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             } else {
                 scheduleOfflineMonitor2();
             }
-        }, AbstractHomeConnectThingHandler.OFFLINE_MONITOR_2_DELAY, TimeUnit.MINUTES);
+        }, AbstractHomeConnectThingHandler.OFFLINE_MONITOR_2_DELAY_MIN, TimeUnit.MINUTES);
     }
 
     private synchronized void stopOfflineMonitor2() {
@@ -1286,7 +1263,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             logger.debug("Try to register event listener again. haId={}", getThingHaId());
             unregisterEventListener();
             registerEventListener();
-        }, AbstractHomeConnectThingHandler.EVENT_LISTENER_CONNECT_RETRY_DELAY, TimeUnit.MINUTES);
+        }, AbstractHomeConnectThingHandler.EVENT_LISTENER_CONNECT_RETRY_DELAY_MIN, TimeUnit.MINUTES);
     }
 
     private synchronized void stopRetryRegistering() {
