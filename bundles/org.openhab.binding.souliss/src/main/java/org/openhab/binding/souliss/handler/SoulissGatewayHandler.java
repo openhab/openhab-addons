@@ -98,8 +98,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             }
 
             if (preferredLocalPort < 0 && preferredLocalPort > 65000) {
+                // local port to 0
                 bridge.getConfiguration().put(SoulissBindingConstants.CONFIG_LOCAL_PORT, 0);
-                logger.debug("Set Preferred Local Port to {}", 0);
             }
 
             if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_PORT) != null) {
