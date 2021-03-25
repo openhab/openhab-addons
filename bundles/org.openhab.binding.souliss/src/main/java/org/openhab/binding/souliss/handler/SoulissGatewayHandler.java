@@ -73,9 +73,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private int maxTypicalXnode;
     private int countPingKo = 0;
 
-    public SoulissGatewayHandler(Bridge _bridge) {
-        super(_bridge);
-        bridge = _bridge;
+    public SoulissGatewayHandler(Bridge br) {
+        super(br);
+        bridge = br;
     }
 
     @Override
