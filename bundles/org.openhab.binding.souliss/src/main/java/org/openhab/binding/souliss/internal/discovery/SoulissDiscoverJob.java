@@ -54,7 +54,7 @@ public class SoulissDiscoverJob implements Runnable {
     @Nullable
     SoulissBindingUDPServerJob udpServerOnDefaultPort = null;
     ///// Debug
-    private Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);
 
     private int resendCounter = 0;
 

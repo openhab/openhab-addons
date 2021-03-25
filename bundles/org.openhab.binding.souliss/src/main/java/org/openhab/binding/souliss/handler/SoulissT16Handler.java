@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class SoulissT16Handler extends SoulissGenericHandler {
     @Nullable
     Configuration gwConfigurationMap;
-    private Logger logger = LoggerFactory.getLogger(SoulissT16Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissT16Handler.class);
     byte t1nRawStateByte0;
     byte t1nRawStateRedByte1;
     byte t1nRawStateGreenByte2;

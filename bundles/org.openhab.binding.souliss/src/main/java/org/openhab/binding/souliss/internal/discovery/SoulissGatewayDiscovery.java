@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.souliss")
 public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
-    private Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
     @Nullable
     private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
     @Nullable
