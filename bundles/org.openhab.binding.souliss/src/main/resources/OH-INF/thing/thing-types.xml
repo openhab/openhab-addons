@@ -301,8 +301,8 @@
 		<label>T21</label>
 		<description>Motorized devices with limit switches</description>
 		<channels>
-			<channel id="rollershutter" typeId="rollershutter"/>
-			<channel id="rollershutterstate" typeId="rollershutterstate"/>
+			<channel id="rollerShutter" typeId="rollerShutter"/>
+			<channel id="rollerShutterState" typeId="rollerShutterState"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
@@ -323,8 +323,8 @@
 		<label>T22</label>
 		<description>Motorized devices with limit switches and middle position</description>
 		<channels>
-			<channel id="rollershutter" typeId="rollershutter"/>
-			<channel id="rollershutterstate" typeId="rollershutterstate"/>
+			<channel id="rollerShutter" typeId="rollerShutter"/>
+			<channel id="rollerShutterState" typeId="rollerShutterState"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
@@ -734,15 +734,15 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rollershutter">
-		<item-type>Rollershutter</item-type>
+	<channel-type id="rollerShutter">
+		<item-type>RollerShutter</item-type>
 		<label>Rollershutter</label>
 		<description>Rollershutter Up/Down</description>
 		<category>Blinds</category>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="rollershutterstate">
+	<channel-type id="rollerShutterState">
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>State of rollershutter/windows</description>
@@ -904,7 +904,7 @@
 	</channel-type>
 
 	<channel-type id="rollerBrightness">
-		<item-type>Rollershutter</item-type>
+		<item-type>RollerShutter</item-type>
 		<label>Brightness</label>
 		<description>Brightness Up/Down</description>
 		<category>DimmableLight</category>

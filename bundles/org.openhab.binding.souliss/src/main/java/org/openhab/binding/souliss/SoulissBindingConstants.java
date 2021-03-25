@@ -118,9 +118,10 @@ public final class SoulissBindingConstants {
     public static final String AUTOMODE_CHANNEL = "automode";
     public static final String STATEONOFF_CHANNEL = "stateOnOff";
     public static final String STATEOPENCLOSE_CHANNEL = "stateOpenClose";
-    public static final String ROLLERSHUTTER_CHANNEL = "rollershutter";
-    public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollershutterstate";
-    public static final String ROLLERSHUTTER_STATE_NUMBER_CHANNEL = "rollershutter_state_number";
+    public static final String ROLLERSHUTTER_CHANNEL = "rollerShutter";
+    public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollerShutterState";
+    // unused for now
+    // public static final String ROLLERSHUTTER_STATE_NUMBER_CHANNEL = "rollershutter_state_number";
     public static final String ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL = "opening";
     public static final String ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL = "closing";
     public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL = "limSwitch_open";
