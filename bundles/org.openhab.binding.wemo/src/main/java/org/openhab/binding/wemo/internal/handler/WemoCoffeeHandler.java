@@ -409,13 +409,13 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
     public @Nullable State getDateTimeState(String attributeValue) {
         long value = 0;
         try {
-            value = Long.parseLong(attributeValue) * 1000; // convert s to ms
+            value = Long.parseLong(attributeValue);
         } catch (NumberFormatException e) {
             logger.error("Unable to parse attributeValue '{}' for device '{}'; expected long", attributeValue,
                     getThing().getUID());
             return null;
         }
-        ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(value), TimeZone.getDefault().toZoneId());
+        ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), TimeZone.getDefault().toZoneId());
         State dateTimeState = new DateTimeType(zoned);
         logger.trace("New attribute brewed '{}' received", dateTimeState);
         return dateTimeState;
