@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissGatewayJobHealthy extends Thread {
 
-    private Logger logger = LoggerFactory.getLogger(SoulissGatewayJobHealthy.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissGatewayJobHealthy.class);
     private String ipAddressOnLAN;
     private byte userIndex;
     private byte nodeIndex;

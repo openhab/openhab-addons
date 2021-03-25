@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissGatewayHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(SoulissGatewayHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissGatewayHandler.class);
     public @Nullable DatagramSocket datagramSocketDefaultPort;
     private @Nullable SoulissBindingUDPServerJob udpServerDefaultPortRunnableClass;
     private SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
