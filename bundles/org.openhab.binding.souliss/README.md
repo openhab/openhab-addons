@@ -158,7 +158,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 If after discovery your thing is not listed you can add it manually.
 You have to choose it from the available things. 
-Firts gateway, after items!
+First gateway, after items!
 To configure Gateway you can leave default value on Thing ID and write your value on "IP or Host Name" and "Gateway port".
 
 To configure a typical (items) you have to choice your "Name" and "Location", you have to choice your "Gateway" and insert correct "Thing ID".
@@ -180,9 +180,9 @@ Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location" [ <parameters> ]
 The general syntax for .things files is defined as follows (parts in <..> are required):
 
 ```
-Bridge <binding_id>:<type_id>:<bridge_id> "<Souliss Gateway Name>" [ <parameters> ]
+Bridge <binding_id>:<bridge_thing_type_id>:<bridge_uid> "<Souliss Gateway Label>" [ <parameters> ]
 {  
-Thing <type_id> <thing_id>  [ <parameters> ]
+Thing <thing_type_id> <thing_uid> "<Souliss Thing Label>" [ <parameters> ]
 }
 
 ```
