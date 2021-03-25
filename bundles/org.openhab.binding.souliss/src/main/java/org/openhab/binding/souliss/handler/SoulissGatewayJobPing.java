@@ -58,11 +58,11 @@ public class SoulissGatewayJobPing implements Runnable {
     }
 
     private void sendPing() {
-        logger.debug("Sending ping packet");
+        // sending ping packet
         if (ipAddressOnLAN.length() > 0) {
             soulissCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN, nodeIndex,
                     userIndex, (byte) 0, (byte) 0);
-            logger.debug("Sent ping packet");
+            // ping packet sent
         }
     }
 
