@@ -53,11 +53,11 @@ public class SoulissGatewayJobHealthy extends Thread {
     }
 
     private void sendHealthyRequest() {
-        logger.debug("Sending healthy packet");
+        // sending healthy packet
         if (ipAddressOnLAN.length() > 0) {
             soulissCommands.sendHealthyRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
                     nodeIndex, userIndex, gw.getNodes());
-            logger.debug("Sent healthy packet");
+            // healthy packet sent
         }
     }
 
