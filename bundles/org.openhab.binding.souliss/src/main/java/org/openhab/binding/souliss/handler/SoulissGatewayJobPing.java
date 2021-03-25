@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissGatewayJobPing implements Runnable {
 
-    private Logger logger = LoggerFactory.getLogger(SoulissGatewayJobPing.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissGatewayJobPing.class);
     private String ipAddressOnLAN = "";
     private byte userIndex;
     private byte nodeIndex;

@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.souliss", service = ThingHandlerFactory.class)
 public class SoulissHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(SoulissHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
