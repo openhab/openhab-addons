@@ -228,7 +228,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void handleRemoval() {
         SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
         logger.debug("Gateway handler removing");
-        // }
     }
 
     @Override
