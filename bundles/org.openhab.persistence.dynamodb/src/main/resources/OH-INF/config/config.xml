@@ -94,7 +94,7 @@
 		<parameter name="profilesConfigFile" type="text" required="false">
 			<label>AWS credentials file</label>
 			<description><![CDATA[Path to the AWS credentials file. <br />
-			For example, /etc/openhab2/aws_creds. Please note that the user that runs openHAB must have approriate read rights to the credential file. <br />
+			For example, /etc/openhab/aws_creds. Please note that the user that runs openHAB must have approriate read rights to the credential file. <br />
 			Give either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
