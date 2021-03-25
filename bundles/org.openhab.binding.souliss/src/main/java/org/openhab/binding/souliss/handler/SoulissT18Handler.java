@@ -76,12 +76,10 @@ public class SoulissT18Handler extends SoulissGenericHandler {
         } else {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
-                        } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
+                    } else if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                     }
                     break;
             }

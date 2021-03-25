@@ -107,28 +107,22 @@ public class SoulissT12Handler extends SoulissGenericHandler {
         {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
-                        } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
+                    } else if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                     }
                     break;
                 case SoulissBindingConstants.AUTOMODE_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_AUTO_CMD);
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_AUTO_CMD);
                     }
                     break;
                 case SoulissBindingConstants.SLEEP_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
-                            // set Off
-                            updateState(channelUID, OnOffType.OFF);
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
+                        // set Off
+                        updateState(channelUID, OnOffType.OFF);
                     }
                     break;
 

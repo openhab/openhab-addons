@@ -74,17 +74,15 @@ public class SoulissT11Handler extends SoulissGenericHandler {
         } else {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
-                        } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
+                    } else if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                     }
                     break;
 
                 case SoulissBindingConstants.SLEEP_CHANNEL:
-                    if ((command instanceof OnOffType) && (command.equals(OnOffType.ON))) {
+                    if (command.equals(OnOffType.ON)) {
                         commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
                         // set Off
                         updateState(channelUID, OnOffType.OFF);

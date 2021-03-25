@@ -80,13 +80,11 @@ public class SoulissT16Handler extends SoulissGenericHandler {
         } else {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
+                    if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
 
-                        } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
-                        }
+                    } else if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                     }
                     break;
                 case SoulissBindingConstants.WHITE_MODE_CHANNEL:
@@ -95,7 +93,6 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                         commandSendRgb(SoulissBindingProtocolConstants.SOULISS_T1N_SET, (byte) 255, (byte) 255,
                                 (byte) 255);
                         updateState(SoulissBindingConstants.LED_COLOR_CHANNEL, hsbState);
-
                     }
                     break;
                 case SoulissBindingConstants.SLEEP_CHANNEL:
@@ -115,23 +112,19 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                                 (byte) (hsbState.getGreen().shortValue() * (255.00 / 100)),
                                 (byte) (hsbState.getBlue().shortValue() * (255.00 / 100)));
 
-                    } else if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
+                    } else if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
 
-                        } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
-                        }
+                    } else if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                     }
                     break;
 
                 case SoulissBindingConstants.ROLLER_BRIGHTNESS_CHANNEL:
-                    if (command instanceof UpDownType) {
-                        if (command.equals(UpDownType.UP)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_UP);
-                        } else if (command.equals(UpDownType.DOWN)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_DOWN);
-                        }
+                    if (command.equals(UpDownType.UP)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_UP);
+                    } else if (command.equals(UpDownType.DOWN)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_DOWN);
                     }
                     break;
 
