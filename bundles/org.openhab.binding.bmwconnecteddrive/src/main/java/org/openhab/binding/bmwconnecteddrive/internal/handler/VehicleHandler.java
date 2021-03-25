@@ -639,13 +639,12 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            if (error.status == 404) {
-                legacyMode = true;
-                logger.debug("VehicleStatus not found - switch to legacy API");
+            if (error.status != 200) {
+                logger.debug("VehicleStatus not found - try legacy API");
                 proxy.get().requestLegacyVehcileStatus(configuration.get(), oldVehicleStatusCallback);
             }
             vehicleStatusCache = Optional.of(Converter.getGson().toJson(error));
-            setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
             removeCallback(this);
         }
     }
@@ -669,6 +668,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                     VehicleAttributesContainer vac = Converter.getGson().fromJson(content,
                             VehicleAttributesContainer.class);
                     vehicleStatusCallback.onResponse(Converter.transformLegacyStatus(vac));
+                    legacyMode = true;
+                    logger.debug("VehicleStatus switched to legacy mode");
                 } catch (JsonSyntaxException jse) {
                     logger.debug("{}", jse.getMessage());
                 }
@@ -677,6 +678,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
         @Override
         public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
             vehicleStatusCallback.onError(error);
         }
     }
