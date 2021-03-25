@@ -65,25 +65,19 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         } else {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ROLLERSHUTTER_CHANNEL:
-                    if (command instanceof UpDownType) {
-                        if (command.equals(UpDownType.UP)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD);
-                        } else if (command.equals(UpDownType.DOWN)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD);
-                        }
-                    } else if (command instanceof StopMoveType) {
-                        if (command.equals(StopMoveType.STOP)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_STOP_CMD);
-                        }
+                    if (command.equals(UpDownType.UP)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD);
+                    } else if (command.equals(UpDownType.DOWN)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD);
+                    } else if (command.equals(StopMoveType.STOP)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_STOP_CMD);
                     }
                     break;
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD_LOCAL);
-                        } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD_LOCAL);
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD_LOCAL);
+                    } else if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD_LOCAL);
                     }
                     break;
             }
