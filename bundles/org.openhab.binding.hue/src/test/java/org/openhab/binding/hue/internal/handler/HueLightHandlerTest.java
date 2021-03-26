@@ -425,9 +425,8 @@ public class HueLightHandlerTest {
     }
 
     private void assertJson(String expected, String actual) {
-        JsonParser parser = new JsonParser();
-        JsonElement jsonExpected = parser.parse(expected);
-        JsonElement jsonActual = parser.parse(actual);
+        JsonElement jsonExpected = JsonParser.parseString(expected);
+        JsonElement jsonActual = JsonParser.parseString(actual);
         assertEquals(jsonExpected, jsonActual);
     }
 }

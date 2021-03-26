@@ -15,7 +15,6 @@ package org.openhab.io.neeo.internal.models;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.NeeoUtil;
@@ -81,7 +80,7 @@ public class NeeoSystemInfo {
      * @return true if greater than or equal, false otherwise
      */
     public boolean isFirmwareGreaterOrEqual(String checkFirmwareVersion) {
-        if (StringUtils.isEmpty(checkFirmwareVersion)) {
+        if (checkFirmwareVersion.isEmpty()) {
             return true;
         }
 
@@ -136,6 +135,6 @@ public class NeeoSystemInfo {
             return false;
         }
 
-        return StringUtils.equals(hostname, ((NeeoSystemInfo) obj).hostname);
+        return hostname.equals(((NeeoSystemInfo) obj).hostname);
     }
 }

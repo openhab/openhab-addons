@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="handle_state" typeId="handle_state"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

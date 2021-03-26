@@ -61,8 +61,6 @@ public class PushoverAPIConnection {
 
     private final ExpiringCacheMap<String, String> cache = new ExpiringCacheMap<>(TimeUnit.DAYS.toMillis(1));
 
-    private final JsonParser parser = new JsonParser();
-
     public PushoverAPIConnection(HttpClient httpClient, PushoverAccountConfiguration config) {
         this.httpClient = httpClient;
         this.config = config;
@@ -80,7 +78,7 @@ public class PushoverAPIConnection {
 
     public String sendPriorityMessage(PushoverMessageBuilder message)
             throws PushoverCommunicationException, PushoverConfigurationException {
-        final JsonObject json = parser.parse(post(MESSAGE_URL, message.build())).getAsJsonObject();
+        final JsonObject json = JsonParser.parseString(post(MESSAGE_URL, message.build())).getAsJsonObject();
         return getMessageStatus(json) && json.has("receipt") ? json.get("receipt").getAsString() : "";
     }
 
@@ -100,16 +98,14 @@ public class PushoverAPIConnection {
         params.put(PushoverMessageBuilder.MESSAGE_KEY_TOKEN, localApikey);
 
         // TODO do not cache the response, cache the parsed list of sounds
-        final JsonObject json = parser.parse(getFromCache(buildURL(SOUNDS_URL, params))).getAsJsonObject();
-        if (json.has("sounds")) {
-            final JsonObject sounds = json.get("sounds").getAsJsonObject();
-            if (sounds != null) {
-                return Collections.unmodifiableList(sounds.entrySet().stream()
+        final String content = getFromCache(buildURL(SOUNDS_URL, params));
+        final JsonObject json = content == null ? null : JsonParser.parseString(content).getAsJsonObject();
+        final JsonObject sounds = json == null || !json.has("sounds") ? null : json.get("sounds").getAsJsonObject();
+
+        return sounds == null ? List.of()
+                : Collections.unmodifiableList(sounds.entrySet().stream()
                         .map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
                         .collect(Collectors.toList()));
-            }
-        }
-        return Collections.emptyList();
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
@@ -172,7 +168,7 @@ public class PushoverAPIConnection {
     }
 
     private String getMessageError(String content) {
-        final JsonObject json = parser.parse(content).getAsJsonObject();
+        final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
         if (json.has("errors")) {
             final JsonArray errors = json.get("errors").getAsJsonArray();
             if (errors != null) {
@@ -183,7 +179,7 @@ public class PushoverAPIConnection {
     }
 
     private boolean getMessageStatus(String content) {
-        final JsonObject json = parser.parse(content).getAsJsonObject();
+        final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
         return json.has("status") ? json.get("status").getAsInt() == 1 : false;
     }
 

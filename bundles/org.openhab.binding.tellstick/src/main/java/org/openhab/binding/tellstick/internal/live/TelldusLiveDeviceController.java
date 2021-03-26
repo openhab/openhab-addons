@@ -13,6 +13,7 @@
 package org.openhab.binding.tellstick.internal.live;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -248,7 +249,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
             case JNA.CLibrary.TELLSTICK_DIM:
                 dimValue = new BigDecimal(((TellstickNetDevice) device).getStatevalue());
                 dimValue = dimValue.multiply(new BigDecimal(100));
-                dimValue = dimValue.divide(new BigDecimal(255), 0, BigDecimal.ROUND_HALF_UP);
+                dimValue = dimValue.divide(new BigDecimal(255), 0, RoundingMode.HALF_UP);
                 break;
             default:
                 logger.warn("Could not handle {} for {}", (((TellstickNetDevice) device).getState()), device);

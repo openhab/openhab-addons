@@ -10,21 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.omnilink.internal.handler;
+package org.openhab.binding.nikohomecontrol.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link BridgeOfflineException} defines an exception for when the OmniLink
- * Bridge is offline or unavailable.
+ * {@link NikoHomeControlActionBlindConfig} is the config class for Niko Home Control Blind Actions.
  *
- * @author Craig Hamilton - Initial contribution
+ * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class BridgeOfflineException extends Exception {
-    private static final long serialVersionUID = -9081729691518514097L;
-
-    public BridgeOfflineException(Exception e) {
-        super(e);
-    }
+public class NikoHomeControlActionBlindConfig extends NikoHomeControlActionConfig {
+    public boolean invert;
 }

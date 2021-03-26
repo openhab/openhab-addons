@@ -65,7 +65,7 @@ public abstract class NikoHomeControlCommunication {
     public synchronized void restartCommunication() {
         stopCommunication();
 
-        logger.debug("Niko Home Control: restart communication from thread {}", Thread.currentThread().getId());
+        logger.debug("restart communication from thread {}", Thread.currentThread().getId());
 
         startCommunication();
     }

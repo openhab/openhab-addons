@@ -14,7 +14,7 @@ package org.openhab.binding.onebusaway.internal.config;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.*;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The {@link StopConfiguration} defines the model for a stop bridge configuration.

@@ -60,7 +60,7 @@ public class Layout {
      * Returns an text representation for a canvas layout.
      *
      * Note only canvas supported currently due to its easy geometry
-     * 
+     *
      * @return a String containing the layout
      */
     public String getLayoutView() {
@@ -97,6 +97,11 @@ public class Layout {
 
             int shiftWidth = getSideLength() / 2;
 
+            if (shiftWidth == 0) {
+                // seems we do not have squares here
+                return "Cannot render layout. Please note that layout views are only supported for square panels.";
+            }
+
             int lineY = maxy;
             Map<Integer, PositionDatum> map;
 
@@ -108,8 +113,9 @@ public class Layout {
                         @Nullable
                         PositionDatum panel = positionData.get(index);
 
-                        if (panel != null && panel.getPosY() == lineY)
+                        if (panel != null && panel.getPosY() == lineY) {
                             map.put(panel.getPosX(), panel);
+                        }
                     }
                 }
                 lineY -= shiftWidth;
@@ -118,14 +124,16 @@ public class Layout {
                         @Nullable
                         PositionDatum panel = map.get(x);
                         view += String.format("%5s ", panel.getPanelId());
-                    } else
+                    } else {
                         view += "      ";
+                    }
                 }
-                view += "\n";
+                view += System.lineSeparator();
             }
 
             return view;
-        } else
+        } else {
             return "";
+        }
     }
 }

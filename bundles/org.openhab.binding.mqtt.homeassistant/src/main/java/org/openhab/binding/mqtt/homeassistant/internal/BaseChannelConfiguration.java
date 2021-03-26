@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
@@ -103,9 +102,9 @@ public abstract class BaseChannelConfiguration {
         protected @Nullable String name;
         protected @Nullable String sw_version;
 
-        @Nullable
-        public String getId() {
-            return StringUtils.join(identifiers, "_");
+        public @Nullable String getId() {
+            List<String> identifiers = this.identifiers;
+            return identifiers == null ? null : String.join("_", identifiers);
         }
     }
 
