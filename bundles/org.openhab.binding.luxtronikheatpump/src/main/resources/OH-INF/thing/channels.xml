@@ -6,7 +6,7 @@
 
 	<channel-type id="temperatureHeatingCircuitFlow">
 		<item-type>Number:Temperature</item-type>
-		<label>Flow Temp. heating circuit</label>
+		<label>Flow Temp. Heating Circuit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -34,21 +34,21 @@
 
 	<channel-type id="temperatureHotGas" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Gas Temp.</label>
+		<label>Hot Gas Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOutside">
 		<item-type>Number:Temperature</item-type>
-		<label>Outside Temp.</label>
+		<label>Outside Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOutsideMean">
 		<item-type>Number:Temperature</item-type>
-		<label>Avg. Temp. Outside over 24 h (Heating Limit Func.)</label>
+		<label>Avg. 24h-Temp. Outside (Limiting)</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -139,7 +139,7 @@
 
 	<channel-type id="inputASD" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Input "Defrost End, Brine Pressure, Flow Rate"</label>
+		<label>Input Defrost/Brine/Flow</label>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -299,7 +299,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeCompressor1">
+	<channel-type id="runtimeTotalCompressor1">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Compressor 1</label>
 		<category>Time</category>
@@ -312,7 +312,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeCompressor2" advanced="true">
+	<channel-type id="runtimeTotalCompressor2" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Compressor 2</label>
 		<category>Time</category>
@@ -325,72 +325,72 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeSecondHeatGenerator1" advanced="true">
+	<channel-type id="runtimeTotalSecondHeatGenerator1" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Operation Time Second Heat Generator 1</label>
+		<label>Operation Time 2nd Heat Generator 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeSecondHeatGenerator2" advanced="true">
+	<channel-type id="runtimeTotalSecondHeatGenerator2" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Operation Time Second Heat Generator 2</label>
+		<label>Operation Time 2nd Heat Generator 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeSecondHeatGenerator3" advanced="true">
+	<channel-type id="runtimeTotalSecondHeatGenerator3" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Operation Time Second Heat Generator 3</label>
+		<label>Operation Time 2nd Heat Generator 3</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeHeatPump">
+	<channel-type id="runtimeTotalHeatPump">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Heat Pump</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeHeating">
+	<channel-type id="runtimeTotalHeating">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Heating</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeHotWater">
+	<channel-type id="runtimeTotalHotWater">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Hot Water</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeCooling">
+	<channel-type id="runtimeTotalCooling">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Cooling</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="runningTimeHeatPump" advanced="true">
+	<channel-type id="runtimeCurrentHeatPump" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Runtime Heat Pump</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="runningTimeSecondHeatGenerator1" advanced="true">
+	<channel-type id="runtimeCurrentSecondHeatGenerator1" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Runtime Second Heat Generator 1</label>
+		<label>Runtime 2nd Heat Generator 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="runningTimeSecondHeatGenerator2" advanced="true">
+	<channel-type id="runtimeCurrentSecondHeatGenerator2" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Runtime Second Heat Generator 2</label>
+		<label>Runtime 2nd Heat Generator 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -425,7 +425,7 @@
 
 	<channel-type id="heatingControllerMoreTime" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Heating Controller More Ttime</label>
+		<label>Heating Controller More Time</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -437,7 +437,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="thermalDisinfectionRunningTime" advanced="true">
+	<channel-type id="runtimeCurrentThermalDisinfection" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Runtime Thermal Disinfection</label>
 		<category>Time</category>
@@ -482,38 +482,38 @@
 
 	<channel-type id="errorTime0">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Error 0 in Memory</label>
+		<label>Timestamp Error 0</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="errorTime1" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Error 1 in Memory</label>
+		<label>Timestamp Error 1</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="errorTime2" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Error 2 in Memory</label>
+		<label>Timestamp Error 2</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="errorTime3" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Error 3 in Memory</label>
+		<label>Timestamp Error 3</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="errorTime4" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Error 4 in Memory</label>
+		<label>Timestamp Error 4</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorCode0">
 		<item-type>Number</item-type>
-		<label>Error Code Error 0 in Memory</label>
+		<label>Error Code Error 0</label>
 		<state readOnly="true">
 			<options>
 				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
@@ -609,7 +609,7 @@
 	</channel-type>
 	<channel-type id="errorCode1" advanced="true">
 		<item-type>Number</item-type>
-		<label>Error Code Error 1 in Memory</label>
+		<label>Error Code Error 1</label>
 		<state readOnly="true">
 			<options>
 				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
@@ -705,7 +705,7 @@
 	</channel-type>
 	<channel-type id="errorCode2" advanced="true">
 		<item-type>Number</item-type>
-		<label>Error Code Error 2 in Memory</label>
+		<label>Error Code Error 2</label>
 		<state readOnly="true">
 			<options>
 				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
@@ -801,7 +801,7 @@
 	</channel-type>
 	<channel-type id="errorCode3" advanced="true">
 		<item-type>Number</item-type>
-		<label>Error Code Error 3 in Memory</label>
+		<label>Error Code Error 3</label>
 		<state readOnly="true">
 			<options>
 				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
@@ -897,7 +897,7 @@
 	</channel-type>
 	<channel-type id="errorCode4" advanced="true">
 		<item-type>Number</item-type>
-		<label>Error Code Error 4 in Memory</label>
+		<label>Error Code Error 4</label>
 		<state readOnly="true">
 			<options>
 				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
@@ -994,13 +994,13 @@
 
 	<channel-type id="errorCountInMemory" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number of Errors in Memory</label>
+		<label>Number of Errors</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="shutdownReason0">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 0 in Memory</label>
+		<label>Reason Shutdown 0</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1017,7 +1017,7 @@
 	</channel-type>
 	<channel-type id="shutdownReason1" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 1 in Memory</label>
+		<label>Reason Shutdown 1</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1034,7 +1034,7 @@
 	</channel-type>
 	<channel-type id="shutdownReason2" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 2 in Memory</label>
+		<label>Reason Shutdown 2</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1051,7 +1051,7 @@
 	</channel-type>
 	<channel-type id="shutdownReason3" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 3 in Memory</label>
+		<label>Reason Shutdown 3</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1068,7 +1068,7 @@
 	</channel-type>
 	<channel-type id="shutdownReason4" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 4 in Memory</label>
+		<label>Reason Shutdown 4</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1086,31 +1086,31 @@
 
 	<channel-type id="shutdownTime0">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 0 in Memory</label>
+		<label>Timestamp Shutdown 0</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="shutdownTime1" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 1 in Memory</label>
+		<label>Timestamp Shutdown 1</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="shutdownTime2" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 2 in Memory</label>
+		<label>Timestamp Shutdown 2</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="shutdownTime3" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 3 in Memory</label>
+		<label>Timestamp Shutdown 3</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="shutdownTime4" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 4 in Memory</label>
+		<label>Timestamp Shutdown 4</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1335,7 +1335,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeSwimmingPool" advanced="true">
+	<channel-type id="runtimeTotalSwimmingPool" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Swimming Pool</label>
 		<category>Time</category>
@@ -1412,7 +1412,7 @@
 
 	<channel-type id="timeLockSecondHotGasCompressor" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Lock Second Compressor Hot Gas</label>
+		<label>Lock 2nd Compressor Hot Gas</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1431,7 +1431,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="operationTimeSolar" advanced="true">
+	<channel-type id="runtimeTotalSolar" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Solar</label>
 		<category>Time</category>
@@ -1454,7 +1454,7 @@
 
 	<channel-type id="outputSupplyAirFan" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Supply Air Fan (Defrost Function)</label>
+		<label>Supply Air Fan (Defrost)</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1811,7 +1811,7 @@
 
 	<channel-type id="secondShutdownReason0" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 0 in Memory 2</label>
+		<label>Reason Shutdown 0 (Memory 2)</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1828,7 +1828,7 @@
 	</channel-type>
 	<channel-type id="secondShutdownReason1" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 1 in Memory 2</label>
+		<label>Reason Shutdown 1 (Memory 2)</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1845,7 +1845,7 @@
 	</channel-type>
 	<channel-type id="secondShutdownReason2" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 2 in Memory 2</label>
+		<label>Reason Shutdown 2 (Memory 2)</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1862,7 +1862,7 @@
 	</channel-type>
 	<channel-type id="secondShutdownReason3" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 3 in Memory 2</label>
+		<label>Reason Shutdown 3 (Memory 2)</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1879,7 +1879,7 @@
 	</channel-type>
 	<channel-type id="secondShutdownReason4" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason Shutdown 4 in Memory 2</label>
+		<label>Reason Shutdown 4 (Memory 2)</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1897,31 +1897,31 @@
 
 	<channel-type id="secondShutdownTime0" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 0 in Memory 2</label>
+		<label>Timestamp Shutdown 0 (Memory 2)</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="secondShutdownTime1" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 1 in Memory 2</label>
+		<label>Timestamp Shutdown 1 (Memory 2)</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="secondShutdownTime2" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 2 in Memory 2</label>
+		<label>Timestamp Shutdown 2 (Memory 2)</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="secondShutdownTime3" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 3 in Memory 2</label>
+		<label>Timestamp Shutdown 3 (Memory 2)</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="secondShutdownTime4" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp Shutdown 4 in Memory 2</label>
+		<label>Timestamp Shutdown 4 (Memory 2)</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1956,7 +1956,7 @@
 
 	<channel-type id="temperatureHeatingParallelShift">
 		<item-type>Number:Temperature</item-type>
-		<label>Heating Temp. (Parallel Shift)</label>
+		<label>Heating Temp. (Offset)</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="-10" max="10" step="0.5"></state>
 	</channel-type>

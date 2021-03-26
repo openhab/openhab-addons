@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="heatpump">
-		<label>Heatpump with Luxtronik control</label>
+		<label>Heatpump with Luxtronik Control</label>
 		<description>Integrates a heatpump with a Luxtronik control.</description>
 		<channels>
 			<channel id="temperatureHeatingCircuitFlow" typeId="temperatureHeatingCircuitFlow"/>
@@ -53,27 +53,27 @@
 			<channel id="outputSwimmingPoolPump" typeId="outputSwimmingPoolPump"/>
 			<channel id="outputMixingCircuit2Closed" typeId="outputMixingCircuit2Closed"/>
 			<channel id="outputMixingCircuit2Open" typeId="outputMixingCircuit2Open"/>
-			<channel id="operationTimeCompressor1" typeId="operationTimeCompressor1"/>
+			<channel id="runtimeTotalCompressor1" typeId="runtimeTotalCompressor1"/>
 			<channel id="pulsesCompressor1" typeId="pulsesCompressor1"/>
-			<channel id="operationTimeCompressor2" typeId="operationTimeCompressor2"/>
+			<channel id="runtimeTotalCompressor2" typeId="runtimeTotalCompressor2"/>
 			<channel id="pulsesCompressor2" typeId="pulsesCompressor2"/>
-			<channel id="operationTimeSecondHeatGenerator1" typeId="operationTimeSecondHeatGenerator1"/>
-			<channel id="operationTimeSecondHeatGenerator2" typeId="operationTimeSecondHeatGenerator2"/>
-			<channel id="operationTimeSecondHeatGenerator3" typeId="operationTimeSecondHeatGenerator3"/>
-			<channel id="operationTimeHeatPump" typeId="operationTimeHeatPump"/>
-			<channel id="operationTimeHeating" typeId="operationTimeHeating"/>
-			<channel id="operationTimeHotWater" typeId="operationTimeHotWater"/>
-			<channel id="operationTimeCooling" typeId="operationTimeCooling"/>
-			<channel id="runningTimeHeatPump" typeId="runningTimeHeatPump"/>
-			<channel id="runningTimeSecondHeatGenerator1" typeId="runningTimeSecondHeatGenerator1"/>
-			<channel id="runningTimeSecondHeatGenerator2" typeId="runningTimeSecondHeatGenerator2"/>
+			<channel id="runtimeTotalSecondHeatGenerator1" typeId="runtimeTotalSecondHeatGenerator1"/>
+			<channel id="runtimeTotalSecondHeatGenerator2" typeId="runtimeTotalSecondHeatGenerator2"/>
+			<channel id="runtimeTotalSecondHeatGenerator3" typeId="runtimeTotalSecondHeatGenerator3"/>
+			<channel id="runtimeTotalHeatPump" typeId="runtimeTotalHeatPump"/>
+			<channel id="runtimeTotalHeating" typeId="runtimeTotalHeating"/>
+			<channel id="runtimeTotalHotWater" typeId="runtimeTotalHotWater"/>
+			<channel id="runtimeTotalCooling" typeId="runtimeTotalCooling"/>
+			<channel id="runtimeCurrentHeatPump" typeId="runtimeCurrentHeatPump"/>
+			<channel id="runtimeCurrentSecondHeatGenerator1" typeId="runtimeCurrentSecondHeatGenerator1"/>
+			<channel id="runtimeCurrentSecondHeatGenerator2" typeId="runtimeCurrentSecondHeatGenerator2"/>
 			<channel id="mainsOnDelay" typeId="mainsOnDelay"/>
 			<channel id="switchingCycleLockOff" typeId="switchingCycleLockOff"/>
 			<channel id="switchingCycleLockOn" typeId="switchingCycleLockOn"/>
 			<channel id="compressorIdleTime" typeId="compressorIdleTime"/>
 			<channel id="heatingControllerMoreTime" typeId="heatingControllerMoreTime"/>
 			<channel id="heatingControllerLessTime" typeId="heatingControllerLessTime"/>
-			<channel id="thermalDisinfectionRunningTime" typeId="thermalDisinfectionRunningTime"/>
+			<channel id="runtimeCurrentThermalDisinfection" typeId="runtimeCurrentThermalDisinfection"/>
 			<channel id="timeHotWaterLock" typeId="timeHotWaterLock"/>
 			<channel id="bivalenceStage" typeId="bivalenceStage"/>
 			<channel id="operatingStatus" typeId="operatingStatus"/>
@@ -128,7 +128,7 @@
 			<channel id="temperatureRoomStation2" typeId="temperatureRoomStation2"/>
 			<channel id="temperatureRoomStation3" typeId="temperatureRoomStation3"/>
 			<channel id="iconTimeSwitchSwimmingPool" typeId="iconTimeSwitchSwimmingPool"/>
-			<channel id="operationTimeSwimmingPool" typeId="operationTimeSwimmingPool"/>
+			<channel id="runtimeTotalSwimmingPool" typeId="runtimeTotalSwimmingPool"/>
 			<channel id="coolingRelease" typeId="coolingRelease"/>
 			<channel id="inputAnalog" typeId="inputAnalog"/>
 			<channel id="iconCirculationPump" typeId="iconCirculationPump"/>
@@ -142,7 +142,7 @@
 			<channel id="timeLockSecondHotGasCompressor" typeId="timeLockSecondHotGasCompressor"/>
 			<channel id="temperatureSupplyAir" typeId="temperatureSupplyAir"/>
 			<channel id="temperatureExhaustAir" typeId="temperatureExhaustAir"/>
-			<channel id="operationTimeSolar" typeId="operationTimeSolar"/>
+			<channel id="runtimeTotalSolar" typeId="runtimeTotalSolar"/>
 			<channel id="outputAnalog3" typeId="outputAnalog3"/>
 			<channel id="outputAnalog4" typeId="outputAnalog4"/>
 			<channel id="outputSupplyAirFan" typeId="outputSupplyAirFan"/>
@@ -231,6 +231,7 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
 				<label>IP address</label>
 				<description>IP address of the heat pump to connect to</description>
 			</parameter>
@@ -243,6 +244,7 @@
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh inverval</label>
 				<default>300</default>
+				<unitLabel>s</unitLabel>
 				<description>Refresh inverval in seconds. Defaults to 300</description>
 			</parameter>
 			<parameter name="showAllChannels" type="boolean" required="false">
