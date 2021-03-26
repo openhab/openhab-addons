@@ -9,7 +9,7 @@
 		<label>Pioneer Classic AVR over IP</label>
 		<description>Control a classic Pioneer AVR (SC-57, SC-LX85, SC-55, SC-1526, SC-LX75, VSX-53, VSX-1326, VSX-LX55,
 			VSX-2021, VSA-LX55, VSX-52, VSX-1126, VSX-1121, VSX-51, VSX-1021, VSX-1026, VSA-1021, VSX-50, VSX-926, VSX-921,
-			VSA-921) over IP
+			VSA-921, VSX-922) over IP
 		</description>
 
 		<channel-groups>
