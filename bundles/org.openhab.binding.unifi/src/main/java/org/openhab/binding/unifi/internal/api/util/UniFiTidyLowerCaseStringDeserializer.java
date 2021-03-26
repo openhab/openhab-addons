@@ -14,8 +14,6 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -34,6 +32,6 @@ public class UniFiTidyLowerCaseStringDeserializer implements JsonDeserializer<St
     public String deserialize(JsonElement json, Type type, JsonDeserializationContext context)
             throws JsonParseException {
         String s = json.getAsJsonPrimitive().getAsString();
-        return StringUtils.lowerCase(StringUtils.strip(s));
+        return s.trim().toLowerCase();
     }
 }

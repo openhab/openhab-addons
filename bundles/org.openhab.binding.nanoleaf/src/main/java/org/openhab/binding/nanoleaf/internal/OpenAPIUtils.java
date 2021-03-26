@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,7 +58,7 @@ public class OpenAPIUtils {
         LOGGER.trace("RequestBuilder: Sending Request {}:{} {} ", requestURI.getHost(), requestURI.getPort(),
                 requestURI.getPath());
 
-        return httpClient.newRequest(requestURI).method(method);
+        return httpClient.newRequest(requestURI).method(method).timeout(10, TimeUnit.SECONDS);
     }
 
     public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, @Nullable String query)

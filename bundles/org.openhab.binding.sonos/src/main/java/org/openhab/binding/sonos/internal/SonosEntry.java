@@ -14,7 +14,7 @@ package org.openhab.binding.sonos.internal;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 

@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -119,7 +118,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
                         final String oldValue = (String) field.get(config);
 
                         String newValue = oldValue;
-                        if (StringUtils.isNotBlank(oldValue)) {
+                        if (oldValue != null && !oldValue.isBlank()) {
                             if (oldValue.charAt(0) == '~') {
                                 newValue = tilde + oldValue.substring(1);
                             } else if (oldValue.charAt(oldValue.length() - 1) == '~') {

@@ -43,7 +43,7 @@ public class SeneyeService {
     public int seneyeType;
     private boolean isInitialized;
     private final Gson gson;
-    private HttpClient httpClient = new HttpClient(new SslContextFactory());
+    private HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
     private ScheduledFuture<?> scheduledJob;
 
     public SeneyeService(SeneyeConfigurationParameters config) throws CommunicationException {

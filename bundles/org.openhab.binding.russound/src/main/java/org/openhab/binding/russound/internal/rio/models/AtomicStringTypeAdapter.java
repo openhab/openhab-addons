@@ -38,8 +38,7 @@ public class AtomicStringTypeAdapter extends TypeAdapter<AtomicReference<String>
     public AtomicReference<String> read(JsonReader in) throws IOException {
         AtomicReference<String> value = null;
 
-        JsonParser jsonParser = new JsonParser();
-        JsonElement je = jsonParser.parse(in);
+        JsonElement je = JsonParser.parseReader(in);
 
         if (je instanceof JsonPrimitive) {
             value = new AtomicReference<>();

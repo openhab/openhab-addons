@@ -13,6 +13,7 @@
 package org.openhab.binding.knx.internal.dpt;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -1017,6 +1018,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      */
     private int convertPercentToByte(PercentType percent) {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-                .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).intValue();
     }
 }

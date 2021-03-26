@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * sent to LIFX lights. The LIFX LAN Protocol Specification states that lights can process up to 20 messages per second,
  * not more.
  *
- * @author Karel Goderis - Initial Contribution
+ * @author Karel Goderis - Initial contribution
  * @author Wouter Born - Deadlock fix
  */
 @NonNullByDefault

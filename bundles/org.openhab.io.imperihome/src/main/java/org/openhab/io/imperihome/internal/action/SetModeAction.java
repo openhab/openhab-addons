@@ -12,7 +12,6 @@
  */
 package org.openhab.io.imperihome.internal.action;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.events.ItemCommandEvent;
@@ -42,7 +41,8 @@ public class SetModeAction extends Action {
         if (device.getType() != DeviceType.THERMOSTAT) {
             return false;
         }
-        return StringUtils.isNotBlank(device.getLinks().get("curmode"));
+        String curmode = device.getLinks().get("curmode");
+        return curmode != null && !curmode.isBlank();
     }
 
     @Override

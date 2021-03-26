@@ -44,9 +44,6 @@ public class F6_05_02 extends _RPSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (!isValid()) {
-            return UnDefType.UNDEF;
-        }
 
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
@@ -61,5 +58,11 @@ public class F6_05_02 extends _RPSMessage {
     @Override
     protected boolean validateData(byte[] bytes) {
         return super.validateData(bytes) && (bytes[0] == ALARM_OFF || bytes[0] == ALARM_ON || bytes[0] == ENERGY_LOW);
+    }
+
+    @Override
+    public boolean isValidForTeachIn() {
+        // just treat the first message with ALARM_ON as teach in
+        return !t21 && !nu && bytes[0] == ALARM_ON;
     }
 }

@@ -49,7 +49,7 @@ public class ShellyCoapServer {
     boolean started = false;
     private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().build();
     private @Nullable UdpMulticastConnector statusConnector;
-    private final CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);;
+    private CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
     private final Set<ShellyCoapListener> coapListeners = ConcurrentHashMap.newKeySet();
 
     protected class ShellyStatusListener extends CoapResource {
@@ -68,6 +68,7 @@ public class ShellyCoapServer {
                 Code code = exchange.getRequest().getCode();
                 switch (code) {
                     case CUSTOM_30:
+                    case PUT: // Shelly Motion beta: incorrect, but handle the format
                         listener.processResponse(createResponse(request));
                         break;
                     default:
@@ -77,17 +78,18 @@ public class ShellyCoapServer {
         }
     }
 
-    public synchronized void start(String localIp, ShellyCoapListener listener)
+    public synchronized void start(String localIp, int port, ShellyCoapListener listener)
             throws UnknownHostException, SocketException {
         if (!started) {
-            logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, COIOT_PORT);
+            logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, port);
             NetworkConfig nc = NetworkConfig.getStandard();
             InetAddress localAddr = InetAddress.getByName(localIp);
-            InetSocketAddress localPort = new InetSocketAddress(COIOT_PORT);
+            InetSocketAddress localPort = new InetSocketAddress(port);
 
             // Join the multicast group on the selected network interface
             statusConnector = new UdpMulticastConnector(localAddr, localPort, CoAP.MULTICAST_IPV4); // bind UDP listener
             statusEndpoint = new CoapEndpoint.Builder().setNetworkConfig(nc).setConnector(statusConnector).build();
+            server = new CoapServer(NetworkConfig.getStandard(), port);
             server.addEndpoint(statusEndpoint);
             CoapResource cit = new ShellyStatusListener("cit", this);
             CoapResource s = new ShellyStatusListener("s", this);

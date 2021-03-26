@@ -13,6 +13,7 @@
 package org.openhab.binding.tado.internal.adapter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
@@ -48,7 +49,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Dennis Frommknecht - Initial contribution
  * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
- * 
+ *
  */
 public class TadoZoneStateAdapter {
     private ZoneState zoneState;
@@ -199,7 +200,7 @@ public class TadoZoneStateAdapter {
     }
 
     private static DecimalType toDecimalType(double value) {
-        BigDecimal decimal = new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal decimal = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
         return new DecimalType(decimal);
     }
 

@@ -26,12 +26,12 @@
 	<channel-type id="grid-power-consumption-channel">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Consumption</label>
-		<description>Grid Power is needed in order to satisfy your overall Power consumption</description>
+		<description>More Photovoltaic Power is produced than needed. Additional Power is consumed by Grid</description>
 	</channel-type>
 	<channel-type id="grid-power-supply-channel">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Supply</label>
-		<description>More Photovoltaic Power is produced than needed. Additional Power is provided towards the Grid</description>
+		<description>Grid Power is needed in order to satisfy your overall Power consumption</description>
 	</channel-type>
 	<channel-type id="external-power-supply-channel">
 		<item-type>Number:Power</item-type>

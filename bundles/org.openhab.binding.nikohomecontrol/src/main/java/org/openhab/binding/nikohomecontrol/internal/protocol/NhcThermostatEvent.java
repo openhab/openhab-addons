@@ -38,6 +38,12 @@ public interface NhcThermostatEvent {
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand);
 
     /**
+     * Called to indicate the thermostat has been initialized.
+     *
+     */
+    public void thermostatInitialized();
+
+    /**
      * Called to indicate the thermostat has been removed from the Niko Home Control controller.
      *
      */
