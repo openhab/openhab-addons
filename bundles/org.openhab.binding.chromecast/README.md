@@ -144,3 +144,19 @@ sitemap chromecast label="Chromecasts" {
     }
 }
 ```
+
+## Rule Action
+
+This binding includes rule actions for casting media.
+
+* `playURL(String url)`
+* `playURL(String url, String mimeType)`
+
+Examples:
+
+```
+val castActions = getActions("chromecast","chromecast:chromecast:29fcf535da")
+val success  = castActions.playURL("http://192.168.1.160:81/mjpg/front1/video.mjpg")
+val success2 = castActions.playURL("http://192.168.1.160:81/mjpg/front1/video.mjpg", "image/jpeg")
+
+```

@@ -156,9 +156,12 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             State state = queryDataFromDevice(epsonCommand);
 
             if (state != null) {
-                updateStatus(ThingStatus.ONLINE);
                 if (isLinked(channel.getUID())) {
                     updateState(channel.getUID(), state);
+                }
+                // the first valid response will cause the thing to go ONLINE
+                if (state != UnDefType.UNDEF) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
             }
         } catch (IllegalArgumentException e) {

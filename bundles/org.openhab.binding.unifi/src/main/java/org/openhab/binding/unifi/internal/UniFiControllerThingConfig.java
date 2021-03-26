@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.unifi.internal;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
 
 /**
@@ -60,7 +59,7 @@ public class UniFiControllerThingConfig {
     }
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(host) && StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password);
+        return !host.isBlank() && !username.isBlank() && !password.isBlank();
     }
 
     @Override

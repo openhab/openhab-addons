@@ -14,7 +14,6 @@ package org.openhab.binding.digitalstrom.internal.lib.manager.impl;
 
 import java.net.HttpURLConnection;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.listener.ConnectionListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
@@ -286,8 +285,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @Override
     public String getNewSessionToken() {
         if (this.genAppToken) {
-            if (StringUtils.isNotBlank(config.getAppToken())) {
-                sessionToken = this.digitalSTROMClient.loginApplication(config.getAppToken());
+            String token = config.getAppToken();
+            if (token != null && !token.isBlank()) {
+                sessionToken = this.digitalSTROMClient.loginApplication(token);
             } else if (codeIsAuthentificationFaild()) {
                 onNotAuthenticated();
             }
@@ -379,8 +379,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private void onNotAuthenticated() {
         String applicationToken = null;
         boolean isAuthenticated = false;
-        if (StringUtils.isNotBlank(config.getAppToken())) {
-            sessionToken = digitalSTROMClient.loginApplication(config.getAppToken());
+        String token = config.getAppToken();
+        if (token != null && !token.isBlank()) {
+            sessionToken = digitalSTROMClient.loginApplication(token);
             if (sessionToken != null) {
                 isAuthenticated = true;
             } else {
@@ -425,7 +426,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                             logger.debug(
                                     "no application-token for application {} found, generate a application-token {}",
                                     config.getApplicationName(), applicationToken);
-                            if (StringUtils.isNotBlank(applicationToken)) {
+                            if (applicationToken != null && !applicationToken.isBlank()) {
                                 // enable applicationToken
                                 if (!digitalSTROMClient.enableApplicationToken(applicationToken,
                                         digitalSTROMClient.login(config.getUserName(), config.getPassword()))) {
@@ -464,10 +465,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
     }
 
     private boolean checkUserPassword() {
-        if (StringUtils.isNotBlank(config.getUserName()) && StringUtils.isNotBlank(config.getPassword())) {
-            return true;
-        }
-        return false;
+        String userName = config.getUserName();
+        String password = config.getPassword();
+        return userName != null && !userName.isBlank() && password != null && !password.isBlank();
     }
 
     /**
@@ -509,8 +509,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     @Override
     public boolean removeApplicationToken() {
-        if (StringUtils.isNotBlank(config.getAppToken())) {
-            return digitalSTROMClient.revokeToken(config.getAppToken(), null);
+        String token = config.getAppToken();
+        if (token != null && !token.isBlank()) {
+            return digitalSTROMClient.revokeToken(token, null);
         }
         return true;
     }

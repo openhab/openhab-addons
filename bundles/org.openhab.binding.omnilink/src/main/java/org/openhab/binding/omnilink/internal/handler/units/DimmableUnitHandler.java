@@ -16,7 +16,6 @@ import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.CHA
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.omnilink.internal.handler.OmniLinkCmd;
 import org.openhab.binding.omnilink.internal.handler.UnitHandler;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -26,6 +25,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 
 /**
  * The {@link DimmableUnitHandler} defines some methods that are used to
@@ -79,15 +80,13 @@ public class DimmableUnitHandler extends UnitHandler {
         } else if (lightLevel == 100) {
             super.handleOnOff(channelUID, OnOffType.ON);
         } else {
-            sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_PERCENT.getNumber(), lightLevel, thingID);
+            sendOmnilinkCommand(CommandMessage.CMD_UNIT_PERCENT, lightLevel, thingID);
         }
     }
 
     private void handleIncreaseDecrease(ChannelUID channelUID, IncreaseDecreaseType command) {
         logger.debug("handleIncreaseDecrease called for channel: {}, command: {}", channelUID, command);
-        sendOmnilinkCommand(
-                IncreaseDecreaseType.INCREASE.equals(command) ? OmniLinkCmd.CMD_UNIT_UNIT_BRIGHTEN_STEP_1.getNumber()
-                        : OmniLinkCmd.CMD_UNIT_UNIT_DIM_STEP_1.getNumber(),
-                0, thingID);
+        sendOmnilinkCommand(IncreaseDecreaseType.INCREASE.equals(command) ? CommandMessage.CMD_UNIT_UPB_BRIGHTEN_STEP_1
+                : CommandMessage.CMD_UNIT_UPB_DIM_STEP_1, 0, thingID);
     }
 }

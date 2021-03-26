@@ -14,12 +14,11 @@
 		<description>Mechanical handle sensor for window/door handles</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by handle</description>
 				<options>
@@ -29,7 +28,6 @@
 					<option value="A5_14_0A">A5-14-0A</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 			<parameter name="receivingSIGEEP" type="boolean">
 				<label>Receive Battery Status Signal Messages</label>

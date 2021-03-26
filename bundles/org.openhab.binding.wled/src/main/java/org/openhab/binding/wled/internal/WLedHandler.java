@@ -256,7 +256,7 @@ public class WLedHandler extends BaseThingHandler {
      * @return WLED needs the letter h followed by 2 digit HEX code for RRGGBB
      */
     private String createColorHex(HSBType hsb) {
-        return String.format("h%06X", hsb.getRGB());
+        return String.format("h%06X", hsb.getRGB() & 0x00FFFFFF);
     }
 
     @Override

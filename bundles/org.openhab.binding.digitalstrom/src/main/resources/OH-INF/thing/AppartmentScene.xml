@@ -16,10 +16,9 @@
 
 		<config-description>
 			<!--scene id -->
-			<parameter name="sceneID" type="text" readOnly="true">
+			<parameter name="sceneID" type="text" readOnly="true" required="true">
 				<label>@text/param_scene_id_label</label>
 				<description>@text/param_scene_id_desc</description>
-				<required>true</required>
 				<options>
 					<option value="ABSENT">@text/absent</option>
 					<option value="PRESENT">@text/present</option>

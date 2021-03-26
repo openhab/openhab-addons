@@ -211,6 +211,16 @@ public class HomekitTaggedItem {
     }
 
     /**
+     * returns true if inverted flag is set, i.e. item has the configuration "inverted=true"
+     * 
+     * @return true if inverted flag is set to true
+     */
+    public boolean isInverted() {
+        final String invertedConfig = getConfiguration(HomekitTaggedItem.INVERTED, "false");
+        return invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
+    }
+
+    /**
      * return configuration as double if exists otherwise return defaultValue
      * 
      * @param key configuration key

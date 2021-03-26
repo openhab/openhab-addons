@@ -22,8 +22,10 @@ import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.omnilink.internal.TemperatureFormat;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequest;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequests;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -36,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AuxSensorProperties;
@@ -101,7 +104,7 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
 
         if (command instanceof RefreshType) {
             retrieveStatus().ifPresentOrElse(this::updateChannels, () -> updateStatus(ThingStatus.OFFLINE,
-                    ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null staus update!"));
+                    ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null status update!"));
             return;
         }
 
@@ -112,13 +115,13 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
 
         switch (channelUID.getId()) {
             case CHANNEL_AUX_LOW_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_LOW_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_HEAT_POINT,
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_AUX_HIGH_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_HIGH_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_COOL_POINT,
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             default:
