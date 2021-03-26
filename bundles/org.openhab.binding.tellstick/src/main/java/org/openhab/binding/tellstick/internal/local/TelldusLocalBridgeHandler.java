@@ -111,8 +111,8 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
             throws TellstickException, InterruptedException {
         TellstickLocalDevicesDTO newList = controller
                 .callRestMethod(TelldusLocalDeviceController.HTTP_LOCAL_API_DEVICES, TellstickLocalDevicesDTO.class);
-        logger.debug("Device list {}", newList.getDevices());
         if (newList.getDevices() != null) {
+            logger.debug("Device list {}", newList.getDevices());
             if (previouslist == null) {
                 for (TellstickLocalDeviceDTO device : newList.getDevices()) {
                     device.setUpdated(true);
@@ -158,6 +158,8 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
                     device.setUpdated(false);
                 }
             }
+        } else {
+            logger.debug("updateDevices, rest API returned null");
         }
     }
 
