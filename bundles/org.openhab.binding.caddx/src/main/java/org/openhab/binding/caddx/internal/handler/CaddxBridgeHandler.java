@@ -86,6 +86,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     private String serialPortName = "";
     private int baudRate;
     private int maxZoneNumber;
+    private boolean isIgnoreZoneStatusTransitions;
     private @Nullable CaddxCommunicator communicator = null;
 
     // Things served by the bridge
@@ -121,6 +122,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         protocol = configuration.getProtocol();
         baudRate = configuration.getBaudrate();
         maxZoneNumber = configuration.getMaxZoneNumber();
+        isIgnoreZoneStatusTransitions = configuration.isIgnoreZoneStatusTransitions();
         updateStatus(ThingStatus.OFFLINE);
 
         // create & start panel interface
@@ -226,7 +228,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                         data = tokens[1];
                     }
 
-                    sendCommand(CaddxMessageContext.DISCOVERY, cmd, data);
+                    sendCommand(CaddxMessageContext.COMMAND, cmd, data);
 
                     updateState(channelUID, new StringType(""));
                 }
@@ -319,11 +321,8 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
         if (source != CaddxSource.NONE) {
             CaddxThingType caddxThingType = null;
-            @Nullable
             Integer partition = null;
-            @Nullable
             Integer zone = null;
-            @Nullable
             Integer keypad = null;
 
             switch (source) {
@@ -348,6 +347,14 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             }
 
             CaddxEvent event = new CaddxEvent(caddxMessage, partition, zone, keypad);
+
+            // Ignore Zone Status messages according to the configuration
+            if (isIgnoreZoneStatusTransitions
+                    && caddxMessage.getCaddxMessageType() == CaddxMessageType.ZONE_STATUS_MESSAGE
+                    && caddxMessage.getContext() == CaddxMessageContext.NONE) {
+                logger.debug("Zone {} Transition ignored.", zone);
+                return;
+            }
 
             // Find the thing
             Thing thing = findThing(caddxThingType, partition, zone, keypad);
