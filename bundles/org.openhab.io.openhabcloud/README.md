@@ -16,6 +16,9 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 * Open the openHAB web portal and login as an administrator.
 * Click on Settings, followed by Misc (in the Add-ons section)
 * Using the + button on the bottom right you can install the openHAB Cloud Add-on
+* You may need to restart the openHAB instance to activate the Add-on.
+  * on the regular installation: close and restart the openHAB service
+  * on the APT or Openhabian installation run: `sudo systemctl restart openhab.service`
 
 ## UUID and Secret
 
