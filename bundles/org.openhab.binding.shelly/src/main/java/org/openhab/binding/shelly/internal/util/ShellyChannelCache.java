@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
@@ -93,7 +94,7 @@ public class ShellyChannelCache {
             }
         } catch (IllegalArgumentException e) {
             logger.debug("{}: Unable to update channel {} with {} (type {}): {} ({})", thingName, channelId, newValue,
-                    newValue.getClass(), ShellyUtils.getMessage(e), e.getClass());
+                    newValue.getClass(), ShellyUtils.getMessage(e), e.getClass(), e);
         }
         return false;
     }
@@ -119,7 +120,8 @@ public class ShellyChannelCache {
     }
 
     public State getValue(String channelId) {
-        return channelData.getOrDefault(channelId, UnDefType.NULL);
+        State st = channelData.get(channelId);
+        return st != null ? st : UnDefType.NULL;
     }
 
     public void resetChannel(String channelId) {

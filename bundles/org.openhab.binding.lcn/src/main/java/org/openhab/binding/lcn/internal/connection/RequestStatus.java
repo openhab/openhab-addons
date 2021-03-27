@@ -92,7 +92,7 @@ public class RequestStatus {
      * @return true if request timed out
      */
     synchronized boolean isTimeout(long timeoutMSec, long currTime) {
-        return this.isPending() && currTime - this.currRequestTimeStamp >= timeoutMSec * 1000000L;
+        return this.isPending() && currTime - this.currRequestTimeStamp >= timeoutMSec;
     }
 
     /**
@@ -114,14 +114,14 @@ public class RequestStatus {
      */
     public synchronized void nextRequestIn(long delayMSec, long currTime) {
         this.isActive = true;
-        this.nextRequestTimeStamp = currTime + delayMSec * 1000000L;
+        this.nextRequestTimeStamp = currTime + delayMSec;
     }
 
     /**
      * Schedules a request to retrieve the current value.
      */
     public synchronized void refresh() {
-        nextRequestIn(0, System.nanoTime());
+        nextRequestIn(0, System.currentTimeMillis());
         this.numRetriesLeft = this.numTries;
     }
 
@@ -181,6 +181,11 @@ public class RequestStatus {
     public synchronized void onResponseReceived() {
         if (this.isActive) {
             this.currRequestTimeStamp = 0; // Mark request (if any) as successful
+
+            // Reset timer for next transmission
+            if (this.maxAgeMSec != -1) {
+                this.nextRequestIn(this.maxAgeMSec, System.currentTimeMillis());
+            }
         }
     }
 

@@ -14,7 +14,6 @@ package org.openhab.binding.denonmarantz.internal;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -184,7 +183,7 @@ public class DenonMarantzState {
     }
 
     public void setNowPlayingArtist(String artist) {
-        StringType newVal = StringUtils.isBlank(artist) ? StringType.EMPTY : StringType.valueOf(artist);
+        StringType newVal = artist == null || artist.isBlank() ? StringType.EMPTY : StringType.valueOf(artist);
         if (!newVal.equals(this.artist)) {
             this.artist = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ARTIST, this.artist);
@@ -192,7 +191,7 @@ public class DenonMarantzState {
     }
 
     public void setNowPlayingAlbum(String album) {
-        StringType newVal = StringUtils.isBlank(album) ? StringType.EMPTY : StringType.valueOf(album);
+        StringType newVal = album == null || album.isBlank() ? StringType.EMPTY : StringType.valueOf(album);
         if (!newVal.equals(this.album)) {
             this.album = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ALBUM, this.album);
@@ -200,7 +199,7 @@ public class DenonMarantzState {
     }
 
     public void setNowPlayingTrack(String track) {
-        StringType newVal = StringUtils.isBlank(track) ? StringType.EMPTY : StringType.valueOf(track);
+        StringType newVal = track == null || track.isBlank() ? StringType.EMPTY : StringType.valueOf(track);
         if (!newVal.equals(this.track)) {
             this.track = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_TRACK, this.track);

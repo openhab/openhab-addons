@@ -16,7 +16,6 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.communicator.parser.DisplayOptionsParser;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -60,8 +59,9 @@ public class DisplayOptionsVirtualDatapointHandler extends AbstractVirtualDatapo
         DisplayOptionsParser rcOptionsParser = new DisplayOptionsParser(channel);
         rcOptionsParser.parse(value);
 
-        if (StringUtils.isNotBlank(rcOptionsParser.getText())) {
-            sendDatapoint(gateway, channel, DATAPOINT_NAME_TEXT, rcOptionsParser.getText());
+        String dpNameText = rcOptionsParser.getText();
+        if (dpNameText != null && !dpNameText.isBlank()) {
+            sendDatapoint(gateway, channel, DATAPOINT_NAME_TEXT, dpNameText);
         }
 
         sendDatapoint(gateway, channel, DATAPOINT_NAME_BEEP, rcOptionsParser.getBeep());

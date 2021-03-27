@@ -17,7 +17,11 @@ import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -211,7 +215,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
 
             if (gatewayResponse.isSuccess()) {
                 responseText = gatewayResponse.getResponseText();
-                json = new JsonParser().parse(responseText).getAsJsonObject();
+                json = JsonParser.parseString(responseText).getAsJsonObject();
                 preSharedKey = json.get(NEW_PSK_BY_GW).getAsString();
 
                 if (isNullOrEmpty(preSharedKey)) {
@@ -323,7 +327,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         deviceClient.setURI(gatewayInfoURI);
         deviceClient.asyncGet().thenAccept(data -> {
             logger.debug("requestGatewayInfo response: {}", data);
-            JsonObject json = new JsonParser().parse(data).getAsJsonObject();
+            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
             String firmwareVersion = json.get(VERSION).getAsString();
             getThing().setProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
@@ -337,7 +341,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         deviceClient.setURI(gatewayURI + "/" + instanceId);
         deviceClient.asyncGet().thenAccept(data -> {
             logger.debug("requestDeviceDetails response: {}", data);
-            JsonObject json = new JsonParser().parse(data).getAsJsonObject();
+            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
             deviceUpdateListeners.forEach(listener -> listener.onUpdate(instanceId, json));
         });
         // restore root URI

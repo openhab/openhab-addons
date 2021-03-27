@@ -12,7 +12,6 @@
  */
 package org.openhab.io.neeo.internal.models;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.NeeoConstants;
@@ -56,14 +55,13 @@ public class NeeoSensorNotification {
         NeeoUtil.requireNotEmpty(deviceKey, "deviceKey cannot be empty");
         NeeoUtil.requireNotEmpty(itemName, "itemName cannot be empty");
 
-        this.type = overrideType == null || StringUtils.isEmpty(overrideType)
-                ? NeeoConstants.NEEO_SENSOR_NOTIFICATION_TYPE
+        this.type = overrideType == null || overrideType.isEmpty() ? NeeoConstants.NEEO_SENSOR_NOTIFICATION_TYPE
                 : overrideType;
         this.data = new SensorNotificationData(
                 deviceKey + ":" + itemName
-                        + (StringUtils.endsWithIgnoreCase(itemName, NeeoConstants.NEEO_SENSOR_SUFFIX) ? ""
+                        + (itemName.toLowerCase().endsWith(NeeoConstants.NEEO_SENSOR_SUFFIX.toLowerCase()) ? ""
                                 : NeeoConstants.NEEO_SENSOR_SUFFIX),
-                data == null || (data instanceof String && StringUtils.isEmpty(data.toString())) ? "-" : data);
+                data == null || (data instanceof String && data.toString().isEmpty()) ? "-" : data);
     }
 
     /**

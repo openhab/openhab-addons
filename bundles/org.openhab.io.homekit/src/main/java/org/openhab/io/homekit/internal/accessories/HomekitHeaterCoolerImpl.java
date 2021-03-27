@@ -16,6 +16,7 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.ACTIVE_S
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_HEATER_COOLER_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_HEATER_COOLER_STATE;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -71,18 +72,34 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
         }
     };
 
+    private final List<CurrentHeaterCoolerStateEnum> customCurrentStateList = new ArrayList<>();
+    private final List<TargetHeaterCoolerStateEnum> customTargetStateList = new ArrayList<>();
+
     public HomekitHeaterCoolerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         activeReader = new BooleanItemReader(getItem(ACTIVE_STATUS, GenericItem.class)
                 .orElseThrow(() -> new IncompleteAccessoryException(ACTIVE_STATUS)), OnOffType.ON, OpenClosedType.OPEN);
-        updateMapping(CURRENT_HEATER_COOLER_STATE, currentStateMapping);
-        updateMapping(TARGET_HEATER_COOLER_STATE, targetStateMapping);
+        updateMapping(CURRENT_HEATER_COOLER_STATE, currentStateMapping, customCurrentStateList);
+        updateMapping(TARGET_HEATER_COOLER_STATE, targetStateMapping, customTargetStateList);
         final HeaterCoolerService service = new HeaterCoolerService(this);
         service.addOptionalCharacteristic(new TemperatureDisplayUnitCharacteristic(this::getTemperatureDisplayUnit,
                 this::setTemperatureDisplayUnit, this::subscribeTemperatureDisplayUnit,
                 this::unsubscribeTemperatureDisplayUnit));
         getServices().add(service);
+    }
+
+    @Override
+    public CurrentHeaterCoolerStateEnum[] getCurrentHeaterCoolerStateValidValues() {
+        return customCurrentStateList.isEmpty()
+                ? currentStateMapping.keySet().toArray(new CurrentHeaterCoolerStateEnum[0])
+                : customCurrentStateList.toArray(new CurrentHeaterCoolerStateEnum[0]);
+    }
+
+    @Override
+    public TargetHeaterCoolerStateEnum[] getTargetHeaterCoolerStateValidValues() {
+        return customTargetStateList.isEmpty() ? targetStateMapping.keySet().toArray(new TargetHeaterCoolerStateEnum[0])
+                : customTargetStateList.toArray(new TargetHeaterCoolerStateEnum[0]);
     }
 
     @Override

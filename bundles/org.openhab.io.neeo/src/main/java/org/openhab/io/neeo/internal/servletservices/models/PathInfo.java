@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.servletservices.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.ItemSubType;
@@ -47,8 +46,7 @@ public class PathInfo {
     private final String componentSubType;
 
     /** The action value */
-    @Nullable
-    private final String actionValue;
+    private final @Nullable String actionValue;
 
     /**
      * Creates the path info object from the route path
@@ -89,7 +87,7 @@ public class PathInfo {
         componentType = paths[idx++];
 
         // actor/sensor/buttoncmd
-        if (StringUtils.equalsIgnoreCase("button", componentType)) {
+        if ("button".equalsIgnoreCase(componentType)) {
             componentSubType = "actor";
             actionValue = paths[idx++];
         } else {

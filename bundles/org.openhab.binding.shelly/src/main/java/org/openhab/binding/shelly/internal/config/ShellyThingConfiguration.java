@@ -29,6 +29,9 @@ public class ShellyThingConfiguration {
     public int lowBattery = 15; // threshold for battery value
     public boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
 
+    public int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
+    public int favoriteDOWN = 0; // Roller position favorite when control channel receives ON, 0=none
+
     public boolean eventsButton = false; // true: register for Relay btn_xxx events
     public boolean eventsSwitch = true; // true: register for device out_xxx events
     public boolean eventsPush = true; // true: register for short/long push events

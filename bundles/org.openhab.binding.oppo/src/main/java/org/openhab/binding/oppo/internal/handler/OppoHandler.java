@@ -69,8 +69,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OppoHandler extends BaseThingHandler implements OppoMessageEventListener {
     private static final long RECON_POLLING_INTERVAL_SEC = 60;
-    private static final long POLLING_INTERVAL_SEC = 15;
-    private static final long INITIAL_POLLING_DELAY_SEC = 10;
+    private static final long POLLING_INTERVAL_SEC = 10;
+    private static final long INITIAL_POLLING_DELAY_SEC = 5;
     private static final long SLEEP_BETWEEN_CMD_MS = 100;
 
     private static final Pattern TIME_CODE_PATTERN = Pattern
@@ -221,7 +221,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      *
      * @param channelUID the channel sending the command
      * @param command the command received
-     * 
+     *
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -615,6 +615,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         closeConnection();
                     } else {
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                        isInitialQuery = false;
+                        isVbModeSet = false;
                     }
                 }
             }
@@ -647,19 +649,21 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
                 synchronized (sequenceLock) {
                     try {
-                        // the verbose mode must be set while the player is on
-                        if (isPowerOn && !isVbModeSet && !isBdpIP) {
-                            connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
-                            isVbModeSet = true;
-                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                        // Verbose mode 2 & 3 only do once until power comes on OR always for BDP direct IP
+                        if ((!isPowerOn && !isInitialQuery) || isBdpIP) {
+                            connector.sendCommand(OppoCommand.QUERY_POWER_STATUS);
                         }
 
-                        // If using direct serial connection, the query is done once after the player is turned on
-                        // - OR - if using direct IP connection on the 83/9x/10x, no unsolicited updates are sent
-                        // so we must query everything to know what changed.
-                        if ((isPowerOn && !isInitialQuery) || isBdpIP) {
-                            connector.sendCommand(OppoCommand.QUERY_POWER_STATUS);
-                            if (isPowerOn) {
+                        if (isPowerOn) {
+                            // the verbose mode must be set while the player is on
+                            if (!isVbModeSet && !isBdpIP) {
+                                connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
+                                isVbModeSet = true;
+                                Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                            }
+
+                            // Verbose mode 2 & 3 only do once OR always for BDP direct IP
+                            if (!isInitialQuery || isBdpIP) {
                                 isInitialQuery = true;
                                 OppoCommand.QUERY_COMMANDS.forEach(cmd -> {
                                     try {
@@ -670,34 +674,34 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                     }
                                 });
                             }
-                        }
 
-                        // for Verbose mode 2 get the current play back time if we are playing, otherwise just do NO_OP
-                        if ((VERBOSE_2.equals(this.verboseMode) && PLAY.equals(currentPlayMode))
-                                || (isBdpIP && isPowerOn)) {
-                            switch (currentTimeMode) {
-                                case T:
-                                    connector.sendCommand(OppoCommand.QUERY_TITLE_ELAPSED);
-                                    break;
-                                case X:
-                                    connector.sendCommand(OppoCommand.QUERY_TITLE_REMAIN);
-                                    break;
-                                case C:
-                                    connector.sendCommand(OppoCommand.QUERY_CHAPTER_ELAPSED);
-                                    break;
-                                case K:
-                                    connector.sendCommand(OppoCommand.QUERY_CHAPTER_REMAIN);
-                                    break;
+                            // for Verbose mode 2 get the current play back time if we are playing, otherwise just do
+                            // NO_OP
+                            if ((VERBOSE_2.equals(this.verboseMode) && PLAY.equals(currentPlayMode)) || isBdpIP) {
+                                switch (currentTimeMode) {
+                                    case T:
+                                        connector.sendCommand(OppoCommand.QUERY_TITLE_ELAPSED);
+                                        break;
+                                    case X:
+                                        connector.sendCommand(OppoCommand.QUERY_TITLE_REMAIN);
+                                        break;
+                                    case C:
+                                        connector.sendCommand(OppoCommand.QUERY_CHAPTER_ELAPSED);
+                                        break;
+                                    case K:
+                                        connector.sendCommand(OppoCommand.QUERY_CHAPTER_REMAIN);
+                                        break;
+                                }
+                                Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+
+                                // make queries to refresh total number of titles/tracks & chapters
+                                connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK);
+                                Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                                connector.sendCommand(OppoCommand.QUERY_CHAPTER);
+                            } else if (!isBdpIP) {
+                                // verbose mode 3
+                                connector.sendCommand(OppoCommand.NO_OP);
                             }
-                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-
-                            // make queries to refresh total number of titles/tracks & chapters
-                            connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK);
-                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                            connector.sendCommand(OppoCommand.QUERY_CHAPTER);
-                        } else if (!isBdpIP) {
-                            // verbose mode 3
-                            connector.sendCommand(OppoCommand.NO_OP);
                         }
 
                     } catch (OppoException | InterruptedException e) {

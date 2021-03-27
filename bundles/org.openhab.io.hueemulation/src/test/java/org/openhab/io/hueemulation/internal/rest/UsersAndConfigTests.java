@@ -114,7 +114,7 @@ public class UsersAndConfigTests {
         response = commonSetup.client.target(commonSetup.basePath).request().post(Entity.json(body));
         assertThat(response.getStatus(), is(200));
 
-        JsonElement e = new JsonParser().parse(response.readEntity(String.class)).getAsJsonArray().get(0);
+        JsonElement e = JsonParser.parseString(response.readEntity(String.class)).getAsJsonArray().get(0);
         e = e.getAsJsonObject().get("success");
         HueSuccessResponseCreateUser rc = commonSetup.cs.gson.fromJson(e, HueSuccessResponseCreateUser.class);
         assertNotNull(rc);

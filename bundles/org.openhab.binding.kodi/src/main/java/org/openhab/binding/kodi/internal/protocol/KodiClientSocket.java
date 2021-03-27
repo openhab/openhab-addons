@@ -54,7 +54,6 @@ public class KodiClientSocket {
 
     private boolean connected = false;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson mapper = new Gson();
     private final URI uri;
     private final WebSocketClient client;
@@ -130,7 +129,7 @@ public class KodiClientSocket {
         @OnWebSocketMessage
         public void onMessage(String message) {
             logger.trace("Message received from server: {}", message);
-            final JsonObject json = parser.parse(message).getAsJsonObject();
+            final JsonObject json = JsonParser.parseString(message).getAsJsonObject();
             if (json.has("id")) {
                 int messageId = json.get("id").getAsInt();
                 if (messageId == nextMessageId - 1) {

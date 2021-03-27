@@ -1194,7 +1194,6 @@ public class Connection {
                                     .collect(Collectors.joining(" / ")));
                 }
             }
-
         } catch (URISyntaxException e) {
             logger.warn("URL '{}' has invalid format for request '{}': {}", url, requestBody, e.getMessage());
         }
@@ -1223,7 +1222,6 @@ public class Connection {
             String json = makeRequestAndReturnString(alexaServer + "/api/device-notification-state");
             JsonDeviceNotificationState result = parseJson(json, JsonDeviceNotificationState.class);
             return Objects.requireNonNullElse(result.deviceNotificationStates, List.of());
-
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("Error getting device notification states", e);
         }
@@ -1877,7 +1875,7 @@ public class Connection {
 
     public @Nullable JsonAutomation @Nullable [] getRoutines()
             throws IOException, URISyntaxException, InterruptedException {
-        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations?limit=2000");
+        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/v2/automations?limit=2000");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }

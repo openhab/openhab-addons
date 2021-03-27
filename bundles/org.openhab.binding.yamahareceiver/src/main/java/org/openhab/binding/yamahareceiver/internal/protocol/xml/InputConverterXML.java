@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
@@ -74,7 +73,7 @@ public class InputConverterXML implements InputConverter {
     private Map<String, String> createMapFromSetting(String setting) {
         Map<String, String> map = new HashMap<>();
 
-        if (!StringUtils.isEmpty(setting)) {
+        if (setting != null && !setting.isEmpty()) {
             String[] entries = setting.split(","); // will contain KEY=VALUE entires
             for (String entry : entries) {
                 String[] keyValue = entry.split("="); // split the KEY=VALUE string

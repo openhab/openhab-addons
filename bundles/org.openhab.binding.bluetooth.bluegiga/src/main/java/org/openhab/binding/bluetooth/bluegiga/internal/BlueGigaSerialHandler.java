@@ -67,6 +67,8 @@ public class BlueGigaSerialHandler {
         parserThread = createBlueGigaBLEHandler(uid);
         parserThread.setUncaughtExceptionHandler((t, th) -> {
             logger.warn("BluegigaSerialHandler terminating due to unhandled error", th);
+            notifyEventListeners(new BlueGigaException(
+                    "BluegigaSerialHandler terminating due to unhandled error, reason " + th.getMessage()));
         });
         parserThread.setDaemon(true);
         parserThread.start();
@@ -238,7 +240,6 @@ public class BlueGigaSerialHandler {
     private void inboundMessageHandlerLoop() {
         final int[] framecheckParams = { 0x00, 0x7F, 0xC0, 0xF8, 0xE0 };
 
-        int exceptionCnt = 0;
         logger.trace("BlueGiga BLE thread started");
         int[] inputBuffer = new int[BLE_MAX_LENGTH];
         int inputCount = 0;
@@ -260,9 +261,8 @@ public class BlueGigaSerialHandler {
                 }
 
                 if (inputCount < 4) {
-                    // The BGAPI protocol has no packet framing, and no error detection, so we do a few
-                    // sanity checks on the header to try and allow resyncronisation should there be an
-                    // error.
+                    // The BGAPI protocol has no packet framing and no error detection, so we do a few
+                    // sanity checks on the header to try and allow resynchronisation.
                     // Byte 0: Check technology type is bluetooth and high length is 0
                     // Byte 1: Check length is less than 64 bytes
                     // Byte 2: Check class ID is less than 8
@@ -278,21 +278,22 @@ public class BlueGigaSerialHandler {
                 } else if (inputCount == 4) {
                     // Process the header to get the length
                     inputLength = inputBuffer[1] + (inputBuffer[0] & 0x02 << 8) + 4;
-                    if (inputLength > 64) {
-                        logger.debug("BLE length larger than 64 bytes ({})", inputLength);
+                    if (inputLength > BLE_MAX_LENGTH) {
+                        logger.debug("Received illegal BLE packet, length larger than max {} bytes ({})",
+                                BLE_MAX_LENGTH, inputLength);
                         if (inputStream.markSupported()) {
                             inputStream.reset();
                         }
                         inputCount = 0;
+                        inputLength = 0;
                         continue;
                     }
-                }
-                if (inputCount == inputLength) {
+                } else if (inputCount == inputLength) {
+                    // End of packet reached - process
                     if (logger.isTraceEnabled()) {
                         logger.trace("BLE RX: {}", printHex(inputBuffer, inputLength));
                     }
 
-                    // End of packet reached - process
                     BlueGigaResponse responsePacket = BlueGigaResponsePackets.getPacket(inputBuffer);
 
                     if (logger.isTraceEnabled()) {
@@ -300,24 +301,16 @@ public class BlueGigaSerialHandler {
                     }
                     if (responsePacket != null) {
                         notifyEventListeners(responsePacket);
+                    } else {
+                        logger.debug("Unknown packet received: {}", printHex(inputBuffer, inputLength));
                     }
 
                     inputCount = 0;
-                    exceptionCnt = 0;
-                }
-
-            } catch (IOException e) {
-                logger.debug("BlueGiga BLE IOException: ", e);
-
-                if (exceptionCnt++ > 10) {
-                    logger.error("BlueGiga BLE exception count exceeded, closing handler");
-                    close = true;
-                    notifyEventListeners(e);
                 }
             } catch (Exception e) {
-                logger.debug("BlueGiga BLE Exception, closing handler", e);
+                logger.trace("BlueGiga BLE Exception: ", e);
                 close = true;
-                notifyEventListeners(e);
+                notifyEventListeners(new BlueGigaException("BlueGiga BLE Exception, reason " + e.getMessage(), e));
             }
         }
         logger.debug("BlueGiga BLE exited.");

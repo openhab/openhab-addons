@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.config.IntRSConfig;
 import org.openhab.binding.satel.internal.protocol.IntRSModule;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
-import org.openhab.binding.satel.internal.util.StringUtils;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -59,7 +58,7 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
 
         final IntRSConfig config = getConfigAs(IntRSConfig.class);
         final String port = config.getPort();
-        if (port != null && StringUtils.isNotBlank(port)) {
+        if (!port.isBlank()) {
             SatelModule satelModule = new IntRSModule(port, serialPortManager, config.getTimeout(),
                     config.hasExtCommandsSupport());
             super.initialize(satelModule);
@@ -76,7 +75,7 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether a serial port is provided
-        if (StringUtils.isBlank(port)) {
+        if (port.isBlank()) {
             configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(PORT)
                     .withMessageKeySuffix("portEmpty").withArguments(PORT).build());
         } else {

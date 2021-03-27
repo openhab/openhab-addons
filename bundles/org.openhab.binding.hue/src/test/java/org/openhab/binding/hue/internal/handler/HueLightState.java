@@ -33,12 +33,14 @@ public class HueLightState {
     String effect = "none";
     String colorMode = "hs";
     String model = "LCT001";
+    String vendor = "Philips";
 
     public HueLightState() {
     }
 
-    public HueLightState(String model) {
+    public HueLightState(String model, String vendor) {
         this.model = model;
+        this.vendor = vendor;
     }
 
     public HueLightState bri(int brightness) {
@@ -105,6 +107,7 @@ public class HueLightState {
                 "      \"type\": \"Extended color light\"," + //
                 "      \"name\": \"Hue Light 1\"," + //
                 "      \"modelid\": \"" + model + "\"," + //
+                "      \"manufacturername\": \"" + vendor + "\"," + //
                 "      \"swversion\": \"65003148\"," + //
                 "      \"uniqueid\": \"00:17:88:01:00:e1:88:29-0b\"," + //
                 "      \"pointsymbol\": {" + //

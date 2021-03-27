@@ -14,31 +14,27 @@
 		</properties>
 
 		<config-description>
-			<parameter name="ipAddress" type="text">
+			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>Network Address</label>
 				<description>Network address of the Miele@home gateway.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="interface" type="text">
+			<parameter name="interface" type="text" required="true">
 				<context>network-address</context>
 				<label>Network Address of the Multicast Interface</label>
 				<description>Network address of openHAB host interface where the binding will listen for multicast events coming
 					from the Miele@home gateway</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="userName" type="text">
+			<parameter name="userName" type="text" required="false">
 				<label>Username</label>
 				<description>
 					Name of a registered Miele@home user.
 				</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password for the registered Miele@home</description>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</bridge-type>

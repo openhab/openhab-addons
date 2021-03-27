@@ -19,10 +19,14 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_P
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.items.Item;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -30,6 +34,8 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
@@ -41,6 +47,7 @@ import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
  */
 @NonNullByDefault
 abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAccessoryImpl {
+    private final Logger logger = LoggerFactory.getLogger(AbstractHomekitPositionAccessoryImpl.class);
     protected int closedPosition;
     protected int openPosition;
     private final Map<PositionStateEnum, String> positionStateMapping;
@@ -73,10 +80,24 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         return CompletableFuture.completedFuture(convertPositionState(TARGET_POSITION, openPosition, closedPosition));
     }
 
-    @NonNullByDefault({})
     public CompletableFuture<Void> setTargetPosition(int value) {
-        getItem(TARGET_POSITION, RollershutterItem.class)
-                .ifPresent(item -> item.send(new PercentType(convertPosition(value, openPosition))));
+        getCharacteristic(TARGET_POSITION).ifPresentOrElse(taggedItem -> {
+            final Item item = taggedItem.getItem();
+            final int targetPosition = convertPosition(value, openPosition);
+            if (item instanceof RollershutterItem) {
+                ((RollershutterItem) item).send(new PercentType(targetPosition));
+            } else if (item instanceof DimmerItem) {
+                ((DimmerItem) item).send(new PercentType(targetPosition));
+            } else if (item instanceof NumberItem) {
+                ((NumberItem) item).send(new DecimalType(targetPosition));
+            } else {
+                logger.warn(
+                        "Unsupported item type for characteristic {} at accessory {}. Expected Rollershutter, Dimmer or Number item, got {}",
+                        TARGET_POSITION, getName(), item.getClass());
+            }
+        }, () -> {
+            logger.warn("Mandatory characteristic {} not found at accessory {}. ", TARGET_POSITION, getName());
+        });
         return CompletableFuture.completedFuture(null);
     }
 
@@ -130,7 +151,17 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     }
 
     protected int convertPositionState(HomekitCharacteristicType type, int openPosition, int closedPosition) {
-        final @Nullable DecimalType value = getStateAs(type, PercentType.class);
+        @Nullable
+        DecimalType value = null;
+        final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(type);
+        if (taggedItem.isPresent()) {
+            final Item item = taggedItem.get().getItem();
+            if ((item instanceof RollershutterItem) || ((item instanceof DimmerItem))) {
+                value = item.getStateAs(PercentType.class);
+            } else {
+                value = item.getStateAs(DecimalType.class);
+            }
+        }
         return value != null ? convertPosition(value.intValue(), openPosition) : closedPosition;
     }
 }

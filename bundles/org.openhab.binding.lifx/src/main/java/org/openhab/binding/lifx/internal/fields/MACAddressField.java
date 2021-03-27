@@ -17,8 +17,8 @@ import java.nio.ByteBuffer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Tim Buckley
- * @author Karel Goderis
+ * @author Tim Buckley - Initial contribution
+ * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
 public class MACAddressField extends Field<MACAddress> {

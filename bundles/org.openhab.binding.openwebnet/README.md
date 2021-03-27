@@ -8,6 +8,8 @@ The binding supports:
 - auto discovery of BUS/SCS IP and ZigBee USB gateways; auto discovery of devices
 - commands from openHAB and feedback (events) from BUS/SCS and wireless network
 
+
+![MyHOMEServer1 Gateway](doc/MyHOMEServer1_gateway.jpg)
 ![F454 Gateway](doc/F454_gateway.png)
 ![ZigBee USB Gateway](doc/USB_gateway.jpg)
 
@@ -40,6 +42,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management   | `13`        | `bus_gateway`                            | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
 | Lighting             | `1`         | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                       | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`         | `bus_automation`                        | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
+| Energy Management    | `18`         | `bus_energy_meter`           | Energy Management  | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
 
@@ -129,7 +132,7 @@ Devices support some of the following channels:
 | `switch` or `switch_01`/`02` for ZigBee | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
 | `brightness`                               | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
 | `shutter`                                   | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
-
+| `power`                  | Number:Power        | The current active power usage from Energy Meter       |     R      |
 ### Notes on channels
 
 #### `shutter` position
@@ -154,6 +157,8 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_on_off_switch        LR_switch        "Living Room Light"     [ where="51" ]
       bus_dimmer               LR_dimmer        "Living Room Dimmer"    [ where="0311#4#01" ]
       bus_automation           LR_shutter       "Living Room Shutter"   [ where="93", shutterRun="10050"]
+      bus_energy_meter         CENTRAL_Ta       "Energy Meter Ta"       [ where="51" ]	
+      bus_energy_meter         CENTRAL_Tb       "Energy Meter Tb"       [ where="52" ]	
 }
 ```
 
@@ -176,6 +181,9 @@ Example items linked to BUS devices:
 Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
 Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
 Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
+Number:Power    iCENTRAL_Ta         "Power [%.0f %unit%]"               <energy>         { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
+Number:Power    iCENTRAL_Tb         "Power [%.0f %unit%]"               <energy>         { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+
 ```
 
 Example items linked to OpenWebNet ZigBee devices:
@@ -198,6 +206,12 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
           Default item=iLR_dimmer           icon="light" 
           Default item=iLR_shutter
     }
+
+    Frame label="Energy Meters" icon="energy"
+    {
+          Default item=iCENTRAL_Ta label="General"      icon="energy" valuecolor=[>3000="red"]
+          Default item=iCENTRAL_Tb label="Ground Floor" icon="energy" valuecolor=[>3000="red"]
+    }
 }
 ```
 
@@ -216,5 +230,6 @@ Special thanks for helping on testing this binding go to:
 [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/),
 [@llegovich](https://community.openhab.org/u/llegovich),
 [@gabriele.daltoe](https://community.openhab.org/u/gabriele.daltoe),
-[@feodor](https://community.openhab.org/u/feodor)
+[@feodor](https://community.openhab.org/u/feodor),
+[@aconte80](https://community.openhab.org/u/aconte80)
 and many others at the fantastic openHAB community!

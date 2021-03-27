@@ -15,6 +15,7 @@ package org.openhab.binding.digitalstrom.internal.handler;
 import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.GeneralLibConstance;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
@@ -108,8 +108,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
     @Override
     public void initialize() {
         logger.debug("Initializing DeviceHandler.");
-        if (StringUtils.isNotBlank((String) getConfig().get(DigitalSTROMBindingConstants.DEVICE_DSID))) {
-            dSID = getConfig().get(DigitalSTROMBindingConstants.DEVICE_DSID).toString();
+        dSID = (String) getConfig().get(DigitalSTROMBindingConstants.DEVICE_DSID);
+        if (dSID != null && !dSID.isBlank()) {
             final Bridge bridge = getBridge();
             if (bridge != null) {
                 bridgeStatusChanged(bridge.getStatusInfo());
@@ -411,7 +411,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         if (value <= 0 || max <= 0) {
             return 0;
         }
-        int percentValue = new BigDecimal(value * ((float) 100 / max)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        int percentValue = new BigDecimal(value * ((float) 100 / max)).setScale(0, RoundingMode.HALF_UP).intValue();
         return percentValue < 0 ? 0 : percentValue > 100 ? 100 : percentValue;
     }
 

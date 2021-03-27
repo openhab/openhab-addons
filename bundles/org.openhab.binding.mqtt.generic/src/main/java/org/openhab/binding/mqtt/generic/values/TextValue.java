@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import static java.util.function.Predicate.not;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.CoreItemFactory;
@@ -45,7 +46,7 @@ public class TextValue extends Value {
      */
     public TextValue(String[] states) {
         super(CoreItemFactory.STRING, Collections.singletonList(StringType.class));
-        Set<String> s = Stream.of(states).filter(e -> StringUtils.isNotBlank(e)).collect(Collectors.toSet());
+        Set<String> s = Stream.of(states).filter(not(String::isBlank)).collect(Collectors.toSet());
         if (!s.isEmpty()) {
             this.states = s;
         } else {

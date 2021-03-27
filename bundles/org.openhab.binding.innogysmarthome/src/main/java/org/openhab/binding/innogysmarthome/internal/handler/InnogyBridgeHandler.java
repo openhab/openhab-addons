@@ -20,11 +20,19 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -183,7 +191,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      * @return true if success
      */
     private boolean checkOnAuthCode() {
-        if (StringUtils.isNotBlank(bridgeConfiguration.authcode)) {
+        if (!bridgeConfiguration.authcode.isBlank()) {
             logger.debug("Trying to get access and refresh tokens");
             try {
                 oAuthService.getAccessTokenResponseByAuthorizationCode(bridgeConfiguration.authcode,
@@ -868,7 +876,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     /**
      * Sends the command to start or stop moving the rollershutter (ISR2) in a specified direction
-     * 
+     *
      * @param deviceId
      * @param action
      */
@@ -970,7 +978,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     /**
      * Checks if the job is already (re-)scheduled.
-     * 
+     *
      * @param job job to check
      * @return true, when the job is already (re-)scheduled, otherwise false
      */

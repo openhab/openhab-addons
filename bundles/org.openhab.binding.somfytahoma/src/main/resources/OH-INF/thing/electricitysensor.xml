@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="energy_consumption" typeId="energy_consumption"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

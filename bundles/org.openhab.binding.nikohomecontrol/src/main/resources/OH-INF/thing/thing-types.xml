@@ -127,7 +127,7 @@
 				<description>Niko Home Control action ID</description>
 				<advanced>false</advanced>
 			</parameter>
-			<parameter name="step" type="integer" required="true">
+			<parameter name="step" type="integer">
 				<label>Step Value</label>
 				<description>Step value used for increase/decrease of dimmer brightness, default 10%</description>
 				<default>10</default>
@@ -150,6 +150,12 @@
 				<label>Action ID</label>
 				<description>Niko Home Control action ID</description>
 				<advanced>false</advanced>
+			</parameter>
+			<parameter name="invert" type="boolean">
+				<label>Invert Direction</label>
+				<description>Invert rollershutter direction</description>
+				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

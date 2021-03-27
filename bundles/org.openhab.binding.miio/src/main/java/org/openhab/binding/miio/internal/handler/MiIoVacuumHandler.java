@@ -22,10 +22,14 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
@@ -88,6 +92,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
+
+    private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream
+            .of(RobotCababilities.SEGMENT_STATUS, RobotCababilities.MAP_STATUS, RobotCababilities.LED_STATUS,
+                    RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
+                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE)
+            .collect(Collectors.toSet()));
 
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
@@ -289,6 +299,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         safeUpdateState(CHANNEL_IN_CLEANING, statusInfo.getInCleaning());
         safeUpdateState(CHANNEL_MAP_PRESENT, statusInfo.getMapPresent());
         if (statusInfo.getState() != null) {
+            stateId = statusInfo.getState();
             StatusType state = StatusType.getType(statusInfo.getState());
             updateState(CHANNEL_STATE, new StringType(state.getDescription()));
             updateState(CHANNEL_STATE_ID, new DecimalType(statusInfo.getState()));
@@ -343,6 +354,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_FORBIDDEN)) {
             safeUpdateState(RobotCababilities.MOP_FORBIDDEN.getChannel(), statusInfo.getMopForbiddenEnable());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.LOCATING)) {
+            safeUpdateState(RobotCababilities.LOCATING.getChannel(), statusInfo.getIsLocating());
         }
         return true;
     }
@@ -461,6 +475,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     map.getValue();
                 }
             }
+            for (RobotCababilities cmd : FEATURES_CHANNELS) {
+                if (isLinked(cmd.getChannel())) {
+                    sendCommand(cmd.getCommand());
+                }
+            }
         } catch (Exception e) {
             logger.debug("Error while updating '{}': '{}", getThing().getUID().toString(), e.getLocalizedMessage());
         }
@@ -527,8 +546,51 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     }
                 }
                 break;
+            case GET_MAP_STATUS:
+            case GET_SEGMENT_STATUS:
+            case GET_LED_STATUS:
+                updateNumericChannel(response);
+                break;
+            case GET_CARPET_MODE:
+            case GET_FW_FEATURES:
+            case GET_CUSTOMIZED_CLEAN_MODE:
+            case GET_MULTI_MAP_LIST:
+            case GET_ROOM_MAPPING:
+                for (RobotCababilities cmd : FEATURES_CHANNELS) {
+                    if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
+                        updateState(cmd.getChannel(), new StringType(response.getResult().toString()));
+                        break;
+                    }
+                }
+                break;
             default:
                 break;
+        }
+    }
+
+    private void updateNumericChannel(MiIoSendCommand response) {
+        RobotCababilities capabilityChannel = null;
+        for (RobotCababilities cmd : FEATURES_CHANNELS) {
+            if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
+                capabilityChannel = cmd;
+                break;
+            }
+        }
+        if (capabilityChannel != null) {
+            if (response.getResult().isJsonArray() && response.getResult().getAsJsonArray().get(0).isJsonPrimitive()) {
+                try {
+                    Integer stat = response.getResult().getAsJsonArray().get(0).getAsInt();
+                    updateState(capabilityChannel.getChannel(), new DecimalType(stat));
+                    return;
+                } catch (ClassCastException | IllegalStateException e) {
+                    logger.debug("Could not update numeric channel {} with '{}': {}", capabilityChannel.getChannel(),
+                            response.getResult(), e.getMessage());
+                }
+            } else {
+                logger.debug("Could not update numeric channel {} with '{}': Not in expected format",
+                        capabilityChannel.getChannel(), response.getResult());
+            }
+            updateState(capabilityChannel.getChannel(), UnDefType.UNDEF);
         }
     }
 

@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
+import org.openhab.binding.digitalstrom.internal.handler.ZoneTemperatureControlHandler;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -103,7 +103,7 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(DigitalSTROMBindingConstants.ZONE_ID, tempControlStatus.getZoneID());
                 String zoneName = tempControlStatus.getZoneName();
-                if (StringUtils.isBlank(zoneName)) {
+                if (zoneName == null || zoneName.isBlank()) {
                     zoneName = tempControlStatus.getZoneID().toString();
                 }
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)

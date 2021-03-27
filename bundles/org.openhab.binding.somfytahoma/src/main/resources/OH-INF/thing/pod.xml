@@ -14,6 +14,7 @@
 			<channel id="battery_status" typeId="battery_status"></channel>
 			<channel id="lighting_led_pod_mode" typeId="lighting_led_pod_mode"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

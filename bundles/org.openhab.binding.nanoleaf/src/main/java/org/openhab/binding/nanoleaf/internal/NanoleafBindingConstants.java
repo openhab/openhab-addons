@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -24,7 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class NanoleafBindingConstants {
 
-    private static final String BINDING_ID = "nanoleaf";
+    public static final String BINDING_ID = "nanoleaf";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
@@ -41,7 +44,6 @@ public class NanoleafBindingConstants {
     public static final String CONFIG_PANEL_ID = "id";
 
     // List of controller channels
-    public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
     public static final String CHANNEL_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
@@ -50,12 +52,10 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_RHYTHM_STATE = "rhythmState";
     public static final String CHANNEL_RHYTHM_ACTIVE = "rhythmActive";
     public static final String CHANNEL_RHYTHM_MODE = "rhythmMode";
-    public static final String CHANNEL_PANEL_LAYOUT = "panelLayout";
 
     // List of light panel channels
-    public static final String CHANNEL_PANEL_COLOR = "panelColor";
-    public static final String CHANNEL_PANEL_SINGLE_TAP = "singleTap";
-    public static final String CHANNEL_PANEL_DOUBLE_TAP = "doubleTap";
+    public static final String CHANNEL_PANEL_COLOR = "color";
+    public static final String CHANNEL_PANEL_TAP = "tap";
 
     // Nanoleaf OpenAPI URLs
     public static final String API_V1_BASE_URL = "/api/v1";
@@ -71,9 +71,12 @@ public class NanoleafBindingConstants {
     public static final String API_MIN_FW_VER_LIGHTPANELS = "1.5.0";
     public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
     public static final String MODEL_ID_LIGHTPANELS = "NL22";
-    public static final String MODEL_ID_CANVAS = "NL29";
+
+    public static final List<String> MODELS_WITH_TOUCHSUPPORT = Arrays.asList("NL29", "NL42");
     public static final String DEVICE_TYPE_LIGHTPANELS = "lightPanels";
-    public static final String DEVICE_TYPE_CANVAS = "canvas";
+    public static final String DEVICE_TYPE_TOUCHSUPPORT = "canvas"; // we need to keep this enum for backward
+                                                                    // compatibility even though not only canvas type
+                                                                    // support touch
 
     // mDNS discovery service type
     // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0

@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Tim Buckley
+ * @author Tim Buckley - Initial contribution
  */
 @NonNullByDefault
 public class UInt32Field extends Field<Long> {

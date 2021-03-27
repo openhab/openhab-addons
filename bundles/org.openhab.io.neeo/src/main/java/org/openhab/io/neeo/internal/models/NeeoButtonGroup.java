@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -110,28 +109,28 @@ public class NeeoButtonGroup {
      */
     @Nullable
     public static NeeoButtonGroup parse(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return null;
         }
 
         // note: if we add more - might want to switch this into a loop
-        if (StringUtils.equalsIgnoreCase(text, POWERONOFF.text)) {
+        if (text.equalsIgnoreCase(POWERONOFF.text)) {
             return POWERONOFF;
         }
 
-        if (StringUtils.equalsIgnoreCase(text, VOLUMES.text)) {
+        if (text.equalsIgnoreCase(VOLUMES.text)) {
             return VOLUMES;
         }
 
-        if (StringUtils.equalsIgnoreCase(text, CHANNELS.text)) {
+        if (text.equalsIgnoreCase(CHANNELS.text)) {
             return CHANNELS;
         }
 
-        if (StringUtils.equalsIgnoreCase(text, CURSORUPDOWN.text)) {
+        if (text.equalsIgnoreCase(CURSORUPDOWN.text)) {
             return CURSORUPDOWN;
         }
 
-        if (StringUtils.equalsIgnoreCase(text, CURSORLEFTRIGHT.text)) {
+        if (text.equalsIgnoreCase(CURSORLEFTRIGHT.text)) {
             return CURSORLEFTRIGHT;
         }
 
@@ -145,7 +144,7 @@ public class NeeoButtonGroup {
      * @return true if matches, false otherwise
      */
     public boolean equals(String text) {
-        return StringUtils.equalsIgnoreCase(this.text, text);
+        return this.text.equalsIgnoreCase(text);
     }
 
     @Override

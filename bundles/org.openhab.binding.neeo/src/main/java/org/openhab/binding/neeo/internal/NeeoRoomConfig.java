@@ -14,10 +14,9 @@ package org.openhab.binding.neeo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.neeo.internal.handler.NeeoRoomHandler;
 
 /**
- * THe configuration class for the room used by {@link NeeoRoomHandler}
+ * Configuration used by {@link org.openhab.binding.neeo.internal.handler.NeeoRoomHandler}
  *
  * @author Tim Roberts - initial contribution
  */

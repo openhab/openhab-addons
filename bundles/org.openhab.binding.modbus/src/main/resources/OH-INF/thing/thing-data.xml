@@ -44,9 +44,10 @@
 				<label>Read Transform</label>
 				<description><![CDATA[Transformation to apply to polled data, after it has been converted to number using readValueType
 	<br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.
-	<br />Use SERVICENAME(ARG) to use transformation service.
+	<br />Use SERVICENAME(ARG) or SERVICENAME:ARG to use transformation service.
 	<br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled
-		value is ignored.]]></description>
+		value is ignored.
+	<br />You can chain many transformations with ∩, for example SERVICE1:ARG1∩SERVICE2:ARG2]]></description>
 				<default>default</default>
 			</parameter>
 			<parameter name="readValueType" type="text">
@@ -97,8 +98,9 @@
 				<label>Write Transform</label>
 				<description><![CDATA[Transformation to apply to received commands.
 	<br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.
-	<br />Use SERVICENAME(ARG) to use transformation service.
+	<br />Use SERVICENAME(ARG) or SERVICENAME:ARG to use transformation service.
 	<br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command
+	<br />You can chain many transformations with ∩, for example SERVICE1:ARG1∩SERVICE2:ARG2
 	value is ignored.]]></description>
 				<default>default</default>
 			</parameter>

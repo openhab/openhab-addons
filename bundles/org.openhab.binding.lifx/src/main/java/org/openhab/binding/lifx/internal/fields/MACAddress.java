@@ -12,30 +12,23 @@
  */
 package org.openhab.binding.lifx.internal.fields;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.util.HexUtils;
 
 /**
- * @author Tim Buckley
- * @author Karel Goderis
+ * @author Tim Buckley - Initial contribution
+ * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
 public class MACAddress {
 
-    public static final MACAddress BROADCAST_ADDRESS = new MACAddress("000000000000", true);
-
-    private final Logger logger = LoggerFactory.getLogger(MACAddress.class);
+    public static final MACAddress BROADCAST_ADDRESS = new MACAddress("000000000000");
 
     private ByteBuffer bytes;
     private String hex = "";
@@ -54,28 +47,10 @@ public class MACAddress {
         createHex();
     }
 
-    public MACAddress(String string, boolean isHex) {
-        if (!isHex) {
-            this.bytes = ByteBuffer.wrap(string.getBytes());
-            createHex();
-        } else {
-            this.bytes = ByteBuffer.wrap(parseHexBinary(string));
-
-            try {
-                formatHex(string, 2, ":");
-            } catch (IOException e) {
-                logger.error("An exception occurred while formatting an HEX string : '{}'", e.getMessage());
-            }
-        }
-    }
-
-    private byte[] parseHexBinary(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
+    public MACAddress(String string) {
+        byte[] byteArray = HexUtils.hexToBytes(string);
+        this.bytes = ByteBuffer.wrap(byteArray);
+        this.hex = HexUtils.bytesToHex(byteArray, ":");
     }
 
     public MACAddress() {
@@ -90,7 +65,7 @@ public class MACAddress {
             byteStrings.add(String.format("%02X", bytes.get()));
         }
 
-        hex = StringUtils.join(byteStrings, ':');
+        hex = String.join(":", byteStrings);
 
         bytes.rewind();
     }
@@ -106,21 +81,6 @@ public class MACAddress {
         bytes.rewind();
 
         return hex.toString();
-    }
-
-    private void formatHex(String original, int length, String separator) throws IOException {
-        ByteArrayInputStream bis = new ByteArrayInputStream(original.getBytes());
-        byte[] buffer = new byte[length];
-        String result = "";
-        while (bis.read(buffer) > 0) {
-            for (byte b : buffer) {
-                result += (char) b;
-            }
-            Arrays.fill(buffer, (byte) 0);
-            result += separator;
-        }
-
-        hex = StringUtils.left(result, result.length() - 1);
     }
 
     @Override

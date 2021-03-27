@@ -173,13 +173,13 @@
 		<getAction name="GetCommonLinkProperties" argument="NewLayer1UpstreamMaxBitRate"/>
 	</channel>
 	<channel name="wanTotalBytesReceived" label="Total Bytes Received">
-		<item type="Number:DataAmount" unit="B" statePattern="%.3f Gio"/>
+		<item type="Number:DataAmount" unit="B" statePattern="%.3f GB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANCIfConfig-com:serviceId:WANCommonInterfaceConfig1"/>
 		<getAction name="GetTotalBytesReceived" argument="NewTotalBytesReceived"/>
 	</channel>
 	<channel name="wanTotalBytesSent" label="Total Bytes Sent">
-		<item type="Number:DataAmount" unit="B" statePattern="%.3f Gio"/>
+		<item type="Number:DataAmount" unit="B" statePattern="%.3f GB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANCIfConfig-com:serviceId:WANCommonInterfaceConfig1"/>
 		<getAction name="GetTotalBytesSent" argument="NewTotalBytesSent"/>

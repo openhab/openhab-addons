@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.io.neeo.NeeoService;
@@ -84,14 +83,14 @@ public class ThingDashboardService extends DefaultServletService {
      */
     @Override
     public boolean canHandleRoute(String[] paths) {
-        return paths.length >= 1 && (StringUtils.equalsIgnoreCase(paths[0], "thingstatus")
-                || StringUtils.equalsIgnoreCase(paths[0], "getchannel")
-                || StringUtils.equalsIgnoreCase(paths[0], "getvirtualdevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "restoredevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "refreshdevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "deletedevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "exportrules")
-                || StringUtils.equalsIgnoreCase(paths[0], "updatedevice"));
+        return paths.length >= 1 && (paths[0].equalsIgnoreCase("thingstatus") //
+                || paths[0].equalsIgnoreCase("getchannel") //
+                || paths[0].equalsIgnoreCase("getvirtualdevice") //
+                || paths[0].equalsIgnoreCase("restoredevice") //
+                || paths[0].equalsIgnoreCase("refreshdevice") //
+                || paths[0].equalsIgnoreCase("deletedevice") //
+                || paths[0].equalsIgnoreCase("exportrules") //
+                || paths[0].equalsIgnoreCase("updatedevice"));
     }
 
     /**
@@ -106,10 +105,10 @@ public class ThingDashboardService extends DefaultServletService {
         Objects.requireNonNull(resp, "resp cannot be null");
 
         try {
-            if (StringUtils.equalsIgnoreCase(paths[0], "thingstatus")) {
+            if (paths[0].equalsIgnoreCase("thingstatus")) {
                 final List<NeeoDevice> devices = context.getDefinitions().getAllDevices();
                 NeeoUtil.write(resp, gson.toJson(devices));
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "getchannel")) {
+            } else if (paths[0].equalsIgnoreCase("getchannel")) {
                 final String itemName = NeeoUtil.decodeURIComponent(req.getParameter("itemname"));
                 final List<NeeoDeviceChannel> channels = context.getDefinitions().getNeeoDeviceChannel(itemName);
                 if (channels == null) {
@@ -117,13 +116,13 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(channels)));
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "getvirtualdevice")) {
+            } else if (paths[0].equalsIgnoreCase("getvirtualdevice")) {
                 final NeeoThingUID uid = context.generate(NeeoConstants.VIRTUAL_THING_TYPE);
                 final NeeoDevice device = new NeeoDevice(uid, 0, NeeoDeviceType.EXCLUDE, "NEEO Integration",
                         "New Virtual Thing", new ArrayList<>(), null, null, null, null);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
             } else {
-                logger.debug("Unknown get path: {}", StringUtils.join(paths, ','));
+                logger.debug("Unknown get path: {}", String.join(",", paths));
             }
         } catch (JsonParseException | IllegalArgumentException | NullPointerException e) {
             logger.debug("Exception handling get: {}", e.getMessage(), e);
@@ -146,7 +145,7 @@ public class ThingDashboardService extends DefaultServletService {
         }
 
         try {
-            if (StringUtils.equalsIgnoreCase(paths[0], "updatedevice")) {
+            if (paths[0].equalsIgnoreCase("updatedevice")) {
                 final NeeoDevice device = gson.fromJson(req.getReader(), NeeoDevice.class);
                 context.getDefinitions().put(device);
 
@@ -155,7 +154,7 @@ public class ThingDashboardService extends DefaultServletService {
                 }
 
                 NeeoUtil.write(resp, gson.toJson(ReturnStatus.SUCCESS));
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "restoredevice")) {
+            } else if (paths[0].equalsIgnoreCase("restoredevice")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
                 context.getDefinitions().remove(uid);
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
@@ -164,7 +163,7 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "refreshdevice")) {
+            } else if (paths[0].equalsIgnoreCase("refreshdevice")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
@@ -172,12 +171,12 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "deletedevice")) {
+            } else if (paths[0].equalsIgnoreCase("deletedevice")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
                 final boolean deleted = context.getDefinitions().remove(uid);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(
                         deleted ? null : "Device " + uid + " was not found (possibly already deleted?)")));
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "exportrules")) {
+            } else if (paths[0].equalsIgnoreCase("exportrules")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
@@ -186,7 +185,7 @@ public class ThingDashboardService extends DefaultServletService {
                     writeExampleRules(resp, device);
                 }
             } else {
-                logger.debug("Unknown post path: {}", StringUtils.join(paths, ','));
+                logger.debug("Unknown post path: {}", String.join(",", paths));
             }
         } catch (JsonParseException | IllegalArgumentException | NullPointerException e) {
             logger.debug("Exception handling post: {}", e.getMessage(), e);

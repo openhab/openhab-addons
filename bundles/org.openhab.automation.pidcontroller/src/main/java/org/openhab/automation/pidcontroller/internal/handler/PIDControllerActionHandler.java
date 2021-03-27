@@ -12,17 +12,17 @@
  */
 package org.openhab.automation.pidcontroller.internal.handler;
 
-import static org.openhab.automation.pidcontroller.internal.PIDControllerConstants.*;
+import static org.openhab.automation.pidcontroller.internal.PIDControllerConstants.AUTOMATION_NAME;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.handler.ActionHandler;
 import org.openhab.core.automation.handler.BaseModuleHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.events.ItemCommandEvent;
@@ -53,16 +53,22 @@ public class PIDControllerActionHandler extends BaseModuleHandler<Action> implem
 
     @Override
     public @Nullable Map<String, Object> execute(Map<String, Object> context) {
-        Stream.of(OUTPUT, P_INSPECTOR, I_INSPECTOR, D_INSPECTOR, E_INSPECTOR).forEach(arg -> {
-            final String itemName = (String) module.getConfiguration().get(arg);
+        final Configuration configuration = module.getConfiguration();
+
+        context.forEach((k, v) -> {
+            // Remove triggername from key to get raw trigger param
+            String itemKey = k.substring(k.lastIndexOf('.') + 1);
+            String itemName = (String) configuration.get(itemKey);
 
             if (itemName == null || itemName.isBlank()) {
-                return;
+                // try original key name (<triggername>.<trigger_param>)
+                itemName = (String) configuration.get(k);
+                if (itemName == null || itemName.isBlank()) {
+                    return;
+                }
             }
-
-            final BigDecimal command = (BigDecimal) context.get("1." + arg);
-
-            if (command != null) {
+            if (v instanceof BigDecimal) {
+                final BigDecimal command = (BigDecimal) v;
                 final DecimalType outputValue = new DecimalType(command);
                 final ItemCommandEvent itemCommandEvent = ItemEventFactory.createCommandEvent(itemName, outputValue);
 
@@ -70,7 +76,7 @@ public class PIDControllerActionHandler extends BaseModuleHandler<Action> implem
             } else {
                 logger.warn(
                         "Command was not posted because either the configuration was not correct or a service was missing: ItemName: {}, Command: {}, eventPublisher: {}, ItemRegistry: {}",
-                        itemName, command, eventPublisher, itemRegistry);
+                        itemName, v, eventPublisher, itemRegistry);
             }
         });
         return null;

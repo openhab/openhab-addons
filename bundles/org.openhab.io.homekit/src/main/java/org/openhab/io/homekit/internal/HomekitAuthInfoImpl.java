@@ -58,7 +58,10 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     @Override
     public void createUser(String username, byte[] publicKey) {
         logger.trace("Create user {}", username);
-        storage.put(createUserKey(username), Base64.getEncoder().encodeToString(publicKey));
+        final String userKey = createUserKey(username);
+        final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey);
+        storage.put(userKey, encodedPublicKey);
+        logger.trace("Stored user key {} with value {}", userKey, encodedPublicKey);
     }
 
     @Override

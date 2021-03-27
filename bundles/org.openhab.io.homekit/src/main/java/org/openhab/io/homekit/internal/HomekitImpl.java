@@ -23,11 +23,14 @@ import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.jmdns.JmDNS;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.net.NetworkAddressService;
@@ -69,6 +72,8 @@ public class HomekitImpl implements Homekit {
     private @Nullable InetAddress networkInterface;
     private @Nullable HomekitServer homekitServer;
     private @Nullable HomekitRoot bridge;
+    private MDNSClient mdnsClient;
+
     private final HomekitChangeListener changeListener;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
@@ -77,11 +82,12 @@ public class HomekitImpl implements Homekit {
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
             @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
-            @Reference ConfigurationAdmin configAdmin, Map<String, Object> properties)
+            @Reference ConfigurationAdmin configAdmin, @Reference MDNSClient mdnsClient, Map<String, Object> properties)
             throws IOException, InvalidAlgorithmParameterException {
         this.networkAddressService = networkAddressService;
         this.configAdmin = configAdmin;
         this.settings = processConfig(properties);
+        this.mdnsClient = mdnsClient;
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
         try {
             authInfo = new HomekitAuthInfoImpl(storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY), settings.pin,
@@ -139,7 +145,8 @@ public class HomekitImpl implements Homekit {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
             changeListener.updateSettings(settings);
-            if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port) {
+            if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port
+                    || oldSettings.useOHmDNS != settings.useOHmDNS) {
                 // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
                 startHomekitServer();
@@ -199,8 +206,29 @@ public class HomekitImpl implements Homekit {
 
     private void startHomekitServer() throws IOException {
         if (homekitServer == null) {
-            networkInterface = InetAddress.getByName(settings.networkInterface);
-            homekitServer = new HomekitServer(networkInterface, settings.port);
+            if (settings.useOHmDNS) {
+                if ((settings.networkInterface == null) || (settings.networkInterface.isEmpty())) {
+                    logger.trace(
+                            "No IP address configured in HomeKit settings. HomeKit will use the first configured address of openHAB");
+                    homekitServer = new HomekitServer(mdnsClient.getClientInstances().iterator().next(), settings.port);
+                } else {
+                    networkInterface = InetAddress.getByName(settings.networkInterface);
+                    for (JmDNS mdns : mdnsClient.getClientInstances()) {
+                        if (mdns.getInetAddress().equals(networkInterface)) {
+                            logger.trace("Suitable mDNS client for IP {} found and will be used for HomeKit",
+                                    networkInterface);
+                            homekitServer = new HomekitServer(mdns, settings.port);
+                        }
+                    }
+                }
+            }
+            if (homekitServer == null) {
+                if (settings.useOHmDNS) {
+                    logger.trace("Not suitable mDNS server for IP {} found", networkInterface);
+                }
+                logger.trace("Create HomeKit server with dedicated mDNS server");
+                homekitServer = new HomekitServer(networkInterface, settings.port);
+            }
             startBridge();
         } else {
             logger.warn("trying to start HomeKit server but it is already initialized");

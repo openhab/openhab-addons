@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.servlet.ServletException;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.binding.BindingInfoRegistry;
@@ -375,8 +374,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
      * @param brainId the non-empty brain id
      * @return the servlet for the brainId or null if none
      */
-    @Nullable
-    public NeeoBrainServlet getServlet(String brainId) {
+    public @Nullable NeeoBrainServlet getServlet(String brainId) {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
 
         final String url = NeeoUtil.getServletUrl(brainId);
@@ -389,11 +387,10 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
      * @param servletUrl a non-null, non-empty servlet URL
      * @return the servlet for the URL or null if not found
      */
-    @Nullable
-    private NeeoBrainServlet getServletByUrl(String servletUrl) {
+    private @Nullable NeeoBrainServlet getServletByUrl(String servletUrl) {
         NeeoUtil.requireNotEmpty(servletUrl, "ServletURL cannot be empty");
         for (NeeoBrainServlet servlet : servlets) {
-            if (StringUtils.equalsIgnoreCase(servletUrl, servlet.getServletUrl())) {
+            if (servletUrl.equalsIgnoreCase(servlet.getServletUrl())) {
                 return servlet;
             }
         }
@@ -410,9 +407,8 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         return Collections.singleton(ItemStateChangedEvent.TYPE);
     }
 
-    @Nullable
     @Override
-    public EventFilter getEventFilter() {
+    public @Nullable EventFilter getEventFilter() {
         return eventFilter;
     }
 

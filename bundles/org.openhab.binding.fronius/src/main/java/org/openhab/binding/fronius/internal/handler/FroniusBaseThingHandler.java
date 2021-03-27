@@ -200,7 +200,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             }
         } catch (JsonSyntaxException e) {
             errorMsg = "Invalid JSON data received";
-            logger.debug("Error running fronius request: {}", errorMsg);
+            logger.debug("Error running fronius request: {}", e.getMessage());
         } catch (IOException | IllegalStateException e) {
             errorMsg = e.getMessage();
             logger.debug("Error running fronius request: {}", errorMsg);

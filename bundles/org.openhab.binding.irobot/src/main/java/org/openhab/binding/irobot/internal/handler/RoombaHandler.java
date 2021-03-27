@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,6 +66,7 @@ import com.google.gson.stream.JsonReader;
  *
  * @author hkuhn42 - Initial contribution
  * @author Pavel Fedin - Rewrite for 900 series
+ * @author Florian Binder - added cleanRegions command and lastCommand channel
  */
 @NonNullByDefault
 public class RoombaHandler extends BaseThingHandler implements MqttConnectionObserver, MqttMessageSubscriber {
@@ -128,7 +130,24 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
                     cmd = isPaused ? "resume" : "start";
                 }
 
-                sendRequest(new MQTTProtocol.CommandRequest(cmd));
+                if (cmd.startsWith(CMD_CLEAN_REGIONS)) {
+                    // format: cleanRegions:<pmid>;<region_id1>,<region_id2>,...
+                    if (Pattern.matches("cleanRegions:[^:;,]+;.+(,[^:;,]+)*", cmd)) {
+                        String[] cmds = cmd.split(":");
+                        String[] params = cmds[1].split(";");
+
+                        String mapId = params[0];
+                        String[] regionIds = params[1].split(",");
+
+                        sendRequest(new MQTTProtocol.CleanRoomsRequest("start", mapId, regionIds));
+                    } else {
+                        logger.warn("Invalid request: {}", cmd);
+                        logger.warn("Correct format: cleanRegions:<pmid>;<region_id1>,<region_id2>,...>");
+                    }
+                } else {
+                    sendRequest(new MQTTProtocol.CommandRequest(cmd));
+                }
+
             }
         } else if (ch.startsWith(CHANNEL_SCHED_SWITCH_PREFIX)) {
             MQTTProtocol.Schedule schedule = lastSchedule;
@@ -169,6 +188,10 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
             sendDelta(new MQTTProtocol.PowerBoost(command.equals(BOOST_AUTO), command.equals(BOOST_PERFORMANCE)));
         } else if (ch.equals(CHANNEL_CLEAN_PASSES)) {
             sendDelta(new MQTTProtocol.CleanPasses(!command.equals(PASSES_AUTO), command.equals(PASSES_2)));
+        } else if (ch.equals(CHANNEL_MAP_UPLOAD)) {
+            if (command instanceof OnOffType) {
+                sendDelta(new MQTTProtocol.MapUploadAllowed(command.equals(OnOffType.ON)));
+            }
         }
     }
 
@@ -489,12 +512,34 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
             }
         }
 
+        if (reported.lastCommand != null) {
+            reportString(CHANNEL_LAST_COMMAND, reported.lastCommand.toString());
+        }
+
+        if (reported.mapUploadAllowed != null) {
+            reportSwitch(CHANNEL_MAP_UPLOAD, reported.mapUploadAllowed);
+        }
+
         reportProperty(Thing.PROPERTY_FIRMWARE_VERSION, reported.softwareVer);
         reportProperty("navSwVer", reported.navSwVer);
         reportProperty("wifiSwVer", reported.wifiSwVer);
         reportProperty("mobilityVer", reported.mobilityVer);
         reportProperty("bootloaderVer", reported.bootloaderVer);
         reportProperty("umiVer", reported.umiVer);
+        reportProperty("sku", reported.sku);
+        reportProperty("batteryType", reported.batteryType);
+
+        if (reported.subModSwVer != null) {
+            // This is used by i7 model. It has more capabilities, perhaps a dedicated
+            // handler should be written by someone who owns it.
+            reportProperty("subModSwVer.nav", reported.subModSwVer.nav);
+            reportProperty("subModSwVer.mob", reported.subModSwVer.mob);
+            reportProperty("subModSwVer.pwr", reported.subModSwVer.pwr);
+            reportProperty("subModSwVer.sft", reported.subModSwVer.sft);
+            reportProperty("subModSwVer.mobBtl", reported.subModSwVer.mobBtl);
+            reportProperty("subModSwVer.linux", reported.subModSwVer.linux);
+            reportProperty("subModSwVer.con", reported.subModSwVer.con);
+        }
     }
 
     private void reportVacHigh() {

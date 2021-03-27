@@ -41,7 +41,7 @@ public class Iammeter3080THandler extends IammeterBaseHandler {
     @SuppressWarnings("null")
     @Override
     protected void resolveData(String response) {
-        JsonElement iammeterDataElement = new JsonParser().parse(response);
+        JsonElement iammeterDataElement = JsonParser.parseString(response);
         JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
         String keyWord = "Datas";
         if (iammeterData.has("Datas") && iammeterData.has("SN")) {

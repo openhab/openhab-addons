@@ -14,7 +14,7 @@ package org.openhab.binding.russound.internal.rio.models;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Simple model of a RIO Bank and it's attributes. Please note this class is used to serialize/deserialize to JSON.
@@ -50,12 +50,12 @@ public class RioBank {
      * @param name a possibly null, possibly empty bank name (null or empty will result in a bank name of "Bank "+ id)
      * @throws IllegalArgumentException if id is < 1 or > 6
      */
-    public RioBank(int id, String name) {
+    public RioBank(int id, @Nullable String name) {
         if (id < 1 || id > 6) {
             throw new IllegalArgumentException("Bank ID can only be between 1 and 6");
         }
         this.id = id;
-        this.name.set(StringUtils.isEmpty(name) ? "Bank " + id : name);
+        this.name.set(name == null || name.isEmpty() ? "Bank " + id : name);
     }
 
     /**
@@ -81,7 +81,7 @@ public class RioBank {
      *
      * @param bankName a possibly null, possibly empty bank name
      */
-    public void setName(String bankName) {
-        name.set(StringUtils.isEmpty(bankName) ? "Bank " + getId() : bankName);
+    public void setName(@Nullable String bankName) {
+        name.set(bankName == null || bankName.isEmpty() ? "Bank " + getId() : bankName);
     }
 }

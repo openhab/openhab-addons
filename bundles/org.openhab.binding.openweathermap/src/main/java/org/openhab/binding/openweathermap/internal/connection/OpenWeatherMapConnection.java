@@ -100,7 +100,6 @@ public class OpenWeatherMapConnection {
     private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.openweathermap");
     private final ExpiringCacheMap<String, String> cache;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson gson = new Gson();
 
     public OpenWeatherMapConnection(OpenWeatherMapAPIHandler handler, HttpClient httpClient) {
@@ -408,7 +407,7 @@ public class OpenWeatherMapConnection {
     }
 
     private String getErrorMessage(String response) {
-        JsonElement jsonResponse = parser.parse(response);
+        JsonElement jsonResponse = JsonParser.parseString(response);
         if (jsonResponse.isJsonObject()) {
             JsonObject json = jsonResponse.getAsJsonObject();
             if (json.has(PROPERTY_MESSAGE)) {

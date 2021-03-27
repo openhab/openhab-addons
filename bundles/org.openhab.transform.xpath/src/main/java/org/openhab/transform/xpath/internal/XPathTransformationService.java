@@ -55,6 +55,12 @@ public class XPathTransformationService implements TransformationService {
 
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            domFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            domFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            domFactory.setXIncludeAware(false);
+            domFactory.setExpandEntityReferences(false);
             domFactory.setNamespaceAware(true);
             domFactory.setValidating(false);
             DocumentBuilder builder = domFactory.newDocumentBuilder();

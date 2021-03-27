@@ -199,7 +199,7 @@ class BlueGigaResponsePackets {
             return bleFrame;
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException e) {
-            logger.error("Error instantiating BLE class", e);
+            logger.debug("Error instantiating BLE class", e);
         }
 
         return null;

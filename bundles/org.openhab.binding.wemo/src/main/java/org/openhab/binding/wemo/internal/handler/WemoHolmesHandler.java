@@ -29,8 +29,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
@@ -359,6 +359,13 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     stringParser = "<data>" + stringParser + "</data>";
 
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    // see
+                    // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                    dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                    dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    dbf.setXIncludeAware(false);
+                    dbf.setExpandEntityReferences(false);
                     DocumentBuilder db = dbf.newDocumentBuilder();
                     InputSource is = new InputSource();
                     is.setCharacterStream(new StringReader(stringParser));

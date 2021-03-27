@@ -60,6 +60,30 @@
 		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="controlsetpoint2">
+		<item-type>Number:Temperature</item-type>
+		<label>Control Setpoint 2</label>
+		<description>Central heating 2 water setpoint set at boiler</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="controlsetpoint2requested">
+		<item-type>Number:Temperature</item-type>
+		<label>Control Setpoint 2 Requested</label>
+		<description>Central heating 2 water setpoint requested by Thermostat</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="controlsetpoint2override">
+		<item-type>Number:Temperature</item-type>
+		<label>Control Setpoint 2 Override</label>
+		<description>Central heating 2 water setpoint configured on OTGW</description>
+		<category>Temperature</category>
+		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="dhwtemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Temperature</label>
@@ -133,6 +157,28 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating Overridden</label>
 		<description>Central heating enabled overridden at OTGW</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="ch2_enable">
+		<item-type>Switch</item-type>
+		<label>Central Heating 2 Enabled</label>
+		<description>Central heating 2 enabled set at boiler</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ch2_enablerequested">
+		<item-type>Switch</item-type>
+		<label>Central Heating 2 Enabled Thermostat</label>
+		<description>Central heating 2 enabled requested by thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ch2_enableoverride">
+		<item-type>Switch</item-type>
+		<label>Central Heating 2 Overridden</label>
+		<description>Central heating 2 enabled overridden at OTGW</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="ch_mode">

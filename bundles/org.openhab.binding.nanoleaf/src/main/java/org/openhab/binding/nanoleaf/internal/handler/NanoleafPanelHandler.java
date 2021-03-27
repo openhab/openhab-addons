@@ -15,11 +15,11 @@ package org.openhab.binding.nanoleaf.internal.handler;
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,13 +28,21 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.nanoleaf.internal.*;
+import org.openhab.binding.nanoleaf.internal.NanoleafBadRequestException;
+import org.openhab.binding.nanoleaf.internal.NanoleafException;
+import org.openhab.binding.nanoleaf.internal.NanoleafNotFoundException;
+import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
+import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.openhab.binding.nanoleaf.internal.model.Effects;
 import org.openhab.binding.nanoleaf.internal.model.Write;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -165,8 +173,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     private void sendRenderedEffectCommand(Command command) throws NanoleafException {
         logger.debug("Command Type: {}", command.getClass());
         HSBType currentPanelColor = getPanelColor();
-        if (currentPanelColor != null)
+        if (currentPanelColor != null) {
             logger.debug("currentPanelColor: {}", currentPanelColor.toString());
+        }
         HSBType newPanelColor = new HSBType();
 
         if (command instanceof HSBType) {
@@ -205,11 +214,11 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         // transform to RGB
         PercentType[] rgbPercent = newPanelColor.toRGB();
         logger.trace("Setting new rgbpercent {} {} {}", rgbPercent[0], rgbPercent[1], rgbPercent[2]);
-        int red = rgbPercent[0].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
+        int red = rgbPercent[0].toBigDecimal().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(255)).intValue();
-        int green = rgbPercent[1].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
+        int green = rgbPercent[1].toBigDecimal().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(255)).intValue();
-        int blue = rgbPercent[2].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
+        int blue = rgbPercent[2].toBigDecimal().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(255)).intValue();
         logger.trace("Setting new rgb {} {} {}", red, green, blue);
         Bridge bridge = getBridge();
@@ -253,8 +262,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         @Nullable
         HSBType panelColor = getPanelColor();
         logger.trace("updatePanelColorChannel: panelColor: {}", panelColor);
-        if (panelColor != null)
+        if (panelColor != null) {
             updateState(CHANNEL_PANEL_COLOR, panelColor);
+        }
     }
 
     /**
@@ -265,26 +275,12 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     public void updatePanelGesture(int gesture) {
         switch (gesture) {
             case 0:
-                updateState(CHANNEL_PANEL_SINGLE_TAP, OnOffType.ON);
-                singleTapJob = scheduler.schedule(this::resetSingleTap, 1, TimeUnit.SECONDS);
-                logger.debug("Asserting single tap of panel {} to ON", getPanelID());
+                triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.SHORT_PRESSED);
                 break;
             case 1:
-                updateState(CHANNEL_PANEL_DOUBLE_TAP, OnOffType.ON);
-                doubleTapJob = scheduler.schedule(this::resetDoubleTap, 1, TimeUnit.SECONDS);
-                logger.debug("Asserting double tap of panel {} to ON", getPanelID());
+                triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.DOUBLE_PRESSED);
                 break;
         }
-    }
-
-    private void resetSingleTap() {
-        updateState(CHANNEL_PANEL_SINGLE_TAP, OnOffType.OFF);
-        logger.debug("Resetting single tap of panel {} to OFF", getPanelID());
-    }
-
-    private void resetDoubleTap() {
-        updateState(CHANNEL_PANEL_DOUBLE_TAP, OnOffType.OFF);
-        logger.debug("Resetting double tap of panel {} to OFF", getPanelID());
     }
 
     public String getPanelID() {
@@ -318,7 +314,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 }
             }
         } catch (NanoleafNotFoundException nfe) {
-            logger.warn("Panel data could not be retrieved as no data was returned (static type missing?) : {}",
+            logger.debug("Panel data could not be retrieved as no data was returned (static type missing?) : {}",
                     nfe.getMessage());
         } catch (NanoleafBadRequestException nfe) {
             logger.debug(
@@ -327,7 +323,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         } catch (NanoleafException nue) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.panel.communication");
-            logger.warn("Panel data could not be retrieved: {}", nue.getMessage());
+            logger.debug("Panel data could not be retrieved: {}", nue.getMessage());
         }
 
         return panelInfo.get(panelID);

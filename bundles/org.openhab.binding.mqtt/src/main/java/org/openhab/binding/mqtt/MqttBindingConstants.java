@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class MqttBindingConstants {
-    private static final String BINDING_ID = "mqtt";
+    public static final String BINDING_ID = "mqtt";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_SYSTEMBROKER = new ThingTypeUID(BINDING_ID, "systemBroker");

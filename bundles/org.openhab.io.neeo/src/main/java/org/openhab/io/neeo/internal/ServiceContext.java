@@ -15,7 +15,7 @@ package org.openhab.io.neeo.internal;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.binding.BindingInfoRegistry;
 import org.openhab.core.events.EventPublisher;

@@ -34,6 +34,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,12 +114,20 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                setAllChannelsOffline();
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             logger.debug("Set handler status to OFFLINE for thing {}", getThing().getUID());
         }
+    }
+
+    /**
+     * Update all channels to an UNDEF state to indicate that the bridge is offline
+     */
+    private synchronized void setAllChannelsOffline() {
+        getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
 
     @Override

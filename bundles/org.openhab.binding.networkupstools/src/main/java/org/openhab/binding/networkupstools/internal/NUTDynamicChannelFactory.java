@@ -42,7 +42,7 @@ class NUTDynamicChannelFactory {
 
     private final NUTChannelTypeProvider channelTypeProvider;
 
-    public NUTDynamicChannelFactory(final NUTChannelTypeProvider channelTypeProvider) {
+    NUTDynamicChannelFactory(final NUTChannelTypeProvider channelTypeProvider) {
         this.channelTypeProvider = channelTypeProvider;
     }
 

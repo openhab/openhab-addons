@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.oppo.internal.communication;
 
+import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +40,8 @@ public abstract class OppoConnector {
     private static final Pattern QRY_PATTERN = Pattern.compile("^@(Q[A-Z0-9]{2}|VUP|VDN) OK (.*)$");
     private static final Pattern STUS_PATTERN = Pattern.compile("^@(U[A-Z0-9]{2}) (.*)$");
 
+    private static final String OK_ON = "@OK ON";
+    private static final String OK_OFF = "@OK OFF";
     private static final String NOP_OK = "@NOP OK";
     private static final String NOP = "NOP";
     private static final String OK = "OK";
@@ -246,6 +250,17 @@ public abstract class OppoConnector {
 
         if (NOP_OK.equals(message)) {
             dispatchKeyValue(NOP, OK);
+            return;
+        }
+
+        // Before verbose mode 2 & 3 get set, these are the responses to QPW
+        if (OK_ON.equals(message)) {
+            dispatchKeyValue(QPW, ON);
+            return;
+        }
+
+        if (OK_OFF.equals(message)) {
+            dispatchKeyValue(QPW, OFF);
             return;
         }
 

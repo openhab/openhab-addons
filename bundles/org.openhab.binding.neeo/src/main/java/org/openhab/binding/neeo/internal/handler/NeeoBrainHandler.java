@@ -46,7 +46,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -187,22 +186,16 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             addProperty(properties, "Last Change", String.valueOf(brain.getLastChange()));
             updateProperties(properties);
 
-            String forwardChain = config.getForwardChain();
-            if (config.isEnableForwardActions() && forwardChain != null && !forwardChain.isEmpty()) {
+            if (config.isEnableForwardActions()) {
                 NeeoUtil.checkInterrupt();
 
                 forwardActionServlet = new NeeoForwardActionsServlet(scheduler, json -> {
                     triggerChannel(NeeoConstants.CHANNEL_BRAIN_FOWARDACTIONS, json);
 
                     final NeeoAction action = Objects.requireNonNull(gson.fromJson(json, NeeoAction.class));
-
-                    for (final Thing child : getThing().getThings()) {
-                        final ThingHandler th = child.getHandler();
-                        if (th instanceof NeeoRoomHandler) {
-                            ((NeeoRoomHandler) th).processAction(action);
-                        }
-                    }
-                }, forwardChain, clientBuilder);
+                    getThing().getThings().stream().map(Thing::getHandler).filter(NeeoRoomHandler.class::isInstance)
+                            .forEach(h -> ((NeeoRoomHandler) h).processAction(action));
+                }, config.getForwardChain(), clientBuilder);
 
                 NeeoUtil.checkInterrupt();
                 try {

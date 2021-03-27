@@ -42,11 +42,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
-    private LocationProvider locationProvider;
-    private final StationDB stationDB;
+
+    private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerDiscoveryService.class);
     private final Map<Integer, Double> distances = new HashMap<>();
+    private final LocationProvider locationProvider;
+    private final StationDB stationDB;
 
     /**
      * Creates a SynopAnalyzerDiscoveryService with enabled autostart.
@@ -84,8 +85,8 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
 
         Integer nearestId = result.entrySet().iterator().next().getKey();
         Optional<Station> station = stationDB.stations.stream().filter(s -> s.idOmm == nearestId).findFirst();
-        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_SYNOP, Integer.toString(nearestId)))
-                .withLabel("Synop : " + station.get().usualName)
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_SYNOP, nearestId.toString()))
+                .withLabel(String.format("Synop : %s", station.get().usualName))
                 .withProperty(SynopAnalyzerConfiguration.STATION_ID, nearestId)
                 .withRepresentationProperty(SynopAnalyzerConfiguration.STATION_ID).build());
     }

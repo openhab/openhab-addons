@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
@@ -54,8 +53,8 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
     }
 
     private boolean isHomeassistantDynamicType(ThingTypeUID thingTypeUID) {
-        return StringUtils.equals(MqttBindingConstants.BINDING_ID, thingTypeUID.getBindingId())
-                && StringUtils.startsWith(thingTypeUID.getId(), MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId());
+        return MqttBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId())
+                && thingTypeUID.getId().startsWith(MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId());
     }
 
     @Activate

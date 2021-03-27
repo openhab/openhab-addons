@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -35,11 +36,12 @@ import org.openhab.core.types.UnDefType;
  * @author Hilbrand Bouwkamp - Initial contribution
  * @see https://github.com/networkupstools/nut/blob/master/docs/nut-names.txt
  */
+@NonNullByDefault
 enum NutName {
     // UPS
     UPS_ALARM("upsAlarm", "ups.alarm", StringType.class),
     UPS_LOAD("upsLoad", "ups.load", Units.PERCENT),
-    UPS_POWER("upsPower", "ups.power", NUTBindingConstants.VOLT_AMPERE),
+    UPS_POWER("upsPower", "ups.power", Units.VOLT_AMPERE),
     UPS_REALPOWER("upsRealpower", "ups.realpower", Units.WATT),
     UPS_STATUS("upsStatus", "ups.status", StringType.class),
     UPS_TEMPERATURE("upsTemperature", "ups.temperature", SIUnits.CELSIUS),
@@ -64,13 +66,14 @@ enum NutName {
     BATTERY_RUNTIME("batteryRuntime", "battery.runtime", Units.SECOND),
     BATTERY_VOLTAGE("batteryVoltage", "battery.voltage", Units.VOLT);
 
-    private static final Map<String, NutName> NUT_NAME_MAP = Stream.of(NutName.values())
+    static final Map<String, NutName> NUT_NAME_MAP = Stream.of(NutName.values())
             .collect(Collectors.toMap(NutName::getChannelId, Function.identity()));
 
     private final String channelId;
     private final String name;
     private final Class<? extends State> stateClass;
-    private final Unit<?> unit;
+    // unit only as a value if using a QuantityType.
+    private final @NonNullByDefault({}) Unit<?> unit;
 
     NutName(final String channelId, final String name, final Class<? extends State> stateClass) {
         this(channelId, name, stateClass, null);
@@ -80,7 +83,8 @@ enum NutName {
         this(channelId, name, QuantityType.class, unit);
     }
 
-    NutName(final String channelId, final String name, final Class<? extends State> stateClass, final Unit<?> unit) {
+    NutName(final String channelId, final String name, final Class<? extends State> stateClass,
+            final @Nullable Unit<?> unit) {
         this.channelId = channelId;
         this.name = name;
         this.stateClass = stateClass;

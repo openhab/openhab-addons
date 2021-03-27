@@ -129,15 +129,14 @@ public class TiVoHandler extends BaseThingHandler {
         TivoStatusData commandResult = null;
         logger.debug("handleCommand '{}' - {} found!", getThing().getUID(), commandKeyword);
         // Re-write command keyword if we are in STANDBY, as only IRCODE TIVO will wake the unit from
-        // standby mode
+        // standby mode, otherwise just execute the commands
         if (deviceStatus.getConnectionStatus() == ConnectionStatus.STANDBY && commandKeyword.contentEquals("TELEPORT")
                 && commandParameter.contentEquals("TIVO")) {
             String command = "IRCODE " + commandParameter;
             logger.debug("TiVo '{}' TELEPORT re-mapped to IRCODE as we are in standby: '{}'", getThing().getUID(),
                     command);
-        }
-        // Execute command
-        if (commandKeyword.contentEquals("FORCECH") || commandKeyword.contentEquals("SETCH")) {
+            commandResult = tivoConnection.get().cmdTivoSend(command);
+        } else if (commandKeyword.contentEquals("FORCECH") || commandKeyword.contentEquals("SETCH")) {
             commandResult = chChannelChange(commandKeyword, commandParameter);
         } else {
             commandResult = tivoConnection.get().cmdTivoSend(commandKeyword + " " + commandParameter);

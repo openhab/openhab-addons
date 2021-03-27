@@ -55,9 +55,10 @@ import com.google.gson.Gson;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class,
+@Component(service = { ThingHandlerFactory.class, SmartthingsHubCommand.class,
         EventHandler.class }, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
-public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory, EventHandler {
+public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
+        implements ThingHandlerFactory, EventHandler, SmartthingsHubCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHandlerFactory.class);
 
@@ -194,5 +195,11 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
     @Nullable
     public SmartthingsBridgeHandler getBridgeHandler() {
         return bridgeHandler;
+    }
+
+    @Override
+    @Nullable
+    public ThingUID getBridgeUID() {
+        return bridgeHandler.getThing().getUID();
     }
 }

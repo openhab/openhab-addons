@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * The {@link MiIoAbstractHandler} is responsible for handling commands, which are
@@ -76,7 +75,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
-    protected final JsonParser parser = new JsonParser();
     protected byte[] token = new byte[0];
 
     protected @Nullable MiIoBindingConfiguration configuration;

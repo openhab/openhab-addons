@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ShellyBindingConfiguration} class contains fields mapping binding configuration parameters.
@@ -31,23 +32,25 @@ public class ShellyBindingConfiguration {
     // Binding Configuration Properties
     public static final String CONFIG_DEF_HTTP_USER = "defaultUserId";
     public static final String CONFIG_DEF_HTTP_PWD = "defaultPassword";
+    public static final String CONFIG_LOCAL_IP = "localIP";
     public static final String CONFIG_AUTOCOIOT = "autoCoIoT";
 
-    public String defaultUserId = ""; // default for http basic user id
-    public String defaultPassword = ""; // default for http basic auth password
+    public String defaultUserId = "admin"; // default for http basic user id
+    public String defaultPassword = "admin"; // default for http basic auth password
+    public String localIP = ""; // default:use OH network config
     public boolean autoCoIoT = true;
 
     public void updateFromProperties(Map<String, Object> properties) {
         for (Map.Entry<String, Object> e : properties.entrySet()) {
-            if (e.getValue() == null) {
-                continue;
-            }
             switch (e.getKey()) {
                 case CONFIG_DEF_HTTP_USER:
                     defaultUserId = (String) e.getValue();
                     break;
                 case CONFIG_DEF_HTTP_PWD:
                     defaultPassword = (String) e.getValue();
+                    break;
+                case CONFIG_LOCAL_IP:
+                    localIP = (String) e.getValue();
                     break;
                 case CONFIG_AUTOCOIOT:
                     autoCoIoT = (boolean) e.getValue();
@@ -57,7 +60,10 @@ public class ShellyBindingConfiguration {
         }
     }
 
-    public void updateFromProperties(Dictionary<String, Object> properties) {
+    public void updateFromProperties(@Nullable Dictionary<String, Object> properties) {
+        if (properties == null) { // saw this once
+            return;
+        }
         List<String> keys = Collections.list(properties.keys());
         Map<String, Object> dictCopy = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));
         updateFromProperties(dictCopy);

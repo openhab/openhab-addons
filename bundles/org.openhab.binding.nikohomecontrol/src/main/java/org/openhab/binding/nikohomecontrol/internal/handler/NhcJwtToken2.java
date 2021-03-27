@@ -14,17 +14,20 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link NhcJwtToken2} represents the Niko Home Control II hobby API token payload.
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 class NhcJwtToken2 {
-    String sub;
-    String iat;
-    String exp;
-    String aud;
-    String iss;
-    String jti;
-    List<String> role;
+    String sub = "";
+    String iat = "";
+    String exp = "";
+    String aud = "";
+    String iss = "";
+    String jti = "";
+    List<String> role = List.of();
 }

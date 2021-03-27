@@ -33,6 +33,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.magentatv.internal.MagentaTVDeviceManager;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEvent;
@@ -88,6 +89,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     private final Gson gson;
     protected final MagentaTVNetwork network;
     protected final MagentaTVDeviceManager manager;
+    private final HttpClient httpClient;
     protected MagentaTVControl control = new MagentaTVControl();
 
     private String thingId = "";
@@ -102,10 +104,12 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @param thing
      * @param bindingConfig
      */
-    public MagentaTVHandler(MagentaTVDeviceManager manager, Thing thing, MagentaTVNetwork network) {
+    public MagentaTVHandler(MagentaTVDeviceManager manager, Thing thing, MagentaTVNetwork network,
+            HttpClient httpClient) {
         super(thing);
         this.manager = manager;
         this.network = network;
+        this.httpClient = httpClient;
         gson = new GsonBuilder().registerTypeAdapter(OauthCredentials.class, new MRProgramInfoEventInstanceCreator())
                 .registerTypeAdapter(OAuthTokenResponse.class, new MRProgramStatusInstanceCreator())
                 .registerTypeAdapter(OAuthAuthenticateResponse.class, new MRShortProgramInfoInstanceCreator())
@@ -150,7 +154,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 }
                 config.setMacAddress(macAddress);
             }
-            control = new MagentaTVControl(config, network);
+            control = new MagentaTVControl(config, network, httpClient);
             config.updateNetwork(control.getConfig()); // get network parameters from control
 
             // Check for emoty credentials (e.g. missing in .things file)
@@ -185,7 +189,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     /**
-     * This routine is called every time the Thing configuration has been changed (e.g. PaperUI)
+     * This routine is called every time the Thing configuration has been changed
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {

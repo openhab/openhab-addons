@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pentair.internal.config;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Configuration parameters for IP Bridge

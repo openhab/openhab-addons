@@ -22,12 +22,25 @@ sudo raspi-config
 
 -> Interfacing Options --> Remote GPIO --> YES --> OK --> Finish
 
+Note: if you are setting this up on a Raspberry Pi without `raspi-config` you can create the service config file manually:
+
+```
+sudo mkdir -p /etc/systemd/system/pigpiod.service.d/
+sudo nano /etc/systemd/system/pigpiod.service.d/public.conf
+```
+      [Service]
+      ExecStart=
+      ExecStart=/usr/bin/pigpiod
+```
+sudo systemctl daemon-reload
+```
+Now that Remote GPIO is enabled, get the daemon going:
 ```
 sudo systemctl enable pigpiod 
 sudo systemctl start pigpiod
 ```
 
-Set `host` to the address of the pi and the `port` to the port of pigpio (default: 8888).
+In openHAB, set `host` to the address of the pi and the `port` to the port of pigpio (default: 8888).
 
 ## Channels
 

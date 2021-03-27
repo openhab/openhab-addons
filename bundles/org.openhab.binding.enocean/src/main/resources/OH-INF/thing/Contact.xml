@@ -13,12 +13,11 @@
 		<description>Single input contact sensor (EEP: D5-00)</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text" multiple="true">
+			<parameter name="receivingEEPId" type="text" multiple="true" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by contact</description>
 				<options>
@@ -30,7 +29,6 @@
 				<default>D5_00_01</default>
 				<multipleLimit>2</multipleLimit>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 			<parameter name="receivingSIGEEP" type="boolean">
 				<label>Receive Battery Status Signal Messages</label>

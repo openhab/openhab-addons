@@ -16,17 +16,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
 
 /**
  *
- * This interface is used to provide a callback mechanism between a @link {@link ThingHandler} and the assoicated
- * protocol.
+ * This interface is used to provide a callback mechanism between a {@link org.openhab.core.thing.binding.ThingHandler}
+ * and the associated protocol.
  * This is necessary since the status and state of a bridge/thing is private and the protocol handler cannot access it
  * directly.
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial contribution
  *
  */
 @NonNullByDefault

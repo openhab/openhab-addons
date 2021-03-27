@@ -19,10 +19,11 @@ It can be extended with different channels.
 | `username`        | yes      |    -    | Username for authentication (advanced parameter). |
 | `password`        | yes      |    -    | Password for authentication (advanced parameter). |
 | `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE` or `DIGEST` (advanced parameter). |
-| `commandMethod`   | no       |   GET   | Method used for sending commands `GET`, `PUT`, `POST`. |
+| `stateMethod`     | no       |   GET   | Method used for requesting the state: `GET`, `PUT`, `POST`. |
+| `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
-| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value".| 
+| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`| 
 | `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
 
 *Note:* Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
@@ -33,6 +34,10 @@ The option exists to be able to authenticate when the server is not sending the 
 Authentication might fail if redirections are involved as headers are stripper prior to redirection.
 
 *Note:* If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
+
+**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
+URLs are properly escaped by the binding itself before the request is sent.
+Using escaped strings in URL parameters may lead to problems with the formatting (see below).
 
 ## Channels
 
@@ -47,6 +52,7 @@ The `image` channel-type supports `stateExtension` only.
 | `commandExtension`      | yes      |      -      | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`. |
 | `stateTransformation  ` | yes      |      -      | One or more transformation applied to received values before updating channel. |
 | `commandTransformation` | yes      |      -      | One or more transformation applied to channel value before sending to a remote. |
+| `stateContent`          | yes      |      -      | Content for state requests (if method is `PUT` or `POST`) |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
 Transformations need to be specified in the same format as 
@@ -151,7 +157,7 @@ The URL is used as format string and two parameters are added:
 - the transformed command (referenced as `%2$`)
 
 After the parameter reference the format needs to be appended.
-See the link above for more information about the available format parameters (e.g. to use the string representation, you need to append `s` to the reference).
+See the link above for more information about the available format parameters (e.g. to use the string representation, you need to append `s` to the reference, for a timestamp `t`).
 When sending an OFF command on 2020-07-06, the URL
 
 ```
@@ -162,4 +168,18 @@ is transformed to
 
 ```
 http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
+```
+
+## Examples
+
+### `demo.things`
+
+```
+Thing http:url:foo "Foo" [ 
+	baseURL="https://example.com/api/v1/metadata-api/web/metadata", 
+	headers="key1=value1", "key2=value2", "key3=value3",
+	refresh=15] {
+		Channels:
+			Type string : text "Text" [ stateTransformation="JSONPATH:$.metadata.data" ]
+}
 ```

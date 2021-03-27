@@ -60,7 +60,6 @@ public class WindcentraleHandler extends BaseThingHandler {
     private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
 
     private final Logger logger = LoggerFactory.getLogger(WindcentraleHandler.class);
-    private final JsonParser parser = new JsonParser();
 
     private @Nullable MillConfig millConfig;
     private @Nullable String millUrl;
@@ -127,7 +126,7 @@ public class WindcentraleHandler extends BaseThingHandler {
                 return;
             }
             logger.trace("Retrieved updated mill data: {}", rawMillData);
-            final JsonElement jsonElement = parser.parse(rawMillData);
+            final JsonElement jsonElement = JsonParser.parseString(rawMillData);
 
             if (!(jsonElement instanceof JsonObject)) {
                 throw new JsonParseException("Could not parse windmill json data");

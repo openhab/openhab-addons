@@ -7,12 +7,12 @@
 	<channel-type id="ac-average-voltage-to-n-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Average Line To Neutral AC Voltage</label>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ac-average-voltage-to-next-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Average Line To Line AC Voltage</label>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-real-power-type">
 		<item-type>Number:Power</item-type>

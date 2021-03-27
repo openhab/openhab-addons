@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Reads a wrapped field in reversed byte order.
  *
- * @author Tim Buckley
+ * @author Tim Buckley - Initial contribution
  */
 @NonNullByDefault
 public class LittleField<T> extends Field<T> {

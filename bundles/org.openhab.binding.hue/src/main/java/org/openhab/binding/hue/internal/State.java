@@ -27,7 +27,7 @@ public class State {
     int hue;
     int sat;
     private float[] xy;
-    private int ct;
+    int ct;
     private String alert;
     private String effect;
     String colormode;

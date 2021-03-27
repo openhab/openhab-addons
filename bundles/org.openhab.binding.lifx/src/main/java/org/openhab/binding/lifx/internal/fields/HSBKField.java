@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Wouter Born - Add support for MultiZone light control
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class HSBKField extends Field<HSBK> {

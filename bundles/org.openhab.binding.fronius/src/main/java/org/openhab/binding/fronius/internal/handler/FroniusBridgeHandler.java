@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
@@ -62,10 +61,13 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
         boolean validConfig = true;
         String errorMsg = null;
-        if (StringUtils.trimToNull(config.hostname) == null) {
+
+        String hostname = config.hostname;
+        if (hostname == null || hostname.isBlank()) {
             errorMsg = "Parameter 'hostname' is mandatory and must be configured";
             validConfig = false;
         }
+
         if (config.refreshInterval != null && config.refreshInterval <= 0) {
             errorMsg = "Parameter 'refresh' must be at least 1 second";
             validConfig = false;

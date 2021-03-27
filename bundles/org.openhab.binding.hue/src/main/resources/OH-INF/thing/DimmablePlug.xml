@@ -13,7 +13,7 @@
 		<description>An outlet that can be dimmed.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

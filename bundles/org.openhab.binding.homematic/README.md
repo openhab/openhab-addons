@@ -209,7 +209,7 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 
 ## Thing Configuration
 
-Things are all discovered automatically, you can handle them in PaperUI.
+Things are all discovered automatically.
 
 If you really like to manually configure a thing:
 
@@ -224,13 +224,6 @@ The first parameter after Thing is the device type, the second the serial number
 If you are using Homegear, you have to add the prefix `HG-` for each type.
 The `HG-` prefix is only needed for Things, not for Items or channel configs.
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
-
-```java
-  Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
-```
-
-As additional parameters you can define a name and a location for each thing.
-The `Name` will be used to identify the thing in the Paper UI lists, the `Location` will be used in the Control section of PaperUI to sort the things.
 
 ```java
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
@@ -296,10 +289,12 @@ Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:cc
 
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.
-The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
 
-**Example:** bridgeId=ccu, type=GATEWAY-EXTRAS-CCU
-Address: fixed GWE00000000
+The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
+Example: bridgeId=**ccu** -> type=GATEWAY-EXTRAS-**CCU**
+
+The address of the virtual device must be the default value `GWE00000000`.
+Usage of a custom ID is not supported.
 
 ### RELOAD_ALL_FROM_GATEWAY
 

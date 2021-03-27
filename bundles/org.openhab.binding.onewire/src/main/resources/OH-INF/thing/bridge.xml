@@ -7,17 +7,15 @@
 		<label>OW Server</label>
 		<description>An owserver instance</description>
 		<config-description>
-			<parameter name="network-address" type="text">
+			<parameter name="network-address" type="text" required="true">
 				<context>network_address</context>
 				<label>Network Address</label>
 				<description>Network address of the host running the owserver</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
 				<description>Listening port of the owserver</description>
 				<default>4304</default>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -27,17 +25,15 @@
 		<description>Allows direct access to the OWFS</description>
 		<state readOnly="true"/>
 		<config-description>
-			<parameter name="path" type="text">
+			<parameter name="path" type="text" required="true">
 				<label>OWFS Path</label>
 				<description>full path to the OWFS-node (e.g. statistics/errors/CRC8_errors)</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1">
+			<parameter name="refresh" type="integer" min="1" required="false">
 				<label>Refresh Time</label>
 				<description>Time in seconds after which the channel is refreshed</description>
 				<default>300</default>
 				<unitLabel>s</unitLabel>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -47,17 +43,15 @@
 		<description>Allows direct access to the OWFS</description>
 		<state readOnly="true"/>
 		<config-description>
-			<parameter name="path" type="text">
+			<parameter name="path" type="text" required="true">
 				<label>OWFS Path</label>
 				<description>full path to the OWFS-node (e.g. statistics/errors/CRC8_errors)</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1">
+			<parameter name="refresh" type="integer" min="1" required="false">
 				<label>Refresh Time</label>
 				<description>Time in seconds after which the channel is refreshed</description>
 				<default>300</default>
 				<unitLabel>s</unitLabel>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</channel-type>

@@ -29,14 +29,31 @@ public class JsonSmartHomeCapabilities {
         public @Nullable String version;
         public @Nullable String interfaceName;
         public @Nullable Properties properties;
+
+        @Override
+        public String toString() {
+            return "SmartHomeCapability{" + "capabilityType='" + capabilityType + '\'' + ", type='" + type + '\''
+                    + ", version='" + version + '\'' + ", interfaceName='" + interfaceName + '\'' + ", properties="
+                    + properties + '}';
+        }
     }
 
     public static class Properties {
         public @Nullable List<Property> supported;
+
+        @Override
+        public String toString() {
+            return "Properties{" + "supported=" + supported + '}';
+        }
     }
 
     public static class Property {
         public @Nullable String name;
+    }
+
+    @Override
+    public String toString() {
+        return "JsonSmartHomeCapabilities{" + "capabilites=" + capabilites + '}';
     }
 
     public @Nullable List<SmartHomeCapability> capabilites;

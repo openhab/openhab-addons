@@ -12,6 +12,10 @@ The latest versions have also implemented Z-Wave as transmission protocol which 
 <img src="doc/tellstick_duo.jpg" alt="Tellstick Duo with device" width="300px"/>
 </p>
 
+<p align="center">
+<img src="doc/znet.jpeg" alt="Tellstick Znet lite v2" width="300px"/>
+</p>
+
 ## Supported Things
 
 This binding supports the following thing types:
@@ -24,6 +28,7 @@ Additionally the binding have two types of bridge things which correspond to ava
 
 *   *Telldus Core Bridge* - Oldest API, used by USB devices. `telldus-core`
 *   *Telldus Live Bridge* - Telldus Cloud service, all devices with online access. `telldus-live`
+*   *Telldus Local Bridge* - Telldus Local API, Tellstick Net v2/Tellstick ZNet Lite v1/v2. `telldus-local`
 
 
 ***Switchbased sensors workaround***
@@ -32,11 +37,12 @@ Additionally the binding have two types of bridge things which correspond to ava
 
 ## Discovery
 
-Devices which is added to *Telldus Core* and *Telldus Live* can be discovered by openHAB.
+Devices which is added to *Telldus Core*, *Telldus Live* and *Telldus Local* can be discovered by openHAB.
 
 When you add this binding it will try to discover the *Telldus Core Bridge*.
 If it is installed correct its devices will show up.
-If you want to use the *Telldus Live* its bridge, *Telldus Live bridge* need to be added manually.
+
+If you want to use the *Telldus Live* or *Telldus Local*, their bridges, *Telldus Live bridge* or *Tellstick Local*, needs to be added manually.
 
 ## Binding Configuration
 
@@ -54,13 +60,13 @@ Use the option `repeat` for that. Default resend count is 2.
 
 ### Bridges
 
-Depending on your tellstick device type there is different ways of using this binding.
-The binding implements two different API:
+Depending on your Tellstick device type there is different ways of using this binding.
+The binding implements three different APIs:
 **1)** *Telldus Core* which is a local only interface supported by USB based device. <br>
-**2)** *Telldus Live* which is a REST based cloud service maintained by Telldus. <br>
+**2)** *Telldus Live* which is a REST based cloud service maintained by Telldus. 
+**3)** *Telldus Local* which is a REST based local service maintained by Telldus.
+<br>
 
-> Not implemented yet but supported by some new devices, contributions are welcome. [API documention.](https://api.telldus.net/localapi/api.html) <br>
-> **3)** *Local Rest API* is a local API which would work similar to Telldus Live but local.
 
 Depending on your Tellstick model, different bridge-types are available:
 
@@ -109,6 +115,36 @@ Required:
 Optional:
 
 -   **refreshInterval:** How often we should contact *Telldus Live* to check for updates (in ms)
+
+#### Telldus Local Bridge
+
+To configure Telldus Local you need to know the local IP address of your Tellstick device and also request an access token.
+
+Goto this page:
+<https://tellstick-server.readthedocs.io/en/latest/api/authentication.html> 
+and follow steps 1), 2) and 3) to generate an access token.
+
+In step 2) when you authenticate the application in your favorite browser, choose the options '1 year' and 'Auto renew access'.
+
+Copy the 'token' returned in Step 3) and use that as accessToken in the local bridge config.
+
+```
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImF1ZCI6IkV4YW1wbGUgYXBwIiwiZXhwIjoxNDUyOTUxNTYyfQ.eyJyZW5ldyI6dHJ1ZSwidHRsIjo4NjQwMH0.HeqoFM6-K5IuQa08Zr9HM9V2TKGRI9VxXlgdsutP7sg"
+```
+
+
+```
+Bridge tellstick:telldus-local:3 "Tellstick Local ZWave" [ipAddress="x.y.z.w" , accesToken= "XYZ...W"]
+```
+
+Required:
+
+-   **ipAddress:** Local IP address of your Tellstick device
+-   **accessToken:** Access Token
+
+Optional:
+
+-   **refreshInterval:** How often we should contact *Telldus Local* to check for updates (in ms)
 
 ## Channels
 
@@ -193,6 +229,9 @@ Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval=200] {
 }
 Bridge tellstick:telldus-live:2 "Tellstick ZWave" [refreshInterval=10000, publicKey="XXXXXXXX", privateKey="YYYYYY", token= "ZZZZZZZZ", tokenSecret="UUUUUUUUUU"] {
 	sensor OutsideSensor2 [protocol="fineoffset",model="temperaturehumidity",name="temperaturehumidity:120",deviceId="120_temperaturehumidity_fineoffset"]
+}
+Bridge tellstick:telldus-local:3 "Tellstick Local ZWave" [ipAddress="192.168.50.17" , accesToken= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImF1ZCI6IkV4YW1wbGUgYXBwIiwiZXhwIjoxNDUyOTUxNTYyfQ.eyJyZW5ldyI6dHJ1ZSwidHRsIjo4NjQwMH0.HeqoFM6-K5IuQa08Zr9HM9V2TKGRI9VxXlgdsutP7sg"] {
+    sensor OutsideSensor3 [protocol="fineoffset",model="temperaturehumidity",name="temperaturehumidity:120",deviceId="120_temperaturehumidity_fineoffset"]
 }
 ```
 

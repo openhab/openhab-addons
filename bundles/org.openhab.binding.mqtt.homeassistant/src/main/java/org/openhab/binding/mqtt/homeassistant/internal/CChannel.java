@@ -16,7 +16,6 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
@@ -149,9 +148,9 @@ public class CChannel {
 
         public Builder stateTopic(@Nullable String state_topic, @Nullable String... templates) {
             this.state_topic = state_topic;
-            if (StringUtils.isNotBlank(state_topic)) {
+            if (state_topic != null && !state_topic.isBlank()) {
                 for (String template : templates) {
-                    if (StringUtils.isNotBlank(template)) {
+                    if (template != null && !template.isBlank()) {
                         this.templateIn = template;
                         break;
                     }
@@ -204,7 +203,8 @@ public class CChannel {
                             .withCommandTopic(command_topic).makeTrigger(trigger).build(),
                     channelUID, valueState, channelStateUpdateListener);
 
-            if (StringUtils.isBlank(state_topic) || this.trigger) {
+            String localStateTopic = state_topic;
+            if (localStateTopic == null || localStateTopic.isBlank() || this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
             } else {

@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link NikoHomeControlBridgeConfig} is the general config class for Niko Home Control Bridges.
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 public class NikoHomeControlBridgeConfig {
-    public String addr;
+    public String addr = "";
     public int port;
     public int refresh;
 }

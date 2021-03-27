@@ -23,11 +23,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -171,7 +170,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     ChannelGroupType groupType = channelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
                     if (groupType == null || device.isGatewayExtras()) {
                         String groupLabel = String.format("%s",
-                                WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
+                                MiscUtils.capitalize(channel.getType().replace("_", " ")));
                         groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
                                 .withChannelDefinitions(channelDefinitions).build();
                         channelGroupTypeProvider.addChannelGroupType(groupType);
@@ -195,7 +194,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         "Multiple firmware versions for device type '{}' found ({}). "
                                 + "Make sure, all devices of the same type have the same firmware version, "
                                 + "otherwise you MAY have channel and/or datapoint errors in the logfile",
-                        deviceType, StringUtils.join(firmwares, ", "));
+                        deviceType, String.join(", ", firmwares));
             }
         }
     }
@@ -204,7 +203,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Adds the firmware version for validation.
      */
     private void addFirmware(HmDevice device) {
-        if (!StringUtils.equals(device.getFirmware(), "?") && !DEVICE_TYPE_VIRTUAL.equals(device.getType())
+        if (!"?".equals(device.getFirmware()) && !DEVICE_TYPE_VIRTUAL.equals(device.getType())
                 && !DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) {
             Set<String> firmwares = firmwaresByType.get(device.getType());
             if (firmwares == null) {
@@ -237,7 +236,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
         List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
         for (ChannelGroupType groupType : groupTypes) {
-            String id = StringUtils.substringAfterLast(groupType.getUID().getId(), "_");
+            int usPos = groupType.getUID().getId().lastIndexOf("_");
+            String id = usPos == -1 ? groupType.getUID().getId() : groupType.getUID().getId().substring(usPos + 1);
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
         }
 
@@ -337,7 +337,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                             MetadataUtils.getParameterName(dp), MetadataUtils.getConfigDescriptionParameterType(dp));
 
                     builder.withLabel(MetadataUtils.getLabel(dp));
-                    builder.withDefault(ObjectUtils.toString(dp.getDefaultValue()));
+                    builder.withDefault(Objects.toString(dp.getDefaultValue(), ""));
                     builder.withDescription(MetadataUtils.getDatapointDescription(dp));
 
                     if (dp.isEnumType()) {
@@ -383,6 +383,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Returns true, if the given datapoint can be ignored for metadata generation.
      */
     public static boolean isIgnoredDatapoint(HmDatapoint dp) {
-        return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1;
+        for (String testValue : IGNORE_DATAPOINT_NAMES) {
+            if (dp.getName().indexOf(testValue) > -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

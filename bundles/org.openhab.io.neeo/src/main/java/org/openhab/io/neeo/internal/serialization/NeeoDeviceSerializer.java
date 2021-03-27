@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
@@ -111,8 +110,8 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
 
         try {
             return new NeeoDevice(uid, driverVersion, devType,
-                    manufacturer == null || StringUtils.isEmpty(manufacturer) ? NeeoUtil.NOTAVAILABLE : manufacturer,
-                    name, Arrays.asList(channels), timing,
+                    manufacturer == null || manufacturer.isEmpty() ? NeeoUtil.NOTAVAILABLE : manufacturer, name,
+                    Arrays.asList(channels), timing,
                     deviceCapabilities == null ? null : Arrays.asList(deviceCapabilities), specificName, iconName);
         } catch (NullPointerException | IllegalArgumentException e) {
             throw new JsonParseException(e);
@@ -146,13 +145,13 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
 
         jsonObject.addProperty("thingType", uid.getThingType());
 
-        if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOIO_BINDING_ID, uid.getBindingId())) {
+        if (NeeoConstants.NEEOIO_BINDING_ID.equalsIgnoreCase(uid.getBindingId())) {
             jsonObject.addProperty("thingStatus", uid.getThingType().toUpperCase());
         }
 
         final ServiceContext localContext = context;
         if (localContext != null) {
-            if (!StringUtils.equalsIgnoreCase(NeeoConstants.NEEOIO_BINDING_ID, uid.getBindingId())) {
+            if (!NeeoConstants.NEEOIO_BINDING_ID.equalsIgnoreCase(uid.getBindingId())) {
                 final Thing thing = localContext.getThingRegistry().get(device.getUid().asThingUID());
                 jsonObject.addProperty("thingStatus",
                         thing == null ? ThingStatus.UNKNOWN.name() : thing.getStatus().name());
@@ -167,12 +166,12 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
                             if (jo.has("groupId") && jo.has("itemLabel")) {
                                 final String groupId = jo.get("groupId").getAsString();
                                 final String groupLabel = NeeoUtil.getGroupLabel(thingType, groupId);
-                                if (StringUtils.isNotEmpty(groupLabel)) {
+                                if (groupLabel != null && !groupLabel.isEmpty()) {
                                     final JsonElement itemLabel = jo.remove("itemLabel");
                                     jo.addProperty("itemLabel", groupLabel + "#" + itemLabel.getAsString());
-                                } else if (StringUtils.isNotEmpty("groupId")) {
+                                } else if (groupId != null && !groupId.isEmpty()) {
                                     // have a groupid but no group definition found (usually error on binding)
-                                    // just default to "Others" like the Paperui does.
+                                    // just default to "Others".
                                     final JsonElement itemLabel = jo.remove("itemLabel");
                                     jo.addProperty("itemLabel", "Others#" + itemLabel.getAsString());
                                 }

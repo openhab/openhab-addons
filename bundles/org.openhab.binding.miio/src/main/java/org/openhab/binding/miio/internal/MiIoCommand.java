@@ -86,6 +86,15 @@ public enum MiIoCommand {
     REMOTE_END("app_rc_end"),
     REMOTE_MOVE("app_rc_move"),
 
+    GET_MAP_STATUS("get_map_status"),
+    GET_SEGMENT_STATUS("get_segment_status"),
+    GET_LED_STATUS("get_led_status"),
+    GET_CARPET_MODE("get_carpet_mode"),
+    GET_FW_FEATURES("get_fw_features"),
+    GET_CUSTOMIZED_CLEAN_MODE("get_customize_clean_mode"),
+    GET_MULTI_MAP_LIST("get_multi_maps_list"),
+    GET_ROOM_MAPPING("get_room_mapping"),
+
     UNKNOWN("");
 
     private final String command;

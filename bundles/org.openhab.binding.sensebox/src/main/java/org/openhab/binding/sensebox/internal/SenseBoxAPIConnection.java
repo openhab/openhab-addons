@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SenseBoxAPIConnection} is responsible for fetching data from the senseBox API server.
@@ -63,8 +64,9 @@ public class SenseBoxAPIConnection {
         // the caching layer does not like null values
         SenseBoxData result = new SenseBoxData();
 
+        String body = null;
         try {
-            String body = HttpUtil.executeUrl(METHOD, query, HEADERS, null, null, TIMEOUT);
+            body = HttpUtil.executeUrl(METHOD, query, HEADERS, null, null, TIMEOUT);
 
             logger.trace("Fetched Data: {}", body);
             SenseBoxData parsedData = gson.fromJson(body, SenseBoxData.class);
@@ -148,6 +150,10 @@ public class SenseBoxAPIConnection {
             logger.trace("=================================");
 
             result = parsedData;
+        } catch (JsonSyntaxException e) {
+            logger.debug("An error occurred while parsing the data into desired class: {} / {} / {}", body,
+                    SenseBoxData.class.getName(), e.getMessage());
+            result.setStatus(ThingStatus.OFFLINE);
         } catch (IOException e) {
             logger.debug("IO problems while fetching data: {} / {}", query, e.getMessage());
             result.setStatus(ThingStatus.OFFLINE);

@@ -13,13 +13,13 @@
 package org.openhab.binding.oceanic.internal.handler;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.oceanic.internal.OceanicBindingConstants.OceanicChannelSelector;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -30,7 +30,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.Type;
 import org.openhab.core.types.TypeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public abstract class OceanicThingHandler extends BaseThingHandler {
 
     public static final String INTERVAL = "interval";
@@ -48,10 +48,10 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OceanicThingHandler.class);
 
     protected int bufferSize;
-    protected ScheduledFuture<?> pollingJob;
+    protected @Nullable ScheduledFuture<?> pollingJob;
     protected static String lastLineReceived = "";
 
-    public OceanicThingHandler(@NonNull Thing thing) {
+    public OceanicThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -78,7 +78,9 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
                                     updateProperties(properties);
                                 } else {
                                     State value = createStateForType(selector, response);
-                                    updateState(theChannelUID, value);
+                                    if (value != null) {
+                                        updateState(theChannelUID, value);
+                                    }
                                 }
                             } else {
                                 logger.warn("Received an empty answer for '{}'", selector.name());
@@ -138,7 +140,7 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
                                     break;
                             }
                             String response = requestResponse(commandAsString);
-                            if (response.equals("ERR")) {
+                            if ("ERR".equals(response)) {
                                 logger.error("An error occurred while setting '{}' to {}", selector.toString(),
                                         commandAsString);
                             }
@@ -155,15 +157,10 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private State createStateForType(OceanicChannelSelector selector, String value) {
-        Class<? extends Type> typeClass = selector.getTypeClass();
-        List<Class<? extends State>> stateTypeList = new ArrayList<>();
-
-        stateTypeList.add((Class<? extends State>) typeClass);
-        State state = TypeParser.parseState(stateTypeList, selector.convertValue(value));
-
-        return state;
+    private @Nullable State createStateForType(OceanicChannelSelector selector, String value) {
+        return TypeParser.parseState(List.of((Class<? extends State>) selector.getTypeClass()),
+                selector.convertValue(value));
     }
 
-    protected abstract String requestResponse(String commandAsString);
+    protected abstract @Nullable String requestResponse(String commandAsString);
 }

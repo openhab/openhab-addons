@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.squeezebox.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration of a server.
  *
@@ -19,11 +21,12 @@ package org.openhab.binding.squeezebox.internal.config;
  * @author Mark Hilbush - Added user ID and password
  *
  */
+@NonNullByDefault
 public class SqueezeBoxServerConfig {
     /**
      * Server ip address
      */
-    public String ipAddress;
+    public String ipAddress = "";
     /**
      * Server web port for REST calls
      */
@@ -35,13 +38,13 @@ public class SqueezeBoxServerConfig {
     /**
      * Language for TTS
      */
-    public String language;
+    public String language = "";
     /*
      * User ID (when authentication enabled in LMS)
      */
-    public String userId;
+    public String userId = "";
     /*
      * User ID (when authentication enabled in LMS)
      */
-    public String password;
+    public String password = "";
 }

@@ -18,9 +18,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.*;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
@@ -78,7 +77,8 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         bridgeConfig = getConfigAs(BsbLanBridgeConfiguration.class);
 
         // validate 'host' configuration
-        if (StringUtils.isBlank(bridgeConfig.host)) {
+        String host = bridgeConfig.host;
+        if (host == null || host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'host' is mandatory and must be configured");
             return;
@@ -128,8 +128,10 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         BsbLanApiCaller apiCaller = new BsbLanApiCaller(bridgeConfig);
 
         // refresh all parameters
-        Set<Integer> parameterIds = things.stream().filter(thing -> thing instanceof BsbLanParameterHandler)
-                .map(thing -> (BsbLanParameterHandler) thing).map(thing -> thing.getParameterId())
+        Set<Integer> parameterIds = things.stream() //
+                .filter(thing -> thing instanceof BsbLanParameterHandler) //
+                .map(thing -> (BsbLanParameterHandler) thing) //
+                .map(thing -> thing.getParameterId()) //
                 .collect(Collectors.toSet());
 
         cachedParameterQueryResponse = apiCaller.queryParameters(parameterIds);

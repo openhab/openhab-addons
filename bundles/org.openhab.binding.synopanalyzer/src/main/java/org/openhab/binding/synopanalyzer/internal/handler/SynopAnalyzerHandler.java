@@ -28,12 +28,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Speed;
+import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.synopanalyser.internal.synop.Overcast;
 import org.openhab.binding.synopanalyser.internal.synop.StationDB;
-import org.openhab.binding.synopanalyser.internal.synop.StationDB.Station;
 import org.openhab.binding.synopanalyser.internal.synop.Synop;
 import org.openhab.binding.synopanalyser.internal.synop.SynopLand;
 import org.openhab.binding.synopanalyser.internal.synop.SynopMobile;
@@ -77,12 +77,11 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
     private @Nullable ScheduledFuture<?> executionJob;
-    // private @NonNullByDefault({}) SynopAnalyzerConfiguration configuration;
     private @NonNullByDefault({}) String formattedStationId;
     private final LocationProvider locationProvider;
-    private final StationDB stationDB;
+    private final @Nullable StationDB stationDB;
 
-    public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, StationDB stationDB) {
+    public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, @Nullable StationDB stationDB) {
         super(thing);
         this.locationProvider = locationProvider;
         this.stationDB = stationDB;
@@ -95,20 +94,18 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         logger.info("Scheduling Synop update thread to run every {} minute for Station '{}'",
                 configuration.refreshInterval, formattedStationId);
 
-        if (thing.getProperties().isEmpty()) {
-            discoverAttributes(configuration.stationId);
+        StationDB stations = stationDB;
+        if (thing.getProperties().isEmpty() && stations != null) {
+            discoverAttributes(stations, configuration.stationId);
         }
 
         executionJob = scheduler.scheduleWithFixedDelay(this::updateSynopChannels, 0, configuration.refreshInterval,
                 TimeUnit.MINUTES);
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
-    protected void discoverAttributes(int stationId) {
-        final Map<String, String> properties = new HashMap<>();
-
-        Optional<Station> station = stationDB.stations.stream().filter(s -> stationId == s.idOmm).findFirst();
-        station.ifPresent(s -> {
+    protected void discoverAttributes(StationDB stations, int stationId) {
+        stations.stations.stream().filter(s -> stationId == s.idOmm).findFirst().ifPresent(s -> {
+            Map<String, String> properties = new HashMap<>();
             properties.put("Usual name", s.usualName);
             properties.put("Location", s.getLocation());
 
@@ -119,9 +116,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
                 properties.put("Distance", new QuantityType<>(distance, SIUnits.METRE).toString());
             }
+            updateProperties(properties);
         });
-
-        updateProperties(properties);
     }
 
     private Optional<Synop> getLastAvailableSynop() {
@@ -129,7 +125,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
         String url = forgeURL();
         try {
-            String answer = HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT_MS);
+            String answer = HttpUtil.executeUrl(HttpMethod.GET, url, REQUEST_TIMEOUT_MS);
             List<String> messages = Arrays.asList(answer.split("\n"));
             if (!messages.isEmpty()) {
                 String message = messages.get(messages.size() - 1);
@@ -159,7 +155,9 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         synop.ifPresent(theSynop -> {
             getThing().getChannels().forEach(channel -> {
                 String channelId = channel.getUID().getId();
-                updateState(channelId, getChannelState(channelId, theSynop));
+                if (isLinked(channelId)) {
+                    updateState(channelId, getChannelState(channelId, theSynop));
+                }
             });
         });
     }

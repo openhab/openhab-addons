@@ -15,6 +15,7 @@
 			<channel-group id="history" typeId="history"/>
 			<channel-group id="cleaning" typeId="cleaning"/>
 			<channel-group id="network" typeId="network"/>
+			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
 		<properties>
@@ -50,6 +51,9 @@
 			<channel id="map_present" typeId="map_present"/>
 			<channel id="state" typeId="state"/>
 			<channel id="state_id" typeId="state_id"/>
+			<channel id="segment_status" typeId="segment_status"/>
+			<channel id="map_status" typeId="map_status"/>
+			<channel id="led_status" typeId="led_status"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -93,6 +97,16 @@
 			<channel id="total_clean_area" typeId="total_clean_area"/>
 			<channel id="total_clean_time" typeId="total_clean_time"/>
 			<channel id="total_clean_count" typeId="total_clean_count"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="info">
+		<label>Info</label>
+		<channels>
+			<channel id="multi_maps_list" typeId="multi_maps_list"/>
+			<channel id="room_mapping" typeId="room_mapping"/>
+			<channel id="fw_features" typeId="fw_features"/>
+			<channel id="customize_clean_mode" typeId="customize_clean_mode"/>
+			<channel id="carpet_mode" typeId="carpet_mode"/>
 		</channels>
 	</channel-group-type>
 
@@ -152,6 +166,21 @@
 		<label>State ID</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="segment_status" advanced="true">
+		<item-type>Number</item-type>
+		<label>Segment Status</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="map_status" advanced="true">
+		<item-type>Number</item-type>
+		<label>Map Status</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="led_status" advanced="true">
+		<item-type>Number</item-type>
+		<label>Led Status</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
 
 	<!-- Dynamic Status Channels -->
 	<channel-type id="water_box_mode">
@@ -177,6 +206,11 @@
 	<channel-type id="mop_forbidden_enable">
 		<item-type>Switch</item-type>
 		<label>Mop Forbidden</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="is_locating">
+		<item-type>Switch</item-type>
+		<label>Robot Locating</label>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -352,5 +386,30 @@
 		<item-type>Image</item-type>
 		<label>Cleaning Map</label>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Info channels -->
+	<channel-type id="fw_features" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Features</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="room_mapping" advanced="true">
+		<item-type>String</item-type>
+		<label>Room Mapping</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="multi_maps_list" advanced="true">
+		<item-type>String</item-type>
+		<label>Multi Map List</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="carpet_mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Carpet Mode</label>
+	</channel-type>
+	<channel-type id="customize_clean_mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Customized Clean Mode</label>
 	</channel-type>
 </thing:thing-descriptions>

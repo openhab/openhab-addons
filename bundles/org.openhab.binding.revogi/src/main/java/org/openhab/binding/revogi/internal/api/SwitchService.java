@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
@@ -66,7 +65,6 @@ public class SwitchService {
         return responses.thenApply(this::getSwitchResponse);
     }
 
-    @NotNull
     private SwitchResponseDTO getSwitchResponse(final List<UdpResponseDTO> singleResponse) {
         return singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
                 .map(response -> deserializeString(response.getAnswer()))

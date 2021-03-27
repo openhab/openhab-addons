@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.meteoblue.internal;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Model for the meteoblue binding configuration.
  *
@@ -64,15 +62,15 @@ public class MeteoBlueConfiguration {
         String a2 = split.length > 1 ? split[1] : null;
         String a3 = split.length > 2 ? split[2] : null;
 
-        if (!StringUtils.isBlank(a1)) {
+        if (a1 != null && !a1.isBlank()) {
             latitude = tryGetDouble(a1);
         }
 
-        if (!StringUtils.isBlank(a2)) {
+        if (a2 != null && !a2.isBlank()) {
             longitude = tryGetDouble(a2);
         }
 
-        if (!StringUtils.isBlank(a3)) {
+        if (a3 != null && !a3.isBlank()) {
             altitude = tryGetDouble(a3);
         }
     }

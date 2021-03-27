@@ -96,6 +96,9 @@ The acquired token will remain active for several weeks following the last succe
 
 In case a websocket connection to the Miniserver remains active for the whole duration of the token's life span, the binding will refresh the token one day before token expiration, without the need of providing the password.
 
+In case of connecting to Generation 2 Miniservers, it is possible to establish a secure WebSocket connection over HTTPS protocol. Binding will automatically detect if HTTPS connection is available and will use it. In that case, commands sent to the Miniserver will not be additionally encrypted. When HTTPS is not available, binding will use unsecure HTTP connection and will encrypt each command.
+
+It is possible to override the communication protocol by setting `webSocketType` configuration parameter. Setting it to 1 will force to always establish HTTPS connection. Setting it to 2 will force to always establish HTTP connection. Default value of 0 means the binding will determine the right protocol in the runtime.
 
 A method to enable unrestricted security policy depends on the JRE version and vendor, some examples can be found [here](https://www.petefreitag.com/item/844.cfm) and [here](https://stackoverflow.com/questions/41580489/how-to-install-unlimited-strength-jurisdiction-policy-files).
 
@@ -195,9 +198,10 @@ To define a parameter value in a .things file, please refer to it by parameter's
 
 ### Security
 
-| ID           | Name                  | Values                                          | Default      | Description                                           |
-|--------------|-----------------------|-------------------------------------------------|--------------|-------------------------------------------------------|
-| `authMethod` | Authentication method | 0: Automatic<br>1: Hash-based<br>2: Token-based | 0: Automatic | A method used to authenticate user in the Miniserver. |
+| ID              | Name                  | Values                                          | Default      | Description                                           |
+|-----------------|-----------------------|-------------------------------------------------|--------------|-------------------------------------------------------|
+| `authMethod`    | Authentication method | 0: Automatic<br>1: Hash-based<br>2: Token-based | 0: Automatic | A method used to authenticate user in the Miniserver. |
+| `webSocketType` | WebSocket protocol    | 0: Automatic<br>1: Force HTTPS<br>2: Force HTTP | 0: Automatic | Communication protocol used for WebSocket connection. |
 
 ### Timeouts
 

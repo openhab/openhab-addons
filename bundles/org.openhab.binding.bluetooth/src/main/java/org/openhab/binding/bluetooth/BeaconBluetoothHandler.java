@@ -19,7 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Power;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
@@ -193,7 +192,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         if (device != null) {
             BluetoothAdapter adapter = device.getAdapter();
             String location = adapter.getLocation();
-            if (location != null || StringUtils.isBlank(location)) {
+            if (location != null && !location.isBlank()) {
                 updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, new StringType(location));
             } else {
                 updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, UnDefType.NULL);

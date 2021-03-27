@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bigassfan.internal;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * The {@link BigAssFanConfig} is responsible for storing the BigAssFan thing configuration.
  *
@@ -60,13 +58,13 @@ public class BigAssFanConfig {
     }
 
     public boolean isValid() {
-        if (StringUtils.isBlank(label)) {
+        if (label == null || label.isBlank()) {
             return false;
         }
-        if (StringUtils.isBlank(ipAddress)) {
+        if (ipAddress == null || ipAddress.isBlank()) {
             return false;
         }
-        if (StringUtils.isBlank(macAddress)) {
+        if (macAddress == null || macAddress.isBlank()) {
             return false;
         }
         return true;

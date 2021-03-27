@@ -236,7 +236,10 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
             }
-            logger.warn("Initial full state parsing failed", e);
+            logger.warn("Initial full state request or result parsing failed", e);
+            if (!thingDisposing) {
+                scheduledFuture = scheduler.schedule(this::initializeBridgeState, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            }
             return null;
         });
     }

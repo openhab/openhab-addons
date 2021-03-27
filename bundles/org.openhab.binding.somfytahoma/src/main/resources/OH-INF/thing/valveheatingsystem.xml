@@ -18,6 +18,7 @@
 			<channel id="open_closed_valve" typeId="open_closed_valve"></channel>
 			<channel id="operating_mode" typeId="operating_mode"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

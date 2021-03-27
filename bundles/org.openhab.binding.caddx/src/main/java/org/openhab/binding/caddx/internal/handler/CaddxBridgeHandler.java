@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
 public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxBridgeHandler.class);
 
-    static final byte[] DISCOVERY_PARTITION_STATUS_REQUEST_0 = { 0x26, 0x00 };
     static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_00 = { 0x25, 0x00 }; // 1 - 16
     static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_10 = { 0x25, 0x01 }; // 17 - 32
     static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_20 = { 0x25, 0x02 }; // 33 - 48
@@ -156,8 +155,13 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_B0, false));
 
             // Send discovery commands for the partitions
-            comm.transmit(new CaddxMessage(DISCOVERY_PARTITION_STATUS_REQUEST_0, false));
             comm.transmit(new CaddxMessage(DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST, false));
+
+            // Send status commands to the zones and partitions
+            thingZonesMap.forEach((k, v) -> sendCommand(CaddxBindingConstants.ZONE_STATUS_REQUEST,
+                    k.subtract(BigDecimal.ONE).toString()));
+            thingPartitionsMap.forEach((k, v) -> sendCommand(CaddxBindingConstants.PARTITION_STATUS_REQUEST,
+                    k.subtract(BigDecimal.ONE).toString()));
         }
 
         // list all channels

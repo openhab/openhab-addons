@@ -95,9 +95,9 @@ public class HttpThingHandler extends BaseThingHandler {
         }
 
         if (command instanceof RefreshType) {
-            String stateUrl = channelUrls.get(channelUID);
-            if (stateUrl != null) {
-                RefreshingUrlCache refreshingUrlCache = urlHandlers.get(stateUrl);
+            String key = channelUrls.get(channelUID);
+            if (key != null) {
+                RefreshingUrlCache refreshingUrlCache = urlHandlers.get(key);
                 if (refreshingUrlCache != null) {
                     try {
                         refreshingUrlCache.get().ifPresent(itemValueConverter::process);
@@ -272,17 +272,17 @@ public class HttpThingHandler extends BaseThingHandler {
 
         channels.put(channelUID, itemValueConverter);
         if (channelConfig.mode != HttpChannelMode.WRITEONLY) {
-            channelUrls.put(channelUID, stateUrl);
-            urlHandlers
-                    .computeIfAbsent(stateUrl,
-                            url -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, url, config))
-                    .addConsumer(itemValueConverter::process);
+            // we need a key consisting of stateContent and URL, only if both are equal, we can use the same cache
+            String key = channelConfig.stateContent + "$" + stateUrl;
+            channelUrls.put(channelUID, key);
+            urlHandlers.computeIfAbsent(key, k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl,
+                    config, channelConfig.stateContent)).addConsumer(itemValueConverter::process);
         }
 
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                 .withReadOnly(channelConfig.mode == HttpChannelMode.READONLY).build().toStateDescription();
         if (stateDescription != null) {
-            // if the state description is not available, we don'tneed to add it
+            // if the state description is not available, we don't need to add it
             httpDynamicStateDescriptionProvider.setDescription(channelUID, stateDescription);
         }
     }

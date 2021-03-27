@@ -52,7 +52,7 @@ public class EnoceanBleDiscoveryParticipant implements BluetoothDiscoveryPartici
     @Override
     public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         Integer manufacturerId = device.getManufacturerId();
-        logger.warn("Discovered device {} with manufacturerId {} and name {}", device.getAddress(), manufacturerId,
+        logger.debug("Discovered device {} with manufacturerId {} and name {}", device.getAddress(), manufacturerId,
                 device.getName());
         if (manufacturerId != null && manufacturerId == ENOCEAN_COMPANY_ID) {
             return new ThingUID(EnoceanBleBindingConstants.THING_TYPE_PTM215B, device.getAdapter().getUID(),

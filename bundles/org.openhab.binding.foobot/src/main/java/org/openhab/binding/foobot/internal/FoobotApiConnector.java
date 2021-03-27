@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -156,7 +155,7 @@ public class FoobotApiConnector {
                 apiKeyLimitRemaining = API_RATE_LIMIT_EXCEEDED;
                 throw new FoobotApiException(response.getStatus(), API_RATE_LIMIT_EXCEEDED_MESSAGE);
             case HttpStatus.OK_200:
-                if (StringUtils.trimToNull(content) == null) {
+                if (content == null || content.isBlank()) {
                     throw new FoobotApiException(0, "No data returned");
                 }
                 return content;

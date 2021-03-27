@@ -1,0 +1,224 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yunmi.waterpuri.lx8"
+		],
+		"channels": [
+			{
+				"property": "run_status",
+				"friendlyName": "Run Status",
+				"channel": "run_status",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rinse",
+				"friendlyName": "Rinse",
+				"channel": "rinse",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "tds_in",
+				"friendlyName": "TDS in",
+				"channel": "tds_in",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "tds_out",
+				"friendlyName": "TDS out",
+				"channel": "tds_out",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f1_totalflow",
+				"friendlyName": "Filter 1 Total Flow",
+				"channel": "f1_totalflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f1_totaltime",
+				"friendlyName": "Filter 1 Total Time",
+				"channel": "f1_totaltime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f1_usedflow",
+				"friendlyName": "Filter 1 Used Flow",
+				"channel": "f1_usedflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f1_usedtime",
+				"friendlyName": "Filter 1 Used Time",
+				"channel": "f1_usedtime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f2_totalflow",
+				"friendlyName": "Filter 2 Total Flow",
+				"channel": "f2_totalflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f2_totaltime",
+				"friendlyName": "Filter 2 Total Time",
+				"channel": "f2_totaltime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f2_usedflow",
+				"friendlyName": "Filter 2 Used Flow",
+				"channel": "f2_usedflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f2_usedtime",
+				"friendlyName": "Filter 2 Used Time",
+				"channel": "f2_usedtime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f3_totalflow",
+				"friendlyName": "Filter 3 Total Flow",
+				"channel": "f3_totalflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f3_totaltime",
+				"friendlyName": "Filter 3 Total Time",
+				"channel": "f3_totaltime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f3_usedflow",
+				"friendlyName": "Filter 3 Used Flow",
+				"channel": "f3_usedflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f3_usedtime",
+				"friendlyName": "Filter 3 Used Time",
+				"channel": "f3_usedtime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f4_totalflow",
+				"friendlyName": "Filter 4 Total Flow",
+				"channel": "f4_totalflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f4_totaltime",
+				"friendlyName": "Filter 4 Total Time",
+				"channel": "f4_totaltime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f4_usedflow",
+				"friendlyName": "Filter 4 Used Flow",
+				"channel": "f4_usedflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f4_usedtime",
+				"friendlyName": "Filter 4 Used Time",
+				"channel": "f4_usedtime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "maintenance_state",
+				"friendlyName": "Maintenance State",
+				"channel": "maintenance_state",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "maintenance_interval",
+				"friendlyName": "Maintenance Interval",
+				"channel": "maintenance_interval",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "tds_warn_thd",
+				"friendlyName": "TDS Warn Threshold",
+				"channel": "tds_warn_thd",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_tds_warn_thd",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "lightMode",
+				"friendlyName": "Light Mode",
+				"channel": "lightMode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Simple Mode"
+						},
+						{
+							"value": "1",
+							"label": "Special Mode"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_lightMode",
+						"parameterType": "STRING"
+					}
+				]
+			}
+		],
+		"experimental": false
+	}
+}

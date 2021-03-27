@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.SECURITY_SYSTEM_CURRENT_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.SECURITY_SYSTEM_TARGET_STATE;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -62,13 +63,31 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
             put(TargetSecuritySystemStateEnum.NIGHT_ARM, "NIGHT_ARM");
         }
     };
+    private final List<CurrentSecuritySystemStateEnum> customCurrentStateList;
+    private final List<TargetSecuritySystemStateEnum> customTargetStateList;
 
     public HomekitSecuritySystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        updateMapping(SECURITY_SYSTEM_CURRENT_STATE, currentStateMapping);
-        updateMapping(SECURITY_SYSTEM_TARGET_STATE, targetStateMapping);
+        customCurrentStateList = new ArrayList<>();
+        customTargetStateList = new ArrayList<>();
+        updateMapping(SECURITY_SYSTEM_CURRENT_STATE, currentStateMapping, customCurrentStateList);
+        updateMapping(SECURITY_SYSTEM_TARGET_STATE, targetStateMapping, customTargetStateList);
         getServices().add(new SecuritySystemService(this));
+    }
+
+    @Override
+    public CurrentSecuritySystemStateEnum[] getCurrentSecuritySystemStateValidValues() {
+        return customCurrentStateList.isEmpty()
+                ? currentStateMapping.keySet().toArray(new CurrentSecuritySystemStateEnum[0])
+                : customCurrentStateList.toArray(new CurrentSecuritySystemStateEnum[0]);
+    }
+
+    @Override
+    public TargetSecuritySystemStateEnum[] getTargetSecuritySystemStateValidValues() {
+        return customTargetStateList.isEmpty()
+                ? targetStateMapping.keySet().toArray(new TargetSecuritySystemStateEnum[0])
+                : customTargetStateList.toArray(new TargetSecuritySystemStateEnum[0]);
     }
 
     @Override

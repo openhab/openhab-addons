@@ -23,7 +23,6 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -131,8 +130,8 @@ public class KM200Cryption {
      * @author Markus Eckhardt
      */
     public void recreateKeys() {
-        if (StringUtils.isNotBlank(remoteDevice.getGatewayPassword())
-                && StringUtils.isNotBlank(remoteDevice.getPrivatePassword()) && remoteDevice.getMD5Salt().length > 0) {
+        if (!remoteDevice.getGatewayPassword().isBlank() && !remoteDevice.getPrivatePassword().isBlank()
+                && remoteDevice.getMD5Salt().length > 0) {
             byte[] md5K1 = null;
             byte[] md5K2Init = null;
             byte[] md5K2Private = null;

@@ -261,8 +261,15 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
                 if (status == HttpURLConnection.HTTP_OK && response != null) {
                     DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder;
                     try {
+                        // see
+                        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                        domFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                        domFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                        domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                        domFactory.setXIncludeAware(false);
+                        domFactory.setExpandEntityReferences(false);
+                        DocumentBuilder builder;
                         builder = domFactory.newDocumentBuilder();
                         Document dDoc = builder.parse(new InputSource(new StringReader(response.getContentAsString())));
                         XPath xPath = XPathFactory.newInstance().newXPath();

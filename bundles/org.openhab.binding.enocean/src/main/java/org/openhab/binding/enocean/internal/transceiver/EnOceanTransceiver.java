@@ -27,9 +27,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.EnOceanException;
+import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
+import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
+import org.openhab.binding.enocean.internal.messages.EventMessage;
+import org.openhab.binding.enocean.internal.messages.EventMessage.EventMessageType;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -138,7 +142,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     Request currentRequest = null;
 
     protected Map<Long, HashSet<PacketListener>> listeners;
-    protected PacketListener teachInListener;
+    protected HashSet<EventListener> eventListeners;
+    protected TeachInListener teachInListener;
 
     protected InputStream inputStream;
     protected OutputStream outputStream;
@@ -151,6 +156,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         requestQueue = new RequestQueue(scheduler);
 
         listeners = new HashMap<>();
+        eventListeners = new HashSet<>();
         teachInListener = null;
 
         this.errorListener = errorListener;
@@ -192,6 +198,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                 }
             });
         }
+        logger.info("EnOceanSerialTransceiver RX thread started");
     }
 
     public void ShutDown() {
@@ -266,36 +273,65 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         }
     }
 
-    protected void informListeners(ERP1Message msg) {
+    protected void informListeners(BasePacket packet) {
         try {
-            byte[] senderId = msg.getSenderId();
+            if (packet.getPacketType() == ESPPacketType.RADIO_ERP1) {
+                ERP1Message msg = (ERP1Message) packet;
+                byte[] senderId = msg.getSenderId();
+                byte[] d = Helper.concatAll(msg.getPayload(), msg.getOptionalPayload());
 
-            if (senderId != null) {
-                if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0] && senderId[1] == filteredDeviceId[1]
-                        && senderId[2] == filteredDeviceId[2]) {
-                    // filter away own messages which are received through a repeater
-                    return;
-                }
+                logger.debug("{} with RORG {} for {} payload {} received", packet.getPacketType().name(),
+                        msg.getRORG().name(), HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
 
-                if (teachInListener != null) {
-                    if (msg.getIsTeachIn() || (msg.getRORG() == RORG.RPS)) {
-                        logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
-                        teachInListener.packetReceived(msg);
-                        return;
+                if (msg.getRORG() != RORG.Unknown) {
+                    if (senderId != null) {
+                        if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0]
+                                && senderId[1] == filteredDeviceId[1] && senderId[2] == filteredDeviceId[2]) {
+                            // filter away own messages which are received through a repeater
+                            return;
+                        }
+
+                        if (teachInListener != null && (msg.getIsTeachIn() || msg.getRORG() == RORG.RPS)) {
+                            logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
+                            teachInListener.packetReceived(msg);
+                            return;
+                        } else if (teachInListener == null && msg.getIsTeachIn()) {
+                            logger.info("Discard message because this is a teach-in telegram from {}!",
+                                    HexUtils.bytesToHex(msg.getSenderId()));
+                            return;
+                        }
+
+                        long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
+                        HashSet<PacketListener> pl = listeners.get(s);
+                        if (pl != null) {
+                            pl.forEach(l -> l.packetReceived(msg));
+                        }
                     }
                 } else {
-                    if (msg.getIsTeachIn()) {
-                        logger.info("Discard message because this is a teach-in telegram from {}!",
-                                HexUtils.bytesToHex(msg.getSenderId()));
+                    logger.debug("Received unknown RORG");
+                }
+            } else if (packet.getPacketType() == ESPPacketType.EVENT) {
+                EventMessage event = (EventMessage) packet;
+
+                byte[] d = Helper.concatAll(packet.getPayload(), packet.getOptionalPayload());
+                logger.debug("{} with type {} payload {} received", ESPPacketType.EVENT.name(),
+                        event.getEventMessageType().name(), HexUtils.bytesToHex(d));
+
+                if (event.getEventMessageType() == EventMessageType.SA_CONFIRM_LEARN) {
+                    byte[] senderId = event.getPayload(EventMessageType.SA_CONFIRM_LEARN.getDataLength() - 5, 4);
+
+                    if (teachInListener != null) {
+                        logger.info("Received smart teach in from {}", HexUtils.bytesToHex(senderId));
+                        teachInListener.eventReceived(event);
+                        return;
+                    } else {
+                        logger.info("Discard message because this is a smart teach-in telegram from {}!",
+                                HexUtils.bytesToHex(senderId));
                         return;
                     }
                 }
 
-                long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
-                HashSet<PacketListener> pl = listeners.get(s);
-                if (pl != null) {
-                    pl.forEach(l -> l.packetReceived(msg));
-                }
+                eventListeners.forEach(l -> l.eventReceived(event));
             }
         } catch (Exception e) {
             logger.error("Exception in informListeners", e);
@@ -354,7 +390,15 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         }
     }
 
-    public void startDiscovery(PacketListener teachInListener) {
+    public void addEventMessageListener(EventListener listener) {
+        eventListeners.add(listener);
+    }
+
+    public void removeEventMessageListener(EventListener listener) {
+        eventListeners.remove(listener);
+    }
+
+    public void startDiscovery(TeachInListener teachInListener) {
         this.teachInListener = teachInListener;
     }
 

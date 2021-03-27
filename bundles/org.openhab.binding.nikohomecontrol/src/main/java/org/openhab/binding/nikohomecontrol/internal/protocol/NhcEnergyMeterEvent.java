@@ -28,14 +28,20 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface NhcEnergyMeterEvent {
 
     /**
-     * This method is called when an energyMeters meter event is received from the Niko Home Control controller.
+     * This method is called when an energyMeter event is received from the Niko Home Control controller.
      *
      * @param power current power consumption/production in W (positive for consumption), null for an empty reading
      */
     public void energyMeterEvent(@Nullable Integer power);
 
     /**
-     * Called to indicate the energyMeters meter has been removed from the Niko Home Control controller.
+     * Called to indicate the energyMeter has been initialized.
+     *
+     */
+    public void energyMeterInitialized();
+
+    /**
+     * Called to indicate the energyMeter has been removed from the Niko Home Control controller.
      *
      */
     public void energyMeterRemoved();

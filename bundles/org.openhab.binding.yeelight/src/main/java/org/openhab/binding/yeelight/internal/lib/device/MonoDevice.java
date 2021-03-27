@@ -37,7 +37,7 @@ public class MonoDevice extends DeviceBase {
 
     @Override
     public void onNotify(String msg) {
-        JsonObject result = new JsonParser().parse(msg).getAsJsonObject();
+        JsonObject result = JsonParser.parseString(msg).getAsJsonObject();
         try {
             if (result.has("id")) {
                 String id = result.get("id").getAsString();

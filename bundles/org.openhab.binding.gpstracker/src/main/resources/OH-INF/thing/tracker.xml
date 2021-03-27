@@ -31,7 +31,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Accuracy</label>
 		<description>GPS accuracy</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastReport">
 		<item-type>DateTime</item-type>

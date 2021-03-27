@@ -20,7 +20,14 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +38,6 @@ import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -100,7 +106,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     public VenstarThermostatHandler(Thing thing) {
         super(thing);
-        httpClient = new HttpClient(new SslContextFactory(true));
+        httpClient = new HttpClient(new SslContextFactory.Client(true));
         gson = new GsonBuilder().registerTypeAdapter(VenstarSystemState.class, new VenstarSystemStateSerializer())
                 .registerTypeAdapter(VenstarSystemMode.class, new VenstarSystemModeSerializer()).create();
 
@@ -112,13 +118,13 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     public Collection<ConfigStatusMessage> getConfigStatus() {
         Collection<ConfigStatusMessage> status = new ArrayList<>();
         VenstarThermostatConfiguration config = getConfigAs(VenstarThermostatConfiguration.class);
-        if (StringUtils.isBlank(config.username)) {
+        if (config.username.isBlank()) {
             log.warn("username is empty");
             status.add(ConfigStatusMessage.Builder.error(CONFIG_USERNAME).withMessageKeySuffix(EMPTY_INVALID)
                     .withArguments(CONFIG_USERNAME).build());
         }
 
-        if (StringUtils.isBlank(config.password)) {
+        if (config.password.isBlank()) {
             log.warn("password is empty");
             status.add(ConfigStatusMessage.Builder.error(CONFIG_PASSWORD).withMessageKeySuffix(EMPTY_INVALID)
                     .withArguments(CONFIG_PASSWORD).build());

@@ -41,7 +41,7 @@ public class CeilingDeviceWithAmbientDevice extends CeilingDevice
     public void onNotify(String msg) {
         logger.debug("Got state: {}", msg);
 
-        JsonObject result = new JsonParser().parse(msg).getAsJsonObject();
+        JsonObject result = JsonParser.parseString(msg).getAsJsonObject();
 
         if (result.has("id")) {
             String id = result.get("id").getAsString();

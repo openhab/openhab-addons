@@ -105,13 +105,14 @@
 		<item-type>String</item-type>
 		<label>Change Menu Screen</label>
 		<description>Change(TELEPORT) to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My
-			Shows), NETFLIX. Type: String</description>
+			Shows), SEARCH, NETFLIX. Type: String</description>
 		<state readOnly="false">
 			<options>
 				<option value="TIVO">TIVO</option>
 				<option value="LIVETV">LIVETV</option>
 				<option value="GUIDE">GUIDE</option>
 				<option value="NOWPLAYING">NOWPLAYING</option>
+				<option value="SEARCH">SEARCH</option>
 				<option value="NETFLIX">NETFLIX</option>
 			</options>
 		</state>
@@ -119,9 +120,65 @@
 	<channel-type id="irCommand">
 		<item-type>String</item-type>
 		<label>Remote Control Button</label>
-		<description>Send a simulated button push (IRCODE) from the remote control to the TiVo. See Appendix A in document TCP
-			Remote Protocol 1.1 for supported codes. Type: String</description>
-		<state readOnly="false"/>
+		<description>Send a simulated button push (IRCODE) from the remote control to the TiVo. See README.md for supported
+			codes. Type: String</description>
+		<state readOnly="false">
+			<options>
+				<option value="UP">UP</option>
+				<option value="DOWN">DOWN</option>
+				<option value="LEFT">LEFT</option>
+				<option value="RIGHT">RIGHT</option>
+				<option value="SELECT">SELECT</option>
+				<option value="TIVO">TIVO</option>
+				<option value="LIVETV">LIVETV</option>
+				<option value="GUIDE">GUIDE</option>
+				<option value="INFO">INFO</option>
+				<option value="EXIT">EXIT</option>
+				<option value="THUMBSUP">THUMBSUP</option>
+				<option value="THUMBSDOWN">THUMBSDOWN</option>
+				<option value="CHANNELUP">CHANNELUP</option>
+				<option value="CHANNELDOWN">CHANNELDOWN</option>
+				<option value="PLAY">PLAY</option>
+				<option value="FORWARD">FORWARD</option>
+				<option value="REVERSE">REVERSE</option>
+				<option value="PAUSE">PAUSE</option>
+				<option value="SLOW">SLOW</option>
+				<option value="REPLAY">REPLAY</option>
+				<option value="ADVANCE">ADVANCE</option>
+				<option value="RECORD">RECORD</option>
+				<option value="NUM0">NUM0</option>
+				<option value="NUM1">NUM1</option>
+				<option value="NUM2">NUM2</option>
+				<option value="NUM3">NUM3</option>
+				<option value="NUM4">NUM4</option>
+				<option value="NUM5">NUM5</option>
+				<option value="NUM6">NUM6</option>
+				<option value="NUM7">NUM7</option>
+				<option value="NUM8">NUM8</option>
+				<option value="NUM9">NUM9</option>
+				<option value="ENTER">ENTER</option>
+				<option value="CLEAR">CLEAR</option>
+				<option value="ACTION_A">ACTION_A</option>
+				<option value="ACTION_B">ACTION_B</option>
+				<option value="ACTION_C">ACTION_C</option>
+				<option value="ACTION_D">ACTION_D</option>
+				<option value="CC_ON">CC_ON</option>
+				<option value="CC_OFF">CC_OFF</option>
+				<option value="FIND_REMOTE">FIND_REMOTE</option>
+				<option value="ASPECT_CORRECTION_FULL">ASPECT_CORRECTION_FULL</option>
+				<option value="ASPECT_CORRECTION_PANEL">ASPECT_CORRECTION_PANEL</option>
+				<option value="ASPECT_CORRECTION_ZOOM">ASPECT_CORRECTION_ZOOM</option>
+				<option value="ASPECT_CORRECTION_WIDE_ZOOM">ASPECT_CORRECTION_WIDE_ZOOM</option>
+				<option value="VIDEO_MODE_FIXED_480i">VIDEO_MODE_FIXED_480i</option>
+				<option value="VIDEO_MODE_FIXED_480p">VIDEO_MODE_FIXED_480p</option>
+				<option value="VIDEO_MODE_FIXED_720p">VIDEO_MODE_FIXED_720p</option>
+				<option value="VIDEO_MODE_FIXED_1080i">VIDEO_MODE_FIXED_1080i</option>
+				<option value="VIDEO_MODE_HYBRID">VIDEO_MODE_HYBRID</option>
+				<option value="VIDEO_MODE_HYBRID_720p">VIDEO_MODE_HYBRID_720p</option>
+				<option value="VIDEO_MODE_HYBRID_1080i">VIDEO_MODE_HYBRID_1080i</option>
+				<option value="VIDEO_MODE_NATIVE">VIDEO_MODE_NATIVE</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="kbdCommand">
 		<item-type>String</item-type>

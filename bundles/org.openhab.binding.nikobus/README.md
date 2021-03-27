@@ -131,6 +131,8 @@ Defines a `rollershutter-module` with address `4C6C`.
 | output-5  | Rollershutter | Output 5     |
 | output-6  | Rollershutter | Output 6     |
 
+In case rollershutters are moving in the oposite direction when sending `UP` or `DOWN` commands, there is a `reverse` parameter, which can be set to `true` in this case to reverse the rollershutter's direction. Defaults to `false`.
+
 ##### Estimating Position
 
 Nikobus rollershuter module does not provide information about rollershutter's position. In order to bridge this gap, an optional parameter `duration` can be set per channel, describing the amount of time needed by a rollershutter to get from open to closed state (or vice-versa).

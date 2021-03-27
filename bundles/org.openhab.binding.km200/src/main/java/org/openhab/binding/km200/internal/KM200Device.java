@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -41,7 +40,6 @@ import com.google.gson.JsonParser;
 public class KM200Device {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
-    private final JsonParser jsonParser = new JsonParser();
     private final KM200Cryption comCryption;
     private final KM200Comm<KM200Device> deviceCommunicator;
 
@@ -84,7 +82,7 @@ public class KM200Device {
     }
 
     public Boolean isConfigured() {
-        return StringUtils.isNotBlank(ip4Address) && cryptKeyPriv.length > 0;
+        return !ip4Address.isBlank() && cryptKeyPriv.length > 0;
     }
 
     public String getIP4Address() {
@@ -361,7 +359,7 @@ public class KM200Device {
                     logger.debug("{}: SERVICE NOT AVAILABLE", service);
                     return null;
                 } else {
-                    nodeRoot = (JsonObject) jsonParser.parse(decodedData);
+                    nodeRoot = (JsonObject) JsonParser.parseString(decodedData);
                 }
             } else {
                 logger.debug("Get empty reply");

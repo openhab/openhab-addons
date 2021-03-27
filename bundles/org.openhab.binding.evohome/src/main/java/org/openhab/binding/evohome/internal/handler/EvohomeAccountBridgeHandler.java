@@ -22,7 +22,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.evohome.internal.RunnableWithTimeout;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
@@ -190,9 +189,9 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
         if (configuration == null) {
             errorMessage = "Configuration is missing or corrupted";
-        } else if (StringUtils.isEmpty(configuration.username)) {
+        } else if (configuration.username == null || configuration.username.isEmpty()) {
             errorMessage = "Username not configured";
-        } else if (StringUtils.isEmpty(configuration.password)) {
+        } else if (configuration.password == null || configuration.password.isEmpty()) {
             errorMessage = "Password not configured";
         } else {
             return true;

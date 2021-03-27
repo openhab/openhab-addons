@@ -13,12 +13,11 @@
 		<description>Sensor which sends light, supply voltage and occupancy data (EEP: A5-07)</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>
 				<options>
@@ -27,7 +26,6 @@
 					<option value="A5_07_03">A5-07-03 battery voltage, lux range [0;1000]</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 			<parameter name="receivingSIGEEP" type="boolean">
 				<label>Receive Battery Status Signal Messages</label>

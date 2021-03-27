@@ -21,13 +21,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
@@ -63,7 +64,7 @@ import com.google.gson.JsonParseException;
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     private long refreshInterval;
     private long hardRefreshInterval;
@@ -75,9 +76,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    public HDPowerViewHubHandler(Bridge bridge, ClientBuilder clientBuilder) {
+    public HDPowerViewHubHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -98,7 +99,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                     webTargets.activateScene(Integer.parseInt(channelUID.getId()));
                 } catch (HubMaintenanceException e) {
                     // exceptions are logged in HDPowerViewWebTargets
-                } catch (NumberFormatException | ProcessingException e) {
+                } catch (NumberFormatException | HubProcessingException e) {
                     logger.debug("Unexpected error {}", e.getMessage());
                 }
             }
@@ -116,7 +117,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        webTargets = new HDPowerViewWebTargets(clientBuilder.build(), host);
+        webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshInterval = config.hardRefresh;
         schedulePoll();
@@ -178,7 +179,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             pollScenes();
         } catch (JsonParseException e) {
             logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
-        } catch (ProcessingException e) {
+        } catch (HubProcessingException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (HubMaintenanceException e) {
@@ -186,7 +187,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
+    private void pollShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
@@ -229,7 +230,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         thingHandler.onReceiveUpdate(shadeData);
     }
 
-    private void pollScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
+    private void pollScenes() throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");

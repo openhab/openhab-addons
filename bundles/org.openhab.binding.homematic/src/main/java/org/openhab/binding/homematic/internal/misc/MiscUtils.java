@@ -50,4 +50,62 @@ public class MiscUtils {
     public static boolean isFalseValue(Object value) {
         return value != null && value == Boolean.FALSE;
     }
+
+    /**
+     * Returns true, if str starts with search. Check is done case-insensitive.
+     */
+    public static boolean strStartsWithIgnoreCase(String str, String search) {
+        if (str == null || search == null || search.length() > str.length()) {
+            return false;
+        }
+        return str.substring(0, search.length()).equalsIgnoreCase(search);
+    }
+
+    /**
+     * Returns true if address is a device
+     */
+    public static boolean isDevice(String address) {
+        return isDevice(address, false);
+    }
+
+    /**
+     * Returns true if address is a device. If allowBidCos ist true then addresses starting with "BidCos" classified as
+     * devices, too.
+     */
+    public static boolean isDevice(String address, boolean allowBidCos) {
+        if (address == null) {
+            return false;
+        }
+        if (address.contains(":")) {
+            return false;
+        }
+        if (allowBidCos && strStartsWithIgnoreCase(address.trim(), "BidCos")) {
+            return true;
+        }
+        return !strStartsWithIgnoreCase(address.trim(), "BidCos");
+    }
+
+    /**
+     * Changes all characters after whitespace to upper-case and all other character to lower case.
+     */
+    public static String capitalize(String value) {
+        if (value == null) {
+            return null;
+        }
+        char[] chars = value.toCharArray();
+        boolean capitalizeNextChar = true;
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isWhitespace(chars[i])) {
+                capitalizeNextChar = true;
+            } else {
+                if (capitalizeNextChar) {
+                    chars[i] = Character.toTitleCase(chars[i]);
+                    capitalizeNextChar = false;
+                } else {
+                    chars[i] = Character.toLowerCase(chars[i]);
+                }
+            }
+        }
+        return new String(chars);
+    }
 }

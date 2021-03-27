@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.rio.AbstractBridgeHandler;
 import org.openhab.binding.russound.internal.rio.AbstractRioHandlerCallback;
@@ -108,7 +107,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
     @Override
     public String getName() {
         final String name = zoneName.get();
-        return StringUtils.isEmpty(name) ? ("Zone " + getId()) : name;
+        return name == null || name.isEmpty() ? "Zone " + getId() : name;
     }
 
     /**

@@ -14,13 +14,14 @@ package org.openhab.binding.russound.internal.rio;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.binding.russound.internal.rio.models.GsonUtilities;
@@ -258,7 +259,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
      * @throws IllegalArgumentException if source is < 1 or > 8
      * @throws IllegalArgumentException if presetJson contains more than one preset
      */
-    public void setZonePresets(int controller, int zone, int source, String presetJson) {
+    public void setZonePresets(int controller, int zone, int source, @Nullable String presetJson) {
         if (controller < 1 || controller > 6) {
             throw new IllegalArgumentException("Controller must be between 1 and 6");
         }
@@ -271,7 +272,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
             throw new IllegalArgumentException("Source must be between 1 and 8");
         }
 
-        if (StringUtils.isEmpty(presetJson)) {
+        if (presetJson == null || presetJson.isEmpty()) {
             return;
         }
 
@@ -299,11 +300,11 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
 
                     // re-retrieve to see if the save/delete worked (saving on a zone that's off - valid won't be set to
                     // true)
-                    if (!StringUtils.equals(myPreset.getName(), presetName) || myPreset.isValid() != presetValid) {
+                    if (!Objects.equals(myPreset.getName(), presetName) || myPreset.isValid() != presetValid) {
                         myPreset.setName(presetName);
                         myPreset.setValid(presetValid);
                         if (presetValid) {
-                            if (StringUtils.isEmpty(presetName)) {
+                            if (presetName == null || presetName.isEmpty()) {
                                 sendCommand("EVENT C[" + controller + "].Z[" + zone + "]!savePreset " + presetId);
                             } else {
                                 sendCommand("EVENT C[" + controller + "].Z[" + zone + "]!savePreset \"" + presetName
@@ -438,8 +439,8 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
      * @param a possibly null, possibly empty response
      */
     @Override
-    public void responseReceived(String response) {
-        if (StringUtils.isEmpty(response)) {
+    public void responseReceived(@Nullable String response) {
+        if (response == null || response.isEmpty()) {
             return;
         }
 

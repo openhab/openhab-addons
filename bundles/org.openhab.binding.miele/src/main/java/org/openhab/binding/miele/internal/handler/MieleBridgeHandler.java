@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -480,8 +480,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
         if (responseData != null) {
             logger.debug("The request '{}' yields '{}'", requestData, responseData);
-            JsonParser parser = new JsonParser();
-            JsonObject resp = (JsonObject) parser.parse(new StringReader(responseData));
+            JsonObject resp = (JsonObject) JsonParser.parseReader(new StringReader(responseData));
 
             result = resp.get("result");
             JsonElement error = resp.get("error");

@@ -43,7 +43,7 @@ public class ControllerVariables {
     public static ControllerVariables parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         ControllerVariables info = new ControllerVariables();
         info.dist = jsonObject.get("dist").getAsInt();
         info.door = jsonObject.get("door").getAsInt();

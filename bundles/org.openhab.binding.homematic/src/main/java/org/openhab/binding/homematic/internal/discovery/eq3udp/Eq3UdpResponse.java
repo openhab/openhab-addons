@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.homematic.internal.discovery.eq3udp;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Extracts a UDP response from a Homematic CCU gateway.
  *
@@ -86,7 +83,7 @@ public class Eq3UdpResponse {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("deviceTypeId", deviceTypeId)
-                .append("serialNumber", serialNumber).toString();
+        return String.format("%s[deviceTypeId=%s,serialNumber=%s]", getClass().getSimpleName(), deviceTypeId,
+                serialNumber);
     }
 }

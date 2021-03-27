@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.config.MagentaTVDynamicConfig;
 import org.openhab.binding.magentatv.internal.network.MagentaTVHttp;
@@ -44,7 +45,7 @@ public class MagentaTVControl {
 
     private final MagentaTVNetwork network;
     private final MagentaTVHttp http = new MagentaTVHttp();
-    private final MagentaTVOAuth oauth = new MagentaTVOAuth();
+    private final MagentaTVOAuth oauth;
     private final MagentaTVDynamicConfig config;
     private boolean initialized = false;
     private String thingId = "";
@@ -52,11 +53,13 @@ public class MagentaTVControl {
     public MagentaTVControl() {
         config = new MagentaTVDynamicConfig();
         network = new MagentaTVNetwork();
+        oauth = new MagentaTVOAuth(new HttpClient());
     }
 
-    public MagentaTVControl(MagentaTVDynamicConfig config, MagentaTVNetwork network) {
+    public MagentaTVControl(MagentaTVDynamicConfig config, MagentaTVNetwork network, HttpClient httpClient) {
         thingId = config.getFriendlyName();
         this.network = network;
+        this.oauth = new MagentaTVOAuth(httpClient);
         this.config = config;
         this.config.setTerminalID(computeMD5(network.getLocalMAC().toUpperCase() + config.getUDN()));
         this.config.setLocalIP(network.getLocalIP());
@@ -391,7 +394,8 @@ public class MagentaTVControl {
             // direct key code
             return key;
         }
-        return KEY_MAP.getOrDefault(key, "");
+        String code = KEY_MAP.get(key);
+        return code != null ? code : "";
     }
 
     /**

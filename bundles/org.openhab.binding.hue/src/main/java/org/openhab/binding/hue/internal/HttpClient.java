@@ -93,7 +93,8 @@ public class HttpClient {
         synchronized (commandsQueue) {
             if (commandsQueue.isEmpty()) {
                 commandsQueue.offer(asyncPutParameters);
-                if (job == null || job.isDone()) {
+                Future<?> localJob = job;
+                if (localJob == null || localJob.isDone()) {
                     job = scheduler.submit(this::executeCommands);
                 }
             } else {

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
 /**
  * Parses a delete device event received from a Homematic gateway.
@@ -31,12 +31,9 @@ public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>>
             Object[] data = (Object[]) message[1];
             for (int i = 0; i < message.length; i++) {
                 String address = getSanitizedAddress(data[i]);
-                boolean isDevice = !StringUtils.contains(address, ":")
-                        && !StringUtils.startsWithIgnoreCase(address, "BidCos");
-                if (isDevice) {
+                if (MiscUtils.isDevice(address)) {
                     adresses.add(address);
                 }
-
             }
         }
         return adresses;

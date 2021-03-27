@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
@@ -29,7 +30,8 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLigh
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -146,9 +148,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         col.power = getOnOff(light.ison);
                         col.setBrightness(light.brightness);
                         updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", col.power);
-                        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
-                                toQuantityType(new Double(col.power == OnOffType.ON ? col.brightness : 0), DIGITS_NONE,
-                                        Units.PERCENT));
+                        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
+                                (double) (col.power == OnOffType.ON ? col.brightness : 0), DIGITS_NONE, Units.PERCENT));
                         update = false;
                         break;
                     }
@@ -264,17 +265,15 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 logger.debug("{}: {} brightness by {}", thingName, command, SHELLY_DIM_STEPSIZE);
                 PercentType percent = (PercentType) super.getChannelValue(CHANNEL_GROUP_COLOR_CONTROL,
                         CHANNEL_BRIGHTNESS);
-                if (percent != null) {
-                    int currentBrightness = percent.intValue() * SHELLY_MAX_BRIGHTNESS;
-                    int newBrightness = currentBrightness;
-                    if (command == IncreaseDecreaseType.DECREASE) {
-                        newBrightness = Math.max(currentBrightness - SHELLY_DIM_STEPSIZE, 0);
-                    } else {
-                        newBrightness = Math.min(currentBrightness + SHELLY_DIM_STEPSIZE, SHELLY_MAX_BRIGHTNESS);
-                    }
-                    col.brightness = newBrightness;
-                    updated = currentBrightness != newBrightness;
+                int currentBrightness = percent.intValue() * SHELLY_MAX_BRIGHTNESS;
+                int newBrightness = currentBrightness;
+                if (command == IncreaseDecreaseType.DECREASE) {
+                    newBrightness = Math.max(currentBrightness - SHELLY_DIM_STEPSIZE, 0);
+                } else {
+                    newBrightness = Math.min(currentBrightness + SHELLY_DIM_STEPSIZE, SHELLY_MAX_BRIGHTNESS);
                 }
+                col.brightness = newBrightness;
+                updated = currentBrightness != newBrightness;
             }
         }
         return updated;
@@ -303,14 +302,13 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     }
 
     private ShellyColorUtils getCurrentColors(int lightId) {
-        ShellyColorUtils col;
-        if (!channelColors.containsKey(lightId)) {
+        ShellyColorUtils col = channelColors.get(lightId);
+        if (col == null) {
             col = new ShellyColorUtils(); // create a new entry
             col.setMinMaxTemp(profile.minTemp, profile.maxTemp);
             channelColors.put(lightId, col);
             logger.trace("{}: Colors entry created for lightId {}", thingName, lightId);
         } else {
-            col = channelColors.get(lightId);
             logger.trace(
                     "{}: Colors loaded for lightId {}: power={}, RGBW={}/{}/{}/{}, gain={}, brightness={}, color temp={} (min={}, max={}",
                     thingName, lightId, col.power, col.red, col.green, col.blue, col.white, col.gain, col.brightness,
@@ -339,6 +337,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         for (ShellyStatusLightChannel light : status.lights) {
             Integer channelId = lightId + 1;
             String controlGroup = buildControlGroupName(profile, channelId);
+            createLightChannels(light, lightId);
             // The bulb has a combined channel set for color or white mode
             // The RGBW2 uses 2 different thing types: color=1 channel, white=4 channel
             if (profile.isBulb) {
@@ -349,11 +348,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             col.power = getOnOff(light.ison);
 
             // Channel control/timer
-            // ShellyStatusLightChannel light = status.lights.get(i);
+            ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
+            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(ls.autoOn));
+            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(ls.autoOff));
             updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(light.autoOn));
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(light.autoOff));
-            updated |= updateInputs(controlGroup, genericStatus, lightId);
+            updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
+
             if (getBool(light.overpower)) {
                 postEvent(ALARM_TYPE_OVERPOWER, false);
             }
@@ -386,8 +386,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 col.setBrightness(getInteger(light.brightness));
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Value",
-                        toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : new Double(0),
-                                DIGITS_NONE, Units.PERCENT));
+                        toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : 0, DIGITS_NONE,
+                                Units.PERCENT));
 
                 if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
                     col.setTemp(getInteger(light.temp));
@@ -403,14 +403,20 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         return updated;
     }
 
+    private void createLightChannels(ShellyStatusLightChannel status, int idx) {
+        if (!areChannelsCreated()) {
+            updateChannelDefinitions(ShellyChannelDefinitions.createLightChannels(getThing(), profile, status, idx));
+        }
+    }
+
     private Integer setColor(Integer lightId, String colorName, Command command, Integer minValue, Integer maxValue)
             throws ShellyApiException, IllegalArgumentException {
         Integer value = -1;
         logger.debug("{}: Set {} to {} ({})", thingName, colorName, command, command.getClass());
         if (command instanceof PercentType) {
             PercentType percent = (PercentType) command;
-            Double v = new Double(maxValue) * percent.doubleValue() / 100.0;
-            value = v.intValue();
+            double v = (double) maxValue * percent.doubleValue() / 100.0;
+            value = (int) v;
             logger.debug("{}: Value for {} is in percent: {}%={}", thingName, colorName, percent, value);
         } else if (command instanceof DecimalType) {
             value = ((DecimalType) command).intValue();
@@ -499,14 +505,13 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 lightId, col.red, col.green, col.blue, col.white, col.gain, col.brightness, col.temp);
     }
 
-    private Integer getColorFromHSB(PercentType colorPercent) {
-        return getColorFromHSB(colorPercent, new Double(SATURATION_FACTOR));
+    private int getColorFromHSB(PercentType colorPercent) {
+        return getColorFromHSB(colorPercent, SATURATION_FACTOR);
     }
 
-    private Integer getColorFromHSB(PercentType colorPercent, Double factor) {
-        Double value = new Double(Math.round(colorPercent.doubleValue() * factor));
-        logger.trace("{}: convert {}% into {}/{} (factor={})", thingName, colorPercent, value, value.intValue(),
-                factor);
-        return value.intValue();
+    private int getColorFromHSB(PercentType colorPercent, double factor) {
+        double value = Math.round(colorPercent.doubleValue() * factor);
+        logger.trace("{}: convert {}% into {}/{} (factor={})", thingName, colorPercent, value, (int) value, factor);
+        return (int) value;
     }
 }

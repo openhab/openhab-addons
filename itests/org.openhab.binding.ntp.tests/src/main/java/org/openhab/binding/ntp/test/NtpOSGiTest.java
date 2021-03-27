@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -450,9 +449,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     }
 
     private String getStringChannelTimeZoneFromItemRegistry() {
-        String itemState = getItemState(ACCEPTED_ITEM_TYPE_STRING).toString();
-        String timeZoneFromItemRegistry = StringUtils.substringAfterLast(itemState, " ");
-        return timeZoneFromItemRegistry;
+        return getItemState(ACCEPTED_ITEM_TYPE_STRING).toString().split(" ")[2];
     }
 
     private void assertFormat(String initialDate, String formatPattern) {

@@ -70,7 +70,7 @@ public final class NikoHomeControlDiscover {
             datagramSocket.send(discoveryPacket);
             while (true) {
                 datagramSocket.receive(packet);
-                logger.trace("Niko Home Control: bridge discovery response {}",
+                logger.trace("bridge discovery response {}",
                         HexUtils.bytesToHex(Arrays.copyOf(packet.getData(), packet.getLength())));
                 if (isNhc(packet)) {
                     break;
@@ -79,7 +79,7 @@ public final class NikoHomeControlDiscover {
             addr = packet.getAddress();
             setNhcBridgeId(packet);
             setIsNhcII(packet);
-            logger.debug("Niko Home Control: IP address is {}, unique ID is {}", addr, nhcBridgeId);
+            logger.debug("IP address is {}, unique ID is {}", addr, nhcBridgeId);
         }
     }
 

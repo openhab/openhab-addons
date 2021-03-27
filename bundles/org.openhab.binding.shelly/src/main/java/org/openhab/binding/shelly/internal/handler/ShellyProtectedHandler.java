@@ -16,10 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyProtectedHandler} implements a dummy handler for password protected devices.
@@ -28,8 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyProtectedHandler extends ShellyBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(ShellyProtectedHandler.class);
-
     /**
      * Constructor
      *

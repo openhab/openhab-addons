@@ -10,11 +10,10 @@
 			<channel id="mute" typeId="mute"/>
 		</channels>
 		<config-description>
-			<parameter name="address" type="text">
+			<parameter name="address" type="text" required="true">
 				<label>Receiver Address(es)</label>
 				<description>Network addresses of ArtNet receivers, format: address[:port][, address[:port], ...]. Default port is
 					6454.</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="localaddress" type="text">
 				<label>Local Network Address</label>

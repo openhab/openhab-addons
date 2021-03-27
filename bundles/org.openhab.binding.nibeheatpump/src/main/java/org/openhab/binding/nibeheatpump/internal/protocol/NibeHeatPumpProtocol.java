@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nibeheatpump.internal.protocol;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 
 /**

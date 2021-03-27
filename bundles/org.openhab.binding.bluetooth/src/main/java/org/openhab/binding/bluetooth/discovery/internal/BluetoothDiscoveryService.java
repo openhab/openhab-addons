@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.discovery.internal;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -131,6 +133,13 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         for (BluetoothAdapter adapter : adapters) {
             adapter.scanStop();
         }
+
+        // The method `removeOlderResults()` removes the Things from listeners like `Inbox`.
+        // We therefore need to reset `latestSnapshot` so that the Things are notified again next time.
+        // Results newer than `getTimestampOfLastScan()` will also be notified again but do not lead to duplicates.
+        discoveryCaches.values().forEach(discoveryCache -> {
+            discoveryCache.latestSnapshot.putValue(null);
+        });
         removeOlderResults(getTimestampOfLastScan());
     }
 
@@ -153,10 +162,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private static DiscoveryResult copyWithNewBridge(DiscoveryResult result, BluetoothAdapter adapter) {
         String label = result.getLabel();
-        String adapterLabel = adapter.getLabel();
-        if (adapterLabel != null) {
-            label = adapterLabel + " - " + label;
-        }
 
         return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter))//
                 .withBridge(adapter.getUID())//
@@ -172,7 +177,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
         private final Map<BluetoothAdapter, Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
 
-        private @Nullable BluetoothDeviceSnapshot latestSnapshot;
+        private ExpiringCache<BluetoothDeviceSnapshot> latestSnapshot = new ExpiringCache<>(Duration.ofMinutes(1),
+                () -> null);
 
         /**
          * This is meant to be used as part of a Map.compute function
@@ -209,7 +215,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             CompletableFuture<DiscoveryResult> future = null;
 
             BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(device);
-            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot;
+            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot.getValue();
             if (latestSnapshot != null) {
                 snapshot.merge(latestSnapshot);
 
@@ -236,7 +242,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                     }
                 }
             }
-            this.latestSnapshot = snapshot;
+            this.latestSnapshot.putValue(snapshot);
 
             if (future == null) {
                 // we pass in the snapshot since it acts as a delegate for the device. It will also retain any new
@@ -291,6 +297,12 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             discoveryResults.put(adapter, results);
         }
 
+        /**
+         * Called when a new discovery is published and thus requires the old discovery to be removed first.
+         *
+         * @param adapter to get the results to be removed
+         * @param result unused
+         */
         private void retractDiscoveryResult(BluetoothAdapter adapter, DiscoveryResult result) {
             Set<DiscoveryResult> results = discoveryResults.remove(adapter);
             if (results != null) {

@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.meteoblue.internal.Forecast;
 import org.openhab.binding.meteoblue.internal.MeteoBlueConfiguration;
 import org.openhab.binding.meteoblue.internal.json.JsonData;
@@ -97,13 +96,13 @@ public class MeteoBlueHandler extends BaseThingHandler {
 
         MeteoBlueConfiguration config = getConfigAs(MeteoBlueConfiguration.class);
 
-        if (StringUtils.isBlank(config.serviceType)) {
+        if (config.serviceType == null || config.serviceType.isBlank()) {
             config.serviceType = MeteoBlueConfiguration.SERVICETYPE_NONCOMM;
             logger.debug("Using default service type ({}).", config.serviceType);
             return;
         }
 
-        if (StringUtils.isBlank(config.location)) {
+        if (config.location == null || config.location.isBlank()) {
             flagBadConfig("The location was not configured.");
             return;
         }
@@ -315,7 +314,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
         if (config.altitude != null) {
             builder.append("&asl=" + config.altitude);
         }
-        if (StringUtils.isNotBlank(config.timeZone)) {
+        if (config.timeZone != null && !config.timeZone.isBlank()) {
             builder.append("&tz=" + config.timeZone);
         }
         url = url.replace("#FORMAT_PARAMS#", builder.toString());

@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.zway.internal.config.ZWayZAutomationDeviceConfiguration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -140,7 +139,8 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
     private ZWayZAutomationDeviceConfiguration loadAndCheckConfiguration() {
         ZWayZAutomationDeviceConfiguration config = getConfigAs(ZWayZAutomationDeviceConfiguration.class);
 
-        if (StringUtils.trimToNull(config.getDeviceId()) == null) {
+        String deviceId = config.getDeviceId();
+        if (deviceId == null || deviceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Z-Wave device couldn't create, because the device id is missing.");
             return null;
@@ -181,7 +181,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
             }
 
             Calendar lastUpdateOfDevice = Calendar.getInstance();
-            lastUpdateOfDevice.setTimeInMillis(new Long(device.getUpdateTime()) * 1000);
+            lastUpdateOfDevice.setTimeInMillis(Long.valueOf(device.getUpdateTime()) * 1000);
 
             if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
                 lastUpdate = lastUpdateOfDevice;

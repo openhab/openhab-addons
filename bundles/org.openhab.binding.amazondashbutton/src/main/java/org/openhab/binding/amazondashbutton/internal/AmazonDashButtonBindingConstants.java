@@ -33,7 +33,6 @@ public class AmazonDashButtonBindingConstants {
     public static final String PRESS = "press";
 
     // Custom Properties
-    public static final String PROPERTY_MAC_ADDRESS = "macAddress";
     public static final String PROPERTY_NETWORK_INTERFACE_NAME = "pcapNetworkInterfaceName";
     public static final String PROPERTY_PACKET_INTERVAL = "packetInterval";
 }

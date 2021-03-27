@@ -21,9 +21,12 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -818,7 +821,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         BigDecimal port = (BigDecimal) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PORT.toString());
         String pin = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PIN.toString());
 
-        if (ip == null || port.compareTo(BigDecimal.ZERO) == 0 || StringUtils.isEmpty(pin)) {
+        if (ip == null || port.compareTo(BigDecimal.ZERO) == 0 || pin == null || pin.isEmpty()) {
             return false;
         }
         return true;

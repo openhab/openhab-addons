@@ -158,7 +158,7 @@ public abstract class NhcAction {
     protected void updateState(int state) {
         NhcActionEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
-            logger.debug("Niko Home Control: update channel state for {} with {}", id, state);
+            logger.debug("update channel state for {} with {}", id, state);
             eventHandler.actionEvent(state);
         }
     }
@@ -167,7 +167,7 @@ public abstract class NhcAction {
      * Method called when action is removed from the Niko Home Control Controller.
      */
     public void actionRemoved() {
-        logger.warn("Niko Home Control: action removed {}, {}", id, name);
+        logger.debug("action removed {}, {}", id, name);
         NhcActionEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.actionRemoved();

@@ -13,8 +13,9 @@
 package org.openhab.binding.systeminfo.internal.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
@@ -316,14 +317,14 @@ public class OSHISysteminfo implements SysteminfoInterface {
     @Override
     public @Nullable DecimalType getSensorsCpuTemperature() {
         BigDecimal cpuTemp = new BigDecimal(sensors.getCpuTemperature());
-        cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
+        cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
         return cpuTemp.signum() == 1 ? new DecimalType(cpuTemp) : null;
     }
 
     @Override
     public @Nullable DecimalType getSensorsCpuVoltage() {
         BigDecimal cpuVoltage = new BigDecimal(sensors.getCpuVoltage());
-        cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
+        cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
         return cpuVoltage.signum() == 1 ? new DecimalType(cpuVoltage) : null;
     }
 
@@ -464,13 +465,13 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     private BigDecimal getPercentsValue(double decimalFraction) {
         BigDecimal result = new BigDecimal(decimalFraction * 100);
-        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
+        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
         return result;
     }
 
     private BigDecimal getTimeInMinutes(double timeInSeconds) {
         BigDecimal timeInMinutes = new BigDecimal(timeInSeconds / 60);
-        timeInMinutes = timeInMinutes.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_UP);
+        timeInMinutes = timeInMinutes.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.UP);
         return timeInMinutes;
     }
 
@@ -525,7 +526,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
         }
         double processorLoads[] = cpu.getSystemLoadAverage(index + 1);
         BigDecimal result = new BigDecimal(processorLoads[index]);
-        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
+        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
         return result;
     }
 

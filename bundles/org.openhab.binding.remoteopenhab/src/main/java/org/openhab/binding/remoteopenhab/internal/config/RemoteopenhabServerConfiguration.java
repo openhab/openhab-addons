@@ -31,8 +31,12 @@ public class RemoteopenhabServerConfiguration {
     public boolean useHttps = false;
     public int port = 8080;
     public boolean trustedCertificate = false;
-    public String restPath = "/rest";
+    public String restPath = "/rest/";
     public String token = "";
+    public String username = "";
+    public String password = "";
+    public boolean authenticateAnyway = false;
     public int accessibilityInterval = 3;
     public int aliveInterval = 5;
+    public boolean restartIfNoActivity = false;
 }

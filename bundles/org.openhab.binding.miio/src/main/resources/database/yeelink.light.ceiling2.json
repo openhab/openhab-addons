@@ -77,13 +77,12 @@
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"type": "Number:Temperature",
-				"unit": "kelvin",
+				"type": "Number",
 				"stateDescription": {
 					"minimum": 2700,
 					"maximum": 6500,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [

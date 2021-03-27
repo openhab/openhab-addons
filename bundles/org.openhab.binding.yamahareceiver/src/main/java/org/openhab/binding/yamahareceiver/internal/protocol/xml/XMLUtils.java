@@ -173,7 +173,13 @@ public class XMLUtils {
                 : "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + message;
 
         try {
-            return XMLUtils.dbf.newDocumentBuilder().parse(new InputSource(new StringReader(response)));
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);
+            return dbf.newDocumentBuilder().parse(new InputSource(new StringReader(response)));
         } catch (SAXException | ParserConfigurationException e) {
             throw new ReceivedMessageParseException(e);
         }

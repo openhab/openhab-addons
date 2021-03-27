@@ -47,6 +47,7 @@ public class PowermaxState extends PowermaxStateContainer {
     public StringValue armMode = new StringValue(this, "_arm_mode");
     public BooleanValue downloadSetupRequired = new BooleanValue(this, "_download_setup_required");
     public DateTimeValue lastKeepAlive = new DateTimeValue(this, "_last_keepalive");
+    public DateTimeValue lastMessageReceived = new DateTimeValue(this, "_last_message_received");
     public StringValue panelStatus = new StringValue(this, "_panel_status");
     public StringValue alarmType = new StringValue(this, "_alarm_type");
     public StringValue troubleType = new StringValue(this, "_trouble_type");

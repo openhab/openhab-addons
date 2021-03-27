@@ -69,7 +69,7 @@ public class TibberHandler extends BaseThingHandler {
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
     private final Logger logger = LoggerFactory.getLogger(TibberHandler.class);
     private final Properties httpHeader = new Properties();
-    private final SslContextFactory sslContextFactory = new SslContextFactory(true);
+    private final SslContextFactory sslContextFactory = new SslContextFactory.Client(true);
     private final Executor websocketExecutor = ThreadPoolManager.getPool("tibber.websocket");
     private TibberConfiguration tibberConfig = new TibberConfiguration();
     private @Nullable TibberWebSocketListener socket;
@@ -120,7 +120,7 @@ public class TibberHandler extends BaseThingHandler {
                 String jsonResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, inputStream, null,
                         REQUEST_TIMEOUT);
 
-                JsonObject object = (JsonObject) new JsonParser().parse(jsonResponse);
+                JsonObject object = (JsonObject) JsonParser.parseString(jsonResponse);
                 rtEnabled = object.getAsJsonObject("data").getAsJsonObject("viewer").getAsJsonObject("home")
                         .getAsJsonObject("features").get("realTimeConsumptionEnabled").toString();
 
@@ -152,7 +152,7 @@ public class TibberHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-            JsonObject object = (JsonObject) new JsonParser().parse(jsonResponse);
+            JsonObject object = (JsonObject) JsonParser.parseString(jsonResponse);
 
             if (jsonResponse.contains("total")) {
                 try {
@@ -434,7 +434,7 @@ public class TibberHandler extends BaseThingHandler {
                 logger.debug("Error/terminate received from server: {}", message);
                 close();
             } else if (message.contains("liveMeasurement")) {
-                JsonObject object = (JsonObject) new JsonParser().parse(message);
+                JsonObject object = (JsonObject) JsonParser.parseString(message);
                 JsonObject myObject = object.getAsJsonObject("payload").getAsJsonObject("data")
                         .getAsJsonObject("liveMeasurement");
                 if (myObject.has("timestamp")) {

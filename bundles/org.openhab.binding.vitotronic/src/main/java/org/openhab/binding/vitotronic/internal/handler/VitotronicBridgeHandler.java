@@ -250,6 +250,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
         logger.trace("Start Background Thread for recieving data from adapter");
         try {
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             xmlReader.setContentHandler(new XmlHandler());
             logger.trace("Start Parser for optolink adapter");
             xmlReader.parse(new InputSource(inStream));

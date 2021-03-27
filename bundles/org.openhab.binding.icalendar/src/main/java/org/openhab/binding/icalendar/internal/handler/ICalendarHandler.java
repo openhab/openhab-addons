@@ -85,8 +85,14 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             TimeZoneProvider tzProvider) {
         super(bridge);
         this.httpClient = httpClient;
-        calendarFile = new File(OpenHAB.getUserDataFolder() + File.separator
-                + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
+        final File cacheFolder = new File(new File(OpenHAB.getUserDataFolder(), "cache"),
+                "org.openhab.binding.icalendar");
+        if (!cacheFolder.exists()) {
+            logger.debug("Creating cache folder '{}'", cacheFolder.getAbsolutePath());
+            cacheFolder.mkdirs();
+        }
+        calendarFile = new File(cacheFolder,
+                getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
         updateStatesLastCalledTime = Instant.now();
         this.tzProvider = tzProvider;

@@ -14,6 +14,7 @@
 			<channel id="onoff" typeId="system.power"></channel>
 			<channel id="memorized_volume" typeId="memorized_volume"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

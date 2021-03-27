@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -57,11 +56,11 @@ public enum ListUiAction {
      * @return the ListUiAction type
      */
     public static ListUiAction parse(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return CLOSE;
         }
         for (ListUiAction enm : ListUiAction.values()) {
-            if (StringUtils.equalsIgnoreCase(text, enm.text)) {
+            if (text.equalsIgnoreCase(enm.text)) {
                 return enm;
             }
         }
@@ -76,11 +75,11 @@ public enum ListUiAction {
      * @return true if valid, false otherwise
      */
     public static boolean isValid(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return true;
         }
         for (ListUiAction enm : ListUiAction.values()) {
-            if (StringUtils.equalsIgnoreCase(text, enm.text)) {
+            if (text.equalsIgnoreCase(enm.text)) {
                 return true;
             }
         }

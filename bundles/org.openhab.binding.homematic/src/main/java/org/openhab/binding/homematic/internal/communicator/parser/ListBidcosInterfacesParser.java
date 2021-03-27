@@ -50,7 +50,7 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBi
      * Returns the parsed type.
      */
     public String getType() {
-        return type;
+        return type == null ? "" : type;
     }
 
     /**

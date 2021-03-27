@@ -15,7 +15,7 @@ package org.openhab.binding.lifx.internal.fields;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Wouter Born - Add Thing properties
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class Version {

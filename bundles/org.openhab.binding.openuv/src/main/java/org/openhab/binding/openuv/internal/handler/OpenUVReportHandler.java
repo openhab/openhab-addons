@@ -56,11 +56,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenUVReportHandler extends BaseThingHandler {
-    private static final DecimalType ALERT_GREEN = DecimalType.ZERO;
-    private static final DecimalType ALERT_YELLOW = new DecimalType(1);
-    private static final DecimalType ALERT_ORANGE = new DecimalType(2);
-    private static final DecimalType ALERT_RED = new DecimalType(3);
-    private static final DecimalType ALERT_PURPLE = new DecimalType(4);
+    private static final State ALERT_GREEN = DecimalType.ZERO;
+    private static final State ALERT_YELLOW = new DecimalType(1);
+    private static final State ALERT_ORANGE = new DecimalType(2);
+    private static final State ALERT_RED = new DecimalType(3);
+    private static final State ALERT_PURPLE = new DecimalType(4);
     private static final State ALERT_UNDEF = HSBType.fromRGB(179, 179, 179);
 
     private static final Map<State, State> ALERT_COLORS = Map.of(ALERT_GREEN, HSBType.fromRGB(85, 139, 47),

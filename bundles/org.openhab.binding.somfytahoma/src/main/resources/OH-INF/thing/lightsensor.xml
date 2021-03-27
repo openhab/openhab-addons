@@ -13,6 +13,7 @@
 			<channel id="luminance" typeId="luminance"></channel>
 			<channel id="sensor_defect" typeId="sensor_defect"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

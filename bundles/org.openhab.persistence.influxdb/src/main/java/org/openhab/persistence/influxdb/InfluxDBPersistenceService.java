@@ -54,20 +54,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the implementation of the InfluxDB {@link PersistenceService}. It persists item values
- * using the <a href="http://influxdb.org">InfluxDB time series database. The states (
- * {@link State}) of an {@link Item} are persisted by default in a time series with names equal to the name of
- * the item.
+ * This is the implementation of the InfluxDB {@link PersistenceService}. It
+ * persists item values using the <a href="http://influxdb.org">InfluxDB time
+ * series database. The states ( {@link State}) of an {@link Item} are persisted
+ * by default in a time series with names equal to the name of the item.
  *
- * This addon supports 1.X and 2.X versions, as two versions are incompatible and use different drivers the
- * specific code for each version is accessed by {@link InfluxDBRepository} and {@link FilterCriteriaQueryCreator}
- * interfaces and specific implementation reside in {@link org.openhab.persistence.influxdb.internal.influx1} and
+ * This addon supports 1.X and 2.X versions, as two versions are incompatible
+ * and use different drivers the specific code for each version is accessed by
+ * {@link InfluxDBRepository} and {@link FilterCriteriaQueryCreator} interfaces
+ * and specific implementation reside in
+ * {@link org.openhab.persistence.influxdb.internal.influx1} and
  * {@link org.openhab.persistence.influxdb.internal.influx2} packages
  *
- * @author Theo Weiss - Initial contribution, rewrite of org.openhab.persistence.influxdb
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0. Some tag code is
- *         based
- *         from not integrated branch from Dominik Vorreiter
+ * @author Theo Weiss - Initial contribution, rewrite of
+ *         org.openhab.persistence.influxdb
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding
+ *         support for InfluxDB 2.0. Some tag code is based from not integrated
+ *         branch from Dominik Vorreiter
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -222,7 +225,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
 
-            String query = RepositoryFactory.createQueryCreator(configuration).createQuery(filter,
+            String query = RepositoryFactory.createQueryCreator(configuration, metadataRegistry).createQuery(filter,
                     configuration.getRetentionPolicy());
             logger.trace("Query {}", query);
             List<InfluxRow> results = influxDBRepository.query(query);

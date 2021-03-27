@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
@@ -61,7 +60,7 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
 
         String uom = channelConfiguration.unit_of_measurement;
 
-        if (uom != null && StringUtils.isNotBlank(uom)) {
+        if (uom != null && !uom.isBlank()) {
             value = new NumberValue(null, null, null, uom);
         } else {
             value = new TextValue();

@@ -27,11 +27,12 @@ public class UTEResponse extends _VLDMessage {
     public static final byte ResponseNeeded_MASK = 0x40;
     public static final byte TeachIn_NotSpecified = 0x20;
 
-    public UTEResponse(ERP1Message packet) {
+    public UTEResponse(ERP1Message packet, boolean teachIn) {
         int dataLength = packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
 
         setData(packet.getPayload(ESP3_RORG_LENGTH, dataLength));
-        bytes[0] = (byte) 0x91; // bidirectional communication, teach in accepted, teach in response
+        bytes[0] = (byte) (teachIn ? 0x91 : 0xA1); // bidirectional communication, teach in accepted or teach out, teach
+                                                   // in response
 
         setStatus((byte) 0x80);
         setSuppressRepeating(true);

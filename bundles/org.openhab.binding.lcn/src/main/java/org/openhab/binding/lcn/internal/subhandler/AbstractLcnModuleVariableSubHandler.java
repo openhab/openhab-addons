@@ -38,7 +38,6 @@ public abstract class AbstractLcnModuleVariableSubHandler extends AbstractLcnMod
     @Override
     public void handleRefresh(LcnChannelGroup channelGroup, int number) {
         requestVariable(info, channelGroup, number);
-        info.requestFirmwareVersion();
     }
 
     /**

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * The {@link LifxNetworkUtil} provides network interface information to the LIFX binding objects. The information is
  * updated when it is older than {@link #UPDATE_INTERVAL_MILLIS}.
  *
- * @author Wouter Born - Periodically update available interface information
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public final class LifxNetworkUtil {

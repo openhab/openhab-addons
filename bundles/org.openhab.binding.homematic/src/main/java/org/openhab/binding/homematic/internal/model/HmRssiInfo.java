@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Object that holds the rssi infos for a RF device.
  *
@@ -65,7 +62,6 @@ public class HmRssiInfo {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("address", address)
-                .append("device", device).append("peer", peer).toString();
+        return String.format("%s[address=%s,device=%d,peer=%i]", getClass().getSimpleName(), address, device, peer);
     }
 }

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.binding.BindingInfo;
@@ -104,7 +104,7 @@ public class TokenSearch {
             final Thing thing = context.getThingRegistry().get(device.getUid().asThingUID());
             if (thing != null) {
                 final String location = thing.getLocation();
-                if (location != null && StringUtils.isNotEmpty(location)) {
+                if (location != null && !location.isEmpty()) {
                     score += search(location, needles);
                 }
 
@@ -160,13 +160,13 @@ public class TokenSearch {
         int arrayLength = needles.length;
         for (int i = 0; i < arrayLength; i++) {
             String needle = needles[i];
-            int stringPos = StringUtils.indexOfIgnoreCase(haystack, needle);
+            int stringPos = haystack.toLowerCase().indexOf(needle.toLowerCase());
             int tokenScore = 0;
             if (stringPos > -1) {
                 if (needle.length() < 2) {
                     tokenScore = 1;
                 } else {
-                    if (StringUtils.equalsIgnoreCase(haystack, needle)) {
+                    if (haystack.equalsIgnoreCase(needle)) {
                         tokenScore = 6;
                     } else if (stringPos == 0) {
                         tokenScore = 2;

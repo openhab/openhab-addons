@@ -14,7 +14,6 @@ package org.openhab.binding.unifi.internal.api.model;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -65,14 +64,21 @@ public class UniFiController {
 
     private final String password;
 
+    private final boolean unifios;
+
+    private String csrfToken;
+
     private final Gson gson;
 
-    public UniFiController(HttpClient httpClient, String host, int port, String username, String password) {
+    public UniFiController(HttpClient httpClient, String host, int port, String username, String password,
+            boolean unifios) {
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
+        this.unifios = unifios;
+        this.csrfToken = "";
         UniFiSiteInstanceCreator siteInstanceCreator = new UniFiSiteInstanceCreator(this);
         UniFiDeviceInstanceCreator deviceInstanceCreator = new UniFiDeviceInstanceCreator(this);
         UniFiClientInstanceCreator clientInstanceCreator = new UniFiClientInstanceCreator(this);
@@ -96,8 +102,10 @@ public class UniFiController {
     }
 
     public void login() throws UniFiException {
+        csrfToken = "";
+
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath("/api/login");
+        req.setPath(unifios ? "/api/auth/login" : "/api/login");
         req.setBodyParameter("username", username);
         req.setBodyParameter("password", password);
         // scurb: Changed strict = false to make blocking feature work
@@ -107,8 +115,9 @@ public class UniFiController {
     }
 
     public void logout() throws UniFiException {
+        csrfToken = "";
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath("/logout");
+        req.setPath(unifios ? "/api/auth/logout" : "/logout");
         executeRequest(req);
     }
 
@@ -125,7 +134,7 @@ public class UniFiController {
 
     public @Nullable UniFiSite getSite(@Nullable String id) {
         UniFiSite site = null;
-        if (StringUtils.isNotBlank(id)) {
+        if (id != null && !id.isBlank()) {
             synchronized (this) {
                 site = sitesCache.get(id);
             }
@@ -140,7 +149,7 @@ public class UniFiController {
 
     public @Nullable UniFiDevice getDevice(@Nullable String id) {
         UniFiDevice device = null;
-        if (StringUtils.isNotBlank(id)) {
+        if (id != null && !id.isBlank()) {
             synchronized (this) {
                 device = devicesCache.get(id);
             }
@@ -155,7 +164,7 @@ public class UniFiController {
 
     public @Nullable UniFiClient getClient(@Nullable String id) {
         UniFiClient client = null;
-        if (StringUtils.isNotBlank(id)) {
+        if (id != null && !id.isBlank()) {
             synchronized (this) {
                 // mgb: first check active clients and fallback to insights if not found
                 client = clientsCache.get(id);
@@ -172,7 +181,7 @@ public class UniFiController {
 
     protected void block(UniFiClient client, boolean blocked) throws UniFiException {
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath("/api/s/" + client.getSite().getName() + "/cmd/stamgr");
+        req.setAPIPath("/api/s/" + client.getSite().getName() + "/cmd/stamgr");
         req.setBodyParameter("cmd", blocked ? "block-sta" : "unblock-sta");
         req.setBodyParameter("mac", client.getMac());
         executeRequest(req);
@@ -180,7 +189,7 @@ public class UniFiController {
 
     protected void reconnect(UniFiClient client) throws UniFiException {
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath("/api/s/" + client.getSite().getName() + "/cmd/stamgr");
+        req.setAPIPath("/api/s/" + client.getSite().getName() + "/cmd/stamgr");
         req.setBodyParameter("cmd", "kick-sta");
         req.setBodyParameter("mac", client.getMac());
         executeRequest(req);
@@ -189,13 +198,14 @@ public class UniFiController {
     // Internal API
 
     private <T> UniFiControllerRequest<T> newRequest(Class<T> responseType) {
-        return new UniFiControllerRequest<>(responseType, gson, httpClient, host, port);
+        return new UniFiControllerRequest<>(responseType, gson, httpClient, host, port, csrfToken, unifios);
     }
 
     private <T> @Nullable T executeRequest(UniFiControllerRequest<T> request) throws UniFiException {
         T result;
         try {
             result = request.execute();
+            csrfToken = request.getCsrfToken();
         } catch (UniFiExpiredSessionException e) {
             login();
             result = executeRequest(request);
@@ -208,7 +218,7 @@ public class UniFiController {
 
     private UniFiSiteCache getSites() throws UniFiException {
         UniFiControllerRequest<UniFiSite[]> req = newRequest(UniFiSite[].class);
-        req.setPath("/api/self/sites");
+        req.setAPIPath("/api/self/sites");
         UniFiSite[] sites = executeRequest(req);
         UniFiSiteCache cache = new UniFiSiteCache();
         if (sites != null) {
@@ -231,7 +241,7 @@ public class UniFiController {
 
     private UniFiDeviceCache getDevices(UniFiSite site) throws UniFiException {
         UniFiControllerRequest<UniFiDevice[]> req = newRequest(UniFiDevice[].class);
-        req.setPath("/api/s/" + site.getName() + "/stat/device");
+        req.setAPIPath("/api/s/" + site.getName() + "/stat/device");
         UniFiDevice[] devices = executeRequest(req);
         UniFiDeviceCache cache = new UniFiDeviceCache();
         if (devices != null) {
@@ -254,7 +264,7 @@ public class UniFiController {
 
     private UniFiClientCache getClients(UniFiSite site) throws UniFiException {
         UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
-        req.setPath("/api/s/" + site.getName() + "/stat/sta");
+        req.setAPIPath("/api/s/" + site.getName() + "/stat/sta");
         UniFiClient[] clients = executeRequest(req);
         UniFiClientCache cache = new UniFiClientCache();
         if (clients != null) {
@@ -277,7 +287,7 @@ public class UniFiController {
 
     private UniFiClientCache getInsights(UniFiSite site) throws UniFiException {
         UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
-        req.setPath("/api/s/" + site.getName() + "/stat/alluser");
+        req.setAPIPath("/api/s/" + site.getName() + "/stat/alluser");
         req.setQueryParameter("within", 168); // scurb: Changed to 7 days.
         UniFiClient[] clients = executeRequest(req);
         UniFiClientCache cache = new UniFiClientCache();

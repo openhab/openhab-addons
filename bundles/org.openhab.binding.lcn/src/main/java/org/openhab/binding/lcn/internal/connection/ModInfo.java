@@ -61,8 +61,8 @@ public class ModInfo {
     /** The LCN module's address. */
     private final LcnAddr addr;
 
-    /** Firmware date of the LCN module. -1 means "unknown". */
-    private int firmwareVersion = -1;
+    /** Firmware date of the LCN module. */
+    private Optional<Integer> firmwareVersion = Optional.empty();
 
     /** Firmware version request status. */
     private final RequestStatus requestFirmwareVersion = new RequestStatus(-1, NUM_TRIES, "Firmware Version");
@@ -128,7 +128,7 @@ public class ModInfo {
         for (Variable var : Variable.values()) {
             if (var != Variable.UNKNOWN) {
                 this.requestStatusVars.put(var, new RequestStatus(MAX_STATUS_POLLED_VALUEAGE_MSEC, NUM_TRIES,
-                        var.getType() + " " + (var.getNumber() + 1)));
+                        addr + " " + var.getType() + " " + (var.getNumber() + 1)));
             }
         }
     }
@@ -226,7 +226,7 @@ public class ModInfo {
      * Triggers a request to retrieve the firmware version of the LCN module, if it is not known, yet.
      */
     public void requestFirmwareVersion() {
-        if (firmwareVersion == -1) {
+        if (firmwareVersion.isEmpty()) {
             requestFirmwareVersion.refresh();
         }
     }
@@ -237,11 +237,11 @@ public class ModInfo {
      * @return if the module has at least 4 threshold registers and 12 variables
      */
     public boolean hasExtendedMeasurementProcessing() {
-        if (firmwareVersion == -1) {
+        if (firmwareVersion.isEmpty()) {
             logger.warn("LCN module firmware version unknown");
             return false;
         }
-        return firmwareVersion >= LcnBindingConstants.FIRMWARE_2013;
+        return firmwareVersion.map(v -> v >= LcnBindingConstants.FIRMWARE_2013).orElse(false);
     }
 
     private boolean update(Connection conn, long timeoutMSec, long currTime, RequestStatus requestStatus, String pck)
@@ -277,40 +277,9 @@ public class ModInfo {
             if (update(conn, timeoutMSec, currTime, requestStatusRelays, PckGenerator.requestRelaysStatus())) {
                 return;
             }
+
             if (update(conn, timeoutMSec, currTime, requestStatusBinSensors, PckGenerator.requestBinSensorsStatus())) {
                 return;
-            }
-
-            // Variable requests
-            if (this.firmwareVersion != -1) { // Firmware version is required
-                // Use the chance to remove a failed "typeless variable" request
-                if (lastRequestedVarWithoutTypeInResponse != Variable.UNKNOWN) {
-                    RequestStatus requestStatus = requestStatusVars.get(lastRequestedVarWithoutTypeInResponse);
-                    if (requestStatus != null && requestStatus.isTimeout(timeoutMSec, currTime)) {
-                        lastRequestedVarWithoutTypeInResponse = Variable.UNKNOWN;
-                    }
-                }
-                // Variables
-                for (Map.Entry<Variable, RequestStatus> kv : this.requestStatusVars.entrySet()) {
-                    RequestStatus requestStatus = kv.getValue();
-                    if (requestStatus.shouldSendNextRequest(timeoutMSec, currTime)) {
-                        // Detect if we can send immediately or if we have to wait for a "typeless" request first
-                        boolean hasTypeInResponse = kv.getKey().hasTypeInResponse(this.firmwareVersion);
-                        if (hasTypeInResponse || this.lastRequestedVarWithoutTypeInResponse == Variable.UNKNOWN) {
-                            try {
-                                conn.queue(this.addr, false,
-                                        PckGenerator.requestVarStatus(kv.getKey(), this.firmwareVersion));
-                                requestStatus.onRequestSent(currTime);
-                                if (!hasTypeInResponse) {
-                                    this.lastRequestedVarWithoutTypeInResponse = kv.getKey();
-                                }
-                                return;
-                            } catch (LcnException ex) {
-                                requestStatus.reset();
-                            }
-                        }
-                    }
-                }
             }
 
             if (update(conn, timeoutMSec, currTime, requestStatusLedsAndLogicOps,
@@ -321,6 +290,45 @@ public class ModInfo {
             if (update(conn, timeoutMSec, currTime, requestStatusLockedKeys, PckGenerator.requestKeyLocksStatus())) {
                 return;
             }
+
+            // Variable requests
+            firmwareVersion.ifPresent(firmwareVersion -> { // Firmware version is required
+                // Use the chance to remove a failed "typeless variable" request
+                if (lastRequestedVarWithoutTypeInResponse != Variable.UNKNOWN) {
+                    RequestStatus requestStatus = requestStatusVars.get(lastRequestedVarWithoutTypeInResponse);
+                    if (requestStatus != null && requestStatus.isTimeout(timeoutMSec, currTime)) {
+                        lastRequestedVarWithoutTypeInResponse = Variable.UNKNOWN;
+                    }
+                }
+                // Variables
+                for (Map.Entry<Variable, RequestStatus> kv : this.requestStatusVars.entrySet()) {
+                    RequestStatus requestStatus = kv.getValue();
+                    try {
+                        if (requestStatus.shouldSendNextRequest(timeoutMSec, currTime)) {
+                            // Detect if we can send immediately or if we have to wait for a "typeless" request first
+                            boolean hasTypeInResponse = kv.getKey().hasTypeInResponse(firmwareVersion);
+                            if (hasTypeInResponse || this.lastRequestedVarWithoutTypeInResponse == Variable.UNKNOWN) {
+                                try {
+                                    conn.queue(this.addr, false,
+                                            PckGenerator.requestVarStatus(kv.getKey(), firmwareVersion));
+                                    requestStatus.onRequestSent(currTime);
+                                    if (!hasTypeInResponse) {
+                                        this.lastRequestedVarWithoutTypeInResponse = kv.getKey();
+                                    }
+                                    return;
+                                } catch (LcnException ex) {
+                                    logger.warn("{}: Failed to generate PCK message: {}: {}", addr, kv.getKey(),
+                                            ex.getMessage());
+                                    requestStatus.reset();
+                                    lastRequestedVarWithoutTypeInResponse = Variable.UNKNOWN;
+                                }
+                            }
+                        }
+                    } catch (LcnException e) {
+                        logger.warn("{}: Failed to receive measurement value: {}", addr, e.getMessage());
+                    }
+                }
+            });
 
             // Try to send next acknowledged command. Will also detect failed ones.
             this.tryProcessNextCommandWithAck(conn, timeoutMSec, currTime);
@@ -334,8 +342,8 @@ public class ModInfo {
      *
      * @return the date
      */
-    public int getFirmwareVersion() {
-        return this.firmwareVersion;
+    public Optional<Integer> getFirmwareVersion() {
+        return firmwareVersion;
     }
 
     /**
@@ -344,7 +352,7 @@ public class ModInfo {
      * @param firmwareVersion the date
      */
     public void setFirmwareVersion(int firmwareVersion) {
-        this.firmwareVersion = firmwareVersion;
+        this.firmwareVersion = Optional.of(firmwareVersion);
 
         requestFirmwareVersion.onResponseReceived();
 
@@ -430,7 +438,7 @@ public class ModInfo {
      * Requests the current value of all LEDs and logic operations, after a LED has been changed by openHAB.
      */
     public void refreshStatusLedsAnLogicAfterChange() {
-        requestStatusLedsAndLogicOps.nextRequestIn(STATUS_REQUEST_DELAY_AFTER_COMMAND_MSEC, System.nanoTime());
+        requestStatusLedsAndLogicOps.nextRequestIn(STATUS_REQUEST_DELAY_AFTER_COMMAND_MSEC, System.currentTimeMillis());
     }
 
     /**
@@ -444,7 +452,7 @@ public class ModInfo {
      * Requests the current locking states of all keys, after a lock state has been changed by openHAB.
      */
     public void refreshStatusStatusLockedKeysAfterChange() {
-        requestStatusLockedKeys.nextRequestIn(STATUS_REQUEST_DELAY_AFTER_COMMAND_MSEC, System.nanoTime());
+        requestStatusLockedKeys.nextRequestIn(STATUS_REQUEST_DELAY_AFTER_COMMAND_MSEC, System.currentTimeMillis());
     }
 
     /**
@@ -480,6 +488,10 @@ public class ModInfo {
         if (requestStatus != null) {
             requestStatus.onResponseReceived();
         }
+
+        if (variable == lastRequestedVarWithoutTypeInResponse) {
+            lastRequestedVarWithoutTypeInResponse = Variable.UNKNOWN; // Reset
+        }
     }
 
     /**
@@ -494,5 +506,12 @@ public class ModInfo {
      */
     public void onLockedKeysResponseReceived() {
         requestStatusLockedKeys.onResponseReceived();
+    }
+
+    /**
+     * Returns the module's bus address.
+     */
+    public LcnAddr getAddress() {
+        return addr;
     }
 }

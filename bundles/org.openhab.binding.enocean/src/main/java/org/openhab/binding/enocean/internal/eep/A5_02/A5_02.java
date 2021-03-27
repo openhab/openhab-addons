@@ -20,7 +20,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  *
@@ -51,9 +50,6 @@ public abstract class A5_02 extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (!isValid()) {
-            return UnDefType.UNDEF;
-        }
 
         double scaledTemp = getScaledMin()
                 - (((getUnscaledMin() - getUnscaledTemperatureValue()) * (getScaledMin() - getScaledMax()))

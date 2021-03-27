@@ -43,8 +43,9 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB2PBN,
-            THING_TYPE_VMB6PBN, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBRFR8S));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_VMB2PBN, THING_TYPE_VMB6PBN, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC,
+                    THING_TYPE_VMBPIRM, THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1));
     private static final HashMap<ThingTypeUID, Integer> ALARM_CONFIGURATION_MEMORY_ADDRESSES = new HashMap<ThingTypeUID, Integer>();
 
     static {
@@ -73,6 +74,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBGPOD, 0x0284);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBGPOD_2, 0x0284);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBRFR8S, 0x0093);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBVP1, 0x002B);
     }
 
     private static final byte ALARM_CONFIGURATION_MEMORY_SIZE = 0x09;

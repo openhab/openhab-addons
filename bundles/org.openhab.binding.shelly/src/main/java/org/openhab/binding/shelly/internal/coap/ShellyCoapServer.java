@@ -16,8 +16,10 @@ import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.COIOT_P
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
@@ -32,7 +34,6 @@ import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.elements.UdpMulticastConnector;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +49,8 @@ public class ShellyCoapServer {
     boolean started = false;
     private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().build();
     private @Nullable UdpMulticastConnector statusConnector;
-    private final CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);;
-    private final Set<ShellyCoapListener> coapListeners = new ConcurrentHashSet<>();
+    private CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
+    private final Set<ShellyCoapListener> coapListeners = ConcurrentHashMap.newKeySet();
 
     protected class ShellyStatusListener extends CoapResource {
         private ShellyCoapServer listener;
@@ -67,6 +68,7 @@ public class ShellyCoapServer {
                 Code code = exchange.getRequest().getCode();
                 switch (code) {
                     case CUSTOM_30:
+                    case PUT: // Shelly Motion beta: incorrect, but handle the format
                         listener.processResponse(createResponse(request));
                         break;
                     default:
@@ -76,16 +78,18 @@ public class ShellyCoapServer {
         }
     }
 
-    public synchronized void start(String localIp, ShellyCoapListener listener) throws UnknownHostException {
+    public synchronized void start(String localIp, int port, ShellyCoapListener listener)
+            throws UnknownHostException, SocketException {
         if (!started) {
-            logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, COIOT_PORT);
+            logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, port);
             NetworkConfig nc = NetworkConfig.getStandard();
             InetAddress localAddr = InetAddress.getByName(localIp);
-            InetSocketAddress localPort = new InetSocketAddress(COIOT_PORT);
+            InetSocketAddress localPort = new InetSocketAddress(port);
 
             // Join the multicast group on the selected network interface
             statusConnector = new UdpMulticastConnector(localAddr, localPort, CoAP.MULTICAST_IPV4); // bind UDP listener
             statusEndpoint = new CoapEndpoint.Builder().setNetworkConfig(nc).setConnector(statusConnector).build();
+            server = new CoapServer(NetworkConfig.getStandard(), port);
             server.addEndpoint(statusEndpoint);
             CoapResource cit = new ShellyStatusListener("cit", this);
             CoapResource s = new ShellyStatusListener("s", this);

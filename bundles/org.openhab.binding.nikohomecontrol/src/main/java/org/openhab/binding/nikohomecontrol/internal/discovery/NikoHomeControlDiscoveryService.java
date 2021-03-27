@@ -48,7 +48,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
     public NikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler handler) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT, false);
-        logger.debug("Niko Home Control: discovery service {}", handler);
+        logger.debug("discovery service {}", handler);
         bridgeUID = handler.getThing().getUID();
         this.handler = handler;
     }
@@ -70,10 +70,10 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
         NikoHomeControlCommunication nhcComm = handler.getCommunication();
 
         if ((nhcComm == null) || !nhcComm.communicationActive()) {
-            logger.warn("Niko Home Control: not connected.");
+            logger.warn("not connected");
             return;
         }
-        logger.debug("Niko Home Control: getting devices on {}", handler.getThing().getUID().getId());
+        logger.debug("getting devices on {}", handler.getThing().getUID().getId());
 
         Map<String, NhcAction> actions = nhcComm.getActions();
 
@@ -99,8 +99,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
                             thingName, thingLocation);
                     break;
                 default:
-                    logger.debug("Niko Home Control: unrecognized action type {} for {} {}", nhcAction.getType(),
-                            actionId, thingName);
+                    logger.debug("unrecognized action type {} for {} {}", nhcAction.getType(), actionId, thingName);
             }
         });
 

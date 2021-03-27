@@ -12,8 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE;
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -49,43 +55,52 @@ import io.github.hapjava.services.impl.ThermostatService;
  */
 class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements ThermostatAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
+    private final Map<CurrentHeatingCoolingStateEnum, String> currentHeatingCoolingStateMapping;
+    private final Map<TargetHeatingCoolingStateEnum, String> targetHeatingCoolingStateMapping;
+    private final List<CurrentHeatingCoolingStateEnum> customCurrentHeatingCoolingStateList;
+    private final List<TargetHeatingCoolingStateEnum> customTargetHeatingCoolingStateList;
 
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
+        currentHeatingCoolingStateMapping = new EnumMap<>(CurrentHeatingCoolingStateEnum.class);
+        currentHeatingCoolingStateMapping.put(CurrentHeatingCoolingStateEnum.OFF, settings.thermostatCurrentModeOff);
+        currentHeatingCoolingStateMapping.put(CurrentHeatingCoolingStateEnum.COOL,
+                settings.thermostatCurrentModeCooling);
+        currentHeatingCoolingStateMapping.put(CurrentHeatingCoolingStateEnum.HEAT,
+                settings.thermostatCurrentModeHeating);
+        targetHeatingCoolingStateMapping = new EnumMap<>(TargetHeatingCoolingStateEnum.class);
+        targetHeatingCoolingStateMapping.put(TargetHeatingCoolingStateEnum.OFF, settings.thermostatTargetModeOff);
+        targetHeatingCoolingStateMapping.put(TargetHeatingCoolingStateEnum.COOL, settings.thermostatTargetModeCool);
+        targetHeatingCoolingStateMapping.put(TargetHeatingCoolingStateEnum.HEAT, settings.thermostatTargetModeHeat);
+        targetHeatingCoolingStateMapping.put(TargetHeatingCoolingStateEnum.AUTO, settings.thermostatTargetModeAuto);
+        customCurrentHeatingCoolingStateList = new ArrayList<>();
+        customTargetHeatingCoolingStateList = new ArrayList<>();
+        updateMapping(CURRENT_HEATING_COOLING_STATE, currentHeatingCoolingStateMapping,
+                customCurrentHeatingCoolingStateList);
+        updateMapping(TARGET_HEATING_COOLING_STATE, targetHeatingCoolingStateMapping,
+                customTargetHeatingCoolingStateList);
         this.getServices().add(new ThermostatService(this));
     }
 
     @Override
+    public CurrentHeatingCoolingStateEnum[] getCurrentHeatingCoolingStateValidValues() {
+        return customCurrentHeatingCoolingStateList.isEmpty()
+                ? currentHeatingCoolingStateMapping.keySet().toArray(new CurrentHeatingCoolingStateEnum[0])
+                : customCurrentHeatingCoolingStateList.toArray(new CurrentHeatingCoolingStateEnum[0]);
+    }
+
+    @Override
+    public TargetHeatingCoolingStateEnum[] getTargetHeatingCoolingStateValidValues() {
+        return customTargetHeatingCoolingStateList.isEmpty()
+                ? targetHeatingCoolingStateMapping.keySet().toArray(new TargetHeatingCoolingStateEnum[0])
+                : customTargetHeatingCoolingStateList.toArray(new TargetHeatingCoolingStateEnum[0]);
+    }
+
+    @Override
     public CompletableFuture<CurrentHeatingCoolingStateEnum> getCurrentState() {
-        final HomekitSettings settings = getSettings();
-        String stringValue = settings.thermostatCurrentModeOff;
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
-        if (characteristic.isPresent()) {
-            stringValue = characteristic.get().getItem().getState().toString();
-        } else {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
-        }
-
-        CurrentHeatingCoolingStateEnum mode;
-
-        if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeCooling)) {
-            mode = CurrentHeatingCoolingStateEnum.COOL;
-        } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeHeating)) {
-            mode = CurrentHeatingCoolingStateEnum.HEAT;
-        } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeOff)) {
-            mode = CurrentHeatingCoolingStateEnum.OFF;
-        } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            logger.warn("Heating cooling current mode not available. Relaying value of OFF to Homekit");
-            mode = CurrentHeatingCoolingStateEnum.OFF;
-        } else {
-            logger.warn("Unrecognized heatingCoolingCurrentMode: {}. Expected {}, {}, or {} strings in value.",
-                    stringValue, settings.thermostatCurrentModeCooling, settings.thermostatCurrentModeHeating,
-                    settings.thermostatCurrentModeOff);
-            mode = CurrentHeatingCoolingStateEnum.OFF;
-        }
-        return CompletableFuture.completedFuture(mode);
+        return CompletableFuture.completedFuture(getKeyFromMapping(CURRENT_HEATING_COOLING_STATE,
+                currentHeatingCoolingStateMapping, CurrentHeatingCoolingStateEnum.OFF));
     }
 
     @Override
@@ -96,14 +111,16 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public double getMinCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+        return convertToCelsius(
+                getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue());
     }
 
     @Override
     public double getMaxCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
-                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+        return convertToCelsius(
+                getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
+                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue());
     }
 
     @Override
@@ -114,36 +131,8 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public CompletableFuture<TargetHeatingCoolingStateEnum> getTargetState() {
-        final HomekitSettings settings = getSettings();
-        String stringValue = settings.thermostatTargetModeOff;
-
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
-        if (characteristic.isPresent()) {
-            stringValue = characteristic.get().getItem().getState().toString();
-        } else {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
-        }
-        TargetHeatingCoolingStateEnum mode;
-
-        if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeCool)) {
-            mode = TargetHeatingCoolingStateEnum.COOL;
-        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeHeat)) {
-            mode = TargetHeatingCoolingStateEnum.HEAT;
-        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeAuto)) {
-            mode = TargetHeatingCoolingStateEnum.AUTO;
-        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeOff)) {
-            mode = TargetHeatingCoolingStateEnum.OFF;
-        } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            logger.warn("Heating cooling target mode not available. Relaying value of OFF to Homekit");
-            mode = TargetHeatingCoolingStateEnum.OFF;
-        } else {
-            logger.warn("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
-                    stringValue, settings.thermostatTargetModeCool, settings.thermostatTargetModeHeat,
-                    settings.thermostatTargetModeAuto, settings.thermostatTargetModeOff);
-            mode = TargetHeatingCoolingStateEnum.OFF;
-        }
-        return CompletableFuture.completedFuture(mode);
+        return CompletableFuture.completedFuture(getKeyFromMapping(TARGET_HEATING_COOLING_STATE,
+                targetHeatingCoolingStateMapping, TargetHeatingCoolingStateEnum.OFF));
     }
 
     @Override
@@ -166,32 +155,8 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public void setTargetState(TargetHeatingCoolingStateEnum mode) {
-        final HomekitSettings settings = getSettings();
-        String modeString = null;
-        switch (mode) {
-            case AUTO:
-                modeString = settings.thermostatTargetModeAuto;
-                break;
-
-            case COOL:
-                modeString = settings.thermostatTargetModeCool;
-                break;
-
-            case HEAT:
-                modeString = settings.thermostatTargetModeHeat;
-                break;
-
-            case OFF:
-                modeString = settings.thermostatTargetModeOff;
-                break;
-        }
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
-        if (characteristic.isPresent()) {
-            ((StringItem) characteristic.get().getItem()).send(new StringType(modeString));
-        } else {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
-        }
+        getItem(TARGET_HEATING_COOLING_STATE, StringItem.class)
+                .ifPresent(item -> item.send(new StringType(targetHeatingCoolingStateMapping.get(mode))));
     }
 
     @Override
@@ -208,14 +173,16 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public double getMinTargetTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+        return convertToCelsius(
+                getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue());
     }
 
     @Override
     public double getMaxTargetTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
-                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+        return convertToCelsius(
+                getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
+                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue());
     }
 
     @Override
@@ -226,7 +193,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public void subscribeCurrentState(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE, callback);
+        subscribe(CURRENT_HEATING_COOLING_STATE, callback);
     }
 
     @Override
@@ -251,7 +218,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public void unsubscribeCurrentState() {
-        unsubscribe(HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
+        unsubscribe(CURRENT_HEATING_COOLING_STATE);
     }
 
     @Override

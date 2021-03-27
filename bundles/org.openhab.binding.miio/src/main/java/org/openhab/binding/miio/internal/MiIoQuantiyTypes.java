@@ -53,9 +53,11 @@ public enum MiIoQuantiyTypes {
     RADIANS(Units.RADIAN, "radians"),
     KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh", "kWH"),
     SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
-    PERCENT(Units.PERCENT),
+    PERCENT(Units.PERCENT, "percentage"),
     KGM3(Units.KILOGRAM_PER_CUBICMETRE, "kilogram_per_cubicmeter"),
     UGM3(Units.MICROGRAM_PER_CUBICMETRE, "microgram_per_cubicmeter"),
+    M3(SIUnits.CUBIC_METRE, "cubic_meter", "cubic_metre"),
+    LITER(Units.LITRE, "L", "litre"),
     PPM(Units.PARTS_PER_MILLION, "parts_per_million");
 
     private final Unit<?> unit;

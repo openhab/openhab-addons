@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
 /**
  * Parses a new device event received from a Homematic gateway.
@@ -35,9 +35,7 @@ public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
                 Map<String, ?> data = (Map<String, ?>) message[i];
 
                 String address = toString(data.get("ADDRESS"));
-                boolean isDevice = !StringUtils.contains(address, ":")
-                        && !StringUtils.startsWithIgnoreCase(address, "BidCos");
-                if (isDevice) {
+                if (MiscUtils.isDevice(address)) {
                     adresses.add(getSanitizedAddress(address));
                 }
             }

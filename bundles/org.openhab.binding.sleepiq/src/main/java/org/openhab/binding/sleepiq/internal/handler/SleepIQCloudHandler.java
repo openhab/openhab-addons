@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.sleepiq.api.Configuration;
 import org.openhab.binding.sleepiq.api.LoginException;
 import org.openhab.binding.sleepiq.api.SleepIQ;
@@ -214,12 +213,12 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         String username = config.username;
         String password = config.password;
 
-        if (StringUtils.isEmpty(username)) {
+        if (username.isEmpty()) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(USERNAME)
                     .withMessageKeySuffix(SleepIQConfigStatusMessage.USERNAME_MISSING).withArguments(USERNAME).build());
         }
 
-        if (StringUtils.isEmpty(password)) {
+        if (password.isEmpty()) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(PASSWORD)
                     .withMessageKeySuffix(SleepIQConfigStatusMessage.PASSWORD_MISSING).withArguments(PASSWORD).build());
         }

@@ -33,6 +33,12 @@ public interface NhcActionEvent {
     public void actionEvent(int state);
 
     /**
+     * Called to indicate the action has been initialized.
+     *
+     */
+    public void actionInitialized();
+
+    /**
      * Called to indicate the action has been removed from the Niko Home Control controller.
      *
      */

@@ -50,7 +50,7 @@ public class ConnectionStateSegmentScan extends AbstractConnectionState {
     }
 
     private void update() {
-        long currTime = System.nanoTime();
+        long currTime = System.currentTimeMillis();
         try {
             if (statusSegmentScan.shouldSendNextRequest(connection.getSettings().getTimeout(), currTime)) {
                 connection.queueDirectly(new LcnAddrGrp(3, 3), false, PckGenerator.segmentCouplerScan());

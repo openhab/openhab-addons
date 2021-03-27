@@ -95,12 +95,13 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
                     }
                 } else {
                     if (forecastDays <= 1 && newForecastDays > 1) {
-                        toBeAddedChannels.addAll(
-                                createChannelsForGroup(CHANNEL_GROUP_FORECAST_TOMORROW, CHANNEL_GROUP_TYPE_UVINDEX));
+                        toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TOMORROW,
+                                CHANNEL_GROUP_TYPE_UVINDEX_FORECAST));
                     }
                     for (int i = (forecastDays < 2) ? 2 : forecastDays; i < newForecastDays; ++i) {
-                        toBeAddedChannels.addAll(createChannelsForGroup(
-                                CHANNEL_GROUP_FORECAST_PREFIX + Integer.toString(i), CHANNEL_GROUP_TYPE_UVINDEX));
+                        toBeAddedChannels
+                                .addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_PREFIX + Integer.toString(i),
+                                        CHANNEL_GROUP_TYPE_UVINDEX_FORECAST));
                     }
                 }
                 forecastDays = newForecastDays;

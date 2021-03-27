@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
@@ -52,9 +51,9 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
         super(componentConfiguration, ChannelConfiguration.class);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : StringUtils.isBlank(channelConfiguration.state_topic);
+                : channelConfiguration.state_topic.isBlank();
 
-        if (optimistic && StringUtils.isNotBlank(channelConfiguration.state_topic)) {
+        if (optimistic && !channelConfiguration.state_topic.isBlank()) {
             throw new UnsupportedOperationException("Component:Switch does not support forced optimistic mode");
         }
 

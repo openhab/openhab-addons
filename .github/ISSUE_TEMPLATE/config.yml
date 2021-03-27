@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 🤔 Support/Usage Question
+    url: https://community.openhab.org
+    about: Feel free to ask anything
+  - name: 📖 Documentation
+    url: https://openhab.org/addons
+    about: Official documentation
+  - name: 📚 Translation feedback
+    url: https://crowdin.com/project/openhab2-addons
+    about: Share feedback on translations

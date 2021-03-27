@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @param <T> the field datatype
  *
- * @author Tim Buckley
+ * @author Tim Buckley - Initial contribution
  */
 @NonNullByDefault
 public abstract class Field<T> {

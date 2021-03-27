@@ -56,10 +56,10 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     @Override
     protected void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
-        if (this.callMonitor == null && callChannelsLinked()) {
+        CallMonitor cm = this.callMonitor;
+        if (cm == null && callChannelsLinked()) {
             this.callMonitor = new CallMonitor(config.ipAddress, this, scheduler);
-        } else if (this.callMonitor != null && !callChannelsLinked()) {
-            CallMonitor cm = this.callMonitor;
+        } else if (cm != null && !callChannelsLinked()) {
             cm.dispose();
             this.callMonitor = null;
         }
@@ -94,5 +94,19 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     @Override
     public void updateState(String channelID, State state) {
         super.updateState(channelID, state);
+    }
+
+    @Override
+    public void handleRefreshCommand() {
+        refreshCallMonitorChannels();
+        super.handleRefreshCommand();
+    }
+
+    private void refreshCallMonitorChannels() {
+        CallMonitor cm = this.callMonitor;
+        if (cm != null) {
+            // initialize states of call monitor channels
+            cm.resetChannels();
+        }
     }
 }

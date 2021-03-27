@@ -23,26 +23,33 @@
 	</bridge-type>
 
 	<!-- OpenUV Report Thing -->
-	<thing-type id="uvreport">
+	<thing-type id="uvreport" extensible="SafeExposure">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="openuvapi"/>
 		</supported-bridge-type-refs>
 
 		<label>UV Report</label>
-		<description>
-			Provides various UV data from the OpenUV Project for a given location.
-		</description>
+		<description>Provides various UV data from the OpenUV Project for a given location.</description>
 
 		<channels>
 			<channel id="UVIndex" typeId="UVIndex"/>
 			<channel id="Alert" typeId="Alert"/>
 			<channel id="UVColor" typeId="UVColor"/>
 			<channel id="UVMax" typeId="UVMax"/>
-			<channel id="UVMaxTime" typeId="UVMaxTime"/>
+			<channel id="UVMaxTime" typeId="timestamp">
+				<label>UV Max Time</label>
+				<description>Max UV Index time (solar noon)</description>
+			</channel>
 			<channel id="UVMaxEvent" typeId="UVMaxEvent"/>
 			<channel id="Ozone" typeId="Ozone"/>
-			<channel id="OzoneTime" typeId="OzoneTime"/>
-			<channel id="UVTime" typeId="UVTime"/>
+			<channel id="OzoneTime" typeId="timestamp">
+				<label>Ozone Observation Time</label>
+				<description>Latest OMI ozone update timestamp.</description>
+			</channel>
+			<channel id="UVTime" typeId="timestamp">
+				<label>Report Timestamp</label>
+				<description>UV Report timestamp.</description>
+			</channel>
 			<channel id="SafeExposure" typeId="SafeExposure"/>
 			<channel id="elevation" typeId="elevation"/>
 		</channels>
@@ -84,26 +91,9 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="OzoneTime" advanced="true">
+	<channel-type id="timestamp" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Ozone Observation Time</label>
-		<description>Latest OMI ozone update timestamp.</description>
-		<category>time</category>
-		<state readOnly="true" pattern="%1$tF %1$tR"/>
-	</channel-type>
-
-	<channel-type id="UVMaxTime" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>UV Max Time</label>
-		<description>Max UV Index time (solar noon)</description>
-		<category>time</category>
-		<state readOnly="true" pattern="%1$tF %1$tR"/>
-	</channel-type>
-
-	<channel-type id="UVTime" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Report Timestamp</label>
-		<description>UV Report timestamp.</description>
+		<label>Timestamp</label>
 		<category>time</category>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
