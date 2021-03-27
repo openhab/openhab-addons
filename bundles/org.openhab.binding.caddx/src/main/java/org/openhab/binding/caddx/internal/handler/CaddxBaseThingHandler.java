@@ -209,16 +209,16 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     /**
      * Get Keypad Terminal Mode Seconds.
      *
-     * @return keypadAddress
+     * @return terminalModeSeconds
      */
     public int getTerminalModeSeconds() {
         return terminalModeSeconds;
     }
 
     /**
-     * Set Keypad Address.
+     * Set Keypad Terminal Mode Seconds.
      *
-     * @param keypadAddress
+     * @param terminalModeSeconds
      */
     public void setTerminalModeSeconds(int terminalModeSeconds) {
         this.terminalModeSeconds = terminalModeSeconds;
