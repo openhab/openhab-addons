@@ -34,15 +34,15 @@ public class ChargeProfileUtils {
 
     // Charging
     public static class TimedChannel {
+        public final String time;
+        public final @Nullable String timer;
+        public final boolean hasDays;
+
         TimedChannel(final String time, @Nullable final String timer, final boolean hasDays) {
             this.time = time;
             this.timer = timer;
             this.hasDays = hasDays;
         }
-
-        public final String time;
-        public final @Nullable String timer;
-        public final boolean hasDays;
     }
 
     @SuppressWarnings("serial")
@@ -71,23 +71,23 @@ public class ChargeProfileUtils {
     };
 
     public static class ChargeKeyHour {
+        public final ProfileKey key;
+        public final boolean isHour;
+
         ChargeKeyHour(final ProfileKey key, final boolean isHour) {
             this.key = key;
             this.isHour = isHour;
         }
-
-        public final ProfileKey key;
-        public final boolean isHour;
     }
 
     public static class ChargeKeyDay {
+        public final ProfileKey key;
+        public final DayOfWeek day;
+
         ChargeKeyDay(final ProfileKey key, final DayOfWeek day) {
             this.key = key;
             this.day = day;
         }
-
-        public final ProfileKey key;
-        public final DayOfWeek day;
     }
 
     @SuppressWarnings("serial")

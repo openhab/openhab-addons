@@ -73,7 +73,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
         ConnectedDriveConfiguration config = getConfigAs(ConnectedDriveConfiguration.class);
-        if (checkConfiguration(config) == false) {
+        if (!checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, config));
@@ -84,13 +84,9 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     }
 
     public static boolean checkConfiguration(ConnectedDriveConfiguration config) {
-        if (Constants.EMPTY.equals(config.userName)) {
+        if (Constants.EMPTY.equals(config.userName) || Constants.EMPTY.equals(config.password)) {
             return false;
-        }
-        if (Constants.EMPTY.equals(config.password)) {
-            return false;
-        }
-        if (BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region)) {
+        } else if (BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region)) {
             return true;
         } else {
             return false;

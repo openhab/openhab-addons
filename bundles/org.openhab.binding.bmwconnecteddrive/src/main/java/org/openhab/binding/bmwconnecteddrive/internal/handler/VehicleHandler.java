@@ -771,8 +771,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     public Optional<ChargeProfileWrapper> getChargeProfileWrapper() {
         return chargeProfileCache.flatMap(cache -> {
             return ChargeProfileWrapper.fromJson(cache).map(wrapper -> {
-                logger.debug("Charge Profile editing - start");
-                logger.debug("{}", wrapper.getJson());
                 return wrapper;
             }).or(() -> {
                 logger.debug("cannot parse charging profile: {}", cache);

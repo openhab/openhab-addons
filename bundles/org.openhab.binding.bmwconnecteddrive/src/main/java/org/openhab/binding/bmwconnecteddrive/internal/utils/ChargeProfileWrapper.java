@@ -46,8 +46,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class ChargeProfileWrapper {
-
-    private final Logger logger = LoggerFactory.getLogger(ChargeProfileWrapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChargeProfileWrapper.class);
 
     public enum ProfileType {
         WEEKLY,
@@ -82,6 +81,7 @@ public class ChargeProfileWrapper {
                 return Optional.of(new ChargeProfileWrapper(cp));
             }
         } catch (JsonSyntaxException jse) {
+            LOGGER.debug("ChargeProfile unparsable: {}", content);
         }
         return Optional.empty();
     }
@@ -149,7 +149,7 @@ public class ChargeProfileWrapper {
                 this.mode = Optional.of(ChargingMode.valueOf(mode));
                 return;
             } catch (IllegalArgumentException iae) {
-                logger.warn("unexpected value for chargingMode: {}", mode);
+                LOGGER.warn("unexpected value for chargingMode: {}", mode);
             }
         }
         this.mode = Optional.empty();
@@ -165,7 +165,7 @@ public class ChargeProfileWrapper {
                 this.preference = Optional.of(ChargingPreference.valueOf(preference));
                 return;
             } catch (IllegalArgumentException iae) {
-                logger.warn("unexpected value for chargingPreference: {}", preference);
+                LOGGER.warn("unexpected value for chargingPreference: {}", preference);
             }
         }
         this.preference = Optional.empty();
@@ -258,7 +258,7 @@ public class ChargeProfileWrapper {
         try {
             times.put(key, time == null ? NULL_LOCAL_TIME : LocalTime.parse(time, TIME_FORMATER));
         } catch (DateTimeParseException dtpe) {
-            logger.warn("unexpected value for {} time: {}", key.name(), time);
+            LOGGER.warn("unexpected value for {} time: {}", key.name(), time);
         }
     }
 
@@ -279,7 +279,7 @@ public class ChargeProfileWrapper {
                         try {
                             daySet.add(DayOfWeek.valueOf(day));
                         } catch (IllegalArgumentException iae) {
-                            logger.warn("unexpected value for {} day: {}", key.name(), day);
+                            LOGGER.warn("unexpected value for {} day: {}", key.name(), day);
                         }
                     }
                 }
