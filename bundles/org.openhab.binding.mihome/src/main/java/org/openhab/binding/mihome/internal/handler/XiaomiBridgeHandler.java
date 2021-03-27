@@ -130,7 +130,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             return;
         }
         logger.debug("Init socket on Port: {}", port);
-        socket = new XiaomiBridgeSocket(port, getThing().getUID().getId());
+        socket = new XiaomiBridgeSocket(port, (String) config.get(INTERFACE), getThing().getUID().getId());
         socket.initialize();
         socket.registerListener(this);
 
