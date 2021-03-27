@@ -90,8 +90,8 @@ public class OpenWeatherMapConnection {
     private static final String UVINDEX_URL = "https://api.openweathermap.org/data/2.5/uvi";
     private static final String UVINDEX_FORECAST_URL = "https://api.openweathermap.org/data/2.5/uvi/forecast";
     // Air Pollution (see https://openweathermap.org/api/air-pollution)
-    private static final String AIR_POLLUTION_URL = "http://api.openweathermap.org/data/2.5/air_pollution";
-    private static final String AIR_POLLUTION_FORECAST_URL = "http://api.openweathermap.org/data/2.5/air_pollution/forecast";
+    private static final String AIR_POLLUTION_URL = "https://api.openweathermap.org/data/2.5/air_pollution";
+    private static final String AIR_POLLUTION_FORECAST_URL = "https://api.openweathermap.org/data/2.5/air_pollution/forecast";
     // Weather icons (see https://openweathermap.org/weather-conditions)
     private static final String ICON_URL = "https://openweathermap.org/img/w/%s.png";
     // One Call API (see https://openweathermap.org/api/one-call-api )
@@ -357,7 +357,7 @@ public class OpenWeatherMapConnection {
         }
 
         Map<String, String> params = new HashMap<>();
-        // API key (see http://openweathermap.org/appid)
+        // API key (see https://openweathermap.org/appid)
         String apikey = config.apikey;
         if (apikey == null || (apikey = apikey.trim()).isEmpty()) {
             throw new OpenWeatherMapConfigurationException("@text/offline.conf-error-missing-apikey");
