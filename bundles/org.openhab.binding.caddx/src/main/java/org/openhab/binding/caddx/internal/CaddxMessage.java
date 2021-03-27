@@ -270,6 +270,9 @@ public class CaddxMessage {
             return "Unknown message type";
         }
 
+        sb.append(String.format("Context: %s", context.toString()));
+        sb.append(System.lineSeparator());
+
         sb.append("Message: ");
         sb.append(String.format("%2s", Integer.toHexString(message[0])));
         sb.append(" ");
