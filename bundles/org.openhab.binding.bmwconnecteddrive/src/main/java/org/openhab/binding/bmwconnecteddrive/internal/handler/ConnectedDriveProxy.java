@@ -87,11 +87,6 @@ public class ConnectedDriveProxy {
         httpClient = httpClientFactory.getCommonHttpClient();
         authHttpClient = httpClientFactory.createHttpClient(AUTH_HTTP_CLIENT_NAME);
         authHttpClient.setFollowRedirects(false);
-        try {
-            authHttpClient.start();
-        } catch (Exception e) {
-            logger.warn("Auth Http Client cannot be started");
-        }
         configuration = config;
 
         final StringBuilder legacyAuth = new StringBuilder();
@@ -252,8 +247,16 @@ public class ConnectedDriveProxy {
      * @return
      */
     private synchronized void updateToken() {
-        final Request req = authHttpClient.POST(legacyAuthUri);
+        if (!authHttpClient.isStarted()) {
+            try {
+                authHttpClient.start();
+            } catch (Exception e) {
+                logger.warn("Auth Http Client cannot be started {}", e.getMessage());
+                return;
+            }
+        }
 
+        final Request req = authHttpClient.POST(legacyAuthUri);
         req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
         req.header(HttpHeader.HOST, getRegionServer());
         req.header(HttpHeader.AUTHORIZATION, getAuthorizationValue());

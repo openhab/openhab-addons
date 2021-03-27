@@ -27,6 +27,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.discovery.VehicleDiscovery
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Dealer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.BimmerConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -71,10 +72,29 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     public void initialize() {
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
-        proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, getConfigAs(ConnectedDriveConfiguration.class)));
-        // give the system some time to create all predefined Vehicles
-        // check with API call if bridge is online
-        initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
+        ConnectedDriveConfiguration config = getConfigAs(ConnectedDriveConfiguration.class);
+        if (checkConfiguration(config) == false) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        } else {
+            proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, config));
+            // give the system some time to create all predefined Vehicles
+            // check with API call if bridge is online
+            initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
+        }
+    }
+
+    public static boolean checkConfiguration(ConnectedDriveConfiguration config) {
+        if (Constants.EMPTY.equals(config.userName)) {
+            return false;
+        }
+        if (Constants.EMPTY.equals(config.password)) {
+            return false;
+        }
+        if (BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

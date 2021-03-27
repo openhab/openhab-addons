@@ -98,15 +98,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
     public RemoteServiceHandler(VehicleHandler vehicleHandler, ConnectedDriveProxy connectedDriveProxy) {
         handler = vehicleHandler;
         proxy = connectedDriveProxy;
-        if (handler.getConfiguration().isPresent()) {
-            final VehicleConfiguration config = handler.getConfiguration().get();
-            serviceExecutionAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionAPI;
-            serviceExecutionStateAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionStateAPI;
-        } else {
-            serviceExecutionAPI = Constants.INVALID;
-            serviceExecutionStateAPI = Constants.INVALID;
-            logger.warn("No configuration for VehicleHandler available");
-        }
+        final VehicleConfiguration config = handler.getConfiguration().get();
+        serviceExecutionAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionAPI;
+        serviceExecutionStateAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionStateAPI;
     }
 
     boolean execute(RemoteService service, String... data) {
