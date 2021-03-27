@@ -10,7 +10,7 @@ This binding integrates the [OpenWeatherMap weather API](https://openweathermap.
 
 ## Supported Things
 
-There are five supported things.
+There are six supported things.
 
 ### OpenWeatherMap Account
 
@@ -37,6 +37,13 @@ One Call API includes current, hourly forecast for 7 days and 5 days historical 
 The third thing `uvindex` supports the [current UV Index](https://openweathermap.org/api/uvi#current) and [forecasted UV Index](https://openweathermap.org/api/uvi#forecast) for a specific location.
 It requires coordinates of the location of your interest.
 You can add as much `uvindex` things for different locations to your setup as you like to observe.
+
+### Current And Forecasted Air Pollution
+
+Another thing is the `air-pollution` which provides the [current air pollution](https://openweathermap.org/api/air-pollution) and [forecasted air pollution](https://openweathermap.org/api/air-pollution#forecast) for a specific location.
+It requires coordinates of the location of your interest.
+Air pollution forecast is available for 5 days with hourly granularity.
+You can add as much `air-pollution` things for different locations to your setup as you like to observe.
 
 ### One Call API Weather and Forecast 
 
@@ -78,12 +85,21 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 
 ### Current UV Index And Forecast
 
-| Parameter      | Description                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
+| Parameter      | Description                                                                                                                      |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------|
+| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                     |
 | forecastDays   | Number of days for UV Index forecast (including todays forecast). Optional, the default value is 6 (min="1", max="8", step="1"). |
 
 Once the parameter `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
+
+### Current Air Pollution And Forecast
+
+| Parameter      | Description                                                                                                                    |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------|
+| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
+| forecastHours  | Number of hours for air pollution forecast. Optional, the default value is 0 (min="0", max="120", step="1").                   |
+
+Once the parameter `forecastHours` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
 ### One Call API Weather and Forecast
 
@@ -188,6 +204,8 @@ See above for a description of the available channels.
 | Channel Group ID                                                 | Channel ID           | Item Type            | Description                                                                       |
 |------------------------------------------------------------------|----------------------|----------------------|-----------------------------------------------------------------------------------|
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | time-stamp           | DateTime             | Date of data forecasted.                                                          |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | sunrise              | DateTime             | Time of sunrise for the given day.                                                |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | sunset               | DateTime             | Time of sunset for the given day.                                                 |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition            | String               | Forecast weather condition.                                                       |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                              |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon                 | Image                | Icon representing the forecasted weather condition.                               |
@@ -205,6 +223,7 @@ See above for a description of the available channels.
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | snow                 | Number:Length        | Expected snow volume of a day.                                                    |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                            |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | uvindex              | Number               | Forecasted Midday UV Index. Only available in the One Call API                    |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | precip-probability   | Number:Dimensionless | Precipitation probability.                                                        |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | morning-temperature  | Number:Temperature   | Expected morning temperature. Only available in the One Call API                  |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | day-temperature      | Number:Temperature   | Expected day-temperature. Only available in the One Call API                      |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | evening-temperature  | Number:Temperature   | Expected evening-temperature. Only available in the One Call API                  |
@@ -222,6 +241,21 @@ See above for a description of the available channels.
 | current, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex    | Number    | Current or forecasted UV Index.      |
 
 The `uvindex` channel is also available in the current data and the daily forecast of the One Call API.
+
+### Air Pollution
+
+| Channel Group ID                                                | Channel ID             | Item Type      | Description                                                              |
+|-----------------------------------------------------------------|------------------------|----------------|--------------------------------------------------------------------------|
+| current, forecastHours01, forecastHours02, ... forecastHours120 | time-stamp             | DateTime       | Date of data observation / forecast.                                     |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | airQualityIndex        | Number         | Current or forecasted air quality index.                                 |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | particulateMatter2dot5 | Number:Density | Current or forecasted density of particles less than 2.5 µm in diameter. |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | particulateMatter10    | Number:Density | Current or forecasted density of particles less than 10 µm in diameter.  |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | carbonMonoxide         | Number:Density | Current or forecasted concentration of carbon monoxide.                  |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | nitrogenMonoxide       | Number:Density | Current or forecasted concentration of nitrogen monoxide.                |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | nitrogenDioxide        | Number:Density | Current or forecasted concentration of nitrogen dioxide.                 |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | ozone                  | Number:Density | Current or forecasted concentration of ozone.                            |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | sulphurDioxide         | Number:Density | Current or forecasted concentration of sulphur dioxide.                  |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | ammonia                | Number:Density | Current or forecasted concentration of ammonia.                          |
 
 ## Full Example
 
