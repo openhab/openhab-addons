@@ -66,10 +66,10 @@ The meter has the following channels:
 | reactivepower_group#reactivepower_phase1                     | Number:Power             | Reactive Power P1                 | Reactive power consumed                  |
 | reactivepower_group#reactivepower_phase2                     | Number:Power             | Reactive Power P2                 | Reactive power consumed                  |
 | reactivepower_group#reactivepower_phase3                     | Number:Power             | Reactive Power P3                 | Reactive power consumed                  |
-| powerfactor_group#powerFactor_allphase                       | Number:Energy            | Power Factor                      | Power Factor                             |
-| powerfactor_group#powerFactor_phase1                         | Number:Energy            | Power Factor P1                   | Power Factor                             |
-| powerfactor_group#powerFactor_phase2                         | Number:Energy            | Power Factor P2                   | Power Factor                             |
-| powerfactor_group#powerFactor_phase3                         | Number:Energy            | Power Factor P3                   | Power Factor                             |
+| powerfactor_group#powerFactor_allphase                       | Number:Dimensionless     | Power Factor                      | Power Factor                             |
+| powerfactor_group#powerFactor_phase1                         | Number:Dimensionless     | Power Factor P1                   | Power Factor                             |
+| powerfactor_group#powerFactor_phase2                         | Number:Dimensionless     | Power Factor P2                   | Power Factor                             |
+| powerfactor_group#powerFactor_phase3                         | Number:Dimensionless     | Power Factor P3                   | Power Factor                             |
 | apppower_group#apppower_allphase                             | Number:Power             | Apparent Power                    | Apparent power consumed                  |
 | apppower_group#apppower_phase1                               | Number:Power             | Apparent Power P1                 | Apparent power consumed                  |
 | apppower_group#apppower_phase2                               | Number:Power             | Apparent Power P2                 | Apparent power consumed                  |

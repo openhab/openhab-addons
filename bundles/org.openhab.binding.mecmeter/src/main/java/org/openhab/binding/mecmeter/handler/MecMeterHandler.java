@@ -394,13 +394,13 @@ public class MecMeterHandler extends BaseThingHandler {
 
                 /* Power Factor */
                 case MecMeterBindingConstants.POWER_FACTOR_PHASE_1:
-                    return new QuantityType<>(response.getPowerFactorPhase1(), Units.VOLT_AMPERE_HOUR);
+                    return new QuantityType<>(response.getPowerFactorPhase1(), Units.ONE);
                 case MecMeterBindingConstants.POWER_FACTOR_PHASE_2:
-                    return new QuantityType<>(response.getPowerFactorPhase2(), Units.VOLT_AMPERE_HOUR);
+                    return new QuantityType<>(response.getPowerFactorPhase2(), Units.ONE);
                 case MecMeterBindingConstants.POWER_FACTOR_PHASE_3:
-                    return new QuantityType<>(response.getPowerFactorPhase3(), Units.VOLT_AMPERE_HOUR);
+                    return new QuantityType<>(response.getPowerFactorPhase3(), Units.ONE);
                 case MecMeterBindingConstants.POWER_FACTOR_ALL:
-                    return new QuantityType<>(response.getPowerFactorSum(), Units.VOLT_AMPERE_HOUR);
+                    return new QuantityType<>(response.getPowerFactorSum(), Units.ONE);
             }
         }
         return null;
