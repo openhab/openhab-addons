@@ -8,7 +8,7 @@ The sensors run on a coin cell battery for over a year.
 
 After setup, you can disconnect the gateway from the internet to keep your sensor information private. 
 
-Please note that using the Xiaomi gateway with OpenHAB requires enabling the developer mode and that multiple user reports suggest that it is no longer posible.
+Please note that using the Xiaomi gateway with openHAB requires enabling the developer mode and that multiple user reports suggest that it is no longer possible.
 Zigbee2Mqtt provides an alternative method to integrate Xiaomi devices.
 
 ## Supported devices
@@ -102,7 +102,7 @@ __Hints:__
 
 ## Removing devices from the gateway
 
-If you remove a Thing in PapaerUI it will also trigger the gateway to unpair the device.
+If you remove a Thing in PaperUI it will also trigger the gateway to unpair the device.
 It will only reappear in your Inbox, if you connect it to the gateway again.
 Just follow the instructions in ["Connecting devices to the gateway"](#connecting-devices-to-the-gateway).
 
@@ -110,7 +110,7 @@ Just follow the instructions in ["Connecting devices to the gateway"](#connectin
 
 - The binding requires port `9898` to not be used by any other service on the system.
 - Make sure multicast traffic is correctly routed between the gateway and your openHAB instance
-- To correctly receive multicast traffic, when your OpenHAB machine is using multiple network interfaces, you might need to configure the optional `interface` property on the `Bridge` Thing, like so:
+- To correctly receive multicast traffic, when your openHAB machine is using multiple network interfaces, you might need to configure the optional `interface` property on the `Bridge` Thing, like so:
 ```
 Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ ..., interface="eth0", ... ] {
 ```
@@ -456,10 +456,10 @@ Make sure you have connected your gateway to openHAB and the communication is wo
 The devices send different types of messages to the gateway.
 You have to capture as many of them as possible, so that the device is fully supported in the end.
 
-1. Heartbeat (transmitted usually every 60 minutes)
+1. Heartbeat (usually transmitted every 60 minutes)
 2. Report (device reports new sensor or status values)
 3. Read ACK (binding refreshes all sensor values after a restart of openHAB)
-4. Write ACK (device has received a command) __not avaiable for sensor-only devices__
+4. Write ACK (device has received a command) __not available for sensor-only devices__
 
 ### Open a new issue or get your hands dirty
 
@@ -469,7 +469,7 @@ Post an issue in the GitHub repository with as much information as possible abou
 - model name
 - content of all the different message types
 
-Or implement the support by youself and submit a pull request.
+Or implement the support by yourself and submit a pull request.
 
 ### Handle the message contents of a basic device thing with items
 
@@ -488,7 +488,7 @@ _Example for the same message from the heartbeat channel - only the data is retu
 
 These messages are in JSON format, which also gives you the ability to parse single values.
 
-_Example for the retrieved IP from the heartbeat message and transformed with JSONPATH transfomration: ```String Gateway_IP {channel="mihome:basic:xxx:heartbeatMessage"[profile="transform:JSONPATH", function="$.ip"]}```_
+_Example for the retrieved IP from the heartbeat message and transformed with JSONPATH transformation: ```String Gateway_IP {channel="mihome:basic:xxx:heartbeatMessage"[profile="transform:JSONPATH", function="$.ip"]}```_
 
  The item will get the value `192.168.0.124`.
 
@@ -553,7 +553,7 @@ In case you want to check if the communication between the machine and the gatew
 
 #### Multiple network interfaces
 
-When the computer running OpenHAB has more than one network interface configured (typically, a VLAN for your segregated IoT devices, and the other for your regular traffic like internet, OpenHAB panel access, etc), it could be that OpenHAB will attempt to listen for Multicast traffic of the Gateway on the wrong network interface.  That will prevent OpenHAB and `netcat` from receiving the messages from the Xiaomi Gateway. Within OpenHAB this manifests by seeing the Gateway and its devices online for a brief period after OpenHAB startup, after which they timeout and are shown Offline. No channel triggers from the Gateway work in this case.
+When the computer running openHAB has more than one network interface configured (typically, a VLAN for your segregated IoT devices, and the other for your regular traffic like internet, openHAB panel access, etc), it could be that openHAB will attempt to listen for Multicast traffic of the Gateway on the wrong network interface.  That will prevent openHAB and `netcat` from receiving the messages from the Xiaomi Gateway. Within openHAB this manifests by seeing the Gateway and its devices online for a brief period after openHAB startup, after which they timeout and are shown Offline. No channel triggers from the Gateway work in this case.
 
 In order to verify that traffic is actually received by the machine use `tcpdump` on each interface:
 - List your network interfaces `ifconfig | grep MULTICAST` or `ip link | grep MULTICAST`
