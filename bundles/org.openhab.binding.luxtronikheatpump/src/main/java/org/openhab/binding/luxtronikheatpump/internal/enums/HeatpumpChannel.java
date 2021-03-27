@@ -60,7 +60,7 @@ public enum HeatpumpChannel {
 
     /**
      * Return temperature in buffer tank
-     * (original: Rücklauftemperatur im Trennspeicher.)
+     * (original: Rücklauftemperatur im Trennspeicher)
      */
     CHANNEL_TEMPERATUR_TRL_EXT(13, "temperatureBufferTankReturn", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_RUECKLEXT),

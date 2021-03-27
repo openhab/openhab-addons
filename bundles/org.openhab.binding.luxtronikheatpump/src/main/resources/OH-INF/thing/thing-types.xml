@@ -232,7 +232,7 @@
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
-				<label>IP address</label>
+				<label>IP Address</label>
 				<description>IP address of the heat pump to connect to</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
@@ -241,7 +241,7 @@
 				<description>Port number of the heat pump to connect to. Defaults to 8889. For heatpumps running firmware version
 					before V1.73, port 8888 needs to be used.</description>
 			</parameter>
-			<parameter name="refresh" type="integer" required="false">
+			<parameter name="refresh" type="integer" required="false" unit="s" min="1">
 				<label>Refresh inverval</label>
 				<default>300</default>
 				<unitLabel>s</unitLabel>
