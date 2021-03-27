@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.pioneeravr.internal.protocol.avr;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pioneeravr.internal.protocol.Response.ResponseType;
 
 /**
@@ -46,7 +47,7 @@ public interface AvrResponse {
          *
          * @return
          */
-        public String getParameterPattern();
+        public @Nullable String getParameterPattern();
 
         /**
          * Return the zone number if the responseData matches a zone of this responseType.

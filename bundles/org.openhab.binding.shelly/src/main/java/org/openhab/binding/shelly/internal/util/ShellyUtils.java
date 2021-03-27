@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.measure.Unit;
 
@@ -43,7 +44,6 @@ import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.Primitives;
 
 /**
  * {@link ShellyUtils} provides general utility functions
@@ -53,6 +53,7 @@ import com.google.gson.internal.Primitives;
 @NonNullByDefault
 public class ShellyUtils {
     private final static String PRE = "Unable to create object of type ";
+    public final static DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
         @Nullable
@@ -76,7 +77,7 @@ public class ShellyUtils {
         }
 
         if (classOfT.isInstance(json)) {
-            return Primitives.wrap(classOfT).cast(json);
+            return wrap(classOfT).cast(json);
         } else if (json.isEmpty()) { // update GSON might return null
             throw new ShellyApiException(PRE + className + "from empty JSON");
         } else {
@@ -93,6 +94,37 @@ public class ShellyUtils {
                 throw new ShellyApiException(PRE + className + "from JSON: " + json, e);
             }
         }
+    }
+
+    private static <T> Class<T> wrap(Class<T> type) {
+        if (type == int.class) {
+            return (Class<T>) Integer.class;
+        }
+        if (type == float.class) {
+            return (Class<T>) Float.class;
+        }
+        if (type == byte.class) {
+            return (Class<T>) Byte.class;
+        }
+        if (type == double.class) {
+            return (Class<T>) Double.class;
+        }
+        if (type == long.class) {
+            return (Class<T>) Long.class;
+        }
+        if (type == char.class) {
+            return (Class<T>) Character.class;
+        }
+        if (type == boolean.class) {
+            return (Class<T>) Boolean.class;
+        }
+        if (type == short.class) {
+            return (Class<T>) Short.class;
+        }
+        if (type == void.class) {
+            return (Class<T>) Void.class;
+        }
+        return type;
     }
 
     public static String mkChannelId(String group, String channel) {
@@ -134,13 +166,14 @@ public class ShellyUtils {
     }
 
     public static String substringAfterLast(@Nullable String string, String pattern) {
-        if (string != null) {
-            int pos = string.lastIndexOf(pattern);
-            if (pos != -1) {
-                return string.substring(pos + pattern.length());
-            }
+        if (string == null) {
+            return "";
         }
-        return "";
+        int pos = string.lastIndexOf(pattern);
+        if (pos != -1) {
+            return string.substring(pos + pattern.length());
+        }
+        return string;
     }
 
     public static String substringBetween(@Nullable String string, String begin, String end) {
@@ -236,12 +269,11 @@ public class ShellyUtils {
         }
     }
 
-    public static String urlEncode(String input) throws ShellyApiException {
+    public static String urlEncode(String input) {
         try {
             return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new ShellyApiException(
-                    "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input, e);
+            return input;
         }
     }
 
@@ -256,7 +288,7 @@ public class ShellyUtils {
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
             if (timestamp == 0) {
-                return getTimestamp();
+                throw new IllegalArgumentException("Timestamp value 0 is invalid");
             }
             ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
             ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
@@ -266,6 +298,18 @@ public class ShellyUtils {
             // Unable to convert device's timezone, use system one
             return getTimestamp();
         }
+    }
+
+    public static String getTimestamp(DateTimeType dt) {
+        return dt.getZonedDateTime().toString().replace('T', ' ').replace('-', '/');
+    }
+
+    public static String convertTimestamp(long ts) {
+        if (ts == 0) {
+            return "";
+        }
+        String time = DATE_TIME.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+        return time.replace('T', ' ').replace('-', '/');
     }
 
     public static Integer getLightIdFromGroup(String groupName) {

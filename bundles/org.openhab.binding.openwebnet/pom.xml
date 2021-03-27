@@ -21,9 +21,9 @@
   <dependencies>
 
     <dependency>
-      <groupId>com.github.openwebnet4j</groupId>
+      <groupId>io.github.openwebnet4j</groupId>
       <artifactId>openwebnet4j</artifactId>
-      <version>0.3.4</version>
+      <version>0.4.1</version>
       <scope>compile</scope>
     </dependency>
 

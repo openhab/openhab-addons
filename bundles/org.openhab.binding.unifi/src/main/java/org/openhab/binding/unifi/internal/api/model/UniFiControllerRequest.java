@@ -131,7 +131,7 @@ public class UniFiControllerRequest<T> {
         String json = getContent();
         // mgb: only try and unmarshall non-void result types
         if (!Void.class.equals(resultType)) {
-            JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
             if (jsonObject.has(PROPERTY_DATA) && jsonObject.get(PROPERTY_DATA).isJsonArray()) {
                 result = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
             }
@@ -223,19 +223,19 @@ public class UniFiControllerRequest<T> {
             request = request.content(content);
         }
 
-        if (!csrfToken.isEmpty())
+        if (!csrfToken.isEmpty()) {
             request.header("x-csrf-token", this.csrfToken);
+        }
 
         return request;
     }
 
     private String getRequestBodyAsJson() {
-        JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = new JsonObject();
         JsonElement jsonElement = null;
         for (Entry<String, String> entry : bodyParameters.entrySet()) {
             try {
-                jsonElement = jsonParser.parse(entry.getValue());
+                jsonElement = JsonParser.parseString(entry.getValue());
             } catch (JsonSyntaxException e) {
                 jsonElement = new JsonPrimitive(entry.getValue());
             }
@@ -245,8 +245,7 @@ public class UniFiControllerRequest<T> {
     }
 
     private static String prettyPrintJson(String content) {
-        JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(content).getAsJsonObject();
+        JsonObject json = JsonParser.parseString(content).getAsJsonObject();
         Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
         return prettyGson.toJson(json);
     }

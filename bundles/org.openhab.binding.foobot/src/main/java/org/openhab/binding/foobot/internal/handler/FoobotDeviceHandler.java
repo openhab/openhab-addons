@@ -21,7 +21,6 @@ import java.util.Map;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
@@ -93,7 +92,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         logger.debug("Initializing Foobot handler.");
         uuid = (String) getConfig().get(FoobotBindingConstants.CONFIG_UUID);
 
-        if (StringUtils.trimToNull(uuid) == null) {
+        if (uuid.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'uuid' is mandatory and must be configured");
             return;

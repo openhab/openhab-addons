@@ -16,7 +16,6 @@ import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.omnilink.internal.handler.OmniLinkCmd;
 import org.openhab.binding.omnilink.internal.handler.UnitHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -29,6 +28,7 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedUnitStatus;
 
 /**
@@ -62,8 +62,8 @@ public class FlagHandler extends UnitHandler {
         switch (channelUID.getId()) {
             case CHANNEL_FLAG_VALUE:
                 if (command instanceof DecimalType) {
-                    sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_SET_COUNTER.getNumber(),
-                            ((DecimalType) command).intValue(), thingID);
+                    sendOmnilinkCommand(CommandMessage.CMD_UNIT_SET_COUNTER, ((DecimalType) command).intValue(),
+                            thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be DecimalType", command);
                 }

@@ -224,8 +224,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     private JsonObject convertStringToJsonObject(String jsonString) {
         try {
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(jsonString);
+            JsonElement jsonElement = JsonParser.parseString(jsonString);
             JsonObject result;
 
             if (jsonElement instanceof JsonObject) {

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
@@ -35,7 +34,7 @@ public class ValueFactory {
         Value value;
         switch (channelTypeID) {
             case MqttBindingConstants.STRING:
-                value = StringUtils.isBlank(config.allowedStates) ? new TextValue()
+                value = config.allowedStates.isBlank() ? new TextValue()
                         : new TextValue(config.allowedStates.split(","));
                 break;
             case MqttBindingConstants.DATETIME:

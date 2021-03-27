@@ -12,12 +12,19 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.openhab.core.config.core.Configuration;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class EnOceanChannelTransformationConfig {
+public class EnOceanChannelTransformationConfig extends Configuration {
 
     public String transformationType;
     public String transformationFunction;
+
+    public EnOceanChannelTransformationConfig() {
+        put("transformationType", "");
+        put("transformationFunction", "");
+    }
 }

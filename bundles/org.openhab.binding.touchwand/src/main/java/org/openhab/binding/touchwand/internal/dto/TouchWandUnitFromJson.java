@@ -85,11 +85,10 @@ public class TouchWandUnitFromJson {
     }
 
     public static TouchWandUnitData parseResponse(String JsonUnit) {
-        final JsonParser jsonParser = new JsonParser();
         TouchWandUnitData myTouchWandUnitData;
         JsonObject unitObj;
         try {
-            unitObj = jsonParser.parse(JsonUnit).getAsJsonObject();
+            unitObj = JsonParser.parseString(JsonUnit).getAsJsonObject();
             myTouchWandUnitData = parseResponse(unitObj);
         } catch (JsonParseException | IllegalStateException e) {
             logger.warn("Could not parse response {}", JsonUnit);

@@ -60,7 +60,6 @@ public class SonyAudioClientSocket {
     private final URI uri;
     private Session session;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson mapper;
 
     private static int ping = 0;
@@ -149,7 +148,7 @@ public class SonyAudioClientSocket {
         public void onMessage(String message) {
             logger.debug("Message received from server: {}", message);
             try {
-                final JsonObject json = parser.parse(message).getAsJsonObject();
+                final JsonObject json = JsonParser.parseString(message).getAsJsonObject();
                 if (json.has("id")) {
                     logger.debug("Response received from server: {}", json);
                     int messageId = json.get("id").getAsInt();

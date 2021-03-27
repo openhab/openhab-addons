@@ -16,11 +16,14 @@ import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseAuthenticationException;
@@ -210,8 +213,9 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
             updateGroupState(group, CHANNEL_ZONE_TYPE, new DecimalType(r.type));
             updateGroupState(group, CHANNEL_ZONE_TIME,
                     r.runTimeSeconds != null ? new DecimalType(r.runTimeSeconds) : UnDefType.UNDEF);
-            if (StringUtils.isNotBlank(r.icon)) {
-                updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + r.icon));
+            String icon = r.icon;
+            if (icon != null && !icon.isBlank()) {
+                updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + icon));
             }
             if (r.time >= MAX_RUN_TIME) {
                 updateGroupState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME, UnDefType.UNDEF);

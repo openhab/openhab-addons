@@ -73,7 +73,6 @@ public class MiIoAsyncCommunication {
     private AtomicInteger id = new AtomicInteger(-1);
     private int timeDelta;
     private int timeStamp;
-    private final JsonParser parser;
     private @Nullable MessageSenderThread senderThread;
     private boolean connected;
     private ThingStatusDetail status = ThingStatusDetail.NONE;
@@ -94,7 +93,6 @@ public class MiIoAsyncCommunication {
         this.timeout = timeout;
         this.cloudConnector = cloudConnector;
         setId(id);
-        parser = new JsonParser();
         startReceiver();
     }
 
@@ -150,7 +148,7 @@ public class MiIoAsyncCommunication {
             }
             fullCommand.addProperty("id", cmdId);
             fullCommand.addProperty("method", command);
-            fullCommand.add("params", parser.parse(params));
+            fullCommand.add("params", JsonParser.parseString(params));
             MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command), fullCommand,
                     cloudServer);
             concurrentLinkedQueue.add(sendCmd);
@@ -188,7 +186,7 @@ public class MiIoAsyncCommunication {
             // hack due to avoid invalid json errors from some misbehaving device firmwares
             decryptedResponse = decryptedResponse.replace(",,", ",");
             JsonElement response;
-            response = parser.parse(decryptedResponse);
+            response = JsonParser.parseString(decryptedResponse);
             if (!response.isJsonObject()) {
                 errorMsg = "Received message is not a JSON object ";
             } else {
