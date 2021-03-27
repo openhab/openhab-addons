@@ -37,7 +37,6 @@
 		</parameter>
 
 		<parameter name="interface" type="text">
-			<context>network-address</context>
 			<label>Interface</label>
 			<description>Interface to bind to for the MiHome communication channel</description>
 			<required>false</required>
