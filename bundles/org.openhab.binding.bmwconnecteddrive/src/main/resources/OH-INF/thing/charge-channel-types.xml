@@ -22,8 +22,8 @@
 		<label>Charging Preferences for Profile</label>
 		<command>
 			<options>
-				<option value="NO_PRESELECTION">keine Vorauswahl</option>
-				<option value="CHARGING_WINDOW">Ladezeitfenster</option>
+				<option value="NO_PRESELECTION">No Preference</option>
+				<option value="CHARGING_WINDOW">Charging Window</option>
 			</options>
 		</command>
 	</channel-type>
