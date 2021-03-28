@@ -26,9 +26,8 @@
 			</parameter>
 			<parameter name="serverCheck" type="integer" required="false" unit="min" min="1">
 				<label>Server Check</label>
-				<description>Time to check communication with Qbus Server (min), default 10. If set to 0 or left empty, no
-					refresh
-					willl be scheduled</description>
+				<description>Time to check communication with Qbus Server (min), default 10. If set to 0 or left empty, no refresh
+					will be scheduled</description>
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
