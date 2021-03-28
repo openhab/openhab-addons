@@ -20,7 +20,7 @@
     <bnd.importpackage>!com.amazonaws.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.joda.convert.*,!scala.util.*,!software.amazon.*,!org.reactivestreams,!com.typesafe.netty</bnd.importpackage>
     <!-- We do not want to embed/compile in dependencies that are declared as OSGi imports (feature.xml). This includes e.g.
       netty & jackson. Let's ensure by listing relevant packages with dep.noembedding -->
-    <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler,jackson-core,jackson-annotations,jackson-dataformat-cbor,jackson-databind</dep.noembedding>
+    <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler,jackson-core,jackson-annotations,jackson-dataformat-cbor,jackson-databind</dep.noembedding>
     <!-- netty version matching the openhab.tp-netty feature version -->
     <netty.version>4.1.42.Final</netty.version>
   </properties>
