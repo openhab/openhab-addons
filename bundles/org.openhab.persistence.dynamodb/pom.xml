@@ -23,6 +23,7 @@
     <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler,jackson-core,jackson-annotations,jackson-dataformat-cbor,jackson-databind</dep.noembedding>
     <!-- netty version matching the openhab.tp-netty feature version -->
     <netty.version>4.1.42.Final</netty.version>
+    <slf4j.version>1.7.21</slf4j.version>
   </properties>
 
   <!--Custom repository for DynamoDBLocal -->
@@ -59,10 +60,20 @@
     </plugins>
   </build>
 
-  <!-- We want to run our tests and compilations using netty and jackson version used in the runtime (provided as OSGi features).
-    Let's ensure the correct versions with dependencyManagement -->
+  <!-- Let's ensure the correct versions with dependencyManagement.
+
+    We want to run our tests and compilations using netty and jackson version used in the runtime (provided as OSGi features).
+    slf4j-api version is locked to core-version. Also: slf4j comes via openHAB logging, so setting it here as provided to
+    have the right OSGi imports.
+  -->
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
@@ -144,7 +155,6 @@
       <artifactId>DynamoDBLocal</artifactId>
       <version>1.13.5</version>
       <scope>test</scope>
-      <exclusions></exclusions>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
