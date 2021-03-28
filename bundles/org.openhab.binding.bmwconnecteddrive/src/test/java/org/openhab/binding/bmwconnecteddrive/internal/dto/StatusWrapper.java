@@ -166,16 +166,18 @@ public class StatusWrapper {
                 break;
             case RANGE_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                if (imperial) {
-                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuelMls),
-                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
-                } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuel),
-                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
+                if (!(state instanceof UnDefType)) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = ((QuantityType) state);
+                    if (imperial) {
+                        assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
+                        assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuelMls),
+                                ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
+                    } else {
+                        assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                        assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuel),
+                                ALLOWED_KM_ROUND_DEVIATION, "Mileage");
+                    }
                 }
                 break;
             case RANGE_HYBRID:

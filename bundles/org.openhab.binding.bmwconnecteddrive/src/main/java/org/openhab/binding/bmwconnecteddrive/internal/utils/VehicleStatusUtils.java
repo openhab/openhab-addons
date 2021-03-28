@@ -42,8 +42,6 @@ public class VehicleStatusUtils {
                 CBSMessage entry = vStatus.cbsData.get(i);
                 if (entry.cbsDueDate != null) {
                     LocalDateTime d = LocalDateTime.parse(entry.cbsDueDate + Constants.UTC_APPENDIX);
-                    // LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
-                    // Converter.SERVICE_DATE_INPUT_PATTERN);
                     if (d.isBefore(serviceDate)) {
                         serviceDate = d;
                     }

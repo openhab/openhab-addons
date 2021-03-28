@@ -36,6 +36,10 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusCo
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -46,6 +50,8 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class Converter {
+    public static final Logger LOGGER = LoggerFactory.getLogger(Converter.class);
+
     public static final DateTimeFormatter SERVICE_DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final DateTimeFormatter SERVICE_DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("MMM yyyy");
 
@@ -65,7 +71,6 @@ public class Converter {
     private static final Gson GSON = new Gson();
     private static final double SCALE = 10;
     public static final double MILES_TO_KM_RATIO = 1.60934;
-    private static final QuantityType<Length> UNDEF_MILES = QuantityType.valueOf(-1, ImperialUnits.MILE);
     private static final String SPLIT_HYPHEN = "-";
     private static final String SPLIT_BRACKET = "\\(";
 
@@ -191,15 +196,16 @@ public class Converter {
         return range * 0.8;
     }
 
-    public static QuantityType<Length> getMiles(QuantityType<Length> qtLength) {
+    public static State getMiles(QuantityType<Length> qtLength) {
         if (qtLength.intValue() == -1) {
-            return UNDEF_MILES;
+            return UnDefType.UNDEF;
         }
         QuantityType<Length> qt = qtLength.toUnit(ImperialUnits.MILE);
         if (qt != null) {
             return qt;
         } else {
-            return QuantityType.valueOf(qtLength.doubleValue() / MILES_TO_KM_RATIO, ImperialUnits.MILE);
+            LOGGER.debug("Cannot convert {} to miles", qt);
+            return UnDefType.UNDEF;
         }
     }
 
