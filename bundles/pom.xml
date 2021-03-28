@@ -348,6 +348,8 @@
 
     <module>org.openhab.binding.mcp23017</module>
 
+    <module>org.openhab.binding.mecmeter</module>
+
     <module>org.openhab.binding.melcloud</module>
 
     <module>org.openhab.binding.meteoalerte</module>
