@@ -14,8 +14,6 @@
 package org.openhab.binding.qbus.internal;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -58,31 +56,11 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void initialize() {
-        readConfig();
-
-        InetAddress addr;
-        Integer port = getPort();
         Integer serverCheck = getServerCheck();
 
-        if (port == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No port defined for Qbus Server");
-            return;
-        }
+        readConfig();
 
-        try {
-            addr = InetAddress.getByName(getAddress());
-            if (addr == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "No ip address defined for Qbus Server");
-                return;
-            } else {
-                createCommunicationObject(addr, port);
-            }
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Incorrect ip address set for Qbus Server");
-        }
+        createCommunicationObject();
 
         if (serverCheck != null) {
             this.setupRefreshTimer(serverCheck);
@@ -105,8 +83,9 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @param addr : IP address of Qbus server
      * @param port : Communication port of QbusServer
      */
-    private void createCommunicationObject(InetAddress addr, int port) {
+    private void createCommunicationObject() {
         scheduler.submit(() -> {
+
             setQbusCommunication(new QbusCommunication(thing));
 
             QbusCommunication qbusCommunication = getQbusCommunication();
