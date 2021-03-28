@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.ahawastecollection</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: AhaWasteCollection Binding</name>
+  <name>openHAB Add-ons :: Bundles :: aha Waste Collection Binding</name>
 
   <dependencies>
     <dependency>

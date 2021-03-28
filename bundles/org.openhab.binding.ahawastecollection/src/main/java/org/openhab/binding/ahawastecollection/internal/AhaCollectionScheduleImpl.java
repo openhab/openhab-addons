@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Schedule that returns the next collection dates from the aha website.
- * 
+ *
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
@@ -48,33 +48,33 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
     private static final String WEBSITE_URL = "https://www.aha-region.de/abholtermine/abfuhrkalender/";
 
     private final Logger logger = LoggerFactory.getLogger(AhaCollectionScheduleImpl.class);
-    private final String gemeinde;
-    private final String strasse;
-    private final String hausnr;
-    private final String hausnraddon;
-    private final String ladeort;
+    private final String commune;
+    private final String street;
+    private final String houseNumber;
+    private final String houseNumberAddon;
+    private final String collectionPlace;
 
     /**
      * Creates an new {@link AhaCollectionScheduleImpl} for the given location.
      */
-    public AhaCollectionScheduleImpl(final String gemeinde, final String strasse, final String hausnr,
-            final String hausnraddon, final String ladeort) {
-        this.gemeinde = gemeinde;
-        this.strasse = strasse;
-        this.hausnr = hausnr;
-        this.hausnraddon = hausnraddon;
-        this.ladeort = ladeort;
+    public AhaCollectionScheduleImpl(final String commune, final String street, final String houseNumber,
+            final String houseNumberAddon, final String collectionPlace) {
+        this.commune = commune;
+        this.street = street;
+        this.houseNumber = houseNumber;
+        this.houseNumberAddon = houseNumberAddon;
+        this.collectionPlace = collectionPlace;
     }
 
     @Override
     public Map<WasteType, CollectionDate> getCollectionDates() throws IOException {
         final Document doc = Jsoup.connect(WEBSITE_URL) //
                 .method(Method.POST) //
-                .data("gemeinde", this.gemeinde) //
-                .data("strasse", this.strasse) //
-                .data("hausnr", this.hausnr) //
-                .data("hausnraddon", this.hausnraddon) //
-                .data("ladeort", this.ladeort) //
+                .data("gemeinde", this.commune) //
+                .data("strasse", this.street) //
+                .data("hausnr", this.houseNumber) //
+                .data("hausnraddon", this.houseNumberAddon) //
+                .data("ladeort", this.collectionPlace) //
                 .data("anzeigen", "Suchen") //
                 .get();
         final Elements tableRows = doc.select("table").select("tr");
@@ -98,11 +98,10 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
 
     /**
      * Parses the {@link CollectionDate} from the given {@link Element table row}.
-     * 
+     *
      * @return The {@link CollectionDate} or <code>null</code> if no dates could be parsed.
      */
-    @Nullable
-    private CollectionDate parseRow(final Element row) {
+    private @Nullable CollectionDate parseRow(final Element row) {
         final Elements columns = row.select("td");
         if (columns.size() != 5) {
             this.logger.debug("Could not parse row: {}", row.toString());
@@ -143,7 +142,7 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
             try {
                 result.add(DATE_FORMAT.parse(dateValue));
             } catch (final ParseException e) {
-                this.logger.warn("Could not parse date: {}", dateValue); //$NON-NLS-1$
+                this.logger.warn("Could not parse date: {}", dateValue);
             }
         }
         return result;

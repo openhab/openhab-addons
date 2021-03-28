@@ -64,10 +64,10 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
 
-    private AhaCollectionScheduleFactory scheduleFactory;
+    private final AhaCollectionScheduleFactory scheduleFactory;
 
     public AhaWasteCollectionHandler(final Thing thing, final CronScheduler scheduler,
-            final TimeZoneProvider timeZoneProvider, AhaCollectionScheduleFactory scheduleFactory) {
+            final TimeZoneProvider timeZoneProvider, final AhaCollectionScheduleFactory scheduleFactory) {
         super(thing);
         this.cronScheduler = scheduler;
         this.timeZoneProvider = timeZoneProvider;
@@ -77,8 +77,10 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
     private Map<WasteType, CollectionDate> loadCollectionDates() {
         try {
-            return this.collectionSchedule.getCollectionDates();
-        } catch (IOException e) {
+            final Map<WasteType, CollectionDate> collectionDates = this.collectionSchedule.getCollectionDates();
+            this.updateStatus(ThingStatus.ONLINE);
+            return collectionDates;
+        } catch (final IOException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return Collections.emptyMap();
         }
@@ -97,19 +99,20 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     public void initialize() {
         this.config = this.getConfigAs(AhaWasteCollectionConfiguration.class);
 
-        final String gemeinde = this.config.commune;
+        final String commune = this.config.commune;
         final String street = this.config.street;
-        final String hausnr = this.config.houseNumber;
-        final String hausnraddon = this.config.houseNumberAddon;
-        final String ladeort = this.config.collectionPlace;
+        final String houseNumber = this.config.houseNumber;
+        final String houseNumberAddon = this.config.houseNumberAddon;
+        final String collectionPlace = this.config.collectionPlace;
 
-        if (gemeinde.isBlank() || street.isBlank() || hausnr.isBlank() || ladeort.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        if (commune.isBlank() || street.isBlank() || houseNumber.isBlank() || collectionPlace.isBlank()) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameters are mandatory and must be configured");
             return;
         }
 
-        this.collectionSchedule = scheduleFactory.create(gemeinde, street, hausnr, hausnraddon, ladeort);
+        this.collectionSchedule = this.scheduleFactory.create(commune, street, houseNumber, houseNumberAddon,
+                collectionPlace);
 
         this.updateStatus(ThingStatus.UNKNOWN);
 
@@ -133,7 +136,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
                 this.dailyJob = this.cronScheduler.schedule(this::updateCollectionDates, DAILY_MIDNIGHT);
                 this.logger.debug("Scheduled {} at midnight", this.dailyJob);
                 // Execute daily startup job immediately
-                updateCollectionDates();
+                this.updateCollectionDates();
             }
         } finally {
             this.monitor.unlock();
@@ -164,8 +167,6 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
         this.logger.debug("Retrieved {} collection entries.", collectionDates.size());
         this.updateChannels(collectionDates);
-
-        this.updateStatus(ThingStatus.ONLINE);
         return true;
     }
 
@@ -178,7 +179,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
             final CollectionDate collectionDate = collectionDates.get(wasteType);
             if (collectionDate == null) {
-                this.logger.warn("No collection dates found for waste type: {}", wasteType); //$NON-NLS-1$
+                this.logger.warn("No collection dates found for waste type: {}", wasteType);
                 continue;
             }
 

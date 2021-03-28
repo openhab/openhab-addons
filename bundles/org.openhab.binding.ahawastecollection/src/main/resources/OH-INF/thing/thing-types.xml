@@ -19,23 +19,25 @@
 		<config-description>
 			<parameter name="commune" type="text" required="true">
 				<label>Commune</label>
-				<description>Commune from form input</description>
+				<description>The selected commune, taken from the form field 'gemeinde'. </description>
 			</parameter>
 			<parameter name="street" type="text" required="true">
 				<label>Street</label>
-				<description>Street from selected street value. For example "02095@Oesterleystr.+/+Südstadt@Südstadt"</description>
+				<description>The selected street, taken from the form field 'strasse'. This value must look like
+					67269@Rosmarinweg+/+Kirchhorst@Kirchhorst</description>
 			</parameter>
 			<parameter name="houseNumber" type="text" required="true">
-				<label>House number</label>
-				<description>House number from form input</description>
+				<label>House Number</label>
+				<description>The selected house number, taken from the form field 'hausnr'.</description>
 			</parameter>
 			<parameter name="houseNumberAddon" type="text" required="false">
-				<label>House number addon from form input, may be empty</label>
-				<description></description>
+				<label>House Number Addon</label>
+				<description>The selected house number addon, taken from the form field 'hausnraddon'.</description>
 			</parameter>
 			<parameter name="collectionPlace" type="text" required="true">
-				<label>Collection place</label>
-				<description>Collection place from form input, for example: "02095-0010+"</description>
+				<label>Collection Place</label>
+				<description>Form value for the collection place, taken from the form field `ladeort`. This value must look like
+					67269-0010+</description>
 			</parameter>
 		</config-description>
 	</thing-type>

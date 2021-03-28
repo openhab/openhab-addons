@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,11 +45,12 @@ import org.openhab.core.types.State;
 /**
  * @author Sönke Küper - Initial contribution
  */
+@NonNullByDefault
 public class AhaWasteCollectionHandlerTest {
 
-    private ThingHandler handler;
-    private ThingHandlerCallback callback;
-    private Thing thing;
+    private @Nullable ThingHandler handler;
+    private @Nullable ThingHandlerCallback callback;
+    private @Nullable Thing thing;
 
     @BeforeEach
     public void setUp() {
@@ -58,20 +61,7 @@ public class AhaWasteCollectionHandlerTest {
         config.put("houseNumberAddon", "");
         config.put("street", "02095@Oesterleystr.+/+Südstadt@Südstadt");
 
-        this.thing = mock(Thing.class);
-        when(this.thing.getUID())
-                .thenReturn(new ThingUID(AhaWasteCollectionBindingConstants.THING_TYPE_SCHEDULE, "collectionCalendar"));
-        when(this.thing.getConfiguration()).thenReturn(config);
-
-        final Channel channelBioWaste = mockChannel(this.thing.getUID(), AhaWasteCollectionBindingConstants.BIOWASTE);
-        final Channel channelGeneralWaste = mockChannel(this.thing.getUID(),
-                AhaWasteCollectionBindingConstants.GENERAL_WASTE);
-        final Channel channelPaper = mockChannel(this.thing.getUID(), AhaWasteCollectionBindingConstants.PAPER);
-        final Channel channelLeightweightPackaging = mockChannel(this.thing.getUID(),
-                AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING);
-
-        when(this.thing.getChannels()).thenReturn(
-                Arrays.asList(channelBioWaste, channelGeneralWaste, channelLeightweightPackaging, channelPaper));
+        this.thing = mockThing(config);
 
         // Stub-Scheduler that executes the command synchronous
         @SuppressWarnings("unchecked")
@@ -100,10 +90,43 @@ public class AhaWasteCollectionHandlerTest {
             }
         };
 
-        this.handler = new AhaWasteCollectionHandler(this.thing, scheduler, ZoneId::systemDefault,
+        this.handler = new AhaWasteCollectionHandler(this.getThing(), scheduler, ZoneId::systemDefault,
                 new AhaCollectionScheduleStubFactory());
         this.callback = mock(ThingHandlerCallback.class);
         this.handler.setCallback(this.callback);
+    }
+
+    private static Thing mockThing(final Configuration config) {
+        final Thing thing = mock(Thing.class);
+        when(thing.getUID())
+                .thenReturn(new ThingUID(AhaWasteCollectionBindingConstants.THING_TYPE_SCHEDULE, "collectionCalendar"));
+        when(thing.getConfiguration()).thenReturn(config);
+
+        final Channel channelBioWaste = mockChannel(thing.getUID(), AhaWasteCollectionBindingConstants.BIOWASTE);
+        final Channel channelGeneralWaste = mockChannel(thing.getUID(),
+                AhaWasteCollectionBindingConstants.GENERAL_WASTE);
+        final Channel channelPaper = mockChannel(thing.getUID(), AhaWasteCollectionBindingConstants.PAPER);
+        final Channel channelLeightweightPackaging = mockChannel(thing.getUID(),
+                AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING);
+
+        when(thing.getChannels()).thenReturn(
+                Arrays.asList(channelBioWaste, channelGeneralWaste, channelLeightweightPackaging, channelPaper));
+        return thing;
+    }
+
+    private static Channel mockChannel(final ThingUID thingId, final String channelId) {
+        final Channel channel = Mockito.mock(Channel.class);
+        when(channel.getUID()).thenReturn(new ChannelUID(thingId, channelId));
+        return channel;
+    }
+
+    // Needed because of NotNullCheck will fail otherwise when using attribute thing in mockito verify.
+    private Thing getThing() {
+        if (this.thing != null) {
+            return this.thing;
+        } else {
+            throw new AssertionError();
+        }
     }
 
     @AfterEach
@@ -114,7 +137,7 @@ public class AhaWasteCollectionHandlerTest {
     @Test
     public void testUpdateChannels() {
         this.handler.initialize();
-        verify(this.callback).statusUpdated(eq(this.thing),
+        verify(this.callback).statusUpdated(eq(this.getThing()),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
         verify(this.callback, timeout(1000)).statusUpdated(eq(this.thing),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
@@ -135,11 +158,5 @@ public class AhaWasteCollectionHandlerTest {
     private static State getDateTime(final Date day) {
         final ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(day.toInstant(), ZoneId.systemDefault());
         return new DateTimeType(zonedDateTime);
-    }
-
-    private static Channel mockChannel(final ThingUID thingId, final String channelId) {
-        final Channel channel = Mockito.mock(Channel.class);
-        when(channel.getUID()).thenReturn(new ChannelUID(thingId, channelId));
-        return channel;
     }
 }

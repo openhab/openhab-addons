@@ -62,9 +62,10 @@ public class AhaWasteCollectionHandlerFactory extends BaseThingHandlerFactory {
             final AhaCollectionScheduleFactory factory = new AhaCollectionScheduleFactory() {
 
                 @Override
-                public AhaCollectionScheduleImpl create(final String gemeinde, final String strasse, String hausnr,
-                        String hausnraddon, String ladeort) {
-                    return new AhaCollectionScheduleImpl(gemeinde, strasse, hausnr, hausnraddon, ladeort);
+                public AhaCollectionScheduleImpl create(final String commune, final String street,
+                        final String houseNumber, final String houseNumberAddon, final String collectionPlace) {
+                    return new AhaCollectionScheduleImpl(commune, street, houseNumber, houseNumberAddon,
+                            collectionPlace);
                 }
             };
             return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider, factory);

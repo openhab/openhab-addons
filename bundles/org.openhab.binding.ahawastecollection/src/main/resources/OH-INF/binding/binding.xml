@@ -4,7 +4,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>aha WasteCollection Binding</name>
-	<description>This binding requests the next waste collection dates from the aha collection schedule served by
-		https://www.aha-region.de/abholtermine/abfuhrkalender.</description>
+	<description>This binding provides information about the upcoming waste collection dates for places, that are served by
+		aha,
+		the waste collection company of the region Hannover. The values are retrieved from the online
+		aha waste collection
+		schedule available at: https://www.aha-region.de/abholtermine/abfuhrkalender.</description>
 
 </binding:binding>

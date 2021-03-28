@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public final class AhaCollectionScheduleStubFactory implements AhaCollectionScheduleFactory {
 
     @Override
-    public AhaCollectionSchedule create(final String gemeinde, final String strasse, final String hausnr,
-            final String hausnraddon, final String ladeort) {
+    public AhaCollectionSchedule create(final String commune, final String street, final String houseNumber,
+            final String houseNumberAddon, final String collectionPlace) {
         return new AhaCollectionScheduleStub();
     }
 }

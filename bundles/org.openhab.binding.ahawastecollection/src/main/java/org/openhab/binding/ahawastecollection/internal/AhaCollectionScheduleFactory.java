@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Factory for creating an {@link AhaCollectionSchedule}.
- * 
+ *
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
@@ -25,6 +25,6 @@ public interface AhaCollectionScheduleFactory {
     /**
      * Creates an new {@link AhaCollectionSchedule} for the given location.
      */
-    public AhaCollectionSchedule create(final String gemeinde, final String strasse, final String hausnr,
-            final String hausnraddon, final String ladeort);
+    public AhaCollectionSchedule create(final String commune, final String street, final String houseNumber,
+            final String houseNumberAddon, final String collectionPlace);
 }
