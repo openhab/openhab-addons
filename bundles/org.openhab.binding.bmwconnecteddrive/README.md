@@ -43,10 +43,10 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
  
 | Name                                | Thing Type ID | Supported Channel Groups                               |
 |-------------------------------------|---------------|--------------------------------------------------------|
-| BMW Electric Vehicle                | bev           | status, range, location, service, check, charge, image |
-| BMW Electric Vehicle with REX       | bev_rex       | status, range, location, service, check, charge, image |
-| BMW Plug-In-Hybrid Electric Vehicle | phev          | status, range, location, service, check, charge, image |
-| BMW Conventional Vehicle            | conv          | status, range, location, service, check, image         |
+| BMW Electric Vehicle                | `bev`         | status, range, location, service, check, charge, image |
+| BMW Electric Vehicle with REX       | `bev_rex`     | status, range, location, service, check, charge, image |
+| BMW Plug-In-Hybrid Electric Vehicle | `phev`        | status, range, location, service, check, charge, image |
+| BMW Conventional Vehicle            | `conv`        | status, range, location, service, check, image         |
 
  
 #### Properties

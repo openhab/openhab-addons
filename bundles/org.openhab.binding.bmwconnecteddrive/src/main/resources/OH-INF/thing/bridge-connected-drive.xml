@@ -4,31 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<bridge-type id="account">
 		<label>BMW ConnectedDrive Account</label>
 		<description>Access to BMW ConnectedDrive Portal for a specific user</description>
-
-		<config-description>
-			<parameter name="userName" type="text" required="true">
-				<label>Username</label>
-				<description>BMW Connected Drive Username</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>BMW Connected Drive Password</description>
-			</parameter>
-			<parameter name="region" type="text" required="true">
-				<label>Region</label>
-				<description>Select Region in order to connect to the appropriate BMW Server</description>
-				<options>
-					<option value="NORTH_AMERICA">North America</option>
-					<option value="CHINA">China</option>
-					<option value="ROW">Rest of the World</option>
-				</options>
-				<default>ROW</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:bmwconnecteddrive:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>
