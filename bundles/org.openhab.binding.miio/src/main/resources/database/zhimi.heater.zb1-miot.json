@@ -7,23 +7,11 @@
 		"maxProperties": 1,
 		"channels": [
 			{
-				"property": "fault",
-				"siid": 2,
-				"piid": 1,
-				"friendlyName": "Heater - Device Fault",
-				"channel": "fault",
-				"channelType": "miot_uint32",
-				"type": "Number",
-				"refresh": true,
-				"actions": []
-			},
-			{
 				"property": "on",
 				"siid": 2,
 				"piid": 2,
 				"friendlyName": "Heater - Power",
 				"channel": "on",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -38,14 +26,55 @@
 				]
 			},
 			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Heater - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Error"
+						},
+						{
+							"value": "1",
+							"label": "NTC\tConnect Error"
+						},
+						{
+							"value": "2",
+							"label": "High Temperature Alarm"
+						},
+						{
+							"value": "3",
+							"label": "EEPROM Error"
+						},
+						{
+							"value": "4",
+							"label": "Multi Errors"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"No Error\",\"1\"\u003d\"NTC\tConnect Error\",\"2\"\u003d\"High Temperature Alarm\",\"3\"\u003d\"EEPROM Error\",\"4\"\u003d\"Multi Errors\"]"
+			},
+			{
 				"property": "target-temperature",
 				"siid": 2,
 				"piid": 6,
 				"friendlyName": "Heater - Target Temperature",
 				"channel": "target-temperature",
-				"channelType": "ZhimiHeaterZa2_target-temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 16,
+					"maximum": 28,
+					"step": 1,
+					"pattern": "%.1f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -65,7 +94,6 @@
 				"piid": 1,
 				"friendlyName": "Alarm - Alarm",
 				"channel": "alarm",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -82,9 +110,14 @@
 				"piid": 1,
 				"friendlyName": "Countdown - Countdown Time",
 				"channel": "countdown-time",
-				"channelType": "time",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 8,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -101,6 +134,13 @@
 				"channel": "relative-humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -114,9 +154,14 @@
 				"piid": 8,
 				"friendlyName": "Environment - Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"category": "temperature",
@@ -131,7 +176,23 @@
 				"piid": 1,
 				"friendlyName": "Indicator Light - Brightness",
 				"channel": "brightness",
-				"type": "Dimmer",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dark"
+						},
+						{
+							"value": "2",
+							"label": "Extinguished"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -143,7 +204,8 @@
 				"tags": [
 					"Control",
 					"Light"
-				]
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Bright\",\"1\"\u003d\"Dark\",\"2\"\u003d\"Extinguished\"]"
 			},
 			{
 				"property": "physical-controls-locked",
@@ -151,7 +213,6 @@
 				"piid": 1,
 				"friendlyName": "Physical Control Locked - Physical Controls Locked",
 				"channel": "physical-controls-locked",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -167,12 +228,17 @@
 				"piid": 7,
 				"friendlyName": "Private-Service - Use Time",
 				"channel": "use-time",
-				"channelType": "time",
 				"type": "Number:Time",
 				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [],
-				"category": "time"
+				"actions": []
 			},
 			{
 				"property": "country-code",
@@ -180,7 +246,6 @@
 				"piid": 8,
 				"friendlyName": "Private-Service - Country-Code",
 				"channel": "country-code",
-				"channelType": "ZhimiHeaterZb1_country-code",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,

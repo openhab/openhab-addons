@@ -20,11 +20,11 @@ package org.openhab.binding.tellstick.internal.live.xml;
 public enum LiveDataType {
     HUMIDITY("humidity"),
     TEMPERATURE("temp"),
-    WINDAVERAGE("windaverage"),
-    WINDDIRECTION("winddirection"),
-    WINDGUST("windgust"),
-    RAINRATE("rainrate"),
-    RAINTOTAL("rainttotal"),
+    WINDAVERAGE("wavg"),
+    WINDDIRECTION("wdir"),
+    WINDGUST("wgust"),
+    RAINRATE("rrate"),
+    RAINTOTAL("rtot"),
     WATT("watt"),
     LUMINATION("lum"),
     UNKOWN("unkown");

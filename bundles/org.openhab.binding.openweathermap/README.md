@@ -10,7 +10,7 @@ This binding integrates the [OpenWeatherMap weather API](https://openweathermap.
 
 ## Supported Things
 
-There are five supported things.
+There are six supported things.
 
 ### OpenWeatherMap Account
 
@@ -29,9 +29,21 @@ If the request fails, all daily forecast channel groups will be removed from the
 
 ### Current UV Index And Forecast
 
+::: tip Note
+The product will retire on 1st April 2021, please find UV data in the One Call API.
+One Call API includes current, hourly forecast for 7 days and 5 days historical UV data.
+:::
+
 The third thing `uvindex` supports the [current UV Index](https://openweathermap.org/api/uvi#current) and [forecasted UV Index](https://openweathermap.org/api/uvi#forecast) for a specific location.
 It requires coordinates of the location of your interest.
 You can add as much `uvindex` things for different locations to your setup as you like to observe.
+
+### Current And Forecasted Air Pollution
+
+Another thing is the `air-pollution` which provides the [current air pollution](https://openweathermap.org/api/air-pollution) and [forecasted air pollution](https://openweathermap.org/api/air-pollution#forecast) for a specific location.
+It requires coordinates of the location of your interest.
+Air pollution forecast is available for 5 days with hourly granularity.
+You can add as much `air-pollution` things for different locations to your setup as you like to observe.
 
 ### One Call API Weather and Forecast 
 
@@ -48,7 +60,7 @@ For every day in history you have to create a different thing.
 
 ## Discovery
 
-If a system location is set, a "Local Weather And Forecast" (`weather-and-forecast`) thing and "Local UV Index" (`uvindex`) thing will be automatically discovered for this location.
+If a system location is set, a "Local Weather And Forecast" (`weather-and-forecast`) thing will be automatically discovered for this location.
 Once the system location will be changed, the background discovery updates the configuration of both things accordingly.
 
 ## Thing Configuration
@@ -73,12 +85,21 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 
 ### Current UV Index And Forecast
 
-| Parameter      | Description                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
+| Parameter      | Description                                                                                                                      |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------|
+| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                     |
 | forecastDays   | Number of days for UV Index forecast (including todays forecast). Optional, the default value is 6 (min="1", max="8", step="1"). |
 
 Once the parameter `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
+
+### Current Air Pollution And Forecast
+
+| Parameter      | Description                                                                                                                    |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------|
+| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
+| forecastHours  | Number of hours for air pollution forecast. Optional, the default value is 0 (min="0", max="120", step="1").                   |
+
+Once the parameter `forecastHours` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
 ### One Call API Weather and Forecast
 
@@ -133,7 +154,6 @@ These channels are not supported in the One Call API
 | current          | visibility           | Number:Length        | Current visibility.                                                     |
 | current          | uvindex              | Number               | Current UV Index. Only available in the One Call API                    |
 
-
 **Attention**: Rain item is showing "1h" in the case when data are received from weather stations directly.
 The fact is that some METAR stations do not have precipitation indicators or do not measure precipitation conditions due to some other technical reasons.
 In this case, we use model data.
@@ -181,31 +201,33 @@ See above for a description of the available channels.
 
 ### Daily Forecast
 
-| Channel Group ID                                                 | Channel ID           | Item Type            | Description                                                                |
-|------------------------------------------------------------------|----------------------|----------------------|----------------------------------------------------------------------------|
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | time-stamp           | DateTime             | Date of data forecasted.                                                   |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition            | String               | Forecast weather condition.                                                |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                       |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon                 | Image                | Icon representing the forecasted weather condition.                        |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon-id              | String               | Id of the icon representing the forecasted weather condition. **Advanced** |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature. Not available in the One Call API         |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | min-temperature      | Number:Temperature   | Minimum forecasted temperature of a day.                                   |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | max-temperature      | Number:Temperature   | Maximum forecasted temperature of a day.                                   |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | pressure             | Number:Pressure      | Forecasted barometric pressure.                                            |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-speed           | Number:Speed         | Forecasted wind speed.                                                     |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-direction       | Number:Angle         | Forecasted wind direction.                                                 |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                                                     |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | rain                 | Number:Length        | Expected rain volume of a day.                                             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | snow                 | Number:Length        | Expected snow volume of a day.                                             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                     |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | uvindex              | Number               | Forecasted Midday UV Index.  Only available in the One Call API            |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | precip-probability   | Number:Dimensionless | Precipitation probability. Only available in the One Call API              |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | morning-temperature  | Number:Temperature   | Expected morning temperature. Only available in the One Call API           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | day-temperature      | Number:Temperature   | Expected day-temperature. Only available in the One Call API               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | evening-temperature  | Number:Temperature   | Expected evening-temperature. Only available in the One Call API           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | night-temperature    | Number:Temperature   | Expected night-temperature. Only available in the One Call API             |
+| Channel Group ID                                                 | Channel ID           | Item Type            | Description                                                                       |
+|------------------------------------------------------------------|----------------------|----------------------|-----------------------------------------------------------------------------------|
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | time-stamp           | DateTime             | Date of data forecasted.                                                          |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | sunrise              | DateTime             | Time of sunrise for the given day.                                                |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | sunset               | DateTime             | Time of sunset for the given day.                                                 |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition            | String               | Forecast weather condition.                                                       |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                              |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon                 | Image                | Icon representing the forecasted weather condition.                               |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon-id              | String               | Id of the icon representing the forecasted weather condition. **Advanced**        |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature. Not available in the One Call API                |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | min-temperature      | Number:Temperature   | Minimum forecasted temperature of a day.                                          |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | max-temperature      | Number:Temperature   | Maximum forecasted temperature of a day.                                          |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | pressure             | Number:Pressure      | Forecasted barometric pressure.                                                   |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                                                  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-speed           | Number:Speed         | Forecasted wind speed.                                                            |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-direction       | Number:Angle         | Forecasted wind direction.                                                        |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                                               |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                                                            |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | rain                 | Number:Length        | Expected rain volume of a day.                                                    |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | snow                 | Number:Length        | Expected snow volume of a day.                                                    |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                            |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | uvindex              | Number               | Forecasted Midday UV Index. Only available in the One Call API                    |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | precip-probability   | Number:Dimensionless | Precipitation probability.                                                        |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | morning-temperature  | Number:Temperature   | Expected morning temperature. Only available in the One Call API                  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | day-temperature      | Number:Temperature   | Expected day-temperature. Only available in the One Call API                      |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | evening-temperature  | Number:Temperature   | Expected evening-temperature. Only available in the One Call API                  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | night-temperature    | Number:Temperature   | Expected night-temperature. Only available in the One Call API                    |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-morning     | Number:Temperature   | Expected apparent temperature in the morning. Only available in the One Call API  |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-day         | Number:Temperature   | Expected apparent temperature in the day. Only available in the One Call API      |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-evening     | Number:Temperature   | Expected apparent temperature in the evening. Only available in the One Call API  |
@@ -220,6 +242,21 @@ See above for a description of the available channels.
 
 The `uvindex` channel is also available in the current data and the daily forecast of the One Call API.
 
+### Air Pollution
+
+| Channel Group ID                                                | Channel ID             | Item Type      | Description                                                              |
+|-----------------------------------------------------------------|------------------------|----------------|--------------------------------------------------------------------------|
+| current, forecastHours01, forecastHours02, ... forecastHours120 | time-stamp             | DateTime       | Date of data observation / forecast.                                     |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | airQualityIndex        | Number         | Current or forecasted air quality index.                                 |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | particulateMatter2dot5 | Number:Density | Current or forecasted density of particles less than 2.5 µm in diameter. |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | particulateMatter10    | Number:Density | Current or forecasted density of particles less than 10 µm in diameter.  |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | carbonMonoxide         | Number:Density | Current or forecasted concentration of carbon monoxide.                  |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | nitrogenMonoxide       | Number:Density | Current or forecasted concentration of nitrogen monoxide.                |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | nitrogenDioxide        | Number:Density | Current or forecasted concentration of nitrogen dioxide.                 |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | ozone                  | Number:Density | Current or forecasted concentration of ozone.                            |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | sulphurDioxide         | Number:Density | Current or forecasted concentration of sulphur dioxide.                  |
+| current, forecastHours01, forecastHours02, ... forecastHours120 | ammonia                | Number:Density | Current or forecasted concentration of ammonia.                          |
+
 ## Full Example
 
 ### Things
@@ -230,11 +267,10 @@ demo.things
 Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="AAA", refreshInterval=30, language="de"] {
     Thing weather-and-forecast local "Local Weather And Forecast" [location="XXX,YYY", forecastHours=0, forecastDays=7]
     Thing weather-and-forecast miami "Weather And Forecast In Miami" [location="25.782403,-80.264563", forecastHours=24, forecastDays=0]
-    Thing uvindex local "Local UV Index" [location="XXX,YYY", forecastDays=7]
 }
 ```
 
-#### One Call API version
+#### One Call API Version
 
 ```java
 Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="Add your API key", refreshInterval=60, language="de"] {
@@ -306,16 +342,9 @@ String miamiHourlyForecast06Condition "Condition in Miami for hours 3 to 6 [%s]"
 Image miamiHourlyForecast06ConditionIcon "Icon" { channel="openweathermap:weather-and-forecast:api:miami:forecastHours06#icon" }
 Number:Temperature miamiHourlyForecast06Temperature "Temperature in Miami for hours 3 to 6 [%.1f %unit%]" <temperature> { channel="openweathermap:weather-and-forecast:api:miami:forecastHours06#temperature" }
 ...
-
-DateTime localCurrentUVIndexTimestamp "Timestamp of last measurement [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:uvindex:api:local:current#time-stamp" }
-Number localCurrentUVIndex "Current UV Index [%d]" { channel="openweathermap:uvindex:api:local:current#uvindex" }
-
-DateTime localForecastTomorrowUVIndexTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:uvindex:api:local:forecastTomorrow#time-stamp" }
-Number localForecastTomorrowUVIndex "UV Index for tomorrow [%d]" { channel="openweathermap:uvindex:api:local:forecastTomorrow#uvindex" }
-...
 ```
 
-#### One Call API version
+#### One Call API Version
 
 ```java
 DateTime localLastMeasurement "Timestamp of Last Measurement [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:onecall:api:local:current#time-stamp" }
@@ -585,17 +614,10 @@ sitemap demo label="OpenWeatherMap" {
         Text item=miamiHourlyForecast06Temperature
         ...
     }
-    Frame label="UV Index" {
-        Text item=localCurrentUVIndexTimestamp
-        Text item=localCurrentUVIndex
-        Text item=localForecastTomorrowUVIndexTimestamp
-        Text item=localForecastTomorrowUVIndex
-        ...
-    }
 }
 ```
 
-#### One Call API version
+#### One Call API Version
 
 Please note that this sitemap does not cover all items of the example above.
 
@@ -727,6 +749,5 @@ sitemap demo label="OpenWeatherMapOneCall" {
         Text item=localHistory1SnowVolume
         Text item=localHistory1Visibility
     }
-
 }
 ```

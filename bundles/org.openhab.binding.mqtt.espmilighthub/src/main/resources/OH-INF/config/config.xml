@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mqtt:rgb">
+		<parameter name="oneTriggersNightMode" type="boolean" required="true">
+			<label>1% Triggers Night Mode</label>
+			<description>1% on a slider will trigger the Night Mode.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="powerFailsToMinimum" type="boolean" required="true">
+			<label>Dimmed on Power Fail</label>
+			<description>If lights loose power when soft off, the lights will default back to the minimum brightness.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:mqtt:cct">
+		<parameter name="dimmedCT" type="integer" required="false" min="153" max="370">
+			<label>Dimmed Colour Temp</label>
+			<description>Traditional globes grow warmer the more they are dimmed. Set this to 370, or leave blank to disable.
+			</description>
+		</parameter>
+
+		<parameter name="oneTriggersNightMode" type="boolean" required="true">
+			<label>1% Triggers Night Mode</label>
+			<description>1% on a slider will trigger the Night Mode.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:mqtt:rgbandcct">
+		<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
+			<label>White Hue</label>
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
+			</description>
+			<default>35</default>
+		</parameter>
+
+		<parameter name="whiteSat" type="integer" required="true" min="-1" max="100">
+			<label>White Saturation</label>
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
+			</description>
+			<default>32</default>
+		</parameter>
+
+		<parameter name="favouriteWhite" type="integer" required="true" min="153" max="370">
+			<label>Favourite White</label>
+			<description>When a shortcut triggers white mode, use this for the colour white.</description>
+			<default>200</default>
+		</parameter>
+
+		<parameter name="dimmedCT" type="integer" required="false" min="153" max="370">
+			<label>Dimmed Colour Temp</label>
+			<description>Traditional globes grow warmer the more they are dimmed. Set this to 370, or leave blank to disable.
+			</description>
+		</parameter>
+
+		<parameter name="oneTriggersNightMode" type="boolean" required="true">
+			<label>1% Triggers Night Mode</label>
+			<description>1% on a slider will trigger the Night Mode.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="powerFailsToMinimum" type="boolean" required="true">
+			<label>Dimmed on Power Fail</label>
+			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
+			<default>true</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:mqtt:rgbw">
+		<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
+			<label>White Hue</label>
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
+			</description>
+			<default>35</default>
+		</parameter>
+
+		<parameter name="whiteSat" type="integer" required="true" min="-1" max="100">
+			<label>White Saturation</label>
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
+			</description>
+			<default>32</default>
+		</parameter>
+
+		<parameter name="oneTriggersNightMode" type="boolean" required="true">
+			<label>1% Triggers Night Mode</label>
+			<description>1% on a slider will trigger the Night Mode.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="powerFailsToMinimum" type="boolean" required="true">
+			<label>Dimmed on Power Fail</label>
+			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="whiteThreshold" type="integer" required="true" min="-1" max="99">
+			<label>White Threshold</label>
+			<description>RGBW saturation changes, will trigger the white mode. -1 will disable this feature.
+			</description>
+			<default>12</default>
+		</parameter>
+
+	</config-description>
+
+</config-description:config-descriptions>

@@ -337,8 +337,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private <T extends SomfyMyLinkResponseBase> T parseResponse(Reader reader, Class<T> responseType) {
-        JsonParser parser = new JsonParser();
-        JsonObject jsonObj = parser.parse(gson.newJsonReader(reader)).getAsJsonObject();
+        JsonObject jsonObj = JsonParser.parseReader(gson.newJsonReader(reader)).getAsJsonObject();
 
         logger.debug("Got full message: {}", jsonObj.toString());
 

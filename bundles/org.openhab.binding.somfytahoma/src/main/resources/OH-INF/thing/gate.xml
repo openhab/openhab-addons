@@ -14,6 +14,7 @@
 			<channel id="gate_command" typeId="gate_command"></channel>
 			<channel id="gate_position" typeId="gate_position"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

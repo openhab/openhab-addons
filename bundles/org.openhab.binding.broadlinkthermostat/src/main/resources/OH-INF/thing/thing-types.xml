@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="broadlinkthermostat"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Floureon Thermostat Thing Type -->
+	<thing-type id="floureonthermostat">
+		<label>Floureon Thermostat</label>
+		<description>A heating device thermostat</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="sensor" typeId="sensor"/>
+			<channel id="roomtemperature" typeId="roomtemperature"/>
+			<channel id="roomtemperatureexternalsensor" typeId="roomtemperatureexternalsensor"/>
+			<channel id="active" typeId="active"/>
+			<channel id="setpoint" typeId="setpoint"/>
+			<channel id="temperatureoffset" typeId="temperatureoffset"/>
+			<channel id="remotelock" typeId="remotelock"/>
+			<channel id="time" typeId="time"/>
+		</channels>
+
+		<representation-property>host</representation-property>
+
+		<config-description-ref uri="thing-type:broadlinkthermostat:floureonandhysenthermostat"/>
+	</thing-type>
+	<thing-type id="hysenthermostat">
+		<label>Hysen Thermostat</label>
+		<description>A heating device thermostat</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="sensor" typeId="sensor"/>
+			<channel id="roomtemperature" typeId="roomtemperature"/>
+			<channel id="roomtemperatureexternalsensor" typeId="roomtemperatureexternalsensor"/>
+			<channel id="active" typeId="active"/>
+			<channel id="setpoint" typeId="setpoint"/>
+			<channel id="temperatureoffset" typeId="temperatureoffset"/>
+			<channel id="remotelock" typeId="remotelock"/>
+			<channel id="time" typeId="time"/>
+		</channels>
+
+		<representation-property>host</representation-property>
+
+		<config-description-ref uri="thing-type:broadlinkthermostat:floureonandhysenthermostat"/>
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Switch display on/off and enable/disables heating</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Current mode of the thermostat</description>
+		<state>
+			<options>
+				<option value="auto">auto</option>
+				<option value="manual">manual</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sensor">
+		<item-type>String</item-type>
+		<label>Sensor</label>
+		<description>The sensor (internal/external) used for triggering the thermostat</description>
+		<category>Sensor</category>
+		<state>
+			<options>
+				<option value="internal">internal</option>
+				<option value="external">external</option>
+				<option value="internal_temp_external_limit">internal control temperature; external limit temperature</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="active">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<description>Shows if thermostat is currently actively heating</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="roomtemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Room temperature, measured directly at the device</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="roomtemperatureexternalsensor">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Ext. Sensor</label>
+		<description>Room temperature, measured by the external sensor</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+		<description>Temperature setpoint that open/close valve</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+	<channel-type id="temperatureoffset">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Offset</label>
+		<description>Manual temperature adjustment</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" step="0.5" min="-2.5" max="2.5"/>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="remotelock">
+		<item-type>Switch</item-type>
+		<label>Remote Lock</label>
+		<description>Locks the device to only allow remote actions</description>
+		<category>Lock</category>
+	</channel-type>
+	<channel-type id="time">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>The time and day of week</description>
+		<category>Time</category>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -15,10 +15,16 @@
   <name>openHAB Add-ons :: Bundles :: ZWay Binding</name>
 
   <properties>
-    <dep.noembedding>commons-lang3</dep.noembedding>
+    <dep.noembedding>commons-lang3,commons-net</dep.noembedding>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>${commons.net.version}</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>

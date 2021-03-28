@@ -52,7 +52,7 @@ In addition there are some optional Configuration Parameters.
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
 | ipAddress               |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
 | password                | velux123         |   Yes    | Password for authentication against the Velux Bridge.(\*\*)  |
-| timeoutMsecs            | 2000             |    No    | Communication timeout in milliseconds.                       |
+| timeoutMsecs            | 3000             |    No    | Communication timeout in milliseconds.                       |
 | protocol                | slip             |    No    | Underlying communication protocol (http/https/slip).         |
 | tcpPort                 | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
 | retries                 | 5                |    No    | Number of retries during I/O.                                |

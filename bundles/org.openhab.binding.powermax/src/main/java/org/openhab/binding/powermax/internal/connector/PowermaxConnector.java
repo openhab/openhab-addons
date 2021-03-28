@@ -47,7 +47,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     }
 
     @Override
-    public abstract void open();
+    public abstract void open() throws Exception;
 
     @Override
     public abstract void close();
@@ -101,9 +101,15 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
                 PowermaxBaseMessage.getMessageHandler(incomingMessage));
 
         // send message to event listeners
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewMessageEvent(event);
-        }
+        listeners.forEach(listener -> listener.onNewMessageEvent(event));
+    }
+
+    /**
+     * Handles a communication failure
+     */
+    public void handleCommunicationFailure(String message) {
+        close();
+        listeners.forEach(listener -> listener.onCommunicationFailure(message));
     }
 
     @Override
@@ -113,7 +119,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
             output.flush();
         } catch (IOException e) {
             logger.debug("sendMessage(): Writing error: {}", e.getMessage(), e);
-            setConnected(false);
+            handleCommunicationFailure(e.getMessage());
         }
     }
 

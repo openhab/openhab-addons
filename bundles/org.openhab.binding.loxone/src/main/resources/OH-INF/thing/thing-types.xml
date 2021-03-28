@@ -39,9 +39,14 @@
 				<description>Host address or IP of the Loxone Miniserver</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" groupName="miniserver">
-				<label>Port</label>
-				<description>Web interface port of the Loxone Miniserver</description>
+				<label>HTTP Port</label>
+				<description>HTTP Web interface port of the Loxone Miniserver</description>
 				<default>80</default>
+			</parameter>
+			<parameter name="httpsPort" type="integer" min="1" max="65535" groupName="miniserver">
+				<label>HTTPS Port</label>
+				<description>HTTPS Web interface port of the Loxone Miniserver</description>
+				<default>443</default>
 			</parameter>
 
 			<parameter name="authMethod" type="integer" min="0" max="2" groupName="security">
@@ -71,6 +76,18 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="webSocketType" type="integer" min="0" max="2" groupName="security">
+				<label>WebSocket Connection Type</label>
+				<description>Protocol used to communicate over WebSocket to the Miniserver</description>
+				<default>0</default>
+				<options>
+					<option value="0">Automatic</option>
+					<option value="1">Force HTTPS</option>
+					<option value="2">Force HTTP</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="firstConDelay" type="integer" min="0" max="120" groupName="timeouts">
 				<label>First Connection Delay</label>
 				<description>Time between binding initialization and first connection attempt (seconds, 0-120)</description>

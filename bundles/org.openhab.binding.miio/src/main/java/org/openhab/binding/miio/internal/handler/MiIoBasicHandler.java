@@ -73,6 +73,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
@@ -196,6 +197,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             value = new JsonPrimitive(boolCommand);
                         } else if (paramType == CommandParameterType.ONOFFBOOLSTRING) {
                             value = new JsonPrimitive(command == OnOffType.ON ? "true" : "false");
+                        } else if (paramType == CommandParameterType.ONOFFNUMBER) {
+                            value = new JsonPrimitive(command == OnOffType.ON ? 1 : 0);
                         }
                     } else if (command instanceof DecimalType) {
                         value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
@@ -503,7 +506,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     private void updatePropsFromJsonArray(MiIoSendCommand response) {
         JsonArray res = response.getResult().getAsJsonArray();
-        JsonArray para = parser.parse(response.getCommandString()).getAsJsonObject().get("params").getAsJsonArray();
+        JsonArray para = JsonParser.parseString(response.getCommandString()).getAsJsonObject().get("params")
+                .getAsJsonArray();
         if (res.size() != para.size()) {
             logger.debug("Unexpected size different. Request size {},  response size {}. (Req: {}, Resp:{})",
                     para.size(), res.size(), para, res);
@@ -570,8 +574,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
                     break;
                 case "switch":
-                    updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
-                            || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
+                    if (val.getAsJsonPrimitive().isNumber()) {
+                        updateState(basicChannel.getChannel(), val.getAsInt() > 0 ? OnOffType.ON : OnOffType.OFF);
+                    } else {
+                        String strVal = val.getAsString().toLowerCase();
+                        updateState(basicChannel.getChannel(),
+                                strVal.equals("on") || strVal.equals("true") ? OnOffType.ON : OnOffType.OFF);
+                    }
                     break;
                 case "color":
                     Color rgb = new Color(val.getAsInt());
@@ -596,9 +605,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         basicChannel.getChannel(), basicChannel.getUnit(), unit);
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), unit));
             } else {
-                logger.debug("Unit '{}' used by '{}' channel '{}' is not found.. using default unit.",
-                        getThing().getUID(), basicChannel.getUnit(), basicChannel.getChannel());
+                logger.debug(
+                        "Unit '{}' used by '{}' channel '{}' is not found in conversion table... Trying anyway to submit as the update.",
+                        basicChannel.getUnit(), getThing().getUID(), basicChannel.getChannel());
+                updateState(basicChannel.getChannel(),
+                        new QuantityType<>(val.getAsBigDecimal().toPlainString() + " " + basicChannel.getUnit()));
             }
+            return;
         }
         // if no unit is provided or unit not found use default units, these units have so far been seen for miio
         // devices

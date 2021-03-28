@@ -13,6 +13,8 @@
 package org.openhab.binding.autelis.internal.handler;
 
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,14 +27,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.B64Code;
-import org.eclipse.jetty.util.StringUtil;
 import org.openhab.binding.autelis.internal.AutelisBindingConstants;
 import org.openhab.binding.autelis.internal.config.AutelisConfiguration;
 import org.openhab.core.library.types.DecimalType;
@@ -288,17 +287,17 @@ public class AutelisHandler extends BaseThingHandler {
         String username = configuration.user;
         String password = configuration.password;
 
-        if (StringUtils.isBlank(username)) {
+        if (username == null || username.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "username must not be empty");
             return;
         }
 
-        if (StringUtils.isBlank(password)) {
+        if (password == null || password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "password must not be empty");
             return;
         }
 
-        if (StringUtils.isBlank(host)) {
+        if (host == null || host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname must not be empty");
             return;
         }
@@ -314,7 +313,8 @@ public class AutelisHandler extends BaseThingHandler {
         }
 
         baseURL = "http://" + host + ":" + port;
-        basicAuthentication = "Basic " + B64Code.encode(username + ":" + password, StringUtil.__ISO_8859_1);
+        basicAuthentication = "Basic "
+                + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
         logger.debug("Autelius binding configured with base url {} and refresh period of {}", baseURL, refresh);
 
         initPolling(0);
@@ -443,7 +443,7 @@ public class AutelisHandler extends BaseThingHandler {
                     }
                 }
 
-                if (StringUtils.isEmpty((value))) {
+                if (value == null || value.isEmpty()) {
                     continue;
                 }
 

@@ -52,9 +52,6 @@ public class F6_02_02 extends _RPSMessage {
     @Override
     protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
-        if (!isValid()) {
-            return null;
-        }
 
         if (t21 && nu) {
             byte dir1 = channelId.equals(CHANNEL_ROCKERSWITCH_CHANNELA) ? AI : BI;
@@ -109,11 +106,6 @@ public class F6_02_02 extends _RPSMessage {
         // this method is used by the classic device listener channels to convert an rocker switch message into an
         // appropriate item update
         State currentState = getCurrentStateFunc.apply(channelId);
-
-        if (!isValid()) {
-            return UnDefType.UNDEF;
-        }
-
         if (t21 && nu) {
             EnOceanChannelVirtualRockerSwitchConfig c = config.as(EnOceanChannelVirtualRockerSwitchConfig.class);
             byte dir1 = c.getChannel() == Channel.ChannelA ? AI : BI;
@@ -170,5 +162,10 @@ public class F6_02_02 extends _RPSMessage {
 
     private State inverse(UpDownType currentState) {
         return currentState == UpDownType.UP ? UpDownType.DOWN : UpDownType.UP;
+    }
+
+    @Override
+    public boolean isValidForTeachIn() {
+        return false; // Never treat a message as F6-02-02, let user decide which orientation of rocker switch is used
     }
 }

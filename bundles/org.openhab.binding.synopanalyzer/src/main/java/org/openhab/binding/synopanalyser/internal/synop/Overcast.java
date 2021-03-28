@@ -29,7 +29,7 @@ public enum Overcast {
     public static Overcast fromOcta(int octa) {
         if (octa == 0) {
             return Overcast.CLEAR_SKY;
-        } else if (octa > 0 && octa < 8) {
+        } else if (octa > 0 && octa < 9) {
             return Overcast.CLOUDY;
         } else if (octa == 9) {
             return Overcast.SKY_NOT_VISIBLE;

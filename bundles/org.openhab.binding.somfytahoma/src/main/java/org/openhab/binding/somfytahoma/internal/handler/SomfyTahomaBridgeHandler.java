@@ -17,13 +17,18 @@ import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstan
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,9 +39,25 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
-import org.openhab.binding.somfytahoma.internal.model.*;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaAction;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRegisterEventsResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatusResponse;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -78,6 +99,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ScheduledFuture<?> reconciliationFuture;
 
+    // List of futures used for command retries
+    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
+
     /**
      * List of executions
      */
@@ -101,6 +125,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * Id of registered events
      */
     private String eventsId = "";
+
+    private ExpiringCache<List<SomfyTahomaDevice>> cachedDevices = new ExpiringCache<>(Duration.ofSeconds(30),
+            this::getDevices);
 
     // Gson & parser
     private final Gson gson = new Gson();
@@ -153,7 +180,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     public synchronized void login() {
         String url;
 
-        if (StringUtils.isEmpty(thingConfig.getEmail()) || StringUtils.isEmpty(thingConfig.getPassword())) {
+        if (thingConfig.getEmail().isEmpty() || thingConfig.getPassword().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Can not access device as username and/or password are null");
             return;
@@ -275,6 +302,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Doing cleanup");
         stopPolling();
         executions.clear();
+        // cancel all scheduled retries
+        retryFutures.forEach(x -> x.cancel(false));
+
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -322,6 +352,16 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         SomfyTahomaDevice[] response = invokeCallToURL(SETUP_URL + "devices", "", HttpMethod.GET,
                 SomfyTahomaDevice[].class);
         return response != null ? List.of(response) : List.of();
+    }
+
+    public synchronized @Nullable SomfyTahomaDevice getCachedDevice(String url) {
+        List<SomfyTahomaDevice> devices = cachedDevices.getValue();
+        for (SomfyTahomaDevice device : devices) {
+            if (url.equals(device.getDeviceURL())) {
+                return device;
+            }
+        }
+        return null;
     }
 
     private void getTahomaUpdates() {
@@ -534,7 +574,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             throws InterruptedException, ExecutionException, TimeoutException {
         logger.trace("Sending {} to url: {} with data: {}", method.asString(), url, urlParameters);
         Request request = sendRequestBuilder(url, method);
-        if (StringUtils.isNotEmpty(urlParameters)) {
+        if (!urlParameters.isEmpty()) {
             request = request.content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8");
         }
 
@@ -561,13 +601,23 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        Boolean result = sendCommandInternal(io, command, params, url);
+        removeFinishedRetries();
+
+        boolean result = sendCommandInternal(io, command, params, url);
         if (!result) {
-            sendCommandInternal(io, command, params, url);
+            scheduleRetry(io, command, params, url, thingConfig.getRetries());
         }
     }
 
-    private Boolean sendCommandInternal(String io, String command, String params, String url) {
+    private void repeatSendCommandInternal(String io, String command, String params, String url, int retries) {
+        logger.debug("Retrying command, retries left: {}", retries);
+        boolean result = sendCommandInternal(io, command, params, url);
+        if (!result && (retries > 0)) {
+            scheduleRetry(io, command, params, url, retries - 1);
+        }
+    }
+
+    private boolean sendCommandInternal(String io, String command, String params, String url) {
         String value = params.equals("[]") ? command : params.replace("\"", "");
         String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value
                 + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
@@ -585,6 +635,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return true;
         }
         return false;
+    }
+
+    private void removeFinishedRetries() {
+        retryFutures.removeIf(x -> x.isDone());
+        logger.debug("Currently {} retries are scheduled.", retryFutures.size());
+    }
+
+    private void scheduleRetry(String io, String command, String params, String url, int retries) {
+        retryFutures.add(scheduler.schedule(() -> {
+            repeatSendCommandInternal(io, command, params, url, retries);
+        }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS));
     }
 
     private String getThingLabelByURL(String io) {

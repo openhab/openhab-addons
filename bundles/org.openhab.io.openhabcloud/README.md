@@ -71,3 +71,5 @@ Alternatively, you can configure the settings in the file `conf/services/openhab
 ```
 
 Note: The exposed items will show up after they receive an update to their state.
+
+Note: In order to use an openHAB UI via the Cloud Connector exposing items is not neccessary. Administrative actions are limited to creating things, items and rules, deleting them is inhibited via the Cloud Connector.

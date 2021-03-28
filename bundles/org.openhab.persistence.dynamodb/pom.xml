@@ -15,6 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: DynamoDB</name>
 
   <properties>
+    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind,jackson-dataformat-cbor</dep.noembedding>
     <bnd.importpackage>!com.amazonaws.*,!org.joda.convert.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.apache.avalon.*</bnd.importpackage>
   </properties>
 
@@ -24,6 +25,16 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-core</artifactId>
       <version>1.11.213</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
@@ -47,6 +58,12 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>jmespath-java</artifactId>
       <version>1.11.213</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
     <dependency>
@@ -91,25 +108,25 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.6.0</version>
+      <version>${jackson.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.6.7</version>
+      <version>${jackson.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.6.7.1</version>
+      <version>${jackson.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-cbor -->
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-cbor</artifactId>
-      <version>2.6.7</version>
+      <version>${jackson.version}</version>
     </dependency>
   </dependencies>
 </project>

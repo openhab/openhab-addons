@@ -53,7 +53,6 @@ class SpotifyConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyConnector.class);
 
-    private final JsonParser parser = new JsonParser();
     private final HttpClient httpClient;
     private final ScheduledExecutorService scheduler;
 
@@ -234,7 +233,7 @@ class SpotifyConnector {
          */
         private String processErrorState(ContentResponse response) {
             try {
-                final JsonElement element = parser.parse(response.getContentAsString());
+                final JsonElement element = JsonParser.parseString(response.getContentAsString());
 
                 if (element.isJsonObject()) {
                     final JsonObject object = element.getAsJsonObject();

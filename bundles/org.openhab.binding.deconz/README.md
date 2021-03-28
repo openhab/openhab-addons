@@ -170,6 +170,7 @@ Other devices support
 | effect            | String                   |     R/W     | Effect selection. Allowed commands are set dynamically                                  | `colorlight`                                    |
 | effectSpeed       | Number                   |     W       | Effect Speed                          | `colorlight`                                    |
 | lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |                 
+| ontime            | Number:Time              |     W       | Timespan for which the light is turned on | all lights |
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                    |
