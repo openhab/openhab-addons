@@ -9,7 +9,7 @@
 	</channel-type>
 	<channel-type id="profile-mode-channel">
 		<item-type>String</item-type>
-		<label>Charge Mode for Profile</label>
+		<label>Charge Mode</label>
 		<command>
 			<options>
 				<option value="IMMEDIATE_CHARGING">Immediate Charging</option>
@@ -19,7 +19,7 @@
 	</channel-type>
 	<channel-type id="profile-prefs-channel">
 		<item-type>String</item-type>
-		<label>Charging Preferences for Profile</label>
+		<label>Charging Preferences</label>
 		<command>
 			<options>
 				<option value="NO_PRESELECTION">No Preference</option>

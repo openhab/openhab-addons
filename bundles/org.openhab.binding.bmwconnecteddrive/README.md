@@ -31,7 +31,7 @@ The bridge establishes the connection between BMW's ConnectedDrive Portal and op
 
 | Name                       | Bridge Type ID | Description                                                |
 |----------------------------|----------------|------------------------------------------------------------|
-| BMW ConnectedDrive Account | account        | Access to BMW ConnectedDrive Portal for a specific user    |
+| BMW ConnectedDrive Account | `account`      | Access to BMW ConnectedDrive Portal for a specific user    |
 
 
 ### Things
