@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,8 @@
  */
 package org.openhab.binding.philipsair.internal.discovery;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PROPERTY_DEV_TYPE;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PROPERTY_MANUFACTURER;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2889_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC3829_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL;
-import static org.openhab.core.thing.Thing.PROPERTY_MAC_ADDRESS;
-import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
-import static org.openhab.core.thing.Thing.PROPERTY_VENDOR;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
+import static org.openhab.core.thing.Thing.*;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -137,6 +128,8 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         DeviceDetails details = device.getDetails();
         ModelDetails modelDetails = details != null ? details.getModelDetails() : null;
         String modelName = modelDetails != null ? modelDetails.getModelName().toLowerCase() : null;
+
+        logger.info("Device {} {}  ?recognized {}", modelDetails, modelName, device.toString());
 
         if (details == null || modelDetails == null
                 || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL.equalsIgnoreCase(modelName)) {
