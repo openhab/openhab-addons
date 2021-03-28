@@ -10,10 +10,9 @@
 			<channel id="mute" typeId="mute"/>
 		</channels>
 		<config-description>
-			<parameter name="address" type="text">
+			<parameter name="address" type="text" required="true">
 				<label>Network Address</label>
 				<description>Network address of bridge, format: address[:port]. Default port is 9020.</description>
-				<required>true</required>
 				<default>localhost</default>
 			</parameter>
 			<parameter name="applycurve" type="text">

@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mecmeter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="meter">
+		<label>mecMeter</label>
+		<description>Power Meter from MEC</description>
+
+		<channel-groups>
+			<channel-group id="general_group" typeId="general_group"/>
+			<channel-group id="voltage_group" typeId="voltage_group"/>
+			<channel-group id="current_group" typeId="current_group"/>
+			<channel-group id="angle_group" typeId="angle_group"/>
+
+			<channel-group id="activepower_group" typeId="activepower_group"/>
+			<channel-group id="activefundpower_group" typeId="activefundpower_group"/>
+			<channel-group id="activeharmpower_group" typeId="activeharmpower_group"/>
+			<channel-group id="reactivepower_group" typeId="reactivepower_group"/>
+			<channel-group id="powerfactor_group" typeId="powerfactor_group"/>
+
+			<channel-group id="apppower_group" typeId="apppower_group"/>
+
+			<channel-group id="fwd_active_energy_group" typeId="fwd_active_energy_group"/>
+			<channel-group id="fwd_active_fund_energy_group" typeId="fwd_active_fund_energy_group"/>
+			<channel-group id="fwd_active_harm_energy_group" typeId="fwd_active_harm_energy_group"/>
+			<channel-group id="fwd_reactive_energy_group" typeId="fwd_reactive_energy_group"/>
+
+			<channel-group id="rev_active_energy_group" typeId="rev_active_energy_group"/>
+			<channel-group id="rev_active_fund_energy_group" typeId="rev_active_fund_energy_group"/>
+			<channel-group id="rev_active_harm_energy_group" typeId="rev_active_harm_energy_group"/>
+			<channel-group id="rev_reactive_energy_group" typeId="rev_reactive_energy_group"/>
+
+			<channel-group id="app_energy_group" typeId="app_energy_group"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Enter the password</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="ip" type="text" required="true">
+				<label>IP</label>
+				<description>The IP address of the mecMeter</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1" max="300" step="1" unit="s" required="false">
+				<label>Refresh Interval</label>
+				<default>5</default>
+				<description>Refresh interval in seconds, default 5 seconds, range 1 to 300 seconds</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Definition of all Channel Groups -->
+	<channel-group-type id="general_group">
+		<label>General Channels</label>
+		<description>General Channels</description>
+		<channels>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="op_time" typeId="op_time"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="voltage_group">
+		<label>Voltage</label>
+		<channels>
+			<channel id="voltage_phase1" typeId="voltage">
+				<label>Voltage P1</label>
+			</channel>
+			<channel id="voltage_phase2" typeId="voltage">
+				<label>Voltage P2</label>
+			</channel>
+			<channel id="voltage_phase3" typeId="voltage">
+				<label>Voltage P3</label>
+			</channel>
+			<channel id="avg_phase_phase_voltage" typeId="avg_phase_phase_voltage"/>
+			<channel id="avg_neutral_phase_voltage" typeId="avg_neutral_phase_voltage"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="current_group">
+		<label>Current</label>
+		<channels>
+			<channel id="current_allphase" typeId="current"/>
+			<channel id="current_phase1" typeId="current">
+				<label>Current P1</label>
+			</channel>
+			<channel id="current_phase2" typeId="current">
+				<label>Current P2</label>
+			</channel>
+			<channel id="current_phase3" typeId="current">
+				<label>Current P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="angle_group">
+		<label>Angles</label>
+		<channels>
+			<channel id="phase_angle_currvolt_phase1" typeId="phase_angle_currvolt">
+				<label>Angle Current to P1</label>
+			</channel>
+			<channel id="phase_angle_currvolt_phase2" typeId="phase_angle_currvolt">
+				<label>Angle Current to P2</label>
+			</channel>
+			<channel id="phase_angle_currvolt_phase3" typeId="phase_angle_currvolt">
+				<label>Angle Current to P3</label>
+			</channel>
+
+			<channel id="phase_angle_phase1-3" typeId="phase_angle"/>
+			<channel id="phase_angle_phase2-3" typeId="phase_angle"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="activepower_group">
+		<label>Active Power</label>
+		<channels>
+			<channel id="activepower_allphase" typeId="activepower"/>
+			<channel id="activepower_phase1" typeId="activepower">
+				<label>Active Power P1</label>
+			</channel>
+			<channel id="activepower_phase2" typeId="activepower">
+				<label>Active Power P2</label>
+			</channel>
+			<channel id="activepower_phase3" typeId="activepower">
+				<label>Active Power P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="activefundpower_group">
+		<label>Active Fund Power</label>
+		<channels>
+			<channel id="activefundpower_allphase" typeId="activefundpower"/>
+			<channel id="activefundpower_phase1" typeId="activefundpower">
+				<label>Active Fund Power P1</label>
+			</channel>
+			<channel id="activefundpower_phase2" typeId="activefundpower">
+				<label>Active Fund Power P2</label>
+			</channel>
+			<channel id="activefundpower_phase3" typeId="activefundpower">
+				<label>Active Fund Power P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="activeharmpower_group">
+		<label>Active Harm Power</label>
+		<channels>
+			<channel id="activeharmpower_allphase" typeId="activeharmpower"/>
+			<channel id="activeharmpower_phase1" typeId="activeharmpower">
+				<label>Active Harm Power P1</label>
+			</channel>
+			<channel id="activeharmpower_phase2" typeId="activeharmpower">
+				<label>Active Harm Power P2</label>
+			</channel>
+			<channel id="activeharmpower_phase3" typeId="activeharmpower">
+				<label>Active Harm Power P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="reactivepower_group">
+		<label>Reactive Power</label>
+		<channels>
+			<channel id="reactivepower_allphase" typeId="reactivepower"/>
+			<channel id="reactivepower_phase1" typeId="reactivepower">
+				<label>Reactive Power P1</label>
+			</channel>
+			<channel id="reactivepower_phase2" typeId="reactivepower">
+				<label>Reactive Power P2</label>
+			</channel>
+			<channel id="reactivepower_phase3" typeId="reactivepower">
+				<label>Reactive Power P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="apppower_group">
+		<label>Apparent Power</label>
+		<channels>
+			<channel id="apppower_allphase" typeId="apppower"/>
+			<channel id="apppower_phase1" typeId="apppower">
+				<label>Apparent Power P1</label>
+			</channel>
+			<channel id="apppower_phase2" typeId="apppower">
+				<label>Apparent Power P2</label>
+			</channel>
+			<channel id="apppower_phase3" typeId="apppower">
+				<label>Apparent Power P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fwd_active_energy_group">
+		<label>Fwd Active Energy</label>
+		<channels>
+			<channel id="fwd_active_energy_allphase" typeId="fwd_active_energy_all"/>
+			<channel id="fwd_active_energy_phase1" typeId="fwd_active_energy">
+				<label>Fwd Active Energy P1</label>
+			</channel>
+			<channel id="fwd_active_energy_phase2" typeId="fwd_active_energy">
+				<label>Fwd Active Energy P2</label>
+			</channel>
+			<channel id="fwd_active_energy_phase3" typeId="fwd_active_energy">
+				<label>Fwd Active Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fwd_active_fund_energy_group">
+		<label>Fwd Active Fund Energy</label>
+		<channels>
+			<channel id="fwd_active_fund_energy_allphase" typeId="fwd_active_fund_energy"/>
+			<channel id="fwd_active_fund_energy_phase1" typeId="fwd_active_fund_energy">
+				<label>Fwd Active Fund Energy P1</label>
+			</channel>
+			<channel id="fwd_active_fund_energy_phase2" typeId="fwd_active_fund_energy">
+				<label>Fwd Active Fund Energy P2</label>
+			</channel>
+			<channel id="fwd_active_fund_energy_phase3" typeId="fwd_active_fund_energy">
+				<label>Fwd Active Fund Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fwd_active_harm_energy_group">
+		<label>Fwd Active Harm Energy</label>
+		<channels>
+			<channel id="fwd_active_harm_energy_allphase" typeId="fwd_active_harm_energy"/>
+			<channel id="fwd_active_harm_energy_phase1" typeId="fwd_active_harm_energy">
+				<label>Fwd Active Harm Energy P1</label>
+			</channel>
+			<channel id="fwd_active_harm_energy_phase2" typeId="fwd_active_harm_energy">
+				<label>Fwd Active Harm Energy P2</label>
+			</channel>
+			<channel id="fwd_active_harm_energy_phase3" typeId="fwd_active_harm_energy">
+				<label>Fwd Active Harm Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fwd_reactive_energy_group">
+		<label>Fwd Reactive Energy</label>
+		<channels>
+			<channel id="fwd_reactive_energy_allphase" typeId="fwd_reactive_energy"/>
+			<channel id="fwd_reactive_energy_phase1" typeId="fwd_reactive_energy">
+				<label>Fwd Reactive Energy P1</label>
+			</channel>
+			<channel id="fwd_reactive_energy_phase2" typeId="fwd_reactive_energy">
+				<label>Fwd Reactive Energy P2</label>
+			</channel>
+			<channel id="fwd_reactive_energy_phase3" typeId="fwd_reactive_energy">
+				<label>Fwd Reactive Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rev_active_energy_group">
+		<label>Rev Active Energy</label>
+		<channels>
+			<channel id="rev_active_energy_allphase" typeId="rev_active_energy_all"/>
+			<channel id="rev_active_energy_phase1" typeId="rev_active_energy">
+				<label>Rev Active Energy P1</label>
+			</channel>
+			<channel id="rev_active_energy_phase2" typeId="rev_active_energy">
+				<label>Rev Active Energy P2</label>
+			</channel>
+			<channel id="rev_active_energy_phase3" typeId="rev_active_energy">
+				<label>Rev Active Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rev_active_fund_energy_group">
+		<label>Rev Active Fund Energy</label>
+		<channels>
+			<channel id="rev_active_fund_energy_allphase" typeId="rev_active_fund_energy"/>
+			<channel id="rev_active_fund_energy_phase1" typeId="rev_active_fund_energy">
+				<label>Rev Active Fund Energy P1</label>
+			</channel>
+			<channel id="rev_active_fund_energy_phase2" typeId="rev_active_fund_energy">
+				<label>Rev Active Fund Energy P2</label>
+			</channel>
+			<channel id="rev_active_fund_energy_phase3" typeId="rev_active_fund_energy">
+				<label>Rev Active Fund Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rev_active_harm_energy_group">
+		<label>Rev Active Harm Energy</label>
+		<channels>
+			<channel id="rev_active_harm_energy_allphase" typeId="rev_active_harm_energy"/>
+			<channel id="rev_active_harm_energy_phase1" typeId="rev_active_harm_energy">
+				<label>Rev Active Harm Energy P1</label>
+			</channel>
+			<channel id="rev_active_harm_energy_phase2" typeId="rev_active_harm_energy">
+				<label>Rev Active Harm Energy P2</label>
+			</channel>
+			<channel id="rev_active_harm_energy_phase3" typeId="rev_active_harm_energy">
+				<label>Rev Active Harm Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rev_reactive_energy_group">
+		<label>Rev Reactive Energy</label>
+		<channels>
+			<channel id="rev_reactive_energy_allphase" typeId="rev_reactive_energy"/>
+			<channel id="rev_reactive_energy_phase1" typeId="rev_reactive_energy">
+				<label>Rev Reactive Energy P1</label>
+			</channel>
+			<channel id="rev_reactive_energy_phase2" typeId="rev_reactive_energy">
+				<label>Rev Reactive Energy P2</label>
+			</channel>
+			<channel id="rev_reactive_energy_phase3" typeId="rev_reactive_energy">
+				<label>Rev Reactive Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="app_energy_group">
+		<label>Apparent Energy</label>
+		<channels>
+			<channel id="appenergy_consumption_allphase" typeId="appenergy_consumption"/>
+			<channel id="appenergy_consumption_phase1" typeId="appenergy_consumption">
+				<label>Apparent Energy P1</label>
+			</channel>
+			<channel id="appenergy_consumption_phase2" typeId="appenergy_consumption">
+				<label>Apparent Energy P2</label>
+			</channel>
+			<channel id="appenergy_consumption_phase3" typeId="appenergy_consumption">
+				<label>Apparent Energy P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="powerfactor_group">
+		<label>Power Factor</label>
+		<channels>
+			<channel id="powerFactor_allphase" typeId="powerFactor"/>
+			<channel id="powerFactor_phase1" typeId="powerFactor">
+				<label>Power Factor P1</label>
+			</channel>
+			<channel id="powerFactor_phase2" typeId="powerFactor">
+				<label>Power Factor P2</label>
+			</channel>
+			<channel id="powerFactor_phase3" typeId="powerFactor">
+				<label>Power Factor P3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- definition of channels types -->
+	<!-- General -->
+	<channel-type id="frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Main Frequency</label>
+		<description>Frequency in Hertz</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Internal Temperature</label>
+		<description>Internal Temperature of the energy meter</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="op_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Time in Operation</label>
+		<description>Time in Operation</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Voltage -->
+	<channel-type id="avg_neutral_phase_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Average Voltage</label>
+		<description>Average N – Phase Voltage in Volt</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage in Volt</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="avg_phase_phase_voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Average Phase – Phase Voltage</label>
+		<description>Average Phase – Phase Voltage in Volt</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Current -->
+	<channel-type id="current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current in Ampere</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Angles -->
+	<channel-type id="phase_angle_currvolt" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Angle Current to Voltage</label>
+		<description>Angle Current to Voltage in Degree</description>
+		<state pattern="%.1f °" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="phase_angle" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Angle Voltage to Voltage</label>
+		<description>Angle Voltage to Voltage in Degree</description>
+		<state pattern="%.1f °" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Power -->
+	<channel-type id="activepower">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<description>Active power consumed</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="activefundpower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Active Fundamental Power</label>
+		<description>Active fundamental power</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="activeharmpower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Active Harmonic Power</label>
+		<description>Active harmonic power</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="reactivepower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Power</label>
+		<description>Reactive power consumed</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="apppower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Apparent Power</label>
+		<description>Apparent power consumed</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Forward Energy -->
+	<channel-type id="fwd_active_energy_all">
+		<item-type>Number:Energy</item-type>
+		<label>Forward Active Energy</label>
+		<description>Forward Active Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fwd_active_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Forward Active Energy</label>
+		<description>Forward Active Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fwd_active_energy_allphase">
+		<item-type>Number:Energy</item-type>
+		<label>Forward Active Energy</label>
+		<description>Forward Active Energy all phase in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fwd_active_fund_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Forward Active Fund. Energy</label>
+		<description>Forward Active Fundamental Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fwd_active_harm_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Forward Active Harm. Energy</label>
+		<description>Forward Active Harmonic Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fwd_reactive_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Forward Reactive Energy</label>
+		<description>Forward Reactive Energy in VArh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Reverse Energy -->
+	<channel-type id="rev_active_energy_all">
+		<item-type>Number:Energy</item-type>
+		<label>Reverse Active Energy</label>
+		<description>Reverse Active Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="rev_active_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Reverse Active Energy</label>
+		<description>Reverse Active Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rev_active_fund_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Reverse Active Fund. Energy</label>
+		<description>Reverse Active Fundamental Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rev_active_harm_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Reverse Active Harm. Energy</label>
+		<description>Reverse Active Harmonic Energy in kWh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rev_reactive_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Reverse Reactive Energy</label>
+		<description>Reverse Reactive Energy in VArh</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Apparent Energy -->
+	<channel-type id="appenergy_consumption" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Apparent Energy Consumption</label>
+		<description>Apparent Energy Consumption in VArh</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Power Factor -->
+	<channel-type id="powerFactor" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power Factor</label>
+		<description>Power Factor</description>
+		<state pattern="%.1f" readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>
