@@ -44,19 +44,19 @@ The discovery service is not yet implemented but the System Manager III software
 ## Bridge configuration
 
 ```
-Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh=10 ] {
+Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverCheck=10 ] {
 ...
 }
 ```
 
 
 
-| Property  | Default   | Required | Description                                                                                                                          |
-| --------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `addr`    | localhost | YES      | The ip address of the machine where the Qbus Server runs                                                                             |
-| `sn`      |           | YES      | The serial number of your controller                                                                                                 |
-| `port`    | 8447      | YES      | The communication port of the client/server                                                                                          |
-| `refresh` | 5         | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
+| Property      | Default   | Required | Description                                                                                                                          |
+| ------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `addr`        | localhost | YES      | The ip address of the machine where the Qbus Server runs                                                                             |
+| `sn`          |           | YES      | The serial number of your controller                                                                                                 |
+| `port`        | 8447      | YES      | The communication port of the client/server                                                                                          |
+| `serverCheck` | 10     | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
 
  
 
@@ -80,7 +80,7 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh
 ### Things
 
 ```
-Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh=10 ] {
+Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverCheck=10 ] {
     dimmer                   1     "ToonzaalLED"      [ dimmerId=100 ]
     onOff                    30    "Toonzaal230V"     [ bistabielId=76 ]
     thermostat               50    "Service"          [ thermostatId=99 ]

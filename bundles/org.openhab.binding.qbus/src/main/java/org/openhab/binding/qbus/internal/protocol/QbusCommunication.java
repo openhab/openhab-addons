@@ -60,13 +60,6 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public final class QbusCommunication extends BaseThingHandler {
 
-    public QbusCommunication(Thing thing) {
-        super(thing);
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(QbusMessageBase.class, new QbusMessageDeserializer());
-        gsonIn = gsonBuilder.create();
-    }
-
     private final Logger logger = LoggerFactory.getLogger(QbusCommunication.class);
 
     private @Nullable Socket qSocket;
@@ -95,6 +88,13 @@ public final class QbusCommunication extends BaseThingHandler {
             .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
 
     private @Nullable QbusBridgeHandler bridgeCallBack;
+
+    public QbusCommunication(Thing thing) {
+        super(thing);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(QbusMessageBase.class, new QbusMessageDeserializer());
+        gsonIn = gsonBuilder.create();
+    }
 
     /**
      * Starts main communication thread.
