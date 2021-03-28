@@ -146,10 +146,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return logger;
     }
 
-    protected boolean isAlwaysOnline() {
-        return false;
-    }
-
     protected @Nullable SomfyTahomaBridgeHandler getBridgeHandler() {
         Bridge localBridge = this.getBridge();
         return localBridge != null ? (SomfyTahomaBridgeHandler) localBridge.getHandler() : null;
@@ -167,7 +163,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private void setUnavailable() {
-        if (ThingStatus.OFFLINE != thing.getStatus() && !isAlwaysOnline()) {
+        if (ThingStatus.OFFLINE != thing.getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
         }
     }

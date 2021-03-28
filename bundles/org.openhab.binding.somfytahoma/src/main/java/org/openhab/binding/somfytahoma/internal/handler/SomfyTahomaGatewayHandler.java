@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.STATUS;
 import static org.openhab.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
@@ -32,6 +35,19 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaGatewayHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initializeThing(@Nullable ThingStatus bridgeStatus) {
+        if (bridgeStatus != null) {
+            if (bridgeStatus == ThingStatus.ONLINE) {
+                refresh(STATUS);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        }
     }
 
     @Override
