@@ -6,33 +6,40 @@
 	<channel-type id="trip-date-time-channel">
 		<item-type>DateTime</item-type>
 		<label>Date and Time</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="trip-duration-channel">
 		<item-type>Number:Time</item-type>
 		<label>Last Trip Duration</label>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="distance-channel">
 		<item-type>Number:Length</item-type>
 		<label>Last Trip Distance</label>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="distance-since-charging-channel">
 		<item-type>Number:Length</item-type>
 		<label>Distance since Charge</label>
 		<description>Total distance driven since last charging</description>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="average-consumption-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Avg. Power Consumption</label>
 		<description>Average electric power consumption per 100 km/mi</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="average-combined-consumption-channel">
 		<item-type>Number:Volume</item-type>
 		<label>Avg. Combined Consumption</label>
 		<description>Average combined consumption in liter per 100 km/mi</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="average-recuperation-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Avg. Recuperation</label>
 		<description>Average electric recuperation per 100 km/mi</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

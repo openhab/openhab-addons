@@ -6,6 +6,7 @@
 	<channel-type id="png-channel">
 		<item-type>Image</item-type>
 		<label>Rendered Vehicle Image</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="image-view-channel">
 		<item-type>String</item-type>

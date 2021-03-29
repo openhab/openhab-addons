@@ -14,5 +14,6 @@
 	<channel-type id="checkcontrol-mileage-channel">
 		<item-type>Number:Length</item-type>
 		<label>Mileage Occurrence</label>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

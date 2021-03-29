@@ -10,5 +10,6 @@
 	<channel-type id="remote-state-channel">
 		<item-type>String</item-type>
 		<label>Service Execution State</label>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
