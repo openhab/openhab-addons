@@ -29,7 +29,8 @@ import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontain
 import org.openhab.binding.digitalstrom.internal.lib.listener.TemperatureControlStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
 import org.openhab.binding.digitalstrom.internal.lib.manager.impl.TemperatureControlManager;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.providers.DsChannelTypeProvider;
 import org.openhab.core.config.core.Configuration;
@@ -281,15 +282,15 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
                                 || !currentChannelID.contains(DsChannelTypeProvider.TEMPERATURE_CONTROLLED))
                         && !controlState.equals(ControlStates.EMERGENCY)) {
                     // FIXME get proper outputchannel
-                    currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(FunctionalColorGroupEnum.BLUE,
-                            OutputModeEnum.TEMPRETURE_PWM, null);
+                    currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(ApplicationGroup.Color.BLUE,
+                            OutputModeEnum.TEMPRETURE_PWM, new ArrayList<OutputChannelEnum>());
                     loadChannel();
                     currentValue = tempControlStatus.getNominalValue();
                     updateState(currentChannelID, new DecimalType(currentValue.doubleValue()));
                 } else if (!controlMode.equals(ControlModes.PID_CONTROL) && !controlMode.equals(ControlModes.OFF)) {
-                    // FIXME get propert outputchannel
-                    currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(FunctionalColorGroupEnum.BLUE,
-                            OutputModeEnum.HEATING_PWM, null);
+                    // FIXME get proper outputchannel
+                    currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(ApplicationGroup.Color.BLUE,
+                            OutputModeEnum.HEATING_PWM, new ArrayList<OutputChannelEnum>());
                     loadChannel();
                     currentValue = tempControlStatus.getControlValue();
                     updateState(currentChannelID, new PercentType(fixPercent(currentValue.intValue())));

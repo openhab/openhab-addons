@@ -33,10 +33,9 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceConstants;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceSceneSpec;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceStateUpdate;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ChangeableDeviceConfigEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
@@ -68,10 +67,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     private DSID meterDSID;
     private int zoneId = 0;
-    private List<Short> groupList = new LinkedList<>();
+    private List<ApplicationGroup> groupList = new LinkedList<>();
 
-    private FunctionalColorGroupEnum functionalGroup;
-    private FuncNameAndColorGroupEnum functionalName;
     private String hwInfo;
 
     private OutputModeEnum outputMode;
@@ -238,7 +235,6 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
         JsonElement jsonOutputChannels = deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey());
         if (jsonOutputChannels != null && jsonOutputChannels.isJsonArray()) {
             JsonArray array = deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey()).getAsJsonArray();
-            logger.debug("multiple channels ({}) found", array.size());
             for (int i = 0; i < array.size(); i++) {
                 if (array.get(i) != null) {
                     int channelId = array.get(i).getAsJsonObject().get("channelID").getAsInt();
@@ -246,7 +242,6 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
                 }
             }
         } else if (jsonOutputChannels != null && jsonOutputChannels.isJsonObject()) {
-            logger.debug("single channel found");
             for (Entry<String, JsonElement> entry : deviceJsonObject
                     .get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey()).getAsJsonObject().entrySet()) {
                 int channelId = entry.getValue().getAsJsonObject().get("channelID").getAsInt();
@@ -259,19 +254,13 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     private void initAddGroup(Short groupID) {
         if (groupID != -1) {
-            this.groupList.add(groupID);
-            if (FuncNameAndColorGroupEnum.containsColorGroup(groupID)) {
-                if (this.functionalName == null
-                        || !FuncNameAndColorGroupEnum.getMode(groupID).equals(FuncNameAndColorGroupEnum.JOKER)) {
-                    this.functionalName = FuncNameAndColorGroupEnum.getMode(groupID);
-                    this.functionalGroup = functionalName.getFunctionalColor();
-                }
-            }
+            addGroupToList(groupID);
+            // XXX: Why is the JOKER ignored in the original code!?
         }
     }
 
     private void init() {
-        if (groupList.contains((short) 1)) {
+        if (groupList.contains(ApplicationGroup.LIGHTS)) {
             maxOutputValue = DeviceConstants.MAX_OUTPUT_VALUE_LIGHT;
             if (this.isDimmable()) {
                 minOutputValue = DeviceConstants.MIN_DIM_VALUE;
@@ -303,21 +292,40 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public List<Short> getGroups() {
-        return new LinkedList<>(groupList);
+        LinkedList<Short> linkedList = new LinkedList<>();
+        groupList.forEach(group -> linkedList.add(group.getId()));
+        return linkedList;
+    }
+
+    /**
+     * Adds the ApplicationGroup of the given groupId to the internal list
+     * 
+     * @param groupID
+     * @return true if the groupId is a valid ApplicationGroup id, false otherwise
+     */
+    private boolean addGroupToList(Short groupID) {
+        ApplicationGroup group = ApplicationGroup.getGroup(groupID);
+        if (ApplicationGroup.UNDEFINED.equals(group)) {
+            logger.error("Unknown application group with ID '{}' found! Ignoring group", groupID);
+        }
+        if (!this.groupList.contains(group)) {
+            this.groupList.add(group);
+        }
+
+        return group != null;
     }
 
     @Override
     public void addGroup(Short groupID) {
-        if (!this.groupList.contains(groupID)) {
-            this.groupList.add(groupID);
-        }
+        addGroupToList(groupID);
         informListenerAboutConfigChange(ChangeableDeviceConfigEnum.GROUPS);
     }
 
     @Override
     public void setGroups(List<Short> newGroupList) {
         if (newGroupList != null) {
-            this.groupList = newGroupList;
+            groupList.clear();
+            newGroupList.forEach(groupId -> groupList.add(ApplicationGroup.getGroup(groupId)));
         }
         informListenerAboutConfigChange(ChangeableDeviceConfigEnum.GROUPS);
     }
@@ -403,12 +411,12 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public boolean isHeatingDevice() {
-        return functionalName.equals(FuncNameAndColorGroupEnum.HEATING);
+        return groupList.contains(ApplicationGroup.HEATING);
     }
 
     @Override
     public boolean isTemperatureControlledDevice() {
-        return functionalName.equals(FuncNameAndColorGroupEnum.TEMPERATION_CONTROL);
+        return groupList.contains(ApplicationGroup.TEMPERATURE_CONTROL);
     }
 
     @Override
@@ -424,13 +432,13 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     }
 
     @Override
-    public synchronized FunctionalColorGroupEnum getFunctionalColorGroup() {
-        return this.functionalGroup;
+    public synchronized ApplicationGroup getFunctionalColorGroup() {
+        return groupList.stream().findFirst().get();
     }
 
     @Override
-    public synchronized void setFunctionalColorGroup(FunctionalColorGroupEnum fuctionalColorGroup) {
-        this.functionalGroup = fuctionalColorGroup;
+    public synchronized void setFunctionalColorGroup(ApplicationGroup functionalColorGroup) {
+        groupList.add(functionalColorGroup);
         informListenerAboutConfigChange(ChangeableDeviceConfigEnum.FUNCTIONAL_GROUP);
     }
 
@@ -1911,9 +1919,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public String toString() {
-        return "DeviceImpl [meterDSID=" + meterDSID + ", zoneId=" + zoneId + ", groupList=" + groupList
-                + ", functionalGroup=" + functionalGroup + ", functionalName=" + functionalName + ", hwInfo=" + hwInfo
-                + ", getName()=" + getName() + ", getDSID()=" + getDSID() + ", getDSUID()=" + getDSUID()
+        return "DeviceImpl [meterDSID=" + meterDSID + ", zoneId=" + zoneId + ", groupList=" + groupList + ", hwInfo="
+                + hwInfo + ", getName()=" + getName() + ", getDSID()=" + getDSID() + ", getDSUID()=" + getDSUID()
                 + ", isPresent()=" + isPresent() + ", isValide()=" + isValid() + ", getDisplayID()=" + getDisplayID()
                 + ", outputMode=" + outputMode + ", getSensorTypes()=" + getSensorTypes() + ", getDeviceSensorValues()="
                 + getDeviceSensorValues() + ", powerSensorRefresh=" + powerSensorRefreshToString() + "]";
