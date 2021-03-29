@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarmax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- SolarMaxBindingConstants.THING_TYPE_ID -->
+	<thing-type id="inverter">
+		<label>SolarMax Power Inverter</label>
+		<description>Basic thing for the SolarMax Power Inverter binding</description>
+
+		<channels>
+			<!-- <channel id="UpdateValuesFromDevice" typeId="UpdateValuesFromDevice"/> -->
+			<channel id="LastUpdated" typeId="LastUpdated"/>
+			<channel id="SoftwareVersion" typeId="SoftwareVersion"/>
+			<channel id="BuildNumber" typeId="BuildNumber"/>
+			<channel id="Startups" typeId="Startups"/>
+			<channel id="AcPhase1Current" typeId="AcPhase1Current"/>
+			<channel id="AcPhase2Current" typeId="AcPhase2Current"/>
+			<channel id="AcPhase3Current" typeId="AcPhase3Current"/>
+			<channel id="EnergyGeneratedToday" typeId="EnergyGeneratedToday"/>
+			<channel id="EnergyGeneratedTotal" typeId="EnergyGeneratedTotal"/>
+			<channel id="OperatingHours" typeId="OperatingHours"/>
+			<channel id="EnergyGeneratedYesterday" typeId="EnergyGeneratedYesterday"/>
+			<channel id="EnergyGeneratedLastMonth" typeId="EnergyGeneratedLastMonth"/>
+			<channel id="EnergyGeneratedLastYear" typeId="EnergyGeneratedLastYear"/>
+			<channel id="EnergyGeneratedThisMonth" typeId="EnergyGeneratedThisMonth"/>
+			<channel id="EnergyGeneratedThisYear" typeId="EnergyGeneratedThisYear"/>
+			<channel id="CurrentPowerGenerated" typeId="CurrentPowerGenerated"/>
+			<channel id="AcFrequency" typeId="AcFrequency"/>
+			<channel id="AcPhase1Voltage" typeId="AcPhase1Voltage"/>
+			<channel id="AcPhase2Voltage" typeId="AcPhase2Voltage"/>
+			<channel id="AcPhase3Voltage" typeId="AcPhase3Voltage"/>
+			<channel id="HeatSinkTemperature" typeId="HeatSinkTemperature"/>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Hostname or IP Address</description>
+			</parameter>
+			<parameter name="portNumber" type="integer" required="false">
+				<label>Port</label>
+				<description>Port Number (defaults to 12345)</description>
+				<default>12345</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>Refresh Interval in seconds (defaults to 15)</description>
+				<default>15</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- <channel-type id="UpdateValuesFromDevice">
+		<item-type>Switch</item-type>
+		<label>Update Trigger</label>
+		<description>Update the values from the SolarMax device</description>
+		</channel-type> -->
+
+	<channel-type id="LastUpdated">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<description>When was the data last read from the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="SoftwareVersion">
+		<item-type>Number</item-type>
+		<label>Software Version</label>
+		<description>Software Version installed on the SolarMax device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="BuildNumber">
+		<item-type>Number</item-type>
+		<label>Build Number</label>
+		<description>Firmware Build Number installed on the SolarMax device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="Startups">
+		<item-type>Number</item-type>
+		<label>Startups</label>
+		<description>Number of times the device has started</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AcPhase1Current">
+		<item-type>Number</item-type>
+		<label>Ac Phase 1 Current</label>
+		<description>Ac Phase 1 Current in Amps</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AcPhase2Current">
+		<item-type>Number</item-type>
+		<label>Ac Phase 2 Current</label>
+		<description>Ac Phase 2 Current in Amps</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AcPhase3Current">
+		<item-type>Number</item-type>
+		<label>Ac Phase 3 Current</label>
+		<description>Ac Phase 3 Current in Amps</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="EnergyGeneratedToday">
+		<item-type>Number</item-type>
+		<label>Energy Generated Today</label>
+		<description>Energy Generated Today in wH</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="EnergyGeneratedTotal">
+		<item-type>Number</item-type>
+		<label>Energy Generated Total</label>
+		<description>Energy Generated Total since recording began in wH</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="OperatingHours">
+		<item-type>Number</item-type>
+		<label>Operating Hours</label>
+		<description>Operating Hours since recording began in H</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="EnergyGeneratedYesterday">
+		<item-type>Number</item-type>
+		<label>Energy Generated Yesterday</label>
+		<description>Energy Generated Yesterday in wH</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="EnergyGeneratedLastMonth">
+		<item-type>Number</item-type>
+		<label>Energy Generated Last Month</label>
+		<description>Energy Generated Last Month in wH</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="EnergyGeneratedLastYear">
+		<item-type>Number</item-type>
+		<label>Energy Generated Last Year</label>
+		<description>Energy Generated Last Year in wH</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="EnergyGeneratedThisMonth">
+		<item-type>Number</item-type>
+		<label>Energy Generated This Month</label>
+		<description>Energy Generated This Month in wH</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="EnergyGeneratedThisYear">
+		<item-type>Number</item-type>
+		<label>Energy Generated This Year</label>
+		<description>Energy Generated This Year in wH</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="CurrentPowerGenerated">
+		<item-type>Number</item-type>
+		<label>Current Power Generated</label>
+		<description>Power currently being generated in w</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AcFrequency">
+		<item-type>Number</item-type>
+		<label>Ac Frequency</label>
+		<description>AcFrequency in Hz</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AcPhase1Voltage">
+		<item-type>Number</item-type>
+		<label>Ac Phase1 Voltage</label>
+		<description>Ac Phase1 Voltage in V</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AcPhase2Voltage">
+		<item-type>Number</item-type>
+		<label>Ac Phase2 Voltage</label>
+		<description>Ac Phase2 Voltage in V</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AcPhase3Voltage">
+		<item-type>Number</item-type>
+		<label>Ac Phase3 Voltage</label>
+		<description>Ac Phase3 Voltage in V</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="HeatSinkTemperature">
+		<item-type>Number</item-type>
+		<label>Heat Sink Temperature</label>
+		<description>Heat Sink Temperature in degrees celcius</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
