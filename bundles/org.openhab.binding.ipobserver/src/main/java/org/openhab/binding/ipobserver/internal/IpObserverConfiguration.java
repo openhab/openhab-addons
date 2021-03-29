@@ -12,15 +12,25 @@
  */
 package org.openhab.binding.ipobserver.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link IpObserverConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Matthew Skinner - Initial contribution
  */
+@NonNullByDefault
 public class IpObserverConfiguration {
+    // bindings config
+    public String address = "";
+    public int pollTime = 20;
+    public int autoReboot = 2000;
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String config1;
+    // Config settings parsed from weather station.
+    public boolean imperialTemperature = false;
+    public boolean imperialRain = false;
+    // 0=lux, 1=w/m2, 2=fc
+    public String solarUnit = "0";
+    // 0=m/s, 1=km/h, 2=ft/s, 3=bft, 4=mph, 5=knot
+    public String windUnit = "0";
 }
