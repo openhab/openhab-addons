@@ -13,11 +13,9 @@
 			<parameter name="username" type="text" required="false">
 				<label>Username</label>
 				<description>Username as used in the GROHE ONDUS App, usually your e-mail address.</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<label>Password</label>
-				<required>true</required>
 				<context>password</context>
 				<description>Password as used in the GROHE ONDUS App.</description>
 			</parameter>
