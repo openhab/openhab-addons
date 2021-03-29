@@ -9,7 +9,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>BMW Electric Vehicle with REX</label>
+		<label>Electric Vehicle with REX</label>
 		<description>Battery Electric Vehicle with Range Extender (BEV_REX)</description>
 
 		<channel-groups>

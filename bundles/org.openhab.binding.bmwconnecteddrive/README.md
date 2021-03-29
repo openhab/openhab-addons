@@ -275,34 +275,36 @@ Charging options with date and time for preferred time windows and charging mode
 * Channel Group ID is **charge**
 * Available for electric and hybrid vehicles
 * Read/Write access for UI. Use [Charge Profile Actions](#charge-profile-action) in rules
-* There are 3 timers available. Replace *X* with number 1,2 or 3 to target the correct timer
+* There are 3 timers *T1, T2 and T3* available. Replace *X* with number 1,2 or 3 to target the correct timer
+* Additional override Timer *OT* defines a single departure besides the 3 predefined schedule timers  
 
-| Channel Label                         | Channel Group ID | Channel ID                | Type     | 
-|---------------------------------------|------------------|---------------------------|----------| 
-| Charging Mode for Profile             | charge           | profile-mode              | String   | 
-| Charging Preferences for Profile      | charge           | profile-prefs             | String   | 
-| Charging Window Start Time            | charge           | window-start              | DateTime | 
-| Charging Window Start Time Hour       | charge           | window-start-hour         | Number   | 
-| Charging Window Start Time Minute     | charge           | window-start-minute       | Number   | 
-| Charging Window End Time              | charge           | window-end                | DateTime | 
-| Charging Window End Time Hour         | charge           | window-end-hour           | Number   | 
-| Charging Window End Time Minute       | charge           | window-end-minute         | Number   | 
-| Air Conditioning at Departure Time    | charge           | profile-climate           | Switch   | 
-| Timer *X*: Enabled                    | charge           | timer*X*-enabled          | Switch   | 
-| Timer *X*: Departure Time             | charge           | timer*X*-departure        | DateTime | 
-| Timer *X*: Departure Time Hour        | charge           | timer*X*-departure-hour   | Number   | 
-| Timer *X*: Departure Time Minute      | charge           | timer*X*-departure-minute | Number   | 
-| Timer *X*: Monday                     | charge           | timer*X*-day-mon          | Switch   | 
-| Timer *X*: Tuesday                    | charge           | timer*X*-day-tue          | Switch   | 
-| Timer *X*: Wednesday                  | charge           | timer*X*-day-wed          | Switch   | 
-| Timer *X*: Thursday                   | charge           | timer*X*-day-thu          | Switch   | 
-| Timer *X*: Friday                     | charge           | timer*X*-day-fri          | Switch   | 
-| Timer *X*: Saturday                   | charge           | timer*X*-day-sat          | Switch   | 
-| Timer *X*: Sunday                     | charge           | timer*X*-day-sun          | Switch   | 
-| Override Timer: Enabled               | charge           | override-enabled          | Switch   | 
-| Override Timer: Departure Time        | charge           | override-departure        | DateTime | 
-| Override Timer: Departure Time Hour   | charge           | override-departure-hour   | Number   | 
-| Override Timer: Departure Time Minute | charge           | override-departure-minute | Number   | 
+| Channel Label              | Channel Group ID | Channel ID                | Type     | 
+|----------------------------|------------------|---------------------------|----------| 
+| Charge Mode                | charge           | profile-mode              | String   | 
+| Charge Preferences         | charge           | profile-prefs             | String   | 
+| Window Start Time          | charge           | window-start              | DateTime | 
+| Window Start Time Hour     | charge           | window-start-hour         | Number   | 
+| Window Start Time Minute   | charge           | window-start-minute       | Number   | 
+| Window End Time            | charge           | window-end                | DateTime | 
+| Window End Time Hour       | charge           | window-end-hour           | Number   | 
+| Window End Time Minute     | charge           | window-end-minute         | Number   | 
+| A/C at Departure           | charge           | profile-climate           | Switch   | 
+| T*X* Enabled               | charge           | timer*X*-enabled          | Switch   | 
+| T*X* Departure Time        | charge           | timer*X*-departure        | DateTime | 
+| T*X* Departure Time Hour   | charge           | timer*X*-departure-hour   | Number   | 
+| T*X* Departure Time Minute | charge           | timer*X*-departure-minute | Number   | 
+| T*X* Days                  | charge           | timer*X*-days             | String   | 
+| T*X* Monday                | charge           | timer*X*-day-mon          | Switch   | 
+| T*X* Tuesday               | charge           | timer*X*-day-tue          | Switch   | 
+| T*X* Wednesday             | charge           | timer*X*-day-wed          | Switch   | 
+| T*X* Thursday              | charge           | timer*X*-day-thu          | Switch   | 
+| T*X* Friday                | charge           | timer*X*-day-fri          | Switch   | 
+| T*X* Saturday              | charge           | timer*X*-day-sat          | Switch   | 
+| T*X* Sunday                | charge           | timer*X*-day-sun          | Switch   | 
+| OT Enabled                 | charge           | override-enabled          | Switch   | 
+| OT Departure Time          | charge           | override-departure        | DateTime | 
+| OT Departure Time Hour     | charge           | override-departure-hour   | Number   | 
+| OT Departure Time Minute   | charge           | override-departure-minute | Number   | 
 
 The channel _profile-mode_ supports
 

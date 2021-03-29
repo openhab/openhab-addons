@@ -10,6 +10,7 @@
 	<channel-type id="profile-mode-channel">
 		<item-type>String</item-type>
 		<label>Charge Mode</label>
+        <description>Mode for selecting immediate or delyed charging</description>
 		<command>
 			<options>
 				<option value="IMMEDIATE_CHARGING">Immediate Charging</option>
@@ -19,7 +20,8 @@
 	</channel-type>
 	<channel-type id="profile-prefs-channel">
 		<item-type>String</item-type>
-		<label>Charging Preferences</label>
+		<label>Charge Preferences</label>
+        <description>Preferences for delayed charging</description>
 		<command>
 			<options>
 				<option value="NO_PRESELECTION">No Preference</option>
@@ -29,198 +31,244 @@
 	</channel-type>
 	<channel-type id="window-start-channel">
 		<item-type>DateTime</item-type>
-		<label>Charge Window Start Time</label>
+		<label>Window Start Time</label>
+        <description>Start time of charging window</description>		
 	</channel-type>
 	<channel-type id="window-start-hour-channel">
 		<item-type>Number</item-type>
-		<label>Charge Window Start Hour</label>
+		<label>Window Start Hour</label>
+        <description>Starting hour of charging window</description>        
 		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-start-minute-channel">
 		<item-type>Number</item-type>
-		<label>Charge Window Start Minute</label>
+		<label>Window Start Minute</label>
+        <description>Starting minute of charging window</description>        
 		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-end-channel">
 		<item-type>DateTime</item-type>
-		<label>Charge Window End Time</label>
+		<label>Window End Time</label>
+        <description>End time of charging window</description>        
 	</channel-type>
 	<channel-type id="window-end-hour-channel">
 		<item-type>Number</item-type>
-		<label>Charge Window End Hour</label>
+		<label>Window End Hour</label>
+        <description>Ending hour of charging window</description>        
 		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-end-minute-channel">
 		<item-type>Number</item-type>
-		<label>Charge Window End Minute</label>
+		<label>Window End Minute</label>
+        <description>Ending minute of charging window</description>        
 		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-departure-channel">
 		<item-type>DateTime</item-type>
-		<label>Timer 1: Departure Time</label>
+		<label>T1 Departure Time</label>
+        <description>Departure time for regular schedule timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-departure-hour-channel">
 		<item-type>Number</item-type>
-		<label>Timer 1: Departure Hour</label>
+		<label>T1 Departure Hour</label>
+        <description>Departure hour for regular schedule timer 1</description>        
 		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-departure-minute-channel">
 		<item-type>Number</item-type>
-		<label>Timer 1: Departure Minute</label>
+		<label>T1 Departure Minute</label>
+        <description>Departure minute for regular schedule timer 1</description>        
 		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-days-channel">
 		<item-type>String</item-type>
-		<label>Timer 1: Scheduled Days</label>
+		<label>T1 Days</label>		
+        <description>Days scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-day-mon-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Scheduled Days Monday</label>
+		<label>T1 Monday</label>
+        <description>Monday scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-day-tue-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Scheduled Days Tuesday</label>
+		<label>T1 Tuesday</label>
+        <description>Tuesday scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-day-wed-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Scheduled Days Wednesday</label>
+		<label>T1 Wednesday</label>
+        <description>Wednesday scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-day-thu-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Scheduled Days Thursday</label>
+		<label>T1 Thursday</label>
+        <description>Thursday scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-day-fri-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Scheduled Days Friday</label>
+		<label>T1 Friday</label>
+        <description>Friday scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-day-sat-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Scheduled Days Saturday</label>
+		<label>T1 Saturday</label>
+        <description>Saturday scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-day-sun-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Scheduled Days Sunday</label>
+		<label>T1 Sunday</label>
+        <description>Sunday scheduled for timer 1</description>        
 	</channel-type>
 	<channel-type id="timer1-enabled-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 1: Enabled</label>
+		<label>T1 Enabled</label>
+        <description>Timer 1 enabled</description>        
 	</channel-type>
 	<channel-type id="timer2-departure-channel">
 		<item-type>DateTime</item-type>
-		<label>Timer 2: Departure Time</label>
+		<label>T2 Departure Time</label>
+        <description>Departure time for regular schedule timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-departure-hour-channel">
 		<item-type>Number</item-type>
-		<label>Timer 2: Departure Hour</label>
+		<label>T2 Departure Hour</label>
+        <description>Departure hour for regular schedule timer 2</description>        
 		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer2-departure-minute-channel">
 		<item-type>Number</item-type>
-		<label>Timer 2: Departure Minute</label>
+		<label>T2 Departure Minute</label>
+        <description>Departure minute for regular schedule timer 2</description>        
 		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer2-days-channel">
 		<item-type>String</item-type>
-		<label>Timer 2: Scheduled Days</label>
+		<label>T2 Days</label>
+        <description>Days scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-day-mon-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Scheduled Days Monday</label>
+		<label>T2 Monday</label>
+        <description>Monday scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-day-tue-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Scheduled Days Tuesday</label>
+		<label>T2 Tuesday</label>
+        <description>Tuesday scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-day-wed-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Scheduled Days Wednesday</label>
+		<label>T2 Wednesday</label>
+        <description>Wednesday scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-day-thu-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Scheduled Days Thursday</label>
+		<label>T2 Thursday</label>
+        <description>Thursday scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-day-fri-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Scheduled Days Friday</label>
+		<label>T2 Friday</label>
+        <description>Friday scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-day-sat-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Scheduled Days Saturday</label>
+		<label>T2 Saturday</label>
+        <description>Saturday scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-day-sun-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Scheduled Days Sunday</label>
+		<label>T2 Sunday</label>
+        <description>Sunday scheduled for timer 2</description>        
 	</channel-type>
 	<channel-type id="timer2-enabled-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 2: Enabled</label>
+		<label>T2 Enabled</label>
+        <description>Timer 2 enabled</description>        
 	</channel-type>
 	<channel-type id="timer3-departure-channel">
 		<item-type>DateTime</item-type>
-		<label>Timer 3: Departure Time</label>
+		<label>T3 Departure Time</label>
+        <description>Departure time for regular schedule timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-departure-hour-channel">
 		<item-type>Number</item-type>
-		<label>Timer 3: Departure Hour</label>
+		<label>T3 Departure Hour</label>
+        <description>Departure hour for regular schedule timer 3</description>        
 		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer3-departure-minute-channel">
 		<item-type>Number</item-type>
-		<label>Timer 3: Departure Minute</label>
+		<label>T3 Departure Minute</label>
+        <description>Departure minute for regular schedule timer 3</description>        
 		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer3-days-channel">
 		<item-type>String</item-type>
-		<label>Timer 3: Scheduled Days</label>
+		<label>T3 Days</label>
+        <description>Days scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-day-mon-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Scheduled Days Monday</label>
+		<label>T3 Monday</label>
+        <description>Monday scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-day-tue-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Scheduled Days Tuesday</label>
+		<label>T3 Tuesday</label>
+        <description>Tuesday scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-day-wed-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Scheduled Days Wednesday</label>
+		<label>T3 Wednesday</label>
+        <description>Wednesday scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-day-thu-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Scheduled Days Thursday</label>
+		<label>T3 Thursday</label>
+        <description>Thursday scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-day-fri-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Scheduled Days Friday</label>
+		<label>T3 Friday</label>
+        <description>Friday scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-day-sat-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Scheduled Days Saturday</label>
+		<label>T3 Saturday</label>
+        <description>Saturday scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-day-sun-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Scheduled Days Sunday</label>
+		<label>T3 Sunday</label>
+        <description>Sunday scheduled for timer 3</description>        
 	</channel-type>
 	<channel-type id="timer3-enabled-channel">
 		<item-type>Switch</item-type>
-		<label>Timer 3: Enabled</label>
+		<label>T3 Enabled</label>
+        <description>Timer 3 enabled</description>        
 	</channel-type>
 	<channel-type id="override-departure-channel">
 		<item-type>DateTime</item-type>
-		<label>Override Timer: Departure Time</label>
+		<label>OT Departure Time</label>
+        <description>Departure time for override timer</description>        
 	</channel-type>
 	<channel-type id="override-departure-hour-channel">
 		<item-type>Number</item-type>
-		<label>Override Timer: Departure Hour</label>
+		<label>OT Departure Hour</label>
+        <description>Departure hour for override timer</description>        
 		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="override-departure-minute-channel">
 		<item-type>Number</item-type>
-		<label>Override Timer: Departure Minute</label>
+		<label>OT Departure Minute</label>
+        <description>Departure minute for override timer</description>        
 		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="override-enabled-channel">
 		<item-type>Switch</item-type>
-		<label>Override Timer: Enabled</label>
+		<label>OT Enabled</label>
+        <description>Override timer enabled</description>        
 	</channel-type>
 </thing:thing-descriptions>
