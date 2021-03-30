@@ -98,7 +98,6 @@ public class SoulissT13Handler extends SoulissGenericHandler {
 
     @Override
     public byte getRawState() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
