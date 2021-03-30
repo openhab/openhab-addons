@@ -11,27 +11,27 @@
 
 		<channels>
 			<!-- <channel id="UpdateValuesFromDevice" typeId="UpdateValuesFromDevice"/> -->
-			<channel id="LastUpdated" typeId="LastUpdated"/>
-			<channel id="SoftwareVersion" typeId="SoftwareVersion"/>
-			<channel id="BuildNumber" typeId="BuildNumber"/>
-			<channel id="Startups" typeId="Startups"/>
-			<channel id="AcPhase1Current" typeId="AcPhase1Current"/>
-			<channel id="AcPhase2Current" typeId="AcPhase2Current"/>
-			<channel id="AcPhase3Current" typeId="AcPhase3Current"/>
-			<channel id="EnergyGeneratedToday" typeId="EnergyGeneratedToday"/>
-			<channel id="EnergyGeneratedTotal" typeId="EnergyGeneratedTotal"/>
-			<channel id="OperatingHours" typeId="OperatingHours"/>
-			<channel id="EnergyGeneratedYesterday" typeId="EnergyGeneratedYesterday"/>
-			<channel id="EnergyGeneratedLastMonth" typeId="EnergyGeneratedLastMonth"/>
-			<channel id="EnergyGeneratedLastYear" typeId="EnergyGeneratedLastYear"/>
-			<channel id="EnergyGeneratedThisMonth" typeId="EnergyGeneratedThisMonth"/>
-			<channel id="EnergyGeneratedThisYear" typeId="EnergyGeneratedThisYear"/>
-			<channel id="CurrentPowerGenerated" typeId="CurrentPowerGenerated"/>
-			<channel id="AcFrequency" typeId="AcFrequency"/>
-			<channel id="AcPhase1Voltage" typeId="AcPhase1Voltage"/>
-			<channel id="AcPhase2Voltage" typeId="AcPhase2Voltage"/>
-			<channel id="AcPhase3Voltage" typeId="AcPhase3Voltage"/>
-			<channel id="HeatSinkTemperature" typeId="HeatSinkTemperature"/>
+			<channel id="lastUpdated" typeId="lastUpdated"/>
+			<channel id="softwareVersion" typeId="softwareVersion"/>
+			<channel id="buildNumber" typeId="buildNumber"/>
+			<channel id="startups" typeId="startups"/>
+			<channel id="acPhase1Current" typeId="acPhase1Current"/>
+			<channel id="acPhase2Current" typeId="acPhase2Current"/>
+			<channel id="acPhase3Current" typeId="acPhase3Current"/>
+			<channel id="energyGeneratedToday" typeId="energyGeneratedToday"/>
+			<channel id="energyGeneratedTotal" typeId="energyGeneratedTotal"/>
+			<channel id="operatingHours" typeId="operatingHours"/>
+			<channel id="energyGeneratedYesterday" typeId="energyGeneratedYesterday"/>
+			<channel id="energyGeneratedLastMonth" typeId="energyGeneratedLastMonth"/>
+			<channel id="energyGeneratedLastYear" typeId="energyGeneratedLastYear"/>
+			<channel id="energyGeneratedThisMonth" typeId="energyGeneratedThisMonth"/>
+			<channel id="energyGeneratedThisYear" typeId="energyGeneratedThisYear"/>
+			<channel id="currentPowerGenerated" typeId="currentPowerGenerated"/>
+			<channel id="acFrequency" typeId="acFrequency"/>
+			<channel id="acPhase1Voltage" typeId="acPhase1Voltage"/>
+			<channel id="acPhase2Voltage" typeId="acPhase2Voltage"/>
+			<channel id="acPhase3Voltage" typeId="acPhase3Voltage"/>
+			<channel id="heatSinkTemperature" typeId="heatSinkTemperature"/>
 		</channels>
 
 		<config-description>
@@ -59,147 +59,147 @@
 		<description>Update the values from the SolarMax device</description>
 		</channel-type> -->
 
-	<channel-type id="LastUpdated">
+	<channel-type id="lastUpdated">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<description>When was the data last read from the device</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="SoftwareVersion">
+	<channel-type id="softwareVersion">
 		<item-type>Number</item-type>
 		<label>Software Version</label>
 		<description>Software Version installed on the SolarMax device</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="BuildNumber">
+	<channel-type id="buildNumber">
 		<item-type>Number</item-type>
 		<label>Build Number</label>
 		<description>Firmware Build Number installed on the SolarMax device</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="Startups">
+	<channel-type id="startups">
 		<item-type>Number</item-type>
 		<label>Startups</label>
 		<description>Number of times the device has started</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="AcPhase1Current">
+	<channel-type id="acPhase1Current">
 		<item-type>Number</item-type>
 		<label>Ac Phase 1 Current</label>
 		<description>Ac Phase 1 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="AcPhase2Current">
+	<channel-type id="acPhase2Current">
 		<item-type>Number</item-type>
 		<label>Ac Phase 2 Current</label>
 		<description>Ac Phase 2 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="AcPhase3Current">
+	<channel-type id="acPhase3Current">
 		<item-type>Number</item-type>
 		<label>Ac Phase 3 Current</label>
 		<description>Ac Phase 3 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="EnergyGeneratedToday">
+	<channel-type id="energyGeneratedToday">
 		<item-type>Number</item-type>
 		<label>Energy Generated Today</label>
 		<description>Energy Generated Today in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="EnergyGeneratedTotal">
+	<channel-type id="energyGeneratedTotal">
 		<item-type>Number</item-type>
 		<label>Energy Generated Total</label>
 		<description>Energy Generated Total since recording began in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="OperatingHours">
+	<channel-type id="operatingHours">
 		<item-type>Number</item-type>
 		<label>Operating Hours</label>
 		<description>Operating Hours since recording began in H</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="EnergyGeneratedYesterday">
+	<channel-type id="energyGeneratedYesterday">
 		<item-type>Number</item-type>
 		<label>Energy Generated Yesterday</label>
 		<description>Energy Generated Yesterday in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="EnergyGeneratedLastMonth">
+	<channel-type id="energyGeneratedLastMonth">
 		<item-type>Number</item-type>
 		<label>Energy Generated Last Month</label>
 		<description>Energy Generated Last Month in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="EnergyGeneratedLastYear">
+	<channel-type id="energyGeneratedLastYear">
 		<item-type>Number</item-type>
 		<label>Energy Generated Last Year</label>
 		<description>Energy Generated Last Year in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="EnergyGeneratedThisMonth">
+	<channel-type id="energyGeneratedThisMonth">
 		<item-type>Number</item-type>
 		<label>Energy Generated This Month</label>
 		<description>Energy Generated This Month in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="EnergyGeneratedThisYear">
+	<channel-type id="energyGeneratedThisYear">
 		<item-type>Number</item-type>
 		<label>Energy Generated This Year</label>
 		<description>Energy Generated This Year in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="CurrentPowerGenerated">
+	<channel-type id="currentPowerGenerated">
 		<item-type>Number</item-type>
 		<label>Current Power Generated</label>
 		<description>Power currently being generated in w</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="AcFrequency">
+	<channel-type id="acFrequency">
 		<item-type>Number</item-type>
 		<label>Ac Frequency</label>
 		<description>AcFrequency in Hz</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="AcPhase1Voltage">
+	<channel-type id="acPhase1Voltage">
 		<item-type>Number</item-type>
 		<label>Ac Phase1 Voltage</label>
 		<description>Ac Phase1 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="AcPhase2Voltage">
+	<channel-type id="acPhase2Voltage">
 		<item-type>Number</item-type>
 		<label>Ac Phase2 Voltage</label>
 		<description>Ac Phase2 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="AcPhase3Voltage">
+	<channel-type id="acPhase3Voltage">
 		<item-type>Number</item-type>
 		<label>Ac Phase3 Voltage</label>
 		<description>Ac Phase3 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="HeatSinkTemperature">
+	<channel-type id="heatSinkTemperature">
 		<item-type>Number</item-type>
 		<label>Heat Sink Temperature</label>
 		<description>Heat Sink Temperature in degrees celcius</description>
