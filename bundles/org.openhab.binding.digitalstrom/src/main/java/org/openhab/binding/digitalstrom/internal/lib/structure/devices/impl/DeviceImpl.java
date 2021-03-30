@@ -242,6 +242,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
                 }
             }
         } else if (jsonOutputChannels != null && jsonOutputChannels.isJsonObject()) {
+            logger.debug("single channel found");
             for (Entry<String, JsonElement> entry : deviceJsonObject
                     .get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey()).getAsJsonObject().entrySet()) {
                 int channelId = entry.getValue().getAsJsonObject().get("channelID").getAsInt();
