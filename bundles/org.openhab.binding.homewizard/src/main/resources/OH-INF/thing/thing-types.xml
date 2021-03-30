@@ -6,7 +6,8 @@
 
 	<thing-type id="p1_wifi_meter">
 		<label>HomeWizard Wi-Fi P1 Meter</label>
-		<description>This thing provides the measurement data that is available through the http interface of the P1 Meter.</description>
+		<description>This thing provides the measurement data that is available through the http interface of the HomeWizard
+			Wi-Fi P1 Meter.</description>
 
 		<channels>
 			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>

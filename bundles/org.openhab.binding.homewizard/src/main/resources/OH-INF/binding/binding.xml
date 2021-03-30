@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>HomeWizard Binding</name>
-	<description>This binding provides access to the DSMR data provided by the HomeWizard Wi-Fi P1 meter on it's local HTTP
+	<description>This binding provides access to the data provided by the HomeWizard Wi-Fi P1 meter on it's local HTTP
 		interface.</description>
 
 </binding:binding>

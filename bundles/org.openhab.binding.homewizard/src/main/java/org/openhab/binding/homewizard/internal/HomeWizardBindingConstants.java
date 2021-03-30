@@ -17,7 +17,7 @@ import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link HomeWizardBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * used across the full binding.
  *
  * @author Daniël van Os - Initial contribution
  */
