@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
@@ -112,7 +111,6 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (isThingReadyToHandleCommand()) {
             super.handleCommand(channelUID, command);
-            @Nullable
             String operationState = getOperationState();
             getApiClient().ifPresent(apiClient -> {
                 try {

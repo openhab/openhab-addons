@@ -124,7 +124,8 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 tokenUrl, authorizeUrl, oAuthServiceHandleId, OAUTH_SCOPE, oAuthClientService);
 
         // create api client
-        apiClient = new HomeConnectApiClient(httpClient, oAuthClientService, config.isSimulator(), apiRequestHistory);
+        apiClient = new HomeConnectApiClient(httpClient, oAuthClientService, config.isSimulator(), apiRequestHistory,
+                config);
         eventSourceClient = new HomeConnectEventSourceClient(clientBuilder, eventSourceFactory, oAuthClientService,
                 config.isSimulator(), scheduler, eventHistory);
 

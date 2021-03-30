@@ -169,7 +169,6 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
                                 OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_STANDBY);
                     }
 
-                    @Nullable
                     String operationState = getOperationState();
                     if (operationState != null && INACTIVE_STATE.contains(operationState)
                             && command instanceof QuantityType) {
@@ -250,7 +249,6 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     public void initialize() {
         super.initialize();
         cavityTemperatureFuture = scheduler.scheduleWithFixedDelay(() -> {
-            @Nullable
             String operationState = getOperationState();
             boolean manuallyUpdateCavityTemperature = this.manuallyUpdateCavityTemperature;
 
@@ -270,7 +268,6 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
 
     @Override
     public void dispose() {
-        @Nullable
         ScheduledFuture<?> cavityTemperatureFuture = this.cavityTemperatureFuture;
         if (cavityTemperatureFuture != null) {
             cavityTemperatureFuture.cancel(true);
@@ -289,7 +286,5 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
         getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ELAPSED_PROGRAM_TIME).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_OVEN_CURRENT_CAVITY_TEMPERATURE)
-                .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
 }

@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
-import static io.github.bucket4j.Bandwidth.classic;
-import static io.github.bucket4j.Refill.intervally;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
-import static org.openhab.binding.homeconnect.internal.client.HttpHelper.*;
+import static org.openhab.binding.homeconnect.internal.client.HttpHelper.formatJsonBody;
+import static org.openhab.binding.homeconnect.internal.client.HttpHelper.getAuthorizationHeader;
+import static org.openhab.binding.homeconnect.internal.client.HttpHelper.sendRequest;
 
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +53,7 @@ import org.openhab.binding.homeconnect.internal.client.model.HomeConnectRequest;
 import org.openhab.binding.homeconnect.internal.client.model.HomeConnectResponse;
 import org.openhab.binding.homeconnect.internal.client.model.Option;
 import org.openhab.binding.homeconnect.internal.client.model.Program;
+import org.openhab.binding.homeconnect.internal.configuration.ApiBridgeConfiguration;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +61,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
 
 /**
  * Client for Home Connect API.
@@ -90,12 +87,13 @@ public class HomeConnectApiClient {
     private final OAuthClientService oAuthClientService;
     private final CircularQueue<ApiRequest> communicationQueue;
     private final JsonParser jsonParser;
-    private final Bucket bucket;
+    private final ApiBridgeConfiguration apiBridgeConfiguration;
 
     public HomeConnectApiClient(HttpClient httpClient, OAuthClientService oAuthClientService, boolean simulated,
-            @Nullable List<ApiRequest> apiRequestHistory) {
+            @Nullable List<ApiRequest> apiRequestHistory, ApiBridgeConfiguration apiBridgeConfiguration) {
         this.client = httpClient;
         this.oAuthClientService = oAuthClientService;
+        this.apiBridgeConfiguration = apiBridgeConfiguration;
 
         availableProgramOptionsCache = new ConcurrentHashMap<>();
         apiUrl = simulated ? API_SIMULATOR_BASE_URL : API_BASE_URL;
@@ -104,11 +102,6 @@ public class HomeConnectApiClient {
         if (apiRequestHistory != null) {
             communicationQueue.addAll(apiRequestHistory);
         }
-        bucket = Bucket4j.builder()
-                // allows 50 tokens per minute (added 10 second buffer)
-                .addLimit(classic(50, intervally(50, Duration.ofSeconds(70))).withInitialTokens(40))
-                // but not often then 50 tokens per second
-                .addLimit(classic(10, intervally(10, Duration.ofSeconds(1)))).build();
     }
 
     /**
@@ -121,7 +114,7 @@ public class HomeConnectApiClient {
     public List<HomeAppliance> getHomeAppliances() throws CommunicationException, AuthorizationException {
         Request request = createRequest(HttpMethod.GET, BASE);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.OK_200, request, response, null, null);
 
             String responseBody = response.getContentAsString();
@@ -146,7 +139,7 @@ public class HomeConnectApiClient {
     public HomeAppliance getHomeAppliance(String haId) throws CommunicationException, AuthorizationException {
         Request request = createRequest(HttpMethod.GET, BASE_PATH + haId);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.OK_200, request, response, haId, null);
 
             String responseBody = response.getContentAsString();
@@ -642,7 +635,7 @@ public class HomeConnectApiClient {
 
         Request request = createRequest(HttpMethod.GET, BASE_PATH + haId + "/programs/available/" + programKey);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.OK_200, request, response, haId, null);
 
             String responseBody = response.getContentAsString();
@@ -697,7 +690,7 @@ public class HomeConnectApiClient {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Request request = createRequest(HttpMethod.GET, path);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.OK_200, request, response, haId, null);
 
             String responseBody = response.getContentAsString();
@@ -719,7 +712,7 @@ public class HomeConnectApiClient {
         Request request = createRequest(HttpMethod.PUT, path).content(new StringContentProvider(requestBodyPayload),
                 BSH_JSON_V1);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.NO_CONTENT_204, request, response, haId, requestBodyPayload);
 
             String responseBody = response.getContentAsString();
@@ -737,7 +730,7 @@ public class HomeConnectApiClient {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Request request = createRequest(HttpMethod.GET, path);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(asList(HttpStatus.OK_200, HttpStatus.NOT_FOUND_404), request, response, haId, null);
 
             String responseBody = response.getContentAsString();
@@ -758,7 +751,7 @@ public class HomeConnectApiClient {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Request request = createRequest(HttpMethod.GET, path);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.OK_200, request, response, haId, null);
 
             String responseBody = response.getContentAsString();
@@ -776,7 +769,7 @@ public class HomeConnectApiClient {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Request request = createRequest(HttpMethod.DELETE, path);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.NO_CONTENT_204, request, response, haId, null);
 
             trackAndLogApiRequest(haId, request, null, response, response.getContentAsString());
@@ -791,7 +784,7 @@ public class HomeConnectApiClient {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Request request = createRequest(HttpMethod.GET, path);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.OK_200, request, response, haId, null);
 
             String responseBody = response.getContentAsString();
@@ -831,7 +824,7 @@ public class HomeConnectApiClient {
         Request request = createRequest(HttpMethod.PUT, path).content(new StringContentProvider(requestBodyPayload),
                 BSH_JSON_V1);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.NO_CONTENT_204, request, response, haId, requestBodyPayload);
 
             trackAndLogApiRequest(haId, request, requestBodyPayload, response, response.getContentAsString());
@@ -874,7 +867,7 @@ public class HomeConnectApiClient {
         Request request = createRequest(HttpMethod.PUT, path).content(new StringContentProvider(requestBodyPayload),
                 BSH_JSON_V1);
         try {
-            ContentResponse response = sendRequest(request);
+            ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.NO_CONTENT_204, request, response, haId, requestBodyPayload);
 
             trackAndLogApiRequest(haId, request, requestBodyPayload, response, response.getContentAsString());
@@ -1108,17 +1101,5 @@ public class HomeConnectApiClient {
 
         return new HomeConnectResponse(response.getStatus(), headers,
                 responseBody != null ? formatJsonBody(responseBody) : null);
-    }
-
-    private ContentResponse sendRequest(Request request)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        if (HttpMethod.GET.name().equals(request.getMethod())) {
-            try {
-                bucket.asScheduler().consume(1);
-            } catch (InterruptedException e) {
-                logger.warn("Rate limiting error! error={}", e.getMessage());
-            }
-        }
-        return request.send();
     }
 }

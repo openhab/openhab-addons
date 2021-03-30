@@ -504,8 +504,7 @@
 		<item-type>Switch</item-type>
 		<label>Freezer Super Mode</label>
 		<description>This setting has no impact on setpoint temperatures but will make the freezer compartment cool to the
-			lowest possible temperature until it is disabled manually by the customer or by the home appliance because of
-			a
+			lowest possible temperature until it is disabled manually by the customer or by the home appliance because of a
 			timeout.</description>
 		<state readOnly="false"/>
 	</channel-type>
@@ -665,7 +664,7 @@
 	</channel-type>
 	<channel-type id="ambient_light_custom_color_state">
 		<item-type>Color</item-type>
-		<label>Ambient Light Custom Color</label>
+		<label>Ambient Light (Custom)</label>
 		<description>This setting describes the custom color state of the ambient light.</description>
 		<category>Colorpicker</category>
 		<tags>

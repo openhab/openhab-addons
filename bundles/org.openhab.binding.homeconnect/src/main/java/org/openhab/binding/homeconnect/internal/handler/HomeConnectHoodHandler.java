@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
@@ -123,7 +122,6 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
         // register hood specific SSE event handlers
         handlers.put(EVENT_HOOD_INTENSIVE_LEVEL,
                 event -> getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL).ifPresent(channel -> {
-                    @Nullable
                     String hoodIntensiveLevel = event.getValue();
                     if (hoodIntensiveLevel != null) {
                         updateState(channel.getUID(), new StringType(mapStageStringType(hoodIntensiveLevel)));
@@ -133,7 +131,6 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                 }));
         handlers.put(EVENT_HOOD_VENTING_LEVEL,
                 event -> getThingChannel(CHANNEL_HOOD_VENTING_LEVEL).ifPresent(channel -> {
-                    @Nullable
                     String hoodVentingLevel = event.getValue();
                     if (hoodVentingLevel != null) {
                         updateState(channel.getUID(), new StringType(mapStageStringType(hoodVentingLevel)));
@@ -223,7 +220,6 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
 
                     // program options
                     if (command instanceof StringType && CHANNEL_HOOD_ACTIONS_STATE.equals(channelUID.getId())) {
-                        @Nullable
                         String operationState = getOperationState();
                         if (OPERATION_STATE_INACTIVE.equals(operationState)
                                 || OPERATION_STATE_RUN.equals(operationState)) {

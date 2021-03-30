@@ -65,6 +65,7 @@ public class HomeConnectEventSourceListener {
     private final JsonParser jsonParser;
     private final ScheduledFuture<?> eventSourceMonitorFuture;
     private final CircularQueue<Event> eventQueue;
+    private final ScheduledExecutorService scheduledExecutorService;
 
     private @Nullable LocalDateTime lastEventReceived;
 
@@ -75,6 +76,7 @@ public class HomeConnectEventSourceListener {
         this.eventListener = eventListener;
         this.client = client;
         this.eventQueue = eventQueue;
+        this.scheduledExecutorService = scheduler;
         jsonParser = new JsonParser();
 
         eventSourceMonitorFuture = createMonitor(scheduler);
@@ -141,13 +143,10 @@ public class HomeConnectEventSourceListener {
                     logger.debug(
                             "Event source listener connection failure due to unauthorized exception : wait 5 seconds... haId={}",
                             haId);
-
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                    }
+                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 5, TimeUnit.SECONDS);
+                } else {
+                    eventListener.onClosed();
                 }
-                eventListener.onClosed();
             }
         } catch (Exception e) {
             logger.error("Could not publish closed event to listener ({})!", haId, e);

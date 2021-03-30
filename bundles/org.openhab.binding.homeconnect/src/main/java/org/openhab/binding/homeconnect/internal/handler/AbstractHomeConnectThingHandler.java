@@ -1204,7 +1204,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     private synchronized void scheduleOfflineMonitor1() {
         this.reinitializationFuture1 = scheduler.schedule(() -> {
-            if (isThingReadyToHandleCommand()) {
+            if (isBridgeOnline() && isThingOffline()) {
                 logger.debug("Offline monitor 1: Check if thing is ONLINE. thing={}, haId={}", getThingLabel(),
                         getThingHaId());
                 refreshThingStatus();
