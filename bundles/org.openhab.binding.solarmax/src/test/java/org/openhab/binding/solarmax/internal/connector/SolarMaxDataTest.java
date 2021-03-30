@@ -64,16 +64,16 @@ public class SolarMaxDataTest {
         SolarMaxData solarMaxData = new SolarMaxData();
 
         Map<SolarMaxCommandKey, String> dataOrig = new HashMap<>();
-        dataOrig.put(SolarMaxCommandKey.SoftwareVersion, softwareVersionOriginal);
+        dataOrig.put(SolarMaxCommandKey.softwareVersion, softwareVersionOriginal);
         solarMaxData.setData(dataOrig);
-        DecimalType origVersion = solarMaxData.get(SolarMaxCommandKey.SoftwareVersion).as(DecimalType.class);
+        DecimalType origVersion = solarMaxData.get(SolarMaxCommandKey.softwareVersion).as(DecimalType.class);
         assertNotNull(origVersion);
         assertEquals(Integer.parseInt(softwareVersionOriginal, 16), origVersion.intValue());
 
         Map<SolarMaxCommandKey, String> dataUpdated = new HashMap<>();
-        dataUpdated.put(SolarMaxCommandKey.SoftwareVersion, softwareVersionUpdated);
+        dataUpdated.put(SolarMaxCommandKey.softwareVersion, softwareVersionUpdated);
         solarMaxData.setData(dataUpdated);
-        DecimalType updatedVersion = solarMaxData.get(SolarMaxCommandKey.SoftwareVersion).as(DecimalType.class);
+        DecimalType updatedVersion = solarMaxData.get(SolarMaxCommandKey.softwareVersion).as(DecimalType.class);
         assertNotEquals(origVersion, updatedVersion);
     }
 }

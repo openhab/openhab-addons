@@ -42,64 +42,64 @@ public class SolarMaxData {
 
     public State get(SolarMaxCommandKey key) {
         switch (key) {
-            case SoftwareVersion:
+            case softwareVersion:
                 return getSoftwareVersion();
 
-            case BuildNumber:
+            case buildNumber:
                 return getBuildNumber();
 
-            case Startups:
+            case startups:
                 return getStartups();
 
-            case AcPhase1Current:
+            case acPhase1Current:
                 return getAcPhase1Current();
 
-            case AcPhase2Current:
+            case acPhase2Current:
                 return getAcPhase2Current();
 
-            case AcPhase3Current:
+            case acPhase3Current:
                 return getAcPhase3Current();
 
-            case EnergyGeneratedToday:
+            case energyGeneratedToday:
                 return getEnergyGeneratedToday();
 
-            case EnergyGeneratedTotal:
+            case energyGeneratedTotal:
                 return getEnergyGeneratedTotal();
 
-            case OperatingHours:
+            case operatingHours:
                 return getOperatingHours();
 
-            case EnergyGeneratedYesterday:
+            case energyGeneratedYesterday:
                 return getEnergyGeneratedYesterday();
 
-            case EnergyGeneratedLastMonth:
+            case energyGeneratedLastMonth:
                 return getEnergyGeneratedLastMonth();
 
-            case EnergyGeneratedLastYear:
+            case energyGeneratedLastYear:
                 return getEnergyGeneratedLastYear();
 
-            case EnergyGeneratedThisMonth:
+            case energyGeneratedThisMonth:
                 return getEnergyGeneratedThisMonth();
 
-            case EnergyGeneratedThisYear:
+            case energyGeneratedThisYear:
                 return getEnergyGeneratedThisYear();
 
-            case CurrentPowerGenerated:
+            case currentPowerGenerated:
                 return getCurrentPowerGenerated();
 
-            case AcFrequency:
+            case acFrequency:
                 return getAcFrequency();
 
-            case AcPhase1Voltage:
+            case acPhase1Voltage:
                 return getAcPhase1Voltage();
 
-            case AcPhase2Voltage:
+            case acPhase2Voltage:
                 return getAcPhase2Voltage();
 
-            case AcPhase3Voltage:
+            case acPhase3Voltage:
                 return getAcPhase3Voltage();
 
-            case HeatSinkTemperature:
+            case heatSinkTemperature:
                 return getHeatSinkTemperature();
 
             default:
@@ -120,83 +120,83 @@ public class SolarMaxData {
     }
 
     public DecimalType getSoftwareVersion() {
-        return getIntegerValueFrom(SolarMaxCommandKey.SoftwareVersion);
+        return getIntegerValueFrom(SolarMaxCommandKey.softwareVersion);
     }
 
     public DecimalType getBuildNumber() {
-        return getIntegerValueFrom(SolarMaxCommandKey.BuildNumber);
+        return getIntegerValueFrom(SolarMaxCommandKey.buildNumber);
     }
 
     public DecimalType getStartups() {
-        return getIntegerValueFrom(SolarMaxCommandKey.Startups);
+        return getIntegerValueFrom(SolarMaxCommandKey.startups);
     }
 
     public DecimalType getAcPhase1Current() {
-        return getDecimalValueFrom(SolarMaxCommandKey.AcPhase1Current, 0.01);
+        return getDecimalValueFrom(SolarMaxCommandKey.acPhase1Current, 0.01);
     }
 
     public DecimalType getAcPhase2Current() {
-        return getDecimalValueFrom(SolarMaxCommandKey.AcPhase2Current, 0.01);
+        return getDecimalValueFrom(SolarMaxCommandKey.acPhase2Current, 0.01);
     }
 
     public DecimalType getAcPhase3Current() {
-        return getDecimalValueFrom(SolarMaxCommandKey.AcPhase3Current, 0.01);
+        return getDecimalValueFrom(SolarMaxCommandKey.acPhase3Current, 0.01);
     }
 
     public DecimalType getEnergyGeneratedToday() {
-        return getIntegerValueFrom(SolarMaxCommandKey.EnergyGeneratedToday, 100);
+        return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedToday, 100);
     }
 
     public DecimalType getEnergyGeneratedTotal() {
-        return getIntegerValueFrom(SolarMaxCommandKey.EnergyGeneratedTotal, 1000);
+        return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedTotal, 1000);
     }
 
     public DecimalType getOperatingHours() {
-        return getIntegerValueFrom(SolarMaxCommandKey.OperatingHours);
+        return getIntegerValueFrom(SolarMaxCommandKey.operatingHours);
     }
 
     public DecimalType getEnergyGeneratedYesterday() {
-        return getIntegerValueFrom(SolarMaxCommandKey.EnergyGeneratedYesterday, 100);
+        return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedYesterday, 100);
     }
 
     public DecimalType getEnergyGeneratedLastMonth() {
-        return getIntegerValueFrom(SolarMaxCommandKey.EnergyGeneratedLastMonth, 1000);
+        return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedLastMonth, 1000);
     }
 
     public DecimalType getEnergyGeneratedLastYear() {
-        return getIntegerValueFrom(SolarMaxCommandKey.EnergyGeneratedLastYear, 1000);
+        return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedLastYear, 1000);
     }
 
     public DecimalType getEnergyGeneratedThisMonth() {
-        return getIntegerValueFrom(SolarMaxCommandKey.EnergyGeneratedThisMonth, 1000);
+        return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedThisMonth, 1000);
     }
 
     public DecimalType getEnergyGeneratedThisYear() {
-        return getIntegerValueFrom(SolarMaxCommandKey.EnergyGeneratedThisYear, 1000);
+        return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedThisYear, 1000);
     }
 
     public DecimalType getCurrentPowerGenerated() {
-        return getIntegerValueFrom(SolarMaxCommandKey.CurrentPowerGenerated, 0.5);
+        return getIntegerValueFrom(SolarMaxCommandKey.currentPowerGenerated, 0.5);
     }
 
     public DecimalType getAcFrequency() {
-        return getDecimalValueFrom(SolarMaxCommandKey.AcFrequency, 0.01);
+        return getDecimalValueFrom(SolarMaxCommandKey.acFrequency, 0.01);
     }
 
     public DecimalType getAcPhase1Voltage() {
-        return getDecimalValueFrom(SolarMaxCommandKey.AcPhase1Voltage, 0.1);
+        return getDecimalValueFrom(SolarMaxCommandKey.acPhase1Voltage, 0.1);
     }
 
     public DecimalType getAcPhase2Voltage() {
-        return getDecimalValueFrom(SolarMaxCommandKey.AcPhase2Voltage, 0.1);
+        return getDecimalValueFrom(SolarMaxCommandKey.acPhase2Voltage, 0.1);
     }
 
     public DecimalType getAcPhase3Voltage() {
-        return getDecimalValueFrom(SolarMaxCommandKey.AcPhase3Voltage, 0.1);
+        return getDecimalValueFrom(SolarMaxCommandKey.acPhase3Voltage, 0.1);
     }
 
     public DecimalType getHeatSinkTemperature() {
-        return getIntegerValueFrom(SolarMaxCommandKey.HeatSinkTemperature);
+        return getIntegerValueFrom(SolarMaxCommandKey.heatSinkTemperature);
     }
 
     private DecimalType getDecimalValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {

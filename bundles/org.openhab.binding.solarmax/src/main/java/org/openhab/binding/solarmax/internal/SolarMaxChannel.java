@@ -23,28 +23,28 @@ import org.openhab.binding.solarmax.internal.connector.SolarMaxCommandKey;
 public enum SolarMaxChannel {
 
     // CHANNEL_UPDATE_VALUES_FROM_DEVICE("UpdateValuesFromDevice"),
-    CHANNEL_LAST_UPDATED("LastUpdated"), //
+    CHANNEL_LAST_UPDATED("lastUpdated"), //
     // CHANNEL_DEVICE_ADDRESS(SolarMaxCommandKey.DeviceAddress.name()),
-    CHANNEL_SOFTWARE_VERSION(SolarMaxCommandKey.SoftwareVersion.name()),
-    CHANNEL_BUILD_NUMBER(SolarMaxCommandKey.BuildNumber.name()),
-    CHANNEL_STARTUPS(SolarMaxCommandKey.Startups.name()),
-    CHANNEL_AC_PHASE1_CURRENT(SolarMaxCommandKey.AcPhase1Current.name()),
-    CHANNEL_AC_PHASE2_CURRENT(SolarMaxCommandKey.AcPhase2Current.name()),
-    CHANNEL_AC_PHASE3_CURRENT(SolarMaxCommandKey.AcPhase3Current.name()),
-    CHANNEL_ENERGY_GENERATED_TODAY(SolarMaxCommandKey.EnergyGeneratedToday.name()),
-    CHANNEL_ENERGY_GENERATED_TOTAL(SolarMaxCommandKey.EnergyGeneratedTotal.name()),
-    CHANNEL_OPERATING_HOURS(SolarMaxCommandKey.OperatingHours.name()),
-    CHANNEL_ENERGY_GENERATED_YESTERDAY(SolarMaxCommandKey.EnergyGeneratedYesterday.name()),
-    CHANNEL_ENERGY_GENERATED_LAST_MONTH(SolarMaxCommandKey.EnergyGeneratedLastMonth.name()),
-    CHANNEL_ENERGY_GENERATED_LAST_YEAR(SolarMaxCommandKey.EnergyGeneratedLastYear.name()),
-    CHANNEL_ENERGY_GENERATED_THIS_MONTH(SolarMaxCommandKey.EnergyGeneratedThisMonth.name()),
-    CHANNEL_ENERGY_GENERATED_THIS_YEAR(SolarMaxCommandKey.EnergyGeneratedThisYear.name()),
-    CHANNEL_CURRENT_POWER_GENERATED(SolarMaxCommandKey.CurrentPowerGenerated.name()),
-    CHANNEL_AC_FREQUENCY(SolarMaxCommandKey.AcFrequency.name()),
-    CHANNEL_AC_PHASE1_VOLTAGE(SolarMaxCommandKey.AcPhase1Voltage.name()),
-    CHANNEL_AC_PHASE2_VOLTAGE(SolarMaxCommandKey.AcPhase2Voltage.name()),
-    CHANNEL_AC_PHASE3_VOLTAGE(SolarMaxCommandKey.AcPhase3Voltage.name()),
-    CHANNEL_HEAT_SINK_TEMPERATUR(SolarMaxCommandKey.HeatSinkTemperature.name())
+    CHANNEL_SOFTWARE_VERSION(SolarMaxCommandKey.softwareVersion.name()),
+    CHANNEL_BUILD_NUMBER(SolarMaxCommandKey.buildNumber.name()),
+    CHANNEL_STARTUPS(SolarMaxCommandKey.startups.name()),
+    CHANNEL_AC_PHASE1_CURRENT(SolarMaxCommandKey.acPhase1Current.name()),
+    CHANNEL_AC_PHASE2_CURRENT(SolarMaxCommandKey.acPhase2Current.name()),
+    CHANNEL_AC_PHASE3_CURRENT(SolarMaxCommandKey.acPhase3Current.name()),
+    CHANNEL_ENERGY_GENERATED_TODAY(SolarMaxCommandKey.energyGeneratedToday.name()),
+    CHANNEL_ENERGY_GENERATED_TOTAL(SolarMaxCommandKey.energyGeneratedTotal.name()),
+    CHANNEL_OPERATING_HOURS(SolarMaxCommandKey.operatingHours.name()),
+    CHANNEL_ENERGY_GENERATED_YESTERDAY(SolarMaxCommandKey.energyGeneratedYesterday.name()),
+    CHANNEL_ENERGY_GENERATED_LAST_MONTH(SolarMaxCommandKey.energyGeneratedLastMonth.name()),
+    CHANNEL_ENERGY_GENERATED_LAST_YEAR(SolarMaxCommandKey.energyGeneratedLastYear.name()),
+    CHANNEL_ENERGY_GENERATED_THIS_MONTH(SolarMaxCommandKey.energyGeneratedThisMonth.name()),
+    CHANNEL_ENERGY_GENERATED_THIS_YEAR(SolarMaxCommandKey.energyGeneratedThisYear.name()),
+    CHANNEL_CURRENT_POWER_GENERATED(SolarMaxCommandKey.currentPowerGenerated.name()),
+    CHANNEL_AC_FREQUENCY(SolarMaxCommandKey.acFrequency.name()),
+    CHANNEL_AC_PHASE1_VOLTAGE(SolarMaxCommandKey.acPhase1Voltage.name()),
+    CHANNEL_AC_PHASE2_VOLTAGE(SolarMaxCommandKey.acPhase2Voltage.name()),
+    CHANNEL_AC_PHASE3_VOLTAGE(SolarMaxCommandKey.acPhase3Voltage.name()),
+    CHANNEL_HEAT_SINK_TEMPERATUR(SolarMaxCommandKey.heatSinkTemperature.name())
 
     ;
 
