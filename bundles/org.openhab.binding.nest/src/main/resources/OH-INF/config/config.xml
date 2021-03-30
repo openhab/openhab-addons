@@ -14,15 +14,13 @@
 			<description>Local settings</description>
 		</parameter-group>
 
-		<parameter name="productId" type="text" groupName="oauth">
+		<parameter name="productId" type="text" groupName="oauth" required="true">
 			<label>Product ID</label>
 			<description>The product ID from the Nest product page</description>
-			<required>true</required>
 		</parameter>
-		<parameter name="productSecret" type="text" groupName="oauth">
+		<parameter name="productSecret" type="text" groupName="oauth" required="true">
 			<label>Product Secret</label>
 			<description>The product secret from the Nest product page</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="pincode" type="text" groupName="oauth">
 			<label>Pincode</label>
