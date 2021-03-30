@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.LifxProduct.Features;
 import org.openhab.binding.lifx.internal.dto.GetColorZonesRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.dto.GetRequest;
@@ -56,7 +57,7 @@ public class LifxLightCurrentStateUpdater {
     private final Logger logger = LoggerFactory.getLogger(LifxLightCurrentStateUpdater.class);
 
     private final String logId;
-    private final LifxProduct product;
+    private final Features features;
     private final CurrentLightState currentLightState;
     private final ScheduledExecutorService scheduler;
     private final LifxLightCommunicationHandler communicationHandler;
@@ -70,7 +71,7 @@ public class LifxLightCurrentStateUpdater {
 
     public LifxLightCurrentStateUpdater(LifxLightContext context, LifxLightCommunicationHandler communicationHandler) {
         this.logId = context.getLogId();
-        this.product = context.getProduct();
+        this.features = context.getFeatures();
         this.currentLightState = context.getCurrentLightState();
         this.scheduler = context.getScheduler();
         this.communicationHandler = communicationHandler;
@@ -132,13 +133,13 @@ public class LifxLightCurrentStateUpdater {
     private void sendLightStateRequests() {
         communicationHandler.sendPacket(new GetRequest());
 
-        if (product.hasFeature(INFRARED)) {
+        if (features.hasFeature(INFRARED)) {
             communicationHandler.sendPacket(new GetLightInfraredRequest());
         }
-        if (product.hasFeature(MULTIZONE)) {
+        if (features.hasFeature(MULTIZONE)) {
             communicationHandler.sendPacket(new GetColorZonesRequest());
         }
-        if (product.hasFeature(TILE_EFFECT)) {
+        if (features.hasFeature(TILE_EFFECT)) {
             communicationHandler.sendPacket(new GetTileEffectRequest());
         }
         if (updateSignalStrength) {

@@ -32,10 +32,10 @@ public class PioneerAvrBindingConstants {
 
     public static final String BINDING_ID = "pioneeravr";
 
-    public static final Set<String> SUPPORTED_DEVICE_MODELS = Collections
-            .unmodifiableSet(Stream.of("SC-57", "SC-LX85", "SC-55", "SC-1526", "SC-LX75", "VSX-53", "VSX-1326",
-                    "VSX-LX55", "VSX-2021", "VSA-LX55", "VSX-52", "VSX-1126", "VSX-1121", "VSX-51", "VSX-1021",
-                    "VSX-1026", "VSA-1021", "VSX-50", "VSX-926", "VSX-921", "VSA-921").collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_DEVICE_MODELS = Collections.unmodifiableSet(
+            Stream.of("SC-57", "SC-LX85", "SC-55", "SC-1526", "SC-LX75", "VSX-53", "VSX-1326", "VSX-LX55", "VSX-2021",
+                    "VSA-LX55", "VSX-52", "VSX-1126", "VSX-1121", "VSX-51", "VSX-1021", "VSX-1026", "VSA-1021",
+                    "VSX-50", "VSX-926", "VSX-921", "VSA-921", "VSX-922").collect(Collectors.toSet()));
 
     public static final Set<String> SUPPORTED_DEVICE_MODELS2014 = Collections
             .unmodifiableSet(Stream.of("SC-LX87", "SC-LX77", "SC-LX57", "SC-2023", "SC-1223", "VSX-1123", "VSX-923")

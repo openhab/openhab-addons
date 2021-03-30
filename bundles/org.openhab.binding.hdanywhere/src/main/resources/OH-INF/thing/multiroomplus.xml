@@ -21,10 +21,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="ipAddress" type="text">
+			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>
 				<description>Network address of the Matrix</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="ports" type="integer" required="true" min="1" max="8">
 				<label>Number of Ports</label>

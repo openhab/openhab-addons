@@ -18,6 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -29,6 +31,7 @@ import org.openhab.core.voice.Voice;
  *
  * @author Florian Schmidt - Initial Contribution
  */
+@NonNullByDefault
 class PicoTTSAudioStream extends FixedLengthAudioStream {
     private final Voice voice;
     private final String text;
@@ -36,7 +39,7 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
     private final InputStream inputStream;
 
     private long length;
-    private File file;
+    private @Nullable File file;
 
     public PicoTTSAudioStream(String text, Voice voice, AudioFormat audioFormat) throws AudioException {
         this.text = text;
@@ -57,7 +60,8 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
         try {
             Process process = Runtime.getRuntime().exec(command);
             process.waitFor();
-            file = new File(outputFile);
+            File file = new File(outputFile);
+            this.file = file;
             this.length = file.length();
             return getFileInputStream(file);
         } catch (IOException e) {
@@ -68,9 +72,6 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
     }
 
     private InputStream getFileInputStream(File file) throws AudioException {
-        if (file == null) {
-            throw new IllegalArgumentException("file must not be null");
-        }
         if (file.exists()) {
             try {
                 return new FileInputStream(file);
@@ -119,6 +120,7 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
 
     @Override
     public InputStream getClonedStream() throws AudioException {
+        File file = this.file;
         if (file != null) {
             return getFileInputStream(file);
         } else {
