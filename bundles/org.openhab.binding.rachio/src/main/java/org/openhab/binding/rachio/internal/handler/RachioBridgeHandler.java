@@ -71,16 +71,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
     /**
      * Thing Handler for the Bridge thing. Handles the cloud connection and links devices+zones to a bridge.
      * Creates an instance of the RachioApi (holding all RachioDevices + RachioZones for the given apikey)
-     *
-     * Sample thing definition:
-     * sets apikey & callback url, sets polling interval to 300s and default zone watering time to 120s:
-     *
-     * Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxxxxxx",
-     * callbackUrl="http://mydomain.com:50001/rachio/webhook",
-     * pollingInterval=300, defaultRuntime=120 ]
-     * {
-     * }
-     *
+     * 
      * @param bridge: Bridge class object
      */
     public RachioBridgeHandler(final Bridge bridge) {

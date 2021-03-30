@@ -1,50 +1,56 @@
-
 # Rachio Sprinkler Binding
 
-This binding allows to retrieve status information from Rachio Sprinklers and control some function like run zones, stop watering etc. It uses the Rachio Cloud API, so you need an account and an apikey. You need to get an API key before the binding can discover your devices. Go to [Rachio Web App](https://rachio.com->login), click on Account Settings in the left navigation. At the bottom you'll find a link "Get API key".
+This binding integrates your Rachio sprinkler system into openHAB and allows to retrieve status information and control some functions like running zones, stop watering etc. 
 
-To receive events from the Rachio cloud service e.g. start/stop zones & skip watering, you need to have connected your OpenHAB installation to MyOpenHAB.org. This is used to proxy events from Rachio back to your OpenHAB instance.
+The binding uses the Rachio Cloud API, so you need an account. 
+You need to get an API key before the binding can discover your devices.
+Go to [Rachio Web App](https://rachio.com->login), click on Account Settings in the left navigation.
+At the bottom you'll find a link "Get API key".
 
-The device setup is read from the Rachio online service, when a Rachio Cloud Connector thing is configured, and therefore it shares the same items as the Smartphone and Web Apps, so there is no special setup required. In fact all Apps (including this binding) control the same device. The binding implements monitoring and control functions, but no configuration etc. To change configuration you could use the Rachio smartphone app or website.
+To receive events from the Rachio cloud service e.g. start/stop zones & skip watering, you need to have connected your OpenHAB installation to myopenhab.org (install the addon). 
+This is used to proxy events from Rachio Cloud back to your openHAB instance.
 
+The device setup is read from the Rachio online service, when a Rachio Cloud Connector thing is configured, and therefore it shares the same items as the Smartphone and Web Apps, so there is no special setup required.
+In fact all Apps (including this binding) control the same device.
 The binding implements monitoring and control functions, but no configuration etc. 
-To change configuration you could use the smartphone App. 
+To change configuration you could use the Rachio smartphone app or website.
 
-Once the binding is able to connect to the Cloud API it will start the auto-discovery of all controller and zonzes under this account. 
+Once the binding is able to connect to the Cloud API it will start the auto-discovery of all controller and zones under this account. 
 As a result the following things are created
 
-- 1 cloud per account
-- 1 device for each controller
+- 1 cloud per account (binding supports multiple accounts(
+- 1 device for very controller (binding supports multiple controllers)
 - n zones for each zone on any controller
 
 Example: 2 controllers with 8 zones each under the same account creates 19 things (1xbridge, 2xdevice, 16xzone). 
 
 ## Supported Things
 
-The cloud api connector is represented by a Bridge Thing. 
+The Cloud API Connector is represented by a Bridge Thing. 
 All devices are connected to this thing, all zones to the corresponding device. 
 
-|Thing|Description|
-|:---|:---|
-|cloud|Each Rachio account is reppresented by a cloud thing. The binding supports multiple accounts at the same time.|
-|device|Each sprinkler controller is represented by a device thing, which links to the cloud thing|
-|zone|Each zone for each controller creates a zone thing, which links to the device thing (and  directly to the bridge thing)|
+|Thing |Description                                                                                                            |
+|:-----|:----------------------------------------------------------------------------------------------------------------------|
+|cloud |Each Rachio account is represented by a `cloud` thing. The binding supports multiple accounts at the same time.          |
+|device|Each sprinkler controller is represented by a `device` thing, which links to the cloud thing.                             |
+|zone  |Each zone for each controller creates a `zone` thing, which links to the device thing (and  directly to the bridge thing)|
 
 ###  Configuration
 
-Option A: Using Paper UI
+**Option A: Using openHAB UI**
 
-- Go to Paper UI:Inbox and press the + button.
+- Go to Inbox and press the + button.
 - Click Add Manually at the end of the list, this will open a list of addable things.
 - Select the Rachio Binding
-- Select Rachio Cloud Connector things
+- Select Rachio Cloud Connector thing
 - Enter at least the api key, other settings are optional
-- To recieve events from the Rachio cloud service set the callbackUrl to https://username:password@home.myopenhab.org/rachio/webhook where username & password are your myopenhab.org login details (you can create a seperate user account in myopenhab.org if you like). Url encode the @ symbol to %40 in your username.
+
+To receive events from the Rachio Cloud service set the callbackUrl to `https://username:password@home.myopenhab.org/rachio/webhook` where username & password are your myopenhab.org credentials (you can create a separate user account in myopenhab.org if you like). The binding will url encode special characters like the @ symbol as %40 in your before submitting the url.
 - save
 
 Now the binding is able to connect to the cloud and start discovery devices and zones.
 
-Option B: Using .things file
+**Option B: Using .things file**
 
 Create conf/things/rachio.things and fill in the parameters:
 
@@ -54,15 +60,15 @@ Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx", pollingInterv
 }
 ```
 
-|Parameter|Description|
-|:---|:---|
-|apikey|This is a token required to access the Rachio Cloud account. See Discovery on information how to get that code.|
-|pollingInterval|Specifies the delay between two status polls. Usually something like 10 minutes should be enough to have a regular status update when the interfaces is configured. If you don't want/can use events a smaller delay might be interesting to get quicker responses on running zones etc.|
-||Important: Please make sure to use an interval > 90sec. Rachio has a reshhold for the number of API calls per day: 1700. This means if you are accessing the API for more than once in a minute your account gets blocked for the rest of the day.|
-|defaultRuntime|You could run zones in 2 different ways:|
-||1. Just by pushing the button in your UI. The zone will start watering for &lt;defaultRuntime&gt; seconds.|
-||2. Setting the zone's channel runTime to &lt;n&gt; seconds and then starting the zone. This will start the zone for &lt;n&gt; seconds. Usually this variant required a OH rule setting the runTime and then sending a ON to the run channel.|
-|callbackUrl| https://username:password@home.myopenhab.org/rachio/webhook where username and password should be set to your MyOpenHab username and password (url encode the @ symbol to %40 in your username) <br/>The Rachio Cloud sends events when activity occurs e.g. zone turns off. To recieve these events you must have your openHAB connected to MyOpenHAB.org which enables proxying the events to your local openHAB instance.<br/> You must enable notifications in Rachio. To do this go to the Rachio Web App-&gt;Accounts Settings-&gt;Notifications <br/>|
+|Parameter        |Description                                                                                                                 |
+|:----------------|:---------------------------------------------------------------------------------------------------------------------------|
+|apikey           |This is a token required to access the Rachio Cloud account. See Discovery on information how to get that code.|
+|pollingInterval  |Specifies the delay between two status polls. Usually something like 10 minutes should be enough to have a regular status update when the interfaces is configured. If you don't want/can use events a smaller delay might be interesting to get quicker responses on running zones etc.|
+|                 |Important: Please make sure to use an interval > 90sec. Rachio has a reshhold for the number of API calls per day: 1700.  This means if you are accessing the API for more than once in a minute your account gets blocked for the rest of the day.|
+|defaultRuntime   |You could run zones in 2 different ways:|
+|                 |1. Just by pushing the button in your UI. The zone will start watering for &lt;defaultRuntime&gt; seconds.| 
+|                 |2. Setting the zone's channel runTime to &lt;n&gt; seconds and then starting the zone. This will start the zone for &lt;n&gt; seconds. Usually this variant required a OH rule setting the runTime and then sending a ON to the run channel.|
+|callbackUrl      | https://username:password@home.myopenhab.org/rachio/webhook where username and password should be set to your MyOpenHab username and password (url encode the @ symbol to %40 in your username) <br/>The Rachio Cloud sends events when activity occurs e.g. zone turns off. To recieve these events you must have your openHAB connected to MyOpenHAB.org which enables proxying the events to your local openHAB instance.<br/> You must enable notifications in Rachio. To do this go to the Rachio Web App-&gt;Accounts Settings-&gt;Notifications <br/>|
 |clearAllCallbacks|The binding dynamically registers the callback. It also supports multiple applications registered to receive events, e.g. a 2nd OH device with the binding providing the same functionality. If for any reason your device setup changes (e.g. new ip address) you need to clear the registered URL once to avoid the "old URL" still receiving events. This also allows to move for a test setup to the regular setup.|
 
 The bridge thing doesn't have any channels.
@@ -70,30 +76,30 @@ The bridge thing doesn't have any channels.
 ### Device Thing - represents one Rachio Controller
 
 |Channel|Description|
-|:--|:--|
-|name|Device Name - name of the controller|
-|active|ON: Device is active, OFF: Device is deactivated|
-|online|ON: Controller is connected to the cloud. OFF: Controller is offline, check internet connection.|
-|paused|OFF: Device is in normal run mode; ON: The device is in suspend mode, no schedule is executed|
-|stop|ON: Stop watering for all zones (command), OFF: normal operation|
-|run|ON: Start warting selected/all zones (defined in runZones)|
-|runZones|Zones to run at a time - list, e.g: "1,3" = run zone 1 and 3; "" means: run all zones; Zones will be started by sending ON to the run channel|
+|:-----------|:----------------------------------------------------------------------------------------------------------------------|
+|name        |Device Name - name of the controller|
+|active      |ON: Device is active, OFF: Device is deactivated|
+|online      |ON: Controller is connected to the cloud. OFF: Controller is offline, check internet connection.|
+|paused      |OFF: Device is in normal run mode; ON: The device is in suspend mode, no schedule is executed|
+|stop        |ON: Stop watering for all zones (command), OFF: normal operation|
+|run         |ON: Start watering selected/all zones (defined in runZones)|
+|runZones    |Zones to run at a time - list, e.g: "1,3" = run zone 1 and 3; "" means: run all zones; Zones will be started by sending ON to the run channel|
 |scheduleName|Currently running schedule, if empty no schedule is running|
-|devEvent|Receives a JSON-formatted message on each device event from the cloud (requires event callback).|
+|devEvent    |Receives a JSON-formatted message on each device event from the cloud (requires event callback).|
 
 The are no additional configuration options on the device level.
 
 ### Zone Thing - represents one zone of a Controller
 
-| Channel |Description|
-|:--|:--|
-|number|Zone number as assigned by the controller (zone 1..16)|
-|name|Name of the zone as configured in the App.|
-|enabled|ON: zone is enabled (ready to run), OFF: zone is disabled.|
-|run|ON: The zone starts watering. If runTime is = 0 the defaultRuntime will be used. OFF: Zone stops watering.|
-|runTime|Number of seconds to run the zone when run receives ON command|
-|runTotal|Total number of seconds the zone was watering (as returned by the cloud service).|
-|imageUrl|URL to the zone picture as configured in the App. Rachio supplies default pictures if no image was created. This can be used e.g. in a habPanel to show the zone picture and display the zone name.|
+|Channel  |Description|
+|:--------|:-------------------------------------------------------------------------------------------------------------------------|
+|number   |Zone number as assigned by the controller (zone 1..16)|
+|name     |Name of the zone as configured in the App.|
+|enabled  |ON: zone is enabled (ready to run), OFF: zone is disabled.|
+|run      |ON: The zone starts watering. If runTime is = 0 the defaultRuntime will be used. OFF: Zone stops watering.|
+|runTime  |Number of seconds to run the zone when run receives ON command|
+|runTotal |Total number of seconds the zone was watering (as returned by the cloud service).|
+|imageUrl |URL to the zone picture as configured in the App. Rachio supplies default pictures if no image was created. This can be used e.g. in a habPanel to show the zone picture and display the zone name.|
 |zoneEvent|Receives a JSON-formatted message on each zone event from the cloud (requires event callback).|
 
 

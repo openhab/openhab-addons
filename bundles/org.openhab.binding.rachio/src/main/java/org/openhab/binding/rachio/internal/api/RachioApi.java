@@ -13,6 +13,7 @@
 package org.openhab.binding.rachio.internal.api;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.*;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -227,14 +228,22 @@ public class RachioApi {
         // "eventTypes":[{"id":"1"},{"id":"2"}]
         // }
         //
-        logger.debug("Register WebHook, callback url = '{}'", callbackUrl);
+        String url = callbackUrl;
+        if (url.contains(":") && url.contains("@") && !url.contains("%")) { // includes userid+password
+            // make sure special chars are url encoded
+            String user = substringBetween(url, "//", ":");
+            String password = substringBetween(substringAfter(url, "//"), ":", "@");
+            url = substringBefore(url, "//") + "//" + urlEncode(user) + ":" + urlEncode(password) + "@"
+                    + substringAfterLast(url, "@");
+        }
+        logger.debug("Register WebHook, callback url = '{}'", url);
         String jsonData = "{ " + "\"device\":{\"id\":\"" + deviceId + "\"}, " + "\"externalId\" : \"" + externalId
-                + "\", " + "\"url\" : \"" + callbackUrl + "\", " + "\"eventTypes\" : [" + "{\"id\" : \""
-                + WHE_DEVICE_STATUS + "\"}, " + "{\"id\" : \"" + WHE_RAIN_DELAY + "\"}, " + "{\"id\" : \""
-                + WEATHER_INTELLIGENCE + "\"}, " + "{\"id\" : \"" + WHE_WATER_BUDGET + "\"}, " + "{\"id\" : \""
-                + WHE_ZONE_DELTA + "\"}, " + "{\"id\" : \"" + WHE_SCHEDULE_STATUS + "\"}, " + "{\"id\" : \""
-                + WHE_ZONE_STATUS + "\"}, " + "{\"id\" : \"" + WHE_RAIN_SENSOR_DETECTION + "\"}, " + "{\"id\" : \""
-                + WHE_DELTA + "\"} " + "]" + "}";
+                + "\", " + "\"url\" : \"" + url + "\", " + "\"eventTypes\" : [" + "{\"id\" : \"" + WHE_DEVICE_STATUS
+                + "\"}, " + "{\"id\" : \"" + WHE_RAIN_DELAY + "\"}, " + "{\"id\" : \"" + WEATHER_INTELLIGENCE + "\"}, "
+                + "{\"id\" : \"" + WHE_WATER_BUDGET + "\"}, " + "{\"id\" : \"" + WHE_ZONE_DELTA + "\"}, "
+                + "{\"id\" : \"" + WHE_SCHEDULE_STATUS + "\"}, " + "{\"id\" : \"" + WHE_ZONE_STATUS + "\"}, "
+                + "{\"id\" : \"" + WHE_RAIN_SENSOR_DETECTION + "\"}, " + "{\"id\" : \"" + WHE_DELTA + "\"} " + "]"
+                + "}";
         httpApi.httpPost(APIURL_BASE + APIURL_DEV_POST_WEBHOOK, jsonData);
     }
 
