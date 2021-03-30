@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.dominoswiss", service = ThingHandlerFactory.class)
 public class dominoswissHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(DOMINOSWISSEGATE_THING_TYPE,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(DOMINOSWISSEGATE_THING_TYPE,
             DOMINOSWISSBLINDS_THING_TYPE);
 
     @Override
