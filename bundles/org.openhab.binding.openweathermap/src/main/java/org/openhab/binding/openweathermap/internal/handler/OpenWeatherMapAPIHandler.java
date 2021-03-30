@@ -14,7 +14,6 @@ package org.openhab.binding.openweathermap.internal.handler;
 
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +33,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapAPIHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_WEATHER_API);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WEATHER_API);
 
     private static final long INITIAL_DELAY_IN_SECONDS = 15;
 
@@ -74,7 +74,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
         config = getConfigAs(OpenWeatherMapAPIConfiguration.class);
 
         boolean configValid = true;
-        if (config.apikey == null || config.apikey.trim().isEmpty()) {
+        if (config.apikey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
             configValid = false;
@@ -172,7 +172,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
     }
 
     private ThingStatus updateThing(@Nullable AbstractOpenWeatherMapHandler handler, Thing thing) {
-        if (handler != null && connection != null) {
+        if (handler != null && ThingHandlerHelper.isHandlerInitialized(handler) && connection != null) {
             handler.updateData(connection);
             return thing.getStatus();
         } else {

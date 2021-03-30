@@ -129,6 +129,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
         String locationString = location.toFullString();
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         createWeatherAndForecastResult(locationString, bridgeUID);
+        createAirPollutionResult(locationString, bridgeUID);
         createOneCallResult(locationString, bridgeUID);
         createOneCallHistoryResult(locationString, bridgeUID);
     }
@@ -136,6 +137,12 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
     private void createWeatherAndForecastResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
                 .withLabel("Local weather and forecast").withProperty(CONFIG_LOCATION, location)
+                .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
+    }
+
+    private void createAirPollutionResult(String location, ThingUID bridgeUID) {
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_AIR_POLLUTION, bridgeUID, LOCAL))
+                .withLabel("Local Air Pollution").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 

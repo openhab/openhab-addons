@@ -36,6 +36,13 @@
 			<advanced>true</advanced>
 		</parameter>
 
+		<parameter name="interface" type="text">
+			<label>Interface</label>
+			<description>Interface to bind to for the MiHome communication channel</description>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+
 		<parameter name="key" type="text">
 			<label>Developer Key</label>
 			<description>Developer key extracted from Xiaomi's app</description>

@@ -345,6 +345,8 @@
         
     <module>org.openhab.binding.mcp23017</module>
         
+    <module>org.openhab.binding.mecmeter</module>
+
     <module>org.openhab.binding.melcloud</module>
         
     <module>org.openhab.binding.meteoalerte</module>
@@ -552,6 +554,7 @@
     <module>org.openhab.binding.solaredge</module>
         
     <module>org.openhab.binding.solarlog</module>
+    
     <module>org.openhab.binding.solarmax</module>
         
     <module>org.openhab.binding.somfymylink</module>
