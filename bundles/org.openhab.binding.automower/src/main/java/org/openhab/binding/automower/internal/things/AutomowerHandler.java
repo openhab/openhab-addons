@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.quantity.Dimensionless;
-import javax.validation.constraints.NotNull;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.actions.AutomowerActions;
@@ -67,6 +67,7 @@ import com.google.gson.Gson;
  * @author Markus Pfleger - Initial contribution
  * @author Marcin Czeczko - Added support for planner & calendar data
  */
+@NonNullByDefault
 public class AutomowerHandler extends BaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AUTOMOWER);
     private static final String NO_ID = "NO_ID";
@@ -74,15 +75,15 @@ public class AutomowerHandler extends BaseThingHandler {
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.MINUTES.toSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
-    private @NotNull final TimeZoneProvider timeZoneProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     private AtomicReference<String> automowerId = new AtomicReference<String>(NO_ID);
     private long lastQueryTimeMs = 0L;
 
-    private ScheduledFuture<?> automowerPollingJob;
+    private @Nullable ScheduledFuture<?> automowerPollingJob;
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
 
-    private Mower mowerState;
+    private @Nullable Mower mowerState;
 
     private Gson gson = new Gson();
 
@@ -189,13 +190,13 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
-    private boolean isValidResult(Mower mower) {
-        return mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
+    private boolean isValidResult(@Nullable Mower mower) {
+        return mower != null && mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
                 && mower.getAttributes().getBattery() != null && mower.getAttributes().getSystem() != null;
     }
 
-    private boolean isConnected(Mower mower) {
-        return mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
+    private boolean isConnected(@Nullable Mower mower) {
+        return mower != null && mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
                 && mower.getAttributes().getMetadata().isConnected();
     }
 
@@ -272,7 +273,7 @@ public class AutomowerHandler extends BaseThingHandler {
         return "RESTRICTED_" + reason.name();
     }
 
-    private void updateChannelState(Mower mower) {
+    private void updateChannelState(@Nullable Mower mower) {
         if (isValidResult(mower)) {
             updateState(CHANNEL_STATUS_NAME, new StringType(mower.getAttributes().getSystem().getName()));
             updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
@@ -314,7 +315,7 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
-    private void initializeProperties(Mower mower) {
+    private void initializeProperties(@Nullable Mower mower) {
         Map<String, String> properties = editProperties();
 
         properties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
