@@ -387,26 +387,26 @@ public class IpObserverHandler extends BaseThingHandler {
 >>>>>>> Bulk updated to UOM.
         updateStatus(ThingStatus.UNKNOWN);
         sendGetRequest(STATION_SETTINGS_URL);
-        createChannel(INDOOR_TEMP, QuantityType.class, SIUnits.CELSIUS, "inTemp");// ImperialUnits.FAHRENHEIT
-        createChannel(OUTDOOR_TEMP, QuantityType.class, SIUnits.CELSIUS, "outTemp");
+        createChannel(TEMP_INDOOR, QuantityType.class, SIUnits.CELSIUS, "inTemp");// ImperialUnits.FAHRENHEIT
+        createChannel(TEMP_OUTDOOR, QuantityType.class, SIUnits.CELSIUS, "outTemp");
         createChannel(INDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "inHumi");
         createChannel(OUTDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "outHumi");
-        createChannel(ABS_PRESSURE, DecimalType.class, SIUnits.PASCAL, "AbsPress");
-        createChannel(REL_PRESSURE, DecimalType.class, SIUnits.PASCAL, "RelPress");
-        createChannel(WIND_DIRECTION, DecimalType.class, SIUnits.CELSIUS, "windir");
-        createChannel(WIND_SPEED, QuantityType.class, Units.KNOT, "avgwind");
-        createChannel(WIND_SPEED2, QuantityType.class, Units.KNOT, "windspeed");
+        createChannel(ABS_PRESSURE, QuantityType.class, SIUnits.PASCAL, "AbsPress");
+        createChannel(REL_PRESSURE, QuantityType.class, SIUnits.PASCAL, "RelPress");
+        createChannel(WIND_DIRECTION, QuantityType.class, Units.DEGREE_ANGLE, "windir");
+        createChannel(WIND_AVERAGE_SPEED, QuantityType.class, Units.KNOT, "avgwind");
+        createChannel(WIND_SPEED, QuantityType.class, Units.KNOT, "windspeed");
         createChannel(WIND_GUST, QuantityType.class, Units.KNOT, "gustspeed");
-        createChannel(DAILY_GUST, QuantityType.class, Units.KNOT, "dailygust");
-        createChannel(SOLAR_RADIATION, DecimalType.class, SIUnits.CELSIUS, "solarrad");
+        createChannel(WIND_MAX_GUST, QuantityType.class, Units.KNOT, "dailygust");
+        createChannel(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarrad");
         createChannel(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
-        createChannel(UVI, DecimalType.class, SIUnits.CELSIUS, "uvi");
-        createChannel(HOURLY_RAIN, QuantityType.class, Units.MILLIMETRE_PER_HOUR, "rainofhourly");
+        createChannel(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
+        createChannel(HOURLY_RAIN_RATE, QuantityType.class, Units.MILLIMETRE_PER_HOUR, "rainofhourly");
         createChannel(DAILY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofdaily");
         createChannel(WEEKLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofweekly");
         createChannel(MONTHLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofmonthly");
         createChannel(YEARLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofyearly");
-        createChannel(BATTERY_OUT, StringType.class, Units.PERCENT, "outBattSta1");
+        createChannel(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
         createChannel(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
         createChannel(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
         pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStation, 1, config.pollTime, TimeUnit.SECONDS);

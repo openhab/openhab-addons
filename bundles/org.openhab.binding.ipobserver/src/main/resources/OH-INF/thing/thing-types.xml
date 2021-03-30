@@ -10,26 +10,26 @@
 		<label>Weather Station</label>
 		<description>Use for any weather station sold under multiple brands that come with an IP Observer unit.</description>
 		<channels>
-			<channel id="indoor_temp" typeId="temp_chan_indoor"/>
-			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
+			<channel id="temperatureIndoor" typeId="temperatureIndoor"/>
+			<channel id="temperatureOutdoor" typeId="temperatureOutdoor"/>
 			<channel id="indoorHumidity" typeId="indoorHumidity"/>
 			<channel id="outdoorHumidity" typeId="outdoorHumidity"/>
-			<channel id="abs_pressure" typeId="pressure_chan_abs"/>
-			<channel id="rel_pressure" typeId="pressure_chan_rel"/>
-			<channel id="wind_direction" typeId="direction_chan"/>
-			<channel id="wind_speed" typeId="speed_chan_avg"/>
-			<channel id="wind_speed2" typeId="chan_wind_speed"/>
-			<channel id="wind_gust" typeId="speed_chan_gust"/>
-			<channel id="daily_gust" typeId="speed_chan_daily_gust"/>
-			<channel id="solar_radiation" typeId="radiation_chan"/>
-			<channel id="uv" typeId="uv_chan"/>
-			<channel id="uvi" typeId="uvi_chan"/>
-			<channel id="hourly_rain" typeId="hourly_rain"/>
-			<channel id="daily_rain" typeId="daily_rain"/>
-			<channel id="weekly_rain" typeId="weekly_rain"/>
-			<channel id="monthly_rain" typeId="monthly_rain"/>
-			<channel id="yearly_rain" typeId="yearly_rain"/>
-			<channel id="battery_out" typeId="battery_outdoor"/>
+			<channel id="pressureAbsolute" typeId="pressureAbsolute"/>
+			<channel id="pressureRelative" typeId="pressureRelative"/>
+			<channel id="windDirection" typeId="windDirection"/>
+			<channel id="windAverageSpeed" typeId="windAverageSpeed"/>
+			<channel id="windSpeed" typeId="windSpeed"/>
+			<channel id="windGust" typeId="windGust"/>
+			<channel id="windMaxGust" typeId="windMaxGust"/>
+			<channel id="solarRadiation" typeId="solarRadiation"/>
+			<channel id="uv" typeId="uv"/>
+			<channel id="uvIndex" typeId="uvIndex"/>
+			<channel id="hourlyRainRate" typeId="hourlyRainRate"/>
+			<channel id="rainToday" typeId="rainToday"/>
+			<channel id="rainForWeek" typeId="rainForWeek"/>
+			<channel id="rainForMonth" typeId="rainForMonth"/>
+			<channel id="rainForYear" typeId="rainForYear"/>
+			<channel id="outdoorBattery" typeId="outdoorBattery"/>
 			<channel id="indoorBattery" typeId="indoorBattery"/>
 			<channel id="responseTime" typeId="responseTime"/>
 			<channel id="reboot" typeId="reboot"/>
@@ -56,22 +56,22 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-type id="responseTime">
+	<channel-type id="responseTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Response Time</label>
 		<description>How many milliseconds it took to fetch the sensor readings from livedata.htm</description>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="temp_chan_indoor">
+	<channel-type id="temperatureIndoor">
 		<item-type>Number:Temperature</item-type>
-		<label>Indoor Temperature</label>
-		<description>Current Temperature Indoor</description>
+		<label>Temperature Indoor</label>
+		<description>Current Temperature Indoors</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="outdoorTemperature">
+	<channel-type id="temperatureOutdoor">
 		<item-type>Number:Temperature</item-type>
-		<label>Outdoor Temperature</label>
+		<label>Temperature Outdoor</label>
 		<description>Current Temperature Outdoors</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -90,131 +90,131 @@
 		<category>Humidity</category>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="pressure_chan_abs">
+	<channel-type id="pressureAbsolute">
 		<item-type>Number:Pressure</item-type>
-		<label>Absolute Pressure</label>
+		<label>Pressure Absolute</label>
 		<description>Absolute Current Pressure</description>
 		<category>Pressure</category>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="pressure_chan_rel">
+	<channel-type id="pressureRelative">
 		<item-type>Number:Pressure</item-type>
-		<label>Relative Pressure</label>
+		<label>Pressure Relative</label>
 		<description>Relative Current Pressure</description>
 		<category>Pressure</category>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="direction_chan">
+	<channel-type id="windDirection">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<description>Wind Direction</description>
 		<category>Wind</category>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="radiation_chan">
+	<channel-type id="solarRadiation">
 		<item-type>Number</item-type>
 		<label>Solar Radiation</label>
 		<description>Solar Radiation</description>
 		<category>Sun</category>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="uv_chan">
+	<channel-type id="uv" advanced="true">
 		<item-type>Number</item-type>
 		<label>UV</label>
 		<description>UV</description>
 		<category>Sun</category>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="uvi_chan">
+	<channel-type id="uvIndex" advanced="true">
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV Index</description>
 		<category>Sun</category>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="speed_chan_avg">
+	<channel-type id="windAverageSpeed" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Average Speed</label>
+		<description>Average Wind Speed</description>
+		<category>Wind</category>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="windSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<description>Wind Speed</description>
 		<category>Wind</category>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="chan_wind_speed">
-		<item-type>Number:Speed</item-type>
-		<label>Wind Speed</label>
-		<description>Wind Speed</description>
-		<category>Wind</category>
-		<state pattern="%.1f" readOnly="true"/>
-	</channel-type>
-	<channel-type id="speed_chan_gust">
+	<channel-type id="windGust" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
 		<description>Wind Gust</description>
 		<category>Wind</category>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="speed_chan_daily_gust">
+	<channel-type id="windMaxGust" advanced="true">
 		<item-type>Number:Speed</item-type>
-		<label>Max Wind Gust</label>
-		<description>Max Wind Gust</description>
+		<label>Wind Max Gust</label>
+		<description>Max wind gust for today.</description>
 		<category>Wind</category>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="hourly_rain">
+	<channel-type id="hourlyRainRate">
 		<item-type>Number:Length</item-type>
 		<label>Hourly Rain Rate</label>
-		<description>Hourly Rain Rate</description>
+		<description>How much rain will fall in an Hour if the rate continues.</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="daily_rain">
+	<channel-type id="rainToday">
 		<item-type>Number:Length</item-type>
-		<label>Daily Rain</label>
-		<description>Daily Rain</description>
+		<label>Rain Today</label>
+		<description>Rain since Midnight.</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="weekly_rain">
+	<channel-type id="rainForWeek" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>Weekly Rain</label>
+		<label>Rain For Week</label>
 		<description>Weekly Rain</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="monthly_rain">
+	<channel-type id="rainForMonth" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>Monthly Rain</label>
-		<description>Monthly Rain</description>
+		<label>Rain For Month</label>
+		<description>Rain since 12:00 on the 1st of this month.</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="yearly_rain">
+	<channel-type id="rainForYear">
 		<item-type>Number:Length</item-type>
-		<label>Yearly Rain</label>
-		<description>Yearly Rain</description>
+		<label>Rain For Year</label>
+		<description>Total rain since 12:00 on 1st Jan.</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="battery_outdoor">
+	<channel-type id="outdoorBattery" advanced="true">
 		<item-type>String</item-type>
 		<label>Outdoor Battery</label>
 		<description>Outdoor Battery Status</description>
 		<category>Battery</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="indoorBattery">
+	<channel-type id="indoorBattery" advanced="true">
 		<item-type>String</item-type>
 		<label>Indoor Battery</label>
 		<description>Indoor Battery Status</description>
 		<category>Battery</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="reboot">
+	<channel-type id="reboot" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Reboot the IP Observer unit</label>
 		<description>If scraping fails to work you can trigger a reboot of the hardware either manually or via a rule.</description>
 	</channel-type>
-	<channel-type id="lastUpdatedTime">
+	<channel-type id="lastUpdatedTime" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Updated Time</label>
 		<description>Time of the last livedata scrape</description>
