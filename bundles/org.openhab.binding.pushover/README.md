@@ -33,6 +33,8 @@ Currently the binding does not support any Channels.
 All actions return a `Boolean` value to indicate if the message was sent successfully or not.
 The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
 
+- `sendMessage(String message, @Nullable String title, @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment, @Nullable String contentType, @Nullable Integer priority, @Nullable String device)` - This method is used to send a plain text message providing all available parameters. All parameters - except `message` can be set to `null` if no specific value should be set.
+
 - `sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
 
 - `sendHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
