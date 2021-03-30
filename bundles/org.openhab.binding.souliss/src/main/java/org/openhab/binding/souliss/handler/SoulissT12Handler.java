@@ -50,17 +50,6 @@ public class SoulissT12Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        /*
-         * TODO Initialize the thingGeneric. If done set status to ONLINE to indicate proper working.
-         * Long running initialization should be done asynchronously in background.
-         * Note: When initialization can NOT be done set the status with more details for further
-         * analysis. See also class ThingStatusDetail for all available status details.
-         * Add a description to give user information to understand why thingGeneric does not work
-         * as expected. E.g.
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-         * "Can not access device as username and/or password are invalid");
-         */
-
         updateStatus(ThingStatus.ONLINE);
 
         gwConfigurationMap = thingGeneric.getConfiguration();
