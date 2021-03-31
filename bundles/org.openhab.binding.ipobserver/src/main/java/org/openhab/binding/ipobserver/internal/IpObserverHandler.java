@@ -44,6 +44,7 @@ import org.jsoup.select.Elements;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -287,13 +288,21 @@ public class IpObserverHandler extends BaseThingHandler {
         request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
         String errorReason = "";
         try {
+            long start = System.currentTimeMillis();
             ContentResponse contentResponse = request.send();
             if (contentResponse.getStatus() == 200) {
+                long responseTime = (System.currentTimeMillis() - start);
                 updateStatus(ThingStatus.ONLINE);
+                updateState(LAST_UPDATED_TIME, new QuantityType<>(responseTime, MetricPrefix.MILLI(Units.SECOND)));
                 if (url == STATION_SETTINGS_URL) {
                     parseSettings(contentResponse.getContentAsString());
                 } else {
                     parseAndUpdate(contentResponse.getContentAsString());
+                }
+                if (config.autoReboot > 0 && responseTime > config.autoReboot) {
+                    logger.info("An Auto reboot of the IP Observer unit has been triggered as the response was {}ms.",
+                            responseTime);
+                    sendGetRequest(REBOOT_URL);
                 }
                 return;
             } else {
@@ -387,25 +396,61 @@ public class IpObserverHandler extends BaseThingHandler {
 >>>>>>> Bulk updated to UOM.
         updateStatus(ThingStatus.UNKNOWN);
         sendGetRequest(STATION_SETTINGS_URL);
-        createChannel(TEMP_INDOOR, QuantityType.class, SIUnits.CELSIUS, "inTemp");// ImperialUnits.FAHRENHEIT
-        createChannel(TEMP_OUTDOOR, QuantityType.class, SIUnits.CELSIUS, "outTemp");
-        createChannel(INDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "inHumi");
-        createChannel(OUTDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "outHumi");
+        if (config.imperialTemperature) {
+            createChannel(TEMP_INDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "inTemp");
+            createChannel(TEMP_OUTDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "outTemp");
+        } else {
+            createChannel(TEMP_INDOOR, QuantityType.class, SIUnits.CELSIUS, "inTemp");
+            createChannel(TEMP_OUTDOOR, QuantityType.class, SIUnits.CELSIUS, "outTemp");
+        }
+
+        if (config.imperialRain) {
+            createChannel(HOURLY_RAIN_RATE, QuantityType.class, Units.INCHES_PER_HOUR, "rainofhourly");
+            createChannel(DAILY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofdaily");
+            createChannel(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofweekly");
+            createChannel(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofmonthly");
+            createChannel(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofyearly");
+        } else {
+            createChannel(HOURLY_RAIN_RATE, QuantityType.class, Units.MILLIMETRE_PER_HOUR, "rainofhourly");
+            createChannel(DAILY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofdaily");
+            createChannel(WEEKLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofweekly");
+            createChannel(MONTHLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofmonthly");
+            createChannel(YEARLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofyearly");
+        }
+
+        if (config.windUnit.equals("5")) {
+            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, Units.KNOT, "avgwind");
+            createChannel(WIND_SPEED, QuantityType.class, Units.KNOT, "windspeed");
+            createChannel(WIND_GUST, QuantityType.class, Units.KNOT, "gustspeed");
+            createChannel(WIND_MAX_GUST, QuantityType.class, Units.KNOT, "dailygust");
+        } else if (config.windUnit.equals("4")) {
+            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "avgwind");
+            createChannel(WIND_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeed");
+            createChannel(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "gustspeed");
+            createChannel(WIND_MAX_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "dailygust");
+        } else if (config.windUnit.equals("1")) {
+            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "avgwind");
+            createChannel(WIND_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "windspeed");
+            createChannel(WIND_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "gustspeed");
+            createChannel(WIND_MAX_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "dailygust");
+        } else if (config.windUnit.equals("0")) {
+            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "avgwind");
+            createChannel(WIND_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "windspeed");
+            createChannel(WIND_GUST, QuantityType.class, Units.METRE_PER_SECOND, "gustspeed");
+            createChannel(WIND_MAX_GUST, QuantityType.class, Units.METRE_PER_SECOND, "dailygust");
+        }
+
         createChannel(ABS_PRESSURE, QuantityType.class, SIUnits.PASCAL, "AbsPress");
         createChannel(REL_PRESSURE, QuantityType.class, SIUnits.PASCAL, "RelPress");
+
         createChannel(WIND_DIRECTION, QuantityType.class, Units.DEGREE_ANGLE, "windir");
-        createChannel(WIND_AVERAGE_SPEED, QuantityType.class, Units.KNOT, "avgwind");
-        createChannel(WIND_SPEED, QuantityType.class, Units.KNOT, "windspeed");
-        createChannel(WIND_GUST, QuantityType.class, Units.KNOT, "gustspeed");
-        createChannel(WIND_MAX_GUST, QuantityType.class, Units.KNOT, "dailygust");
+        createChannel(INDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "inHumi");
+        createChannel(OUTDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "outHumi");
+
         createChannel(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarrad");
         createChannel(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
         createChannel(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
-        createChannel(HOURLY_RAIN_RATE, QuantityType.class, Units.MILLIMETRE_PER_HOUR, "rainofhourly");
-        createChannel(DAILY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofdaily");
-        createChannel(WEEKLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofweekly");
-        createChannel(MONTHLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofmonthly");
-        createChannel(YEARLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofyearly");
+
         createChannel(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
         createChannel(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
         createChannel(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
