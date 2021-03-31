@@ -60,7 +60,7 @@
 				"actions": []
 			},
 			{
-				"property": "battery_life",
+				"property": "battary_life",
 				"friendlyName": "Battery",
 				"channel": "battery_life",
 				"type": "Number",
