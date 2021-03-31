@@ -27,6 +27,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.Enums.SpecialModeKind;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
@@ -56,6 +57,7 @@ public class DaikinWebTargets {
     private String getSensorInfoUri;
     private String registerUuidUri;
     private String getEnergyInfoYearUri;
+    private String getEnergyInfoWeekUri;
     private String setSpecialModeUri;
 
     private String setAirbaseControlInfoUri;
@@ -83,6 +85,7 @@ public class DaikinWebTargets {
         getSensorInfoUri = baseUri + "aircon/get_sensor_info";
         registerUuidUri = baseUri + "common/register_terminal";
         getEnergyInfoYearUri = baseUri + "aircon/get_year_power_ex";
+        getEnergyInfoWeekUri = baseUri + "aircon/get_week_power_ex";
         setSpecialModeUri = baseUri + "aircon/set_special_mode";
 
         // Daikin Airbase API
@@ -126,6 +129,11 @@ public class DaikinWebTargets {
     public EnergyInfoYear getEnergyInfoYear() throws DaikinCommunicationException {
         String response = invoke(getEnergyInfoYearUri);
         return EnergyInfoYear.parse(response);
+    }
+
+    public EnergyInfoDayAndWeek getEnergyInfoDayAndWeek() throws DaikinCommunicationException {
+        String response = invoke(getEnergyInfoWeekUri);
+        return EnergyInfoDayAndWeek.parse(response);
     }
 
     public boolean setSpecialMode(SpecialModeKind specialModeKind, boolean state) throws DaikinCommunicationException {
