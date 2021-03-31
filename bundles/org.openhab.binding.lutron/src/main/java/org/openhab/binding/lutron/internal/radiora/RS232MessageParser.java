@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lutron.internal.radiora;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.radiora.protocol.LEDMapFeedback;
 import org.openhab.binding.lutron.internal.radiora.protocol.LocalZoneChangeFeedback;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
@@ -25,11 +27,12 @@ import org.slf4j.LoggerFactory;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class RS232MessageParser {
 
-    private Logger logger = LoggerFactory.getLogger(RS232MessageParser.class);
+    private final Logger logger = LoggerFactory.getLogger(RS232MessageParser.class);
 
-    public RadioRAFeedback parse(String msg) {
+    public @Nullable RadioRAFeedback parse(String msg) {
         String prefix = parsePrefix(msg);
 
         switch (prefix) {
