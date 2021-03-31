@@ -5,6 +5,7 @@
 	<feature name="openhab-binding-philipsair" description="Philips Air Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-upnp</feature>
+		<feature>openhab-transport-coap</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.philipsair/${project.version}</bundle>
 	</feature>
 </features>

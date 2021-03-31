@@ -45,8 +45,11 @@ public class PhilipsAirBindingConstants {
     public static final String SUPPORTED_MODEL_NUMBER_AC1214_10 = "ac1214_10";
     public static final String SUPPORTED_MODEL_NUMBER_AC3829_10 = "ac3829_10";
 
+    public static final String SUPPORTED_MODEL_COAP = "coap";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UNIVERSAL = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_UNIVERSAL);
+    public static final ThingTypeUID THING_TYPE_COAP = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_COAP);
     public static final ThingTypeUID THING_TYPE_AC2889_10 = new ThingTypeUID(BINDING_ID,
             SUPPORTED_MODEL_NUMBER_AC2889_10);
     public static final ThingTypeUID THING_TYPE_AC2729 = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_NUMBER_AC2729);
@@ -56,8 +59,15 @@ public class PhilipsAirBindingConstants {
             SUPPORTED_MODEL_NUMBER_AC3829_10);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_COAP, THING_TYPE_AC2889_10, THING_TYPE_AC2729,
+                    THING_TYPE_AC1214_10, THING_TYPE_AC3829_10).collect(Collectors.toSet()));
+
+    public static final Set<ThingTypeUID> SUPPORTED_UPNP_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_AC2889_10, THING_TYPE_AC2729,
                     THING_TYPE_AC1214_10, THING_TYPE_AC3829_10).collect(Collectors.toSet()));
+
+    public static final Set<ThingTypeUID> SUPPORTED_COAP_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_COAP).collect(Collectors.toSet()));
 
     public static final String DISCOVERY_UPNP_MODEL = "AirPurifier";
 

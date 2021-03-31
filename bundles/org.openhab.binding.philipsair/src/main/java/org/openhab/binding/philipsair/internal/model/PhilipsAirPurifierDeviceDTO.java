@@ -23,6 +23,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class PhilipsAirPurifierDeviceDTO {
 
+    @SerializedName("device_id")
+    @Expose
+    private String deviceId;
     @SerializedName("name")
     @Expose
     private String name;
@@ -42,6 +45,14 @@ public class PhilipsAirPurifierDeviceDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getType() {

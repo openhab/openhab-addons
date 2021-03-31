@@ -72,7 +72,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES_UIDS;
+        return SUPPORTED_UPNP_THING_TYPES_UIDS;
     }
 
     @Override
@@ -128,8 +128,6 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         DeviceDetails details = device.getDetails();
         ModelDetails modelDetails = details != null ? details.getModelDetails() : null;
         String modelName = modelDetails != null ? modelDetails.getModelName().toLowerCase() : null;
-
-        logger.info("Device {} {}  ?recognized {}", modelDetails, modelName, device.toString());
 
         if (details == null || modelDetails == null
                 || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL.equalsIgnoreCase(modelName)) {

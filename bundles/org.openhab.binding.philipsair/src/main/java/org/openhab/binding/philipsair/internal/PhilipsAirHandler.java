@@ -15,19 +15,12 @@ package org.openhab.binding.philipsair.internal;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,6 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
+import org.openhab.binding.philipsair.internal.connection.PhilipsAirCoapAPIConnection;
+import org.openhab.binding.philipsair.internal.connection.PhilipsAirHttpAPIConnection;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
@@ -65,7 +60,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michal Boronski - Initial contribution
  * @author Mmarcel Verpaalen- OH3 migration
- * 
+ *
  */
 @NonNullByDefault
 public class PhilipsAirHandler extends BaseThingHandler {
@@ -97,12 +92,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
             PhilipsAirPurifierWritableDataDTO commandData = prepareCommandData(channelUID.getIdWithoutGroup(), command);
             try {
                 currentData = connection.sendCommand(channelUID.getIdWithoutGroup(), commandData);
-            } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
-                    | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException
-                    | InvalidAlgorithmParameterException e) {
+            } catch (PhilipsAirAPIException e) {
                 logger.debug("An exception occured", e);
             }
-
             updateChannels();
         }
     }
@@ -199,7 +191,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
             callback.configurationUpdated(thing);
         }
 
-        connection = new PhilipsAirAPIConnection(config, httpClient);
+        if (SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
+            connection = new PhilipsAirCoapAPIConnection(config);
+        } else {
+            connection = new PhilipsAirHttpAPIConnection(config, httpClient);
+        }
         updateStatus(ThingStatus.UNKNOWN);
         if (this.refreshJob == null || this.refreshJob.isCancelled()) {
             logger.debug("Start refresh job at interval {} sec.", refreshInterval);
@@ -300,7 +296,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
             try {
                 value = getValue(channelUID, data, deviceInfo, filters);
             } catch (Exception e) {
-                logger.debug("AirPurifier doesn't provide {} measurement", channelUID.getAsString().toUpperCase());
+                logger.debug("AirPurifier doesn't provide '{}' measurement. To avoid this message unlink  channel: {}",
+                        channelUID.getId(), channelUID.getAsString());
                 return;
             }
 

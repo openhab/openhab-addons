@@ -20,6 +20,8 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="dt" typeId="dt"/>
 			<channel id="dtrs" typeId="dtrs"/>
+			<channel id="cl" typeId="cl"/>
+
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="controls-adv">

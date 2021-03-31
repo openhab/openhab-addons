@@ -5,14 +5,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:philipsair:config">
+		<parameter name="host" type="text" required="true">
+			<label>IP or Hostname</label>
+			<description>IP or hostname of the thing</description>
+		</parameter>
 		<parameter name="key" type="text" required="false">
 			<label>Key</label>
 			<description>Air Purifier device token for communication
 			</description>
-		</parameter>
-		<parameter name="host" type="text" required="true">
-			<label>IP or Hostname</label>
-			<description>IP or hostname of the thing</description>
 		</parameter>
 		<parameter name="deviceUUID" type="text" required="false"
 			pattern="^([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})$">
