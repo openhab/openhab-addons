@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter.internal.data;
+package org.openhab.binding.dwdunwetter.internal.dto;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for {@link DwdWarningCache}
+ * Tests for {@link org.openhab.binding.dwdunwetter.internal.dto.DwdWarningCache}
  *
  * @author Martin Koehler - Initial contribution
  */

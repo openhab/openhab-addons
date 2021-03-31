@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter.internal.data;
+package org.openhab.binding.dwdunwetter.internal.dto;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,14 +30,17 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Tests for {@link DwdWarningsData}
+ * Tests for {@link org.openhab.binding.dwdunwetter.internal.dto.DwdWarningsData}
  *
+ * <p>
  * Uses the warnings.xml from the resources directory instead of accessing the api endpoint.
  *
+ * <p>
  * The XML has 2 Entries:
+ *
  * <ol>
- * <li>Amtliche WARNUNG vor WINDBÖEN, MINOR</li>
- * <li>Amtliche WARNUNG vor STURMBÖEN, MODERATE</li>
+ * <li>Amtliche WARNUNG vor WINDBÖEN, MINOR
+ * <li>Amtliche WARNUNG vor STURMBÖEN, MODERATE
  * </ol>
  *
  * @author Martin Koehler - Initial contribution
@@ -60,21 +63,21 @@ public class DwdWarningsDataTest {
     public void testGetHeadline() {
         assertThat(warningsData.getHeadline(0), is("Amtliche WARNUNG vor STURMBÖEN"));
         assertThat(warningsData.getHeadline(1), is("Amtliche WARNUNG vor WINDBÖEN"));
-        assertThat(warningsData.getHeadline(2), is(UnDefType.NULL));
+        assertThat(warningsData.getHeadline(2), is(UnDefType.UNDEF));
     }
 
     @Test
     public void testGetSeverity() {
         assertThat(warningsData.getSeverity(0), is("Moderate"));
         assertThat(warningsData.getSeverity(1), is("Minor"));
-        assertThat(warningsData.getSeverity(2), is(UnDefType.NULL));
+        assertThat(warningsData.getSeverity(2), is(UnDefType.UNDEF));
     }
 
     @Test
     public void testGetEvent() {
         assertThat(warningsData.getEvent(0), is("STURMBÖEN"));
         assertThat(warningsData.getEvent(1), is("WINDBÖEN"));
-        assertThat(warningsData.getEvent(2), is(UnDefType.NULL));
+        assertThat(warningsData.getEvent(2), is(UnDefType.UNDEF));
     }
 
     @Test
@@ -83,21 +86,21 @@ public class DwdWarningsDataTest {
                 "Es treten Sturmböen mit Geschwindigkeiten zwischen 60 km/h (17m/s, 33kn, Bft 7) und 80 km/h (22m/s, 44kn, Bft 9) anfangs aus südwestlicher, später aus westlicher Richtung auf. In Schauernähe sowie in exponierten Lagen muss mit schweren Sturmböen um 90 km/h (25m/s, 48kn, Bft 10) gerechnet werden."));
         assertThat(warningsData.getDescription(1), is(
                 "Es treten Windböen mit Geschwindigkeiten bis 60 km/h (17m/s, 33kn, Bft 7) aus westlicher Richtung auf. In Schauernähe sowie in exponierten Lagen muss mit Sturmböen bis 80 km/h (22m/s, 44kn, Bft 9) gerechnet werden."));
-        assertThat(warningsData.getDescription(2), is(UnDefType.NULL));
+        assertThat(warningsData.getDescription(2), is(UnDefType.UNDEF));
     }
 
     @Test
     public void testGetAltitude() {
         assertThat(warningsData.getAltitude(0).format("%.0f ft"), is("0 ft"));
         assertThat(warningsData.getAltitude(1).format("%.0f ft"), is("0 ft"));
-        assertThat(warningsData.getAltitude(2), is(UnDefType.NULL));
+        assertThat(warningsData.getAltitude(2), is(UnDefType.UNDEF));
     }
 
     @Test
     public void testGetCeiling() {
         assertThat(warningsData.getCeiling(0).format("%.0f ft"), is("9843 ft"));
         assertThat(warningsData.getCeiling(1).format("%.0f ft"), is("9843 ft"));
-        assertThat(warningsData.getCeiling(2), is(UnDefType.NULL));
+        assertThat(warningsData.getCeiling(2), is(UnDefType.UNDEF));
     }
 
     @Test
@@ -107,7 +110,7 @@ public class DwdWarningsDataTest {
                 .toString(), is("2018-12-22T18:00Z[UTC]"));
         assertThat(((DateTimeType) warningsData.getExpires(1)).getZonedDateTime().withZoneSameInstant(ZoneId.of("UTC"))
                 .toString(), is("2018-12-23T01:00Z[UTC]"));
-        assertThat(warningsData.getExpires(2), is(UnDefType.NULL));
+        assertThat(warningsData.getExpires(2), is(UnDefType.UNDEF));
     }
 
     @Test
@@ -117,7 +120,7 @@ public class DwdWarningsDataTest {
                 .toString(), is("2018-12-21T10:00Z[UTC]"));
         assertThat(((DateTimeType) warningsData.getOnset(1)).getZonedDateTime().withZoneSameInstant(ZoneId.of("UTC"))
                 .toString(), is("2018-12-22T18:00Z[UTC]"));
-        assertThat(warningsData.getOnset(2), is(UnDefType.NULL));
+        assertThat(warningsData.getOnset(2), is(UnDefType.UNDEF));
     }
 
     @Test
@@ -127,7 +130,7 @@ public class DwdWarningsDataTest {
                 .withZoneSameInstant(ZoneId.of("UTC")).toString(), is("2018-12-22T03:02Z[UTC]"));
         assertThat(((DateTimeType) warningsData.getEffective(1)).getZonedDateTime()
                 .withZoneSameInstant(ZoneId.of("UTC")).toString(), is("2018-12-22T10:15Z[UTC]"));
-        assertThat(warningsData.getEffective(2), is(UnDefType.NULL));
+        assertThat(warningsData.getEffective(2), is(UnDefType.UNDEF));
     }
 
     @Test

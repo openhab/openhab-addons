@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter.internal.data;
+package org.openhab.binding.dwdunwetter.internal.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
