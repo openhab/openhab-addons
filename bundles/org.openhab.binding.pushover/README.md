@@ -32,6 +32,10 @@ Currently the binding does not support any Channels.
 
 All actions return a `Boolean` value to indicate if the message was sent successfully or not.
 The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
+Parameters declared as `@Nullable` are not optional.
+One has to pass a `null` value if it should be skipped or the default value for it should be used.
+
+- `sendMessage(String message, @Nullable String title, @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment, @Nullable String contentType, @Nullable Integer priority, @Nullable String device)` - This method is used to send a plain text message providing all available parameters.
 
 - `sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
 
