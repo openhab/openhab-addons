@@ -16,6 +16,14 @@ The binding gets in sync with the next status refresh.
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
+Also check out the [Shelly Manager](doc/ShellyManager.md), which
+- provides detailed information on your Shellys
+- helps to diagnose WiFi issues or device instabilities
+- includes some common actions and 
+- simplifies firmware updates.
+
+[Shelly Manager](doc/ShellyManager.md) could also act as a firmware upgrade proxy - the device doesn't need to connect directly to the Internet, instead openHAB services as a download proxy, which improves device security.
+
 ## Supported Devices
 
 | thing-type         | Model                                                  | Vendor ID |
@@ -257,15 +265,19 @@ The following trigger types are sent:
 
 |Event Type         |Description                                                                                                    |
 |-------------------|---------------------------------------------------------------------------------------------------------------|
-|SHORT_PRESSED      |The button was pressed once for a short time                                                                   |
-|DOUBLE_PRESSED     |The button was pressed twice with short delay                                                                  |
-|TRIPLE_PRESSED     |The button was pressed three times with short delay                                                            |
-|LONG_PRESSED       |The button was pressed for a longer time                                                                       |
-|SHORT_LONG_PRESSED |A short followed by a long button push                                                                         |
-|LONG_SHORT_PRESSED |A long followed by a short button push                                                                         |
+|SHORT_PRESSED      |The button was pressed once for a short time (lastEvent=S)                                                     |
+|DOUBLE_PRESSED     |The button was pressed twice with short delay (lastEvent=SS)                                                   |
+|TRIPLE_PRESSED     |The button was pressed three times with short delay (lastEvent=SSS)                                            |
+|LONG_PRESSED       |The button was pressed for a longer time (lastEvent=L)                                                         |
+|SHORT_LONG_PRESSED |A short followed by a long button push (lastEvent=SL)                                                          |
+|LONG_SHORT_PRESSED |A long followed by a short button push (lastEvent=LS)                                                          |
  
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events. 
+
+If you want to use those events triggering a rule:
+- If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
+- For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event 
 
 ### Alarms
 
@@ -796,7 +808,8 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 Important: The Shelly Motion does only support CoIoT Unicast, which means you need to set the CoIoT peer address.
 
-Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
+- Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
+- Use [Shelly Manager](doc/ShellyManager.md, select Action 'Set CoIoT peer' and the Manager will sets the openHAB IP address as peer address
 
 |Group     |Channel        |Type     |read-only|Description                                                          |
 |----------|---------------|---------|---------|---------------------------------------------------------------------|

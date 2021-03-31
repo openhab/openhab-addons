@@ -1,0 +1,50 @@
+<div class="page">
+    <p class="caption">Firmware update</p>
+    <hr/>
+    <p/>
+	<table style="padding-right: 6px;">
+		<tr><td>Device</td><td>${serviceName}</td></tr>
+		<tr><td>Device Type</td><td>${modelId}</td></tr>
+		<tr><td>Device Mode</td><td>${deviceMode}</td></tr>
+		<tr><td>Device IP</td><td><a href="http://${deviceIp}" title="${deviceName}"target="_blank">${deviceIp}</a></td></tr>
+		<tr><td style="padding-left: 10px">Device Hardware Rev</td><td>${deviceHwRev}</td></tr>
+		<tr><td>WiFi</td><td>${wifiNetwork}</td></tr>
+		<tr><td><p/></td></tr>
+		<tr><td>Current firmware</td><td>${firmwareVersion}</td></tr>
+		<tr><td>Requested version</td><td>${version}</td></tr>
+	</table>
+	<p/>
+	
+    <form style="padding: 6px 6px;">
+        <p>Please select connection type:</p>
+        <input type="radio" name="connection" id="internet" value="internet"/>
+            <label for="internet">Device downloads firmware directly from Internet</label><br/>
+        <input type="radio" name="connection" id="local" value="local"/>
+            <label for="local">Use openHAB as proxy (device doesn't requires Internet access)</label><br/>
+        <input type="radio" name="connection" id="custom" value="custom"/>
+            <label for="custom">Use custom URL</label>
+            <div style="padding-left: 38px;">
+                <input type="text" name = "url" id="url" value="http://" style=" padding: 3px 3px;/>
+                    <label for="url">&nbsp;</label>
+            </div>
+
+	    <input type="hidden" id="uid" name="uid" value="${uid}">
+	    <input type="hidden" id="version" name="version" value="${version}">
+	    <input type="hidden" id="update" name="update" value="yes">
+	    
+	    <p class="top-distance20">
+		    <button class="button">Perform Update</button>&nbsp;&nbsp;
+		    <button type="button" class="buttonCancel" onclick="location = '${uri}/overview'">Abort</button>
+        </p>
+        <p/>
+    </form>
+    <script type="text/JavaScript">
+        const connection = "${connection}";
+        document.getElementById(connection.valueOf() === "" ? "internet" : "${connection}").checked = true;                        
+    </script>
+    <p/>
+
+	<p class="info">${message}</p>
+</div>
+<p/>
+	
