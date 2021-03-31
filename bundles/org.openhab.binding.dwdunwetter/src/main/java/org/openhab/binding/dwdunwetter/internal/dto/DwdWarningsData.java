@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter.internal.data;
+package org.openhab.binding.dwdunwetter.internal.dto;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -218,18 +218,18 @@ public class DwdWarningsData {
 
     public State getSeverity(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? UnDefType.NULL : StringType.valueOf(data.getSeverity().getText());
+        return data == null ? UnDefType.UNDEF : StringType.valueOf(data.getSeverity().getText());
     }
 
     public State getDescription(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? UnDefType.NULL : StringType.valueOf(data.getDescription());
+        return data == null ? UnDefType.UNDEF : StringType.valueOf(data.getDescription());
     }
 
     public State getEffective(int number) {
         DwdWarningData data = getGemeindeData(number);
         if (data == null) {
-            return UnDefType.NULL;
+            return UnDefType.UNDEF;
         }
         ZonedDateTime zoned = ZonedDateTime.ofInstant(data.getEffective(), ZoneId.systemDefault());
         return new DateTimeType(zoned);
@@ -238,7 +238,7 @@ public class DwdWarningsData {
     public State getExpires(int number) {
         DwdWarningData data = getGemeindeData(number);
         if (data == null) {
-            return UnDefType.NULL;
+            return UnDefType.UNDEF;
         }
         ZonedDateTime zoned = ZonedDateTime.ofInstant(data.getExpires(), ZoneId.systemDefault());
         return new DateTimeType(zoned);
@@ -247,7 +247,7 @@ public class DwdWarningsData {
     public State getOnset(int number) {
         DwdWarningData data = getGemeindeData(number);
         if (data == null) {
-            return UnDefType.NULL;
+            return UnDefType.UNDEF;
         }
         ZonedDateTime zoned = ZonedDateTime.ofInstant(data.getOnset(), ZoneId.systemDefault());
         return new DateTimeType(zoned);
@@ -255,18 +255,18 @@ public class DwdWarningsData {
 
     public State getEvent(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? UnDefType.NULL : StringType.valueOf(data.getEvent());
+        return data == null ? UnDefType.UNDEF : StringType.valueOf(data.getEvent());
     }
 
     public State getHeadline(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? UnDefType.NULL : StringType.valueOf(data.getHeadline());
+        return data == null ? UnDefType.UNDEF : StringType.valueOf(data.getHeadline());
     }
 
     public State getAltitude(int number) {
         DwdWarningData data = getGemeindeData(number);
         if (data == null) {
-            return UnDefType.NULL;
+            return UnDefType.UNDEF;
         }
         return new QuantityType<>(data.getAltitude(), ImperialUnits.FOOT);
     }
@@ -274,19 +274,19 @@ public class DwdWarningsData {
     public State getCeiling(int number) {
         DwdWarningData data = getGemeindeData(number);
         if (data == null) {
-            return UnDefType.NULL;
+            return UnDefType.UNDEF;
         }
         return new QuantityType<>(data.getCeiling(), ImperialUnits.FOOT);
     }
 
     public State getInstruction(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? UnDefType.NULL : StringType.valueOf(data.getInstruction());
+        return data == null ? UnDefType.UNDEF : StringType.valueOf(data.getInstruction());
     }
 
     public State getUrgency(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? UnDefType.NULL : StringType.valueOf(data.getUrgency().getText());
+        return data == null ? UnDefType.UNDEF : StringType.valueOf(data.getUrgency().getText());
     }
 
     public boolean isNew(int number) {
