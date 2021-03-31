@@ -105,6 +105,5 @@
 			<label>Ramp</label>
 			<description>Time in seconds until the output's value is reached.</description>
 		</parameter>
-
 	</config-description>
 </config-description:config-descriptions>
