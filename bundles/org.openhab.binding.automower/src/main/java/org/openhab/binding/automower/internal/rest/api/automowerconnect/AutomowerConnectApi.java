@@ -39,7 +39,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AutomowerConnectApi extends HusqvarnaApi {
-
     public AutomowerConnectApi(HttpClient httpClient) {
         super(httpClient);
     }
@@ -81,7 +80,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
 
     private ContentResponse executeRequest(String appKey, String token, final Request request)
             throws AutomowerCommunicationException {
-
         request.timeout(10, TimeUnit.SECONDS);
 
         request.header("Authorization-Provider", "husqvarna");

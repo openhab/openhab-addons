@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner & calendar data
+ * @author Marcin Czeczko - Initial contribution
  */
-public class Calendar {
-    private List<CalendarTask> tasks = new ArrayList<>();
+public class PlannerOverride {
+    private String action;
 
-    public List<CalendarTask> getTasks() {
-        return tasks;
+    public String getAction() {
+        return action;
+    }
+
+    public PlannerOverride setAction(String action) {
+        this.action = action;
+        return this;
     }
 }
