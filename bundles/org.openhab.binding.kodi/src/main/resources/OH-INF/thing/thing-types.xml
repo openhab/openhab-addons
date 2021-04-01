@@ -22,6 +22,7 @@
 			<channel id="input" typeId="input"/>
 			<channel id="inputtext" typeId="inputtext"/>
 			<channel id="inputaction" typeId="inputaction"/>
+			<channel id="inputbuttonevent" typeId="inputbuttonevent"/>
 			<channel id="systemcommand" typeId="systemcommand"/>
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="originaltitle" typeId="system.media-title"/>
