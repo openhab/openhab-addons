@@ -41,6 +41,7 @@ public class SolarmaxConnectorFindCommands {
                     // specifically searching for "E" errors with 4 characters (I know now that they don't exist ;-)
                     // commandsToCheck.add("E" + first + second + third);
                 }
+                commandsToCheck.add("E" + first + second);
             }
         }
 
@@ -99,7 +100,7 @@ public class SolarmaxConnectorFindCommands {
         System.out.println("Failed commands:");
 
         for (String failedCommand : failedCommands) {
-            System.out.print(failedCommand + "\", \"");
+            System.out.println(failedCommand + "\", \"");
         }
     }
 

@@ -145,7 +145,7 @@ public class SolarMaxConnector {
         return returnMap;
     }
 
-    private static String getCommandString(List<SolarMaxCommandKey> commandList) {
+    static String getCommandString(List<SolarMaxCommandKey> commandList) {
         String commandString = "";
         for (SolarMaxCommandKey command : commandList) {
             if (commandString != "") {
