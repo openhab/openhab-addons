@@ -1353,14 +1353,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    public void inputButtonEvent(String button, String keymap) {
+    private void inputButtonEvent(String button, String keymap) {
         JsonObject params = new JsonObject();
         params.addProperty("button", button);
         params.addProperty("keymap", keymap);
         socket.callMethod("Input.ButtonEvent", params);
     }
 
-    public void inputButtonEvent(String button, String keymap, int holdtime) {
+    private void inputButtonEvent(String button, String keymap, int holdtime) {
         JsonObject params = new JsonObject();
         params.addProperty("button", button);
         params.addProperty("keymap", keymap);
