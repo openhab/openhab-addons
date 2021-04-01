@@ -21,7 +21,6 @@ import static org.openhab.binding.ipobserver.internal.IpObserverBindingConstants
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -126,7 +125,7 @@ public class IpObserverHandler extends BaseThingHandler {
         }
 
         public void processMessage(String sensorValue) {
-            if (!Objects.equals(sensorValue, this.currentState)) {
+            if (!sensorValue.equals(this.currentState)) {
                 this.currentState = sensorValue;
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
                 if (state instanceof QuantityType) {
@@ -429,13 +428,13 @@ public class IpObserverHandler extends BaseThingHandler {
         }
 
         if (config.imperialRain) {
-            createChannel(HOURLY_RAIN_RATE, QuantityType.class, Units.INCHES_PER_HOUR, "rainofhourly");
+            createChannel(HOURLY_RAIN_RATE, QuantityType.class, ImperialUnits.INCH, "rainofhourly");
             createChannel(DAILY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofdaily");
             createChannel(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofweekly");
             createChannel(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofmonthly");
             createChannel(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofyearly");
         } else {
-            createChannel(HOURLY_RAIN_RATE, QuantityType.class, Units.MILLIMETRE_PER_HOUR, "rainofhourly");
+            createChannel(HOURLY_RAIN_RATE, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofhourly");
             createChannel(DAILY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofdaily");
             createChannel(WEEKLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofweekly");
             createChannel(MONTHLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofmonthly");
@@ -493,7 +492,8 @@ public class IpObserverHandler extends BaseThingHandler {
         // The units for the following are ignored as they are not a QuantityType.class
         createChannel(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
         createChannel(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
-        createChannel(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
+        // was outBattSta1 so some units may use this instead?
+        createChannel(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta");
         createChannel(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
         createChannel(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
     }
