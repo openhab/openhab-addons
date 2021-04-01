@@ -10,7 +10,6 @@
 		<description>Basic thing for the SolarMax Power Inverter binding</description>
 
 		<channels>
-			<!-- <channel id="UpdateValuesFromDevice" typeId="UpdateValuesFromDevice"/> -->
 			<channel id="lastUpdated" typeId="lastUpdated"/>
 			<channel id="softwareVersion" typeId="softwareVersion"/>
 			<channel id="buildNumber" typeId="buildNumber"/>
@@ -52,12 +51,6 @@
 		</config-description>
 
 	</thing-type>
-
-	<!-- <channel-type id="UpdateValuesFromDevice">
-		<item-type>Switch</item-type>
-		<label>Update Trigger</label>
-		<description>Update the values from the SolarMax device</description>
-		</channel-type> -->
 
 	<channel-type id="lastUpdated">
 		<item-type>DateTime</item-type>

@@ -22,9 +22,7 @@ import org.openhab.binding.solarmax.internal.connector.SolarMaxCommandKey;
  */
 public enum SolarMaxChannel {
 
-    // CHANNEL_UPDATE_VALUES_FROM_DEVICE("UpdateValuesFromDevice"),
     CHANNEL_LAST_UPDATED("lastUpdated"), //
-    // CHANNEL_DEVICE_ADDRESS(SolarMaxCommandKey.DeviceAddress.name()),
     CHANNEL_SOFTWARE_VERSION(SolarMaxCommandKey.softwareVersion.name()),
     CHANNEL_BUILD_NUMBER(SolarMaxCommandKey.buildNumber.name()),
     CHANNEL_STARTUPS(SolarMaxCommandKey.startups.name()),

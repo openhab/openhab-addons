@@ -34,12 +34,6 @@ import org.openhab.core.library.types.DecimalType;
 public class SolarMaxDataTest {
 
     @Test
-    public void gettersTest() throws Exception {
-
-        // SolarMaxData solarMaxData = new SolarMaxData().dataDateTime()
-    }
-
-    @Test
     public void dataDateTimeGetterSetterTest() throws Exception {
 
         // dataDateTime shouldn't be a problem, but check it anyway
