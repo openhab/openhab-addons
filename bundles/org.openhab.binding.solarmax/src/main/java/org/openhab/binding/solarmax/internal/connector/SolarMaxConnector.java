@@ -191,13 +191,9 @@ public class SolarMaxConnector {
         String request = contructRequest(commandString);
         try {
 
-            // hard code it for now
-            // request = "{FB;01;46|64:KDY;KMT;KYR;KT0;TNF;TKK;PAC;PRL;IL1;IDC;UL1;UDC;SYS|1199}";
-            // send the message out
             logger.trace("    ==>: {}", request);
 
             outputStream.write(request.getBytes());
-            // outputStream.flush();
 
             String response = "";
             byte[] responseByte = new byte[1];
@@ -360,7 +356,6 @@ public class SolarMaxConnector {
         String dstHex = String.format("%02X", 1); // destinationDevice defaults to 1 and is ignored with TCP/IP
         String len = "00";
         String cs = "0000";
-        // String msg = is_array(questions) ? "64:" + implode(';', questions) : "64:" + questions;
         String msg = "64:" + questions;
         int lenInt = ("{" + src + ";" + dstHex + ";" + len + "|" + msg + "|" + cs + "}").length();
 
@@ -394,16 +389,8 @@ public class SolarMaxConnector {
     }
 
     static boolean validateResponse(final String header) {
-
-        // // FIXME: 12.11.2016 whole response will be passed in
-        // final String patternString = "/\\{([0-9A-F]{2});FB;([0-9A-F]{2})/";
-        // final Pattern pattern = Pattern.compile(patternString);
-
-        // final Matcher matcher = pattern.matcher(header);
-
-        // boolean matches = matcher.matches();
-        // // return matches;
-        // // FIXME: 10.11.2016
+        // probably should implement a patter matcher with a patternString like "/\\{([0-9A-F]{2});FB;([0-9A-F]{2})/",
+        // but for now...
         return true;
     }
 }

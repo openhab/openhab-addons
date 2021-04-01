@@ -54,17 +54,6 @@ public class SolarMaxHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         // Read only
-
-        // logger.debug("handleCommand channel: {} command: {}", channelUID, command);
-        // String ch = channelUID.getId();
-        // // if (command instanceof RefreshType) {
-        // // updateChannels();
-        // // return;
-        // // }
-        // if (ch.equals(SolarMaxChannel.CHANNEL_UPDATE_VALUES_FROM_DEVICE.name())) {
-        // // if (ch.equals(SolarMaxBindingConstants.CHANNEL_UPDATE_VALUES_FROM_DEVICE)) {
-        // updateValuesFromDevice();
-        // }
     }
 
     @Override
@@ -93,7 +82,6 @@ public class SolarMaxHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing SolarMax Handler Thing");
-        // isRunning = false;
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
         }
@@ -137,11 +125,6 @@ public class SolarMaxHandler extends BaseThingHandler {
 
             Channel channel = getThing().getChannel(channelId);
 
-            // there are two special channels, where the values don't come from the device
-            // if (channelId.equals(SolarMaxChannel.CHANNEL_UPDATE_VALUES_FROM_DEVICE.getChannelId())) {
-            // // channel isn't read from the device, so ignore this
-
-            // } else
             if (channelId.equals(SolarMaxChannel.CHANNEL_LAST_UPDATED.getChannelId())) {
                 // channel shows when the device was last read, so handle it specially
                 State state = solarMaxData.getDataDateTime();
@@ -155,8 +138,6 @@ public class SolarMaxHandler extends BaseThingHandler {
                 if (channel == null) {
                     logger.error("No channel found with id: {}", channelId);
                 }
-                // State state = getState(value, channel);
-                // return new DecimalType(versionAsInt);
                 State state = solarMaxData.get(SolarMaxCommandKey.valueOf(channelId));
 
                 if (channel != null && state != null) {
