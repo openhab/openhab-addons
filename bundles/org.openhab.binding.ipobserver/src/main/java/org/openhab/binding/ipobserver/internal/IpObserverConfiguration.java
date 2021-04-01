@@ -33,4 +33,6 @@ public class IpObserverConfiguration {
     public String solarUnit = "0";
     // 0=m/s, 1=km/h, 2=ft/s, 3=bft, 4=mph, 5=knot
     public String windUnit = "0";
+    // 0=hpa, 1=inhg, 2=mmhg
+    public String pressureUnit = "0";
 }

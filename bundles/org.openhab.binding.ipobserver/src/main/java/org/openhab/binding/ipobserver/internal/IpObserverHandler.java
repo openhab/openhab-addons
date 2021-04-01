@@ -204,6 +204,8 @@ public class IpObserverHandler extends BaseThingHandler {
         config.solarUnit = doc.select("select[name=unit_Solar] option[selected]").val();
         // 0=m/s, 1=km/h, 2=ft/s, 3=bft, 4=mph, 5=knot
         config.windUnit = doc.select("select[name=unit_Wind] option[selected]").val();
+        // 0=hpa, 1=inhg, 2=mmhg
+        config.pressureUnit = doc.select("select[name=unit_Pressure] option[selected]").val();
         // 0=degC, 1=degF
         if ("1".equals(doc.select("select[name=u_Temperature] option[selected]").val())) {
             config.imperialTemperature = true;
@@ -220,13 +222,24 @@ public class IpObserverHandler extends BaseThingHandler {
 
     private void parseAndUpdate(String html) {
         Document doc = Jsoup.parse(html);
+        String value = doc.select("select[name=inBattSta] option[selected]").val();
+        UpdateHandler localUpdater = updateHandlers.get("inBattSta");
+        if (localUpdater != null) {
+            localUpdater.processMessage(value);
+        }
+        value = doc.select("select[name=outBattSta] option[selected]").val();
+        localUpdater = updateHandlers.get("outBattSta");
+        if (localUpdater != null) {
+            localUpdater.processMessage(value);
+        }
+
         Elements elements = doc.select("input");
         for (Element element : elements) {
             String elementName = element.attr("name");
-            String value = element.attr("value");
-            logger.debug("Found element {}, value is {}", elementName, value);
-            if (value != null) {
-                UpdateHandler localUpdater = updateHandlers.get(elementName);
+            value = element.attr("value");
+            logger.trace("Found element {}, value is {}", elementName, value);
+            if (!value.isEmpty()) {
+                localUpdater = updateHandlers.get(elementName);
                 if (localUpdater != null) {
                     localUpdater.processMessage(value);
                 }
@@ -292,10 +305,15 @@ public class IpObserverHandler extends BaseThingHandler {
             ContentResponse contentResponse = request.send();
             if (contentResponse.getStatus() == 200) {
                 long responseTime = (System.currentTimeMillis() - start);
-                updateStatus(ThingStatus.ONLINE);
+                if (!this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    updateStatus(ThingStatus.ONLINE);
+                    logger.debug("Finding out which units of measurement the weather station is using.");
+                    sendGetRequest(STATION_SETTINGS_URL);
+                }
                 updateState(LAST_UPDATED_TIME, new QuantityType<>(responseTime, MetricPrefix.MILLI(Units.SECOND)));
                 if (url == STATION_SETTINGS_URL) {
                     parseSettings(contentResponse.getContentAsString());
+                    setupChannels();
                 } else {
                     parseAndUpdate(contentResponse.getContentAsString());
                 }
@@ -340,6 +358,7 @@ public class IpObserverHandler extends BaseThingHandler {
         }
     }
 
+<<<<<<< HEAD
     @Override
     public void initialize() {
         config = getConfigAs(IpObserverConfiguration.class);
@@ -396,10 +415,15 @@ public class IpObserverHandler extends BaseThingHandler {
 >>>>>>> Bulk updated to UOM.
         updateStatus(ThingStatus.UNKNOWN);
         sendGetRequest(STATION_SETTINGS_URL);
+=======
+    private void setupChannels() {
+>>>>>>> updates
         if (config.imperialTemperature) {
+            logger.debug("Using imperial units of measurement for temperature.");
             createChannel(TEMP_INDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "inTemp");
             createChannel(TEMP_OUTDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "outTemp");
         } else {
+            logger.debug("Using metric units of measurement for temperature.");
             createChannel(TEMP_INDOOR, QuantityType.class, SIUnits.CELSIUS, "inTemp");
             createChannel(TEMP_OUTDOOR, QuantityType.class, SIUnits.CELSIUS, "outTemp");
         }
@@ -438,22 +462,46 @@ public class IpObserverHandler extends BaseThingHandler {
             createChannel(WIND_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "windspeed");
             createChannel(WIND_GUST, QuantityType.class, Units.METRE_PER_SECOND, "gustspeed");
             createChannel(WIND_MAX_GUST, QuantityType.class, Units.METRE_PER_SECOND, "dailygust");
+        } else {
+            logger.warn(
+                    "The IP Observer is sending a wind format the binding does not support. Select one of the other units.");
         }
 
-        createChannel(ABS_PRESSURE, QuantityType.class, SIUnits.PASCAL, "AbsPress");
-        createChannel(REL_PRESSURE, QuantityType.class, SIUnits.PASCAL, "RelPress");
+        if (config.solarUnit.equals("1")) {
+            createChannel(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarrad");
+        } else if (config.solarUnit.equals("0")) {
+            createChannel(SOLAR_RADIATION, QuantityType.class, Units.LUX, "solarrad");
+        } else {
+            logger.warn(
+                    "The IP Observer is sending fc (Foot Candles) for the solar radiation. Select one of the other units.");
+        }
+
+        if (config.pressureUnit.equals("0")) {
+            createChannel(ABS_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "AbsPress");
+            createChannel(REL_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "RelPress");
+        } else if (config.pressureUnit.equals("1")) {
+            createChannel(ABS_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "AbsPress");
+            createChannel(REL_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "RelPress");
+        } else if (config.pressureUnit.equals("2")) {
+            createChannel(ABS_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "AbsPress");
+            createChannel(REL_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "RelPress");
+        }
 
         createChannel(WIND_DIRECTION, QuantityType.class, Units.DEGREE_ANGLE, "windir");
         createChannel(INDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "inHumi");
         createChannel(OUTDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "outHumi");
-
-        createChannel(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarrad");
+        // The units for the following are ignored as they are not a QuantityType.class
         createChannel(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
         createChannel(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
-
         createChannel(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
         createChannel(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
         createChannel(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
+    }
+
+    @Override
+    public void initialize() {
+        config = getConfigAs(IpObserverConfiguration.class);
+        updateStatus(ThingStatus.UNKNOWN);
         pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStation, 1, config.pollTime, TimeUnit.SECONDS);
     }
 

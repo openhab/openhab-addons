@@ -132,14 +132,14 @@
 		<category>Sun</category>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="windAverageSpeed" advanced="true">
+	<channel-type id="windAverageSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Average Speed</label>
 		<description>Average Wind Speed</description>
 		<category>Wind</category>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="windSpeed">
+	<channel-type id="windSpeed" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<description>Wind Speed</description>
@@ -161,7 +161,7 @@
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="hourlyRainRate">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Hourly Rain Rate</label>
 		<description>How much rain will fall in an Hour if the rate continues.</description>
 		<category>Rain</category>
