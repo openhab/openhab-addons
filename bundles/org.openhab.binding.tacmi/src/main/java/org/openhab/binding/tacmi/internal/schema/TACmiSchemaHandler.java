@@ -152,8 +152,8 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             responseString = response.getContentAsString();
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Response body was: {} ", responseString);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Response body was: {} ", responseString);
         }
 
         final ISimpleMarkupParser parser = new SimpleMarkupParser(this.noRestrictions);
@@ -170,9 +170,9 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             final ApiPageParser pp = parsePage(schemaApiPage,
                     new ApiPageParser(this, entries, this.channelTypeProvider));
 
-            if (pp.isConfigChanged()) {
+            final List<Channel> channels = pp.getChannels();
+            if (pp.isConfigChanged() || channels.size() != this.getThing().getChannels().size()) {
                 // we have to update our channels...
-                final List<Channel> channels = pp.getChannels();
                 final ThingBuilder thingBuilder = editThing();
                 thingBuilder.withChannels(channels);
                 updateThing(thingBuilder.build());
@@ -271,6 +271,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                 return;
         }
         try {
+            e.setLastCommandTS(System.currentTimeMillis());
             ContentResponse res = reqUpdate.send();
             if (res.getStatus() == 200) {
                 // update ok, we update the state
