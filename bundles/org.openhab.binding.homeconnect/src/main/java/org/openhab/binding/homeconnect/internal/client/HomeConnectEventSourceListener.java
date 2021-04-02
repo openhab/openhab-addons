@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * Event source listener (Server-Sent-Events).
@@ -185,7 +184,7 @@ public class HomeConnectEventSourceListener {
         if ((STATUS.equals(type) || EVENT.equals(type) || NOTIFY.equals(type)) && data != null && !data.trim().isEmpty()
                 && !EMPTY_DATA.equals(data)) {
             try {
-                JsonObject responseObject = JsonParser.parseString(data).getAsJsonObject();
+                JsonObject responseObject = HttpHelper.parseString(data).getAsJsonObject();
                 JsonArray items = responseObject.getAsJsonArray("items");
 
                 items.forEach(item -> {

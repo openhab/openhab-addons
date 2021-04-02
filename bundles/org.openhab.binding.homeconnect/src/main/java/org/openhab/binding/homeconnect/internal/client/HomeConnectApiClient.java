@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
-import static com.google.gson.JsonParser.parseString;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.binding.homeconnect.internal.client.HttpHelper.formatJsonBody;
 import static org.openhab.binding.homeconnect.internal.client.HttpHelper.getAuthorizationHeader;
+import static org.openhab.binding.homeconnect.internal.client.HttpHelper.parseString;
 import static org.openhab.binding.homeconnect.internal.client.HttpHelper.sendRequest;
 
 import java.time.ZonedDateTime;
