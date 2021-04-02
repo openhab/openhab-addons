@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
+import static com.google.gson.JsonParser.parseString;
 import static io.github.bucket4j.Bandwidth.classic;
 import static io.github.bucket4j.Refill.intervally;
 
@@ -40,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -56,7 +56,6 @@ import io.github.bucket4j.Bucket4j;
 public class HttpHelper {
     private static final String BEARER = "Bearer ";
     private static final int OAUTH_EXPIRE_BUFFER = 10;
-    private static final JsonParser JSON_PARSER = new JsonParser();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Map<String, Bucket> BUCKET_MAP = new HashMap<>();
 
@@ -79,7 +78,7 @@ public class HttpHelper {
             return "";
         }
         try {
-            JsonObject json = JSON_PARSER.parse(jsonString).getAsJsonObject();
+            JsonObject json = parseString(jsonString).getAsJsonObject();
             return GSON.toJson(json);
         } catch (Exception e) {
             return jsonString;

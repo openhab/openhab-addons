@@ -62,7 +62,6 @@ public class HomeConnectEventSourceListener {
     private final HomeConnectEventListener eventListener;
     private final HomeConnectEventSourceClient client;
     private final Logger logger = LoggerFactory.getLogger(HomeConnectEventSourceListener.class);
-    private final JsonParser jsonParser;
     private final ScheduledFuture<?> eventSourceMonitorFuture;
     private final CircularQueue<Event> eventQueue;
     private final ScheduledExecutorService scheduledExecutorService;
@@ -77,7 +76,6 @@ public class HomeConnectEventSourceListener {
         this.client = client;
         this.eventQueue = eventQueue;
         this.scheduledExecutorService = scheduler;
-        jsonParser = new JsonParser();
 
         eventSourceMonitorFuture = createMonitor(scheduler);
     }
@@ -187,7 +185,7 @@ public class HomeConnectEventSourceListener {
         if ((STATUS.equals(type) || EVENT.equals(type) || NOTIFY.equals(type)) && data != null && !data.trim().isEmpty()
                 && !EMPTY_DATA.equals(data)) {
             try {
-                JsonObject responseObject = jsonParser.parse(data).getAsJsonObject();
+                JsonObject responseObject = JsonParser.parseString(data).getAsJsonObject();
                 JsonArray items = responseObject.getAsJsonArray("items");
 
                 items.forEach(item -> {

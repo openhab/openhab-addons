@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
+import static com.google.gson.JsonParser.parseString;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
@@ -60,7 +61,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * Client for Home Connect API.
@@ -86,7 +86,6 @@ public class HomeConnectApiClient {
     private final Map<String, List<AvailableProgramOption>> availableProgramOptionsCache;
     private final OAuthClientService oAuthClientService;
     private final CircularQueue<ApiRequest> communicationQueue;
-    private final JsonParser jsonParser;
     private final ApiBridgeConfiguration apiBridgeConfiguration;
 
     public HomeConnectApiClient(HttpClient httpClient, OAuthClientService oAuthClientService, boolean simulated,
@@ -97,7 +96,6 @@ public class HomeConnectApiClient {
 
         availableProgramOptionsCache = new ConcurrentHashMap<>();
         apiUrl = simulated ? API_SIMULATOR_BASE_URL : API_BASE_URL;
-        jsonParser = new JsonParser();
         communicationQueue = new CircularQueue<>(COMMUNICATION_QUEUE_SIZE);
         if (apiRequestHistory != null) {
             communicationQueue.addAll(apiRequestHistory);
@@ -916,7 +914,7 @@ public class HomeConnectApiClient {
 
     private Program mapToProgram(String json) {
         ArrayList<Option> optionList = new ArrayList<>();
-        JsonObject responseObject = jsonParser.parse(json).getAsJsonObject();
+        JsonObject responseObject = parseString(json).getAsJsonObject();
         JsonObject data = responseObject.getAsJsonObject("data");
         Program result = new Program(data.get("key").getAsString(), optionList);
         JsonArray options = data.getAsJsonArray("options");
@@ -942,7 +940,7 @@ public class HomeConnectApiClient {
         ArrayList<AvailableProgram> result = new ArrayList<>();
 
         try {
-            JsonObject responseObject = jsonParser.parse(json).getAsJsonObject();
+            JsonObject responseObject = parseString(json).getAsJsonObject();
 
             JsonArray programs = responseObject.getAsJsonObject("data").getAsJsonArray("programs");
             programs.forEach(program -> {
@@ -970,7 +968,7 @@ public class HomeConnectApiClient {
         ArrayList<AvailableProgramOption> result = new ArrayList<>();
 
         try {
-            JsonObject responseObject = jsonParser.parse(json).getAsJsonObject();
+            JsonObject responseObject = parseString(json).getAsJsonObject();
 
             JsonArray options = responseObject.getAsJsonObject("data").getAsJsonArray("options");
             options.forEach(option -> {
@@ -993,7 +991,7 @@ public class HomeConnectApiClient {
     }
 
     private HomeAppliance mapToHomeAppliance(String json) {
-        JsonObject responseObject = jsonParser.parse(json).getAsJsonObject();
+        JsonObject responseObject = parseString(json).getAsJsonObject();
 
         JsonObject data = responseObject.getAsJsonObject("data");
 
@@ -1004,7 +1002,7 @@ public class HomeConnectApiClient {
 
     private ArrayList<HomeAppliance> mapToHomeAppliances(String json) {
         final ArrayList<HomeAppliance> result = new ArrayList<>();
-        JsonObject responseObject = jsonParser.parse(json).getAsJsonObject();
+        JsonObject responseObject = parseString(json).getAsJsonObject();
 
         JsonObject data = responseObject.getAsJsonObject("data");
         JsonArray homeappliances = data.getAsJsonArray("homeappliances");
@@ -1021,7 +1019,7 @@ public class HomeConnectApiClient {
     }
 
     private Data mapToState(String json) {
-        JsonObject responseObject = jsonParser.parse(json).getAsJsonObject();
+        JsonObject responseObject = parseString(json).getAsJsonObject();
 
         JsonObject data = responseObject.getAsJsonObject("data");
 

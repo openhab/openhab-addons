@@ -74,36 +74,41 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
     protected void startScan() {
         logger.debug("Starting device scan.");
 
-        HomeConnectApiClient apiClient = bridgeHandler.getApiClient();
+        var bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler != null) {
+            HomeConnectApiClient apiClient = bridgeHandler.getApiClient();
 
-        try {
-            List<HomeAppliance> appliances = apiClient.getHomeAppliances();
-            logger.debug("Scan found {} devices.", appliances.size());
+            try {
+                List<HomeAppliance> appliances = apiClient.getHomeAppliances();
+                logger.debug("Scan found {} devices.", appliances.size());
 
-            // add found devices
-            for (HomeAppliance appliance : appliances) {
-                @Nullable
-                ThingTypeUID thingTypeUID = getThingTypeUID(appliance);
+                // add found devices
+                for (HomeAppliance appliance : appliances) {
+                    @Nullable
+                    ThingTypeUID thingTypeUID = getThingTypeUID(appliance);
 
-                if (thingTypeUID != null) {
-                    logger.debug("Found {} ({}).", appliance.getHaId(), appliance.getType().toUpperCase());
+                    if (thingTypeUID != null) {
+                        logger.debug("Found {} ({}).", appliance.getHaId(), appliance.getType().toUpperCase());
 
-                    Map<String, Object> properties = Map.of(HA_ID, appliance.getHaId());
-                    String name = appliance.getBrand() + " " + appliance.getName() + " (" + appliance.getHaId() + ")";
+                        Map<String, Object> properties = Map.of(HA_ID, appliance.getHaId());
+                        String name = appliance.getBrand() + " " + appliance.getName() + " (" + appliance.getHaId()
+                                + ")";
 
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                            .create(new ThingUID(BINDING_ID, appliance.getType(),
-                                    bridgeHandler.getThing().getUID().getId(), appliance.getHaId()))
-                            .withThingType(thingTypeUID).withProperties(properties).withRepresentationProperty(HA_ID)
-                            .withBridge(bridgeHandler.getThing().getUID()).withLabel(name).build();
-                    thingDiscovered(discoveryResult);
-                } else {
-                    logger.debug("Ignoring unsupported device {} of type {}.", appliance.getHaId(),
-                            appliance.getType());
+                        DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                                .create(new ThingUID(BINDING_ID, appliance.getType(),
+                                        bridgeHandler.getThing().getUID().getId(), appliance.getHaId()))
+                                .withThingType(thingTypeUID).withProperties(properties)
+                                .withRepresentationProperty(HA_ID).withBridge(bridgeHandler.getThing().getUID())
+                                .withLabel(name).build();
+                        thingDiscovered(discoveryResult);
+                    } else {
+                        logger.debug("Ignoring unsupported device {} of type {}.", appliance.getHaId(),
+                                appliance.getType());
+                    }
                 }
+            } catch (CommunicationException | AuthorizationException e) {
+                logger.debug("Exception during scan.", e);
             }
-        } catch (CommunicationException | AuthorizationException e) {
-            logger.debug("Exception during scan.", e);
         }
         logger.debug("Finished device scan.");
     }
@@ -111,13 +116,19 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
     @Override
     public void deactivate() {
         super.deactivate();
-        removeOlderResults(System.currentTimeMillis(), bridgeHandler.getThing().getUID());
+        var bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler != null) {
+            removeOlderResults(System.currentTimeMillis(), bridgeHandler.getThing().getUID());
+        }
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan(), bridgeHandler.getThing().getUID());
+        var bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler != null) {
+            removeOlderResults(getTimestampOfLastScan(), bridgeHandler.getThing().getUID());
+        }
     }
 
     private @Nullable ThingTypeUID getThingTypeUID(HomeAppliance appliance) {
