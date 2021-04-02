@@ -267,8 +267,8 @@ The following channels are also writable:
 | comfortCoolingMode | Number |   | Comfort cooling mode |
 | temperatureComfortCoolingATRelease | Number:Temperature |   | Comfort cooling AT release |
 | temperatureComfortCoolingATReleaseTarget | Number:Temperature |   | Comfort cooling AT release target |
-| comfortCoolingATExcess | Number |   | AT Excess |
-| comfortCoolingATUndercut | Number |   | AT undercut |
+| comfortCoolingATExcess | Number:Time |   | AT Excess |
+| comfortCoolingATUndercut | Number:Time |   | AT undercut |
 
 
 ## Example

@@ -2062,14 +2062,14 @@
 	</channel-type>
 
 	<channel-type id="comfortCoolingATExcess">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>AT Excess</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" step="1"></state>
 	</channel-type>
 
 	<channel-type id="comfortCoolingATUndercut">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>AT Undercut</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" step="1"></state>

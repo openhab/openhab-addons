@@ -1275,7 +1275,7 @@ public enum HeatpumpChannel {
      * Comfort cooling mode
      * (original: Comfort Kühlung Betriebsart)
      */
-    CHANNEL_EINST_BWSTYP_AKT(100, "comfortCoolingMode", NumberItem.class, null, true, HeatpumpVisibility.KUHLUNG),
+    CHANNEL_EINST_BWSTYP_AKT(108, "comfortCoolingMode", NumberItem.class, null, true, HeatpumpVisibility.KUHLUNG),
 
     /**
      * Comfort cooling AT release
@@ -1295,15 +1295,15 @@ public enum HeatpumpChannel {
      * AT Excess
      * (original: AT-Überschreitung)
      */
-    CHANNEL_EINST_KUHL_ZEIT_EIN_AKT(850, "comfortCoolingATExcess", NumberItem.class, null, true,
-            HeatpumpVisibility.SYSEIN_KUHL_ZEIT_EIN),
+    CHANNEL_EINST_KUHL_ZEIT_EIN_AKT(850, "comfortCoolingATExcess", NumberItem.class, Units.HOUR, true,
+            HeatpumpVisibility.KUHLUNG),
 
     /**
      * AT undercut
      * (original: AT-Unterschreitung)
      */
-    CHANNEL_EINST_KUHL_ZEIT_AUS_AKT(851, "comfortCoolingATUndercut", NumberItem.class, null, true,
-            HeatpumpVisibility.SYSEIN_KUHL_ZEIT_AUS),
+    CHANNEL_EINST_KUHL_ZEIT_AUS_AKT(851, "comfortCoolingATUndercut", NumberItem.class, Units.HOUR, true,
+            HeatpumpVisibility.KUHLUNG),
 
     /**
      * Channel holding complete (localized) status message
