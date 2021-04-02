@@ -111,41 +111,41 @@ Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=
 ### Item Configuration
 
 ```
-Number:Temperature stiebel_eltron_temperature_ffk            "Temperature FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature" }
-Number:Temperature stiebel_eltron_setpoint_ffk            "Set point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature-setpoint" }
-Number:Dimensionless stiebel_eltron_humidity_ffk            "Humidity FFK [%.1f %%]" <humidity>   { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-humidity" }
-Number:Temperature stiebel_eltron_dewpoint_ffk            "Dew point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-dewpoint" }
+Number:Temperature stiebel_eltron_temperature_ffk            "Temperature FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#fek-temperature" }
+Number:Temperature stiebel_eltron_setpoint_ffk            "Set point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#fek-temperature-setpoint" }
+Number:Dimensionless stiebel_eltron_humidity_ffk            "Humidity FFK [%.1f %%]" <humidity>   { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#fek-humidity" }
+Number:Temperature stiebel_eltron_dewpoint_ffk            "Dew point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#fek-dewpoint" }
 
-Number:Temperature stiebel_eltron_outdoor_temp            "Outdoor temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#outdoor-temperature" }
-Number:Temperature stiebel_eltron_temp_hk1                "Temperature HK1 [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#hk1-temperature" }
-Number:Temperature stiebel_eltron_setpoint_hk1            "Set point HK1 [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#hk1-temperature-setpoint" }
-Number:Temperature stiebel_eltron_temp_water                "Water temperature  [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#water-temperature" }
-Number:Temperature stiebel_eltron_setpoint_water            "Water setpoint [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#water-temperature-setpoint" }
-Number:Temperature stiebel_eltron_source_temp            "Source temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#source-temperature" }
-Number:Temperature stiebel_eltron_vorlauf_temp            "Supply tempertature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#supply-temperature" }
-Number:Temperature stiebel_eltron_ruecklauf_temp            "Return temperature  [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#return-temperature" }
+Number:Temperature stiebel_eltron_outdoor_temp            "Outdoor temperature [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#outdoor-temperature" }
+Number:Temperature stiebel_eltron_temp_hk1                "Temperature HK1 [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#hk1-temperature" }
+Number:Temperature stiebel_eltron_setpoint_hk1            "Set point HK1 [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#hk1-temperature-setpoint" }
+Number:Temperature stiebel_eltron_temp_water                "Water temperature  [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#water-temperature" }
+Number:Temperature stiebel_eltron_setpoint_water            "Water setpoint [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#water-temperature-setpoint" }
+Number:Temperature stiebel_eltron_source_temp            "Source temperature [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#source-temperature" }
+Number:Temperature stiebel_eltron_vorlauf_temp            "Supply tempertature [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#supply-temperature" }
+Number:Temperature stiebel_eltron_ruecklauf_temp            "Return temperature  [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemInformation#return-temperature" }
 
-Number stiebel_eltron_heating_comfort_temp              "Heating Comfort Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#comfort-temperature-heating" }
-Number stiebel_eltron_heating_eco_temp              "Heating Eco Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#eco-temperature-heating" }
-Number stiebel_eltron_water_comfort_temp              "Water Comfort Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#comfort-temperature-water" }
-Number stiebel_eltron_water_eco_temp              "Water Eco Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#eco-temperature-water" }
-Number stiebel_eltron_operation_mode           "Operation Mode"   { channel="modbus:heatpump:stiebelEltron:systemParameter#operation-mode" }
+Number stiebel_eltron_heating_comfort_temp              "Heating Comfort Temperature [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemParameter#comfort-temperature-heating" }
+Number stiebel_eltron_heating_eco_temp              "Heating Eco Temperature [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemParameter#eco-temperature-heating" }
+Number stiebel_eltron_water_comfort_temp              "Water Comfort Temperature [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemParameter#comfort-temperature-water" }
+Number stiebel_eltron_water_eco_temp              "Water Eco Temperature [%.1f °C]"    { channel="modbus:heatpump:bridge:stiebelEltron:systemParameter#eco-temperature-water" }
+Number stiebel_eltron_operation_mode           "Operation Mode"   { channel="modbus:heatpump:bridge:stiebelEltron:systemParameter#operation-mode" }
 
-Contact stiebel_eltron_mode_pump               "Pump [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-pumping" }
-Contact stiebel_eltron_mode_heating             "Heating [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-heating" }
-Contact stiebel_eltron_mode_water              "Heating Water [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-heating-water" }
-Contact stiebel_eltron_mode_cooling             "Cooling [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-cooling" }
-Contact stiebel_eltron_mode_summer             "Summer Mode [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-summer" }
+Contact stiebel_eltron_mode_pump               "Pump [%d]"   { channel="modbus:heatpump:bridge:stiebelEltron:systemState#is-pumping" }
+Contact stiebel_eltron_mode_heating             "Heating [%d]"   { channel="modbus:heatpump:bridge:stiebelEltron:systemState#is-heating" }
+Contact stiebel_eltron_mode_water              "Heating Water [%d]"   { channel="modbus:heatpump:bridge:stiebelEltron:systemState#is-heating-water" }
+Contact stiebel_eltron_mode_cooling             "Cooling [%d]"   { channel="modbus:heatpump:bridge:stiebelEltron:systemState#is-cooling" }
+Contact stiebel_eltron_mode_summer             "Summer Mode [%d]"   { channel="modbus:heatpump:bridge:stiebelEltron:systemState#is-summer" }
 
 
-Number:Energy stiebel_eltron_production_heat_today            "Heat quantity today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_today" }
-Number:Energy stiebel_eltron_production_heat_total            "Heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_total"}
-Number:Energy stiebel_eltron_production_water_today            "Water heat quantity today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_water_today" }
-Number:Energy stiebel_eltron_production_water_total            "Water heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production_water_total"}
-Number:Energy stiebel_eltron_consumption_heat_total             "Heating power consumption total [%.3f MWh]"  {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_total"}
-Number:Energy stiebel_eltron_consumption_heat_today            "Heating power consumption today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_today" }
-Number:Energy stiebel_eltron_consumption_water_today            "Water heating power consumption today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_today" }
-Number:Energy stiebel_eltron_consumption_water_total            "Water heating power consumption total [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_total"}
+Number:Energy stiebel_eltron_production_heat_today            "Heat quantity today [%.0f kWh]"    { channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#production_heat_today" }
+Number:Energy stiebel_eltron_production_heat_total            "Heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#production_heat_total"}
+Number:Energy stiebel_eltron_production_water_today            "Water heat quantity today  [%.0f kWh]"    { channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#production_water_today" }
+Number:Energy stiebel_eltron_production_water_total            "Water heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#production_water_total"}
+Number:Energy stiebel_eltron_consumption_heat_total             "Heating power consumption total [%.3f MWh]"  {channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#consumption_heat_total"}
+Number:Energy stiebel_eltron_consumption_heat_today            "Heating power consumption today [%.0f kWh]"    { channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#consumption_heat_today" }
+Number:Energy stiebel_eltron_consumption_water_today            "Water heating power consumption today  [%.0f kWh]"    { channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#consumption_water_today" }
+Number:Energy stiebel_eltron_consumption_water_total            "Water heating power consumption total [%.3f MWh]"   {channel="modbus:heatpump:bridge:stiebelEltron:energyInformation#consumption_water_total"}
 
 ```
 
