@@ -99,18 +99,22 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
             discoveryServiceReg.get(thingHandler).unregister();
             discoveryServiceReg.remove(thingHandler);
         }
+
         super.removeHandler(thingHandler);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+
         if (PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             PulseaudioBridgeHandler handler = new PulseaudioBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PulseaudioHandler(thing);
+            PulseaudioHandler pulseaudioHandler = new PulseaudioHandler(thing, bundleContext);
+            return pulseaudioHandler;
         }
 
         return null;

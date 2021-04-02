@@ -51,6 +51,8 @@ public class PulseaudioBindingConstants {
     public static final String BRIDGE_PARAMETER_REFRESH_INTERVAL = "refresh";
 
     public static final String DEVICE_PARAMETER_NAME = "name";
+    public static final String DEVICE_PARAMETER_AUDIO_SINK_ACTIVATION = "activateSimpleProtocolSink";
+    public static final String DEVICE_PARAMETER_AUDIO_SINK_PORT = "simpleProtocolSinkPort";
 
     public static final Map<String, Boolean> TYPE_FILTERS = new HashMap<>();
 

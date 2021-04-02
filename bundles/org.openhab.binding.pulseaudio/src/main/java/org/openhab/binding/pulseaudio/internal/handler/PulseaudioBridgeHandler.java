@@ -155,7 +155,9 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        pollingJob.cancel(true);
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+        }
         client.disconnect();
         super.dispose();
     }

@@ -21,6 +21,18 @@
 				<label>Name</label>
 				<description>The name of one specific device.</description>
 			</parameter>
+			<parameter name="activateSimpleProtocolSink" type="boolean">
+				<label>Sink by simple-protocol-tcp</label>
+				<description>Activation of a corresponding sink in openHAB (needs module-simple-protocol-tcp loaded on the server)</description>
+				<default>false</default>
+				<required>false</required>
+			</parameter>
+			<parameter name="simpleProtocolSinkPort" type="integer">
+				<label>Simple protocol port</label>
+				<description>Port of the module-simple-protocol-tcp listening for this sink</description>
+				<default>4711</default>
+				<required>false</required>
+			</parameter>
 		</config-description>
 	</thing-type>
 
