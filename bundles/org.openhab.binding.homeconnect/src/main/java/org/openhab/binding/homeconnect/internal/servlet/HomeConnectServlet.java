@@ -17,7 +17,6 @@ import static java.time.ZonedDateTime.now;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -87,7 +86,6 @@ public class HomeConnectServlet extends HttpServlet {
     private static final String APPLIANCES_PATH = "/appliances";
     private static final String REQUEST_LOG_PATH = "/log/requests";
     private static final String EVENT_LOG_PATH = "/log/events";
-    private static final String REQUEST_COUNT_PATH = "/requests";
     private static final String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
     private static final String PARAM_CODE = "code";
     private static final String PARAM_STATE = "state";
@@ -181,16 +179,6 @@ public class HomeConnectServlet extends HttpServlet {
             } else {
                 getBridgesPage(request, response);
             }
-        } else if (pathMatches(path, REQUEST_COUNT_PATH)) {
-            @Nullable
-            String action = request.getParameter(PARAM_ACTION);
-            @Nullable
-            String bridgeId = request.getParameter(PARAM_BRIDGE_ID);
-            if (action != null && bridgeId != null && !action.trim().isEmpty() && !bridgeId.trim().isEmpty()) {
-                getApiRequestsPerSecondCsv(response, bridgeId);
-            } else {
-                getRequestCountPage(request, response);
-            }
         } else if (pathMatches(path, APPLIANCES_PATH)) {
             @Nullable
             String action = request.getParameter(PARAM_ACTION);
@@ -278,30 +266,6 @@ public class HomeConnectServlet extends HttpServlet {
      */
     public void removeBridgeHandler(HomeConnectBridgeHandler bridgeHandler) {
         bridgeHandlers.remove(bridgeHandler);
-    }
-
-    private void getRequestCountPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (bridgeHandlers.isEmpty()) {
-            getBridgesPage(request, response);
-        } else {
-            WebContext context = new WebContext(request, response, request.getServletContext());
-            context.setVariable("bridgeHandlers", bridgeHandlers);
-            templateEngine.process("requests", context, response.getWriter());
-        }
-    }
-
-    private void getApiRequestsPerSecondCsv(HttpServletResponse response, String bridgeId) throws IOException {
-        Optional<HomeConnectBridgeHandler> bridgeHandler = getBridgeHandler(bridgeId);
-        if (bridgeHandler.isPresent()) {
-            response.setContentType("text/csv");
-            PrintWriter writer = response.getWriter();
-
-            writer.println(String.format("%s,%s", "time", "requests"));
-            bridgeHandler.get().getApiClient().getLatestApiRequests().forEach(apiRequest -> writer.println(
-                    String.format("%s,%s", apiRequest.getTime().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME), 1)));
-        } else {
-            response.sendError(HttpStatus.BAD_REQUEST_400, "Unknown bridge");
-        }
     }
 
     private void getAppliancesPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
