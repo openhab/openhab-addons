@@ -19,12 +19,11 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
-import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
 import org.openhab.core.audio.AudioFormat;
@@ -37,12 +36,16 @@ import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
+import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
+
 /**
  * The audio sink for openhab, implemented by a connection to a pulseaudio sink
  *
  * @author Gwendal Roulleau - Initial contribution
  *
  */
+@NonNullByDefault
 public class PulseAudioAudioSink implements AudioSink {
 
     private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSink.class);
@@ -52,7 +55,7 @@ public class PulseAudioAudioSink implements AudioSink {
 
     private PulseaudioHandler pulseaudioHandler;
 
-    private Socket clientSocket;
+    private @Nullable Socket clientSocket;
 
     static {
         SUPPORTED_FORMATS.add(AudioFormat.WAV);
@@ -80,7 +83,7 @@ public class PulseAudioAudioSink implements AudioSink {
      * @param input
      * @return
      */
-    private InputStream getPCMStreamFromMp3Stream(InputStream input) {
+    private @Nullable InputStream getPCMStreamFromMp3Stream(InputStream input) {
         try {
             MpegAudioFileReader mpegAudioFileReader = new MpegAudioFileReader();
             AudioInputStream sourceAIS = mpegAudioFileReader.getAudioInputStream(input);
@@ -94,7 +97,7 @@ public class PulseAudioAudioSink implements AudioSink {
             return mpegconverter.getAudioInputStream(convertFormat, sourceAIS);
 
         } catch (IOException | UnsupportedAudioFileException e) {
-            logger.error("Cannot convert this mp3 stream to pcm stream", e);
+            logger.warn("Cannot convert this mp3 stream to pcm stream: {}", e.getMessage());
         }
         return null;
     }
@@ -106,7 +109,8 @@ public class PulseAudioAudioSink implements AudioSink {
      * @throws IOException
      */
     private void connectIfNeeded() throws IOException {
-        if (clientSocket == null || !clientSocket.isConnected() || clientSocket.isClosed()) {
+        Socket clientSocketLocal = clientSocket;
+        if (clientSocketLocal == null || !clientSocketLocal.isConnected() || clientSocketLocal.isClosed()) {
             String host = pulseaudioHandler.getHost();
             int port = pulseaudioHandler.getSimpleTcpPort();
             clientSocket = new Socket(host, port);
@@ -118,7 +122,7 @@ public class PulseAudioAudioSink implements AudioSink {
      * Disconnect the socket to pulseaudio simple protocol
      */
     public void disconnect() {
-        if (clientSocket == null) {
+        if (clientSocket != null) {
             try {
                 clientSocket.close();
             } catch (IOException e) {
@@ -148,10 +152,12 @@ public class PulseAudioAudioSink implements AudioSink {
 
             try {
                 connectIfNeeded();
-                // send raw audio to the socket and to pulse audio
-                audioInputStream.transferTo(clientSocket.getOutputStream());
+                if (audioInputStream != null && clientSocket != null) {
+                    // send raw audio to the socket and to pulse audio
+                    audioInputStream.transferTo(clientSocket.getOutputStream());
+                }
             } catch (IOException e) {
-                logger.error("Error while trying to send audio to pulseaudio audio sink. Cannot connect to {} : {}",
+                logger.warn("Error while trying to send audio to pulseaudio audio sink. Cannot connect to {}:{}",
                         pulseaudioHandler.getHost(), pulseaudioHandler.getSimpleTcpPort());
             }
         } finally {
@@ -159,7 +165,6 @@ public class PulseAudioAudioSink implements AudioSink {
                 if (audioInputStream != null) {
                     audioInputStream.close();
                 }
-                ;
                 audioStream.close();
             } catch (IOException e) {
             }

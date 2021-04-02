@@ -317,7 +317,12 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
 
     @SuppressWarnings("null")
     public String getHost() {
-        return (String) getBridge().getConfiguration().get(PulseaudioBindingConstants.BRIDGE_PARAMETER_HOST);
+        if (getBridge() != null) {
+            return (String) getBridge().getConfiguration().get(PulseaudioBindingConstants.BRIDGE_PARAMETER_HOST);
+        } else {
+            logger.error("A bridge must be configured for this pulseaudio thing");
+            return "null";
+        }
     }
 
     public int getSimpleTcpPort() {

@@ -92,14 +92,14 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (this.discoveryServiceReg.containsKey(thingHandler)) {
+        ServiceRegistration<?> serviceRegistration = this.discoveryServiceReg.get(thingHandler);
+        if (serviceRegistration != null) {
             PulseaudioDeviceDiscoveryService service = (PulseaudioDeviceDiscoveryService) bundleContext
-                    .getService(discoveryServiceReg.get(thingHandler).getReference());
+                    .getService(serviceRegistration.getReference());
             service.deactivate();
-            discoveryServiceReg.get(thingHandler).unregister();
-            discoveryServiceReg.remove(thingHandler);
+            serviceRegistration.unregister();
         }
-
+        discoveryServiceReg.remove(thingHandler);
         super.removeHandler(thingHandler);
     }
 
@@ -113,8 +113,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            PulseaudioHandler pulseaudioHandler = new PulseaudioHandler(thing, bundleContext);
-            return pulseaudioHandler;
+            return new PulseaudioHandler(thing, bundleContext);
         }
 
         return null;

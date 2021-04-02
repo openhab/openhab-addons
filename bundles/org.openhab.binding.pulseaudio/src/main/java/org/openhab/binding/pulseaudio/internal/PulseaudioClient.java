@@ -24,6 +24,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
@@ -143,19 +144,19 @@ public class PulseaudioClient {
         modules.addAll(Parser.parseModules(listModules()));
 
         items.clear();
-        if (TYPE_FILTERS.get(SINK_THING_TYPE.getId())) {
+        if (Optional.ofNullable(TYPE_FILTERS.get(SINK_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading sinks");
             items.addAll(Parser.parseSinks(listSinks(), this));
         }
-        if (TYPE_FILTERS.get(SOURCE_THING_TYPE.getId())) {
+        if (Optional.ofNullable(TYPE_FILTERS.get(SOURCE_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading sources");
             items.addAll(Parser.parseSources(listSources(), this));
         }
-        if (TYPE_FILTERS.get(SINK_INPUT_THING_TYPE.getId())) {
+        if (Optional.ofNullable(TYPE_FILTERS.get(SINK_INPUT_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading sink-inputs");
             items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
         }
-        if (TYPE_FILTERS.get(SOURCE_OUTPUT_THING_TYPE.getId())) {
+        if (Optional.ofNullable(TYPE_FILTERS.get(SOURCE_OUTPUT_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading source-outputs");
             items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
         }
@@ -404,13 +405,14 @@ public class PulseaudioClient {
      *            values from 0 - 100)
      */
     public void setVolumePercent(AbstractAudioDeviceConfig item, int vol) {
+        int volumeToSet = vol;
         if (item == null) {
             return;
         }
-        if (vol <= 100) {
-            vol = toAbsoluteVolume(vol);
+        if (volumeToSet <= 100) {
+            volumeToSet = toAbsoluteVolume(volumeToSet);
         }
-        setVolume(item, vol);
+        setVolume(item, volumeToSet);
     }
 
     /**
