@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.rachio.internal.api.RachioApiRateLimit;
+import org.openhab.binding.rachio.internal.api.RachioApiResult;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioEventProperty;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioZoneStatus;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudNetworkSettings;
@@ -134,7 +134,7 @@ public class RachioEventGsonDTO {
     public RachioCloudNetworkSettings network; // "network" : {}
     String pin = "";
 
-    public RachioApiRateLimit apiResult = new RachioApiRateLimit();
+    public RachioApiResult apiResult = new RachioApiResult();
 
     // public JsonArray eventDatas;
     @Nullable

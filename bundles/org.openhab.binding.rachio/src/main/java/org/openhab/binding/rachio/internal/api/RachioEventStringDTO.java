@@ -19,12 +19,12 @@ import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import com.google.gson.Gson;
 
 /**
- * {@link RachioEventString} store some relevant information from API events.
+ * {@link RachioEventStringDTO} store some relevant information from API events.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class RachioEventString {
+public class RachioEventStringDTO {
     @Nullable
     private GenericEvent gEvent;
     @Nullable
@@ -77,7 +77,7 @@ public class RachioEventString {
         }
     }
 
-    public RachioEventString(RachioEventGsonDTO event) {
+    public RachioEventStringDTO(RachioEventGsonDTO event) {
         if (event.type.equals("ZONE_STATUS")) {
             zEvent = new ZoneEvent(event);
         } else {

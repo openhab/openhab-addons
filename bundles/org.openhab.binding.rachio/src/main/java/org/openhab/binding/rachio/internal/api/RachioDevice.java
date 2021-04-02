@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudNetworkSettings;
-import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
 import org.openhab.binding.rachio.internal.handler.RachioDeviceHandler;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -45,6 +45,8 @@ public class RachioDevice extends RachioCloudDevice {
     public String runList = "";
     public Integer runTime = 0;
     public String lastEvent = "";
+    @Nullable
+    public DateTimeType lastEventTime;
     public boolean paused = false;
     public int rainDelay = 0;
 
@@ -290,15 +292,17 @@ public class RachioDevice extends RachioCloudDevice {
         runTime = time;
     }
 
-    public void setEvent(RachioEventGsonDTO event) {
-        String s = new RachioEventString(event).toJson();
-        if (!s.isEmpty()) {
-            lastEvent = s;
-        }
+    public void setEvent(String event, DateTimeType ts) {
+        lastEvent = event;
+        lastEventTime = ts;
     }
 
     public String getEvent() {
         return lastEvent;
+    }
+
+    public @Nullable DateTimeType getEventTime() {
+        return lastEventTime;
     }
 
     public void setNetwork(@Nullable RachioCloudNetworkSettings network) {

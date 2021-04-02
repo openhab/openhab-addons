@@ -15,9 +15,13 @@ package org.openhab.binding.rachio.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DateTimeType;
 
 /**
  * {@link RachioUtils} provides some helper functions
@@ -26,6 +30,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class RachioUtils {
+    public static String getString(@Nullable String value) {
+        return value != null ? value : "";
+    }
+
     public static String substringBefore(@Nullable String string, String pattern) {
         if (string != null) {
             int pos = string.indexOf(pattern);
@@ -87,5 +95,13 @@ public class RachioUtils {
         } catch (UnsupportedEncodingException e) {
             return input;
         }
+    }
+
+    public static Long now() {
+        return System.currentTimeMillis() / 1000L;
+    }
+
+    public static DateTimeType getTimestamp() {
+        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now()), ZoneId.systemDefault()));
     }
 }

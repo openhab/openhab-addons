@@ -25,12 +25,7 @@ import org.openhab.binding.rachio.internal.api.RachioZone;
 
 @NonNullByDefault
 public interface RachioStatusListener {
-    /**
-     * This method will be called whenever a new device/zone status is received by the cloud handler.
-     *
-     * @param updatedDev On device updates this is the new RachioDevice information, maybe null!!
-     * @param supdatedZone On zone updates this is the new RachioZone information, maybe null!!
-     */
-
     public boolean onThingStateChangedl(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone);
+
+    public void onConfigurationUpdated();
 }

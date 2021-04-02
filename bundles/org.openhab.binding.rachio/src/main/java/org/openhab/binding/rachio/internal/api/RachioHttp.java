@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.api;
 
 import static java.net.HttpURLConnection.*;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.getString;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -27,6 +28,7 @@ import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +65,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    public RachioApiRateLimit httpGet(String url, @Nullable String urlParameters) throws RachioApiException {
+    public RachioApiResult httpGet(String url, @Nullable String urlParameters) throws RachioApiException {
         return httpRequest(HttpMethod.GET, url, urlParameters, null);
     }
 
@@ -75,7 +77,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    public RachioApiRateLimit httpPut(String url, String putData) throws RachioApiException {
+    public RachioApiResult httpPut(String url, String putData) throws RachioApiException {
         return httpRequest(HttpMethod.PUT, url, null, putData);
     }
 
@@ -87,7 +89,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    public RachioApiRateLimit httpPost(String url, String postData) throws RachioApiException {
+    public RachioApiResult httpPost(String url, String postData) throws RachioApiException {
         return httpRequest(HttpMethod.POST, url, null, postData);
     }
 
@@ -99,7 +101,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception if something went wrong (e.g. unable to connect)
      */
-    public RachioApiRateLimit httpDelete(String url, @Nullable String urlParameters) throws RachioApiException {
+    public RachioApiResult httpDelete(String url, @Nullable String urlParameters) throws RachioApiException {
         return httpRequest(HttpMethod.DELETE, url, urlParameters, null);
     }
 
@@ -111,10 +113,10 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    protected RachioApiRateLimit httpRequest(String method, String url, @Nullable String urlParameters,
+    protected RachioApiResult httpRequest(String method, String url, @Nullable String urlParameters,
             @Nullable String reqDatas) throws RachioApiException {
 
-        RachioApiRateLimit result = new RachioApiRateLimit();
+        RachioApiResult result = new RachioApiResult();
         try {
             apiCalls++;
 
@@ -181,7 +183,11 @@ public class RachioHttp {
 
             return result;
         } catch (RuntimeException | IOException e) {
-            throw new RachioApiException(e.toString(), result, e);
+            result.resultString = getString(e.toString());
+            if (result.resultString.contains("Server returned HTTP response code: 429")) {
+                result.responseCode = HttpStatus.TOO_MANY_REQUESTS_429;
+            }
+            throw new RachioApiException(result.resultString, result, e);
         }
     }
 }

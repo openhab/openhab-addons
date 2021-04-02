@@ -122,14 +122,13 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
      */
     public boolean webHookEvent(String ipAddress, RachioEventGsonDTO event) {
         try {
-            logger.debug("Rachio Cloud Event for device '{}' received", event.deviceId);
+            logger.debug("RachioCloud: Event for device {} received", event.deviceName);
 
             // process event parameters
             for (HashMap.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
                 RachioBridge bridge = be.getValue();
                 if (bridge.cloudHandler != null) {
                     RachioBridgeHandler cloudHandler = bridge.cloudHandler;
-                    logger.trace("Check for externalId: '{}' / '{}'", event.externalId, cloudHandler.getExternalId());
                     if (cloudHandler.getExternalId().equals(event.externalId)) {
                         return cloudHandler.webHookEvent(event);
                     }
@@ -137,12 +136,14 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             }
 
             // invalid externalId, could be an indicator for unauthorized access
-            logger.warn("Unauthorized webhook event (wrong externalId: '{}')", event.externalId);
+            logger.warn("RachioCloud: Unauthorized webhook event (wrong externalId: {}, source ip: {})",
+                    event.externalId, ipAddress);
             return false;
         } catch (RuntimeException e) {
-            logger.debug("Unable to process event: {}", e.getMessage());
+            logger.debug("RachioCloud: Unable to process event", e);
         }
-        logger.debug("Unable to route event to bridge, externalId='{}', deviceId='{}'", event.externalId,
+
+        logger.debug("RachioCloud: Unable to route event to bridge, externalId={}, deviceId={}", event.externalId,
                 event.deviceId);
         return false;
     }

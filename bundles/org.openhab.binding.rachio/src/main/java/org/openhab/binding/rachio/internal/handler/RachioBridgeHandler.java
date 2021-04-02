@@ -13,6 +13,7 @@
 package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.getString;
 
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +73,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
     /**
      * Thing Handler for the Bridge thing. Handles the cloud connection and links devices+zones to a bridge.
      * Creates an instance of the RachioApi (holding all RachioDevices + RachioZones for the given apikey)
-     * 
+     *
      * @param bridge: Bridge class object
      */
     public RachioBridgeHandler(final Bridge bridge) {
@@ -96,7 +98,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
             thingConfig = bindingConfig;
             thingConfig.updateConfig(getConfig().getProperties());
 
-            logger.debug("Connecting to Rachio cloud");
+            logger.debug("RachioCloud: Connecting to Rachio Cloud");
             createCloudConnection(rachioApi);
             updateProperties();
 
@@ -116,20 +118,31 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
                 }
             }
 
-            logger.info("Cloud connector initialized.");
+            logger.info("RachioCloud: Connector initialized");
             updateStatus(ThingStatus.ONLINE);
         } catch (RachioApiException e) {
             errorMessage = e.toString();
+            if (e.getApiResult().isResponseRateLimit()) {
+                logger.warn("RachioCloud: Account is blocked due to rate limit, wait 24h and retry");
+            }
         } catch (UnknownHostException e) {
-            errorMessage = MessageFormat.format("Unknown host '{0}' or Internet connection down", e.getMessage());
+            errorMessage = "Unknown Host or Internet connection down";
         } catch (RuntimeException e) {
-            errorMessage = e.getMessage();
+            errorMessage = getString(e.getMessage());
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.debug("RachioBridge: {}", errorMessage);
+                logger.debug("RachioCloud: {}", errorMessage);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
         }
+    }
+
+    /**
+     * This routine is called every time the Thing configuration has been changed
+     */
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        rachioStatusListeners.stream().forEach(l -> l.onConfigurationUpdated());
     }
 
     /**
@@ -146,7 +159,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         // cloud handler has no channels
-        logger.debug("Handle command {} for {}", command.toString(), channelUID.getAsString());
+        logger.debug("RachioCloud: Command {} for {} ignored", command, channelUID.getAsString());
     }
 
     /**
@@ -155,12 +168,12 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
      */
     public void refreshDeviceStatus() {
         String errorMessage = "";
-        logger.debug("RachioBridgeHandler: refreshDeviceStatus");
+        logger.trace("RachioCloud: refreshDeviceStatus");
 
         try {
             synchronized (this) {
                 if (jobPending) {
-                    logger.debug("RachioBridge: Already checking");
+                    logger.debug("RachioCloud: Already checking");
                     return;
                 }
                 jobPending = true;
@@ -168,7 +181,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
 
             HashMap<String, RachioDevice> deviceList = getDevices();
             if (deviceList == null) {
-                logger.debug("Cloud access not initialized yet!");
+                logger.debug("RachioCloud: Cloud access not initialized yet!");
                 return;
             }
 
@@ -177,7 +190,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
             if (checkApi.getLastApiResult().isRateLimitBlocked()) {
                 String errorCritical = "";
                 errorCritical = MessageFormat.format(
-                        "RachioBridge: API access blocked on update ({0} / {1}), reset at {2}",
+                        "RachioCloud: API access blocked on update ({0} / {1}), reset at {2}",
                         checkApi.getLastApiResult().rateRemaining, checkApi.getLastApiResult().rateLimit,
                         checkApi.getLastApiResult().rateReset);
                 logger.debug("{}", errorCritical);
@@ -188,13 +201,13 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
             if (checkApi.getLastApiResult().isRateLimitWarning()) {
                 skipCalls++;
                 if (skipCalls % RACHIO_RATE_SKIP_CALLS > 0) {
-                    logger.info("API limit is getting critical -> skip update ({} / {})", skipCalls,
+                    logger.info("RachioCloud: API limit is getting critical -> skip update ({} / {})", skipCalls,
                             RACHIO_RATE_SKIP_CALLS);
                     return;
                 }
             }
             if (this.getThing().getStatus() != ThingStatus.ONLINE) {
-                logger.debug("Bridge is ONLINE");
+                logger.debug("RachioCloud: Bridge is ONLINE");
                 updateStatus(ThingStatus.ONLINE);
             }
 
@@ -203,17 +216,17 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
                 RachioDevice checkDev = de.getValue();
                 RachioDevice dev = deviceList.get(checkDev.id);
                 if (dev == null) {
-                    logger.info("New device detected: '{}' - '{}'", checkDev.id, checkDev.name);
+                    logger.info("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
                 } else {
                     if (!dev.compare(checkDev)) {
-                        logger.trace("Update data for device '{}'", dev.name);
+                        logger.trace("RachioCloud: Update data for device {}", dev.name);
                         if (dev.getThingHandler() != null) {
                             dev.getThingHandler().onThingStateChangedl(checkDev, null);
                         } else {
                             rachioStatusListeners.stream().forEach(l -> l.onThingStateChangedl(checkDev, null));
                         }
                     } else {
-                        logger.trace("Device '{}' was not updaterd", checkDev.id);
+                        logger.trace("RachioCloud: Device {} was not updaterd", checkDev.id);
                     }
 
                     HashMap<String, RachioZone> zoneList = dev.getZones();
@@ -222,17 +235,17 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
                         RachioZone checkZone = ze.getValue();
                         RachioZone zone = zoneList.get(checkZone.id);
                         if (zone == null) {
-                            logger.debug("New zone detected: '{}' - '{}'", checkDev.id, checkZone.name);
+                            logger.debug("RachioCloud: New zone detected: {} - {}", checkDev.id, checkZone.name);
                         } else {
                             if (!zone.compare(checkZone)) {
-                                logger.trace("Update status for zone '{}'", zone.name);
+                                logger.trace("RachioCloud: Update status for zone {}", zone.name);
                                 if (zone.getThingHandler() != null) {
                                     zone.getThingHandler().onThingStateChangedl(checkDev, null);
                                 } else {
                                     rachioStatusListeners.stream().forEach(l -> l.onThingStateChangedl(checkDev, null));
                                 }
                             } else {
-                                logger.trace("Zone '{}' was not updated.", checkZone.id);
+                                logger.trace("RachioCloud: Zone {} was not updated.", checkZone.id);
                             }
                         }
                     }
@@ -241,7 +254,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (RachioApiException e) {
             errorMessage = e.toString();
         } catch (RuntimeException | UnknownHostException e) {
-            errorMessage = e.getMessage();
+            errorMessage = getString(e.getMessage());
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("RachioBridge: {}", errorMessage);
@@ -251,7 +264,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public void shutdown() {
-        logger.info("Rachio Bridge: Shutting down");
+        logger.info("RachioCloud: Shutting down");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
     }
 
@@ -263,7 +276,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
     private void createCloudConnection(RachioApi api) throws RachioApiException, UnknownHostException {
         if (thingConfig.apikey.isEmpty()) {
             throw new RachioApiException(
-                    "RachioBridgeHandler: Unable to connect to Rachio Cloud: apikey not set, check services/rachio.cfg!");
+                    "RachioCloud: Unable to connect to Rachio Cloud: apikey not set, check services/rachio.cfg!");
         }
 
         // initialiaze API access, may throw an exception
@@ -402,7 +415,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
         try {
             return rachioApi.getDevices();
         } catch (RuntimeException e) {
-            logger.debug("Unable to retrieve device list: {}", e.getMessage());
+            logger.debug("Unable to retrieve device list", e);
         }
         return null;
     }
@@ -438,7 +451,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
      */
     public void registerWebHook(String deviceId) throws RachioApiException {
         if (getCallbackUrl().isEmpty()) {
-            logger.debug("No callbackUrl configured.");
+            logger.debug("RachioCloud: No callbackUrl configured.");
         } else {
             rachioApi.registerWebHook(deviceId, getCallbackUrl(), getExternalId(), getClearAllCallbacks());
         }
@@ -465,11 +478,11 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
                     }
                 }
             }
-            logger.debug("Event {}.{} for unknown device '{}': {}", event.category, event.type, event.deviceId,
-                    event.summary);
+            logger.debug("RachioCloud: Event {}.{} for unknown device {}: {}", event.category, event.type,
+                    event.deviceId, event.summary);
         } catch (RuntimeException e) {
-            logger.debug("Unable to process event {}.{} for device '{}': {}", event.category, event.type,
-                    event.deviceId, e.getMessage());
+            logger.debug("RachioCloud: Unable to process event {}.{} for device {}", event.category, event.type,
+                    event.deviceId, e);
         }
         return false;
     }
@@ -556,7 +569,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public synchronized void dispose() {
-        logger.debug("Disposing Rachio cloud handler");
+        logger.debug("RachioCloud: Disposing handler");
 
         ScheduledFuture<?> job = pollingJob;
         if (job != null && !job.isCancelled()) {

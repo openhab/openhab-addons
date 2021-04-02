@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
 import org.openhab.binding.rachio.internal.handler.RachioZoneHandler;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -43,6 +44,9 @@ public class RachioZone extends RachioCloudZone {
     protected String uniqueId = "";
 
     protected int startRunTime = 0;
+    protected String lastEvent = "";
+    @Nullable
+    protected DateTimeType lastEventTime;
 
     /**
      * Use reflection to shallow copy simple type fields with matching names from one object to another
@@ -146,5 +150,18 @@ public class RachioZone extends RachioCloudZone {
 
     public boolean isEnable() {
         return enabled;
+    }
+
+    public void setEvent(String event, DateTimeType ts) {
+        lastEvent = event;
+        lastEventTime = ts;
+    }
+
+    public String getEvent() {
+        return lastEvent;
+    }
+
+    public @Nullable DateTimeType getEventTime() {
+        return lastEventTime;
     }
 }

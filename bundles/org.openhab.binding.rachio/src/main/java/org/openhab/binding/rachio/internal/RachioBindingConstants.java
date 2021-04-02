@@ -82,9 +82,13 @@ public class RachioBindingConstants {
     public static final String CHANNEL_DEVICE_RUN_ZONES = "runZones";
     public static final String CHANNEL_DEVICE_RUN_TIME = "runTime";
     public static final String CHANNEL_DEVICE_STOP = "stop";
-    public static final String CHANNEL_DEVICE_EVENT = "event";
-    public static final String CHANNEL_DEVICE_SCHEDULE = "scheduleName";
     public static final String CHANNEL_DEVICE_RAIN_DELAY = "rainDelay";
+    public static final String CHANNEL_DEVICE_RAIN_STRIPPED = "rainSensorTripped";
+
+    public static final String CHANNEL_SCHED_NAME = "scheduleName";
+    public static final String CHANNEL_SCHED_INFO = "scheduleInfo";
+    public static final String CHANNEL_SCHED_START = "scheduleStart";
+    public static final String CHANNEL_SCHED_END = "scheduleEnd";
 
     // List of all Zone Channel ids
     public static final String CHANNEL_ZONE_NAME = "name";
@@ -94,18 +98,10 @@ public class RachioBindingConstants {
     public static final String CHANNEL_ZONE_RUN_TIME = "runTime";
     public static final String CHANNEL_ZONE_RUN_TOTAL = "runTotal";
     public static final String CHANNEL_ZONE_IMAGEURL = "imageUrl";
-    // public static final String CHANNEL_ZONE_EVENT = "zoneEvent";
-    // public static final String CHANNEL_ZONE_AVL_WATER = "avlWater";
-    // public static final String CHANNEL_ZONE_ROOT_DEPTH = "rootDepth";
-    // public static final String CHANNEL_ZONE_EFFICIENCY = "efficiency";
-    // public static final String CHANNEL_ZONE_YARD_SQFT = "yardSqft";
-    // public static final String CHANNEL_ZONE_WATHER_DEPTH = "watherDepth";
-    // public static final String CHANNEL_ZONE_SOIL_TYPE = "soilType";
-    // public static final String CHANNEL_ZONE_SLOPE_TYPE = "slopeType";
-    // public static final String CHANNEL_ZONE_CROP_TYPE = "cropType";
-    // public static final String CHANNEL_ZONE_SHADE_TYPE = "shadeType";
-    // public static final String CHANNEL_ZONE_NOZZLE_TYPE = "nozzleType";
-    // public static final String CHANNEL_ZONE_NOZZLE_IPH = "nozzleIph";
+
+    public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
+    public static final String CHANNEL_LAST_EVENT = "lastEvent";
+    public static final String CHANNEL_LAST_EVENTTS = "lastEventTime";
 
     // Default for config options / thing settings
     public static int DEFAULT_POLLING_INTERVAL_SEC = 120;

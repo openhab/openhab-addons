@@ -66,9 +66,9 @@ public class RachioWebHookServlet extends HttpServlet {
         this.rachioHandlerFactory = rachioHandlerFactory;
         try {
             httpService.registerServlet(SERVLET_WEBHOOK_PATH, this, null, httpService.createDefaultHttpContext());
-            logger.debug("Started Rachio Webhook servlet at {}", SERVLET_WEBHOOK_PATH);
+            logger.debug("RchioWebhook: Started servlet at {}", SERVLET_WEBHOOK_PATH);
         } catch (ServletException | NamespaceException e) {
-            logger.warn("Could not start Rachio Webhook servlet: {}", e.getMessage(), e);
+            logger.warn("RchioWebhook: Could not start Rachio Webhook servlet", e);
         }
     }
 

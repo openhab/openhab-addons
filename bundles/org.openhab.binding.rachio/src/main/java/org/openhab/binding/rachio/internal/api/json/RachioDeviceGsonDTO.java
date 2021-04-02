@@ -33,16 +33,17 @@ public class RachioDeviceGsonDTO {
         public double longitude = 0.0; // "longitude":-62.3335037231445,
         public String name = ""; // "name":"My Rachio"
         public ArrayList<RachioCloudScheduleRule> scheduleRules = new ArrayList<>(); // "scheduleRules":[]
-        public boolean cycleSoak = false; // "cycleSoak":false}
         public String serialNumber = ""; // "serialNumber":"VR0549999",
-        public long rainDelayExpirationDate = 0; // "rainDelayExpirationDate":0,
         public String macAddress = ""; // "macAddress":"XXXXXXXXXXXX",
+        public long rainDelayExpirationDate = 0; // "rainDelayExpirationDate":0,
         public boolean on = true; // "on":true,
         public ArrayList<RachioCloudScheduleRule> flexScheduleRules = new ArrayList<>(); // "flexScheduleRules":[],
         public String model = ""; // "model":"GENERATION2_8ZONE",
         public String scheduleModeType = ""; // "scheduleModeType":"MANUAL",
         public boolean deleted = false; // "deleted":false,
+        public boolean rainSensorTripped = false;
         public boolean homeKitCompatible = false; // "homeKitCompatible":false
+        public long utcOffset = 0;
     }
 
     public static class RachioCloudScheduleRule {

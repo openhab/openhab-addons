@@ -22,7 +22,7 @@
 				<label>Polling/Refresh Interval</label>
 				<description>Seconds between fetching values from the cloud service</description>
 				<required>false</required>
-				<default>60</default>
+				<default>120</default>
 			</parameter>
 			<parameter name="defaultRuntime" type="integer" min="30" step="30">
 				<label>Default Runtime</label>
@@ -63,10 +63,16 @@
 			<channel id="runZones" typeId="dev_runZones"/>
 			<channel id="runTime" typeId="dev_runTime"/>
 			<channel id="rainDelay" typeId="dev_rainDelay"/>
-			<channel id="devEvent" typeId="dev_event"/>
+			<channel id="rainSensorTripped" typeId="dev_rainSensorTripped"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="lastEvent" typeId="lastEvent"/>
+			<channel id="lastEventTime" typeId="lastEventTime"/>
+			<channel id="scheduleName" typeId="scheduleName"/>
+			<channel id="scheduleInfo" typeId="scheduleInfo"/>
+			<channel id="scheduleStart" typeId="scheduleStart"/>
+			<channel id="scheduleEnd" typeId="scheduleEnd"/>
 			<channel id="latitude" typeId="dev_latitude"/>
 			<channel id="longitude" typeId="dev_longitude"/>
-			<channel id="scheduleName" typeId="dev_schedule"/>
 		</channels>
 	</thing-type>
 
@@ -113,12 +119,12 @@
 	<channel-type id="dev_rainDelay">
 		<item-type>Number</item-type>
 		<label>Rain Delay</label>
-		<description>>0: Rain delay device</description>
+		<description>>1: Rain delay device</description>
 	</channel-type>
-	<channel-type id="dev_event">
-		<item-type>String</item-type>
-		<label>Last Device Event</label>
-		<description>Events can be received when callback is configured.</description>
+	<channel-type id="dev_rainSensorTripped">
+		<item-type>Switch</item-type>
+		<label>Rain Sensor Tripped</label>
+		<description>>ON: The rain sensor is in tripped state</description>
 	</channel-type>
 	<channel-type id="dev_latitude" advanced="true">
 		<item-type>Number</item-type>
@@ -160,21 +166,15 @@
 			<channel id="runTime" typeId="zone_runTime"/>
 			<channel id="runTotal" typeId="zone_runTotal"/>
 			<channel id="imageUrl" typeId="zone_imageUrl"/>
-			<channel id="zoneEvent" typeId="zone_event"/>
-			<!-- channel id="avlWater" typeId="zone_avlWater"/ -->
-			<!-- channel id="rootDepth" typeId="zone_rootDepth"/ -->
-			<!-- channel id="efficiency" typeId="zone_efficiency"/ -->
-			<!-- channel id="yardSqft" typeId="zone_yardSqft"/ -->
-			<!-- channel id="watherDepth" typeId="zone_waterDepth"/ -->
-			<!-- channel id="nozzleHeadCat" typeId="zone_nozzleHeadCat"/ -->
-			<!-- channel id="nozzleIph" typeId="zone_nozzleIph"/ -->
-			<!-- channel id="nozzleImageUrl" typeId="zone_nozzleImageUrl"/ -->
+			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="lastEvent" typeId="lastEvent"/>
+			<channel id="lastEventTime" typeId="lastEventTime"/>
 		</channels>
 	</thing-type>
 
 	<channel-type id="zone_name">
 		<item-type>String</item-type>
-		<label>Zone Name</label>
+		<label>Name</label>
 		<description>Name of the zone as configured in the Rachip App</description>
 		<state readOnly="true" pattern="%s">
 		</state>
@@ -188,7 +188,7 @@
 	</channel-type>
 	<channel-type id="zone_enabled">
 		<item-type>Switch</item-type>
-		<label>Zone Enabled</label>
+		<label>Enabled</label>
 		<description>ON: Zone is enabled, OFF: zone is disabled)</description>
 	</channel-type>
 	<channel-type id="zone_run">
@@ -198,38 +198,13 @@
 	</channel-type>
 	<channel-type id="zone_runTime">
 		<item-type>Number</item-type>
-		<label>Zone Runtime</label>
+		<label>Runtime</label>
 		<description>Set > 0 to start zone for given secs</description>
-	</channel-type>
-	<channel-type id="zone_event">
-		<item-type>String</item-type>
-		<label>Last Zone Event</label>
-		<description>Events can be received when callback is configured.</description>
 	</channel-type>
 	<channel-type id="zone_avlWater">
 		<item-type>Number</item-type>
 		<label>Available Water</label>
 		<description>Available water for the zone.</description>
-	</channel-type>
-	<channel-type id="zone_rootDepth">
-		<item-type>Number</item-type>
-		<label>Root Depth</label>
-		<description>Depth of the root for this zone.</description>
-	</channel-type>
-	<channel-type id="zone_efficiency">
-		<item-type>Number</item-type>
-		<label>Efficiency</label>
-		<description></description>
-	</channel-type>
-	<channel-type id="zone_yardSqft">
-		<item-type>Number</item-type>
-		<label>Size of the zone in sqft</label>
-		<description></description>
-	</channel-type>
-	<channel-type id="zone_waterDepth">
-		<item-type>Number</item-type>
-		<label>Water Depth</label>
-		<description></description>
 	</channel-type>
 	<channel-type id="zone_runTotal">
 		<item-type>Number</item-type>
@@ -238,22 +213,43 @@
 	</channel-type>
 	<channel-type id="zone_imageUrl">
 		<item-type>String</item-type>
-		<label>Zone Image URL</label>
+		<label>Image URL</label>
 		<description>URL for the zone picture/image.</description>
 	</channel-type>
-	<channel-type id="zone_nozzleHeadCat">
+
+	<channel-type id="scheduleName">
 		<item-type>String</item-type>
-		<label>Nozzle Head Category</label>
-		<description>Type of the nozzle's head.</description>
+		<label>Schedule Name</label>
+		<description>Name of schedule.</description>
 	</channel-type>
-	<channel-type id="zone_nozzleIph">
-		<item-type>Number</item-type>
-		<label>Nozzle Inches per Hour</label>
-		<description>Nozzle's inches per hour</description>
-	</channel-type>
-	<channel-type id="zone_nozzleImageUrl">
+	<channel-type id="scheduleInfo">
 		<item-type>String</item-type>
-		<label>Nozzle Image URL</label>
-		<description>URL for a nozzle image</description>
+		<label>Schedule Info</label>
+		<description>Brief description of schedule.</description>
+	</channel-type>
+	<channel-type id="scheduleStart">
+		<item-type>DateTime</item-type>
+		<label>Schedule Start</label>
+		<description>Start of schedule.</description>
+	</channel-type>
+	<channel-type id="scheduleEnd">
+		<item-type>DateTime</item-type>
+		<label>Schedule End</label>
+		<description>End of schedule.</description>
+	</channel-type>
+	<channel-type id="lastUpdate">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp of last status update.</description>
+	</channel-type>
+	<channel-type id="lastEvent">
+		<item-type>String</item-type>
+		<label>Last Event</label>
+		<description>Events can be received when callback is configured.</description>
+	</channel-type>
+	<channel-type id="lastEventTime">
+		<item-type>DateTime</item-type>
+		<label>Last Event Time</label>
+		<description>Timestamp of last status update.</description>
 	</channel-type>
 </thing:thing-descriptions>

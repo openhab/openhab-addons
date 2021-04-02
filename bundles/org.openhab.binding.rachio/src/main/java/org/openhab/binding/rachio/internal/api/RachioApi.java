@@ -57,7 +57,7 @@ public class RachioApi {
     protected String fullName = "";
     protected String email = "";
 
-    protected RachioApiRateLimit lastApiResult = new RachioApiRateLimit();
+    protected RachioApiResult lastApiResult = new RachioApiResult();
     protected static final Integer EXTERNAL_ID_SALT = (int) (Math.random() * 50 + 1);
 
     private HashMap<String, RachioDevice> deviceList = new HashMap<String, RachioDevice>();
@@ -67,11 +67,11 @@ public class RachioApi {
         this.personId = personId;
     }
 
-    public RachioApiRateLimit getLastApiResult() {
+    public RachioApiResult getLastApiResult() {
         return lastApiResult;
     }
 
-    protected void setApiResult(RachioApiRateLimit result) {
+    protected void setApiResult(RachioApiResult result) {
         lastApiResult = result;
     }
 
@@ -91,8 +91,6 @@ public class RachioApi {
         if (!initializePersonId() || !initializeDevices(bridgeUID) || !initializeZones()) {
             throw new RachioApiException("API initialization failed!");
         }
-
-        logger.debug("Rachio API initialized");
     }
 
     public HashMap<String, RachioDevice> getDevices() {
@@ -204,7 +202,7 @@ public class RachioApi {
             json = httpApi.httpGet(APIURL_BASE + APIURL_DEV_QUERY_WEBHOOK + "/" + deviceId + "/webhook",
                     null).resultString; // throws
             logger.debug("Registered webhooks for device '{}': {}", deviceId, json);
-            logger.trace("RachioWebHook: Registered WebHooks - JSON='{}'", json);
+            logger.trace("Registered WebHooks - JSON='{}'", json);
             json = "{\"webhooks\":" + json + "}";
             Gson gson = new Gson();
             RachioApiWebHookList list = gson.fromJson(json, RachioApiWebHookList.class);

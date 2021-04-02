@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class RachioApiException extends Exception {
     private static final long serialVersionUID = -2579498702258574787L;
-    private RachioApiRateLimit apiResult = new RachioApiRateLimit();
+    private RachioApiResult apiResult = new RachioApiResult();
     @Nullable
     private Throwable e = null;
 
@@ -42,18 +42,18 @@ public class RachioApiException extends Exception {
         e = throwable;
     }
 
-    public RachioApiException(String message, RachioApiRateLimit result) {
+    public RachioApiException(String message, RachioApiResult result) {
         super(message);
         apiResult = result;
     }
 
-    public RachioApiException(String message, RachioApiRateLimit result, Throwable throwable) {
+    public RachioApiException(String message, RachioApiResult result, Throwable throwable) {
         super(message);
         apiResult = result;
         e = throwable;
     }
 
-    public RachioApiRateLimit getApiResult() {
+    public RachioApiResult getApiResult() {
         return apiResult;
     }
 
@@ -73,12 +73,12 @@ public class RachioApiException extends Exception {
                 message = MessageFormat.format("Unable to connect to {0} (unknown host / internet connection down)",
                         string[1]);
             } else if (ex.getClass() == MalformedURLException.class) {
-                message = MessageFormat.format("Invalid URL: '{0}'", message);
+                message = MessageFormat.format("Invalid URL: {0}", message);
             } else {
-                message = MessageFormat.format("'{0}' ({1}", ex.toString(), ex.getMessage());
+                message = MessageFormat.format("{0} ({1}", ex.toString(), ex.getMessage());
             }
         } else {
-            message = MessageFormat.format("'{0}' ({1})", super.getClass().toString(), super.getMessage());
+            message = MessageFormat.format("{0} ({1})", super.getClass().toString(), super.getMessage());
         }
 
         String url = !apiResult.url.isEmpty() ? MessageFormat.format(", {0} {1}, http code={2}",
@@ -88,7 +88,7 @@ public class RachioApiException extends Exception {
                         apiResult.rateRemaining, apiResult.rateLimit)
                 : "";
         String resultString = !apiResult.resultString.isEmpty()
-                ? MessageFormat.format(", result = '{0}'", apiResult.resultString)
+                ? MessageFormat.format(", result = {0}", apiResult.resultString)
                 : "";
         return MessageFormat.format("Exception: {0}{1}{2}{3}", message, url, rateLimit, resultString);
     }

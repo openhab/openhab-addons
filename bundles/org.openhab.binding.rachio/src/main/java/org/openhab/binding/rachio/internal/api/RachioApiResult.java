@@ -16,18 +16,19 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RachioApiRateLimit} help to supervise the API rate limits. Rachio blocks API access for accounts exceeding
+ * The {@link RachioApiResult} help to supervise the API rate limits. Rachio blocks API access for accounts exceeding
  * the limit of 1700 calls per day.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class RachioApiRateLimit {
-    private final Logger logger = LoggerFactory.getLogger(RachioApiRateLimit.class);
+public class RachioApiResult {
+    private final Logger logger = LoggerFactory.getLogger(RachioApiResult.class);
 
     public String requestMethod = "";
     public String url = "";
@@ -75,6 +76,10 @@ public class RachioApiRateLimit {
 
         logger.trace("API rate limit: remaining={}, limit={}, reset at {}", this.rateRemaining, rateLimit,
                 this.rateReset);
+    }
+
+    public boolean isResponseRateLimit() {
+        return responseCode == HttpStatus.TOO_MANY_REQUESTS_429;
     }
 
     public boolean isRateLimitWarning() {

@@ -75,32 +75,42 @@ The bridge thing doesn't have any channels.
 
 ### Device Thing - represents one Rachio Controller
 
-|Channel|Description|
-|:-----------|:----------------------------------------------------------------------------------------------------------------------|
-|name        |Device Name - name of the controller|
-|active      |ON: Device is active, OFF: Device is deactivated|
-|online      |ON: Controller is connected to the cloud. OFF: Controller is offline, check internet connection.|
-|paused      |OFF: Device is in normal run mode; ON: The device is in suspend mode, no schedule is executed|
-|stop        |ON: Stop watering for all zones (command), OFF: normal operation|
-|run         |ON: Start watering selected/all zones (defined in runZones)|
-|runZones    |Zones to run at a time - list, e.g: "1,3" = run zone 1 and 3; "" means: run all zones; Zones will be started by sending ON to the run channel|
-|scheduleName|Currently running schedule, if empty no schedule is running|
-|devEvent    |Receives a JSON-formatted message on each device event from the cloud (requires event callback).|
+|Channel      |Description                                                                                                            |
+|:------------|:----------------------------------------------------------------------------------------------------------------------|
+|name         |Device Name - name of the controller                                                                                   |
+|active       |ON: Device is active, OFF: Device is deactivated                                                                       |
+|online       |ON: Controller is connected to the cloud. OFF: Controller is offline, check Internet connection.                       |
+|paused       |OFF: Device is in normal run mode; ON: The device is in suspend mode, no schedule is executed                          |
+|stop         |ON: Stop watering for all zones (command), OFF: normal operation                                                       |
+|run          |ON: Start watering selected/all zones (defined in runZones)                                                            |
+|runZones     |Zones to run at a time - list, e.g: "1,3" = run zone 1 and 3; "" means: run all zones                                  |
+|runTime      |Run time of all zones                                                                                                  |
+|rainDelay    |> 0: Rain delay scheduled for x sec; =0: Currently not in rain delay mode                                              |
+|rainSensorTripped|ON: Rain sensor has tripped (rain detected)                                                                        |
+|lastUpdate   |Timestamp of last status update                                                                                        |
+|lastEvent    |Last event received from the cloud (requires configuration of event callback)                                          |
+|lastEventTime|Timestamp last event has been received (only if event callback is active)                                              |
+|scheduleName |Current/last executed schedule: name                                                                                   |
+|scheduleInfo |Description of current/last executed schedule                                                                          |
+|scheduleStart|Schedule start time                                                                                                    |
+|scheduleStop |Schedule end time                                                                                                      |
 
 The are no additional configuration options on the device level.
 
 ### Zone Thing - represents one zone of a Controller
 
-|Channel  |Description|
-|:--------|:-------------------------------------------------------------------------------------------------------------------------|
-|number   |Zone number as assigned by the controller (zone 1..16)|
-|name     |Name of the zone as configured in the App.|
-|enabled  |ON: zone is enabled (ready to run), OFF: zone is disabled.|
-|run      |ON: The zone starts watering. If runTime is = 0 the defaultRuntime will be used. OFF: Zone stops watering.|
-|runTime  |Number of seconds to run the zone when run receives ON command|
-|runTotal |Total number of seconds the zone was watering (as returned by the cloud service).|
-|imageUrl |URL to the zone picture as configured in the App. Rachio supplies default pictures if no image was created. This can be used e.g. in a habPanel to show the zone picture and display the zone name.|
-|zoneEvent|Receives a JSON-formatted message on each zone event from the cloud (requires event callback).|
+|Channel      |Description                                                                                                            |
+|:------------|:----------------------------------------------------------------------------------------------------------------------|
+|number       |Zone number as assigned by the controller (zone 1..16)                                                                 |
+|name         |Name of the zone as configured in the App.                                                                             |
+|enabled      |ON: zone is enabled (ready to run), OFF: zone is disabled.                                                             |
+|run          |ON: The zone starts watering. If runTime is = 0 the defaultRuntime will be used. OFF: Zone stops watering.             |
+|runTime      |Number of seconds to run the zone when run receives ON command                                                         |
+|runTotal     |Total number of seconds the zone was watering (as returned by the cloud service).                                      |
+|imageUrl     |URL to the zone picture as configured in the App. Rachio supplies default pictures if no image was created.            |
+|lastUpdate   |Timestamp of last status update                                                                                        |
+|lastEvent    |Last event received from the cloud (requires configuration of event callback)                                          |
+|lastEventTime|Timestamp last event has been received (only if event callback is active)                                              |
 
 
 # Full example
@@ -121,6 +131,7 @@ Bridge rachio:cloud:1 @ "Sprinkler" [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
     Thing rachio:zone:1:XXXXXXXXXXXX-5 "Rachio zone 5" @ "Sprinkler"
     Thing rachio:zone:1:XXXXXXXXXXXX-6 "Rachio zone 6" @ "Sprinkler"
     Thing rachio:zone:1:XXXXXXXXXXXX-7 "Rachio zone 7" @ "Sprinkler"
+    Thing rachio:zone:1:XXXXXXXXXXXX-8 "Rachio zone 8" @ "Sprinkler"
 }
 ```
 
@@ -128,38 +139,45 @@ Bridge rachio:cloud:1 @ "Sprinkler" [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
 
 ```
     // Sprinkler Controller
-    String   RachioC04DAC_Name        "Name"                 {channel="rachio:device:1:XXXXXXXXXXXX:name"}
-    Switch   RachioC04DAC_Active      "Active"               {channel="rachio:device:1:XXXXXXXXXXXX:active"}
-    Switch   RachioC04DAC_Online      "Online"               {channel="rachio:device:1:XXXXXXXXXXXX:online"}
-    Switch   RachioC04DAC_Paused      "Paused"               {channel="rachio:device:1:XXXXXXXXXXXX:paused"}
-    Switch   RachioC04DAC_Stop        "Stop Watering"        {channel="rachio:device:1:XXXXXXXXXXXX:stop"}
-    Switch   RachioC04DAC_Run         "Run Multiple Zones"   {channel="rachio:device:1:XXXXXXXXXXXX:run"}
-    String   RachioC04DAC_RunZones    "Run Zone List"        {channel="rachio:device:1:XXXXXXXXXXXX:runZones"}
-    Number   RachioC04DAC_RunTime     "Run Time"             {channel="rachio:device:1:XXXXXXXXXXXX:runTime"}
-    Number   RachioC04DAC_RainDelay   "Rain Delay"           {channel="rachio:device:1:XXXXXXXXXXXX:rainDelay"}
-    String   RachioC04DAC_DevEvent    "Last Device Event"    {channel="rachio:device:1:XXXXXXXXXXXX:devEvent"}
-    Number   RachioC04DAC_Latitude    "Latitude"             {channel="rachio:device:1:XXXXXXXXXXXX:latitude"}
-    Number   RachioC04DAC_Longitude   "Longitude"            {channel="rachio:device:1:XXXXXXXXXXXX:longitude"}
+    String   RachioC04DAC_Name          "Name"               {channel="rachio:device:1:XXXXXXXXXXXX:name"}
+    Switch   RachioC04DAC_Active        "Active"             {channel="rachio:device:1:XXXXXXXXXXXX:active"}
+    Switch   RachioC04DAC_Online        "Online"             {channel="rachio:device:1:XXXXXXXXXXXX:online"}
+    Switch   RachioC04DAC_Paused        "Paused"             {channel="rachio:device:1:XXXXXXXXXXXX:paused"}
+    Switch   RachioC04DAC_Stop          "Stop Watering"      {channel="rachio:device:1:XXXXXXXXXXXX:stop"}
+    Switch   RachioC04DAC_Run           "Run Multiple Zones" {channel="rachio:device:1:XXXXXXXXXXXX:run"}
+    String   RachioC04DAC_RunZones      "Run Zone List"      {channel="rachio:device:1:XXXXXXXXXXXX:runZones"}
+    Number   RachioC04DAC_RunTime       "Run Time"           {channel="rachio:device:1:XXXXXXXXXXXX:runTime"}
+    Number   RachioC04DAC_RainDelay     "Rain Delay"         {channel="rachio:device:1:XXXXXXXXXXXX:rainDelay"}
+    Switch   RachioC04DAC_RainSensorTr  "Rain Sensor"        {channel="rachio:device:1:XXXXXXXXXXXX:rainSensorTripped"}
+    String   RachioC04DAC_lastEvent     "Last Event"         {channel="rachio:device:1:XXXXXXXXXXXX:lastEvent"}
+    DateTime RachioC04DAC_lastEventTime "Last Event Time"    {channel="rachio:device:1:XXXXXXXXXXXX:lastEventTime"}
+    DateTime RachioC04DAC_lastUpdate    LastUpdate"          {channel="rachio:device:1:XXXXXXXXXXXX:lastUpdate"}
+    Number   RachioC04DAC_Latitude      "Latitude"           {channel="rachio:device:1:XXXXXXXXXXXX:latitude"}1
+    Number   RachioC04DAC_Longitude     "Longitude"          {channel="rachio:device:1:XXXXXXXXXXXX:longitude"}
 
     // Zone1
-    String   RachioZone1_Name        "Zone Name"         {channel="rachio:zone:1:XXXXXXXXXXXX-1:name"}
-    Number   RachioZone1_Number      "Zone Number"       {channel="rachio:zone:1:XXXXXXXXXXXX-1:number"}
-    Switch   RachioZone1_Enabled     "Zone Enabled"      {channel="rachio:zone:1:XXXXXXXXXXXX-1:enabled"}
-    Switch   RachioZone1_Run         "Run Zone"          {channel="rachio:zone:1:XXXXXXXXXXXX-1:run"}
-    Number   RachioZone1_RunTime     "Zone Runtime"      {channel="rachio:zone:1:XXXXXXXXXXXX-1:runTime"}
-    Number   RachioZone1_RunTotal    "Total Runtime"     {channel="rachio:zone:1:XXXXXXXXXXXX-1:runTotal"}
-    String   RachioZone1_ImageUrl    "Zone Image URL"    {channel="rachio:zone:1:XXXXXXXXXXXX-1:imageUrl"}
-    String   RachioZone1_ZoneEvent   "Last Zone Event"   {channel="rachio:zone:1:XXXXXXXXXXXX-1:zoneEvent"}
+    String   RachioZone1_Name           "Zone Name"       {channel="rachio:zone:1:XXXXXXXXXXXX-1:name"}
+    Number   RachioZone1_Number         "Zone Number"     {channel="rachio:zone:1:XXXXXXXXXXXX-1:number"}  
+    Switch   RachioZone1_Enabled        "Zone Enabled"    {channel="rachio:zone:1:XXXXXXXXXXXX-1:enabled"}
+    Switch   RachioZone1_Run            "Run Zone"        {channel="rachio:zone:1:XXXXXXXXXXXX-1:run"}
+    Number   RachioZone1_RunTime        "Zone Runtime"    {channel="rachio:zone:1:XXXXXXXXXXXX-1:runTime"}
+    Number   RachioZone1_RunTotal       "Total Runtime"   {channel="rachio:zone:1:XXXXXXXXXXXX-1:runTotal"}
+    String   RachioZone1_ImageUrl       "Zone Image URL"  {channel="rachio:zone:1:XXXXXXXXXXXX-1:imageUrl"}
+    String   RachioZone1_lastEvent      "Last Event"      {channel="rachio:device:1:XXXXXXXXXXXX:lastEvent"}
+    DateTime RachioZone1_lastEventTime  "Last Event Time" {channel="rachio:device:1:XXXXXXXXXXXX:lastEventTime"}
+    DateTime RachioZone1_lastUpdate     "Last Update"     {channel="rachio:device:1:XXXXXXXXXXXX:lastUpdate"}
 
     // Zone2
-    String   RachioZone2_Name        "Zone Name"         {channel="rachio:zone:1:XXXXXXXXXXXX-2:name"}
-    Number   RachioZone2_Number      "Zone Number"       {channel="rachio:zone:1:XXXXXXXXXXXX-2:number"}
-    Switch   RachioZone2_Enabled     "Zone Enabled"      {channel="rachio:zone:1:XXXXXXXXXXXX-2:enabled"}
-    Switch   RachioZone2_Run         "Run Zone"          {channel="rachio:zone:1:XXXXXXXXXXXX-2:run"}
-    Number   RachioZone2_RunTime     "Zone Runtime"      {channel="rachio:zone:1:XXXXXXXXXXXX-2:runTime"}
-    Number   RachioZone2_RunTotal    "Total Runtime"     {channel="rachio:zone:1:XXXXXXXXXXXX-2:runTotal"}
-    String   RachioZone2_ImageUrl    "Zone Image URL"    {channel="rachio:zone:1:XXXXXXXXXXXX-2:imageUrl"}
-    String   RachioZone2_ZoneEvent   "Last Zone Event"   {channel="rachio:zone:1:XXXXXXXXXXXX-2:zoneEvent"}
+    String   RachioZone2_Name           "Zone Name"       {channel="rachio:zone:1:XXXXXXXXXXXX-2:name"}
+    Number   RachioZone2_Number         "Zone Number"     {channel="rachio:zone:1:XXXXXXXXXXXX-2:number"}
+    Switch   RachioZone2_Enabled        "Zone Enabled"    {channel="rachio:zone:1:XXXXXXXXXXXX-2:enabled"}
+    Switch   RachioZone2_Run            "Run Zone"        {channel="rachio:zone:1:XXXXXXXXXXXX-2:run"} 
+    Number   RachioZone2_RunTime        "Zone Runtime"    {channel="rachio:zone:1:XXXXXXXXXXXX-2:runTime"}
+    Number   RachioZone2_RunTotal       "Total Runtime"   {channel="rachio:zone:1:XXXXXXXXXXXX-2:runTotal"}
+    String   RachioZone2_ImageUrl       "Zone Image URL"  {channel="rachio:zone:1:XXXXXXXXXXXX-2:imageUrl"}
+    String   RachioC04DAC_lastEvent     "Last Event"      {channel="rachio:zone:1:XXXXXXXXXXXX-2:lastEvent"}
+    DateTime RachioC04DAC_lastEventTime "Last Event Time" {channel="rachio:zone:1:XXXXXXXXXXXX-2:lastEventTime"}
+    DateTime RachioC04DAC_lastUpdate    LastUpdate"       {channel="rachio:zone:1:XXXXXXXXXXXX-2:lastUpdate"}
 ```
 
 ### Rule Example
@@ -197,42 +215,16 @@ end
 
 ### Rule Example
 
-Sample rule to catch zone events (replace rachio_zone_1_xxxxxxxx_1_zoneEvent with the connect item name):
+Catch zone events:
 
 ```
-var int totalRunTime = 0
-
-/* ------- Alarm handler ----- */
 rule "Zone started"
 when
-    Item rachio_zone_1_xxxxxxxx_1_zoneEvent changed
+    Item RachioZone1_lastEvent changed
 then
-    var jsonString = rachio_zone_1_xxxxxxxx_1_zoneEvent.state.toString
-    logDebug("RachioEvent", "Event triggered (JSON='" + jsonString + "')")
-    
-    var eventTimestamp = transform("JSONPATH","$.timestamp",jsonString);
-    var eventType = transform("JSONPATH","$.type",jsonString)
-    var eventSubType = transform("JSONPATH","$.subType",jsonString)
-    var eventSummary = transform("JSONPATH","$.summary",jsonString)
-
-    if (eventType == "ZONE_STATUS") {
-        var zoneName = transform("JSONPATH","$.zoneName",jsonString)
-        var zoneNumber = transform("JSONPATH","$.zoneNumber",jsonString)
-        var runState = transform("JSONPATH","$.zoneRunState",jsonString)
-        var runStart = transform("JSONPATH","$.startTime",jsonString)
-        var runEnd = transform("JSONPATH","$.endTime",jsonString)
-        var runDuration = transform("JSONPATH","$.duration",jsonString)
-        var scheduleType = transform("JSONPATH","$.scheduleType",jsonString)
-        logInfo("RachioEvent", eventTimestamp + " " + zoneName + "[" + zoneNumber + "]: " + eventSummary + "(type='" + scheduleType + "', state='" + runState + "')")
-        if (eventSubType == "ZONE_COMPLETED") {
-            totalRunTime = totalRunTime + Integer::parseInt(runDuration)
-            logInfo("RachioZone", "Zone [" + zoneNumber + "]: start: " + runStart + ", end: " + runEnd + ", duration: " + runDuration + " => Total run time = " + totalRunTime)
-        }
-    } 
-    else {
-        // generic message
-        logInfo("RachioEvent", eventTimestamp + " [" + eventSubType + "]: " + eventSummary)
+    if (RachioZone1_lastEvent == "ZONE_STARTED") {
+        ...
     }
-
+   
 end
 ```
