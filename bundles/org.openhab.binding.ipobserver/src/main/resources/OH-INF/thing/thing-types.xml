@@ -219,11 +219,6 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="reboot" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Reboot the IP Observer unit</label>
-		<description>If scraping fails to work you can trigger a reboot of the hardware either manually or via a rule.</description>
-	</channel-type>
 	<channel-type id="lastUpdatedTime" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Updated Time</label>

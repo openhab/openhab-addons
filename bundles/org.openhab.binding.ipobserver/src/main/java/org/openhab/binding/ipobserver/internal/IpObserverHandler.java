@@ -97,7 +97,8 @@ import org.slf4j.LoggerFactory;
  * The {@link IpObserverHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Matthew Skinner - Initial contribution
+ * @author Thomas Hentschel - Based on parts from old binding.
+ * @author Matthew Skinner - Full re-write for BND, V3.0 and UOM
  */
 @NonNullByDefault
 public class IpObserverHandler extends BaseThingHandler {
@@ -105,18 +106,18 @@ public class IpObserverHandler extends BaseThingHandler {
 <<<<<<< HEAD
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(IpObserverHandler.class);
-    private Map<String, UpdateHandler> updateHandlers = new HashMap<String, UpdateHandler>();
+    private Map<String, ChannelHandler> channelHandlers = new HashMap<String, ChannelHandler>();
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private IpObserverConfiguration config = new IpObserverConfiguration();
 
-    class UpdateHandler {
+    class ChannelHandler {
         private IpObserverHandler handler;
         private Channel channel;
         private String currentState = "";
         private Unit<?> unit;
         private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<Class<? extends State>>();
 
-        UpdateHandler(IpObserverHandler handler, Channel channel, Class<? extends State> acceptable, Unit<?> unit) {
+        ChannelHandler(IpObserverHandler handler, Channel channel, Class<? extends State> acceptable, Unit<?> unit) {
             super();
             this.handler = handler;
             this.channel = channel;
@@ -199,11 +200,8 @@ public class IpObserverHandler extends BaseThingHandler {
 
     private void parseSettings(String html) {
         Document doc = Jsoup.parse(html);
-        // 0=lux, 1=w/m2, 2=fc
         config.solarUnit = doc.select("select[name=unit_Solar] option[selected]").val();
-        // 0=m/s, 1=km/h, 2=ft/s, 3=bft, 4=mph, 5=knot
         config.windUnit = doc.select("select[name=unit_Wind] option[selected]").val();
-        // 0=hpa, 1=inhg, 2=mmhg
         config.pressureUnit = doc.select("select[name=unit_Pressure] option[selected]").val();
         // 0=degC, 1=degF
         if ("1".equals(doc.select("select[name=u_Temperature] option[selected]").val())) {
@@ -222,12 +220,12 @@ public class IpObserverHandler extends BaseThingHandler {
     private void parseAndUpdate(String html) {
         Document doc = Jsoup.parse(html);
         String value = doc.select("select[name=inBattSta] option[selected]").val();
-        UpdateHandler localUpdater = updateHandlers.get("inBattSta");
+        ChannelHandler localUpdater = channelHandlers.get("inBattSta");
         if (localUpdater != null) {
             localUpdater.processMessage(value);
         }
         value = doc.select("select[name=outBattSta] option[selected]").val();
-        localUpdater = updateHandlers.get("outBattSta");
+        localUpdater = channelHandlers.get("outBattSta");
         if (localUpdater != null) {
             localUpdater.processMessage(value);
         }
@@ -238,7 +236,7 @@ public class IpObserverHandler extends BaseThingHandler {
             value = element.attr("value");
             logger.trace("Found element {}, value is {}", elementName, value);
             if (!value.isEmpty()) {
-                localUpdater = updateHandlers.get(elementName);
+                localUpdater = channelHandlers.get(elementName);
                 if (localUpdater != null) {
                     localUpdater.processMessage(value);
                 }
@@ -309,7 +307,7 @@ public class IpObserverHandler extends BaseThingHandler {
                     logger.debug("Finding out which units of measurement the weather station is using.");
                     sendGetRequest(STATION_SETTINGS_URL);
                 }
-                updateState(LAST_UPDATED_TIME, new QuantityType<>(responseTime, MetricPrefix.MILLI(Units.SECOND)));
+                updateState(RESPONSE_TIME, new QuantityType<>(responseTime, MetricPrefix.MILLI(Units.SECOND)));
                 if (url == STATION_SETTINGS_URL) {
                     parseSettings(contentResponse.getContentAsString());
                     setupChannels();
@@ -317,7 +315,7 @@ public class IpObserverHandler extends BaseThingHandler {
                     parseAndUpdate(contentResponse.getContentAsString());
                 }
                 if (config.autoReboot > 0 && responseTime > config.autoReboot) {
-                    logger.info("An Auto reboot of the IP Observer unit has been triggered as the response was {}ms.",
+                    logger.debug("An Auto reboot of the IP Observer unit has been triggered as the response was {}ms.",
                             responseTime);
                     sendGetRequest(REBOOT_URL);
                 }
@@ -342,6 +340,7 @@ public class IpObserverHandler extends BaseThingHandler {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -354,6 +353,13 @@ public class IpObserverHandler extends BaseThingHandler {
         if (channel != null) {
             updateHandlers.put(htmlName, new UpdateHandler(this, channel, type, unit));
 >>>>>>> Bulk updated to UOM.
+=======
+    private void createChannelHandler(String chanName, Class<? extends State> type, Unit<?> unit, String htmlName) {
+        @Nullable
+        Channel channel = this.getThing().getChannel(chanName);
+        if (channel != null) {
+            channelHandlers.put(htmlName, new ChannelHandler(this, channel, type, unit));
+>>>>>>> Fix time channels.
         }
     }
 
@@ -419,83 +425,84 @@ public class IpObserverHandler extends BaseThingHandler {
 >>>>>>> updates
         if (config.imperialTemperature) {
             logger.debug("Using imperial units of measurement for temperature.");
-            createChannel(TEMP_INDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "inTemp");
-            createChannel(TEMP_OUTDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "outTemp");
+            createChannelHandler(TEMP_INDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "inTemp");
+            createChannelHandler(TEMP_OUTDOOR, QuantityType.class, ImperialUnits.FAHRENHEIT, "outTemp");
         } else {
             logger.debug("Using metric units of measurement for temperature.");
-            createChannel(TEMP_INDOOR, QuantityType.class, SIUnits.CELSIUS, "inTemp");
-            createChannel(TEMP_OUTDOOR, QuantityType.class, SIUnits.CELSIUS, "outTemp");
+            createChannelHandler(TEMP_INDOOR, QuantityType.class, SIUnits.CELSIUS, "inTemp");
+            createChannelHandler(TEMP_OUTDOOR, QuantityType.class, SIUnits.CELSIUS, "outTemp");
         }
 
         if (config.imperialRain) {
-            createChannel(HOURLY_RAIN_RATE, QuantityType.class, ImperialUnits.INCH, "rainofhourly");
-            createChannel(DAILY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofdaily");
-            createChannel(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofweekly");
-            createChannel(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofmonthly");
-            createChannel(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofyearly");
+            createChannelHandler(HOURLY_RAIN_RATE, QuantityType.class, ImperialUnits.INCH, "rainofhourly");
+            createChannelHandler(DAILY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofdaily");
+            createChannelHandler(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofweekly");
+            createChannelHandler(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofmonthly");
+            createChannelHandler(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofyearly");
         } else {
-            createChannel(HOURLY_RAIN_RATE, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofhourly");
-            createChannel(DAILY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofdaily");
-            createChannel(WEEKLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofweekly");
-            createChannel(MONTHLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofmonthly");
-            createChannel(YEARLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofyearly");
+            createChannelHandler(HOURLY_RAIN_RATE, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE),
+                    "rainofhourly");
+            createChannelHandler(DAILY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofdaily");
+            createChannelHandler(WEEKLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofweekly");
+            createChannelHandler(MONTHLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofmonthly");
+            createChannelHandler(YEARLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofyearly");
         }
 
         if (config.windUnit.equals("5")) {
-            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, Units.KNOT, "avgwind");
-            createChannel(WIND_SPEED, QuantityType.class, Units.KNOT, "windspeed");
-            createChannel(WIND_GUST, QuantityType.class, Units.KNOT, "gustspeed");
-            createChannel(WIND_MAX_GUST, QuantityType.class, Units.KNOT, "dailygust");
+            createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, Units.KNOT, "avgwind");
+            createChannelHandler(WIND_SPEED, QuantityType.class, Units.KNOT, "windspeed");
+            createChannelHandler(WIND_GUST, QuantityType.class, Units.KNOT, "gustspeed");
+            createChannelHandler(WIND_MAX_GUST, QuantityType.class, Units.KNOT, "dailygust");
         } else if (config.windUnit.equals("4")) {
-            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "avgwind");
-            createChannel(WIND_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeed");
-            createChannel(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "gustspeed");
-            createChannel(WIND_MAX_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "dailygust");
+            createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "avgwind");
+            createChannelHandler(WIND_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeed");
+            createChannelHandler(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "gustspeed");
+            createChannelHandler(WIND_MAX_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "dailygust");
         } else if (config.windUnit.equals("1")) {
-            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "avgwind");
-            createChannel(WIND_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "windspeed");
-            createChannel(WIND_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "gustspeed");
-            createChannel(WIND_MAX_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "dailygust");
+            createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "avgwind");
+            createChannelHandler(WIND_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "windspeed");
+            createChannelHandler(WIND_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "gustspeed");
+            createChannelHandler(WIND_MAX_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "dailygust");
         } else if (config.windUnit.equals("0")) {
-            createChannel(WIND_AVERAGE_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "avgwind");
-            createChannel(WIND_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "windspeed");
-            createChannel(WIND_GUST, QuantityType.class, Units.METRE_PER_SECOND, "gustspeed");
-            createChannel(WIND_MAX_GUST, QuantityType.class, Units.METRE_PER_SECOND, "dailygust");
+            createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "avgwind");
+            createChannelHandler(WIND_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "windspeed");
+            createChannelHandler(WIND_GUST, QuantityType.class, Units.METRE_PER_SECOND, "gustspeed");
+            createChannelHandler(WIND_MAX_GUST, QuantityType.class, Units.METRE_PER_SECOND, "dailygust");
         } else {
             logger.warn(
                     "The IP Observer is sending a wind format the binding does not support. Select one of the other units.");
         }
 
         if (config.solarUnit.equals("1")) {
-            createChannel(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarrad");
+            createChannelHandler(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarrad");
         } else if (config.solarUnit.equals("0")) {
-            createChannel(SOLAR_RADIATION, QuantityType.class, Units.LUX, "solarrad");
+            createChannelHandler(SOLAR_RADIATION, QuantityType.class, Units.LUX, "solarrad");
         } else {
             logger.warn(
                     "The IP Observer is sending fc (Foot Candles) for the solar radiation. Select one of the other units.");
         }
 
         if (config.pressureUnit.equals("0")) {
-            createChannel(ABS_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "AbsPress");
-            createChannel(REL_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "RelPress");
+            createChannelHandler(ABS_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "AbsPress");
+            createChannelHandler(REL_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "RelPress");
         } else if (config.pressureUnit.equals("1")) {
-            createChannel(ABS_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "AbsPress");
-            createChannel(REL_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "RelPress");
+            createChannelHandler(ABS_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "AbsPress");
+            createChannelHandler(REL_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "RelPress");
         } else if (config.pressureUnit.equals("2")) {
-            createChannel(ABS_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "AbsPress");
-            createChannel(REL_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "RelPress");
+            createChannelHandler(ABS_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "AbsPress");
+            createChannelHandler(REL_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "RelPress");
         }
 
-        createChannel(WIND_DIRECTION, QuantityType.class, Units.DEGREE_ANGLE, "windir");
-        createChannel(INDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "inHumi");
-        createChannel(OUTDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "outHumi");
+        createChannelHandler(WIND_DIRECTION, QuantityType.class, Units.DEGREE_ANGLE, "windir");
+        createChannelHandler(INDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "inHumi");
+        createChannelHandler(OUTDOOR_HUMIDITY, DecimalType.class, Units.PERCENT, "outHumi");
         // The units for the following are ignored as they are not a QuantityType.class
-        createChannel(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
-        createChannel(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
+        createChannelHandler(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
+        createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
         // was outBattSta1 so some units may use this instead?
-        createChannel(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta");
-        createChannel(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
-        createChannel(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
+        createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta");
+        createChannelHandler(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
+        createChannelHandler(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
     }
 
     @Override
@@ -531,10 +538,12 @@ public class IpObserverHandler extends BaseThingHandler {
 =======
     @Override
     public void dispose() {
-        updateHandlers.clear();
-        if (pollingFuture != null) {
-            pollingFuture.cancel(true);
-            pollingFuture = null;
+        channelHandlers.clear();
+        @Nullable
+        ScheduledFuture<?> localFuture = pollingFuture;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+            localFuture = null;
         }
 >>>>>>> Bulk updated to UOM.
     }

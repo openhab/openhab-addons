@@ -54,6 +54,5 @@ public class IpObserverBindingConstants {
     public static final String INDOOR_BATTERY = "indoorBattery";
     public static final String OUTDOOR_BATTERY = "outdoorBattery";
     public static final String RESPONSE_TIME = "responseTime";
-    public static final String REBOOT = "reboot";
     public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
 }
