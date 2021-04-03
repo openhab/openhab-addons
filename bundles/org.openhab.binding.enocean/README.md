@@ -14,7 +14,7 @@ First of all you have to configure an EnOcean transceiver (gateway).
 A directly connected USB300 can be auto discovered, an EnOceanPi has to be added manually to openHAB.
 Both gateways are represented by an _EnOcean gateway_ in openHAB.
 If you want to place the gateway for better reception apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
-In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001.
+In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _set2net_ config file.
 If everything is running fine you should see the _base id_ of your gateway in the properties of your bridge.
 
 Another way to improve sending and reception reliability is to setup a wired connection.
