@@ -68,7 +68,7 @@ public enum OutputChannelEnum {
     WATER_FLOW(23, "waterFlow"),
     POWER_LEVEL(24, "powerLevel");
 
-    private final int channel;
+    private final int channelId;
 
     private final String name;
 
@@ -76,7 +76,7 @@ public enum OutputChannelEnum {
 
     static {
         for (OutputChannelEnum channels : OutputChannelEnum.values()) {
-            OUTPUT_CHANNELS.put(channels.getChannel(), channels);
+            OUTPUT_CHANNELS.put(channels.getChannelId(), channels);
         }
     }
 
@@ -102,8 +102,8 @@ public enum OutputChannelEnum {
         return OUTPUT_CHANNELS.get(channelID);
     }
 
-    private OutputChannelEnum(int channel, String name) {
-        this.channel = channel;
+    private OutputChannelEnum(int channelId, String name) {
+        this.channelId = channelId;
         this.name = name;
     }
 
@@ -112,8 +112,8 @@ public enum OutputChannelEnum {
      *
      * @return mode id
      */
-    public int getChannel() {
-        return channel;
+    public int getChannelId() {
+        return channelId;
     }
 
     /**

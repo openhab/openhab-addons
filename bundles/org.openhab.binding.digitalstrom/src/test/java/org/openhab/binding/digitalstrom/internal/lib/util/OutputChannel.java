@@ -5,10 +5,10 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 public class OutputChannel {
     public OutputChannel(OutputChannelEnum outputChannel) {
         super();
-        this.channelID = outputChannel.getChannel();
+        this.channelID = outputChannel.getChannelId();
         this.name = outputChannel.getName();
         this.id = outputChannel.getName();
-        this.index = outputChannel.getChannel();
+        this.index = outputChannel.getChannelId();
     }
 
     int channelID;
