@@ -104,7 +104,6 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
             SomfyTahomaBridgeHandler handler = getBridgeHandler();
             if (handler != null && command instanceof StringType) {
                 handler.executeActionGroup(command.toString());
-                updateState(channelUID, new StringType(command.toString()));
             }
         }
     }

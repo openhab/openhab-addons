@@ -394,5 +394,6 @@
 		<item-type>String</item-type>
 		<label>Scenarios</label>
 		<description>The scenarios defined in the cloud portal</description>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
