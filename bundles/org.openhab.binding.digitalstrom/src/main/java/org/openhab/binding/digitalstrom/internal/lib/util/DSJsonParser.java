@@ -6,16 +6,12 @@ import java.util.Map.Entry;
 
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.JSONApiResponseKeysEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public final class DSJsonParser {
-
-    private static final Logger logger = LoggerFactory.getLogger(DSJsonParser.class);
 
     private DSJsonParser() {
     }
@@ -32,7 +28,6 @@ public final class DSJsonParser {
                 }
             }
         } else if (jsonOutputChannels != null && jsonOutputChannels.isJsonObject()) {
-            logger.debug("single channel found");
             for (Entry<String, JsonElement> entry : jsonObject.get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey())
                     .getAsJsonObject().entrySet()) {
                 int channelId = entry.getValue().getAsJsonObject().get("channelID").getAsInt();
