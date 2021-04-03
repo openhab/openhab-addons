@@ -324,7 +324,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     sendCommand(EiscpCommand.NETUSB_TITLE_QUERY);
                 }
                 break;
-
+            case CHANNEL_AUDIOINFO:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.AUDIOINFO_QUERY);
+                }
+                break;
             /*
              * MISC
              */
