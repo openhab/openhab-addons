@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.action.ChargeProfileActions;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
@@ -48,6 +49,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.RemoteServiceUtils;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
@@ -722,6 +724,21 @@ public class VehicleHandler extends VehicleChannelHandler {
                         processed = true;
                     }
                 }
+            } else if (command instanceof DateTimeType) {
+                DateTimeType dtt = (DateTimeType) command;
+                logger.debug("Accept {} for ID {}", dtt.toFullString(), id);
+                final ChargeKeyHour keyHour = ChargeProfileUtils.getKeyHour(id + ConnectedDriveConstants.CHARGE_HOUR);
+                if (keyHour != null) {
+                    profile.setHour(keyHour.key, dtt.getZonedDateTime().getHour());
+                    updateTimedState(profile, keyHour.key);
+                }
+                final ChargeKeyHour keyMinute = ChargeProfileUtils
+                        .getKeyHour(id + ConnectedDriveConstants.CHARGE_MINUTE);
+                if (keyMinute != null) {
+                    profile.setMinute(keyMinute.key, dtt.getZonedDateTime().getMinute());
+                    updateTimedState(profile, keyMinute.key);
+                }
+                processed = true;
             } else if (command instanceof DecimalType) {
                 final ChargeKeyHour keyHour = ChargeProfileUtils.getKeyHour(id);
                 if (keyHour != null) {
