@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
+import org.openhab.binding.digitalstrom.internal.lib.util.JsonModel;
+import org.openhab.binding.digitalstrom.internal.lib.util.OutputChannel;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -135,6 +137,6 @@ class DeviceImplTest {
         Gson gson = new Gson();
         String json = gson.toJson(model);
 
-        return new JsonParser().parse(json).getAsJsonObject();
+        return JsonParser.parseString(json).getAsJsonObject();
     }
 }

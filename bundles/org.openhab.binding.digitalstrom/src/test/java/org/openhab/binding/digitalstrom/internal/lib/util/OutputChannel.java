@@ -1,4 +1,4 @@
-package org.openhab.binding.digitalstrom.internal.lib.structure.devices.impl;
+package org.openhab.binding.digitalstrom.internal.lib.util;
 
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 

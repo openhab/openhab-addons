@@ -222,7 +222,7 @@ public interface Device extends GeneralDeviceInformation {
     /**
      * Returns a list with group ids which the device is part of.
      *
-     * @return List of ApplicationGroups
+     * @return List of group ids
      */
     List<Short> getGroups();
 

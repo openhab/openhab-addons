@@ -46,6 +46,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.JSONDeviceSceneSpecImpl;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalScene;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneEnum;
+import org.openhab.binding.digitalstrom.internal.lib.util.DSJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,13 +183,14 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
             JsonArray array = deviceJsonObject.get(JSONApiResponseKeysEnum.GROUPS.getKey()).getAsJsonArray();
             for (int i = 0; i < array.size(); i++) {
                 if (array.get(i) != null) {
-                    initAddGroup(array.get(i).getAsShort());
+                    addGroupToList(array.get(i).getAsShort());
                 }
             }
         } else if (groups != null && groups.isJsonObject()) {
             for (Entry<String, JsonElement> entry : deviceJsonObject.get(JSONApiResponseKeysEnum.GROUPS.getKey())
                     .getAsJsonObject().entrySet()) {
-                initAddGroup(entry.getValue().getAsJsonObject().get(JSONApiResponseKeysEnum.ID.getKey()).getAsShort());
+                addGroupToList(
+                        entry.getValue().getAsJsonObject().get(JSONApiResponseKeysEnum.ID.getKey()).getAsShort());
             }
         }
         if (deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_MODE.getKey()) != null) {
@@ -225,39 +227,9 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
             }
         }
 
-        outputChannels.addAll(getOutputChannels(deviceJsonObject));
+        outputChannels.addAll(DSJsonParser.getOutputChannels(deviceJsonObject));
 
         init();
-    }
-
-    private List<OutputChannelEnum> getOutputChannels(JsonObject deviceJsonObject) {
-        List<OutputChannelEnum> outputChannels = new ArrayList<>();
-        JsonElement jsonOutputChannels = deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey());
-        if (jsonOutputChannels != null && jsonOutputChannels.isJsonArray()) {
-            JsonArray array = deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey()).getAsJsonArray();
-            for (int i = 0; i < array.size(); i++) {
-                if (array.get(i) != null) {
-                    int channelId = array.get(i).getAsJsonObject().get("channelID").getAsInt();
-                    outputChannels.add(OutputChannelEnum.getChannel(channelId));
-                }
-            }
-        } else if (jsonOutputChannels != null && jsonOutputChannels.isJsonObject()) {
-            logger.debug("single channel found");
-            for (Entry<String, JsonElement> entry : deviceJsonObject
-                    .get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey()).getAsJsonObject().entrySet()) {
-                int channelId = entry.getValue().getAsJsonObject().get("channelID").getAsInt();
-                outputChannels.add(OutputChannelEnum.getChannel(channelId));
-            }
-        }
-
-        return outputChannels;
-    }
-
-    private void initAddGroup(Short groupID) {
-        if (groupID != -1) {
-            addGroupToList(groupID);
-            // XXX: Why is the JOKER ignored in the original code!?
-        }
     }
 
     private void init() {
@@ -307,10 +279,11 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private boolean addGroupToList(Short groupID) {
         ApplicationGroup group = ApplicationGroup.getGroup(groupID);
         if (ApplicationGroup.UNDEFINED.equals(group)) {
-            logger.error("Unknown application group with ID '{}' found! Ignoring group", groupID);
-        }
-        if (!this.groupList.contains(group)) {
-            this.groupList.add(group);
+            logger.info("Unknown application group with ID '{}' found! Ignoring group", groupID);
+        } else {
+            if (!this.groupList.contains(group)) {
+                this.groupList.add(group);
+            }
         }
 
         return group != null;
