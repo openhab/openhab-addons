@@ -264,8 +264,8 @@ public class SceneDiscovery {
                                         }
                                         if (groupID != null) {
 
-                                            if (ApplicationGroup.getGroup(groupID)
-                                                    .equals(ApplicationGroup.Color.YELLOW)) {
+                                            if (ApplicationGroup.Color.YELLOW
+                                                    .equals(ApplicationGroup.getGroup(groupID))) {
                                                 discoverScene(SceneEnum.AUTO_OFF.getSceneNumber(), groupID);
                                             }
                                             String response = connectionManager.getHttpTransport()
