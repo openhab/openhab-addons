@@ -3,6 +3,34 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * digitalSTROM Application Groups.
+ * 
+ * <pre>
+	| Group ID | Name                  | Color   | Application                         |
+	| -------- | --------------------- | ------- | ----------------------------------- |
+	| 1        | Lights                | Yellow  | Room lights                         |
+	| 2        | Blinds                | Gray    | Blinds, curtains, shades, awnings   |
+	| 3        | Heating               | Blue    | Heating                             |
+	| 9        | Cooling               | Blue    | Cooling                             |
+	| 10       | Ventilation           | Blue    | Ventilation                         |
+	| 11       | Window                | Blue    | Windows                             |
+	| 12       | Recirculation         | Blue    | Ceiling fan, Fan coil units         |
+	| 64       | Apartment Ventilation | Blue    | Ventilation system                  |
+	| 48       | Temperature Control   | Blue    | Single room temperature control     |
+	| 4        | Audio                 | Cyan    | Playing music or radio              |
+	| 5        | Video                 | Magenta | TV, Video                           |
+	| 8        | Joker                 | Black   | Configurable                        |
+	| n/a      | Single Device         | White   | Various, individual per device      |
+	| n/a      | Security              | Red     | Security related functions, Alarms  |
+	| n/a      | Access                | Green   | Access related functions, door bell |
+ * </pre>
+ * 
+ * @author Rouven Schürch - Initial contribution
+ * @see <a href="https://developer.digitalstrom.org/Architecture/ds-basics.pdf">ds-basics.pdf</a> (Version 1.4/1.6),
+ *      chapter 3.2 (Group), Table 2.
+ *
+ */
 public enum ApplicationGroup {
 
     LIGHTS((short) 1, Color.YELLOW),
@@ -57,8 +85,8 @@ public enum ApplicationGroup {
     }
 
     /**
-     * Returns the corresponding ApplicationGroup or ApplicationGroup.UNDEFINED if there is no
-     * ApplicationGroup for the given groupId.
+     * Returns the corresponding ApplicationGroup or ApplicationGroup.UNDEFINED if
+     * there is no ApplicationGroup for the given groupId.
      * 
      * @param groupId
      * @return ApplicationGroup or ApplicationGroup.UNDEFINED

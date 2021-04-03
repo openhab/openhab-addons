@@ -10,27 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 class ApplicationGroupTest {
-    /*
-     * <pre>
-     * | Group ID | Name | Color | Application |
-     * | -------- | --------------------- | ------- | ----------------------------------- |
-     * | 1 | Lights | Yellow | Room lights |
-     * | 2 | Blinds | Gray | Blinds, curtains, shades, awnings |
-     * | 3 | Heating | Blue | Heating |
-     * | 9 | Cooling | Blue | Cooling |
-     * | 10 | Ventilation | Blue | Ventilation |
-     * | 11 | Window | Blue | Windows |
-     * | 12 | Recirculation | Blue | Ceiling fan, Fan coil units |
-     * | 64 | Apartment Ventilation | Blue | Ventilation system |
-     * | 48 | Temperature Control | Blue | Single room temperature control |
-     * | 4 | Audio | Cyan | Playing music or radio |
-     * | 5 | Video | Magenta | TV, Video |
-     * | 8 | Joker | Black | Configurable |
-     * | n/a | Single Device | White | Various, individual per device |
-     * | n/a | Security | Red | Security related functions, Alarms |
-     * | n/a | Access | Green | Access related functions, door bell |
-     * </pre>
-     */
+
     @Test
     void test_1_Lights_Yellow() {
         ApplicationGroup group = ApplicationGroup.getGroup((short) 1);

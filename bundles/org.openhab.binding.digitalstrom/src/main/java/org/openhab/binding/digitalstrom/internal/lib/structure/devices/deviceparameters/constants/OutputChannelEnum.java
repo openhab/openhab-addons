@@ -5,44 +5,43 @@ import java.util.Map;
 
 /**
  * The {@link OutputChannelEnum} lists all available digitalSTROM-device output
- * channels.
+ * channels:
+ * 
+ * <pre>
+	| ID  | Description                           | Channel Name                                                         | Min | Max   | Unit                 |
+	| --- | ------------------------------------- | -------------------------------------------------------------------- | --- | ----- | -------------------- |
+	| 1   | Light Brightness                      | brightness                                                           | 0   | 100   | percent              |
+	| 2   | Colored Light Hue                     | hue                                                                  | 0   | 360   | degrees              |
+	| 3   | Colored Light Saturation              | saturation                                                           | 0   | 100   | percent              |
+	| 4   | Color Temperature                     | colortemp                                                            | 100 | 1000  | mired                |
+	| 5   | Light CIE Color Model x               | x                                                                    | 0   | 10000 | scaled to 0.0 to 1.0 |
+	| 6   | Light CIE Color Model y               | y                                                                    | 0   | 10000 | scaled to 0.0 to 1.0 |
+	| 7   | Shade Position Outside (blinds)       | shadePositionOutside                                                 | 0   | 100   | percent              |
+	| 8   | Shade Position Outside (curtains)     | shadePositionIndoor                                                  | 0   | 100   | percent              |
+	| 9   | Shade Opening Angle Outside (blinds)  | shadeOpeningAngleOutside                                             | 0   | 100   | percent              |
+	| 10  | Shade Opening Angle Indoor (curtains) | shadeOpeningAngleIndoor                                              | 0   | 100   | percent              |
+	| 11  | Transparency (e.g. smart glass)       | transparency                                                         | 0   | 100   | percent              |
+	| 12  | Air Flow Intensity                    | airFlowIntensity                                                     | 0   | 100   | percent              |
+	| 13  | Air Flow Direction                    | airFlowDirection - 0=both(undefined), 1=supply, (in),2=exhaust (out) | 0   | 2     | specific             |
+	| 14  | Flap Opening Angle                    | airFlapPosition                                                      | 0   | 100   | percent              |
+	| 15  | Ventilation Louver Position           | airLouverPosition                                                    | 0   | 100   | percent              |
+	| 16  | Heating Power                         | heatingPower                                                         | 0   | 100   | percent              |
+	| 17  | Cooling Capacity                      | coolingCapacity                                                      | 0   | 100   | percent              |
+	| 18  | Audio Volume (loudness)               | audioVolume                                                          | 0   | 100   | percent              |
+	| 19  | Power State                           | powerState - 0=powerOff, 1=powerOn, 2=forcedOff, 3=standby           | 0   | 2     | specific             |
+	| 20  | Ventilation swing mode                | airLouverAuto - 0=not active, 1=active                               | 0   | 1     | specific             |
+	| 21  | Ventilation auto intensity            | airFlowAuto - 0=not active, 1=active                                 | 0   | 1     | specific             |
+	| 22  | Water Temperature                     | waterTemperature                                                     | 0   | 150   | celsius              |
+	| 23  | Water Flow Rate                       | waterFlow                                                            | 0   | 100   | percent              |
+	| 24  | Power Level                           | powerLevel                                                           | 0   | 100   | percent              |
+ * </pre>
  *
  * @author Rouven Schürch - Initial contribution
- * @see <a href="http://developer.digitalstrom.org/Architecture/ds-basics.pdf">,
- *      Version 1.4/1.6, chapter 9.1 Output Channel Types, Table 6: Output
- *      channel types</a>
+ * @see <a href="http://developer.digitalstrom.org/Architecture/ds-basics.pdf">ds-basics.pdf</a> (Version 1.4/1.6),
+ *      chapter
+ *      9.1 (Output Channel Types), Table 6: Output channel types
  */
 public enum OutputChannelEnum {
-    /**
-     * <pre>
-    *| ID  | Description                           | Channel Name                                                         | Min | Max   | Unit                 |
-    *| --- | ------------------------------------- | -------------------------------------------------------------------- | --- | ----- | -------------------- |
-    *| 1   | Light Brightness                      | brightness                                                           | 0   | 100   | percent              |
-    *| 2   | Colored Light Hue                     | hue                                                                  | 0   | 360   | degrees              |
-    *| 3   | Colored Light Saturation              | saturation                                                           | 0   | 100   | percent              |
-    *| 4   | Color Temperature                     | colortemp                                                            | 100 | 1000  | mired                |
-    *| 5   | Light CIE Color Model x               | x                                                                    | 0   | 10000 | scaled to 0.0 to 1.0 |
-    *| 6   | Light CIE Color Model y               | y                                                                    | 0   | 10000 | scaled to 0.0 to 1.0 |
-    *| 7   | Shade Position Outside (blinds)       | shadePositionOutside                                                 | 0   | 100   | percent              |
-    *| 8   | Shade Position Outside (curtains)     | shadePositionIndoor                                                  | 0   | 100   | percent              |
-    *| 9   | Shade Opening Angle Outside (blinds)  | shadeOpeningAngleOutside                                             | 0   | 100   | percent              |
-    *| 10  | Shade Opening Angle Indoor (curtains) | shadeOpeningAngleIndoor                                              | 0   | 100   | percent              |
-    *| 11  | Transparency (e.g. smart glass)       | transparency                                                         | 0   | 100   | percent              |
-    *| 12  | Air Flow Intensity                    | airFlowIntensity                                                     | 0   | 100   | percent              |
-    *| 13  | Air Flow Direction                    | airFlowDirection - 0=both(undefined), 1=supply, (in),2=exhaust (out) | 0   | 2     | specific             |
-    *| 14  | Flap Opening Angle                    | airFlapPosition                                                      | 0   | 100   | percent              |
-    *| 15  | Ventilation Louver Position           | airLouverPosition                                                    | 0   | 100   | percent              |
-    *| 16  | Heating Power                         | heatingPower                                                         | 0   | 100   | percent              |
-    *| 17  | Cooling Capacity                      | coolingCapacity                                                      | 0   | 100   | percent              |
-    *| 18  | Audio Volume (loudness)               | audioVolume                                                          | 0   | 100   | percent              |
-    *| 19  | Power State                           | powerState - 0=powerOff, 1=powerOn, 2=forcedOff, 3=standby           | 0   | 2     | specific             |
-    *| 20  | Ventilation swing mode                | airLouverAuto - 0=not active, 1=active                               | 0   | 1     | specific             |
-    *| 21  | Ventilation auto intensity            | airFlowAuto - 0=not active, 1=active                                 | 0   | 1     | specific             |
-    *| 22  | Water Temperature                     | waterTemperature                                                     | 0   | 150   | celsius              |
-    *| 23  | Water Flow Rate                       | waterFlow                                                            | 0   | 100   | percent              |
-    *| 24  | Power Level                           | powerLevel                                                           | 0   | 100   | percent              |
-     * </pre>
-     */
 
     BRIGHTNESS(1, "brightness"),
     HUE(2, "hue"),
