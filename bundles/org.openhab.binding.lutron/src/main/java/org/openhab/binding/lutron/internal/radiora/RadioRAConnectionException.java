@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.lutron.internal.radiora;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown when an attempt to open a RadioRA Connection fails.
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class RadioRAConnectionException extends Exception {
 
     private static final long serialVersionUID = 1L;

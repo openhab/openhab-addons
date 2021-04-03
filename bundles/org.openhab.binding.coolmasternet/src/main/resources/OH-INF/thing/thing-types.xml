@@ -14,21 +14,18 @@
 				<context>network-address</context>
 				<description>The IP address / FQDN of the CoolMasterNet unit</description>
 				<default></default>
-				<required>true</required>
 			</parameter>
 
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
 				<description>Port of ASCII interface of CoolMasterNet unit.</description>
 				<default>10102</default>
-				<required>false</required>
 			</parameter>
 
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Frequency</label>
 				<description>Frequency to poll the controller for updates, in seconds. Defaults to every 5 seconds.</description>
 				<default>5</default>
-				<required>false</required>
 			</parameter>
 		</config-description>
 
@@ -52,11 +49,10 @@
 		</channels>
 
 		<config-description>
-			<parameter name="uid" type="text">
+			<parameter name="uid" type="text" required="true">
 				<label>HVAC Unit ID</label>
 				<description>Unit ID of the HVAC Unit to control. Example: L1.100.</description>
 				<default>L1.100</default>
-				<required>true</required>
 			</parameter>
 		</config-description>
 
