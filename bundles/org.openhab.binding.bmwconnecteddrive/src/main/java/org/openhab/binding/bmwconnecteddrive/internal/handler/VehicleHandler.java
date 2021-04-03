@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.action.ChargeProfileActions;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
@@ -41,7 +40,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandl
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.RemoteService;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils.ChargeKeyDay;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils.ChargeKeyHour;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
@@ -727,27 +725,10 @@ public class VehicleHandler extends VehicleChannelHandler {
             } else if (command instanceof DateTimeType) {
                 DateTimeType dtt = (DateTimeType) command;
                 logger.debug("Accept {} for ID {}", dtt.toFullString(), id);
-                final ChargeKeyHour keyHour = ChargeProfileUtils.getKeyHour(id + ConnectedDriveConstants.CHARGE_HOUR);
-                if (keyHour != null) {
-                    profile.setHour(keyHour.key, dtt.getZonedDateTime().getHour());
-                    updateTimedState(profile, keyHour.key);
-                }
-                final ChargeKeyHour keyMinute = ChargeProfileUtils
-                        .getKeyHour(id + ConnectedDriveConstants.CHARGE_MINUTE);
-                if (keyMinute != null) {
-                    profile.setMinute(keyMinute.key, dtt.getZonedDateTime().getMinute());
-                    updateTimedState(profile, keyMinute.key);
-                }
-                processed = true;
-            } else if (command instanceof DecimalType) {
-                final ChargeKeyHour keyHour = ChargeProfileUtils.getKeyHour(id);
-                if (keyHour != null) {
-                    if (keyHour.isHour) {
-                        profile.setHour(keyHour.key, ((DecimalType) command).intValue());
-                    } else {
-                        profile.setMinute(keyHour.key, ((DecimalType) command).intValue());
-                    }
-                    updateTimedState(profile, keyHour.key);
+                final ProfileKey key = ChargeProfileUtils.getTimeKey(id);
+                if (key != null) {
+                    profile.setTime(key, dtt.getZonedDateTime().toLocalTime());
+                    updateTimedState(profile, key);
                     processed = true;
                 }
             }

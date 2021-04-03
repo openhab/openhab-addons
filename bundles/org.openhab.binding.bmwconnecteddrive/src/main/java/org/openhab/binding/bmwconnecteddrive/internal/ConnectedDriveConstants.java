@@ -143,15 +143,11 @@ public class ConnectedDriveConstants {
     public static final String CHARGE_PROFILE_MODE = "profile-mode";
     public static final String CHARGE_PROFILE_PREFERENCE = "profile-prefs";
     public static final String CHARGE_WINDOW_START = "window-start";
-    public static final String CHARGE_WINDOW_START_HOUR = "window-start-hour";
-    public static final String CHARGE_WINDOW_START_MINUTE = "window-start-minute";
     public static final String CHARGE_WINDOW_END = "window-end";
     public static final String CHARGE_TIMER1 = "timer1";
     public static final String CHARGE_TIMER2 = "timer2";
     public static final String CHARGE_TIMER3 = "timer3";
     public static final String CHARGE_OVERRIDE = "override";
-    public static final String CHARGE_HOUR = "-hour";
-    public static final String CHARGE_MINUTE = "-minute";
     public static final String CHARGE_DEPARTURE = "-departure";
     public static final String CHARGE_ENABLED = "-enabled";
     public static final String CHARGE_DAYS = "-days";

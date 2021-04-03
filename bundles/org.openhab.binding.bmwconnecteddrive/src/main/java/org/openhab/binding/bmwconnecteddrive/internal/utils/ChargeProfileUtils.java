@@ -70,16 +70,6 @@ public class ChargeProfileUtils {
         }
     };
 
-    public static class ChargeKeyHour {
-        public final ProfileKey key;
-        public final boolean isHour;
-
-        ChargeKeyHour(final ProfileKey key, final boolean isHour) {
-            this.key = key;
-            this.isHour = isHour;
-        }
-    }
-
     public static class ChargeKeyDay {
         public final ProfileKey key;
         public final DayOfWeek day;
@@ -101,11 +91,10 @@ public class ChargeProfileUtils {
     };
 
     @SuppressWarnings("serial")
-    private static final Map<String, ChargeKeyHour> CHARGE_TIME_CHANNEL_KEYS = new HashMap<>() {
+    private static final Map<String, ProfileKey> CHARGE_TIME_CHANNEL_KEYS = new HashMap<>() {
         {
             TIMED_CHANNELS.forEach((key, channel) -> {
-                put(channel.time + CHARGE_HOUR, new ChargeKeyHour(key, true));
-                put(channel.time + CHARGE_MINUTE, new ChargeKeyHour(key, false));
+                put(channel.time, key);
             });
         }
     };
@@ -137,7 +126,7 @@ public class ChargeProfileUtils {
         return CHARGE_DAYS_CHANNEL_KEYS.get(id);
     }
 
-    public static @Nullable ChargeKeyHour getKeyHour(final String id) {
+    public static @Nullable ProfileKey getTimeKey(final String id) {
         return CHARGE_TIME_CHANNEL_KEYS.get(id);
     }
 
