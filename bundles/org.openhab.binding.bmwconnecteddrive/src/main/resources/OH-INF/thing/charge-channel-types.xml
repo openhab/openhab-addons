@@ -33,19 +33,19 @@
 		<item-type>DateTime</item-type>
 		<label>Window Start Time</label>
 		<description>Start time of charging window</description>
-		<state pattern="%1$tH:%1$tM"/>
+		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-end-channel">
 		<item-type>DateTime</item-type>
 		<label>Window End Time</label>
 		<description>End time of charging window</description>
-		<state pattern="%1$tH:%1$tM"/>
+		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-departure-channel">
 		<item-type>DateTime</item-type>
 		<label>T1 Departure Time</label>
 		<description>Departure time for regular schedule timer 1</description>
-		<state pattern="%1$tH:%1$tM"/>
+		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-days-channel">
 		<item-type>String</item-type>
@@ -96,7 +96,7 @@
 		<item-type>DateTime</item-type>
 		<label>T2 Departure Time</label>
 		<description>Departure time for regular schedule timer 2</description>
-		<state pattern="%1$tH:%1$tM"/>
+		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer2-days-channel">
 		<item-type>String</item-type>
@@ -147,7 +147,7 @@
 		<item-type>DateTime</item-type>
 		<label>T3 Departure Time</label>
 		<description>Departure time for regular schedule timer 3</description>
-		<state pattern="%1$tH:%1$tM"/>
+		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer3-days-channel">
 		<item-type>String</item-type>
@@ -198,7 +198,7 @@
 		<item-type>DateTime</item-type>
 		<label>OT Departure Time</label>
 		<description>Departure time for override timer</description>
-		<state pattern="%1$tH:%1$tM"/>
+		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="override-enabled-channel">
 		<item-type>Switch</item-type>
