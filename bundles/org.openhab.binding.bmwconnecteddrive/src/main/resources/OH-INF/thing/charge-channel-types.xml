@@ -35,53 +35,17 @@
 		<description>Start time of charging window</description>
 		<state pattern="%1$tH:%1$tM"/>
 	</channel-type>
-	<channel-type id="window-start-hour-channel">
-		<item-type>Number</item-type>
-		<label>Window Start Hour</label>
-		<description>Starting hour of charging window</description>
-		<state min="0" max="23" step="1" pattern="%d"/>
-	</channel-type>
-	<channel-type id="window-start-minute-channel">
-		<item-type>Number</item-type>
-		<label>Window Start Minute</label>
-		<description>Starting minute of charging window</description>
-		<state min="0" max="55" step="5" pattern="%d"/>
-	</channel-type>
 	<channel-type id="window-end-channel">
 		<item-type>DateTime</item-type>
 		<label>Window End Time</label>
 		<description>End time of charging window</description>
 		<state pattern="%1$tH:%1$tM"/>
 	</channel-type>
-	<channel-type id="window-end-hour-channel">
-		<item-type>Number</item-type>
-		<label>Window End Hour</label>
-		<description>Ending hour of charging window</description>
-		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
-	</channel-type>
-	<channel-type id="window-end-minute-channel">
-		<item-type>Number</item-type>
-		<label>Window End Minute</label>
-		<description>Ending minute of charging window</description>
-		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
-	</channel-type>
 	<channel-type id="timer1-departure-channel">
 		<item-type>DateTime</item-type>
 		<label>T1 Departure Time</label>
 		<description>Departure time for regular schedule timer 1</description>
 		<state pattern="%1$tH:%1$tM"/>
-	</channel-type>
-	<channel-type id="timer1-departure-hour-channel">
-		<item-type>Number</item-type>
-		<label>T1 Departure Hour</label>
-		<description>Departure hour for regular schedule timer 1</description>
-		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
-	</channel-type>
-	<channel-type id="timer1-departure-minute-channel">
-		<item-type>Number</item-type>
-		<label>T1 Departure Minute</label>
-		<description>Departure minute for regular schedule timer 1</description>
-		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-days-channel">
 		<item-type>String</item-type>
@@ -134,18 +98,6 @@
 		<description>Departure time for regular schedule timer 2</description>
 		<state pattern="%1$tH:%1$tM"/>
 	</channel-type>
-	<channel-type id="timer2-departure-hour-channel">
-		<item-type>Number</item-type>
-		<label>T2 Departure Hour</label>
-		<description>Departure hour for regular schedule timer 2</description>
-		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
-	</channel-type>
-	<channel-type id="timer2-departure-minute-channel">
-		<item-type>Number</item-type>
-		<label>T2 Departure Minute</label>
-		<description>Departure minute for regular schedule timer 2</description>
-		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
-	</channel-type>
 	<channel-type id="timer2-days-channel">
 		<item-type>String</item-type>
 		<label>T2 Days</label>
@@ -197,18 +149,6 @@
 		<description>Departure time for regular schedule timer 3</description>
 		<state pattern="%1$tH:%1$tM"/>
 	</channel-type>
-	<channel-type id="timer3-departure-hour-channel">
-		<item-type>Number</item-type>
-		<label>T3 Departure Hour</label>
-		<description>Departure hour for regular schedule timer 3</description>
-		<state min="0" max="23" step="1" pattern="%d"/>
-	</channel-type>
-	<channel-type id="timer3-departure-minute-channel">
-		<item-type>Number</item-type>
-		<label>T3 Departure Minute</label>
-		<description>Departure minute for regular schedule timer 3</description>
-		<state min="0" max="55" step="5" pattern="%d"/>
-	</channel-type>
 	<channel-type id="timer3-days-channel">
 		<item-type>String</item-type>
 		<label>T3 Days</label>
@@ -259,18 +199,6 @@
 		<label>OT Departure Time</label>
 		<description>Departure time for override timer</description>
 		<state pattern="%1$tH:%1$tM"/>
-	</channel-type>
-	<channel-type id="override-departure-hour-channel">
-		<item-type>Number</item-type>
-		<label>OT Departure Hour</label>
-		<description>Departure hour for override timer</description>
-		<state min="0" max="23" step="1" pattern="%d"/>
-	</channel-type>
-	<channel-type id="override-departure-minute-channel">
-		<item-type>Number</item-type>
-		<label>OT Departure Minute</label>
-		<description>Departure minute for override timer</description>
-		<state min="0" max="55" step="5" pattern="%d"/>
 	</channel-type>
 	<channel-type id="override-enabled-channel">
 		<item-type>Switch</item-type>

@@ -11,14 +11,8 @@
 			<channel id="profile-mode" typeId="profile-mode-channel"/>
 			<channel id="profile-prefs" typeId="profile-prefs-channel"/>
 			<channel id="window-start" typeId="window-start-channel"/>
-			<channel id="window-start-hour" typeId="window-start-hour-channel"/>
-			<channel id="window-start-minute" typeId="window-start-minute-channel"/>
 			<channel id="window-end" typeId="window-end-channel"/>
-			<channel id="window-end-hour" typeId="window-end-hour-channel"/>
-			<channel id="window-end-minute" typeId="window-end-minute-channel"/>
 			<channel id="timer1-departure" typeId="timer1-departure-channel"/>
-			<channel id="timer1-departure-hour" typeId="timer1-departure-hour-channel"/>
-			<channel id="timer1-departure-minute" typeId="timer1-departure-minute-channel"/>
 			<channel id="timer1-days" typeId="timer1-days-channel"/>
 			<channel id="timer1-day-mon" typeId="timer1-day-mon-channel"/>
 			<channel id="timer1-day-tue" typeId="timer1-day-tue-channel"/>
@@ -29,8 +23,6 @@
 			<channel id="timer1-day-sun" typeId="timer1-day-sun-channel"/>
 			<channel id="timer1-enabled" typeId="timer1-enabled-channel"/>
 			<channel id="timer2-departure" typeId="timer2-departure-channel"/>
-			<channel id="timer2-departure-hour" typeId="timer2-departure-hour-channel"/>
-			<channel id="timer2-departure-minute" typeId="timer2-departure-minute-channel"/>
 			<channel id="timer2-days" typeId="timer2-days-channel"/>
 			<channel id="timer2-day-mon" typeId="timer2-day-mon-channel"/>
 			<channel id="timer2-day-tue" typeId="timer2-day-tue-channel"/>
@@ -41,8 +33,6 @@
 			<channel id="timer2-day-sun" typeId="timer2-day-sun-channel"/>
 			<channel id="timer2-enabled" typeId="timer2-enabled-channel"/>
 			<channel id="timer3-departure" typeId="timer3-departure-channel"/>
-			<channel id="timer3-departure-hour" typeId="timer3-departure-hour-channel"/>
-			<channel id="timer3-departure-minute" typeId="timer3-departure-minute-channel"/>
 			<channel id="timer3-days" typeId="timer3-days-channel"/>
 			<channel id="timer3-day-mon" typeId="timer3-day-mon-channel"/>
 			<channel id="timer3-day-tue" typeId="timer3-day-tue-channel"/>
@@ -53,8 +43,6 @@
 			<channel id="timer3-day-sun" typeId="timer3-day-sun-channel"/>
 			<channel id="timer3-enabled" typeId="timer3-enabled-channel"/>
 			<channel id="override-departure" typeId="override-departure-channel"/>
-			<channel id="override-departure-hour" typeId="override-departure-hour-channel"/>
-			<channel id="override-departure-minute" typeId="override-departure-minute-channel"/>
 			<channel id="override-enabled" typeId="override-enabled-channel"/>
 		</channels>
 	</channel-group-type>

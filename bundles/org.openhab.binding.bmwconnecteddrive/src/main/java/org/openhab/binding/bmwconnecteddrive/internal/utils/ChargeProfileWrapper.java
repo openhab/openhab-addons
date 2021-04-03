@@ -208,22 +208,6 @@ public class ChargeProfileWrapper {
         }
     }
 
-    public void setHour(final ProfileKey key, final int hour) {
-        LocalTime dateTime = times.get(key);
-        if (dateTime == null) {
-            dateTime = NULL_LOCAL_TIME;
-        }
-        times.put(key, dateTime.withHour(hour));
-    }
-
-    public void setMinute(final ProfileKey key, int minute) {
-        LocalTime dateTime = times.get(key);
-        if (dateTime == null) {
-            dateTime = NULL_LOCAL_TIME;
-        }
-        times.put(key, dateTime.withMinute(minute));
-    }
-
     public String getJson() {
         final ChargeProfile profile = new ChargeProfile();
         final WeeklyPlanner planner = new WeeklyPlanner();

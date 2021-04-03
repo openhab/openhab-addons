@@ -46,7 +46,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.RemoteServiceUtils;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -352,10 +351,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             final LocalTime time = profile.getTime(key);
             updateChannel(CHANNEL_GROUP_CHARGE, timed.time, time == null ? UnDefType.UNDEF
                     : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
-            updateChannel(CHANNEL_GROUP_CHARGE, timed.time + CHARGE_HOUR,
-                    time == null ? UnDefType.UNDEF : new DecimalType(time.getHour()));
-            updateChannel(CHANNEL_GROUP_CHARGE, timed.time + CHARGE_MINUTE,
-                    time == null ? UnDefType.UNDEF : new DecimalType(time.getMinute()));
             if (timed.timer != null) {
                 final Boolean enabled = profile.isEnabled(key);
                 updateChannel(CHANNEL_GROUP_CHARGE, timed.timer + CHARGE_ENABLED,
