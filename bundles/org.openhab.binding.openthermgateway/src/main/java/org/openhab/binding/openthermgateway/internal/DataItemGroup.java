@@ -180,10 +180,14 @@ public class DataItemGroup {
         g.put(118, new DataItem[] { new DataItem(118, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvstarts") });
         g.put(119,
                 new DataItem[] { new DataItem(119, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerstarts") });
-        g.put(120, new DataItem[] { new DataItem(120, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerhours") });
-        g.put(121, new DataItem[] { new DataItem(121, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumphours") });
-        g.put(122, new DataItem[] { new DataItem(122, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvhours") });
-        g.put(123, new DataItem[] { new DataItem(123, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerhours") });
+        g.put(120, new DataItem[] {
+                new DataItem(120, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerhours", Units.HOUR) });
+        g.put(121, new DataItem[] {
+                new DataItem(121, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumphours", Units.HOUR) });
+        g.put(122, new DataItem[] {
+                new DataItem(122, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvhours", Units.HOUR) });
+        g.put(123, new DataItem[] {
+                new DataItem(123, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerhours", Units.HOUR) });
         g.put(124,
                 new DataItem[] { new DataItem(124, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "masterotversion") });
         g.put(125, new DataItem[] { new DataItem(125, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "slaveotversion") });

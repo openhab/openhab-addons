@@ -137,10 +137,10 @@ Number:Dimensionless BurnerStarts "Burner starts" { channel="openthermgateway:ot
 Number:Dimensionless CentralHeatingPumpStarts "Central heating pump starts" { channel="openthermgateway:otgw:1:chpumpstarts" }
 Number:Dimensionless DomesticHotWaterPumpValveStarts "Domestic hot water pump/valve starts" { channel="openthermgateway:otgw:1:dhwpvstarts" }
 Number:Dimensionless DomesticHotWaterBurnerStarts "Domestic hot water burner starts" { channel="openthermgateway:otgw:1:dhwburnerstarts" }
-Number:Dimensionless BurnerHours "Burner hours" { channel="openthermgateway:otgw:1:burnerhours" }
-Number:Dimensionless CentralHeatingPumpHours "Central heating pump hours" { channel="openthermgateway:otgw:1:chpumphours" }
-Number:Dimensionless DomesticHotWaterPumpValveHours "Domestic hot water pump/valve hours" { channel="openthermgateway:otgw:1:dhwpvhours" }
-Number:Dimensionless DomesticHotWaterBurnerHours "Domestic hot water burner hours" { channel="openthermgateway:otgw:1:dhwburnerhours" }
+Number:Time BurnerHours "Burner hours" { channel="openthermgateway:otgw:1:burnerhours" }
+Number:Time CentralHeatingPumpHours "Central heating pump hours" { channel="openthermgateway:otgw:1:chpumphours" }
+Number:Time DomesticHotWaterPumpValveHours "Domestic hot water pump/valve hours" { channel="openthermgateway:otgw:1:dhwpvhours" }
+Number:Time DomesticHotWaterBurnerHours "Domestic hot water burner hours" { channel="openthermgateway:otgw:1:dhwburnerhours" }
 Text SendCommand "Send command channel" { channel="openthermgateway:otgw:1:sendcommand" }
 ```
 
