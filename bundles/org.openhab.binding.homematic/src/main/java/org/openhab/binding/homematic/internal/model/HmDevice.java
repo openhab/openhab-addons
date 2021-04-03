@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HmDevice {
     private final Logger logger = LoggerFactory.getLogger(HmDevice.class);
-    
+
     public static final String TYPE_GATEWAY_EXTRAS = "GATEWAY-EXTRAS";
     public static final String ADDRESS_GATEWAY_EXTRAS = "GWE00000000";
 

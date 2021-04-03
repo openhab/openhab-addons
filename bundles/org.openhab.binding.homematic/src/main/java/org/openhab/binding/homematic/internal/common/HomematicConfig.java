@@ -382,8 +382,8 @@ public class HomematicConfig {
                 "%s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
                         + "gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,"
                         + "discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]",
-                getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort,
-                gatewayType, getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout,
-                discoveryTimeToLive, installModeDuration, socketMaxAlive);
+                getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort, gatewayType,
+                getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout, discoveryTimeToLive,
+                installModeDuration, socketMaxAlive);
     }
 }
