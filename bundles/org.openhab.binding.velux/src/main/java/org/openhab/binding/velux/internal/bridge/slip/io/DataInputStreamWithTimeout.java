@@ -132,7 +132,10 @@ class DataInputStreamWithTimeout implements Closeable {
                         i = 0;
                     }
                 } catch (SocketTimeoutException e) {
-                    // socket read time outs are OK => keep on polling
+                    // socket read time outs are OK => keep on polling; unless interrupted
+                    if (interrupted) {
+                        break;
+                    }
                     continue;
                 } catch (IOException e) {
                     // any other exception => stop polling
