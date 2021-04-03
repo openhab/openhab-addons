@@ -16,8 +16,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -122,6 +124,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
     private VeluxBridge mySlipBridge = new SlipVeluxBridge(this);
+
+    private static final Map<String, Future<Boolean>> disposeTasks = new ConcurrentHashMap<>();
 
     /*
      * **************************************
@@ -254,70 +258,90 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public void initialize() {
         logger.info("Initializing Velux Bridge '{}'.", getThing().getUID());
-        // The framework requires you to return from this method quickly.
-        // Setting the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        logger.trace("initialize() called.");
+        // set the thing status to UNKNOWN temporarily and let the background task decide the real status
         updateStatus(ThingStatus.UNKNOWN);
-        // Take care of unusual situations...
+        // take care of unusual situations...
         if (scheduler.isShutdown()) {
-            logger.warn("initialize(): scheduler is shutdown, aborting the initialization of this bridge.");
+            logger.warn("initialize(): scheduler is shutdown, aborting initialization.");
             return;
         }
-        getTaskExecutor();
-        logger.trace("initialize(): preparing background initialization task.");
-        // Background initialization...
+        logger.trace("initialize(): scheduling background initialization task.");
         scheduler.execute(() -> {
-            logger.trace("initialize.scheduled(): Further work within scheduler.execute().");
-            logger.trace("initialize.scheduled(): Initializing bridge configuration parameters.");
-            this.veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
-            logger.trace("initialize.scheduled(): work on updated bridge configuration parameters.");
-            bridgeParamsUpdated();
-
-            logger.debug("initialize.scheduled(): activated scheduler with {} milliseconds.",
-                    this.veluxBridgeConfiguration.refreshMSecs);
-            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                try {
-                    refreshOpenHAB();
-                } catch (RuntimeException e) {
-                    logger.warn("Exception occurred during activated refresh scheduler: {}.", e.getMessage());
-                }
-            }, this.veluxBridgeConfiguration.refreshMSecs, this.veluxBridgeConfiguration.refreshMSecs,
-                    TimeUnit.MILLISECONDS);
-            logger.trace("initialize.scheduled(): done.");
+            initializeScheduled();
         });
         logger.trace("initialize() done.");
     }
 
     /**
-     * NOTE: It takes care about shutting down the connections before removal of this binding.
+     * Various initialisation actions to be executed on a background thread
+     *
+     * Note: if a disposeScheduled() task has been scheduled for the same ThingUID, then execution of this method will
+     * be paused until that task has finished.
      */
-    @Override
-    public synchronized void dispose() {
-        logger.info("Shutting down Velux Bridge '{}'.", getThing().getUID());
-        logger.trace("dispose(): shutting down continous refresh.");
-        // Just for avoidance of Potential null pointer access
-        ScheduledFuture<?> currentRefreshJob = refreshJob;
-        if (currentRefreshJob != null) {
-            logger.trace("dispose(): stopping the refresh.");
-            currentRefreshJob.cancel(true);
+    private synchronized void initializeScheduled() {
+        Future<Boolean> disposeTask = disposeTasks.remove(getThing().getUID().toString());
+        if (disposeTask != null) {
+            logger.trace("initializeScheduled(): wait for pending disposeScheduled() task to finish.");
+            try {
+                disposeTask.get();
+            } catch (InterruptedException | ExecutionException e) {
+                logger.debug("initializeScheduled(): disposeScheduled() wait error '{}'.", e.getMessage());
+            }
         }
-        // shut down the task executor
+        logger.trace("initializeScheduled(): initialize bridge configuration parameters.");
+        veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
+        logger.trace("initializeScheduled(): adopt new bridge configuration parameters.");
+        bridgeParamsUpdated();
+        long mSecs = veluxBridgeConfiguration.refreshMSecs;
+        logger.debug("initializeScheduled(): scheduling refresh at {} milliseconds.", mSecs);
+        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                refreshOpenHAB();
+            } catch (RuntimeException e) {
+                logger.warn("Exception occurred during activated refresh scheduler: {}.", e.getMessage());
+            }
+        }, mSecs, mSecs, TimeUnit.MILLISECONDS);
+        logger.trace("initializeScheduled(): done.");
+    }
+
+    @Override
+    public void dispose() {
+        logger.info("Shutting down Velux Bridge '{}'.", getThing().getUID());
+        logger.trace("dispose(): scheduling background disposal task.");
+        Future<Boolean> disposeTask = scheduler.submit(() -> {
+            return disposeScheduled();
+        });
+        disposeTasks.put(getThing().getUID().toString(), disposeTask);
+        logger.trace("dispose() done.");
+    }
+
+    /**
+     * Various disposal actions to be executed on a background thread
+     */
+    private Boolean disposeScheduled() {
+        logger.trace("disposeScheduled(): cancel the refresh polling task.");
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+        }
+        logger.trace("disposeScheduled(): cancel any other scheduled tasks.");
         ExecutorService taskExecutor = this.taskExecutor;
         if (taskExecutor != null) {
-            taskExecutor.shutdownNow();
+            try {
+                taskExecutor.shutdown();
+                if (!taskExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                    logger.warn("disposeScheduled(): unexpected awaitTermination() timeout.");
+                }
+            } catch (InterruptedException e) {
+                logger.warn("disposeScheduled(): unexpected awaitTermination() interruption.");
+            }
         }
-        // Background execution of dispose
-        scheduler.execute(() -> {
-            logger.trace("dispose.scheduled(): (synchronous) logout initiated.");
-            thisBridge.bridgeLogout();
-            logger.trace("dispose.scheduled(): shutting down JSON bridge.");
-            myJsonBridge.shutdown();
-            logger.trace("dispose.scheduled(): shutting down SLIP bridge.");
-            mySlipBridge.shutdown();
-        });
-        logger.trace("dispose(): calling super class.");
-        super.dispose();
-        logger.trace("dispose() done.");
+        logger.trace("disposeScheduled(): shut down JSON connection interface.");
+        myJsonBridge.shutdown();
+        logger.trace("disposeScheduled(): shut down SLIP connection interface.");
+        mySlipBridge.shutdown();
+        logger.trace("disposeScheduled(): done.");
+        return true;
     }
 
     /**
