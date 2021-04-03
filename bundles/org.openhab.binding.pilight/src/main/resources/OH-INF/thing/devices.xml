@@ -72,10 +72,9 @@
 		<label>Text Value</label>
 		<state readOnly="true"/>
 		<config-description>
-			<parameter name="property" type="text">
+			<parameter name="property" type="text" required="true">
 				<label>Property</label>
 				<description>The Property of the Device.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -85,10 +84,9 @@
 		<label>Number Value</label>
 		<state readOnly="true"/>
 		<config-description>
-			<parameter name="property" type="text">
+			<parameter name="property" type="text" required="true">
 				<label>Property</label>
 				<description>The Property of the Device.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</channel-type>
