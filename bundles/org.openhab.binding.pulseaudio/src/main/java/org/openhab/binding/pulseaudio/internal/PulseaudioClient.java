@@ -25,7 +25,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
@@ -379,6 +381,77 @@ public class PulseaudioClient {
     }
 
     /**
+     * Locate or load (if needed) the simple protocol tcp module for the given sink
+     * and returns the port.
+     * The module loading (if needed) will be tried several times, on a new random port each time.
+     *
+     * @param item the sink we are searching for
+     * @param simpleTcpPortPref the port to use if we have to load the module
+     * @return the port on which the module is listening
+     */
+    public Optional<Integer> loadModuleSimpleProtocolTcpIfNeeded(AbstractAudioDeviceConfig item,
+            Integer simpleTcpPortPref) {
+        int currentTry = 0;
+        int simpleTcpPortToTry = simpleTcpPortPref;
+        do {
+            Optional<Integer> simplePort = findSimpleProtocolTcpModule(item);
+
+            if (simplePort.isPresent()) {
+                return simplePort;
+            } else {
+                sendRawCommand("load-module module-simple-protocol-tcp sink=" + item.getPaName() + " port="
+                        + simpleTcpPortToTry);
+                simpleTcpPortToTry = new Random().nextInt(64512) + 1024; // a random port above 1024
+            }
+            try { // let time for the module to load
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+
+            currentTry++;
+        } while (currentTry < 3);
+
+        logger.warn("The pulseaudio binding tried 3 times to load the module-simple-protocol-tcp"
+                + " on random port on the pulseaudio server and give up trying");
+        return Optional.empty();
+    }
+
+    /**
+     * Find a simple protocol module corresponding to the given sink in argument
+     * and returns the port it listens to
+     *
+     * @param item
+     * @return
+     */
+    private Optional<Integer> findSimpleProtocolTcpModule(AbstractAudioDeviceConfig item) {
+        update();
+
+        List<Module> modulesCopy = new ArrayList<Module>(modules);
+        return modulesCopy.stream() // iteration on modules
+                .filter(module -> MODULE_SIMPLE_PROTOCOL_TCP_NAME.equals(module.getPaName())) // filter on module name
+                .filter(module -> extractArgumentFromLine("sink", module.getArgument()) // extract sink in argument
+                        .map(sinkName -> sinkName.equals(item.getPaName())).orElse(false)) // filter on sink name
+                .findAny() // get a corresponding module
+                .map(module -> extractArgumentFromLine("port", module.getArgument())
+                        .orElse(Integer.toString(MODULE_SIMPLE_PROTOCOL_TCP_DEFAULT_PORT))) // get port
+                .map(portS -> Integer.parseInt(portS));
+    }
+
+    private @NonNull Optional<@NonNull String> extractArgumentFromLine(String argumentWanted, String argumentLine) {
+        String argument = null;
+        int startPortIndex = argumentLine.indexOf(argumentWanted + "=");
+        if (startPortIndex != -1) {
+            startPortIndex = startPortIndex + argumentWanted.length() + 1;
+            int endPortIndex = argumentLine.indexOf(" ", startPortIndex);
+            if (endPortIndex == -1) {
+                endPortIndex = argumentLine.length();
+            }
+            argument = argumentLine.substring(startPortIndex, endPortIndex);
+        }
+        return Optional.ofNullable(argument);
+    }
+
+    /**
      * returns the item names that can be used in commands
      *
      * @param item
@@ -585,6 +658,8 @@ public class PulseaudioClient {
                 } catch (SocketTimeoutException e) {
                     // Timeout -> as newer PA versions (>=5.0) do not send the >>> we have no chance
                     // to detect the end of the answer, except by this timeout
+                } catch (SocketException e) {
+                    logger.warn("Socket exception while sending pulseaudio command: {}", e.getMessage());
                 } catch (IOException e) {
                     logger.error("Exception while reading socket: {}", e.getMessage());
                 }
@@ -621,7 +696,7 @@ public class PulseaudioClient {
         } catch (NoRouteToHostException e) {
             logger.error("no route to host {}", host);
         } catch (SocketException e) {
-            logger.error("{}", e.getLocalizedMessage(), e);
+            logger.error("cannot connect to host {} : {}", host, e.getMessage());
         }
     }
 

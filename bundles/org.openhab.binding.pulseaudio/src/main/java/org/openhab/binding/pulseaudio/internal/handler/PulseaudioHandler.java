@@ -14,6 +14,7 @@ package org.openhab.binding.pulseaudio.internal.handler;
 
 import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,6 +110,12 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                 logger.trace("Registering an audio sink for pulse audio sink thing {}", thing.getUID());
                 PulseAudioAudioSink audioSink = new PulseAudioAudioSink(this);
                 setAudioSink(audioSink);
+                try {
+                    audioSink.connectIfNeeded();
+                } catch (IOException e) {
+                    logger.warn("pulseaudio binding cannot connect to the module-simple-protocol-tcp on {} ({})",
+                            getHost(), e.getMessage());
+                }
                 @SuppressWarnings("unchecked")
                 ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                         .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
@@ -124,12 +131,17 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             refreshJob = null;
         }
         updateStatus(ThingStatus.OFFLINE);
+        bridgeHandler.unregisterDeviceStatusListener(this);
         bridgeHandler = null;
         logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
         super.dispose();
 
+        if (audioSink != null) {
+            audioSink.disconnect();
+        }
+
         // Unregister the potential pulse audio sink's audio sink
-        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(getThing().getUID().toString());
+        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.remove(getThing().getUID().toString());
         if (reg != null) {
             logger.trace("Unregistering the audio sync service for pulse audio sink thing {}", getThing().getUID());
             reg.unregister();
@@ -325,9 +337,20 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
+    /**
+     * This method will scan the pulseaudio server to find the port on which the module/sink is listening
+     * If no module is listening, then it will command the module to load on the pulse audio server,
+     *
+     * @return
+     */
     public int getSimpleTcpPort() {
-        return ((BigDecimal) getThing().getConfiguration()
+        Integer simpleTcpPortPref = ((BigDecimal) getThing().getConfiguration()
                 .get(PulseaudioBindingConstants.DEVICE_PARAMETER_AUDIO_SINK_PORT)).intValue();
+
+        PulseaudioBridgeHandler bridgeHandler = getPulseaudioBridgeHandler();
+        AbstractAudioDeviceConfig device = bridgeHandler.getDevice(name);
+        return getPulseaudioBridgeHandler().getClient().loadModuleSimpleProtocolTcpIfNeeded(device, simpleTcpPortPref)
+                .orElse(simpleTcpPortPref);
     }
 
     @Override

@@ -19,6 +19,8 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
+import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -35,9 +37,6 @@ import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
-import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 
 /**
  * The audio sink for openhab, implemented by a connection to a pulseaudio sink
@@ -108,7 +107,7 @@ public class PulseAudioAudioSink implements AudioSink {
      * @throws UnknownHostException
      * @throws IOException
      */
-    private void connectIfNeeded() throws IOException {
+    public void connectIfNeeded() throws IOException {
         Socket clientSocketLocal = clientSocket;
         if (clientSocketLocal == null || !clientSocketLocal.isConnected() || clientSocketLocal.isClosed()) {
             String host = pulseaudioHandler.getHost();
@@ -156,9 +155,25 @@ public class PulseAudioAudioSink implements AudioSink {
                     // send raw audio to the socket and to pulse audio
                     audioInputStream.transferTo(clientSocket.getOutputStream());
                 }
-            } catch (IOException e) {
-                logger.warn("Error while trying to send audio to pulseaudio audio sink. Cannot connect to {}:{}",
-                        pulseaudioHandler.getHost(), pulseaudioHandler.getSimpleTcpPort());
+            } catch (IOException e) { // second try, as the socket disconnection is sometimes not well detected
+                disconnect();
+                try {
+                    connectIfNeeded();
+                    if (audioInputStream != null && clientSocket != null) {
+                        // send raw audio to the socket and to pulse audio
+                        audioInputStream.transferTo(clientSocket.getOutputStream());
+                    }
+                } catch (IOException e1) {
+                    if (clientSocket != null) {
+                        logger.warn(
+                                "Error while trying to send audio to pulseaudio audio sink. Cannot connect to port {} (ip {}), error: {}",
+                                clientSocket.getPort(), pulseaudioHandler.getHost(), e1.getMessage());
+                    } else {
+                        logger.warn(
+                                "Error while trying to send audio to pulseaudio audio sink. Cannot connect. (error: {})",
+                                e1.getMessage());
+                    }
+                }
             }
         } finally {
             try {
