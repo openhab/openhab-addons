@@ -389,4 +389,11 @@
 		<description>Operating mode of the Somfy thermostatic valve</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="scenarios">
+		<item-type>String</item-type>
+		<label>Scenarios</label>
+		<description>The scenarios defined in the cloud portal</description>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
+	</channel-type>
 </thing:thing-descriptions>
