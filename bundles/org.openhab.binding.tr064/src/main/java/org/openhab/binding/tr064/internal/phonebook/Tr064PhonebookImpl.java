@@ -63,7 +63,7 @@ public class Tr064PhonebookImpl implements Phonebook {
     private void getPhonebook() {
         try {
             ContentResponse contentResponse = httpClient.newRequest(phonebookUrl).method(HttpMethod.GET)
-                    .timeout(2, TimeUnit.SECONDS).send();
+                    .timeout(5, TimeUnit.SECONDS).send();
             InputStream xml = new ByteArrayInputStream(contentResponse.getContent());
 
             JAXBContext context = JAXBContext.newInstance(PhonebooksType.class);
