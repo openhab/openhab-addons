@@ -229,7 +229,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
                     SomfyTahomaLoginResponse.class);
-            if (data.isSuccess()) {
+            if (data == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Received invalid data (login)");
+            } else if (data.isSuccess()) {
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 String id = registerEvents();
                 if (id != null && !id.equals(UNAUTHORIZED)) {
@@ -247,11 +250,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Received invalid data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
+            logger.debug("Received invalid data (login)", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             if (e instanceof ExecutionException) {
-                if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                if (isAuthenticationChallenge(e)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Authentication challenge");
                     setTooManyRequests();
@@ -377,9 +380,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     public synchronized @Nullable SomfyTahomaDevice getCachedDevice(String url) {
         List<SomfyTahomaDevice> devices = cachedDevices.getValue();
-        for (SomfyTahomaDevice device : devices) {
-            if (url.equals(device.getDeviceURL())) {
-                return device;
+        if (devices != null) {
+            for (SomfyTahomaDevice device : devices) {
+                if (url.equals(device.getDeviceURL())) {
+                    return device;
+                }
             }
         }
         return null;
@@ -451,15 +456,32 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private void processExecutionRegisteredEvent(SomfyTahomaEvent event) {
-        JsonElement el = event.getAction();
-        if (el.isJsonArray()) {
-            SomfyTahomaAction[] actions = gson.fromJson(el, SomfyTahomaAction[].class);
-            for (SomfyTahomaAction action : actions) {
-                registerExecution(action.getDeviceURL(), event.getExecId());
+        boolean invalidData = false;
+        try {
+            JsonElement el = event.getAction();
+            if (el.isJsonArray()) {
+                SomfyTahomaAction[] actions = gson.fromJson(el, SomfyTahomaAction[].class);
+                if (actions == null) {
+                    invalidData = true;
+                } else {
+                    for (SomfyTahomaAction action : actions) {
+                        registerExecution(action.getDeviceURL(), event.getExecId());
+                    }
+                }
+            } else {
+                SomfyTahomaAction action = gson.fromJson(el, SomfyTahomaAction.class);
+                if (action == null) {
+                    invalidData = true;
+                } else {
+                    registerExecution(action.getDeviceURL(), event.getExecId());
+                }
             }
-        } else {
-            SomfyTahomaAction action = gson.fromJson(el, SomfyTahomaAction.class);
-            registerExecution(action.getDeviceURL(), event.getExecId());
+        } catch (JsonSyntaxException e) {
+            invalidData = true;
+        }
+        if (invalidData) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Received invalid data (execution registered)");
         }
     }
 
@@ -771,7 +793,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean isAuthenticationChallenge(Exception ex) {
-        return ex.getMessage().contains(AUTHENTICATION_CHALLENGE);
+        String msg = ex.getMessage();
+        return msg != null && msg.contains(AUTHENTICATION_CHALLENGE);
     }
 
     @Override
