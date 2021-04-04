@@ -56,7 +56,7 @@ These are the channels that are currently supported:
 | automatic      | Switch | This is the control channel to start the automatic operation mode of the device |
 | cleanMode      | Switch (RO) | This is the channel that indicates if the device is in the cleaning mode |
 | temperature    | Number:Temperature (RO) | This channel provides the current measured temperature in Celsius or Fahrenheit as configured on the device |
-| humidity       | Number:Dimenionsless (RO) | This channel provides the humidity measured by the device in percent |
+| humidity       | Number:Dimensionless (RO) | This channel provides the humidity measured by the device in percent |
 | waterLevel     | Number (RO) | This channel indicates the water level of the tank where 1 is equal to the yellow "refill tank" warning on the device/App |
 | fanRPM         | Number (RO) | This channel provides the speed of the ventilation fan |
 | timerTimePassed  | Number:Time (RO) | If a timer has been set, this channel provides the minutes since when the timer was started  |
