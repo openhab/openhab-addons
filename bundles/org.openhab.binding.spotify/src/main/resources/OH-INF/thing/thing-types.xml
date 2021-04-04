@@ -64,20 +64,17 @@
 		<representation-property>clientId</representation-property>
 
 		<config-description>
-			<parameter name="clientId" type="text">
-				<required>true</required>
+			<parameter name="clientId" type="text" required="true">
 				<label>Application Client ID</label>
 				<description>This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify
 					Account. Go to https://developer.spotify.com/</description>
 			</parameter>
-			<parameter name="clientSecret" type="text">
-				<required>true</required>
+			<parameter name="clientSecret" type="text" required="true">
 				<label>Application Client Secret</label>
 				<description>This is the Client Secret provided by Spotify when you add a new Application for openHAB to your
 					Spotify Account.</description>
 			</parameter>
-			<parameter name="refreshPeriod" type="integer" min="1" max="60">
-				<required>true</required>
+			<parameter name="refreshPeriod" type="integer" min="1" max="60" required="true">
 				<default>10</default>
 				<label>Connect Refresh Period (seconds)</label>
 				<description>This is the frequency of the polling requests to the Spotify Connect Web API. There are limits to the
@@ -116,8 +113,7 @@
 		<representation-property>deviceName</representation-property>
 
 		<config-description>
-			<parameter name="deviceName" type="text">
-				<required>true</required>
+			<parameter name="deviceName" type="text" required="true">
 				<label>Spotify Device Name</label>
 				<description>This is the device name provided by Spotify.</description>
 			</parameter>
