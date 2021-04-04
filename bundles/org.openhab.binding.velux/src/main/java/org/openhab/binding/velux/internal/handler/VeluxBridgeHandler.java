@@ -257,7 +257,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     @Override
     public void initialize() {
-        logger.info("Initializing Velux Bridge '{}'.", getThing().getUID());
         // set the thing status to UNKNOWN temporarily and let the background task decide the real status
         updateStatus(ThingStatus.UNKNOWN);
         // take care of unusual situations...
@@ -265,11 +264,9 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.warn("initialize(): scheduler is shutdown, aborting initialization.");
             return;
         }
-        logger.trace("initialize(): scheduling background initialization task.");
         scheduler.execute(() -> {
             initializeScheduled();
         });
-        logger.trace("initialize() done.");
     }
 
     /**
@@ -287,31 +284,32 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             try {
                 disposeTask.get();
             } catch (InterruptedException | ExecutionException e) {
-                logger.debug("initializeScheduled(): disposeScheduled() wait error '{}'.", e.getMessage());
+                logger.warn("initializeScheduled(): unexpected exception waiting for disposeScheduled() '{}'.",
+                        e.getMessage());
             }
         }
         logger.trace("initializeScheduled(): adopt new bridge configuration parameters.");
         bridgeParamsUpdated();
         long mSecs = veluxBridgeConfiguration.refreshMSecs;
-        logger.debug("initializeScheduled(): scheduling refresh at {} milliseconds.", mSecs);
+        logger.trace("initializeScheduled(): scheduling refresh at {} milliseconds.", mSecs);
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 refreshOpenHAB();
             } catch (RuntimeException e) {
-                logger.warn("Exception occurred during activated refresh scheduler: {}.", e.getMessage());
+                logger.warn("initializeScheduled(): unexpected exception activating refresh scheduler '{}'.",
+                        e.getMessage());
             }
         }, mSecs, mSecs, TimeUnit.MILLISECONDS);
-        logger.trace("initializeScheduled(): done.");
+        logger.info("Velux Bridge '{}' initialization completed (with {} scenes and {} actuators).",
+                getThing().getUID(), bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
+                bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
     }
 
     @Override
     public void dispose() {
-        logger.info("Shutting down Velux Bridge '{}'.", getThing().getUID());
-        logger.trace("dispose(): scheduling background disposal task.");
         disposeTasks.put(veluxBridgeConfiguration.ipAddress, scheduler.submit(() -> {
             return disposeScheduled();
         }));
-        logger.trace("dispose() done.");
     }
 
     /**
@@ -332,14 +330,14 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     logger.warn("disposeScheduled(): unexpected awaitTermination() timeout.");
                 }
             } catch (InterruptedException e) {
-                logger.warn("disposeScheduled(): unexpected awaitTermination() interruption.");
+                logger.warn("disposeScheduled(): unexpected exception awaitTermination() '{}'.", e.getMessage());
             }
         }
         logger.trace("disposeScheduled(): shut down JSON connection interface.");
         myJsonBridge.shutdown();
         logger.trace("disposeScheduled(): shut down SLIP connection interface.");
         mySlipBridge.shutdown();
-        logger.trace("disposeScheduled(): done.");
+        logger.info("Velux Bridge '{}' shut down completed.", getThing().getUID());
         return true;
     }
 
@@ -405,11 +403,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         logger.trace("bridgeParamsUpdated(): Fetching existing scenes.");
         bridgeParameters.scenes.getScenes(thisBridge);
-        logger.info("Found {} scenes:\n\t{}", VeluxBindingConstants.BINDING_ID,
+        logger.info("Found Velux scenes:\n\t{}",
                 bridgeParameters.scenes.getChannel().existingScenes.toString(false, "\n\t"));
         logger.trace("bridgeParamsUpdated(): Fetching existing actuators/products.");
         bridgeParameters.actuators.getProducts(thisBridge);
-        logger.info("Found {} actuators:\n\t{}", VeluxBindingConstants.BINDING_ID,
+        logger.info("Found Velux actuators:\n\t{}",
                 bridgeParameters.actuators.getChannel().existingProducts.toString(false, "\n\t"));
 
         if (thisBridge.bridgeAPI().setHouseStatusMonitor() != null) {
@@ -422,9 +420,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         }
 
         veluxBridgeConfiguration.hasChanged = false;
-        logger.info("{} Bridge is online with {} scenes and {} actuators, now.", VeluxBindingConstants.BINDING_ID,
-                bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
-                bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
         logger.debug("Velux veluxBridge is online, now.");
         updateStatus(ThingStatus.ONLINE);
         logger.trace("bridgeParamsUpdated() successfully finished.");
