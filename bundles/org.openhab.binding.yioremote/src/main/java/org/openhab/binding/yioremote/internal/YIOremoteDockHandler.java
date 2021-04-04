@@ -81,7 +81,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private AuthenticationMessage authenticationMessageHandler = new AuthenticationMessage();
     private IRReceiverMessage irReceiverMessageHandler = new IRReceiverMessage();
     private PingMessage pingMessageHandler = new PingMessage();
-    private boolean reconnectionInProgress = false;
     private int reconnectionCounter = 0;
 
     public YIOremoteDockHandler(Thing thing) {
@@ -124,10 +123,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                     authenticateWebsocket();
                                     break;
                                 case COMMUNICATION_ERROR:
-                                    if (!reconnectionInProgress) {
-                                        disposeWebsocketPollingJob();
-                                        reconnectWebsocket();
-                                    }
+                                    disposeWebsocketPollingJob();
+                                    reconnectWebsocket();
                                     break;
                                 case AUTHENTICATION_COMPLETE:
                                 case CHECK_PONG:
@@ -147,24 +144,19 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
                 @Override
                 public void onClose() {
-                    if (!reconnectionInProgress) {
-                        logger.debug("onClose");
-                        disposeWebsocketPollingJob();
-                        reconnectWebsocket();
-                    }
-
+                    logger.debug("onClose");
+                    disposeWebsocketPollingJob();
+                    reconnectWebsocket();
                 }
 
                 @Override
                 public void onError(Throwable cause) {
-                    if (!reconnectionInProgress) {
-                        logger.debug("onError");
-                        disposeWebsocketPollingJob();
-                        yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Communication lost no ping from YIO DOCK");
-                        reconnectWebsocket();
-                    }
+                    logger.debug("onError");
+                    disposeWebsocketPollingJob();
+                    yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Communication lost no ping from YIO DOCK");
+                    reconnectWebsocket();
                 }
             });
 
@@ -336,6 +328,13 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             case AUTHENTICATION_PROCESS:
                 if (authenticationOk) {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE;
+                    if (webSocketReconnectionPollingJob != null) {
+                        if (!webSocketReconnectionPollingJob.isCancelled() && webSocketReconnectionPollingJob != null) {
+                            webSocketReconnectionPollingJob.cancel(true);
+                        }
+                        webSocketReconnectionPollingJob = null;
+                        reconnectionCounter = 0;
+                    }
                     updateStatus(ThingStatus.ONLINE);
                     updateState(STATUS_STRING_CHANNEL, StringType.EMPTY);
                     updateState(RECEIVER_SWITCH_CHANNEL, OnOffType.OFF);
@@ -407,8 +406,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     public void reconnectWebsocket() {
+        yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
         if (reconnectionCounter < 10) {
-            reconnectionInProgress = true;
             reconnectionCounter++;
             if (webSocketReconnectionPollingJob == null) {
                 webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 30,
@@ -416,12 +415,22 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             }
         } else {
             reconnectionCounter = 0;
-            yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Connection lost no ping from YIO DOCK");
             if (webSocketReconnectionPollingJob == null) {
                 webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 1,
                         TimeUnit.MINUTES);
+            } else {
+                if (webSocketReconnectionPollingJob != null) {
+                    if (!webSocketReconnectionPollingJob.isCancelled() && webSocketReconnectionPollingJob != null) {
+                        webSocketReconnectionPollingJob.cancel(true);
+                    }
+                }
+                webSocketReconnectionPollingJob = null;
+                if (webSocketReconnectionPollingJob == null) {
+                    webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0,
+                            1, TimeUnit.MINUTES);
+                }
             }
 
         }
@@ -462,7 +471,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                         webSocketReconnectionPollingJob.cancel(true);
                     }
                     webSocketReconnectionPollingJob = null;
-                    reconnectionInProgress = false;
                     reconnectionCounter = 0;
                 }
                 break;
