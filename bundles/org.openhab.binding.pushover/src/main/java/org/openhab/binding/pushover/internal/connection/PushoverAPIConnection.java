@@ -37,7 +37,7 @@ import org.openhab.core.cache.ExpiringCacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -130,7 +130,7 @@ public class PushoverAPIConnection {
         return executeRequest(HttpMethod.POST, url, body);
     }
 
-    private String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
+    private synchronized String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
             throws PushoverCommunicationException, PushoverConfigurationException {
         logger.trace("Pushover request: {} - URL = '{}'", httpMethod, url);
         try {
@@ -169,13 +169,11 @@ public class PushoverAPIConnection {
 
     private String getMessageError(String content) {
         final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
-        if (json.has("errors")) {
-            final JsonArray errors = json.get("errors").getAsJsonArray();
-            if (errors != null) {
-                return errors.toString();
-            }
+        final JsonElement errorsElement = json.get("errors");
+        if (errorsElement != null && errorsElement.isJsonArray()) {
+            return errorsElement.getAsJsonArray().toString();
         }
-        return "Unknown error occured.";
+        return "@text/offline.conf-error-unknown";
     }
 
     private boolean getMessageStatus(String content) {

@@ -31,6 +31,8 @@ Currently the binding does not support any Channels.
 ## Thing Actions
 
 All actions return a `Boolean` value to indicate if the message was sent successfully or not.
+If the communication to Pushover servers fails the binding does not try to send the message again.
+One has to take care of that on its own if it is important.
 The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
 Parameters declared as `@Nullable` are not optional.
 One has to pass a `null` value if it should be skipped or the default value for it should be used.
