@@ -820,6 +820,129 @@ sitemap BMW label="BMW" {
 }
 ```
 
+### Rules File
+```
+rule "i3ChargeWindowStartSetpoint"
+when
+    Item i3ChargeWindowStartMinute changed or
+    Item i3ChargeWindowStartHour changed
+then
+    val hour = (i3ChargeWindowStartHour.state as Number).intValue
+    val minute = (i3ChargeWindowStartMinute.state as Number).intValue
+    val time = (i3ChargeWindowStart.state as DateTimeType).zonedDateTime
+    i3ChargeWindowStart.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
+end
+
+rule "i3ChargeWindowStart"
+when
+    Item i3ChargeWindowStart changed
+then
+    val time = (i3ChargeWindowStart.state as DateTimeType).zonedDateTime
+    i3ChargeWindowStartMinute.sendCommand(time.minute)
+    i3ChargeWindowStartHour.sendCommand(time.hour)
+end
+
+rule "i3ChargeWindowEndSetpoint"
+when
+    Item i3ChargeWindowEndMinute changed or
+    Item i3ChargeWindowEndHour changed
+then
+    val hour = (i3ChargeWindowEndHour.state as Number).intValue
+    val minute = (i3ChargeWindowEndMinute.state as Number).intValue
+    val time = (i3ChargeWindowEnd.state as DateTimeType).zonedDateTime
+    i3ChargeWindowEnd.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
+end
+
+rule "i3ChargeWindowEnd"
+when
+    Item i3ChargeWindowEnd changed
+then
+    val time = (i3ChargeWindowEnd.state as DateTimeType).zonedDateTime
+    i3ChargeWindowEndMinute.sendCommand(time.minute)
+    i3ChargeWindowEndHour.sendCommand(time.hour)
+end
+
+rule "i3Timer1DepartureSetpoint"
+when
+    Item i3Timer1DepartureMinute changed or
+    Item i3Timer1DepartureHour changed
+then
+    val hour = (i3Timer1DepartureHour.state as Number).intValue
+    val minute = (i3Timer1DepartureMinute.state as Number).intValue
+    val time = (i3Timer1Departure.state as DateTimeType).zonedDateTime
+    i3Timer1Departure.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
+end
+
+rule "i3Timer1Departure"
+when
+    Item i3Timer1Departure changed
+then
+    val time = (i3Timer1Departure.state as DateTimeType).zonedDateTime
+    i3Timer1DepartureMinute.sendCommand(time.minute)
+    i3Timer1DepartureHour.sendCommand(time.hour)
+end
+
+rule "i3Timer2DepartureSetpoint"
+when
+    Item i3Timer2DepartureMinute changed or
+    Item i3Timer2DepartureHour changed
+then
+    val hour = (i3Timer2DepartureHour.state as Number).intValue
+    val minute = (i3Timer2DepartureMinute.state as Number).intValue
+    val time = (i3Timer2Departure.state as DateTimeType).zonedDateTime
+    i3Timer2Departure.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
+end
+
+rule "i3Timer2Departure"
+when
+    Item i3Timer2Departure changed
+then
+    val time = (i3Timer2Departure.state as DateTimeType).zonedDateTime
+    i3Timer2DepartureMinute.sendCommand(time.minute)
+    i3Timer2DepartureHour.sendCommand(time.hour)
+end
+
+rule "i3Timer3DepartureSetpoint"
+when
+    Item i3Timer3DepartureMinute changed or
+    Item i3Timer3DepartureHour changed
+then
+    val hour = (i3Timer3DepartureHour.state as Number).intValue
+    val minute = (i3Timer3DepartureMinute.state as Number).intValue
+    val time = (i3Timer3Departure.state as DateTimeType).zonedDateTime
+    i3Timer3Departure.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
+end
+
+rule "i3Timer3Departure"
+when
+    Item i3Timer3Departure changed
+then
+    val time = (i3Timer3Departure.state as DateTimeType).zonedDateTime
+    i3Timer3DepartureMinute.sendCommand(time.minute)
+    i3Timer3DepartureHour.sendCommand(time.hour)
+end
+
+rule "i3OverrideDepartureSetpoint"
+when
+    Item i3OverrideDepartureMinute changed or
+    Item i3OverrideDepartureHour changed
+then
+    val hour = (i3OverrideDepartureHour.state as Number).intValue
+    val minute = (i3OverrideDepartureMinute.state as Number).intValue
+    val time = (i3OverrideDeparture.state as DateTimeType).zonedDateTime
+    i3OverrideDeparture.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
+end
+
+rule "i3OverrideDeparture"
+when
+    Item i3OverrideDeparture changed
+then
+    val time = (i3OverrideDeparture.state as DateTimeType).zonedDateTime
+    i3OverrideDepartureMinute.sendCommand(time.minute)
+    i3OverrideDepartureHour.sendCommand(time.hour)
+end
+```
+
 ### Action example
 
 ```
