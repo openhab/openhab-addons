@@ -279,8 +279,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * be paused until that task has finished.
      */
     private synchronized void initializeScheduled() {
-        Future<Boolean> disposeTask = disposeTasks.remove(getThing().getUID().toString());
-        if (disposeTask != null) {
+        logger.trace("initializeScheduled(): initialize bridge configuration parameters.");
+        veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
+        Future<Boolean> disposeTask = disposeTasks.remove(veluxBridgeConfiguration.ipAddress);
+        if ((disposeTask != null) && (!disposeTask.isDone())) {
             logger.trace("initializeScheduled(): wait for pending disposeScheduled() task to finish.");
             try {
                 disposeTask.get();
@@ -288,8 +290,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 logger.debug("initializeScheduled(): disposeScheduled() wait error '{}'.", e.getMessage());
             }
         }
-        logger.trace("initializeScheduled(): initialize bridge configuration parameters.");
-        veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
         logger.trace("initializeScheduled(): adopt new bridge configuration parameters.");
         bridgeParamsUpdated();
         long mSecs = veluxBridgeConfiguration.refreshMSecs;
@@ -308,10 +308,9 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     public void dispose() {
         logger.info("Shutting down Velux Bridge '{}'.", getThing().getUID());
         logger.trace("dispose(): scheduling background disposal task.");
-        Future<Boolean> disposeTask = scheduler.submit(() -> {
+        disposeTasks.put(veluxBridgeConfiguration.ipAddress, scheduler.submit(() -> {
             return disposeScheduled();
-        });
-        disposeTasks.put(getThing().getUID().toString(), disposeTask);
+        }));
         logger.trace("dispose() done.");
     }
 
