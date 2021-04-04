@@ -81,6 +81,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private AuthenticationMessage authenticationMessageHandler = new AuthenticationMessage();
     private IRReceiverMessage irReceiverMessageHandler = new IRReceiverMessage();
     private PingMessage pingMessageHandler = new PingMessage();
+    private boolean reconnectionInProgress = false;
+    private int reconnectionCounter = 0;
 
     public YIOremoteDockHandler(Thing thing) {
         super(thing);
@@ -122,7 +124,10 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                     authenticateWebsocket();
                                     break;
                                 case COMMUNICATION_ERROR:
-                                    reconnectWebsocket();
+                                    if (!reconnectionInProgress) {
+                                        disposeWebsocketPollingJob();
+                                        reconnectWebsocket();
+                                    }
                                     break;
                                 case AUTHENTICATION_COMPLETE:
                                 case CHECK_PONG:
@@ -142,17 +147,24 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
                 @Override
                 public void onClose() {
-                    disposeWebsocketPollingJob();
-                    reconnectWebsocket();
+                    if (!reconnectionInProgress) {
+                        logger.debug("onClose");
+                        disposeWebsocketPollingJob();
+                        reconnectWebsocket();
+                    }
+
                 }
 
                 @Override
                 public void onError(Throwable cause) {
-                    disposeWebsocketPollingJob();
-                    yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication lost no ping from YIO DOCK");
-                    reconnectWebsocket();
+                    if (!reconnectionInProgress) {
+                        logger.debug("onError");
+                        disposeWebsocketPollingJob();
+                        yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Communication lost no ping from YIO DOCK");
+                        reconnectWebsocket();
+                    }
                 }
             });
 
@@ -395,9 +407,23 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     public void reconnectWebsocket() {
-        if (webSocketReconnectionPollingJob == null) {
-            webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 30,
-                    TimeUnit.SECONDS);
+        if (reconnectionCounter < 10) {
+            reconnectionInProgress = true;
+            reconnectionCounter++;
+            if (webSocketReconnectionPollingJob == null) {
+                webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 30,
+                        TimeUnit.SECONDS);
+            }
+        } else {
+            reconnectionCounter = 0;
+            yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Connection lost no ping from YIO DOCK");
+            if (webSocketReconnectionPollingJob == null) {
+                webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 1,
+                        TimeUnit.MINUTES);
+            }
+
         }
     }
 
@@ -436,6 +462,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                         webSocketReconnectionPollingJob.cancel(true);
                     }
                     webSocketReconnectionPollingJob = null;
+                    reconnectionInProgress = false;
+                    reconnectionCounter = 0;
                 }
                 break;
             default:
