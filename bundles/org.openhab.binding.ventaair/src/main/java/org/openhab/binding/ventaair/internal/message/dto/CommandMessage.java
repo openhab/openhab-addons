@@ -10,26 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ventaair.internal.message;
+package org.openhab.binding.ventaair.internal.message.dto;
+
+import org.openhab.binding.ventaair.internal.message.action.Action;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Base class for messages
+ * Message containing a command to be send to the device
  *
  * @author Stefan Triller - Initial contribution
  *
  */
-public class Message {
+public class CommandMessage extends Message {
+    @SerializedName(value = "Action")
+    private Action action;
 
-    @SerializedName(value = "Header")
-    protected Header header;
-
-    public Message(Header header) {
-        this.header = header;
-    }
-
-    public Header getHeader() {
-        return header;
+    public CommandMessage(Action action, Header header) {
+        super(header);
+        this.action = action;
     }
 }

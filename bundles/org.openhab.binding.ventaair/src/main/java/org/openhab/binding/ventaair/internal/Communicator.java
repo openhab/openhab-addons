@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
@@ -29,11 +30,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ventaair.internal.VentaThingHandler.StateUpdatedCallback;
-import org.openhab.binding.ventaair.internal.message.CommandMessage;
-import org.openhab.binding.ventaair.internal.message.DeviceInfoMessage;
-import org.openhab.binding.ventaair.internal.message.Header;
-import org.openhab.binding.ventaair.internal.message.Message;
 import org.openhab.binding.ventaair.internal.message.action.Action;
+import org.openhab.binding.ventaair.internal.message.dto.CommandMessage;
+import org.openhab.binding.ventaair.internal.message.dto.DeviceInfoMessage;
+import org.openhab.binding.ventaair.internal.message.dto.Header;
+import org.openhab.binding.ventaair.internal.message.dto.Message;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class Communicator {
-    private final Duration COMMUNICATION_TIMEOUT = Duration.ofSeconds(5);
+    private static final Duration COMMUNICATION_TIMEOUT = Duration.ofSeconds(5);
 
     private final Logger logger = LoggerFactory.getLogger(Communicator.class);
 
@@ -80,27 +81,27 @@ public class Communicator {
     public void pollDataFromDevice() {
         String messageJson = gson.toJson(new Message(header));
 
-        logger.debug("Opening connection to device for polling");
-
         try (Socket socket = new Socket(ipAddress, VentaAirBindingConstants.PORT)) {
             socket.setSoTimeout((int) COMMUNICATION_TIMEOUT.toMillis());
             InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
 
             byte[] dataToSend = buildMessageBytes(messageJson, "GET", "Complete");
+            // we write these lines to the log in order to help users with new/other venta devices, so they only need to
+            // enable debug logging
             logger.debug("Sending request data message (String):\n{}", new String(dataToSend));
             logger.debug("Sending request data message (bytes): [{}]", HexUtils.bytesToHex(dataToSend, ", "));
             output.write(dataToSend);
 
-            logger.debug("Data was sent to outputstream");
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(input));
+            BufferedReader br = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
             String reply = "";
             while ((reply = br.readLine()) != null) {
                 if (reply.startsWith("{")) {
                     // remove padding byte(s) after JSON data
                     String data = String.valueOf(reply.toCharArray(), 0, reply.length() - 1);
-                    logger.debug("Got Data: {}", data);
+                    // we write this line to the log in order to help users with new/other venta devices, so they only
+                    // need to enable debug logging
+                    logger.debug("Got Data from device: {}", data);
 
                     DeviceInfoMessage deviceInfoMessage = gson.fromJson(data, DeviceInfoMessage.class);
                     if (deviceInfoMessage != null) {
@@ -108,17 +109,18 @@ public class Communicator {
                     }
                 }
             }
+            br.close();
             socket.close();
         } catch (IOException e) {
-            logger.debug("Communication problem while polling data from device", e);
             callback.communicationProblem();
         }
     }
 
     private byte[] buildMessageBytes(String message, String method, String endpoint) throws IOException {
         ByteArrayOutputStream getInfoOutputStream = new ByteArrayOutputStream();
-        getInfoOutputStream.write(createMessageHeader(method, endpoint, message.length()).getBytes());
-        getInfoOutputStream.write(message.getBytes());
+        getInfoOutputStream
+                .write(createMessageHeader(method, endpoint, message.length()).getBytes(StandardCharsets.UTF_8));
+        getInfoOutputStream.write(message.getBytes(StandardCharsets.UTF_8));
         getInfoOutputStream.write(new byte[] { 0x1c, 0x00 });
         return getInfoOutputStream.toByteArray();
     }
@@ -135,16 +137,15 @@ public class Communicator {
     public void sendActionToDevice(Action action) throws IOException {
         CommandMessage message = new CommandMessage(action, header);
 
-        logger.debug("Have built message={}", message);
-
         String messageJson = gson.toJson(message);
-        logger.debug("command message={}", messageJson);
 
         try (Socket socket = new Socket(ipAddress, VentaAirBindingConstants.PORT)) {
             OutputStream output = socket.getOutputStream();
 
             byte[] dataToSend = buildMessageBytes(messageJson, "POST", "Action");
 
+            // we write these lines to the log in order to help users with new/other venta devices, so they only need to
+            // enable debug logging
             logger.debug("sending: {}", new String(dataToSend));
             logger.debug("sendingArray: {}", Arrays.toString(dataToSend));
 
@@ -170,7 +171,6 @@ public class Communicator {
     public void stopPollDataFromDevice() {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob != null && !localPollingJob.isCancelled()) {
-            logger.debug("Canceling polling job");
             localPollingJob.cancel(true);
         }
         logger.debug("Setting polling job to null");

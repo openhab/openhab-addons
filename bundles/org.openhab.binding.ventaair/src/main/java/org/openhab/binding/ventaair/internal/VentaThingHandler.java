@@ -18,14 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ventaair.internal.message.DeviceInfoMessage;
-import org.openhab.binding.ventaair.internal.message.Header;
-import org.openhab.binding.ventaair.internal.message.Info;
-import org.openhab.binding.ventaair.internal.message.Measurements;
 import org.openhab.binding.ventaair.internal.message.action.Action;
 import org.openhab.binding.ventaair.internal.message.action.AllActions;
 import org.openhab.binding.ventaair.internal.message.action.AutomaticAction;
@@ -36,11 +34,16 @@ import org.openhab.binding.ventaair.internal.message.action.HumidityAction;
 import org.openhab.binding.ventaair.internal.message.action.PowerAction;
 import org.openhab.binding.ventaair.internal.message.action.SleepModeAction;
 import org.openhab.binding.ventaair.internal.message.action.TimerAction;
+import org.openhab.binding.ventaair.internal.message.dto.DeviceInfoMessage;
+import org.openhab.binding.ventaair.internal.message.dto.Header;
+import org.openhab.binding.ventaair.internal.message.dto.Info;
+import org.openhab.binding.ventaair.internal.message.dto.Measurements;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -63,8 +66,7 @@ public class VentaThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VentaThingHandler.class);
 
-    @NonNullByDefault({})
-    private VentaAirDeviceConfiguration config;
+    private VentaAirDeviceConfiguration config = new VentaAirDeviceConfiguration();
 
     private @Nullable Communicator communicator;
 
@@ -85,8 +87,7 @@ public class VentaThingHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case VentaAirBindingConstants.CHANNEL_POWER:
                 if (command instanceof OnOffType) {
-                    OnOffType power = (OnOffType) command;
-                    dispatchActionToDevice(new PowerAction(power == OnOffType.ON ? true : false));
+                    dispatchActionToDevice(new PowerAction(command == OnOffType.ON));
                 }
                 break;
             case VentaAirBindingConstants.CHANNEL_FAN_SPEED:
@@ -109,26 +110,22 @@ public class VentaThingHandler extends BaseThingHandler {
                 break;
             case VentaAirBindingConstants.CHANNEL_SLEEP_MODE:
                 if (command instanceof OnOffType) {
-                    OnOffType sleepMode = (OnOffType) command;
-                    dispatchActionToDevice(new SleepModeAction(sleepMode == OnOffType.ON ? true : false));
+                    dispatchActionToDevice(new SleepModeAction(command == OnOffType.ON));
                 }
                 break;
             case VentaAirBindingConstants.CHANNEL_BOOST:
                 if (command instanceof OnOffType) {
-                    OnOffType boost = (OnOffType) command;
-                    dispatchActionToDevice(new BoostAction(boost == OnOffType.ON ? true : false));
+                    dispatchActionToDevice(new BoostAction(command == OnOffType.ON));
                 }
                 break;
             case VentaAirBindingConstants.CHANNEL_CHILD_LOCK:
                 if (command instanceof OnOffType) {
-                    OnOffType childLock = (OnOffType) command;
-                    dispatchActionToDevice(new ChildLockAction(childLock == OnOffType.ON ? true : false));
+                    dispatchActionToDevice(new ChildLockAction(command == OnOffType.ON));
                 }
                 break;
             case VentaAirBindingConstants.CHANNEL_AUTOMATIC:
                 if (command instanceof OnOffType) {
-                    OnOffType automatic = (OnOffType) command;
-                    dispatchActionToDevice(new AutomaticAction(automatic == OnOffType.ON ? true : false));
+                    dispatchActionToDevice(new AutomaticAction(command == OnOffType.ON));
                 }
                 break;
 
@@ -179,7 +176,7 @@ public class VentaThingHandler extends BaseThingHandler {
             try {
                 localCommunicator.sendActionToDevice(action);
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
             localCommunicator.pollDataFromDevice();
@@ -230,7 +227,7 @@ public class VentaThingHandler extends BaseThingHandler {
             Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;
 
             if (actions != null) {
-                OnOffType powerState = actions.isPower() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType powerState = OnOffType.from(actions.isPower());
                 updateState(VentaAirBindingConstants.CHANNEL_POWER, powerState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_POWER, powerState);
 
@@ -246,19 +243,19 @@ public class VentaThingHandler extends BaseThingHandler {
                 updateState(VentaAirBindingConstants.CHANNEL_TIMER, timerState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_TIMER, timerState);
 
-                OnOffType sleepModeState = actions.isSleepMode() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType sleepModeState = OnOffType.from(actions.isSleepMode());
                 updateState(VentaAirBindingConstants.CHANNEL_SLEEP_MODE, sleepModeState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_SLEEP_MODE, sleepModeState);
 
-                OnOffType boostState = actions.isBoost() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType boostState = OnOffType.from(actions.isBoost());
                 updateState(VentaAirBindingConstants.CHANNEL_BOOST, boostState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_BOOST, boostState);
 
-                OnOffType childLockState = actions.isChildLock() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType childLockState = OnOffType.from(actions.isChildLock());
                 updateState(VentaAirBindingConstants.CHANNEL_CHILD_LOCK, childLockState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CHILD_LOCK, childLockState);
 
-                OnOffType automaticState = actions.isAutomatic() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType automaticState = OnOffType.from(actions.isAutomatic());
                 updateState(VentaAirBindingConstants.CHANNEL_AUTOMATIC, automaticState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_AUTOMATIC, automaticState);
 
@@ -273,7 +270,8 @@ public class VentaThingHandler extends BaseThingHandler {
                 updateState(VentaAirBindingConstants.CHANNEL_TEMPERATURE, temperatureState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_TEMPERATURE, temperatureState);
 
-                DecimalType humidityState = new DecimalType(measurements.getHumidity());
+                QuantityType<Dimensionless> humidityState = new QuantityType<>(measurements.getHumidity(),
+                        Units.PERCENT);
                 updateState(VentaAirBindingConstants.CHANNEL_HUMIDITY, humidityState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_HUMIDITY, humidityState);
 
@@ -292,15 +290,15 @@ public class VentaThingHandler extends BaseThingHandler {
                 int discReplaceHours = info.getDiscIonT() * 5 / 60;
                 int cleaningHours = info.getCleaningT() * 5 / 60;
 
-                DecimalType opHoursState = new DecimalType(opHours);
+                QuantityType<Time> opHoursState = new QuantityType<Time>(opHours, Units.HOUR);
                 updateState(VentaAirBindingConstants.CHANNEL_OPERATION_TIME, opHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_OPERATION_TIME, opHoursState);
 
-                DecimalType discReplaceHoursState = new DecimalType(2200 - discReplaceHours);
+                QuantityType<Time> discReplaceHoursState = new QuantityType<Time>(2200 - discReplaceHours, Units.HOUR);
                 updateState(VentaAirBindingConstants.CHANNEL_DISC_REPLACE_TIME, discReplaceHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_DISC_REPLACE_TIME, discReplaceHoursState);
 
-                DecimalType cleaningHoursState = new DecimalType(4400 - cleaningHours);
+                QuantityType<Time> cleaningHoursState = new QuantityType<Time>(4400 - cleaningHours, Units.HOUR);
                 updateState(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
 
@@ -308,7 +306,7 @@ public class VentaThingHandler extends BaseThingHandler {
                 updateState(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
 
-                DecimalType timerTimePassedState = new DecimalType(info.getTimerT());
+                QuantityType<Time> timerTimePassedState = new QuantityType<Time>(info.getTimerT(), Units.MINUTE);
                 updateState(VentaAirBindingConstants.CHANNEL_TIMER_TIME_PASSED, timerTimePassedState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_TIMER_TIME_PASSED, timerTimePassedState);
 

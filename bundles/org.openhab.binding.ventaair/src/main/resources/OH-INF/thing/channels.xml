@@ -57,9 +57,9 @@
 	</channel-type>
 
 	<channel-type id="timerTimePassed">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Timer Time Passed</label>
-		<description>Time that has passed since set by the Timer (in min)</description>
+		<description>Time that has passed since set by the Timer</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -96,11 +96,11 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimenionsless</item-type>
 		<label>Humidity</label>
 		<description>Current Humidity</description>
 		<category>Humidity</category>
-		<state pattern="%.1f %%" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="waterLevel">
@@ -121,7 +121,7 @@
 		<item-type>Number</item-type>
 		<label>Fan RPM</label>
 		<description>Fan RPM</description>
-		<state pattern="%d" readOnly="true"/>
+		<state pattern="%d RPM" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cleanMode">
@@ -132,21 +132,21 @@
 	</channel-type>
 
 	<channel-type id="operationTime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Operation Time</label>
 		<description>Operation Time since the device was first started (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="discReplaceTime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Hygiene Disc Replacement</label>
 		<description>Time until the Hygiene Disc should be replaced (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cleaningTime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Cleaning Time</label>
 		<description>Time until next cleaning (in hours)</description>
 		<state pattern="%d" readOnly="true"/>

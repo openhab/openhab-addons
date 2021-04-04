@@ -15,6 +15,8 @@ package org.openhab.binding.ventaair.internal.discovery;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ventaair.internal.VentaAirBindingConstants;
-import org.openhab.binding.ventaair.internal.message.Header;
-import org.openhab.binding.ventaair.internal.message.Message;
+import org.openhab.binding.ventaair.internal.message.dto.Header;
+import org.openhab.binding.ventaair.internal.message.dto.Message;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -50,14 +52,14 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.ventaair")
 public class VentaDeviceDiscovery extends AbstractDiscoveryService {
+    private static final String REPRESENTATION_PROPERTY = "macAddress";
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(VentaAirBindingConstants.THING_TYPE_LW60T);
     // defined as int, because AbstractDiscoveryService wants and int and not long as provided by Duration.getSeconds()
     private static final int MANUAL_DISCOVERY_TIME = 30;
+    private static final Duration TIME_BETWEEN_SCANS = Duration.ofSeconds(30);
 
     private final Logger logger = LoggerFactory.getLogger(VentaDeviceDiscovery.class);
-
-    private final Duration TIME_BETWEEN_SCANS = Duration.ofSeconds(30);
 
     private @Nullable ScheduledFuture<?> scanJob = null;
 
@@ -67,22 +69,18 @@ public class VentaDeviceDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("startScan() pressed");
         findDevices();
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         super.startBackgroundDiscovery();
-        logger.debug("startBackgroundDiscovery()");
 
         ScheduledFuture<?> localScanJob = scanJob;
-        if (localScanJob != null && !localScanJob.isCancelled()) {
-            logger.debug("Canceling old scan job");
+        if (localScanJob != null) {
             localScanJob.cancel(true);
         }
 
-        logger.debug("Scheduling new scan job");
         scanJob = scheduler.scheduleWithFixedDelay(this::findDevices, 5, TIME_BETWEEN_SCANS.getSeconds(),
                 TimeUnit.SECONDS);
     }
@@ -90,11 +88,9 @@ public class VentaDeviceDiscovery extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         super.stopBackgroundDiscovery();
-        logger.debug("stopBackgroundDiscovery()");
 
         ScheduledFuture<?> localScanJob = scanJob;
-        if (localScanJob != null && !localScanJob.isCancelled()) {
-            logger.debug("Canceling scan job");
+        if (localScanJob != null) {
             localScanJob.cancel(true);
         }
         scanJob = null;
@@ -103,7 +99,6 @@ public class VentaDeviceDiscovery extends AbstractDiscoveryService {
     private void findDevices() {
         byte[] buf = new byte[512];
         try (DatagramSocket socket = new DatagramSocket(VentaAirBindingConstants.PORT)) {
-
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             socket.receive(packet);
 
@@ -126,9 +121,11 @@ public class VentaDeviceDiscovery extends AbstractDiscoveryService {
                     break;
             }
             createDiscoveryResult(thingTypeUID, m.getHeader());
-
+        } catch (SocketException e) {
+            logger.warn("Could not open port {} to scan for Venta devices in the network.",
+                    VentaAirBindingConstants.PORT);
         } catch (IOException e) {
-            logger.debug("Exception while opening port or trying to parse discovery data from device.", e);
+            // swallow, since we already log the broken packet above
         }
     }
 
@@ -136,7 +133,7 @@ public class VentaDeviceDiscovery extends AbstractDiscoveryService {
         Gson gson = new Gson();
         Message msg = null;
 
-        String packetAsString = new String(packet);
+        String packetAsString = new String(packet, StandardCharsets.UTF_8);
 
         String[] lines = packetAsString.split("\n");
         if (lines.length >= 3) {
@@ -162,14 +159,13 @@ public class VentaDeviceDiscovery extends AbstractDiscoveryService {
         ThingUID uid = new ThingUID(thingTypeUID, ipAddress.replace(".", "_"));
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("ipAddress", ipAddress);
-        properties.put("macAddress", macAddress);
+        properties.put(REPRESENTATION_PROPERTY, macAddress);
         properties.put("deviceType", deviceType);
 
         String typeLabel = thingTypeUID.getId().toUpperCase();
 
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withRepresentationProperty("macAddress")
-                .withProperties(properties).withLabel(typeLabel + " (IP=" + ipAddress + " Mac=" + macAddress + ")")
-                .build();
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withRepresentationProperty(REPRESENTATION_PROPERTY)
+                .withProperties(properties).withLabel(typeLabel + " (IP=" + ipAddress + ")").build();
 
         this.thingDiscovered(result);
     }

@@ -35,7 +35,7 @@
 
 	<!-- Generic type has boost channel and maybe in the future other channels -->
 	<thing-type id="generic">
-		<label>Generic VentaAir Humidifier/Cleaner</label>
+		<label>Generic Humidifier/Cleaner</label>
 		<description>Thing for Venta Air Humidifiers/Cleaners</description>
 
 		<channels>

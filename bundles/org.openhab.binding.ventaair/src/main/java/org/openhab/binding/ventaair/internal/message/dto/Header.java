@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ventaair.internal.message;
+package org.openhab.binding.ventaair.internal.message.dto;
 
 import com.google.gson.annotations.SerializedName;
 
