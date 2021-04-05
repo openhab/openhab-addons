@@ -37,10 +37,14 @@ public class SVDRPVolume {
     public static SVDRPVolume parse(String message) throws SVDRPParseResponseException {
         SVDRPVolume volume = new SVDRPVolume();
         try {
-            String number = message.substring(message.lastIndexOf(" ") + 1, message.length());
-            int val = Integer.parseInt(number);
-            val = val * 100 / 255;
-            volume.setVolume(val);
+            String vol = message.substring(message.lastIndexOf(" ") + 1, message.length());
+            if ("mute".equals(vol)) {
+                volume.setVolume(0);
+            } else {
+                int val = Integer.parseInt(vol);
+                val = val * 100 / 255;
+                volume.setVolume(val);
+            }
         } catch (NumberFormatException nex) {
             throw new SVDRPParseResponseException(nex.getMessage(), nex);
         } catch (IndexOutOfBoundsException ie) {

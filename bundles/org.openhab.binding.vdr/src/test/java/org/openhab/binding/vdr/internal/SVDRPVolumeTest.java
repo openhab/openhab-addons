@@ -29,6 +29,7 @@ import org.openhab.binding.vdr.internal.svdrp.SVDRPVolume;
 @NonNullByDefault
 public class SVDRPVolumeTest {
     private final String volumeResponseOk = "Audio volume is 255";
+    private final String volumeResponseMute = "Audio is mute";
     private final String volumeResponseParseError1 = "Audiovolumeis255";
     private final String volumeResponseParseError2 = "Audio volume is 255x";
 
@@ -36,6 +37,8 @@ public class SVDRPVolumeTest {
     public void testParseVolumeData() throws SVDRPException {
         SVDRPVolume volume = SVDRPVolume.parse(volumeResponseOk);
         assertEquals(100, volume.getVolume());
+        volume = SVDRPVolume.parse(volumeResponseMute);
+        assertEquals(0, volume.getVolume());
     }
 
     @Test

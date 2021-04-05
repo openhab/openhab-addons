@@ -88,8 +88,6 @@ public class VDRHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // ensure that there is no active refresh thread
-        stopRefreshThread(true);
         // initialize and schedule refresh thread
         scheduleRefreshThread();
     }
