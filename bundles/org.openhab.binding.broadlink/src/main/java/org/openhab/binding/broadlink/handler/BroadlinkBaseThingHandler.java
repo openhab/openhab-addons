@@ -221,32 +221,27 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     public void updateItemStatus() {
-        thingLogger.logTrace("updateItemStatus; checking host availability at " + thingConfig.getIpAddress());
-        if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
+        thingLogger.logTrace("updateItemStatus; checking status for device at " + thingConfig.getIpAddress());
+        boolean gotStatusOk = getStatusFromDevice();
+        if (gotStatusOk){
+            // success - device online
             thingLogger.logTrace("updateItemStatus; host found at " + thingConfig.getIpAddress());
             if (!Utils.isOnline(getThing())) {
                 thingLogger.logTrace("updateItemStatus; device not currently online, resolving");
                 transitionToOnline();
-            } else {
-                // Normal operation ...
-                boolean gotStatusOk = getStatusFromDevice();
-                if (!gotStatusOk) {
-                    if (thingConfig.isIgnoreFailedUpdates()) {
-                        thingLogger.logWarn(
-                                "Problem getting status. Not marking offline because configured to ignore failed updates ...");
-                    } else {
-                        thingLogger.logError("Problem getting status. Marking as offline ...");
-                        forceOffline(ThingStatusDetail.GONE, "Problem getting status");
-                    }
-                }
             }
         } else {
-            if (thingConfig.isStaticIp()) {
-                if (!Utils.isOffline(getThing())) {
-                    thingLogger.logDebug("Statically-IP-addressed device not found at " + thingConfig.getIpAddress());
-                    forceOffline(ThingStatusDetail.NONE, "Couldn't find statically-IP-addressed device");
-                }
+            // problem with querying device - offline?
+            if (thingConfig.isIgnoreFailedUpdates()) {
+                thingLogger.logWarn(
+                        "Problem getting status. Not marking offline because configured to ignore failed updates ...");
             } else {
+                thingLogger.logError("Problem getting status. Marking as offline ...");
+                forceOffline(ThingStatusDetail.GONE, "Problem getting status");
+            }
+
+            // if dynamic IP then search
+            if (!thingConfig.isStaticIp()) {
                 thingLogger.logDebug(
                         String.format("Dynamic IP device not found at %s, will search...", thingConfig.getIpAddress()));
                 DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
