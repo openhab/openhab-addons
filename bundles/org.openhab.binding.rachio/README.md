@@ -152,8 +152,6 @@ Bridge rachio:cloud:1 @ "Sprinkler" [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
     String   RachioC04DAC_lastEvent     "Last Event"         {channel="rachio:device:1:XXXXXXXXXXXX:lastEvent"}
     DateTime RachioC04DAC_lastEventTime "Last Event Time"    {channel="rachio:device:1:XXXXXXXXXXXX:lastEventTime"}
     DateTime RachioC04DAC_lastUpdate    LastUpdate"          {channel="rachio:device:1:XXXXXXXXXXXX:lastUpdate"}
-    Number   RachioC04DAC_Latitude      "Latitude"           {channel="rachio:device:1:XXXXXXXXXXXX:latitude"}1
-    Number   RachioC04DAC_Longitude     "Longitude"          {channel="rachio:device:1:XXXXXXXXXXXX:longitude"}
 
     // Zone1
     String   RachioZone1_Name           "Zone Name"       {channel="rachio:zone:1:XXXXXXXXXXXX-1:name"}

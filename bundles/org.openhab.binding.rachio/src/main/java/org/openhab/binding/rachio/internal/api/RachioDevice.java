@@ -163,13 +163,14 @@ public class RachioDevice extends RachioCloudDevice {
         properties.put(PROPERTY_DEV_ID, id);
         properties.put(PROPERTY_DEV_LAT, new Double(latitude).toString());
         properties.put(PROPERTY_DEV_LONG, new Double(longitude).toString());
-        if (network != null) {
-            properties.put(PROPERTY_IP_ADDRESS, network.ip);
-            properties.put(PROPERTY_IP_MASK, network.ip);
-            properties.put(PROPERTY_IP_GW, network.gw);
-            properties.put(PROPERTY_IP_DNS1, network.dns1);
-            properties.put(PROPERTY_IP_DNS2, network.dns2);
-            properties.put(PROPERTY_WIFI_RSSI, network.rssi);
+        RachioCloudNetworkSettings nw = network;
+        if (nw != null) {
+            properties.put(PROPERTY_IP_ADDRESS, nw.ip);
+            properties.put(PROPERTY_IP_MASK, nw.ip);
+            properties.put(PROPERTY_IP_GW, nw.gw);
+            properties.put(PROPERTY_IP_DNS1, nw.dns1);
+            properties.put(PROPERTY_IP_DNS2, nw.dns2);
+            properties.put(PROPERTY_WIFI_RSSI, nw.rssi);
         }
         return properties;
     }

@@ -71,8 +71,6 @@
 			<channel id="scheduleInfo" typeId="scheduleInfo"/>
 			<channel id="scheduleStart" typeId="scheduleStart"/>
 			<channel id="scheduleEnd" typeId="scheduleEnd"/>
-			<channel id="latitude" typeId="dev_latitude"/>
-			<channel id="longitude" typeId="dev_longitude"/>
 		</channels>
 	</thing-type>
 
@@ -133,22 +131,6 @@
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
-	<channel-type id="dev_longitude" advanced="true">
-		<item-type>Number</item-type>
-		<label>Longitude</label>
-		<description>Longitude of the device location</description>
-		<state readOnly="true" pattern="%s">
-		</state>
-	</channel-type>
-	<channel-type id="dev_schedule" advanced="true">
-		<item-type>String</item-type>
-		<label>Running schedule</label>
-		<description>Currently running schedule, if empty no schedule is running</description>
-		<state readOnly="true" pattern="%s">
-		</state>
-	</channel-type>
-
-
 
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
