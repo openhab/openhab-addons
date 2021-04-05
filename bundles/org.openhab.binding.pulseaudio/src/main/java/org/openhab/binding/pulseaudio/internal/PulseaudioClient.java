@@ -141,28 +141,30 @@ public class PulseaudioClient {
     /**
      * updates the item states and their relationships
      */
-    public void update() {
-        modules.clear();
-        modules.addAll(Parser.parseModules(listModules()));
+    public synchronized void update() {
+        // one step copy
+        modules = new ArrayList<Module>(Parser.parseModules(listModules()));
 
-        items.clear();
+        List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
+        newItems.clear();
         if (Optional.ofNullable(TYPE_FILTERS.get(SINK_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading sinks");
-            items.addAll(Parser.parseSinks(listSinks(), this));
+            newItems.addAll(Parser.parseSinks(listSinks(), this));
         }
         if (Optional.ofNullable(TYPE_FILTERS.get(SOURCE_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading sources");
-            items.addAll(Parser.parseSources(listSources(), this));
+            newItems.addAll(Parser.parseSources(listSources(), this));
         }
         if (Optional.ofNullable(TYPE_FILTERS.get(SINK_INPUT_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading sink-inputs");
-            items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
+            newItems.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
         }
         if (Optional.ofNullable(TYPE_FILTERS.get(SOURCE_OUTPUT_THING_TYPE.getId())).orElse(false)) {
             logger.debug("reading source-outputs");
-            items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
+            newItems.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
         }
-        logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), items.size());
+        logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), newItems.size());
+        items = newItems;
     }
 
     private String listModules() {
