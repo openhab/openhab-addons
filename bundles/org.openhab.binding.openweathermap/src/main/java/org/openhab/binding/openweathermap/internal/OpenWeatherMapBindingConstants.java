@@ -125,7 +125,7 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_SULPHUR_DIOXIDE = "sulphurDioxide";
     public static final String CHANNEL_AMMONIA = "ammonia";
     public static final String CHANNEL_PRECIPITATION = "precipitation";
-    public static final String CHANNEL_ALERT_TITLE = "title";
+    public static final String CHANNEL_ALERT_EVENT = "event";
     public static final String CHANNEL_ALERT_DESCRIPTION = "description";
     public static final String CHANNEL_ALERT_ONSET = "onset";
     public static final String CHANNEL_ALERT_EXPIRES = "expires";

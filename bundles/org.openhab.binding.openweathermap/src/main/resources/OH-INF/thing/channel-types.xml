@@ -294,7 +294,7 @@
 		<label>Weather Warnings</label>
 		<description>Weather warnings issued for the requested location.</description>
 		<channels>
-			<channel id="title" typeId="alert-title"/>
+			<channel id="event" typeId="alert-event"/>
 			<channel id="description" typeId="alert-description"/>
 			<channel id="onset" typeId="alert-onset"/>
 			<channel id="expires" typeId="alert-expires"/>
@@ -781,10 +781,10 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="alert-title">
+	<channel-type id="alert-event">
 		<item-type>String</item-type>
-		<label>Title</label>
-		<description>A brief description of the alert.</description>
+		<label>Type</label>
+		<description>Type of the warning, e.g. FROST.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

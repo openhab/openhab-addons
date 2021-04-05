@@ -683,7 +683,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         if (alerts != null && alerts.size() > count) {
             Alert alert = alerts.get(count - 1);
             switch (channelId) {
-                case CHANNEL_ALERT_TITLE:
+                case CHANNEL_ALERT_EVENT:
                     state = getStringTypeState(alert.event);
                     break;
                 case CHANNEL_ALERT_DESCRIPTION:

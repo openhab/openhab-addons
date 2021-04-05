@@ -238,7 +238,7 @@ See above for a description of the available channels.
 
 | Channel Group ID      | Channel ID  | Item Type | Description                                         |
 |-----------------------|-------------|-----------|-----------------------------------------------------|
-| alerts1, alerts2, ... | title       | String    | A brief description of the alert.                   |
+| alerts1, alerts2, ... | event       | String    | Type of the warning, e.g. FROST.                    |
 | alerts1, alerts2, ... | description | String    | A detailed description of the alert.                |
 | alerts1, alerts2, ... | onset       | DateTime  | Start Date and Time for which the warning is valid. |
 | alerts1, alerts2, ... | expires     | DateTime  | End Date and Time for which the warning is valid.   |
