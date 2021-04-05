@@ -252,20 +252,20 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         } catch (JsonSyntaxException e) {
             logger.debug("Received invalid data (login)", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            if (e instanceof ExecutionException) {
-                if (isAuthenticationChallenge(e)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Authentication challenge");
-                    setTooManyRequests();
-                    return;
-                }
+        } catch (ExecutionException e) {
+            if (isAuthenticationChallenge(e)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authentication challenge");
+                setTooManyRequests();
+            } else {
+                logger.debug("Cannot get login cookie", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot get login cookie");
             }
-            logger.debug("Cannot get login cookie!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot get login cookie");
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Getting login cookie timeout");
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Getting login cookie interrupted");
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -592,11 +592,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         try {
             eventsId = "";
             sendGetToTahomaWithCookie(TAHOMA_API_URL + "logout");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.debug("Cannot send logout command!", e);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -845,12 +844,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Cannot call url: {} with params: {}!", url, urlParameters, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Cannot call url: {} with params: {}!", url, urlParameters, e);
+        } catch (TimeoutException e) {
+            logger.debug("Timeout when calling url: {} with params: {}!", url, urlParameters, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            Thread.currentThread().interrupt();
         }
         return null;
     }
