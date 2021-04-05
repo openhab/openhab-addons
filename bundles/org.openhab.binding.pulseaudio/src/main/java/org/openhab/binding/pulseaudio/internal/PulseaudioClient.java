@@ -388,9 +388,10 @@ public class PulseaudioClient {
      * @param item the sink we are searching for
      * @param simpleTcpPortPref the port to use if we have to load the module
      * @return the port on which the module is listening
+     * @throws InterruptedException
      */
     public Optional<Integer> loadModuleSimpleProtocolTcpIfNeeded(AbstractAudioDeviceConfig item,
-            Integer simpleTcpPortPref) {
+            Integer simpleTcpPortPref) throws InterruptedException {
         int currentTry = 0;
         int simpleTcpPortToTry = simpleTcpPortPref;
         do {
@@ -403,11 +404,7 @@ public class PulseaudioClient {
                         + simpleTcpPortToTry);
                 simpleTcpPortToTry = new Random().nextInt(64512) + 1024; // a random port above 1024
             }
-            try { // let time for the module to load
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-            }
-
+            Thread.sleep(100);
             currentTry++;
         } while (currentTry < 3);
 

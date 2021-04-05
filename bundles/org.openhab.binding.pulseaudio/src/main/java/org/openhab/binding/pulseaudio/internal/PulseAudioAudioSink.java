@@ -15,7 +15,6 @@ package org.openhab.binding.pulseaudio.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -104,10 +103,10 @@ public class PulseAudioAudioSink implements AudioSink {
     /**
      * Connect to pulseaudio with the simple protocol
      *
-     * @throws UnknownHostException
      * @throws IOException
+     * @throws InterruptedException when interrupted during the loading module wait
      */
-    public void connectIfNeeded() throws IOException {
+    public void connectIfNeeded() throws IOException, InterruptedException {
         Socket clientSocketLocal = clientSocket;
         if (clientSocketLocal == null || !clientSocketLocal.isConnected() || clientSocketLocal.isClosed()) {
             String host = pulseaudioHandler.getHost();
@@ -149,30 +148,28 @@ public class PulseAudioAudioSink implements AudioSink {
                         audioStream.getFormat());
             }
 
-            try {
-                connectIfNeeded();
-                if (audioInputStream != null && clientSocket != null) {
-                    // send raw audio to the socket and to pulse audio
-                    audioInputStream.transferTo(clientSocket.getOutputStream());
-                }
-            } catch (IOException e) { // second try, as the socket disconnection is sometimes not well detected
-                disconnect();
+            for (int countAttempt = 1; countAttempt <= 2; countAttempt++) { // two attempts allowed
                 try {
                     connectIfNeeded();
                     if (audioInputStream != null && clientSocket != null) {
                         // send raw audio to the socket and to pulse audio
                         audioInputStream.transferTo(clientSocket.getOutputStream());
+                        break;
                     }
-                } catch (IOException e1) {
-                    if (clientSocket != null) {
-                        logger.warn(
-                                "Error while trying to send audio to pulseaudio audio sink. Cannot connect to port {} (ip {}), error: {}",
-                                clientSocket.getPort(), pulseaudioHandler.getHost(), e1.getMessage());
-                    } else {
-                        logger.warn(
-                                "Error while trying to send audio to pulseaudio audio sink. Cannot connect. (error: {})",
-                                e1.getMessage());
+                } catch (IOException e) {
+                    disconnect(); // disconnect force to clear connection in case of socket not cleanly shutdown
+                    if (countAttempt == 2) { // we won't retry : log and quit
+                        if (logger.isWarnEnabled()) {
+                            String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
+                            logger.warn(
+                                    "Error while trying to send audio to pulseaudio audio sink. Cannot connect to {}:{}, error: {}",
+                                    pulseaudioHandler.getHost(), port, e.getMessage());
+                        }
+                        break;
                     }
+                } catch (InterruptedException ie) {
+                    logger.info("Interrupted during sink audio connection: {}", ie.getMessage());
+                    break;
                 }
             }
         } finally {
