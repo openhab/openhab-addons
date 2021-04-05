@@ -19,10 +19,9 @@ public class SolarmaxConnectorFindCommands {
 
     private static final Logger logger = LoggerFactory.getLogger(SolarMaxConnector.class);
 
-    static final String host = "192.168.1.151";
-    static final int port = 12345;
-    static final int deviceId = 1;
-    static final int connectionTimeout = 1000; // ms
+    private static final String host = "192.168.1.151";
+    private static final int port = 12345;
+    private static final int connectionTimeout = 1000; // ms
 
     @Test
     public void testForCommands() throws UnknownHostException, SolarMaxException {
