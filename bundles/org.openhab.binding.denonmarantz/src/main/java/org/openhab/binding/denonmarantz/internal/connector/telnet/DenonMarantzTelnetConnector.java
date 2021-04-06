@@ -127,6 +127,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
                     Thread.sleep(300);
                 } catch (InterruptedException e) {
                     logger.trace("requestStateOverTelnet() - Interrupted while requesting state.");
+                    Thread.currentThread().interrupt();
                 }
             }
         });
