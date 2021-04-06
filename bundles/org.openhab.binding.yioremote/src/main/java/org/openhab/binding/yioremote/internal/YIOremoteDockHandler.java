@@ -326,7 +326,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     updateState(STATUS_STRING_CHANNEL, StringType.EMPTY);
                     updateState(RECEIVER_SWITCH_CHANNEL, OnOffType.OFF);
-                    webSocketPollingJob = scheduler.scheduleWithFixedDelay(this::pollingWebsocketJob, 0, 60,
+                    webSocketPollingJob = scheduler.scheduleWithFixedDelay(this::pollingWebsocketJob, 0, 40,
                             TimeUnit.SECONDS);
                 } else {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_FAILED;
@@ -411,7 +411,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             logger.debug("if");
             webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 30,
                     TimeUnit.SECONDS);
-        } else if (reconnectionCounter == 10) {
+        } else if (reconnectionCounter == 5) {
             logger.debug("elseif");
             reconnectionCounter = 0;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -423,7 +423,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 disposeWebSocketReconnectionPollingJob();
                 if (webSocketReconnectionPollingJob == null) {
                     webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0,
-                            1, TimeUnit.MINUTES);
+                            5, TimeUnit.MINUTES);
                 }
             }
         } else {
