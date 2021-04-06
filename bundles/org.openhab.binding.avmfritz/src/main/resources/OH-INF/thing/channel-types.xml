@@ -231,4 +231,13 @@
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter</description>
+		<category>Blinds</category>
+		<state readOnly="false"/>
+	</channel-type>
+
 </thing:thing-descriptions>
