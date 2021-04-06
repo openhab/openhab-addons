@@ -48,6 +48,7 @@ import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.development.Threads;
+import org.openhab.binding.velux.internal.factory.VeluxHandlerFactory;
 import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseBridgeHandler;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
@@ -300,8 +301,9 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         e.getMessage());
             }
         }, mSecs, mSecs, TimeUnit.MILLISECONDS);
-        logger.info("Velux Bridge '{}' initialization completed (with {} scenes and {} actuators).",
-                getThing().getUID(), bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
+        VeluxHandlerFactory.refreshBindingInfo();
+        logger.info("Velux Bridge Thing '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
+                bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
                 bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
     }
 
@@ -315,7 +317,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     /**
      * Various disposal actions to be executed on a background thread
      */
-    private Boolean disposeScheduled() {
+    private synchronized Boolean disposeScheduled() {
         logger.trace("disposeScheduled(): cancel the refresh polling task.");
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
@@ -337,7 +339,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         myJsonBridge.shutdown();
         logger.trace("disposeScheduled(): shut down SLIP connection interface.");
         mySlipBridge.shutdown();
-        logger.info("Velux Bridge '{}' shut down completed.", getThing().getUID());
+        VeluxHandlerFactory.refreshBindingInfo();
+        logger.info("Velux Bridge Thing '{}' is shut down.", getThing().getUID());
         return true;
     }
 
