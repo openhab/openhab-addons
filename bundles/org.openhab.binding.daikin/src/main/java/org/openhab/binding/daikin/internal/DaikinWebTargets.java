@@ -15,7 +15,9 @@ package org.openhab.binding.daikin.internal;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -234,8 +236,11 @@ public class DaikinWebTargets {
             return response.getContentAsString();
         } catch (DaikinCommunicationException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (ExecutionException | TimeoutException e) {
             throw new DaikinCommunicationException("Daikin HTTP error", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new DaikinCommunicationException("Daikin HTTP interrupted", e);
         }
     }
 
