@@ -242,8 +242,12 @@ public class FritzAhaWebInterface {
             String content = contentResponse.getContentAsString();
             logger.debug("GET response complete: {}", content);
             return content;
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.debug("response failed: {}", e.getLocalizedMessage(), e);
+            return null;
+        } catch (InterruptedException e) {
+            logger.debug("response interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             return null;
         }
     }
