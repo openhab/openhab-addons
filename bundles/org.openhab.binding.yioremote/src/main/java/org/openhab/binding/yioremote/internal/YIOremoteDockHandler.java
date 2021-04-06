@@ -406,13 +406,10 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     public void reconnectWebsocket() {
         yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-        logger.debug(String.valueOf(reconnectionCounter));
         if (webSocketReconnectionPollingJob == null) {
-            logger.debug("if");
             webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 30,
                     TimeUnit.SECONDS);
         } else if (reconnectionCounter == 5) {
-            logger.debug("elseif");
             reconnectionCounter = 0;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Connection lost no ping from YIO DOCK");
@@ -427,7 +424,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 }
             }
         } else {
-            logger.debug("else");
         }
     }
 
@@ -468,7 +464,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             default:
                 break;
         }
-
     }
 
     public void sendMessage(YioRemoteMessages messageType, String messagePayload) {
