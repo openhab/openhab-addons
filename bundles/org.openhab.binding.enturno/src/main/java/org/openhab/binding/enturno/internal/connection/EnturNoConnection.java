@@ -160,8 +160,12 @@ public class EnturNoConnection {
             String errorMessage = e.getLocalizedMessage();
             logger.debug("Exception occurred during execution: {}", errorMessage, e);
             throw new EnturCommunicationException(errorMessage, e);
-        } catch (InterruptedException | TimeoutException | IOException e) {
+        } catch (TimeoutException | IOException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new EnturCommunicationException(e.getLocalizedMessage(), e);
+        } catch (InterruptedException e) {
+            logger.debug("Execution interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             throw new EnturCommunicationException(e.getLocalizedMessage(), e);
         }
     }
