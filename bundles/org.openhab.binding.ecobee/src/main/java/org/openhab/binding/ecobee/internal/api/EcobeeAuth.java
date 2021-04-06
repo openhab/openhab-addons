@@ -262,6 +262,7 @@ public class EcobeeAuth {
             }
         } catch (InterruptedException e) {
             logger.debug("InterruptedException on call to Ecobee authorization API: {}", e.getMessage());
+            Thread.currentThread().interrupt();
         }
         return null;
     }
