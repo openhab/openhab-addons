@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Lukas Agethen - Added support for Energy Year reading, compressor frequency and powerful mode
  * @author Wouter Denayer - Added to support for weekly & daily energy reading
- * 
+ *
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
@@ -281,7 +281,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     }
 
     /**
-     * 
+     *
      * @param channel
      * @param maybePower
      */
@@ -304,7 +304,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                 return;
             }
             webTargets.registerUuid(key);
-        } catch (Exception e) {
+        } catch (DaikinCommunicationException e) {
             // suppress exceptions
             logger.debug("registerUuid({}) error: {}", key, e.getMessage());
         }
