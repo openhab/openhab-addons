@@ -90,7 +90,10 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         ContentResponse response;
         try {
             response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
+            throw new AutomowerCommunicationException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new AutomowerCommunicationException(e);
         }
         return response;
