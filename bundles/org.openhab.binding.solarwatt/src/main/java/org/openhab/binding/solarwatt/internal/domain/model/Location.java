@@ -132,7 +132,6 @@ public class Location extends Device {
         // to get the unmetered consumption we need for {@link LocationHandler} to take Location.(Work|Power)Consumed
         // and subtract the (Work|Power)(AC)In of the OUTER_CONSUMERs
         try {
-            @Nullable
             JsonObject rawDevicesMap = deviceDTO.getJsonObjectFromTag("IdDevicesMap");
             Gson gson = new GsonBuilder().create();
             this.devicesMap = gson.fromJson(rawDevicesMap, IdDevicesMap.class);
@@ -143,7 +142,6 @@ public class Location extends Device {
     }
 
     public IdDevicesMap getDevicesMap() {
-        @Nullable
         IdDevicesMap returnDevicesMap = this.devicesMap;
         if (returnDevicesMap != null) {
             return returnDevicesMap;

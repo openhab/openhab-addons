@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.solarwatt.internal.channel.SolarwattChannelTypeProvider;
 import org.openhab.binding.solarwatt.internal.domain.model.Device;
 import org.openhab.binding.solarwatt.internal.domain.model.EVStation;
@@ -69,12 +68,10 @@ public class LocationHandler extends SimpleDeviceHandler {
     @Override
     protected void initDeviceChannels() {
         // add calculated channels
-        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
         if (bridgeHandler != null) {
             // update the unmetered channel via subtracting the outerconsumers
             // from the powerConsumed
-            @Nullable
             Location locationDevice = (Location) this.getDevice();
             if (locationDevice != null) {
                 locationDevice.addChannel(CHANNEL_POWER_DIRECT_CONSUMED.getChannelName(), Units.WATT,
@@ -93,9 +90,7 @@ public class LocationHandler extends SimpleDeviceHandler {
     }
 
     private void updateCalculated() {
-        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
-        @Nullable
         final Location locationDevice = (Location) this.getDevice();
         if (bridgeHandler != null && locationDevice != null) {
             this.calculateDirectConsumption(locationDevice);
@@ -103,8 +98,7 @@ public class LocationHandler extends SimpleDeviceHandler {
         }
     }
 
-    private void calculateUnmeteredConsumption(@NotNull EnergyManagerHandler bridgeHandler,
-            @NotNull Location locationDevice) {
+    private void calculateUnmeteredConsumption(EnergyManagerHandler bridgeHandler, Location locationDevice) {
         // update the unmetered channels via subtracting
         // the outerconsumers from the powerConsumed
         BigDecimal powerConsumed = locationDevice.getBigDecimalFromChannel(CHANNEL_POWER_CONSUMED.getChannelName());
@@ -113,7 +107,6 @@ public class LocationHandler extends SimpleDeviceHandler {
         final List<BigDecimal> powerOuter = new ArrayList<>();
         final List<BigDecimal> workOuter = new ArrayList<>();
 
-        @Nullable
         Set<String> outerConsumers = locationDevice.getDevicesMap().getOuterConsumer();
         if (outerConsumers != null) {
             outerConsumers.stream().map(bridgeHandler::getDeviceFromGuid).forEach(outerDevice -> {
@@ -139,7 +132,7 @@ public class LocationHandler extends SimpleDeviceHandler {
         }
     }
 
-    private void calculateDirectConsumption(@NotNull Location locationDevice) {
+    private void calculateDirectConsumption(Location locationDevice) {
         // calculate direct consumption for display purposes
         locationDevice.addState(CHANNEL_POWER_DIRECT_CONSUMED.getChannelName(),
                 this.calculateQuantityDifference(locationDevice.getState(CHANNEL_POWER_SELF_CONSUMED.getChannelName()),
@@ -162,10 +155,8 @@ public class LocationHandler extends SimpleDeviceHandler {
     private @Nullable State calculateQuantityDifference(@Nullable State stateValue, @Nullable State stateSubtract) {
         if (stateValue != null && stateSubtract != null) {
             @SuppressWarnings("rawtypes")
-            @Nullable
             QuantityType quantityValue = stateValue.as(QuantityType.class);
             @SuppressWarnings("rawtypes")
-            @Nullable
             QuantityType quantitySubtract = stateSubtract.as(QuantityType.class);
 
             if (quantityValue != null && quantitySubtract != null) {

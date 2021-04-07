@@ -68,7 +68,6 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
      * @return UID of existing channeltype
      */
     public ChannelTypeUID assertChannelType(SolarwattChannel solarwattChannel) {
-        @Nullable
         ChannelType existingChannel = this.channelMap.get(solarwattChannel.getChannelName());
         if (existingChannel == null) {
             this.logger.trace("Creating ChannelType for TagName {}", solarwattChannel.getChannelName());
@@ -82,10 +81,8 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
 
     private ChannelType getChannelType(SolarwattChannel solarwattChannel) {
         StateChannelTypeBuilder stateDescriptionBuilder;
-        @Nullable
         Unit<?> unit = solarwattChannel.getUnit();
         if (unit != null) {
-            @Nullable
             String dimension = ":" + UnitUtils.getDimensionName(unit);
             String unitString = unit.toString();
 

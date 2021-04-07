@@ -21,7 +21,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.solarwatt.internal.channel.SolarwattChannelTypeProvider;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.model.Device;
@@ -61,7 +60,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
         if (bridgeHandler != null) {
             this.initDeviceChannels();
@@ -84,7 +82,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
         if (bridgeHandler != null) {
             if (command instanceof RefreshType) {
@@ -105,7 +102,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
     protected void updateDeviceChannels() {
         this.logger.trace("updateDeviceChannels for {}", this.getThing().getUID());
         // find device for the thing
-        @Nullable
         Device device = this.getDevice();
 
         if (device != null) {
@@ -122,7 +118,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
     protected void initDeviceChannels() {
         this.logger.trace("initDeviceChannels for {}", this.getThing().getUID());
         // find device for the thing
-        @Nullable
         Device device = this.getDevice();
 
         if (device != null) {
@@ -139,7 +134,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
     protected void updateDeviceProperties() {
         this.logger.trace("updateDeviceProperties for {}", this.getThing().getUID());
         // find device for the thing
-        @Nullable
         Device device = this.getDevice();
 
         if (device != null) {
@@ -184,14 +178,11 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      * @param channelType uid of the channel type
      * @return builder for that channel type
      */
-    @NotNull
     public static ChannelBuilder getChannelBuilder(SolarwattChannel solarwattChannel, ChannelUID channelUID,
             ChannelTypeUID channelType) {
         String itemType = CoreItemFactory.STRING;
-        @Nullable
         Unit<?> unit = solarwattChannel.getUnit();
         if (unit != null) {
-            @Nullable
             String dimension = UnitUtils.getDimensionName(unit);
 
             if (Units.PERCENT.equals(unit)) {
@@ -220,10 +211,8 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      * @return instance responsible for this handler
      */
     protected @Nullable EnergyManagerHandler getEnergyManagerHandler() {
-        @Nullable
         Bridge bridge = this.getBridge();
         if (bridge != null) {
-            @Nullable
             BridgeHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler instanceof EnergyManagerHandler) {
                 return (EnergyManagerHandler) bridgeHandler;
@@ -245,11 +234,9 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      * @return model with values
      */
     protected @Nullable Device getDevice() {
-        @Nullable
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
 
         if (bridgeHandler != null) {
-            @Nullable
             Map<String, Device> bridgeDevices = bridgeHandler.getDevices();
             if (bridgeDevices != null) {
                 return bridgeDevices.get(this.editProperties().get(THING_PROPERTIES_GUID));

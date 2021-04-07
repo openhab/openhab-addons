@@ -134,7 +134,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      */
     public void updateChannels() {
         this.logger.trace("{} updateChannels", this);
-        @Nullable
         Map<String, Device> devices = this.getDevices();
         if (devices != null) {
             if (this.energyManagerGuid == null) {
@@ -144,7 +143,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
                     this.logger.warn("Failed updating EnergyManager channels: {}", ex.getMessage());
                 }
             }
-            @Nullable
             EnergyManager energyManager = (EnergyManager) devices.get(this.energyManagerGuid);
 
             if (energyManager != null) {
@@ -164,7 +162,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     }
 
     private void calculateUpdates(EnergyManager energyManager) {
-        @Nullable
         State timezoneState = energyManager.getState(CHANNEL_IDTIMEZONE.getChannelName());
         if (timezoneState != null) {
             this.zoneId = ZoneId.of(timezoneState.toFullString());
@@ -239,7 +236,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         this.logger.debug("{} initialize", this);
-        @Nullable
         SolarwattConfiguration localConfig = this.getConfigAs(SolarwattConfiguration.class);
         this.initRefresh(localConfig);
         this.initDeviceCache(localConfig);
@@ -256,7 +252,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             this.devicesCache = new ExpiringCache<>(Duration.of(localConfig.refresh, ChronoUnit.SECONDS),
                     this::refreshDevices);
 
-            @Nullable
             ExpiringCache<Map<String, Device>> localDevicesCache = this.devicesCache;
             if (localDevicesCache != null) {
                 // trigger initial load
@@ -272,7 +267,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     public void dispose() {
         this.logger.debug("{} dispose", this);
 
-        @Nullable
         ScheduledFuture<?> localRefreshJob = this.refreshJob;
         if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
             localRefreshJob.cancel(true);
@@ -283,7 +277,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void initRefresh(SolarwattConfiguration localConfig) {
-        @Nullable
         ScheduledFuture<?> localRefreshJob = this.refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
             this.logger.trace("Setting Energymanager refreshInterval to '{}' seconds", localConfig.refresh);
@@ -300,10 +293,8 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * @return map with all {@link Device}s
      */
     public @Nullable Map<String, Device> getDevices() {
-        @Nullable
         ExpiringCache<Map<String, Device>> localDevicesCache = this.devicesCache;
         if (localDevicesCache != null) {
-            @Nullable
             Map<String, Device> cache = localDevicesCache.getValue();
             if (cache != null) {
                 this.updateStatus(ThingStatus.ONLINE);
@@ -324,7 +315,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * @return device belonging to guid or null if not found.
      */
     public @Nullable Device getDeviceFromGuid(String guid) {
-        @Nullable
         Map<String, Device> localDevices = this.getDevices();
         if (localDevices != null && localDevices.containsKey(guid)) {
             return localDevices.get(guid);
@@ -344,17 +334,14 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * @return date time in timezone
      */
     public ZonedDateTime getFromMilliTimestamp(BigDecimal timestamp) {
-        @Nullable
         Map<String, Device> devices = this.getDevices();
         if (devices != null) {
-            @Nullable
             EnergyManager energyManager = (EnergyManager) devices.get(this.energyManagerGuid);
             if (energyManager != null) {
                 BigDecimal[] bigDecimals = timestamp.divideAndRemainder(BigDecimal.valueOf(1_000));
                 Instant instant = Instant.ofEpochSecond(bigDecimals[0].longValue(),
                         bigDecimals[1].multiply(BigDecimal.valueOf(1_000_000)).longValue());
 
-                @Nullable
                 ZoneId localZoneID = this.zoneId;
                 if (localZoneID != null) {
                     return ZonedDateTime.ofInstant(instant, localZoneID);
@@ -405,7 +392,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
 
         this.getThing().getThings().forEach(childThing -> {
             try {
-                @Nullable
                 ThingHandler childHandler = childThing.getHandler();
                 if (childHandler != null) {
                     childHandler.handleCommand(new ChannelUID(childThing.getUID(), THING_PROPERTIES_GUID),

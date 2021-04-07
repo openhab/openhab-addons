@@ -82,7 +82,6 @@ public class GridFlow extends Device {
         GridFlow.ConfigInverterControl localConfigInverterControl = this.configInverterControl;
         if (localConfigInverterControl != null) {
             // the only interesting value is the derailing (i.e. limit power flowing into the grid)
-            @Nullable
             BigDecimal feedInLimit = localConfigInverterControl.getFeedInLimit();
             if (feedInLimit != null) {
                 QuantityType<?> state = new QuantityType<>(feedInLimit.multiply(BigDecimal.valueOf(100)),

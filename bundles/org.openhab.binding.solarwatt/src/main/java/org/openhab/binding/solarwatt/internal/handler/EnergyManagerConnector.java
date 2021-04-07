@@ -23,7 +23,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpStatus;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.solarwatt.internal.SolarwattConfiguration;
 import org.openhab.binding.solarwatt.internal.domain.EnergyManagerCollection;
 import org.openhab.binding.solarwatt.internal.domain.dto.EnergyManagerDTO;
@@ -45,7 +44,7 @@ import com.google.gson.JsonSyntaxException;
 public class EnergyManagerConnector {
     private static final String PROTOCOL = "http://";
     private static final String WIZARD_DEVICES_URL = "/rest/kiwigrid/wizard/devices";
-    private static final long CONNECT_TIMEOUT_SECONDS = 3;
+    private static final long CONNECT_TIMEOUT_SECONDS = 30;
 
     private final Logger logger = LoggerFactory.getLogger(EnergyManagerConnector.class);
     private final Gson gson = new GsonBuilder().create();
@@ -105,7 +104,6 @@ public class EnergyManagerConnector {
      * @return collection containing all {@link DeviceDTO}s
      * @throws SolarwattConnectionException on communication errors
      */
-    @NotNull
     private EnergyManagerCollection getEnergyManagerCollectionFromJson(ContentResponse response)
             throws SolarwattConnectionException {
         final String content = response.getContentAsString();

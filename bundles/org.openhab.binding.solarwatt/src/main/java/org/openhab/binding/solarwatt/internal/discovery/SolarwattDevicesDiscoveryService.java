@@ -97,7 +97,6 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void stopBackgroundDiscovery() {
-        @Nullable
         ScheduledFuture<?> localScanningJob = this.scanningJob;
         if (localScanningJob != null && !localScanningJob.isCancelled()) {
             localScanningJob.cancel(true);
@@ -124,10 +123,8 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
      * Walks through the list of devices and adds discovery results for the supported devices.
      */
     private void scanForDeviceThings() {
-        @Nullable
         EnergyManagerHandler localEnergyManagerHandler = this.energyManagerHandler;
         if (localEnergyManagerHandler != null) {
-            @Nullable
             final Map<String, Device> devices = localEnergyManagerHandler.getDevices();
 
             final ThingUID bridgeUID = localEnergyManagerHandler.getThing().getUID();

@@ -6,39 +6,27 @@ All supported values and devices were discovered while playing with my own energ
 
 ## Supported Things
 
-* EnergyManager  
-  Location  
-  Forecast  
-  GridFlow  
-  ProfileApp  
-  ScheduleApp  
-  SimpleSwitcher (seems deprecated)  
-  SmartEnergyManagement (seems deprecated)
-
-* BatteryConverter
-  
-* MyReserve  
-  MyReserveInverter  
-  MyReservePowerMeter
-  
-* EVStation (eg. Keba)
-* S0Counter
-* SunSpecInverter (eg. Fronius)  
-
+| Thing Type ID | Devices |
+|------|---------------|
+|solarwatt:energymanager| EnergyManager itself
+|solarwatt:location| Location part of the EnergyManager 
+|solarwatt:pvplant| Power producing part of the EnergyManager
+|solarwatt:gridflow| Grid interaction part of the EnergyManager
+|solarwatt:inverter| inverter producing AC current; e.g. MyReserve, Fronius
+|solarwatt:batteryconverter| battery storage systems; e.g. MyReserve
+|solarwatt:powermeter| powermeters; e.g. S0BusCounter, MyReserve
+|solarwatt:evstation| electric-vehicle charging station; e.g. Keba Wallbox
 
 ## Discovery
 
 You have to enter the hostname or ip-address of the energymanager itself.
 The attached devices and supported channels are discovered automatically.
 
-## Binding Configuration
-
-The binding has no configuration settings.
-
 ## Thing Configuration
 
-Only the EnergyManager thing requires configuration.
-You have to give it the hostname or ip-address.
+| Property | Default | Required | Description |
+|----------|---------|----------|-------------|
+| hostname | None | Yes | hostname or ip-address of the energy manager
 
 ## Channels
 
@@ -53,6 +41,7 @@ You have to give it the hostname or ip-address.
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
 |timestamp | Number | Milliseconds since the epoch set to the last NTP time sync |
+|datetime | DateTime | Date and time of the last NTP time sync in the timezone of the energy manager |
 |idTimezone | String | Timezone the energy manager is running in. All  timestamps are milliseconds since the epoch within this timezone |
 |fractionCPULoadTotal | Number:Percent | Total CPU load |
 |fractionCPULoadUser | Number:Percent | Userspace CPU load |
@@ -77,7 +66,9 @@ You have to give it the hostname or ip-address.
 | powerSelfSupplied | Number:Energy | Energy consumed direct from PV plus energy consumed from storage
 | powerConsumedFromGrid | Number:Energy | Energy consumed from the grid  
 | powerConsumedFromStorage | Number:Energy | Energy consumed from storage
+| powerConsumedUnmetered | Number:Energy | Energy consumed in the inner side (outer consumers are subtracted)
 | powerConsumed | Number:Energy | Total energy consumed. All inner and outer consumers.
+| powerDirectConsumed | Number:Energy | Energy consumed directly from PV without buffering
 | powerProduced | Number:Energy | Energy produced by the PV
 | powerOut | Number:Energy | Energy delivered to the grid  
 | powerDirectConsumed | Number:Energy | Energy consumed directly without energy put into storage or taken from storage
@@ -86,7 +77,9 @@ You have to give it the hostname or ip-address.
 | workSelfSupplied | Number:Energy | Energy consumed direct from PV plus energy consumed from storage
 | workConsumedFromGrid | Number:Energy | Energy consumed from the grid  
 | workConsumedFromStorage | Number:Energy | Energy consumed from storage
+| workConsumedUnmetered | Number:Energy | Energy consumed in the inner side (outer consumers are subtracted)
 | workConsumed | Number:Energy | Total energy consumed. All inner and outer consumers.
+| workDirectConsumed | Number:Energy | Energy consumed directly from PV without buffering
 | workProduced | Number:Energy | Energy produced by the PV
 | workOut | Number:Energy | Energy delivered to the grid  
 | workDirectConsumed | Number:Energy | Energy consumed directly without energy put into storage or taken from storage
@@ -124,6 +117,9 @@ All of *Inverter* plus
 | stateOfHealth | Number | Internal health metric in percent
 | temperatureBattery | Number:Temperature | Temperature of the battery in celsius
 | modeConverter | String | Current mode of converter. *ON* or *OFF*
+| voltageBatteryCellMin | Number:Voltage | minimum voltage of all batteries
+| voltageBatteryCellMean | Number:Voltage | mean voltage of all batteries
+| voltageBatteryCellMax | Number:Voltage | maximum voltage of all batteries
 
 ### EVStation, KebaEv
 
@@ -135,20 +131,8 @@ All of *Inverter* plus
 | modeStation | String | Current mode of the charger. One off *STANDBY*, *CHARGING*, *OFF*
 | connectivityStatus | String | Current state of the charging connection. One off *ONLINE* or *OFFLINE*
 
-### Forecast
-
-Nothing yet
-
 ### GridFlow
 
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
-| feedInLimit | Number | Current derating setting
-
-### ScheduleApp
-
-Nothing yet.
-
-### ProfileApp
-
-Don't know yet what this thing does.
+| feedInLimit | Number:Dimensionless | Current derating setting in percent

@@ -22,7 +22,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattTag;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
@@ -86,13 +85,10 @@ public class Device {
         this.addStringState(CHANNEL_STATE_DEVICE, deviceDTO);
     }
 
-    @NotNull
     public BigDecimal getBigDecimalFromChannel(String channelName) {
-        @Nullable
         State state = this.getStateValues().get(channelName);
         if (state != null) {
             @SuppressWarnings("rawtypes")
-            @Nullable
             QuantityType quantity = state.as(QuantityType.class);
             if (quantity != null) {
                 return quantity.toBigDecimal();
@@ -235,6 +231,16 @@ public class Device {
         this.addChannel(solarwattTag.getChannelName(), Units.AMPERE, "current", advanced);
 
         this.addStateBigDecimal(solarwattTag, deviceDTO, Units.AMPERE);
+    }
+
+    protected void addVoltageQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.addVoltageQuantity(solarwattTag, deviceDTO, false);
+    }
+
+    protected void addVoltageQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO, Boolean advanced) {
+        this.addChannel(solarwattTag.getChannelName(), Units.VOLT, "voltage", advanced);
+
+        this.addStateBigDecimal(solarwattTag, deviceDTO, Units.VOLT);
     }
 
     protected void addStringState(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {

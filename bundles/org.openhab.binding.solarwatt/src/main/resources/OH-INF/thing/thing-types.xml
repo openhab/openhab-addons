@@ -14,6 +14,7 @@
 			<parameter name="hostname" type="text">
 				<label>Host Name / IP Address</label>
 				<description>The host name/ip address of the solarwatt energymanager.</description>
+				<context>network-address</context>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="refresh" type="integer" unit="s">

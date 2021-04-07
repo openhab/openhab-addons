@@ -79,10 +79,8 @@ public class DeviceDTO {
      * @return raw json from tag value
      */
     protected @Nullable JsonPrimitive getJsonPrimitiveFromTag(String tagName) {
-        @Nullable
         Map<String, TagValueDTO> localTagValues = this.getTagValues();
         if (localTagValues != null) {
-            @Nullable
             TagValueDTO localTag = localTagValues.get(tagName);
             if (localTag != null && localTag.getValue().isJsonPrimitive()) {
                 return (JsonPrimitive) localTag.getValue();
@@ -101,10 +99,8 @@ public class DeviceDTO {
      * @return raw json from tag value
      */
     public @Nullable JsonObject getJsonObjectFromTag(String tagName) {
-        @Nullable
         Map<String, TagValueDTO> localTagValues = this.getTagValues();
         if (localTagValues != null) {
-            @Nullable
             TagValueDTO localTag = localTagValues.get(tagName);
             if (localTag != null && localTag.getValue().isJsonObject()) {
                 return (JsonObject) localTag.getValue();

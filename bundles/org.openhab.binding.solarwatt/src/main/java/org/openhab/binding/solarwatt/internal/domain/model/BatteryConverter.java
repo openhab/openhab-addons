@@ -93,6 +93,9 @@ public class BatteryConverter extends Inverter {
         this.addCelsiusQuantity(CHANNEL_TEMPERATURE_BATTERY, deviceDTO);
         this.addWattHourQuantity(CHANNEL_WORK_AC_IN, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_AC_IN, deviceDTO);
+        this.addVoltageQuantity(CHANNEL_VOLTAGE_BATTERY_CELL_MIN, deviceDTO, true);
+        this.addVoltageQuantity(CHANNEL_VOLTAGE_BATTERY_CELL_MEAN, deviceDTO, true);
+        this.addVoltageQuantity(CHANNEL_VOLTAGE_BATTERY_CELL_MAX, deviceDTO, true);
     }
 
     @Override

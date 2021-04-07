@@ -33,8 +33,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SolarwattHandlerFactory} is responsible for creating things and thing
@@ -45,8 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.solarwatt", service = ThingHandlerFactory.class)
 public class SolarwattHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(SolarwattHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGY_MANAGER,
             THING_TYPE_INVERTER, THING_TYPE_POWERMETER, THING_TYPE_EVSTATION, THING_TYPE_BATTERYCONVERTER,
@@ -81,7 +77,6 @@ public class SolarwattHandlerFactory extends BaseThingHandlerFactory {
             return new SimpleDeviceHandler(thing, this.channelTypeProvider);
         }
 
-        this.logger.trace("No matching handler for {} from {}", thingTypeUID, SUPPORTED_THING_TYPES_UIDS);
         return null;
     }
 }

@@ -114,6 +114,9 @@ public class SolarwattBindingConstants {
     public static final SolarwattTag CHANNEL_WORK_SELF_SUPPLIED = new SolarwattTag("WorkSelfSupplied");
     public static final SolarwattTag CHANNEL_CURRENT_LIMIT = new SolarwattTag("CurrentLimit");
     public static final SolarwattTag CHANNEL_FEED_IN_LIMIT = new SolarwattTag("FeedInLimit");
+    public static final SolarwattTag CHANNEL_VOLTAGE_BATTERY_CELL_MAX = new SolarwattTag("VoltageBatteryCellMax");
+    public static final SolarwattTag CHANNEL_VOLTAGE_BATTERY_CELL_MIN = new SolarwattTag("VoltageBatteryCellMin");
+    public static final SolarwattTag CHANNEL_VOLTAGE_BATTERY_CELL_MEAN = new SolarwattTag("VoltageBatteryCellMean");
 
     // thing configuration and properties keys
     public static final String THING_PROPERTIES_GUID = "guid";
