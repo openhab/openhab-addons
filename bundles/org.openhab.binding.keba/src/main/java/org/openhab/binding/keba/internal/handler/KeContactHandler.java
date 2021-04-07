@@ -178,35 +178,45 @@ public class KeContactHandler extends BaseThingHandler {
     private void pollingRunnable() {
         try {
             logger.debug("Running pollingRunnable to connect Keba wallbox");
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                ByteBuffer response = cache.get(CACHE_REPORT_1);
-                if (response != null) {
-                    onData(response);
-                }
+            ByteBuffer response = cache.get(CACHE_REPORT_1);
+            if (response == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Missing response from Keba station for 'report 1'");
+            } else {
+                onData(response);
+            }
 
+            Thread.sleep(REPORT_INTERVAL);
+
+            response = cache.get(CACHE_REPORT_2);
+            if (response == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Missing response from Keba station for 'report 2'");
+            } else {
+                onData(response);
+            }
+
+            Thread.sleep(REPORT_INTERVAL);
+
+            response = cache.get(CACHE_REPORT_3);
+            if (response == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Missing response from Keba station for 'report 3'");
+            } else {
+                onData(response);
+            }
+
+            if (isReport100needed) {
                 Thread.sleep(REPORT_INTERVAL);
 
-                response = cache.get(CACHE_REPORT_2);
-                if (response != null) {
+                response = cache.get(CACHE_REPORT_100);
+                if (response == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Missing response from Keba station for 'report 100'");
+                } else {
                     onData(response);
                 }
-
-                Thread.sleep(REPORT_INTERVAL);
-
-                response = cache.get(CACHE_REPORT_3);
-                if (response != null) {
-                    onData(response);
-                }
-
-                if (isReport100needed) {
-                    Thread.sleep(REPORT_INTERVAL);
-
-                    response = cache.get(CACHE_REPORT_100);
-                    if (response != null) {
-                        onData(response);
-                    }
-                    isReport100needed = false;
-                }
+                isReport100needed = false;
             }
         } catch (InterruptedException e) {
             logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
@@ -214,6 +224,10 @@ public class KeContactHandler extends BaseThingHandler {
     }
 
     protected void onData(ByteBuffer byteBuffer) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
         response = StringUtils.chomp(response);
 
