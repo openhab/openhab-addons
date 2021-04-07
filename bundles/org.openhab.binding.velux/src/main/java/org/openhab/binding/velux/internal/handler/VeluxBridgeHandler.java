@@ -316,7 +316,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("disposeSchedulerJob(): cancel the refresh polling job.");
         ScheduledFuture<?> refreshSchedulerJob = this.refreshSchedulerJob;
         if (refreshSchedulerJob != null) {
-            refreshSchedulerJob.cancel(true);
+            refreshSchedulerJob.cancel(false);
         }
         logger.trace("disposeSchedulerJob(): cancel any other scheduled jobs.");
         ExecutorService commsJobExecutor = this.communicationsJobExecutor;
