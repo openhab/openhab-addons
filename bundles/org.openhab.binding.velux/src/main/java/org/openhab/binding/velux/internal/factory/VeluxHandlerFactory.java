@@ -187,7 +187,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         } else {
             logger.warn("createHandler({}) failed: ThingHandler not found for {}.", thingTypeUID, thing.getLabel());
         }
-        // updateBindingState();
+        updateBindingState();
         return resultHandler;
     }
 
@@ -209,7 +209,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
             logger.trace("removeHandler() removing thing '{}'.", thingHandler.toString());
             veluxHandlers.remove(thingHandler);
         }
-        // updateBindingState();
+        updateBindingState();
         super.removeHandler(thingHandler);
     }
 
