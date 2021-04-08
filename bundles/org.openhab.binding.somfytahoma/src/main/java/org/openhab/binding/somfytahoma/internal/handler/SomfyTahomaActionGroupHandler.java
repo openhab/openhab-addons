@@ -39,6 +39,7 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void initializeThing(@Nullable ThingStatus bridgeStatus) {
         if (bridgeStatus != null) {
+            url = getURL();
             if (bridgeStatus == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
