@@ -44,7 +44,7 @@ public class StationHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(StationHandler.class);
     private static final long MAX_STATUS_AGE_MINUTES = 1;
 
-    private boolean stationOnline = false;
+    private boolean stationOperational = false;
     private @Nullable StationStatus currentStatus;
     private LocalDateTime lastUpdate = LocalDateTime.MIN;
 
@@ -89,10 +89,10 @@ public class StationHandler extends BaseThingHandler {
                 updateState(channelUID.getId(), StateHelper.getOverallTotal(currentStatus));
                 break;
             case CHANNEL_OPERATIONAL:
-                updateState(channelUID.getId(), StateHelper.getOnline(currentStatus));
-                if (currentStatus != null && currentStatus.isOnline() != stationOnline) {
-                    stationOnline = !stationOnline;
-                    triggerChannel(channelUID, OnOffType.from(stationOnline).name());
+                updateState(channelUID.getId(), StateHelper.getOperational(currentStatus));
+                if (currentStatus != null && currentStatus.isOperational() != stationOperational) {
+                    stationOperational = !stationOperational;
+                    triggerChannel(channelUID, OnOffType.from(stationOperational).name());
                 }
                 break;
             case CHANNEL_TODAY_INCOME:

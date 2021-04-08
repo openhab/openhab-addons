@@ -172,7 +172,6 @@ public class PortalHandler extends BaseBridgeHandler {
         String response = sendPost(STATUS_URL, gson.toJson(new StatusRequest(stationUUID)));
         if (response == null) {
             throw new CommunicationException("No response received from portal");
-
         }
         BaseResponse semsResponse = gson.fromJson(response, BaseResponse.class);
         if (semsResponse == null) {

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.semsportal.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception indicating that the configuration of the portal was wrong, like an unknown account or invalid password.
  *
  * @author Iwan Bron - Initial contribution
  *
  */
+@NonNullByDefault
 public class ConfigurationException extends Exception {
     private static final long serialVersionUID = -803416460838670618L;
 

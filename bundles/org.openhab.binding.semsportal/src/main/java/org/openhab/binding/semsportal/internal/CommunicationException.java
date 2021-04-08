@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.semsportal.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception indicating there was a problem communicating with the portal. It can indicate either no response at all, or
  * a response that was not expected.
@@ -19,6 +21,7 @@ package org.openhab.binding.semsportal.internal;
  * @author Iwan Bron - Initial contribution
  *
  */
+@NonNullByDefault
 public class CommunicationException extends Exception {
     private static final long serialVersionUID = 4175625868879971138L;
 

@@ -35,11 +35,11 @@ public class StateHelper {
         // hide constructor, no initialisation possible
     }
 
-    public static State getOnline(@Nullable StationStatus currentStatus) {
+    public static State getOperational(@Nullable StationStatus currentStatus) {
         if (currentStatus == null) {
             return UnDefType.UNDEF;
         }
-        return OnOffType.from(currentStatus.isOnline());
+        return OnOffType.from(currentStatus.isOperational());
     }
 
     public static State getLastUpdate(@Nullable StationStatus currentStatus) {

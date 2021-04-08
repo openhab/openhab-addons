@@ -54,7 +54,7 @@ public class StationStatus {
         return keyPerformanceIndicators.getTotalIncome();
     }
 
-    public boolean isOnline() {
+    public boolean isOperational() {
         return stations.isEmpty() ? false : stations.get(0).getStatus() == 1;
     }
 

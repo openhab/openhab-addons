@@ -17,7 +17,6 @@ import static org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants
 import java.util.Hashtable;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.semsportal.internal.discovery.StationDiscoveryService;
@@ -62,8 +61,9 @@ public class SEMSPortalHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_PORTAL.equals(thingTypeUID)) {
             PortalHandler handler = new PortalHandler((Bridge) thing, httpClientFactory);
+            Hashtable<String, Object> dictionary = new Hashtable<>();
             bundleContext.registerService(DiscoveryService.class.getName(), new StationDiscoveryService(handler),
-                    new Hashtable<@NonNull String, @NonNull Object>());
+                    dictionary);
             return handler;
         }
         if (THING_TYPE_STATION.equals(thingTypeUID)) {
