@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.enphase.internal.handler;
 
-import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.*;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.CONFIG_HOSTNAME;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_CHANNELGROUP_CONSUMPTION;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATTS_NOW;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_LIFETIME;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_SEVEN_DAYS;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_TODAY;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -77,7 +82,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private final EnvoyConnector connector;
     private final EnvoyHostAddressCache envoyHostnameCache;
 
-    private @NonNullByDefault({}) EnvoyConfiguration configuration;
+    private EnvoyConfiguration configuration = new EnvoyConfiguration();
     private @Nullable ScheduledFuture<?> updataDataFuture;
     private @Nullable ScheduledFuture<?> updateHostnameFuture;
     private @Nullable ExpiringCache<Map<String, @Nullable InverterDTO>> invertersCache;
@@ -134,15 +139,10 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         configuration = getConfigAs(EnvoyConfiguration.class);
         if (!EnphaseBindingConstants.isValidSerial(configuration.serialNumber)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number is not valid");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial number is not valid");
             return;
         }
-        if (configuration.hostname.isEmpty()) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Waiting to retrieve ip address of the envoy gateway. Can take up to a minute.");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        updateStatus(ThingStatus.UNKNOWN);
         connector.setConfiguration(configuration);
         consumptionSupported = FeatureStatus.UNKNOWN;
         jsonSupported = FeatureStatus.UNKNOWN;
@@ -367,6 +367,8 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         final String lastKnownHostname = envoyHostnameCache.getLastKnownHostAddress(configuration.serialNumber);
 
         if (lastKnownHostname.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No ip address known of the envoy gateway. If this isn't updated in a few minutes check your connection.");
             scheduleHostnameUpdate(true);
         } else {
             final Configuration config = editConfiguration();
@@ -399,8 +401,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
      * @return Returns true if the bridge is online and not has an configuration pending.
      */
     public boolean isOnline() {
-        return getThing().getStatus() == ThingStatus.ONLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.NONE;
+        return getThing().getStatus() == ThingStatus.ONLINE;
     }
 
     @Override

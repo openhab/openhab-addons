@@ -128,7 +128,7 @@ public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, Envo
         if (getServiceType().equals(info.getType())) {
             final String serial = info.getPropertyString(DISCOVERY_SERIAL);
 
-            logger.debug("Discovered an Envoy with id '{}'", serial);
+            logger.debug("Discovered an Envoy with serial number '{}'", serial);
             return new ThingUID(THING_TYPE_ENPHASE_ENVOY, serial);
         }
         return null;
