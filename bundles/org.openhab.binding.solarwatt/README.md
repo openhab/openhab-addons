@@ -54,24 +54,24 @@ The attached devices and supported channels are discovered automatically.
 
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
-| powerACOut | Number:Energy | Energy produced by the PV in watts |
+| powerACOut | Number:Power | Energy produced by the PV in watts |
 | workACOut | Number:Energy | Energy produced by the PV in watt hours |
 
 ### Location
 
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
-| powerBuffered | Number:Energy | Energy flow into the storage system
-| powerSelfConsumed | Number:Energy | Energy consumed direct from PV plus energy stored
-| powerSelfSupplied | Number:Energy | Energy consumed direct from PV plus energy consumed from storage
-| powerConsumedFromGrid | Number:Energy | Energy consumed from the grid  
-| powerConsumedFromStorage | Number:Energy | Energy consumed from storage
-| powerConsumedUnmetered | Number:Energy | Energy consumed in the inner side (outer consumers are subtracted)
-| powerConsumed | Number:Energy | Total energy consumed. All inner and outer consumers.
-| powerDirectConsumed | Number:Energy | Energy consumed directly from PV without buffering
-| powerProduced | Number:Energy | Energy produced by the PV
-| powerOut | Number:Energy | Energy delivered to the grid  
-| powerDirectConsumed | Number:Energy | Energy consumed directly without energy put into storage or taken from storage
+| powerBuffered | Number:Power | Power flow into the storage system
+| powerSelfConsumed | Number:Power | Power consumed direct from PV plus energy stored
+| powerSelfSupplied | Number:Power | Power consumed direct from PV plus energy consumed from storage
+| powerConsumedFromGrid | Number:Power | Power consumed from the grid  
+| powerConsumedFromStorage | Number:Power | Power consumed from storage
+| powerConsumedUnmetered | Number:Power | Power consumed in the inner side (outer consumers are subtracted)
+| powerConsumed | Number:Power | Total power consumed. All inner and outer consumers.
+| powerDirectConsumed | Number:Power | Power consumed directly from PV without buffering
+| powerProduced | Number:Power | Power produced by the PV
+| powerOut | Number:Power | Power delivered to the grid  
+| powerDirectConsumed | Number:Power | Power consumed directly without energy put into storage or taken from storage
 | workBuffered | Number:Energy | Energy flow into the storage system
 | workSelfConsumed | Number:Energy | Energy consumed direct from PV plus energy stored
 | workSelfSupplied | Number:Energy | Energy consumed direct from PV plus energy consumed from storage
@@ -89,8 +89,8 @@ The attached devices and supported channels are discovered automatically.
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
 | channelDirectionMetering | String | Representing which energy flow directions are metered. One off *IN*, *OUT*, *BIDIRECTIONAL* 
-| powerIn | Number:Energy | Energy metered flowing into the consumer
-| powerOut | Number:Energy | Energy metered flowing out of the producer  
+| powerIn | Number:Power | Power metered flowing into the consumer
+| powerOut | Number:Power | Power metered flowing out of the producer  
 | workIn | Number:Energy | Energy metered flowing into the consumer
 | workOut | Number:Energy | Energy metered flowing out of the producer  
 | consumptionEnergySum | Number:Energy | Total energy in watt hours 
@@ -99,11 +99,11 @@ The attached devices and supported channels are discovered automatically.
 
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
-| powerACOutMax | Number:Energy | Maximum power production 
-| powerACOutLimit | Number:Energy | Limit of power production
-| powerACOut | Number:Energy | Energy delivered by the inverter
+| powerACOutMax | Number:Power | Maximum power production 
+| powerACOutLimit | Number:Power | Limit of power production
+| powerACOut | Number:Power | Power delivered by the inverter
 | workACOut | Number:Energy | Energy delivered by the inverter
-| powerInstallledPeak | Number:Energy | Technical peak power available 
+| powerInstallledPeak | Number:Power | Technical peak power available 
 
 ### BatteryConverter, MyReserve
 
@@ -111,12 +111,12 @@ All of *Inverter* plus
 
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
-| powerACIn | Number:Energy | Energy fed into battery
+| powerACIn | Number:Power | Power fed into battery
 | workACIn | Number:Energy | Energy fed into battery
 | stateOfCharge | Number | Charging state of battery in percent
 | stateOfHealth | Number | Internal health metric in percent
 | temperatureBattery | Number:Temperature | Temperature of the battery in celsius
-| modeConverter | String | Current mode of converter. *ON* or *OFF*
+| modeConverter | Switch | Current mode of converter. *ON* or *OFF*
 | voltageBatteryCellMin | Number:Voltage | minimum voltage of all batteries
 | voltageBatteryCellMean | Number:Voltage | mean voltage of all batteries
 | voltageBatteryCellMax | Number:Voltage | maximum voltage of all batteries
@@ -125,7 +125,7 @@ All of *Inverter* plus
 
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
-| powerACIn | Number:Energy | Energy consumed by the charger
+| powerACIn | Number:Power | Power consumed by the charger
 | workACIn | Number:Energy | Energy consumed by the charger
 | workACInSession | Number:Energy | Work consumed during current/last charging session
 | modeStation | String | Current mode of the charger. One off *STANDBY*, *CHARGING*, *OFF*
