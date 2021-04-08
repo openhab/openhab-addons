@@ -74,7 +74,7 @@ public class AVMFritzBindingConstants {
     public static final ThingTypeUID COMETDECT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_COMETDECT);
     public static final ThingTypeUID HAN_FUN_CONTACT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_CONTACT);
     public static final ThingTypeUID HAN_FUN_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SWITCH);
-    public static final ThingTypeUID BLIND_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_BLIND);
+    public static final ThingTypeUID HAN_FUN_BLIND_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_BLIND);
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
 
@@ -168,7 +168,7 @@ public class AVMFritzBindingConstants {
             COMETDECT_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
-            DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE, BLIND_THING_TYPE);
+            DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_BLIND_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
             GROUP_SWITCH_THING_TYPE);
