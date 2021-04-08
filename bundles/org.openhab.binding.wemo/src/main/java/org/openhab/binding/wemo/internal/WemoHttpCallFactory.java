@@ -10,23 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wemo.internal.handler;
+package org.openhab.binding.wemo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.binding.BaseThingHandler;
 
 /**
- * @author Stefan Triller - Initial contribution
+ * {@link WemoHttpCallFactory} creates {@WemoHttpCall}s.
+ *
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractWemoHandler extends BaseThingHandler {
+public interface WemoHttpCallFactory {
 
-    protected WemoHttpCall wemoHttpCaller;
-
-    public AbstractWemoHandler(Thing thing, WemoHttpCall wemoHttpCaller) {
-        super(thing);
-        this.wemoHttpCaller = wemoHttpCaller;
-    }
+    WemoHttpCall createHttpCall();
 }
