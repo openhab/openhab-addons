@@ -28,10 +28,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTestParent;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -154,8 +152,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
             String capitability) throws MalformedURLException, URISyntaxException, ValidationException {
         Thing bridge = createBridge(BRIDGE_TYPE_UID);
 
-        WemoHttpCall mockCaller = Mockito.spy(new WemoHttpCall());
-        Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE, mockCaller);
+        Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
             assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
