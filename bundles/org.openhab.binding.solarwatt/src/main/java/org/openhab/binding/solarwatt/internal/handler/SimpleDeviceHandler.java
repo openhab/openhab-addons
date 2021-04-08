@@ -12,13 +12,6 @@
  */
 package org.openhab.binding.solarwatt.internal.handler;
 
-import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
-
-import java.text.MessageFormat;
-import java.util.Map;
-
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.channel.SolarwattChannelTypeProvider;
@@ -38,6 +31,12 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.measure.Unit;
+import java.text.MessageFormat;
+import java.util.Map;
+
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
 
 /**
  * The {@link SimpleDeviceHandler} bundles everything related to generic talking to devices.
@@ -65,7 +64,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
             this.initDeviceChannels();
             this.updateDeviceProperties();
             this.updateDeviceChannels();
-            this.updateStatus(ThingStatus.ONLINE);
         } else {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing!");
@@ -86,7 +84,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
         if (bridgeHandler != null) {
             if (command instanceof RefreshType) {
                 this.logger.debug("update command for {}", this.getThing().getUID());
-                this.updateStatus(ThingStatus.ONLINE);
                 this.updateDeviceProperties();
                 this.updateDeviceChannels();
             }
@@ -143,6 +140,9 @@ public class SimpleDeviceHandler extends BaseThingHandler {
             this.putProperty(properties, PROPERTY_ID_FIRMWARE, device.getIdFirmware());
             this.putProperty(properties, PROPERTY_ID_MANUFACTURER, device.getIdManufacturer());
             this.updateProperties(properties);
+
+            // relay state of device to status
+            this.updateStatus(device.getStateDevice());
         }
     }
 
@@ -155,7 +155,7 @@ public class SimpleDeviceHandler extends BaseThingHandler {
     /**
      * Assert that all channels inside of our thing are well defined.
      *
-     * Only channel which can not be found are created.
+     * Only channels which can not be found are created.
      *
      * @param solarwattChannel channel description with name and unit
      */

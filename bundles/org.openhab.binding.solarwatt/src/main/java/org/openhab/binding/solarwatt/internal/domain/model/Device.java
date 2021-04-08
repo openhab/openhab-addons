@@ -30,6 +30,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
 
 /**
@@ -66,7 +67,7 @@ public class Device {
     private @Nullable String idName;
     private @Nullable String idFirmware;
     private @Nullable String idManufacturer;
-
+    private ThingStatus stateDevice = ThingStatus.UNINITIALIZED;
     protected final Map<String, State> stateValues;
     protected final Map<String, SolarwattChannel> solarwattChannelSet;
 
@@ -82,6 +83,11 @@ public class Device {
         this.idName = deviceDTO.getStringTag("IdName");
         this.idFirmware = deviceDTO.getStringTag("IdFirmware");
         this.idManufacturer = deviceDTO.getStringTag("IdManufacturer");
+        if ("OK".equals(deviceDTO.getStringTag("StateDevice"))) {
+            this.stateDevice = ThingStatus.ONLINE;
+        } else {
+            this.stateDevice = ThingStatus.OFFLINE;
+        }
 
         this.addStringState(CHANNEL_STATE_DEVICE, deviceDTO);
     }
@@ -175,6 +181,10 @@ public class Device {
     public void addStateSwitch(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
         this.addState(solarwattTag.getChannelName(), deviceDTO
                 .getState((jsonElement -> OnOffType.from(jsonElement.getAsString())), solarwattTag.getTagName()));
+    }
+
+    public ThingStatus getStateDevice() {
+        return this.stateDevice;
     }
 
     public Map<String, State> getStateValues() {
