@@ -170,7 +170,7 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
             logger.trace("initialize.scheduled(): Setting ThingStatus to ONLINE.");
             updateStatus(ThingStatus.ONLINE);
             updateVisibleInformation();
-            logger.info("Velux Binding Info Thing '{}' is initialized.", getThing().getUID());
+            logger.info("Velux Binding Info Element '{}' is initialized.", getThing().getUID());
         });
         logger.trace("initialize() done.");
     }

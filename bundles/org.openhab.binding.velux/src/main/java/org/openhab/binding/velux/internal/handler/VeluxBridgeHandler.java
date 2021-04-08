@@ -297,7 +297,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             refreshSchedulerJob();
         }, mSecs, mSecs, TimeUnit.MILLISECONDS);
         VeluxHandlerFactory.refreshBindingInfo();
-        logger.info("Velux Bridge Thing '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
+        logger.info("Velux Bridge '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
                 bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
                 bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
     }
@@ -335,7 +335,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("disposeSchedulerJob(): shut down SLIP connection interface.");
         mySlipBridge.shutdown();
         VeluxHandlerFactory.refreshBindingInfo();
-        logger.info("Velux Bridge Thing '{}' is shut down.", getThing().getUID());
+        logger.info("Velux Bridge '{}' is shut down.", getThing().getUID());
         return true;
     }
 
