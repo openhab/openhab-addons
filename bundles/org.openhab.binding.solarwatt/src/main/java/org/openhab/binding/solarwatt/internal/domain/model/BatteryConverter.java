@@ -87,7 +87,7 @@ public class BatteryConverter extends Inverter {
     public void update(DeviceDTO deviceDTO) {
         super.update(deviceDTO);
 
-        this.addStringState(CHANNEL_MODE_CONVERTER, deviceDTO);
+        this.addSwitchState(CHANNEL_MODE_CONVERTER, deviceDTO);
         this.addPercentQuantity(CHANNEL_STATE_OF_CHARGE, deviceDTO);
         this.addPercentQuantity(CHANNEL_STATE_OF_HEALTH, deviceDTO);
         this.addCelsiusQuantity(CHANNEL_TEMPERATURE_BATTERY, deviceDTO);

@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattTag;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -171,6 +172,11 @@ public class Device {
                 .getState((jsonElement -> new StringType(jsonElement.getAsString())), solarwattTag.getTagName()));
     }
 
+    public void addStateSwitch(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.addState(solarwattTag.getChannelName(), deviceDTO
+                .getState((jsonElement -> OnOffType.from(jsonElement.getAsString())), solarwattTag.getTagName()));
+    }
+
     public Map<String, State> getStateValues() {
         return this.stateValues;
     }
@@ -247,6 +253,12 @@ public class Device {
         this.addChannel(solarwattTag.getChannelName(), null, "status", false);
 
         this.addStateString(solarwattTag, deviceDTO);
+    }
+
+    protected void addSwitchState(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.addChannel(solarwattTag.getChannelName(), null, "switch", false);
+
+        this.addStateSwitch(solarwattTag, deviceDTO);
     }
 
     /**

@@ -83,21 +83,32 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
         StateChannelTypeBuilder stateDescriptionBuilder;
         Unit<?> unit = solarwattChannel.getUnit();
         if (unit != null) {
-            String dimension = ":" + UnitUtils.getDimensionName(unit);
-            String unitString = unit.toString();
+            if ("switch".equals(solarwattChannel.getCategory())) {
+                stateDescriptionBuilder = ChannelTypeBuilder
+                        .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID,
+                                solarwattChannel.getChannelName()), solarwattChannel.getChannelName(),
+                                CoreItemFactory.SWITCH)
+                        .withCategory(solarwattChannel.getCategory()).isAdvanced(solarwattChannel.getAdvanced())
+                        .withStateDescriptionFragment(
+                                StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
+            } else {
+                String dimension = ":" + UnitUtils.getDimensionName(unit);
+                String unitString = unit.toString();
 
-            if (Units.PERCENT.equals(unit)) {
-                // strangely it is Angle
-                dimension = ":Dimensionless";
-                unitString = "%%";
+                if (Units.PERCENT.equals(unit)) {
+                    // strangely it is Angle
+                    dimension = ":Dimensionless";
+                    unitString = "%%";
+                }
+
+                stateDescriptionBuilder = ChannelTypeBuilder
+                        .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID,
+                                solarwattChannel.getChannelName()), solarwattChannel.getChannelName(),
+                                CoreItemFactory.NUMBER + dimension)
+                        .withCategory(solarwattChannel.getCategory()).isAdvanced(solarwattChannel.getAdvanced())
+                        .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
+                                .withPattern("%.2f " + unitString).build());
             }
-
-            stateDescriptionBuilder = ChannelTypeBuilder
-                    .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getChannelName()),
-                            solarwattChannel.getChannelName(), CoreItemFactory.NUMBER + dimension)
-                    .withCategory(solarwattChannel.getCategory()).isAdvanced(solarwattChannel.getAdvanced())
-                    .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
-                            .withPattern("%.2f " + unitString).build());
         } else {
             stateDescriptionBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getChannelName()),
