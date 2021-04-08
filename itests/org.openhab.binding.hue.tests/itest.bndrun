@@ -29,11 +29,6 @@ Fragment-Host: org.openhab.binding.hue
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.3,2.3.4)',\
 	jakarta.xml.bind-api;version='[2.3.3,2.3.4)',\
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
-	org.apache.xbean.bundleutils;version='[4.17.0,4.17.1)',\
-	org.apache.xbean.finder;version='[4.17.0,4.17.1)',\
-	org.objectweb.asm;version='[8.0.1,8.0.2)',\
-	org.objectweb.asm.commons;version='[8.0.1,8.0.2)',\
-	org.objectweb.asm.tree;version='[8.0.1,8.0.2)',\
 	org.openhab.binding.hue;version='[3.1.0,3.1.1)',\
 	org.openhab.binding.hue.tests;version='[3.1.0,3.1.1)',\
 	org.openhab.core;version='[3.1.0,3.1.1)',\
@@ -72,4 +67,9 @@ Fragment-Host: org.openhab.binding.hue
 	org.ops4j.pax.logging.pax-logging-api;version='[2.0.8,2.0.9)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.3.13,7.3.14)',\
 	org.osgi.util.function;version='[1.1.0,1.1.1)',\
-	org.osgi.util.promise;version='[1.1.1,1.1.2)'
+	org.osgi.util.promise;version='[1.1.1,1.1.2)',\
+	org.apache.xbean.bundleutils;version='[4.18.0,4.18.1)',\
+	org.apache.xbean.finder;version='[4.18.0,4.18.1)',\
+	org.objectweb.asm;version='[9.1.0,9.1.1)',\
+	org.objectweb.asm.commons;version='[9.0.0,9.0.1)',\
+	org.objectweb.asm.tree;version='[9.0.0,9.0.1)'
