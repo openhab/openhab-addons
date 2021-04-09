@@ -42,7 +42,7 @@ OR: If there is no offset configured (default config) on the dip switch in RS-48
 | 61     | BSP/Xcom-CAN          |
 |--------|-----------------------|
 
-More Details about that can be found in the technical specification and appendix for Studer RTU Modbus protocoll. Check default config (dip switches 1 and 2 off) while configuring the pin-out on the RS-485!
+More Details about that can be found in the technical specification and appendix for Studer RTU Modbus protocol. Check default config (dip switches 1 and 2 off) while configuring the pin-out on the RS-485!
 
 Multicast writes on any devices of given class, but reads only on the first available device (Not Summary!). As currently there are no writes available, 10/20/40 is useless for now.
 
