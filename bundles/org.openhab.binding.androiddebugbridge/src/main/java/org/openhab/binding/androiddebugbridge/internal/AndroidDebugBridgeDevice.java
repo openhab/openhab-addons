@@ -23,6 +23,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,6 +68,7 @@ public class AndroidDebugBridgeDevice {
     }
 
     private final ScheduledExecutorService scheduler;
+    private final ReentrantLock commandLock = new ReentrantLock();
 
     private String ip = "127.0.0.1";
     private int port = 5555;
@@ -272,25 +274,35 @@ public class AndroidDebugBridgeDevice {
         if (adb == null) {
             throw new AndroidDebugBridgeDeviceException("Device not connected");
         }
-        var commandFuture = scheduler.submit(() -> {
-            var byteArrayOutputStream = new ByteArrayOutputStream();
-            String cmd = String.join(" ", args);
-            logger.debug("{} - shell:{}", ip, cmd);
-            try {
-                AdbStream stream = adb.open("shell:" + cmd);
-                do {
-                    byteArrayOutputStream.writeBytes(stream.read());
-                } while (!stream.isClosed());
-            } catch (IOException e) {
-                String message = e.getMessage();
-                if (message != null && !message.equals("Stream closed")) {
-                    throw e;
+        try {
+            commandLock.lock();
+            var commandFuture = scheduler.submit(() -> {
+                var byteArrayOutputStream = new ByteArrayOutputStream();
+                String cmd = String.join(" ", args);
+                logger.debug("{} - shell:{}", ip, cmd);
+                try {
+                    AdbStream stream = adb.open("shell:" + cmd);
+                    do {
+                        byteArrayOutputStream.writeBytes(stream.read());
+                    } while (!stream.isClosed());
+                } catch (IOException e) {
+                    String message = e.getMessage();
+                    if (message != null && !message.equals("Stream closed")) {
+                        throw e;
+                    }
                 }
+                return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
+            });
+            this.commandFuture = commandFuture;
+            return commandFuture.get(timeoutSec, TimeUnit.SECONDS);
+        } finally {
+            var commandFuture = this.commandFuture;
+            if (commandFuture != null) {
+                commandFuture.cancel(true);
+                this.commandFuture = null;
             }
-            return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
-        });
-        this.commandFuture = commandFuture;
-        return commandFuture.get(timeoutSec, TimeUnit.SECONDS);
+            commandLock.unlock();
+        }
     }
 
     private static AdbBase64 getBase64Impl() {
