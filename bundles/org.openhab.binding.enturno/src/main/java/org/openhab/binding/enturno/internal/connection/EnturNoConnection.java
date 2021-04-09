@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -77,7 +77,6 @@ public class EnturNoConnection {
     private final EnturNoHandler handler;
     private final HttpClient httpClient;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson gson = new Gson();
 
     public EnturNoConnection(EnturNoHandler handler, HttpClient httpClient) {
@@ -96,9 +95,9 @@ public class EnturNoConnection {
      */
     public synchronized List<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId, @Nullable String lineCode)
             throws JsonSyntaxException, EnturConfigurationException, EnturCommunicationException {
-        if (StringUtils.isBlank(stopPlaceId)) {
+        if (stopPlaceId == null || stopPlaceId.isBlank()) {
             throw new EnturConfigurationException("Stop place id cannot be empty or null");
-        } else if (lineCode == null || StringUtils.isBlank(lineCode)) {
+        } else if (lineCode == null || lineCode.isBlank()) {
             throw new EnturConfigurationException("Line code cannot be empty or null");
         }
 
@@ -115,8 +114,9 @@ public class EnturNoConnection {
 
     private Map<String, String> getRequestParams(EnturNoConfiguration config) {
         Map<String, String> params = new HashMap<>();
-        params.put(PARAM_STOPID, StringUtils.trimToEmpty(config.getStopPlaceId()));
-        params.put(PARAM_START_DATE_TIME, StringUtils.trimToEmpty(LocalDateTime.now(ZoneId.of(TIME_ZONE)).toString()));
+        String stopPlaceId = config.getStopPlaceId();
+        params.put(PARAM_STOPID, stopPlaceId == null ? "" : stopPlaceId.trim());
+        params.put(PARAM_START_DATE_TIME, LocalDateTime.now(ZoneId.of(TIME_ZONE)).toString());
 
         return params;
     }
@@ -141,7 +141,7 @@ public class EnturNoConnection {
 
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
-            String errorMessage = StringUtils.EMPTY;
+            String errorMessage = "";
             logger.trace("Entur response: status = {}, content = '{}'", httpStatus, content);
             switch (httpStatus) {
                 case OK_200:
@@ -160,14 +160,18 @@ public class EnturNoConnection {
             String errorMessage = e.getLocalizedMessage();
             logger.debug("Exception occurred during execution: {}", errorMessage, e);
             throw new EnturCommunicationException(errorMessage, e);
-        } catch (InterruptedException | TimeoutException | IOException e) {
+        } catch (TimeoutException | IOException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new EnturCommunicationException(e.getLocalizedMessage(), e);
+        } catch (InterruptedException e) {
+            logger.debug("Execution interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             throw new EnturCommunicationException(e.getLocalizedMessage(), e);
         }
     }
 
     private String getErrorMessage(String response) {
-        JsonObject jsonResponse = parser.parse(response).getAsJsonObject();
+        JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         if (jsonResponse.has(PROPERTY_MESSAGE)) {
             return jsonResponse.get(PROPERTY_MESSAGE).getAsString();
         }

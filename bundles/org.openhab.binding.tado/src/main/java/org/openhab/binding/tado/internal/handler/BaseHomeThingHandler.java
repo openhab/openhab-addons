@@ -31,7 +31,7 @@ public abstract class BaseHomeThingHandler extends BaseThingHandler {
 
     public Long getHomeId() {
         TadoHomeHandler handler = getHomeHandler();
-        return handler != null ? handler.getHomeId() : new Long(0);
+        return handler != null ? handler.getHomeId() : Long.valueOf(0);
     }
 
     protected TadoHomeHandler getHomeHandler() {

@@ -17,7 +17,7 @@ import static org.openhab.binding.neato.internal.NeatoBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.neato.internal.CouldNotFindRobotException;
 import org.openhab.binding.neato.internal.NeatoBindingConstants;

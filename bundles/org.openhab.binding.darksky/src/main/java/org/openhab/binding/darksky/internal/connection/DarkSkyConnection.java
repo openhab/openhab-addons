@@ -211,8 +211,12 @@ public class DarkSkyConnection {
             } else {
                 throw new DarkSkyCommunicationException(errorMessage, e.getCause());
             }
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new DarkSkyCommunicationException(e.getLocalizedMessage(), e.getCause());
+        } catch (InterruptedException e) {
+            logger.debug("Execution interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             throw new DarkSkyCommunicationException(e.getLocalizedMessage(), e.getCause());
         }
     }

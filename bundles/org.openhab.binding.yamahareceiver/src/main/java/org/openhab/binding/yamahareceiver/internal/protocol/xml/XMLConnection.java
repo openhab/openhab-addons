@@ -26,7 +26,6 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,7 +182,7 @@ public class XMLConnection extends AbstractConnection {
                 .filter(x -> x.toLowerCase().startsWith(HEADER_CHARSET_PART))
                 .map(x -> x.substring(HEADER_CHARSET_PART.length() + 1, x.length() - 1)).findFirst();
 
-        if (charsetName.isPresent() && !StringUtils.isEmpty(charsetName.get())) {
+        if (charsetName.isPresent() && !charsetName.get().isEmpty()) {
             try {
                 charset = Charset.forName(charsetName.get());
             } catch (UnsupportedCharsetException | IllegalCharsetNameException e) {

@@ -13,12 +13,11 @@
 		<description>Multi Function Sensor like a Smoke Detector (EEP: F6-05, D2-14)</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>
 				<options>
@@ -26,7 +25,6 @@
 					<option value="D2_14_30">D2-14-30 multi function sensor for smoke</option>
 					<option value="A5_30_03_ELTAKO">A5-30-03 Eltako smoke detectors (FHMB, FRWB)</option>
 				</options>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

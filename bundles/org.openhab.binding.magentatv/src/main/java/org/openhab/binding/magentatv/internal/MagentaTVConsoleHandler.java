@@ -20,18 +20,15 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.network.MagentaTVOAuth;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +44,12 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
     private static final String CMD_LOGIN = "login";
 
     private final Logger logger = LoggerFactory.getLogger(MagentaTVConsoleHandler.class);
-    private final MagentaTVOAuth oauth = new MagentaTVOAuth();
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    private @Nullable ClientBuilder injectedClientBuilder;
+    private final MagentaTVOAuth oauth;
 
     @Activate
-    public MagentaTVConsoleHandler() {
+    public MagentaTVConsoleHandler(@Reference HttpClientFactory httpClientFactory) {
         super(BINDING_ID, "Interact with the " + BINDING_ID + " integration.");
+        oauth = new MagentaTVOAuth(httpClientFactory.getCommonHttpClient());
     }
 
     @Override

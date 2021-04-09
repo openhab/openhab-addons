@@ -1,6 +1,6 @@
 # BSB-LAN Binding
 
-This binding uses the REST API of [BSB-LPB-PPS-LAN](https://github.com/fredlcore/bsb_lan) to obtain data from the device.
+This binding uses the REST API of [BSB-LPB-PPS-LAN](https://github.com/fredlcore/BSB-LAN) to obtain data from the device.
 
 ## Supported Things
 

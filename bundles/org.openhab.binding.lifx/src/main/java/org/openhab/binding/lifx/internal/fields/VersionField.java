@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Wouter Born - Add Thing properties
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class VersionField extends Field<Version> {

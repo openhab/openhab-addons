@@ -1,0 +1,106 @@
+        <tr >
+            <td>
+                <div class="tooltip">
+                    <div>
+                        <img src="${uri}/images/status_${iconStatus}.png" class="statusIcon"/>                
+                    </div>
+                    <div class="tooltiptext">
+                        <table style="text-align:left; ">
+                            <tr><td colspan = "2" class="caption2">${thingName}</td></tr>
+                            <tr><td>Status</td><td>${thingStatus} ${thingStatusDetail}</td></tr>
+                            <tr><td>CoIoT Status</td><td>${coiotStatus}</td></tr>
+                            <tr><td>CoIoT Destination</td><td>${coiotDestination}</td></tr>
+                            <tr><td>Cloud Status</td><td>${cloudStatus}</td></tr>
+                            <tr><td>MQTT Status</td><td>${mqttStatus}</td></tr>
+                            <tr><td>Actions skipped</td><td>${actionsSkipped}</td></tr>
+                            <tr><td>Max Internal Temp</td><td>${maxInternalTemp}</td></tr>
+                            <tr><td>&nbsp;<br/></td></tr>
+                            ${deviceStatus}
+                        </table>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="tooltip" style="border: 1px; border-color: white;">
+                    <span style="white-space: nowrap;">${displayName}</span>
+                    <div class="tooltiptext">
+                        <table style="text-align:left; ">
+                            <tr><td colspan = "2" class="caption2">${thingName}</td></tr>
+                            <tr><td>Shelly Device Name</td><td>${deviceName}</td></tr>
+                            <tr><td>Device Hardware Rev</td><td>${deviceHwRev}</td></tr>
+                            <tr><td>Device Type</td><td>${modelId}</td></tr>
+                            <tr><td>Device Mode</td><td>${deviceMode}</td></tr>
+                            <tr><td>Firmware Version</td><td>${firmwareVersion}</td></tr>
+                            <tr><td>Network Name</td><td>${serviceName}</td></tr>
+                            <tr><td>MAC Address</td><td>${macAddress}</td></tr>
+                            <tr><td>Discoverable</td><td>${discoverable}</td></tr>
+                            <tr><td>WiFi Auto Recovery</td><td>${wifiAutoRecovery}</td></tr>
+                            <tr><td>WiFi AP Roaming</td><td>${apRoamingMode}</td></tr>
+                            <tr><td>WiFi AP Threshold</td><td>${apRoamingThreshold}</td></tr>
+                            <tr><td>Timezone</td><td>${deviceTimezone}</td></tr>
+                            <tr><td>Time Server</td><td>${sntpServer}</td></tr>
+                            <tr><td>Debug Mode</td><td>${debugMode}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div title = "Cloud ${cloudStatus}">
+                    <img src="${uri}/images/cloud_${cloudStatus}.png" class="icon"/>
+                </div>
+            </td>
+            <td>
+                <div title = "MQTT ${mqttStatus}">
+                    <img src="${uri}/images/mqtt_${mqttStatus}.png" class="icon"/>
+                </div>
+            </td>
+            <td>
+                <div title="Refresh Device Status">
+	                <a href="${uri}/overview?action=refresh&uid=${uid}">
+	                    <img src="${uri}/images/refresh.png" class="icon"/>
+	                </a>
+                </div>
+            </td>
+            <td>
+                <div title="Reset Device Statistic">
+                    <a href="${uri}/action?action=reset_stat&uid=${uid}">
+                        <img src="${uri}/images/resetstat.png" class="icon"/>
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div title="Check for new firmware">
+                    <a href="${uri}/action?action=otacheck&uid=${uid}">
+                        <img src="${uri}/images/otacheck.png" class="icon"/>
+                    </a>
+                </div>
+            </td>
+            <td><a href="http://${deviceIp}" title="${displayName}" target="_blank">${deviceIp}</a></td>
+            <td>${wifiNetwork}</td>
+            <td >
+                <div title = "Cloud ${cloudStatus}">
+                    <img src="${uri}/images/wifi${wifiSignal}.png" class="icon" alt="Signal quality: ${wifiSignal} (4=best..1=very weak)"/>
+                </div>
+            </td>
+            <td align="right"  nowrap>&nbsp;${wifiSignalRssi}</td>
+            <td align="center" nowrap>${batteryLevel}</td>
+            <td>${heartBeat}</td>
+            <td>${actionList}</td>
+            <td nowrap>${firmwareVersion}</td>
+            <td align="center">${updateAvailable}</td>
+            <td>${firmwareSelection}</td>
+            <td align="right" nowrap>${uptime}</td>
+            <td align="center" nowrap title="Max Internal Device Temp so far: ${maxInternalTemp}">${internalTemp}</td>
+            <td align="right" nowrap>${devUpdatePeriod} s</td>
+            <td align="right">${remainingWatchdog} s</td>
+            <td align="right">${alarmCount}</td>
+            <td nowrap>
+                <a href="${uri}/action?action=reset_stat&uid=${uid}" title="Clear alarm">${lastAlarm}</a>
+            </td>
+            <td>${lastAlarmTs}</td>
+            <td align="right">${deviceRestarts}</td>
+            <td align="right">${timeoutErrors}</td>
+            <td align="right">${timeoutsRecovered}</td>
+            <td align="right" title="CoIoT Status: ${coiotStatus}">${coiotMessages}</td>
+            <td align="right">${coiotErrors}</td>
+        </tr>

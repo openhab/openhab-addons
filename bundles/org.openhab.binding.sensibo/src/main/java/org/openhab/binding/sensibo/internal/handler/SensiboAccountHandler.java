@@ -85,7 +85,6 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     public static String API_ENDPOINT = "https://home.sensibo.com/api";
     private final Logger logger = LoggerFactory.getLogger(SensiboAccountHandler.class);
     private final HttpClient httpClient;
-    private final JsonParser jsonParser = new JsonParser();
     private final RequestLogger requestLogger;
     private final Gson gson;
     private SensiboModel model = new SensiboModel(0);
@@ -207,7 +206,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             final ContentResponse contentResponse = request.send();
             final String responseJson = contentResponse.getContentAsString();
             if (contentResponse.getStatus() == HttpStatus.OK_200) {
-                final JsonObject o = jsonParser.parse(responseJson).getAsJsonObject();
+                final JsonObject o = JsonParser.parseString(responseJson).getAsJsonObject();
                 final String overallStatus = o.get("status").getAsString();
                 if ("success".equals(overallStatus)) {
                     return gson.fromJson(o.get("result"), responseType);

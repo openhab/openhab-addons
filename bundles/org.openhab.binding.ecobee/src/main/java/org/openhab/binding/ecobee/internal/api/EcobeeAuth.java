@@ -18,8 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -133,8 +132,9 @@ public class EcobeeAuth {
                 logger.debug("EcobeeAuth: Got null authorize response from Ecobee API");
                 setState(EcobeeAuthState.NEED_PIN);
             } else {
-                if (StringUtils.isNotEmpty(authResponse.error)) {
-                    throw new EcobeeAuthException(authResponse.error + ": " + authResponse.errorDescription);
+                String error = authResponse.error;
+                if (error != null && !error.isEmpty()) {
+                    throw new EcobeeAuthException(error + ": " + authResponse.errorDescription);
                 }
                 code = authResponse.code;
                 writeLogMessage(authResponse.pin, authResponse.expiresIn);
@@ -172,8 +172,9 @@ public class EcobeeAuth {
             setState(isPinExpired() ? EcobeeAuthState.NEED_PIN : EcobeeAuthState.NEED_TOKEN);
             return;
         }
-        if (StringUtils.isNotEmpty(tokenResponse.error)) {
-            throw new EcobeeAuthException(tokenResponse.error + ": " + tokenResponse.errorDescription);
+        String error = tokenResponse.error;
+        if (error != null && !error.isEmpty()) {
+            throw new EcobeeAuthException(error + ": " + tokenResponse.errorDescription);
         }
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse();
         accessTokenResponse.setRefreshToken(tokenResponse.refreshToken);
@@ -261,6 +262,7 @@ public class EcobeeAuth {
             }
         } catch (InterruptedException e) {
             logger.debug("InterruptedException on call to Ecobee authorization API: {}", e.getMessage());
+            Thread.currentThread().interrupt();
         }
         return null;
     }

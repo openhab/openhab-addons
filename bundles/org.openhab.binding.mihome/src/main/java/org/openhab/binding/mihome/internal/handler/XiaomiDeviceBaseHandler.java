@@ -81,8 +81,6 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
     private static final long ONLINE_TIMEOUT_MILLIS = TimeUnit.HOURS.toMillis(2);
     private ScheduledFuture<?> onlineCheckTask;
 
-    private JsonParser parser = new JsonParser();
-
     private XiaomiBridgeHandler bridgeHandler;
 
     private String itemId;
@@ -148,7 +146,7 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
             }
             logger.debug("Item got update: {}", message);
             try {
-                JsonObject data = parser.parse(message.get("data").getAsString()).getAsJsonObject();
+                JsonObject data = JsonParser.parseString(message.get("data").getAsString()).getAsJsonObject();
                 parseCommand(command, data);
                 if (THING_TYPE_BASIC.equals(getThing().getThingTypeUID())) {
                     parseDefault(message);

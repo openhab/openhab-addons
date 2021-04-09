@@ -206,6 +206,7 @@ public class IpCameraHandler extends BaseThingHandler {
         private byte[] incomingJpeg = new byte[0];
         private String incomingMessage = "";
         private String contentType = "empty";
+        private String boundary = "";
         private Object reply = new Object();
         private String requestUrl = "";
         private boolean closeConnection = true;
@@ -255,6 +256,8 @@ public class IpCameraHandler extends BaseThingHandler {
                                         firstStreamedMsg = msg;
                                         streamToGroup(firstStreamedMsg, mjpegChannelGroup, true);
                                     }
+                                } else {
+                                    boundary = Helper.searchString(contentType, "boundary=");
                                 }
                             } else if (contentType.contains("image/jp")) {
                                 if (bytesToRecieve == 0) {
@@ -305,11 +308,32 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             // Alarm Streams never have a LastHttpContent as they always stay open//
                             else if (contentType.contains("multipart")) {
-                                if (bytesAlreadyRecieved != 0) {
-                                    reply = incomingMessage;
-                                    incomingMessage = "";
-                                    bytesToRecieve = 0;
-                                    bytesAlreadyRecieved = 0;
+                                int beginIndex, endIndex;
+                                if (bytesToRecieve == 0) {
+                                    beginIndex = incomingMessage.indexOf("Content-Length:");
+                                    if (beginIndex != -1) {
+                                        endIndex = incomingMessage.indexOf("\r\n", beginIndex);
+                                        if (endIndex != -1) {
+                                            bytesToRecieve = Integer.parseInt(
+                                                    incomingMessage.substring(beginIndex + 15, endIndex).strip());
+                                        }
+                                    }
+                                }
+                                // --boundary and headers are not included in the Content-Length value
+                                if (bytesAlreadyRecieved > bytesToRecieve) {
+                                    // Check if message has a second --boundary
+                                    endIndex = incomingMessage.indexOf("--" + boundary, bytesToRecieve);
+                                    if (endIndex == -1) {
+                                        reply = incomingMessage;
+                                        incomingMessage = "";
+                                        bytesToRecieve = 0;
+                                        bytesAlreadyRecieved = 0;
+                                    } else {
+                                        reply = incomingMessage.substring(0, endIndex);
+                                        incomingMessage = incomingMessage.substring(endIndex, incomingMessage.length());
+                                        bytesToRecieve = 0;// Triggers search next time for Content-Length:
+                                        bytesAlreadyRecieved = incomingMessage.length() - endIndex;
+                                    }
                                     super.channelRead(ctx, reply);
                                 }
                             }
@@ -1411,7 +1435,7 @@ public class IpCameraHandler extends BaseThingHandler {
         updateState(channelToUpdate, valueOf);
     }
 
-    void bringCameraOnline() {
+    private void bringCameraOnline() {
         isOnline = true;
         updateStatus(ThingStatus.ONLINE);
         groupTracker.listOfOnlineCameraHandlers.add(this);
@@ -1419,19 +1443,6 @@ public class IpCameraHandler extends BaseThingHandler {
         Future<?> localFuture = cameraConnectionJob;
         if (localFuture != null) {
             localFuture.cancel(false);
-        }
-
-        switch (thing.getThingTypeUID().getId()) {
-            case HIKVISION_THING:
-                sendHttpGET("/ISAPI/Smart/AudioDetection/channels/" + cameraConfig.getNvrChannel() + "01");
-                sendHttpGET("/ISAPI/Smart/LineDetection/" + cameraConfig.getNvrChannel() + "01");
-                sendHttpGET("/ISAPI/Smart/FieldDetection/" + cameraConfig.getNvrChannel() + "01");
-                sendHttpGET(
-                        "/ISAPI/System/Video/inputs/channels/" + cameraConfig.getNvrChannel() + "01/motionDetection");
-                sendHttpGET("/ISAPI/System/Video/inputs/channels/" + cameraConfig.getNvrChannel() + "/overlays/text/1");
-                sendHttpGET("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel());
-                sendHttpGET("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel());
-                break;
         }
 
         if (cameraConfig.getGifPreroll() > 0 || cameraConfig.getUpdateImageWhen().contains("1")) {
@@ -1724,8 +1735,8 @@ public class IpCameraHandler extends BaseThingHandler {
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
 
-        // for poll times above 9 seconds don't display a warning about the Image channel.
-        if (9000 <= cameraConfig.getPollTime() && cameraConfig.getUpdateImageWhen().contains("1")) {
+        // for poll times 9 seconds and above don't display a warning about the Image channel.
+        if (9000 > cameraConfig.getPollTime() && cameraConfig.getUpdateImageWhen().contains("1")) {
             logger.warn(
                     "The Image channel is set to update more often than 8 seconds. This is not recommended. The Image channel is best used only for higher poll times. See the readme file on how to display the cameras picture for best results or use a higher poll time.");
         }

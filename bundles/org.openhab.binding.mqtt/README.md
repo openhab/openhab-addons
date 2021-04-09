@@ -68,3 +68,5 @@ Configuration parameters are:
 
 * __stateTopic__: This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".
 * __payload__: An optional condition on the value of the MQTT topic that must match before this channel is triggered.
+
+Note for new users - direct broker Bridge channels are rarely needed. You almost certainly will want to be using one of the binding extensions, or the generic Things and Channels features for most devices or services.

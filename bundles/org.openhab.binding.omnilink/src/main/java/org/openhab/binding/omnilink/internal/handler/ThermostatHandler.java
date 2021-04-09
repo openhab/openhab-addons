@@ -24,8 +24,10 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.omnilink.internal.TemperatureFormat;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequest;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequests;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
@@ -42,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
@@ -144,34 +147,34 @@ public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThe
 
         switch (channelUID.getId()) {
             case CHANNEL_THERMO_SYSTEM_MODE:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE.getNumber(),
-                        ((DecimalType) command).intValue(), thingID);
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_SYSTEM_MODE, ((DecimalType) command).intValue(),
+                        thingID);
                 break;
             case CHANNEL_THERMO_FAN_MODE:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_FAN_MODE.getNumber(), ((DecimalType) command).intValue(),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_FAN_MODE, ((DecimalType) command).intValue(),
                         thingID);
                 break;
             case CHANNEL_THERMO_HOLD_STATUS:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE.getNumber(),
-                        ((DecimalType) command).intValue(), thingID);
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_HOLD_MODE, ((DecimalType) command).intValue(),
+                        thingID);
                 break;
             case CHANNEL_THERMO_HEAT_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_LOW_POINT.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_HEAT_POINT,
                         temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_THERMO_COOL_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_HIGH_POINT.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_COOL_POINT,
                         temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_THERMO_HUMIDIFY_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HUMDIFY_POINT.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_HUMDIFY_POINT,
                         TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_THERMO_DEHUMIDIFY_SETPOINT:
-                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_DEHUMIDIFY_POINT.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_THERMO_SET_DEHUMIDIFY_POINT,
                         TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;

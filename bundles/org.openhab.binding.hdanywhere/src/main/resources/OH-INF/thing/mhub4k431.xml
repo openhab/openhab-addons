@@ -17,10 +17,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="ipAddress" type="text">
+			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>
 				<description>Network address of the Matrix</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="interval" type="integer" required="true">
 				<label>Polling Interval</label>
