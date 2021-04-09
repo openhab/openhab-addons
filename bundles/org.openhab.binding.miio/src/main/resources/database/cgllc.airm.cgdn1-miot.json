@@ -312,48 +312,6 @@
 				"actions": []
 			},
 			{
-				"property": "start-time",
-				"siid": 9,
-				"piid": 2,
-				"friendlyName": "Settings - Start Time",
-				"channel": "start_time",
-				"type": "Number",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 2147483647,
-					"step": 1,
-					"pattern": "%.1f"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "end-time",
-				"siid": 9,
-				"piid": 3,
-				"friendlyName": "Settings - End Time",
-				"channel": "end_time",
-				"type": "Number",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 2147483647,
-					"step": 1,
-					"pattern": "%.1f"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
 				"property": "monitoring-frequency",
 				"siid": 9,
 				"piid": 4,

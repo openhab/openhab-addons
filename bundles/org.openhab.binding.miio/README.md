@@ -522,8 +522,6 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | charging_state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not charging","3"="Not chargeable"] |
 | voltage              | Number:ElectricPotential | Battery - Voltage                        |            |
 | mac                  | String               | Mac - Mac                                |            |
-| start_time           | Number               | Settings - Start Time                    |            |
-| end_time             | Number               | Settings - End Time                      |            |
 | monitoring_frequency | Number:Time          | Settings - Monitoring Frequency          | Value mapping ["1"="Second","60"="Second","300"="Second","600"="Second","0"="Null"] |
 | screen_off           | Number:Time          | Settings - Screen Off                    | Value mapping ["15"="Second","30"="Second","60"="Second","300"="Second","0"="Null"] |
 | device_off           | Number:Time          | Settings - Device Off                    | Value mapping ["15"="Minute","30"="Minute","60"="Minute","0"="Null"] |
@@ -4983,8 +4981,6 @@ Number:Dimensionless battery_level "Battery - Battery Level" (G_airm) {channel="
 Number charging_state "Battery - Charging State" (G_airm) {channel="miio:basic:airm:charging_state"}
 Number:ElectricPotential voltage "Battery - Voltage" (G_airm) {channel="miio:basic:airm:voltage"}
 String mac "Mac - Mac" (G_airm) {channel="miio:basic:airm:mac"}
-Number start_time "Settings - Start Time" (G_airm) {channel="miio:basic:airm:start_time"}
-Number end_time "Settings - End Time" (G_airm) {channel="miio:basic:airm:end_time"}
 Number:Time monitoring_frequency "Settings - Monitoring Frequency" (G_airm) {channel="miio:basic:airm:monitoring_frequency"}
 Number:Time screen_off "Settings - Screen Off" (G_airm) {channel="miio:basic:airm:screen_off"}
 Number:Time device_off "Settings - Device Off" (G_airm) {channel="miio:basic:airm:device_off"}
