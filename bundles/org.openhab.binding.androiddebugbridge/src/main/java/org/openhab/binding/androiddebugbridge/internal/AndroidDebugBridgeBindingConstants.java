@@ -45,6 +45,8 @@ public class AndroidDebugBridgeBindingConstants {
     public static final String AWAKE_STATE_CHANNEL = "awake-state";
     public static final String WAKE_LOCK_CHANNEL = "wake-lock";
     public static final String SCREEN_STATE_CHANNEL = "screen-state";
+    public static final String REBOOT_CHANNEL = "reboot";
+
     // List of all Parameters
     public static final String PARAMETER_IP = "ip";
     public static final String PARAMETER_PORT = "port";

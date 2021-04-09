@@ -148,6 +148,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     updateState(channelUID, OnOffType.from(screenState));
                 }
                 break;
+            case REBOOT_CHANNEL:
+                if (OnOffType.from(command.toFullString()) == OnOffType.ON) {
+                    adbConnection.rebootDevice();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Rebooting");
+                    break;
+                }
         }
     }
 

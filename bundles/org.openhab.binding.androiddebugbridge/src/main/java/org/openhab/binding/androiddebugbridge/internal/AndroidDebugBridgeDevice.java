@@ -233,6 +233,12 @@ public class AndroidDebugBridgeDevice {
         return volumeInfo;
     }
 
+    public void rebootDevice()
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        runAdbShell("reboot", "-p", "&", "exit", "0");
+        disconnect();
+    }
+
     public boolean isConnected() {
         var currentSocket = socket;
         return currentSocket != null && currentSocket.isConnected();
