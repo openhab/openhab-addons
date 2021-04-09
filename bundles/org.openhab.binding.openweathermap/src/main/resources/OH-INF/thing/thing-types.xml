@@ -233,7 +233,6 @@
 			<channel-group id="forecastHours23" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours24" typeId="oneCallHourly"/>
 
-
 			<channel-group id="forecastToday" typeId="oneCallDaily">
 				<label>One Call API Todays Forecast</label>
 				<description>This is the weather forecast for today from the one call API.</description>
