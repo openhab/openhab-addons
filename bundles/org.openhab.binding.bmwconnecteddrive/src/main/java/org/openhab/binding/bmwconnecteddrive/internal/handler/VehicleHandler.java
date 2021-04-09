@@ -73,7 +73,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class VehicleHandler extends VehicleChannelHandler {
-    private boolean legacyMode = false; // switch to legacy API in case of 404 Errors
+    private int legacyMode = Constants.INT_UNDEF; // switch to legacy API in case of 404 Errors
 
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
@@ -269,10 +269,10 @@ public class VehicleHandler extends VehicleChannelHandler {
     public void getData() {
         proxy.ifPresentOrElse(prox -> {
             configuration.ifPresentOrElse(config -> {
-                if (!legacyMode) {
-                    prox.requestVehcileStatus(config, vehicleStatusCallback);
-                } else {
+                if (legacyMode == 1) {
                     prox.requestLegacyVehcileStatus(config, oldVehicleStatusCallback);
+                } else {
+                    prox.requestVehcileStatus(config, vehicleStatusCallback);
                 }
                 addCallback(vehicleStatusCallback);
                 if (isSupported(Constants.STATISTICS)) {
@@ -611,6 +611,8 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onResponse(@Nullable String content) {
             if (content != null) {
+                // switch to non legacy mode
+                legacyMode = 0;
                 updateStatus(ThingStatus.ONLINE);
                 vehicleStatusCache = Optional.of(content);
                 try {
@@ -635,7 +637,8 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            if (error.status != 200) {
+            // only if legacyMode isn't set yet try legacy API
+            if (error.status != 200 && legacyMode == Constants.INT_UNDEF) {
                 logger.debug("VehicleStatus not found - try legacy API");
                 proxy.get().requestLegacyVehcileStatus(configuration.get(), oldVehicleStatusCallback);
             }
@@ -664,7 +667,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     VehicleAttributesContainer vac = Converter.getGson().fromJson(content,
                             VehicleAttributesContainer.class);
                     vehicleStatusCallback.onResponse(Converter.transformLegacyStatus(vac));
-                    legacyMode = true;
+                    legacyMode = 1;
                     logger.debug("VehicleStatus switched to legacy mode");
                 } catch (JsonSyntaxException jse) {
                     logger.debug("{}", jse.getMessage());
