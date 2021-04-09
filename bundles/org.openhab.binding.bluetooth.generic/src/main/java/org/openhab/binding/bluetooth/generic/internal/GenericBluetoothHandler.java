@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.core.library.types.StringType;
@@ -85,7 +84,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         GenericBindingConfiguration config = getConfigAs(GenericBindingConfiguration.class);
         readCharacteristicJob = scheduler.scheduleWithFixedDelay(() -> {
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
-                if (resolved) {
+                if (device.isServicesDiscovered()) {
                     handlerToChannels.forEach((charHandler, channelUids) -> {
                         // Only read the value manually if notification is not on.
                         // Also read it the first time before we activate notifications below.
@@ -139,11 +138,9 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
     @Override
     public void onServicesDiscovered() {
-        if (!resolved) {
-            resolved = true;
-            logger.trace("Service discovery completed for '{}'", address);
-            updateThingChannels();
-        }
+        super.onServicesDiscovered();
+        logger.trace("Service discovery completed for '{}'", address);
+        updateThingChannels();
     }
 
     @Override
@@ -157,19 +154,9 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     }
 
     @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        super.onCharacteristicReadComplete(characteristic, status);
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            byte[] data = characteristic.getByteValue();
-            getCharacteristicHandler(characteristic).handleCharacteristicUpdate(data);
-        }
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        super.onCharacteristicUpdate(characteristic);
-        byte[] data = characteristic.getByteValue();
-        getCharacteristicHandler(characteristic).handleCharacteristicUpdate(data);
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
+        super.onCharacteristicUpdate(characteristic, value);
+        getCharacteristicHandler(characteristic).handleCharacteristicUpdate(value);
     }
 
     private void updateThingChannels() {
@@ -207,13 +194,28 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         return Objects.requireNonNull(charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new));
     }
 
-    private boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        return device.readCharacteristic(characteristic);
+    private void readCharacteristic(BluetoothCharacteristic characteristic) {
+        readCharacteristic(characteristic.getService().getUuid(), characteristic.getUuid()).whenComplete((data, th) -> {
+            if (th != null) {
+                logger.warn("Could not read data from characteristic {} of device {}: {}", characteristic.getUuid(),
+                        address, th.getMessage());
+                return;
+            }
+            if (data != null) {
+                getCharacteristicHandler(characteristic).handleCharacteristicUpdate(data);
+            }
+        });
     }
 
-    private boolean writeCharacteristic(BluetoothCharacteristic characteristic, byte[] data) {
-        characteristic.setValue(data);
-        return device.writeCharacteristic(characteristic);
+    private void writeCharacteristic(BluetoothCharacteristic characteristic, byte[] data) {
+        writeCharacteristic(characteristic.getService().getUuid(), characteristic.getUuid(), data, false)
+                .whenComplete((r, th) -> {
+                    if (th != null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Could not write data to characteristic " + characteristic.getUuid() + ": "
+                                        + th.getMessage());
+                    }
+                });
     }
 
     private class CharacteristicHandler {
@@ -253,10 +255,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     } else if (state instanceof StringType) {
                         // unknown characteristic
                         byte[] data = HexUtils.hexToBytes(state.toString());
-                        if (!writeCharacteristic(characteristic, data)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Could not write data to characteristic: " + characteristicUUID);
-                        }
+                        writeCharacteristic(characteristic, data);
                     }
                 } catch (RuntimeException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -275,10 +274,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     BluetoothChannelUtils.updateHolder(gattParser, request, fieldName, state);
                     byte[] data = gattParser.serialize(request);
 
-                    if (!writeCharacteristic(characteristic, data)) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Could not write data to characteristic: " + characteristicUUID);
-                    }
+                    writeCharacteristic(characteristic, data);
                 } catch (NumberFormatException ex) {
                     logger.warn("Could not parse characteristic value: {} : {}", characteristicUUID, state, ex);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
