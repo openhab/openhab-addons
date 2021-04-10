@@ -1,10 +1,15 @@
+img[src*="#small"] {
+    width:400px;
+    height:324px;
+}
+
 # air-Q Binding
 
-The air-Q Binding integrates the air analyzer <a href="http://www.air-q.com">air-Q</a> device into the openHAB system.
+The air-Q Binding integrates the air analyzer [air-Q](http://www.air-q.com) device into the openHAB system.
 
 With the binding, it is possible to subscribe to all data delivered by the air-Q device.
 
-<img src="src/main/resources/image_air-Q.png" alt="air-Q image" width="400px" height="324px" />
+![air-Q image](doc/image_air-Q.png#small)
 
 ## Supported Things
 
@@ -13,11 +18,7 @@ This Binding was tested with an `air-Q Pro` device with 14 sensors. It also work
 
 ## Discovery
 
-Auto-discovery is not yet supported.
-
-## Binding Configuration
-
-The binding does not need to be configured.
+Auto-discovery is not supported.
 
 ## Thing Configuration
 
@@ -35,7 +36,7 @@ The Thing provides the following properties:
 | softwareVersion        | Firmware version              |
 | sensorList             | Available sensors             |
 | sensorInfo             | Information about the sensors |
-| industryVersion        | Industry version              |
+| industry               | Industry version              |
 
 ## Channels
 
@@ -43,78 +44,79 @@ The air-Q Thing offers access to all sensor data of the air-Q, according to its 
 This includes also the Maximum Error per sensor value.
 For the Maximum Error channels just add `_maxerr` to the channel names.
 
-| channel                   | type     | description                                                         |
-|---------------------------|----------|---------------------------------------------------------------------|
-| status                    | String   | Status of the sensors                                               |
-| avgFineDustSize           | Number   | Average size of Fine Dust [experimental]                            |
-| fineDustCnt00_3           | Number   | Fine Dust >0,3 &mu;m                                                |
-| fineDustCnt00_5           | Number   | Fine Dust >0,5 &mu;m                                                |
-| fineDustCnt01             | Number   | Fine Dust >1 &mu;m                                                  |
-| fineDustCnt02_5           | Number   | Fine Dust >2,5 &mu;m                                                |
-| fineDustCnt05             | Number   | Fine Dust >5 &mu;m                                                  |
-| fineDustCnt10             | Number   | Fine Dust >10 &mu;m                                                 |
-| co                        | Number   | CO concentration                                                    |
-| co2                       | Number   | CO<sub>2</sub> concentration                                        |
-| dCO2dt                    | Number   | Change of CO<sub>2</sub> concentration                              |
-| dHdt                      | Number   | Change of Humidity                                                  |
-| dewpt                     | Number   | Dew Point                                                           |
-| doorEvent                 | Switch   | Door Event (experimental)                                           |
-| health                    | Number   | Health Index                                                        |
-| humidityRelative          | Number   | Humidity in percent                                                 |
-| humidityAbsolute          | Number   | Absolute Humidity                                                   |
-| measureTime               | Number   | Milliseconds needed for measurement                                 |
-| no2                       | Number   | NO<sub>2</sub> concentration                                        |
-| o3                        | Number   | Ozone (<sub>3</sub>) concentration                                  |
-| o2                        | Number   | Oxygen (O<sub>2</sub>) concentration                                |
-| performance               | Number   | Performance index                                                   |
-| fineDustConc01            | Number   | Fine Dust concentration >1 &mu;m                                    |
-| fineDustConc02_5          | Number   | Fine Dust concentration >2.5 &mu;m                                  |
-| fineDustConc10            | Number   | Fine Dust concentration >10 &mu;m                                   |
-| pressure                  | Number   | Pressure                                                            |
-| so2                       | Number   | SO<sub>2</sub> concentration                                        |
-| sound                     | Number   | Noise                                                               |
-| temperature               | Number   | Temperature                                                         |
-| timestamp                 | Time     | Timestamp of measurement                                            |
-| voc                       | Number   | VOC concentration                                                   |
-| uptime                    | Number   | uptime in seconds                                                   |
-| wifi                      | Switch   | WLAN on or off                                                      |
-| SSID                      | String   | WLAN SSID                                                           |
-| password                  | String   | Device Password                                                     |
-| wifiInfo                  | Switch   | Show WLAN status with LED                                           |
-| timeServer                | String   | Name of Timeserver address                                          |
-| location                  | Location | Location of air-Q device                                            |
-| nightmode_StartDay        | String   | Time to start day operation                                         |
-| nightmode_StartNight      | String   | End of day operation                                                |
-| nightmode_BrightnessDay   | Number   | Brightness of LED during the day                                    |
-| nightmode_BrightnessNight | Number   | Brightness of LED at night                                          |
-| nightmode_FanNightOff     | Switch   | Switch off fan at night                                             |
-| nightmode_WifiNightOff    | Switch   | Switch off WLAN at night                                            |
-| devicename                | String   | Device Name                                                         |
-| roomType                  | String   | Type of room                                                        |
-| logLevel                  | String   | Logging level                                                       |
-| deleteKey                 | String   | Settings to be deleted                                              |
-| fireAlarm                 | Switch   | Send Fire Alarm if certain levels are met                           |
-| WLAN_config_gateway       | String   | Network Gateway                                                     |
-| WLAN_config_MAC           | String   | MAC Address                                                         |
-| WLAN_config_SSID          | String   | WLAN SSID                                                           |
-| WLAN_config_IPAddress     | String   | Assigned IP address                                                 |
-| WLAN_config_netMask       | String   | Network mask                                                        |
-| WLAN_config_BSSID         | String   | Network BSSID                                                       |
-| cloudUpload               | Switch   | Upload to air-Q cloud                                               |
-| averagingRhythm           | Number   | Rhythm of measurement for historic average                          |
-| powerFreqSuppression      | String   | Power Frequency                                                     |
-| autoDriftCompensation     | Switch   | Compensate automatic drift                                          |
-| autoUpdate                | Switch   | Install Firmware updates automatically                              |
-| advancedDataProcessing    | Switch   | Use advanced algorithms eg. for open window or presence of a person |
-| ppm_and_ppb               | Switch   | Output CO as ppm and NO2, O3 and SO2 as ppb value instead of mg/m3  |
-| gasAlarm                  | Switch   | Send Gas Alarm if certain levels are met                            |
-| id                        | String   | Device ID, retrieved from configuration                             |
-| soundPressure             | Switch   | Sound Pressure Level                                                |
-| alarmForwarding           | Switch   | Forward gas or fire alarm to other air-Q devices in the household   |
-| userCalib                 | String   | Last sensor calibration                                             |
-| initialCalFinished        | Switch   | Initial calibration has finished                                    |
-| averaging                 | Switch   | Do an average                                                       |
-| errorBars                 | Switch   | Calculate Maximum Errors                                            |
+The rw column is empty if the channel is only readable, w if the channel can be written and rw if it allows both to be read and written.
+
+| channel                   | type                 | rw | description                                                         |
+|---------------------------|----------------------|--------------------------------------------------------------------------|
+| status                    | String               |    | Status of the sensors (usually "OK")                                |
+| avgFineDustSize           | Number:Length        |    | Average size of Fine Dust [experimental]                            |
+| fineDustCnt00_3           | Number:Dimensionless |    | Fine Dust >0,3 µm                                                   |
+| fineDustCnt00_5           | Number:Dimensionless |    | Fine Dust >0,5 µm                                                   |
+| fineDustCnt01             | Number:Dimensionless |    | Fine Dust >1 µm                                                     |
+| fineDustCnt02_5           | Number:Dimensionless |    | Fine Dust >2,5 µm                                                   |
+| fineDustCnt05             | Number:Dimensionless |    | Fine Dust >5 µm                                                     |
+| fineDustCnt10             | Number:Dimensionless |    | Fine Dust >10 µm                                                    |
+| co                        | Number:Dimensionless |    | CO concentration                                                    |
+| co2                       | Number               |    | CO₂ concentration                                                   |
+| dCO2dt                    | Number               |    | Change of CO₂ concentration                                         |
+| dHdt                      | Number               |    | Change of Humidity                                                  |
+| dewpt                     | Number:Temperature   |    | Dew Point                                                           |
+| doorEvent                 | Number               |    | Door Event (experimental, might not work reliably)                  |
+| health                    | Number:Dimensionless |    | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)   |
+| humidityRelative          | Number:Dimensionless |    | Humidity in percent                                                 |
+| humidityAbsolute          | Number               |    | Absolute Humidity                                                   |
+| measureTime               | Number               |    | Milliseconds needed for measurement                                 |
+| no2                       | Number               |    | NO₂ concentration                                                   |
+| o3                        | Number               |    | Ozone (O₃) concentration                                            |
+| o2                        | Number:Dimensionless |    | Oxygen (O₂) concentration                                           |
+| performance               | Number:Dimensionless |    | Performance Index (0 to 1000)                                       |
+| fineDustConc01            | Number               |    | Fine Dust concentration >1 µm                                       |
+| fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
+| fineDustConc10            | Number               |    | Fine Dust concentration >10 µm             fni                      |
+| pressure                  | Number:Pressure      |    | Pressure                                                            |
+| so2                       | Number               |    | SO₂ concentration                                                   |
+| sound                     | Number               |    | Noise                                                               |
+| temperature               | Number:Temperature   |    | Temperature                                                         |
+| timestamp                 | DateTime             |    | Timestamp of measurement                                            |
+| tvoc                      | Number               |    | VOC concentration                                                   |
+| uptime                    | Number               |    | uptime in seconds                                                   |
+| wifi                      | Switch               |    | WLAN on or off                                                      |
+| ssid                      | String               |    | WLAN SSID                                                           |
+| password                  | String               | w  | Device Password                                                     |
+| wifiInfo                  | Switch               | rw | Show WLAN status with LED                                           |
+| timeServer                | String               | rw | Name of Timeserver address                                          |
+| location                  | Location             | rw | Location of air-Q device                                            |
+| nightmodeStartDay         | String               | rw | Time to start day operation                                         |
+| nightmodeStartNight       | String               | rw | End of day operation                                                |
+| nightmodeBrightnessDay    | Number:Dimensionless | rw | Brightness of LED during the day                                    |
+| nightmodeBrightnessNight  | Number:Dimensionless | rw | Brightness of LED at night                                          |
+| nightmodeFanNightOff      | Switch               | rw | Switch off fan at night                                             |
+| nightmodeWifiNightOff     | Switch               | rw | Switch off WLAN at night                                            |
+| deviceName                | String               |    | Device Name                                                         |
+| roomType                  | String               | rw | Type of room                                                        |
+| logLevel                  | String               | w  | Logging level                                                       |
+| deleteKey                 | String               | w  | Settings to be deleted                                              |
+| fireAlarm                 | Switch               | rw | Send Fire Alarm if certain levels are met                           |
+| wlanConfigGateway         | String               | rw | Network Gateway                                                     |
+| wlanConfigMac             | String               | rw | MAC Address                                                         |
+| wlanConfigSsid            | String               | rw | WLAN SSID                                                           |
+| wlanConfigIPAddress       | String               | rw | Assigned IP address                                                 |
+| wlanConfigNetMask         | String               | rw | Network mask                                                        |
+| wlanConfigBssid           | String               | rw | Network BSSID                                                       |
+| cloudUpload               | Switch               | rw | Upload to air-Q cloud                                               |
+| averagingRhythm           | Number               | rw | Rhythm of measurement for historic average                          |
+| powerFreqSuppression      | String               | rw | Power Frequency                                                     |
+| autoDriftCompensation     | Switch               | rw | Compensate automatic drift                                          |
+| autoUpdate                | Switch               | rw | Install Firmware updates automatically                              |
+| advancedDataProcessing    | Switch               | rw | Use advanced algorithms eg. for open window or presence of a person |
+| ppm_and_ppb               | Switch               | rw | Output CO as ppm and NO₂, O₃ and SO₂ as ppb value instead of mg/m3  |
+| gasAlarm                  | Switch               | rw | Send Gas Alarm if certain levels are met                            |
+| soundPressure             | Switch               | rw | Sound Pressure Level                                                |
+| alarmForwarding           | Switch               | rw | Forward gas or fire alarm to other air-Q devices in the household   |
+| userCalib                 | String               |    | Last sensor calibration                                             |
+| initialCalFinished        | Switch               |    | Initial calibration has finished                                    |
+| averaging                 | Switch               | rw | Do an average                                                       |
+| errorBars                 | Switch               | rw | Calculate Maximum Errors                                            |
 
 ## Example
 
@@ -157,7 +159,7 @@ Number                airQ_so2                    "SO2 concentration"           
 Number                airQ_sound                  "Noise"                                 {channel="airq:airq:1:sound"}
 Number:Temperature    airQ_temperature            "Temperature"                           {channel="airq:airq:1:temperature"}
 DateTime              airQ_timestamp              "Time stamp"                            {channel="airq:airq:1:timestamp"}
-Number                airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:voc"}
+Number                airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:tvoc"}
 Number                airQ_uptime                 "Uptime"                                {channel="airq:airq:1:uptime"}
 
 Number:Dimensionless  airQ_cnt03_maxerr        "Maximum error of Fine Dust >0,3 µm"             {channel="airq:airq:1:cnt0_3_maxerr"}
@@ -172,7 +174,7 @@ Number:Dimensionless  airQ_humidity_maxerr     "Maximum error of Humidity"      
 Number:Dimensionless  airQ_humidity_abs_maxerr "Maximum error of Absolute Humidity"             {channel="airq:airq:1:humidity_abs_maxerr"}
 Number:Dimensionless  airQ_no2_maxerr          "Maximum error of NO2 concentration"             {channel="airq:airq:1:no2_maxerr"}
 Number:Dimensionless  airQ_o3_maxerr           "Maximum error of O3 concentration"              {channel="airq:airq:1:o3_maxerr"}
-Number:Dimensionless  airQ_oxygen_maxerr       "Maximum error of Oxygen concentration"          {channel="airq:airq:1:oxygen_maxerr"}
+Number:Dimensionless  airQ_oxygen_maxerr       "Maximum error of Oxygen concentration"          {channel="airq:airq:1:o2_maxerr"}
 Number:Dimensionless  airQ_pm1_maxerr          "Maximum error of Fine Dust Concentration >1µ"   {channel="airq:airq:1:pm1_maxerr"}
 Number:Dimensionless  airQ_pm2_5_maxerr        "Maximum error of Fine Dust Concentration >2.5µ" {channel="airq:airq:1:pm2_5_maxerr"}
 Number:Dimensionless  airQ_pm10_maxerr         "Maximum error of Fine Dust Concentration >10µ"  {channel="airq:airq:1:pm10_maxerr"}
@@ -180,43 +182,43 @@ Number:Dimensionless  airQ_pressure_maxerr     "Maximum error of Pressure"      
 Number:Dimensionless  airQ_so2_maxerr          "Maximum error of SO2 concentration"             {channel="airq:airq:1:so2_maxerr"}
 Number:Dimensionless  airQ_sound_maxerr        "Maximum error of Noise"                         {channel="airq:airq:1:sound_maxerr"}
 Number:Dimensionless  airQ_temperature_maxerr  "Maximum error of Temperature"                   {channel="airq:airq:1:temperature_maxerr"}
-Number:Dimensionless  airQ_voc_maxerr          "Maximum error of VOC concentration"             {channel="airq:airq:1:voc_maxerr"}
+Number:Dimensionless  airQ_voc_maxerr          "Maximum error of VOC concentration"             {channel="airq:airq:1:tvoc_maxerr"}
 
-Switch airQ_wifi                    "WLAN on or off"                        {channel="airq:airq:1:wifi"}
-String airQ_SSID                    "WLAN SSID"                             {channel="airq:airq:1:SSID"}
-String airQ_password                "Device Password"                       {channel="airq:airq:1:password"}
-Switch airQ_wifiInfo                "Show WLAN status with LED"             {channel="airq:airq:1:wifiInfo"}
-String airQ_timeServer              "Name of Timeserver address"            {channel="airq:airq:1:timeServer"}
-Location airQ_location              "Location of air-Q device"              {channel="airq:airq:1:location"}
-String airQ_nightMode_startDay      "Time to start day operation"           {channel="airq:airq:1:nightMode_startDay"}
-String airQ_nightMode_startNight    "End of day operation"                  {channel="airq:airq:1:nightMode_startNight"}
-Number:Dimensionless airQ_nightMode_brightnessDay "Brightness of LED during the day"      {channel="airq:airq:1:nightMode_brightnessDay"}
-Number:Dimensionless airQ_nightMode_brightnessNight   "Brightness of LED at night"        {channel="airq:airq:1:nightMode_brightnessNight"}
-Switch airQ_nightMode_fanNightOff   "Switch off fan at night"               {channel="airq:airq:1:nightMode_fanNightOff"}
-Switch airQ_nightMode_wifiNightOff  "Switch off WLAN at night"              {channel="airq:airq:1:nightMode_wifiNightOff"}
-String airQ_devicename              "Device Name"                           {channel="airq:airq:1:devicename"}
-String airQ_roomType                "Type of room"                          {channel="airq:airq:1:roomType"}
-String airQ_logLevel                "Logging level"                         {channel="airq:airq:1:logLevel"}
-String airQ_deleteKey               "Settings to be deleted"                {channel="airq:airq:1:deleteKey"}
-Switch airQ_fireAlarm               "Send Fire Alarm if certain levels are met" {channel="airq:airq:1:fireAlarm"}
-String airQ_WLAN_config_gateway     "Network Gateway"                       {channel="airq:airq:1:WLAN_config_gateway"}
-String airQ_WLAN_config_MAC         "MAC Address"                           {channel="airq:airq:1:WLAN_config_MAC"}
-String airQ_WLAN_config_SSID        "WLAN SSID"                             {channel="airq:airq:1:WLAN_config_SSID"}
-String airQ_WLAN_config_IPAddress   "Assigned IP address"                   {channel="airq:airq:1:WLAN_config_IPAddress"}
-String airQ_WLAN_config_netMask     "Network mask"                          {channel="airq:airq:1:WLAN_config_netMask"}
-String airQ_WLAN_config_BSSID       "Network BSSID"                         {channel="airq:airq:1:WLAN_config_BSSID"}
-Switch airQ_cloudUpload             "Upload to air-Q cloud"                 {channel="airq:airq:1:cloudUpload"}
-Number airQ_averagingRhythm         "Rhythm of measurement for historic average"    {channel="airq:airq:1:averagingRhythm"}
-String airQ_powerFreqSuppression    "Power Frequency"                       {channel="airq:airq:1:powerFreqSuppression"}
-Switch airQ_autoDriftCompensation   "Compensate automatic drift"            {channel="airq:airq:1:autoDriftCompensation"}
-Switch airQ_autoUpdate              "Install Firmware updates automatically"    {channel="airq:airq:1:autoUpdate"}
+Switch airQ_wifi                    "WLAN on or off"                                 {channel="airq:airq:1:wifi"}
+String airQ_SSID                    "WLAN SSID"                                      {channel="airq:airq:1:ssid"}
+String airQ_password                "Device Password"                                {channel="airq:airq:1:password"}
+Switch airQ_wifiInfo                "Show WLAN status with LED"                      {channel="airq:airq:1:wifiInfo"}
+String airQ_timeServer              "Name of Timeserver address"                     {channel="airq:airq:1:timeServer"}
+Location airQ_location              "Location of air-Q device"                       {channel="airq:airq:1:location"}
+String airQ_nightMode_startDay      "Time to start day operation"                    {channel="airq:airq:1:nightModeStartDay"}
+String airQ_nightMode_startNight    "End of day operation"                           {channel="airq:airq:1:nightModeStartNight"}
+Number:Dimensionless airQ_nightMode_brightnessDay "Brightness of LED during the day" {channel="airq:airq:1:nightModeBrightnessDay"}
+Number:Dimensionless airQ_nightMode_brightnessNight   "Brightness of LED at night"   {channel="airq:airq:1:nightModeBrightnessNight"}
+Switch airQ_nightMode_fanNightOff   "Switch off fan at night"                        {channel="airq:airq:1:nightModeFanNightOff"}
+Switch airQ_nightMode_wifiNightOff  "Switch off WLAN at night"                       {channel="airq:airq:1:nightModeWifiNightOff"}
+String airQ_deviceName              "Device Name"                                    {channel="airq:airq:1:deviceName"}
+String airQ_roomType                "Type of room"                                   {channel="airq:airq:1:roomType"}
+String airQ_logLevel                "Logging level"                                  {channel="airq:airq:1:logLevel"}
+String airQ_deleteKey               "Settings to be deleted"                         {channel="airq:airq:1:deleteKey"}
+Switch airQ_fireAlarm               "Send Fire Alarm if certain levels are met"      {channel="airq:airq:1:fireAlarm"}
+String airQ_WLAN_config_gateway     "Network Gateway"                                {channel="airq:airq:1:wlanConfigGateway"}
+String airQ_WLAN_config_MAC         "MAC Address"                                    {channel="airq:airq:1:wlanConfigMac"}
+String airQ_WLAN_config_SSID        "WLAN SSID"                                      {channel="airq:airq:1:wlanConfigSsid"}
+String airQ_WLAN_config_IPAddress   "Assigned IP address"                            {channel="airq:airq:1:wlanConfigIPAddress"}
+String airQ_WLAN_config_netMask     "Network mask"                                   {channel="airq:airq:1:wlanConfigNetMask"}
+String airQ_WLAN_config_BSSID       "Network BSSID"                                  {channel="airq:airq:1:wlanConfigBssid"}
+Switch airQ_cloudUpload             "Upload to air-Q cloud"                          {channel="airq:airq:1:cloudUpload"}
+Number airQ_averagingRhythm         "Rhythm of measurement for historic average"     {channel="airq:airq:1:averagingRhythm"}
+String airQ_powerFreqSuppression    "Power Frequency"                                {channel="airq:airq:1:powerFreqSuppression"}
+Switch airQ_autoDriftCompensation   "Compensate automatic drift"                     {channel="airq:airq:1:autoDriftCompensation"}
+Switch airQ_autoUpdate              "Install Firmware updates automatically"         {channel="airq:airq:1:autoUpdate"}
 Switch airQ_advancedDataProcessing  "Use advanced algorithms eg. for open window or presence of a person"   {channel="airq:airq:1:advancedDataProcessing"}
 Switch airQ_ppm_and_ppb             "Output CO as ppm and NO2, O3 and SO2 as ppb value instead of mg/m3"    {channel="airq:airq:1:ppm_and_ppb"}
-Switch airQ_gasAlarm                "Send Gas Alarm if certain levels are met"  {channel="airq:airq:1:gasAlarm"}
-Switch airQ_soundPressure           "Sound Pressure Level"                  {channel="airq:airq:1:soundPressure"}
+Switch airQ_gasAlarm                "Send Gas Alarm if certain levels are met"       {channel="airq:airq:1:gasAlarm"}
+Switch airQ_soundPressure           "Sound Pressure Level"                           {channel="airq:airq:1:soundPressure"}
 Switch airQ_alarmForwarding         "Forward gas or fire alarm to other air-Q devices in the household"     {channel="airq:airq:1:alarmForwarding"}
-String airQ_userCalib               "Last sensor calibration"               {channel="airq:airq:1:userCalib"}
-Switch airQ_initialCalFinished      "Initial calibration has finished"      {channel="airq:airq:1:initialCalFinished"}
-Switch airQ_averaging               "Do an average"                         {channel="airq:airq:1:averaging"}
-Switch airQ_errorBars               "Calculate Maximum Errors"              {channel="airq:airq:1:errorBars"}
+String airQ_userCalib               "Last sensor calibration"                        {channel="airq:airq:1:userCalib"}
+Switch airQ_initialCalFinished      "Initial calibration has finished"               {channel="airq:airq:1:initialCalFinished"}
+Switch airQ_averaging               "Do an average"                                  {channel="airq:airq:1:averaging"}
+Switch airQ_errorBars               "Calculate Maximum Errors"                       {channel="airq:airq:1:errorBars"}
 ```

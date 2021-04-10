@@ -12,14 +12,10 @@
  */
 package org.openhab.binding.airq.internal;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
@@ -28,17 +24,26 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -60,7 +65,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link airqHandler} is responsible for retrieving all information from the air-Q device
+ * The {@link $AirqHandler} is responsible for retrieving all information from the air-Q device
  * and change properties and channels accordingly.
  *
  * @author Aurelio Caliaro - Initial contribution
@@ -69,11 +74,12 @@ import com.google.gson.JsonObject;
 public class AirqHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AirqHandler.class);
+    private final Gson gson = new Gson();
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> getConfigDataJob;
-    private @Nullable ThingStatus thStatus;
-    protected static final int POLLING_PERIOD_DATA = 15000; // in milliseconds
+    protected static final int POLLING_PERIOD_DATA_MSEC = 15000; // in milliseconds
     protected static final int POLLING_PERIOD_CONFIG = 1; // in minutes
+    protected final HttpClient httpClient;
     AirqConfiguration config = new AirqConfiguration();
 
     final class ResultPair {
@@ -101,8 +107,10 @@ public class AirqHandler extends BaseThingHandler {
         }
     }
 
-    public AirqHandler(Thing thing) {
+    public AirqHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
+        logger.warn("air-Q - airqHandler - constructor: httpClient={}", httpClient);
     }
 
     private boolean isTimeFormat(String str) {
@@ -171,18 +179,18 @@ public class AirqHandler extends BaseThingHandler {
                 case "ppm_and_ppb":
                     newobj.addProperty("ppm&ppb", command == OnOffType.ON);
                     changeSettings(newobj);
-                case "nightmode_FanNightOff":
+                case "nightmodeFanNightOff":
                     subjson.addProperty("FanNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
                     break;
-                case "nightmode_WifiNightOff":
+                case "nightmodeWifiNightOff":
                     subjson.addProperty("WifiNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
                     break;
                 case "SSID":
-                    JsonElement wifidatael = new Gson().fromJson(command.toString(), JsonElement.class);
+                    JsonElement wifidatael = gson.fromJson(command.toString(), JsonElement.class);
                     if (wifidatael != null) {
                         JsonObject wifidataobj = wifidatael.getAsJsonObject();
                         newobj.addProperty("WiFissid", wifidataobj.get("WiFissid").getAsString());
@@ -201,7 +209,7 @@ public class AirqHandler extends BaseThingHandler {
                     newobj.addProperty(channelUID.getId(), command.toString());
                     changeSettings(newobj);
                     break;
-                case "nightmode_StartDay":
+                case "nightmodeStartDay":
                     if (isTimeFormat(command.toString())) {
                         subjson.addProperty("StartDay", command.toString());
                         newobj.add("NightMode", subjson);
@@ -212,7 +220,7 @@ public class AirqHandler extends BaseThingHandler {
                                 channelUID.getId(), command.toString());
                     }
                     break;
-                case "nightmode_StartNight":
+                case "nightmodeStartNight":
                     if (isTimeFormat(command.toString())) {
                         subjson.addProperty("StartNight", command.toString());
                         newobj.add("NightMode", subjson);
@@ -230,23 +238,23 @@ public class AirqHandler extends BaseThingHandler {
                     newobj.add("geopos", subjson);
                     changeSettings(newobj);
                     break;
-                case "nightmode_BrightnessDay":
+                case "nightmodeBrightnessDay":
                     try {
                         subjson.addProperty("BrightnessDay", Float.parseFloat(command.toString()));
                         newobj.add("NightMode", subjson);
                         changeSettings(newobj);
-                    } catch (Exception exc) {
+                    } catch (NumberFormatException exc) {
                         logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
                                 channelUID.getId(), command.toString());
                     }
                     break;
-                case "nightmode_BrightnessNight":
+                case "nightmodeBrightnessNight":
                     try {
                         subjson.addProperty("BrightnessNight", Float.parseFloat(command.toString()));
                         newobj.add("NightMode", subjson);
                         changeSettings(newobj);
-                    } catch (Exception exc) {
+                    } catch (NumberFormatException exc) {
                         logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
                                 channelUID.getId(), command.toString());
@@ -270,7 +278,7 @@ public class AirqHandler extends BaseThingHandler {
                 case "averagingRhythm":
                     try {
                         newobj.addProperty("SecondsMeasurementDelay", Integer.parseUnsignedInt(command.toString()));
-                    } catch (Exception exc) {
+                    } catch (NumberFormatException exc) {
                         logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} only accepts an integer value, and {} is not.",
                                 channelUID.getId(), command.toString());
@@ -301,7 +309,7 @@ public class AirqHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         // We don't have to test if ipAddress and password have been set because we have defined them
         // as being 'required' in thing-types.xml and OpenHAB will only initialize the handler if both are set.
-        String data = getDecryptedContentString("http://".concat(config.ipAddress.concat("/data")), "GET", null);
+        String data = getDecryptedContentString("http://" + config.ipAddress + "/data", "GET", null);
         // we try if the device is reachable and the password is correct. Otherwise a corresponding message is
         // thrown in Thing manager.
         if (data == null) {
@@ -310,7 +318,8 @@ public class AirqHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.ONLINE);
         }
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA, TimeUnit.MILLISECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA_MSEC,
+                TimeUnit.MILLISECONDS);
         getConfigDataJob = scheduler.scheduleWithFixedDelay(this::getConfigData, 0, POLLING_PERIOD_CONFIG,
                 TimeUnit.MINUTES);
     }
@@ -318,52 +327,54 @@ public class AirqHandler extends BaseThingHandler {
     // AES decoding based on this tutorial: https://www.javainterviewpoint.com/aes-256-encryption-and-decryption/
     public @Nullable String decrypt(byte[] base64text, String password) {
         String content = "";
-        logger.trace("air-Q - airqHandler - decrypt(): content to decypt: {}", base64text);
+        logger.trace("air-Q - airqHandler - decrypt(): content to decrypt: {}", base64text);
         byte[] encodedtextwithIV = Base64.getDecoder().decode(base64text);
         byte[] ciphertext = Arrays.copyOfRange(encodedtextwithIV, 16, encodedtextwithIV.length);
         byte[] passkey = Arrays.copyOf(password.getBytes(), 32);
         if (password.length() < 32) {
             Arrays.fill(passkey, password.length(), 32, (byte) '0');
         }
-        byte[] IV = Arrays.copyOf(encodedtextwithIV, 16);
         SecretKey seckey = new SecretKeySpec(passkey, 0, passkey.length, "AES");
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(seckey.getEncoded(), "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(IV);
+            IvParameterSpec ivSpec = new IvParameterSpec(Arrays.copyOf(encodedtextwithIV, 16));
             cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
             byte[] decryptedText = cipher.doFinal(ciphertext);
-            content = new String(decryptedText);
+            content = new String(decryptedText, StandardCharsets.UTF_8);
             logger.trace("air-Q - airqHandler - decrypt(): Text decoded as String: {}", content);
-        } catch (BadPaddingException bpe) {
+        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException exc) {
             logger.warn("Error while decrypting. Probably the provided password is wrong.");
             return null;
-        } catch (Exception e) {
-            logger.warn("air-Q - airqHandler - decrypt(): Error while decrypting: {}", e.toString());
-            return null;
-        }
+        } /*
+           * catch (Exception e) {
+           * logger.warn("air-Q - airqHandler - decrypt(): Error while decrypting: {}", e.toString());
+           * return null;
+           * }
+           */
         return content;
     }
 
     public String encrypt(byte[] toencode, String password) {
         String content = "";
         logger.trace("air-Q - airqHandler - encrypt(): text to encode: {}", new String(toencode));
-        byte[] passkey = Arrays.copyOf(password.getBytes(), 32);
+        byte[] passkey = Arrays.copyOf(password.getBytes(StandardCharsets.UTF_8), 32);
         if (password.length() < 32) {
             Arrays.fill(passkey, password.length(), 32, (byte) '0');
         }
-        byte[] IV = new byte[16];
+        byte[] iv = new byte[16];
         SecureRandom random = new SecureRandom();
-        random.nextBytes(IV);
+        random.nextBytes(iv);
         SecretKey seckey = new SecretKeySpec(passkey, 0, passkey.length, "AES");
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(seckey.getEncoded(), "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(IV);
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
             byte[] encryptedText = cipher.doFinal(toencode);
             byte[] totaltext = new byte[16 + encryptedText.length];
-            System.arraycopy(IV, 0, totaltext, 0, 16);
+            System.arraycopy(iv, 0, totaltext, 0, 16);
             System.arraycopy(encryptedText, 0, totaltext, 16, encryptedText.length);
             byte[] encodedcontent = Base64.getEncoder().encode(totaltext);
             logger.trace("air-Q - airqHandler - encrypt(): encrypted text: {}", encodedcontent);
@@ -384,7 +395,6 @@ public class AirqHandler extends BaseThingHandler {
             logger.trace("air-Q - airqHandler - getDecryptedContentString(): Result from getData() is {} with body={}",
                     res, res.getBody());
             // Gson code based on https://riptutorial.com/de/gson
-            Gson gson = new Gson();
             JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
             if (ans != null) {
                 JsonObject jsonObj = ans.getAsJsonObject();
@@ -405,58 +415,32 @@ public class AirqHandler extends BaseThingHandler {
     // calls the networking job and in addition does additional tests for online/offline management
     protected @Nullable Result getData(String address, String requestMethod, @Nullable String body) {
         Result res = null;
-        res = doNetwork(address, "GET", body);
+        int timeout = 10;
+        logger.debug("air-Q - airqHandler - getData(): connecting to {} with method {} and body {}", address,
+                requestMethod, body);
+        Request request = httpClient.newRequest(address).timeout(timeout, TimeUnit.SECONDS).method(requestMethod);
+        if (body != null) {
+            request = request.content(new StringContentProvider(body)).header(HttpHeader.CONTENT_TYPE,
+                    "application/json");
+        }
+        try {
+            ContentResponse response = request.send();
+            res = new Result(response.getContentAsString(), response.getStatus());
+        } catch (InterruptedException | ExecutionException | TimeoutException exc) {
+            logger.warn("air-Q - airqHandler - doNetwork(): Error while accessing air-Q: {}", exc.toString());
+        }
         if (res == null) {
-            if (thStatus != ThingStatus.OFFLINE) {
+            if (getThing().getStatus() != ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "air-Q device not reachable");
-                thStatus = ThingStatus.OFFLINE;
             } else {
                 logger.warn("air-Q - airqHandler - getData(): retried but still cannot reach the air-Q device.");
             }
         } else {
-            if (thStatus == ThingStatus.OFFLINE) {
+            if (getThing().getStatus() == ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                thStatus = ThingStatus.ONLINE;
             }
         }
         return res;
-    }
-
-    // does the networking job (and only that)
-    protected @Nullable Result doNetwork(String address, String requestMethod, @Nullable String body) {
-        int timeout = 10000;
-        HttpURLConnection conn = null;
-        logger.debug("air-Q - airqHandler - doNetwork(): connecting to {} with method {} and body {}", address,
-                requestMethod, body);
-        try {
-            conn = (HttpURLConnection) new URL(address).openConnection();
-            conn.setRequestMethod(requestMethod);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setConnectTimeout(timeout);
-            conn.setReadTimeout(timeout);
-            if (body != null && !body.isEmpty()) {
-                conn.setDoOutput(true);
-                try (Writer out = new OutputStreamWriter(conn.getOutputStream())) {
-                    out.write(body);
-                }
-            }
-            try (InputStream in = conn.getInputStream(); ByteArrayOutputStream result = new ByteArrayOutputStream()) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = in.read(buffer)) != -1) {
-                    result.write(buffer, 0, length);
-                }
-                conn.disconnect();
-                return new Result(result.toString(StandardCharsets.UTF_8.name()), conn.getResponseCode());
-            }
-        } catch (IOException exc) {
-            logger.warn("air-Q - airqHandler - doNetwork(): Error while accessing air-Q: {}", exc.toString());
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
-        }
-        return null;
     }
 
     public static class Result {
@@ -490,10 +474,9 @@ public class AirqHandler extends BaseThingHandler {
     public void pollData() {
         logger.trace("air-Q - airqHandler - run(): starting polled data handler");
         try {
-            String url = "http://".concat(config.ipAddress.concat("/data"));
+            String url = "http://" + config.ipAddress + "/data";
             String jsonAnswer = getDecryptedContentString(url, "GET", null);
             if (jsonAnswer != null) {
-                Gson gson = new Gson();
                 JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
                 if (decEl != null) {
                     JsonObject decObj = decEl.getAsJsonObject();
@@ -554,13 +537,12 @@ public class AirqHandler extends BaseThingHandler {
         Result res = null;
         logger.trace("air-Q - airqHandler - getConfigData(): starting processing data");
         try {
-            String url = "http://".concat(config.ipAddress.concat("/config"));
+            String url = "http://" + config.ipAddress + "/config";
             res = getData(url, "GET", null);
             if (res != null) {
                 String jsontext = res.getBody();
                 logger.trace("air-Q - airqHandler - getConfigData(): Result from getBody() is {} with body={}", res,
                         res.getBody());
-                Gson gson = new Gson();
                 JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
                 if (ans != null) {
                     JsonObject jsonObj = ans.getAsJsonObject();
@@ -577,7 +559,7 @@ public class AirqHandler extends BaseThingHandler {
                             processType(decObj, "TimeServer", "timeServer", "string");
                             processType(decObj, "geopos", "location", "coord");
                             processType(decObj, "NightMode", "", "nightmode");
-                            processType(decObj, "devicename", "devicename", "string");
+                            processType(decObj, "devicename", "deviceName", "string");
                             processType(decObj, "RoomType", "roomType", "string");
                             processType(decObj, "Logging", "logLevel", "string");
                             processType(decObj, "DeleteKey", "deleteKey", "string");
@@ -659,11 +641,11 @@ public class AirqHandler extends BaseThingHandler {
                     updateState(channelName, DateTimeType.valueOf(timestampString));
                     break;
                 case "coord":
-                    JsonElement ans_coord = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
-                    if (ans_coord != null) {
-                        JsonObject json_coord = ans_coord.getAsJsonObject();
-                        Float latitude = json_coord.get("lat").getAsFloat();
-                        Float longitude = json_coord.get("long").getAsFloat();
+                    JsonElement ansCoord = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
+                    if (ansCoord != null) {
+                        JsonObject jsonCoord = ansCoord.getAsJsonObject();
+                        Float latitude = jsonCoord.get("lat").getAsFloat();
+                        Float longitude = jsonCoord.get("long").getAsFloat();
                         updateState(channelName, new PointType(new DecimalType(latitude), new DecimalType(longitude)));
                     } else {
                         logger.warn(
@@ -672,30 +654,30 @@ public class AirqHandler extends BaseThingHandler {
                     }
                     break;
                 case "nightmode":
-                    JsonElement daynightdata = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
+                    JsonElement daynightdata = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
                     if (daynightdata != null) {
-                        JsonObject json_daynightdata = daynightdata.getAsJsonObject();
-                        processType(json_daynightdata, "StartDay", "nightMode_startDay", "string");
-                        processType(json_daynightdata, "StartNight", "nightMode_startNight", "string");
-                        processType(json_daynightdata, "BrightnessDay", "nightMode_brightnessDay", "number");
-                        processType(json_daynightdata, "BrightnessNight", "nightMode_brightnessNight", "number");
-                        processType(json_daynightdata, "FanNightOff", "nightMode_fanNightOff", "boolean");
-                        processType(json_daynightdata, "WifiNightOff", "nightMode_wifiNightOff", "boolean");
+                        JsonObject jsonDaynightdata = daynightdata.getAsJsonObject();
+                        processType(jsonDaynightdata, "StartDay", "nightModeStartDay", "string");
+                        processType(jsonDaynightdata, "StartNight", "nightModeStartNight", "string");
+                        processType(jsonDaynightdata, "BrightnessDay", "nightModeBrightnessDay", "number");
+                        processType(jsonDaynightdata, "BrightnessNight", "nightModeBrightnessNight", "number");
+                        processType(jsonDaynightdata, "FanNightOff", "nightModeFanNightOff", "boolean");
+                        processType(jsonDaynightdata, "WifiNightOff", "nightModeWifiNightOff", "boolean");
                     } else {
                         logger.warn("air-Q - airqHandler - processType(): Cannot extract day/night data: {}",
                                 dec.get(airqName).toString());
                     }
                     break;
                 case "wlan":
-                    JsonElement wlandata = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
+                    JsonElement wlandata = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
                     if (wlandata != null) {
-                        JsonObject json_wlandata = wlandata.getAsJsonObject();
-                        processType(json_wlandata, "Gateway", "wlanConfigGateway", "string");
-                        processType(json_wlandata, "MAC", "wlanConfigMac", "string");
-                        processType(json_wlandata, "SSID", "wlanConfigSsid", "string");
-                        processType(json_wlandata, "IP address", "wlanConfigIPAddress", "string");
-                        processType(json_wlandata, "Net Mask", "wlanConfigNetMask", "string");
-                        processType(json_wlandata, "BSSID", "wlanConfigBssid", "string");
+                        JsonObject jsonWlandata = wlandata.getAsJsonObject();
+                        processType(jsonWlandata, "Gateway", "wlanConfigGateway", "string");
+                        processType(jsonWlandata, "MAC", "wlanConfigMac", "string");
+                        processType(jsonWlandata, "SSID", "wlanConfigSsid", "string");
+                        processType(jsonWlandata, "IP address", "wlanConfigIPAddress", "string");
+                        processType(jsonWlandata, "Net Mask", "wlanConfigNetMask", "string");
+                        processType(jsonWlandata, "BSSID", "wlanConfigBssid", "string");
                     } else {
                         logger.warn(
                                 "air-Q - airqHandler - processType(): Cannot extract WLAN data from this string: {}",
@@ -703,12 +685,12 @@ public class AirqHandler extends BaseThingHandler {
                     }
                     break;
                 case "arr":
-                    JsonElement jsonarr = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
+                    JsonElement jsonarr = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
                     if ((jsonarr != null) && (jsonarr.isJsonArray())) {
                         JsonArray arr = jsonarr.getAsJsonArray();
-                        String str = new String();
+                        StringBuilder str = new StringBuilder();
                         for (JsonElement el : arr) {
-                            str = str.concat(el.getAsString()).concat(", ");
+                            str.append(el.getAsString() + ", ");
                         }
                         updateState(channelName, new StringType(str.substring(0, str.length() - 2)));
                     } else {
@@ -716,7 +698,7 @@ public class AirqHandler extends BaseThingHandler {
                     }
                     break;
                 case "calib":
-                    JsonElement lastcalib = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
+                    JsonElement lastcalib = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
                     if (lastcalib != null) {
                         JsonObject calibobj = lastcalib.getAsJsonObject();
                         String str = new String();
@@ -727,9 +709,8 @@ public class AirqHandler extends BaseThingHandler {
                             JsonObject attributeValue = (JsonObject) entry.getValue();
                             timecalib = Long.valueOf(attributeValue.get("timestamp").toString());
                             String timecalibString = sdfcalib.format(new Date(timecalib * 1000));
-                            str = str.concat(attributeName).concat(": offset=")
-                                    .concat(attributeValue.get("offset").getAsString()).concat(" [")
-                                    .concat(timecalibString).concat("]");
+                            str = str + attributeName + ": offset=" + attributeValue.get("offset").getAsString() + " ["
+                                    + timecalibString + "]";
                         }
                         updateState(channelName, new StringType(str.substring(0, str.length() - 1)));
                     } else {
@@ -744,12 +725,12 @@ public class AirqHandler extends BaseThingHandler {
                     logger.trace("air-Q - airqHandler - processType(): property {} set to {}", channelName, propstr);
                     break;
                 case "proparr":
-                    JsonElement proparr = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
+                    JsonElement proparr = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
                     if ((proparr != null) && proparr.isJsonArray()) {
                         JsonArray arr = proparr.getAsJsonArray();
                         String arrstr = new String();
                         for (JsonElement el : arr) {
-                            arrstr = arrstr.concat(el.getAsString()).concat(", ");
+                            arrstr = arrstr + el.getAsString() + ", ";
                         }
                         logger.trace("air-Q - airqHandler - processType(): property array {} set to {}", channelName,
                                 arrstr.substring(0, arrstr.length() - 2));
@@ -771,27 +752,21 @@ public class AirqHandler extends BaseThingHandler {
         String jsoncmd = jsonchange.toString();
         logger.trace("air-Q - airqHandler - changeSettings(): called with jsoncmd={}", jsoncmd);
         Result res = null;
-        try {
-            String url = "http://".concat(config.ipAddress.concat("/config"));
-            String jsonbody = encrypt(jsoncmd.getBytes(), config.password);
-            String fullbody = "request=".concat(jsonbody);
-            logger.trace("air-Q - airqHandler - changeSettings(): doing call to url={}, method=POST, body={}", url,
-                    fullbody);
-            res = getData(url, "POST", fullbody);
-            if (res != null) {
-                Gson gson = new Gson();
-                JsonElement ans = gson.fromJson(res.getBody(), JsonElement.class);
-                if (ans != null) {
-                    JsonObject jsonObj = ans.getAsJsonObject();
-                    String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
-                    logger.trace("air-Q - airqHandler - changeSettings(): call returned {}", jsonAnswer);
-                } else {
-                    logger.warn("The air-Q data could not be extracted from this string: {}", ans);
-                }
+        String url = "http://" + config.ipAddress + "/config";
+        String jsonbody = encrypt(jsoncmd.getBytes(StandardCharsets.UTF_8), config.password);
+        String fullbody = "request=" + jsonbody;
+        logger.trace("air-Q - airqHandler - changeSettings(): doing call to url={}, method=POST, body={}", url,
+                fullbody);
+        res = getData(url, "POST", fullbody);
+        if (res != null) {
+            JsonElement ans = gson.fromJson(res.getBody(), JsonElement.class);
+            if (ans != null) {
+                JsonObject jsonObj = ans.getAsJsonObject();
+                String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
+                logger.trace("air-Q - airqHandler - changeSettings(): call returned {}", jsonAnswer);
+            } else {
+                logger.warn("The air-Q data could not be extracted from this string: {}", ans);
             }
-        } catch (Exception e) {
-            logger.warn("air-Q - airqHandler - ChangeSettings(): Error while changing settings in air-Q data: {}",
-                    e.toString());
         }
     }
 };

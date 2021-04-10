@@ -15,7 +15,7 @@ package org.openhab.binding.airq.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link airqConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link AirqConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Aurelio Caliaro - Initial contribution
  */

@@ -20,18 +20,19 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link airqHandlerFactory} is responsible for creating the air-Q thing and its handlers.
+ * The {@link AirqHandlerFactory} is responsible for creating the air-Q thing and its handlers.
  *
  * @author Aurelio Caliaro - Initial contribution
  */
@@ -39,9 +40,13 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.airq", service = ThingHandlerFactory.class)
 public class AirqHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(AirqHandlerFactory.class);
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AIRQ);
+    private final HttpClientFactory httpClientFactory;
+
+    @Activate
+    public AirqHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,7 +57,7 @@ public class AirqHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_AIRQ.equals(thingTypeUID)) {
-            return new AirqHandler(thing);
+            return new AirqHandler(thing, httpClientFactory.getCommonHttpClient());
         }
         return null;
     }
@@ -60,9 +65,6 @@ public class AirqHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        logger.trace(
-                "air-Q - airqHandlerFactory - createThing: start with thingTypeUID={}, configuration={}, thingUID={}, bridgeUID={}",
-                thingTypeUID, configuration, thingUID, bridgeUID);
         Thing th = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         return th;
     }
