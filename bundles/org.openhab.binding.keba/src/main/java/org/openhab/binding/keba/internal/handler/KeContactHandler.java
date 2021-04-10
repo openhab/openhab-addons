@@ -178,46 +178,54 @@ public class KeContactHandler extends BaseThingHandler {
     private void pollingRunnable() {
         try {
             logger.debug("Running pollingRunnable to connect Keba wallbox");
-            ByteBuffer response = cache.get(CACHE_REPORT_1);
-            if (response == null) {
+            long stamp = System.currentTimeMillis();
+            if (!isKebaReachable()) {
+                logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Missing response from Keba station for 'report 1'");
+                        "An timeout occurred while polling the charging station");
             } else {
-                onData(response);
-            }
-
-            Thread.sleep(REPORT_INTERVAL);
-
-            response = cache.get(CACHE_REPORT_2);
-            if (response == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Missing response from Keba station for 'report 2'");
-            } else {
-                onData(response);
-            }
-
-            Thread.sleep(REPORT_INTERVAL);
-
-            response = cache.get(CACHE_REPORT_3);
-            if (response == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Missing response from Keba station for 'report 3'");
-            } else {
-                onData(response);
-            }
-
-            if (isReport100needed) {
-                Thread.sleep(REPORT_INTERVAL);
-
-                response = cache.get(CACHE_REPORT_100);
+                ByteBuffer response = cache.get(CACHE_REPORT_1);
                 if (response == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Missing response from Keba station for 'report 100'");
+                    logger.debug("Missing response from Keba station for 'report 1'");
                 } else {
                     onData(response);
                 }
-                isReport100needed = false;
+
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = cache.get(CACHE_REPORT_2);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 2'");
+                } else {
+                    onData(response);
+                }
+
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = cache.get(CACHE_REPORT_3);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 3'");
+                } else {
+                    onData(response);
+                }
+
+                if (isReport100needed) {
+                    Thread.sleep(REPORT_INTERVAL);
+
+                    response = cache.get(CACHE_REPORT_100);
+                    if (response == null) {
+                        logger.debug("Missing response from Keba station for 'report 100'");
+                    } else {
+                        onData(response);
+                    }
+                    isReport100needed = false;
+                }
             }
+        } catch (IOException e) {
+            logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
+                    e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "An error occurred while polling the charging station");
         } catch (InterruptedException e) {
             logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         }
