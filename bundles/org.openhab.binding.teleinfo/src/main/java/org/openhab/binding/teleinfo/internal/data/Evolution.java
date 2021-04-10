@@ -10,24 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.dto.common;
+package org.openhab.binding.teleinfo.internal.data;
 
 /**
- * The {@link FrameEjpOption} interface defines common attributes for EJP option.
+ * Define the evolution option values
+ * 
+ * @author Olivier MARCEAU - Initial contribution
  *
- * @author Nicolas SIBERIL - Initial contribution
  */
-public interface FrameEjpOption {
-
-    int getEjphpm();
-
-    void setEjphpm(int ejphpm);
-
-    int getEjphn();
-
-    void setEjphn(int ejphn);
-
-    Integer getPejp();
-
-    void setPejp(Integer pejp);
+public enum Evolution {
+    ICC,
+    NONE
 }
