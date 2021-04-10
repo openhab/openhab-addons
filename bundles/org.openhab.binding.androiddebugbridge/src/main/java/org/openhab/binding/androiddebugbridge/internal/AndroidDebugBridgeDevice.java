@@ -51,6 +51,8 @@ public class AndroidDebugBridgeDevice {
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
     private static final Pattern TAP_EVENT_PATTERN = Pattern.compile("(?<x>\\d+),(?<y>\\d+)");
+    private static final Pattern PACKAGE_NAME_PATTERN = Pattern
+            .compile("^([A-Za-z]{1}[A-Za-z\\d_]*\\.)+[A-Za-z][A-Za-z\\d_]*$");
 
     private static @Nullable AdbCrypto adbCrypto;
 
@@ -109,6 +111,10 @@ public class AndroidDebugBridgeDevice {
 
     public void startPackage(String packageName)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
+            logger.warn("{} is not a valid package name", packageName);
+            return;
+        }
         var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1");
         if (out.contains("monkey aborted"))
             throw new AndroidDebugBridgeDeviceException("Unable to open package");
@@ -116,6 +122,10 @@ public class AndroidDebugBridgeDevice {
 
     public void stopPackage(String packageName)
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
+            logger.warn("{} is not a valid package name", packageName);
+            return;
+        }
         runAdbShell("am", "force-stop", packageName);
     }
 
