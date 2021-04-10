@@ -255,8 +255,11 @@ public class AndroidDebugBridgeDevice {
 
     public void rebootDevice()
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
-        runAdbShell("reboot", "-p", "&", "exit", "0");
-        disconnect();
+        try {
+            runAdbShell("reboot", "-p", "&", "sleep", "0.1", "&&", "exit");
+        } finally {
+            disconnect();
+        }
     }
 
     public boolean isConnected() {
