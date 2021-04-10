@@ -10,6 +10,7 @@
 		<channels>
 			<channel id="key-event" typeId="key-event-channel"/>
 			<channel id="text" typeId="text-channel"/>
+			<channel id="tap" typeId="tap-channel"/>
 			<channel id="media-volume" typeId="system.volume"/>
 			<channel id="media-control" typeId="system.media-control"/>
 			<channel id="start-package" typeId="start-package-channel"/>
@@ -354,6 +355,12 @@
 		<item-type>String</item-type>
 		<label>Send Text</label>
 		<description>Send text to android device</description>
+	</channel-type>
+
+	<channel-type id="tap-channel">
+		<item-type>String</item-type>
+		<label>Send Tap</label>
+		<description>Send tap event to android device</description>
 	</channel-type>
 
 	<channel-type id="start-package-channel">

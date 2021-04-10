@@ -58,6 +58,7 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 |----------|--------|------------------------------|
 | key-event  | String | Send key event to android device. Possible values listed below |
 | text  | String | Send text to android device |
+| tap  | String | Send tap event to android device (format x,y) |
 | media-volume  | Dimmer | Set or get media volume level on android device |
 | media-control  | Player | Control media on android device |
 | start-package  | String | Run application by package name |

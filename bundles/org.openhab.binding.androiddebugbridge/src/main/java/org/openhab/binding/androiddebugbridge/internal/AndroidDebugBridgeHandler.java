@@ -105,6 +105,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             case TEXT_CHANNEL:
                 adbConnection.sendText(command.toFullString());
                 break;
+            case TAP_CHANNEL:
+                adbConnection.sendTap(command.toFullString());
+                break;
             case MEDIA_VOLUME_CHANNEL:
                 handleMediaVolume(channelUID, command);
                 break;

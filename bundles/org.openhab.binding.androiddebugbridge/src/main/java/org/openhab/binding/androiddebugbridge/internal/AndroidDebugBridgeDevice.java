@@ -50,6 +50,7 @@ public class AndroidDebugBridgeDevice {
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
+    private static final Pattern TAP_EVENT_PATTERN = Pattern.compile("(?<x>\\d+),(?<y>\\d+)");
 
     private static @Nullable AdbCrypto adbCrypto;
 
@@ -95,6 +96,15 @@ public class AndroidDebugBridgeDevice {
     public void sendText(String text)
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
         runAdbShell("input", "text", URLEncoder.encode(text, StandardCharsets.UTF_8));
+    }
+
+    public void sendTap(String point)
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        var match = TAP_EVENT_PATTERN.matcher(point);
+        if (!match.matches()) {
+            throw new AndroidDebugBridgeDeviceException("Unable to parse tap event");
+        }
+        runAdbShell("input", "mouse", "tap", match.group("x"), match.group("y"));
     }
 
     public void startPackage(String packageName)

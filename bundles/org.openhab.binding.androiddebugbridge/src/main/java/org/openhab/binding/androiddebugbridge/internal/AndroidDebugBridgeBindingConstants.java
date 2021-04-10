@@ -36,6 +36,7 @@ public class AndroidDebugBridgeBindingConstants {
     // List of all Channel ids
     public static final String KEY_EVENT_CHANNEL = "key-event";
     public static final String TEXT_CHANNEL = "text";
+    public static final String TAP_CHANNEL = "tap";
     public static final String MEDIA_VOLUME_CHANNEL = "media-volume";
     public static final String MEDIA_CONTROL_CHANNEL = "media-control";
     public static final String START_PACKAGE_CHANNEL = "start-package";
