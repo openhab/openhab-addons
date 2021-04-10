@@ -10,23 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.dto.common;
+package org.openhab.binding.teleinfo.internal.data;
 
 /**
- * The {@link Ptec} enumeration defines all PTEC values.
+ * Define all the pricing option values
+ * 
+ * @author Olivier MARCEAU - Initial contribution
  *
- * @author Nicolas SIBERIL - Initial contribution
  */
-public enum Ptec {
-    TH,
+public enum Pricing {
+    BASE,
+    TEMPO,
     HC,
-    HP,
-    HN,
-    PM,
-    HCJB,
-    HCJW,
-    HCJR,
-    HPJB,
-    HPJW,
-    HPJR
+    EJP
 }
