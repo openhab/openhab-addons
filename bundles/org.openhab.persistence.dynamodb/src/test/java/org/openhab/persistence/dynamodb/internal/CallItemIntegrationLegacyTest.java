@@ -15,15 +15,11 @@ package org.openhab.persistence.dynamodb.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Visitor for DynamoDBItem
  *
  * @author Sami Salonen - Initial contribution
  *
  */
 @NonNullByDefault
-public interface DynamoDBItemVisitor<T> {
-
-    public T visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);
-
-    public T visit(DynamoDBStringItem dynamoStringItem);
+public class CallItemIntegrationLegacyTest extends CallItemIntegrationTest {
+    public static final boolean LEGACY_MODE = true;
 }
