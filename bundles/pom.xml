@@ -508,6 +508,8 @@
 
     <module>org.openhab.binding.remoteopenhab</module>
 
+    <module>org.openhab.binding.resol</module>
+
     <module>org.openhab.binding.rfxcom</module>
 
     <module>org.openhab.binding.rme</module>
