@@ -70,7 +70,7 @@ public class ModbusProfileFactory implements ProfileFactory, ProfileTypeProvider
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext context) {
         if (GAIN_OFFSET.equals(profileTypeUID)) {
-            return new ModbusGainOffsetProfile(callback, context);
+            return new ModbusGainOffsetProfile<>(callback, context);
         } else {
             return null;
         }

@@ -255,7 +255,7 @@ public class ModbusGainOffsetProfileTest {
     @Test
     public void testOnCommandFromItem() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        ModbusGainOffsetProfile profile = createProfile(callback, "1.0", "0.0");
+        ModbusGainOffsetProfile<?> profile = createProfile(callback, "1.0", "0.0");
 
         profile.onStateUpdateFromItem(new DecimalType(3.78));
         // should be no-op
@@ -266,7 +266,7 @@ public class ModbusGainOffsetProfileTest {
     public void testInvalidInit() {
         // offset must be dimensionless
         ProfileCallback callback = mock(ProfileCallback.class);
-        ModbusGainOffsetProfile profile = createProfile(callback, "1.0", "0.0 K");
+        ModbusGainOffsetProfile<?> profile = createProfile(callback, "1.0", "0.0 K");
         assertFalse(profile.isValid());
     }
 
@@ -275,7 +275,7 @@ public class ModbusGainOffsetProfileTest {
     @EmptySource
     public void testInitGainDefault(String gain) {
         ProfileCallback callback = mock(ProfileCallback.class);
-        ModbusGainOffsetProfile p = createProfile(callback, gain, "0.0");
+        ModbusGainOffsetProfile<?> p = createProfile(callback, gain, "0.0");
         assertTrue(p.isValid());
         assertEquals(p.getGain(), Optional.of(QuantityType.ONE));
     }
@@ -285,12 +285,12 @@ public class ModbusGainOffsetProfileTest {
     @EmptySource
     public void testInitOffsetDefault(String offset) {
         ProfileCallback callback = mock(ProfileCallback.class);
-        ModbusGainOffsetProfile p = createProfile(callback, "1", offset);
+        ModbusGainOffsetProfile<?> p = createProfile(callback, "1", offset);
         assertTrue(p.isValid());
         assertEquals(p.getPregainOffset(), Optional.of(QuantityType.ZERO));
     }
 
-    private ModbusGainOffsetProfile createProfile(ProfileCallback callback, @Nullable String gain,
+    private ModbusGainOffsetProfile<?> createProfile(ProfileCallback callback, @Nullable String gain,
             @Nullable String preGainOffset) {
         ProfileContext context = mock(ProfileContext.class);
         Configuration config = new Configuration();
@@ -302,6 +302,6 @@ public class ModbusGainOffsetProfileTest {
         }
         when(context.getConfiguration()).thenReturn(config);
 
-        return new ModbusGainOffsetProfile(callback, context);
+        return new ModbusGainOffsetProfile<>(callback, context);
     }
 }

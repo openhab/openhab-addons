@@ -15,8 +15,10 @@ package org.openhab.binding.modbus.internal.profiles;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import javax.measure.Quantity;
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusGainOffsetProfile implements StateProfile {
+public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProfile {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusGainOffsetProfile.class);
     private static final String PREGAIN_OFFSET_PARAM = "pre-gain-offset";
@@ -57,8 +59,8 @@ public class ModbusGainOffsetProfile implements StateProfile {
     private final ProfileCallback callback;
     private final ProfileContext context;
 
-    private Optional<QuantityType<?>> pregainOffset;
-    private Optional<QuantityType<?>> gain;
+    private Optional<QuantityType<Dimensionless>> pregainOffset;
+    private Optional<QuantityType<Q>> gain;
 
     public ModbusGainOffsetProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
@@ -81,11 +83,11 @@ public class ModbusGainOffsetProfile implements StateProfile {
         return pregainOffset.isPresent() && gain.isPresent();
     }
 
-    public Optional<QuantityType<?>> getPregainOffset() {
+    public Optional<QuantityType<Dimensionless>> getPregainOffset() {
         return pregainOffset;
     }
 
-    public Optional<QuantityType<?>> getGain() {
+    public Optional<QuantityType<Q>> getGain() {
         return gain;
     }
 
@@ -124,11 +126,10 @@ public class ModbusGainOffsetProfile implements StateProfile {
         callback.sendUpdate(result);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Type applyGainOffset(Type state, boolean towardsItem) {
         Type result = UnDefType.UNDEF;
-        Optional<QuantityType<?>> localGain = gain;
-        Optional<QuantityType<?>> localPregainOffset = pregainOffset;
+        Optional<QuantityType<Q>> localGain = gain;
+        Optional<QuantityType<Dimensionless>> localPregainOffset = pregainOffset;
         if (localGain.isEmpty() || localPregainOffset.isEmpty()) {
             logger.warn("Gain or offset unavailable. Check logs for configuration errors.");
             return UnDefType.UNDEF;
@@ -136,32 +137,33 @@ public class ModbusGainOffsetProfile implements StateProfile {
             return UnDefType.UNDEF;
         }
 
-        QuantityType<?> gain = localGain.get();
-        QuantityType<?> pregainOffsetQt = localPregainOffset.get();
+        QuantityType<Q> gain = localGain.get();
+        QuantityType<Dimensionless> pregainOffsetQt = localPregainOffset.get();
         String formula = towardsItem ? String.format("( '%s' + '%s') * '%s'", state, pregainOffsetQt, gain)
                 : String.format("'%s'/'%s' - '%s'", state, gain, pregainOffsetQt);
         if (state instanceof QuantityType) {
-            final QuantityType<?> qtState;
-            if (towardsItem) {
-                qtState = ((QuantityType<?>) state).toUnit(Units.ONE);
-                if (qtState == null) {
-                    logger.warn("Profile can only process plain numbers from handler. Got unit {}. Returning UNDEF",
-                            ((QuantityType<?>) state).getUnit());
-                    return UnDefType.UNDEF;
-                }
-            } else {
-                qtState = (QuantityType<?>) state;
-            }
             try {
                 if (towardsItem) {
-                    result = applyGain(qtState.add((QuantityType) pregainOffsetQt), gain, true);
+                    @SuppressWarnings("unchecked") // xx.toUnit(ONE) returns null or QuantityType<Dimensionless>
+                    @Nullable
+                    QuantityType<Dimensionless> qtState = (QuantityType<Dimensionless>) (((QuantityType<?>) state)
+                            .toUnit(Units.ONE));
+                    if (qtState == null) {
+                        logger.warn("Profile can only process plain numbers from handler. Got unit {}. Returning UNDEF",
+                                ((QuantityType<?>) state).getUnit());
+                        return UnDefType.UNDEF;
+                    }
+                    QuantityType<Dimensionless> offsetted = qtState.add(pregainOffsetQt);
+                    result = applyGainTowardsItem(offsetted, gain);
                 } else {
-                    result = applyGain(qtState, gain, false).subtract((QuantityType) pregainOffsetQt);
+                    final QuantityType<?> qtState = (QuantityType<?>) state;
+                    result = applyGainTowardsHandler(qtState, gain).subtract(pregainOffsetQt);
+
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
                 logger.warn(
                         "Cannot apply gain ('{}') and offset ('{}') to state ('{}') (formula {}) because types do not match (towardsItem={}): {}",
-                        gain, pregainOffsetQt, qtState, formula, towardsItem, e.getMessage());
+                        gain, pregainOffsetQt, state, formula, towardsItem, e.getMessage());
                 return UnDefType.UNDEF;
             }
         } else if (state instanceof DecimalType) {
@@ -178,38 +180,50 @@ public class ModbusGainOffsetProfile implements StateProfile {
         return result;
     }
 
-    private Optional<QuantityType<?>> parameterAsQuantityType(String parameterName, Object parameterValue) {
+    private <Q2 extends Quantity<Q2>> Optional<QuantityType<Q>> parameterAsQuantityType(String parameterName,
+            Object parameterValue) {
         return parameterAsQuantityType(parameterName, parameterValue, null);
     }
 
-    private Optional<QuantityType<?>> parameterAsQuantityType(String parameterName, Object parameterValue,
-            @Nullable Unit<?> assertUnit) {
-        Optional<QuantityType<?>> result = Optional.empty();
+    private <Q2 extends Quantity<Q2>> Optional<QuantityType<Q2>> parameterAsQuantityType(String parameterName,
+            Object parameterValue, @Nullable Unit<Q2> assertUnit) {
+        Optional<QuantityType<Q2>> result = Optional.empty();
+        Unit<Q2> sourceUnit = null;
         if (parameterValue instanceof String) {
             try {
-                QuantityType<?> quantityType = new QuantityType<>((String) parameterValue);
-                if (assertUnit != null) {
-                    QuantityType<?> normalizedQt = quantityType.toUnit(assertUnit);
-                    if (normalizedQt != null) {
-                        result = Optional.of(quantityType);
-                    } else {
-                        logger.error("Parameter '{}' is expected to be convertible into {}, unit was {}.",
-                                parameterName, assertUnit, quantityType.getUnit());
-                    }
-                } else {
-                    result = Optional.of(quantityType);
-                }
+                QuantityType<Q2> qt = new QuantityType<>((String) parameterValue);
+                result = Optional.of(qt);
+                sourceUnit = qt.getUnit();
             } catch (IllegalArgumentException e) {
                 logger.error("Cannot convert value '{}' of parameter '{}' into a QuantityType.", parameterValue,
                         parameterName);
             }
         } else if (parameterValue instanceof BigDecimal) {
             BigDecimal parameterBigDecimal = (BigDecimal) parameterValue;
-            result = Optional.of(new QuantityType<>(parameterBigDecimal.toString()));
+            result = Optional.of(new QuantityType<Q2>(parameterBigDecimal.toString()));
         } else {
             logger.error("Parameter '{}' is not of type String or BigDecimal", parameterName);
+            return result;
+        }
+        result = result.map(quantityType -> convertUnit(quantityType, assertUnit));
+        if (result.isEmpty()) {
+            logger.error("Unable to convert parameter '{}' to unit {}. Unit was {}.", parameterName, assertUnit,
+                    sourceUnit);
         }
         return result;
+    }
+
+    private <Q2 extends Quantity<Q2>> @Nullable QuantityType<Q2> convertUnit(QuantityType<Q2> quantityType,
+            @Nullable Unit<Q2> unit) {
+        if (unit == null) {
+            return quantityType;
+        }
+        QuantityType<Q2> normalizedQt = quantityType.toUnit(unit);
+        if (normalizedQt != null) {
+            return normalizedQt;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -218,17 +232,18 @@ public class ModbusGainOffsetProfile implements StateProfile {
      * When the conversion is towards the handler (towardsItem=false), unit will be ONE
      *
      */
-    private QuantityType<?> applyGain(QuantityType<?> qtState, QuantityType<?> gainDelta, boolean towardsItem) {
-        if (towardsItem) {
-            return qtState.multiply(gainDelta);
-        } else {
-            QuantityType<?> plain = qtState.toUnit(gainDelta.getUnit());
-            if (plain == null) {
-                throw new UnconvertibleException(
-                        String.format("Cannot process command '%s', unit should compatible with gain", qtState));
-            }
-            return new QuantityType<>(plain.toBigDecimal().divide(gainDelta.toBigDecimal()), Units.ONE);
+    @SuppressWarnings("unchecked")
+    private <T extends QuantityType<?>> T applyGainTowardsItem(QuantityType<Dimensionless> qtState, T gainDelta) {
+        return (T) qtState.multiply(gainDelta);
+    }
+
+    private QuantityType<Dimensionless> applyGainTowardsHandler(QuantityType<?> qtState, QuantityType<?> gainDelta) {
+        QuantityType<?> plain = qtState.toUnit(gainDelta.getUnit());
+        if (plain == null) {
+            throw new UnconvertibleException(
+                    String.format("Cannot process command '%s', unit should compatible with gain", qtState));
         }
+        return new QuantityType<>(plain.toBigDecimal().divide(gainDelta.toBigDecimal()), Units.ONE);
     }
 
     private static Object orDefault(Object defaultValue, @Nullable Object value) {
