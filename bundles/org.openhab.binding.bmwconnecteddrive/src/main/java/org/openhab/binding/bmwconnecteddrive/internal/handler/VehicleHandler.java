@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
-import org.openhab.binding.bmwconnecteddrive.internal.action.ChargeProfileActions;
+import org.openhab.binding.bmwconnecteddrive.internal.action.BMWConnectedDriveActions;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributesContainer;
@@ -766,7 +766,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(ChargeProfileActions.class);
+        return Set.of(BMWConnectedDriveActions.class);
     }
 
     public Optional<ChargeProfileWrapper> getChargeProfileWrapper() {

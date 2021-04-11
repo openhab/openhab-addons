@@ -32,13 +32,13 @@ import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
- * The {@link ChargeProfileActions} provides actions for VehicleHandler
+ * The {@link BMWConnectedDriveActions} provides actions for VehicleHandler
  *
  * @author Norbert Truchsess - Initial contribution
  */
-@ThingActionsScope(name = "chargeprofile")
+@ThingActionsScope(name = "bmwconnecteddrive")
 @NonNullByDefault
-public class ChargeProfileActions implements ThingActions {
+public class BMWConnectedDriveActions implements ThingActions {
 
     private Optional<VehicleHandler> handler = Optional.empty();
 
@@ -213,150 +213,150 @@ public class ChargeProfileActions implements ThingActions {
         setDays(OVERRIDE, days);
     }
 
-    @RuleAction(label = "send", description = "sends the charging profile to the vehicle")
-    public void send() {
+    @RuleAction(label = "sendChargeProfile", description = "sends the charging profile to the vehicle")
+    public void sendChargeProfile() {
         handler.ifPresent(handle -> handle.sendChargeProfile(getProfile()));
     }
 
     @RuleAction(label = "cancel", description = "cancel current edit of charging profile")
-    public void cancel() {
+    public void cancelEditChargeProfile() {
         profile = Optional.empty();
     }
 
     public static Optional<LocalTime> getTimer1Departure(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer1Departure();
+        return ((BMWConnectedDriveActions) actions).getTimer1Departure();
     }
 
     public static void setTimer1Departure(ThingActions actions, @Nullable LocalTime time) {
-        ((ChargeProfileActions) actions).setTimer1Departure(time);
+        ((BMWConnectedDriveActions) actions).setTimer1Departure(time);
     }
 
     public static Optional<Boolean> getTimer1Enabled(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer1Enabled();
+        return ((BMWConnectedDriveActions) actions).getTimer1Enabled();
     }
 
     public static void setTimer1Enabled(ThingActions actions, @Nullable Boolean enabled) {
-        ((ChargeProfileActions) actions).setTimer1Enabled(enabled);
+        ((BMWConnectedDriveActions) actions).setTimer1Enabled(enabled);
     }
 
     public static Optional<LocalTime> getTimer2Departure(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer2Departure();
+        return ((BMWConnectedDriveActions) actions).getTimer2Departure();
     }
 
     public static void setTimer2Departure(ThingActions actions, @Nullable LocalTime time) {
-        ((ChargeProfileActions) actions).setTimer2Departure(time);
+        ((BMWConnectedDriveActions) actions).setTimer2Departure(time);
     }
 
     public static Optional<Boolean> getTimer2Enabled(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer2Enabled();
+        return ((BMWConnectedDriveActions) actions).getTimer2Enabled();
     }
 
     public static void setTimer2Enabled(ThingActions actions, @Nullable Boolean enabled) {
-        ((ChargeProfileActions) actions).setTimer2Enabled(enabled);
+        ((BMWConnectedDriveActions) actions).setTimer2Enabled(enabled);
     }
 
     public static Optional<LocalTime> getTimer3Departure(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer3Departure();
+        return ((BMWConnectedDriveActions) actions).getTimer3Departure();
     }
 
     public static void setTimer3Departure(ThingActions actions, @Nullable LocalTime time) {
-        ((ChargeProfileActions) actions).setTimer3Departure(time);
+        ((BMWConnectedDriveActions) actions).setTimer3Departure(time);
     }
 
     public static Optional<Boolean> getTimer3Enabled(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer3Enabled();
+        return ((BMWConnectedDriveActions) actions).getTimer3Enabled();
     }
 
     public static void setTimer3Enabled(ThingActions actions, @Nullable Boolean enabled) {
-        ((ChargeProfileActions) actions).setTimer3Enabled(enabled);
+        ((BMWConnectedDriveActions) actions).setTimer3Enabled(enabled);
     }
 
     public static Optional<LocalTime> getOverrideTimerDeparture(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getOverrideTimerDeparture();
+        return ((BMWConnectedDriveActions) actions).getOverrideTimerDeparture();
     }
 
     public static void setOverrideTimerDeparture(ThingActions actions, @Nullable LocalTime time) {
-        ((ChargeProfileActions) actions).setOverrideTimerDeparture(time);
+        ((BMWConnectedDriveActions) actions).setOverrideTimerDeparture(time);
     }
 
     public static Optional<Boolean> getOverrideTimerEnabled(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getOverrideTimerEnabled();
+        return ((BMWConnectedDriveActions) actions).getOverrideTimerEnabled();
     }
 
     public static void setOverrideTimerEnabled(ThingActions actions, @Nullable Boolean enabled) {
-        ((ChargeProfileActions) actions).setOverrideTimerEnabled(enabled);
+        ((BMWConnectedDriveActions) actions).setOverrideTimerEnabled(enabled);
     }
 
     public static Optional<LocalTime> getPreferredWindowStart(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getPreferredWindowStart();
+        return ((BMWConnectedDriveActions) actions).getPreferredWindowStart();
     }
 
     public static void setPreferredWindowStart(ThingActions actions, @Nullable LocalTime time) {
-        ((ChargeProfileActions) actions).setPreferredWindowStart(time);
+        ((BMWConnectedDriveActions) actions).setPreferredWindowStart(time);
     }
 
     public static Optional<LocalTime> getPreferredWindowEnd(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getPreferredWindowEnd();
+        return ((BMWConnectedDriveActions) actions).getPreferredWindowEnd();
     }
 
     public static void setPreferredWindowEnd(ThingActions actions, @Nullable LocalTime time) {
-        ((ChargeProfileActions) actions).setPreferredWindowEnd(time);
+        ((BMWConnectedDriveActions) actions).setPreferredWindowEnd(time);
     }
 
     public static Optional<Boolean> getClimatizationEnabled(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getClimatizationEnabled();
+        return ((BMWConnectedDriveActions) actions).getClimatizationEnabled();
     }
 
     public static void setClimatizationEnabled(ThingActions actions, @Nullable Boolean enabled) {
-        ((ChargeProfileActions) actions).setClimatizationEnabled(enabled);
+        ((BMWConnectedDriveActions) actions).setClimatizationEnabled(enabled);
     }
 
     public static Optional<String> getChargingMode(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getChargingMode();
+        return ((BMWConnectedDriveActions) actions).getChargingMode();
     }
 
     public static void setChargingMode(ThingActions actions, @Nullable String mode) {
-        ((ChargeProfileActions) actions).setChargingMode(mode);
+        ((BMWConnectedDriveActions) actions).setChargingMode(mode);
     }
 
     public static Optional<Set<DayOfWeek>> getTimer1Days(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer1Days();
+        return ((BMWConnectedDriveActions) actions).getTimer1Days();
     }
 
     public static void setTimer1Days(ThingActions actions, @Nullable Set<DayOfWeek> days) {
-        ((ChargeProfileActions) actions).setTimer1Days(days);
+        ((BMWConnectedDriveActions) actions).setTimer1Days(days);
     }
 
     public static Optional<Set<DayOfWeek>> getTimer2Days(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer2Days();
+        return ((BMWConnectedDriveActions) actions).getTimer2Days();
     }
 
     public static void setTimer2Days(ThingActions actions, @Nullable Set<DayOfWeek> days) {
-        ((ChargeProfileActions) actions).setTimer2Days(days);
+        ((BMWConnectedDriveActions) actions).setTimer2Days(days);
     }
 
     public static Optional<Set<DayOfWeek>> getTimer3Days(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getTimer3Days();
+        return ((BMWConnectedDriveActions) actions).getTimer3Days();
     }
 
     public static void setTimer3Days(ThingActions actions, @Nullable Set<DayOfWeek> days) {
-        ((ChargeProfileActions) actions).setTimer3Days(days);
+        ((BMWConnectedDriveActions) actions).setTimer3Days(days);
     }
 
     public static Optional<Set<DayOfWeek>> getOverrideTimerDays(ThingActions actions) {
-        return ((ChargeProfileActions) actions).getOverrideTimerDays();
+        return ((BMWConnectedDriveActions) actions).getOverrideTimerDays();
     }
 
     public static void setOverrideTimerDays(ThingActions actions, @Nullable Set<DayOfWeek> days) {
-        ((ChargeProfileActions) actions).setOverrideTimerDays(days);
+        ((BMWConnectedDriveActions) actions).setOverrideTimerDays(days);
     }
 
-    public static void send(ThingActions actions) {
-        ((ChargeProfileActions) actions).send();
+    public static void sendChargeProfile(ThingActions actions) {
+        ((BMWConnectedDriveActions) actions).sendChargeProfile();
     }
 
-    public static void cancel(ThingActions actions) {
-        ((ChargeProfileActions) actions).cancel();
+    public static void cancelEditChargeProfile(ThingActions actions) {
+        ((BMWConnectedDriveActions) actions).cancelEditChargeProfile();
     }
 
     @Override
