@@ -99,7 +99,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertTrue(discovery.getSupportedThingTypes().contains(COMETDECT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_CONTACT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_SWITCH_THING_TYPE));
-        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_BLIND_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_BLINDS_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_HEATING_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_SWITCH_THING_TYPE));
     }
@@ -771,8 +771,8 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
-        assertEquals(new ThingUID("avmfritz:HAN_FUN_BLIND:1:142760503450_1"), discoveryResult.getThingUID());
-        assertEquals(HAN_FUN_BLIND_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(new ThingUID("avmfritz:HAN_FUN_BLINDS:1:142760503450_1"), discoveryResult.getThingUID());
+        assertEquals(HAN_FUN_BLINDS_THING_TYPE, discoveryResult.getThingTypeUID());
         assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
         assertEquals("142760503450-1", discoveryResult.getProperties().get(CONFIG_AIN));
         assertEquals("0x37c4", discoveryResult.getProperties().get(PROPERTY_VENDOR));

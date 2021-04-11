@@ -103,7 +103,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertNull(device.getSwitch());
 
@@ -143,7 +143,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertTrue(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertNotNull(device.getSwitch());
         assertEquals(SwitchModel.ON, device.getSwitch().getState());
@@ -187,7 +187,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertTrue(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertNotNull(device.getSwitch());
         assertEquals(SwitchModel.ON, device.getSwitch().getState());
@@ -231,7 +231,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertNull(device.getSwitch());
 
@@ -269,7 +269,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertNull(device.getSwitch());
 
@@ -307,7 +307,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertNull(device.getSwitch());
 
@@ -345,7 +345,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertEquals(new BigDecimal("100"), device.getBattery());
         assertEquals(BatteryModel.BATTERY_OFF, device.getBatterylow());
@@ -394,7 +394,7 @@ public class AVMFritzDeviceListModelTest {
         assertTrue(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertEquals(new BigDecimal("100"), device.getBattery());
         assertEquals(BatteryModel.BATTERY_OFF, device.getBatterylow());
@@ -464,7 +464,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertTrue(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertNotNull(device.getSwitch());
         assertEquals(SwitchModel.OFF, device.getSwitch().getState());
@@ -506,7 +506,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertTrue(device.getButtons().isEmpty());
 
@@ -549,7 +549,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isHANFUNBlind());
+        assertFalse(device.isHANFUNBlinds());
 
         assertEquals(1, device.getButtons().size());
         assertEquals(1529590797, device.getButtons().get(0).getLastpressedtimestamp());
@@ -592,7 +592,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
-        assertTrue(device.isHANFUNBlind());
+        assertTrue(device.isHANFUNBlinds());
 
         assertTrue(device.getButtons().isEmpty());
 
@@ -638,7 +638,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(group.isHumiditySensor());
         assertFalse(group.isPowermeter());
         assertTrue(group.isHeatingThermostat());
-        assertFalse(group.isHANFUNBlind());
+        assertFalse(group.isHANFUNBlinds());
 
         assertNull(group.getSwitch());
 
@@ -676,7 +676,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(group.isHumiditySensor());
         assertTrue(group.isPowermeter());
         assertFalse(group.isHeatingThermostat());
-        assertFalse(group.isHANFUNBlind());
+        assertFalse(group.isHANFUNBlinds());
 
         assertNotNull(group.getSwitch());
         assertEquals(SwitchModel.ON, group.getSwitch().getState());

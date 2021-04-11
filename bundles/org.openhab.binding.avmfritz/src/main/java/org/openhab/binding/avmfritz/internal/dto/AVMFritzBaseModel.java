@@ -53,7 +53,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int DECT_REPEATER_BIT = 1 << 10; // Bit 10
     protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
     protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
-    protected static final int BLIND_BIT = 1 << 18; // Bit 18
+    protected static final int HAN_FUN_BLINDS_BIT = 1 << 18; // Bit 18
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
@@ -179,8 +179,8 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & HAN_FUN_UNIT_BIT) > 0;
     }
 
-    public boolean isHANFUNBlind() {
-        return (bitmask & BLIND_BIT) > 0;
+    public boolean isHANFUNBlinds() {
+        return (bitmask & HAN_FUN_BLINDS_BIT) > 0;
     }
 
     public String getFirmwareVersion() {
@@ -223,7 +223,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
                 .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",isMicrophone=")
                 .append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",isHANFUNBlind=")
-                .append(isHANFUNBlind()).append(",id=").append(deviceId).append(",manufacturer=")
+                .append(isHANFUNBlinds()).append(",id=").append(deviceId).append(",manufacturer=")
                 .append(deviceManufacturer).append(",productname=").append(productName).append(",fwversion=")
                 .append(firmwareVersion).append(",present=").append(present).append(",name=").append(name)
                 .append(",battery=").append(getBattery()).append(",batterylow=").append(getBatterylow()).append(",")

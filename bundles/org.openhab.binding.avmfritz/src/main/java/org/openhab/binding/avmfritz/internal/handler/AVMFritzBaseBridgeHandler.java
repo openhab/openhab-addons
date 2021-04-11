@@ -327,8 +327,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return GROUP_SWITCH;
             }
         } else if (device instanceof DeviceModel && device.isHANFUNUnit()) {
-            if (device.isHANFUNBlind()) {
-                return DEVICE_HAN_FUN_BLIND;
+            if (device.isHANFUNBlinds()) {
+                return DEVICE_HAN_FUN_BLINDS;
             }
             List<String> interfaces = Arrays
                     .asList(((DeviceModel) device).getEtsiunitinfo().getInterfaces().split(","));

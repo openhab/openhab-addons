@@ -151,7 +151,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (deviceModel.isHANFUNAlarmSensor()) {
                     updateHANFUNAlarmSensor(deviceModel.getAlert());
                 }
-                if (deviceModel.isHANFUNBlind()) {
+                if (deviceModel.isHANFUNBlinds()) {
                     updateLevelcontrol(deviceModel.getLevelcontrol());
                 }
             }

@@ -277,7 +277,7 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
 	</thing-type>
 
-	<thing-type id="HAN_FUN_BLIND">
+	<thing-type id="HAN_FUN_BLINDS">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox"/>
 			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
