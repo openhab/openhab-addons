@@ -184,13 +184,13 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
         return parameterAsQuantityType(parameterName, parameterValue, null);
     }
 
-    private <Q2 extends Quantity<Q2>> Optional<QuantityType<Q2>> parameterAsQuantityType(String parameterName,
-            Object parameterValue, @Nullable Unit<Q2> assertUnit) {
-        Optional<QuantityType<Q2>> result = Optional.empty();
-        Unit<Q2> sourceUnit = null;
+    private <QU extends Quantity<QU>> Optional<QuantityType<QU>> parameterAsQuantityType(String parameterName,
+            Object parameterValue, @Nullable Unit<QU> assertUnit) {
+        Optional<QuantityType<QU>> result = Optional.empty();
+        Unit<QU> sourceUnit = null;
         if (parameterValue instanceof String) {
             try {
-                QuantityType<Q2> qt = new QuantityType<>((String) parameterValue);
+                QuantityType<QU> qt = new QuantityType<>((String) parameterValue);
                 result = Optional.of(qt);
                 sourceUnit = qt.getUnit();
             } catch (IllegalArgumentException e) {
@@ -199,7 +199,7 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
             }
         } else if (parameterValue instanceof BigDecimal) {
             BigDecimal parameterBigDecimal = (BigDecimal) parameterValue;
-            result = Optional.of(new QuantityType<Q2>(parameterBigDecimal.toString()));
+            result = Optional.of(new QuantityType<QU>(parameterBigDecimal.toString()));
         } else {
             logger.error("Parameter '{}' is not of type String or BigDecimal", parameterName);
             return result;
