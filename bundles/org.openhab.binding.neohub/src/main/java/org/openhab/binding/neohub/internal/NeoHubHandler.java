@@ -71,7 +71,18 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private @Nullable NeoHubReadDcbResponse systemData = null;
 
-    private boolean isLegacyApiSelected = true;
+    private enum ApiVersion {
+        LEGACY("legacy"),
+        NEW("new");
+
+        public final String label;
+
+        private ApiVersion(String label) {
+            this.label = label;
+        }
+    }
+
+    private ApiVersion apiVersion = ApiVersion.LEGACY;
     private boolean isApiOnline = false;
 
     public NeoHubHandler(Bridge bridge) {
@@ -227,7 +238,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             String responseJson;
             NeoHubAbstractDeviceData deviceData;
 
-            if (isLegacyApiSelected) {
+            if (apiVersion == ApiVersion.LEGACY) {
                 responseJson = socket.sendMessage(CMD_CODE_INFO);
                 deviceData = NeoHubInfoResponse.createDeviceData(responseJson);
             } else {
@@ -302,7 +313,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             String responseJson;
             NeoHubReadDcbResponse systemData;
 
-            if (isLegacyApiSelected) {
+            if (apiVersion == ApiVersion.LEGACY) {
                 responseJson = socket.sendMessage(CMD_CODE_READ_DCB);
                 systemData = NeoHubReadDcbResponse.createSystemData(responseJson);
             } else {
@@ -315,7 +326,19 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 return null;
             }
 
-            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, systemData.getFirmwareVersion());
+            String physicalFirmware = systemData.getFirmwareVersion();
+            if (physicalFirmware != null) {
+                String thingFirmware = getThing().getProperties().get(PROPERTY_FIRMWARE_VERSION);
+                if (!physicalFirmware.equals(thingFirmware)) {
+                    // update the thing firmware property to the hub's physical firmware value
+                    getThing().setProperty(PROPERTY_FIRMWARE_VERSION, physicalFirmware);
+                    // log it only if the prior property value was neither null nor empty
+                    if ((thingFirmware != null) && (thingFirmware.length() > 0)) {
+                        logger.info("hub '{}' firmware has updated from '{}' to '{}'", thingFirmware, physicalFirmware);
+                    }
+                }
+            }
+
             return systemData;
         } catch (Exception e) {
             logger.warn(MSG_FMT_SYSTEM_POLL_ERR, getThing().getUID(), e.getMessage());
@@ -361,7 +384,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
                     @Nullable
                     Boolean onlineBefore = connectionStates.put(deviceName, online);
-                    if ((onlineBefore != null) && !onlineBefore.equals(online)) {
+                    if (!online.equals(onlineBefore) && ((onlineBefore != null) || logger.isDebugEnabled())) {
                         logger.info("hub '{}' device \"{}\" has {} the RF mesh network", getThing().getUID(),
                                 deviceName, online.booleanValue() ? "joined" : "left");
                     }
@@ -432,14 +455,18 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         NeoHubConfiguration config = this.config;
-        boolean isLegacyApiSelected = (supportsLegacyApi && config != null && config.preferLegacyApi);
-        if (isLegacyApiSelected != this.isLegacyApiSelected) {
-            logger.debug("hub '{}' changing API version: {}", getThing().getUID(),
-                    isLegacyApiSelected ? "\"new\" => \"legacy\"" : "\"legacy\" => \"new\"");
+        ApiVersion apiVersion = (supportsLegacyApi && config != null && config.preferLegacyApi) ? ApiVersion.LEGACY
+                : ApiVersion.NEW;
+        if (apiVersion != this.apiVersion) {
+            logger.debug("hub '{}' changing API version: '{}' => '{}'", getThing().getUID(), this.apiVersion.label,
+                    apiVersion.label);
+            this.apiVersion = apiVersion;
         }
 
-        getThing().setProperty(PROPERTY_API_VERSION, isLegacyApiSelected ? "legacy" : "new");
-        this.isLegacyApiSelected = isLegacyApiSelected;
+        if (!apiVersion.label.equals(getThing().getProperties().get(PROPERTY_API_VERSION))) {
+            getThing().setProperty(PROPERTY_API_VERSION, apiVersion.label);
+        }
+
         isApiOnline = true;
     }
 
@@ -461,7 +488,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
     }
 
     public boolean isLegacyApiSelected() {
-        return isLegacyApiSelected;
+        return apiVersion == ApiVersion.LEGACY;
     }
 
     public Unit<?> getTemperatureUnit() {
