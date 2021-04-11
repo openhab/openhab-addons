@@ -175,11 +175,6 @@ public class ModbusGainOffsetProfile implements StateProfile {
                     gain, state, state.getClass().getSimpleName(), towardsItem);
             result = state;
         }
-        if (result == null) {
-            // Should not happen, unit conversions are bound to succeed
-            // This is here to make the compiler happy
-            throw new IllegalStateException();
-        }
         return result;
     }
 
