@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * <ol>
  * <li>Bit 0: HAN-FUN Gerät</li>
+ * <li>Bit 2: Licht Bit</li>
  * <li>Bit 3: HAN-FUN Button - undocumented</li>
  * <li>Bit 4: Alarm-Sensor</li>
  * <li>Bit 5: AVM-Button</li>
@@ -34,14 +35,19 @@ import javax.xml.bind.annotation.XmlElement;
  * <li>Bit 10: AVM DECT Repeater</li>
  * <li>Bit 11: Mikrofon</li>
  * <li>Bit 13: HAN-FUN Unit</li>
+ * <li>Bit 15: an-/ausschaltbares Gerät/Steckdose/Lampe/Aktor</li>
+ * <li>Bit 16: Gerät mit einstellbarem Dimm-, Höhen- bzw. Niveau-Level</li>
+ * <li>Bit 17: Lampe mit einstellbarer Farbe/Farbtemperatur</li>
  * </ol>
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Joshua Bacher - Added support AVM FRITZ!DECT 500
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
+    protected static final int HAN_FUN_LIGHT_BIT = 1 << 2; // Bit 1 - light
     protected static final int HAN_FUN_BUTTON_BIT = 1 << 3; // Bit 3 - undocumented
     protected static final int HAN_FUN_ALARM_SENSOR_BIT = 1 << 4; // Bit 4
     protected static final int BUTTON_BIT = 1 << 5; // Bit 5
@@ -52,6 +58,9 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int DECT_REPEATER_BIT = 1 << 10; // Bit 10
     protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
     protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
+    protected static final int ON_OFF_UNIT_BIT = 1 << 15; // Bit 15 - an-/ausschaltbares Gerät/Steckdose/Lampe/Aktor
+    protected static final int DIMMABLE_LIGHT_BIT = 1 << 16; // Bit 16 - dimmable light
+    protected static final int LIGHTING_COLOR_TEMPERATURE_BIT = 1 << 17; // Bit 17 - dimmable light
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
@@ -90,6 +99,19 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     @XmlElement(name = "powermeter")
     private PowerMeterModel powermeterModel;
 
+    @XmlElement(name = "colorcontrol")
+    private ColorControlModel colorControlModel;
+
+    @XmlElement(name = "levelcontrol")
+    private LevelControlModel levelControlModel;
+
+    public SimpleOnOffModel getSimpleOnOffUnit() {
+        return simpleOnOffUnit;
+    }
+
+    @XmlElement(name = "simpleonoff")
+    private SimpleOnOffModel simpleOnOffUnit;
+
     @XmlElement(name = "hkr")
     private HeatingModel heatingModel;
 
@@ -97,8 +119,12 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return powermeterModel;
     }
 
-    public void setPowermeter(PowerMeterModel powermeter) {
-        this.powermeterModel = powermeter;
+    public ColorControlModel getColorControlModel() {
+        return colorControlModel;
+    }
+
+    public LevelControlModel getLevelControlModel() {
+        return levelControlModel;
     }
 
     public HeatingModel getHkr() {
@@ -137,6 +163,24 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & HAN_FUN_BUTTON_BIT) > 0;
     }
 
+    // TODO: need to use this one somewhere :)
+    public boolean isLightDevice() {
+        return (bitmask & HAN_FUN_LIGHT_BIT) > 0;
+    }
+
+    public boolean isOnOffUnit() {
+        return (bitmask & ON_OFF_UNIT_BIT) > 0;
+    }
+
+    // TODO: need to use this one somewhere :)
+    public boolean isDimmableLightDevice() {
+        return (bitmask & DIMMABLE_LIGHT_BIT) > 0;
+    }
+
+    public boolean isLightingColorTemperature() {
+        return (bitmask & LIGHTING_COLOR_TEMPERATURE_BIT) > 0;
+    }
+
     public boolean isHANFUNAlarmSensor() {
         return (bitmask & HAN_FUN_ALARM_SENSOR_BIT) > 0;
     }
@@ -159,6 +203,10 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
 
     public boolean isPowermeter() {
         return (bitmask & POWERMETER_BIT) > 0;
+    }
+
+    public void setPowermeter(PowerMeterModel powermeter) {
+        this.powermeterModel = powermeter;
     }
 
     public boolean isDectRepeater() {
@@ -211,16 +259,18 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     public String toString() {
         return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
                 .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
-                .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append(",isButton=").append(isButton())
-                .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTempSensor=")
-                .append(isTempSensor()).append(",isHumiditySensor=").append(isHumiditySensor()).append(",isPowermeter=")
-                .append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
-                .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",isMicrophone=")
-                .append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",id=").append(deviceId)
-                .append(",manufacturer=").append(deviceManufacturer).append(",productname=").append(productName)
-                .append(",fwversion=").append(firmwareVersion).append(",present=").append(present).append(",name=")
-                .append(name).append(",battery=").append(getBattery()).append(",batterylow=").append(getBatterylow())
-                .append(",").append(getSwitch()).append(",").append(getPowermeter()).append(",").append(getHkr())
-                .append(",").toString();
+                .append(",isOnOffUnit=").append(isOnOffUnit()).append(",isLightDevice=").append(isLightDevice())
+                .append(",isDimmableLightDevice=").append(isDimmableLightDevice()).append(",isHANFUNAlarmSensor=")
+                .append(isHANFUNAlarmSensor()).append(",isButton=").append(isButton()).append(",isSwitchableOutlet=")
+                .append(isSwitchableOutlet()).append(",isTempSensor=").append(isTempSensor())
+                .append(",isHumiditySensor=").append(isHumiditySensor()).append(",isPowermeter=").append(isPowermeter())
+                .append(",isDectRepeater=").append(isDectRepeater()).append(",isHeatingThermostat=")
+                .append(isHeatingThermostat()).append(",isMicrophone=").append(isMicrophone()).append(",isHANFUNUnit=")
+                .append(isHANFUNUnit()).append(",id=").append(deviceId).append(",manufacturer=")
+                .append(deviceManufacturer).append(",productname=").append(productName).append(",fwversion=")
+                .append(firmwareVersion).append(",present=").append(present).append(",name=").append(name)
+                .append(",battery=").append(getBattery()).append(",batterylow=").append(getBatterylow()).append(",")
+                .append(getSwitch()).append(",").append(getPowermeter()).append(",").append(getHkr()).append(",")
+                .toString();
     }
 }

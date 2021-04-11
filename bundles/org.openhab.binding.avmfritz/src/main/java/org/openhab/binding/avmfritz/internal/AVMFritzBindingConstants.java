@@ -40,6 +40,7 @@ public class AVMFritzBindingConstants {
     public static final String POWERLINE_MODEL_NAME = "FRITZ!Powerline";
 
     // List of main device types
+    public static final String DEVICE_DECT500 = "FRITZ_DECT_500";
     public static final String DEVICE_DECT400 = "FRITZ_DECT_400";
     public static final String DEVICE_DECT440 = "FRITZ_DECT_440";
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
@@ -59,6 +60,7 @@ public class AVMFritzBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
+    public static final ThingTypeUID DECT500_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT500);
     public static final ThingTypeUID DECT400_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT400);
     public static final ThingTypeUID DECT440_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT440);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
@@ -125,6 +127,9 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_CONTACT_STATE = "contact_state";
     public static final String CHANNEL_PRESS = "press";
     public static final String CHANNEL_LAST_CHANGE = "last_change";
+    public static final String CHANNEL_ONOFF_STATE = "onoffstate";
+    public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_BRIGHTNESS = "brightness";
 
     // List of all Channel config ids
     public static final String CONFIG_CHANNEL_TEMP_OFFSET = "offset";
@@ -163,6 +168,8 @@ public class AVMFritzBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Set.of(DECT300_THING_TYPE, DECT301_THING_TYPE,
             COMETDECT_THING_TYPE);
 
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHTING_THING_TYPES = Set.of(DECT500_THING_TYPE);
+
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
             DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE);
 
@@ -174,6 +181,6 @@ public class AVMFritzBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
-                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS)
+                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS, SUPPORTED_LIGHTING_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet()));
 }

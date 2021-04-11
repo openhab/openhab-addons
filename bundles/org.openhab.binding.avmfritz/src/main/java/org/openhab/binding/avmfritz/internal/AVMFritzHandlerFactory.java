@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal;
@@ -17,13 +17,7 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.avmfritz.internal.handler.AVMFritzButtonHandler;
-import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
-import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingGroupHandler;
-import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
-import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
-import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
-import org.openhab.binding.avmfritz.internal.handler.Powerline546EHandler;
+import org.openhab.binding.avmfritz.internal.handler.*;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -80,6 +74,8 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
             return new AVMFritzButtonHandler(thing);
         } else if (SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)) {
             return new AVMFritzHeatingDeviceHandler(thing);
+        } else if (SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)) {
+            return new AVMFritzDimmingLightingDeviceHandler(thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
         } else if (GROUP_HEATING_THING_TYPE.equals(thingTypeUID)) {

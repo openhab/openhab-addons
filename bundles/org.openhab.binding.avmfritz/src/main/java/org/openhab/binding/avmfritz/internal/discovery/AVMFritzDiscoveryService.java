@@ -56,12 +56,10 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
     private @NonNullByDefault({}) AVMFritzBaseBridgeHandler bridgeHandler;
 
     public AVMFritzDiscoveryService() {
-        super(Collections
-                .unmodifiableSet(Stream
-                        .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES,
-                                SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS)
-                        .flatMap(Set::stream).collect(Collectors.toSet())),
-                30);
+        super(Collections.unmodifiableSet(Stream
+                .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
+                        SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_LIGHTING_THING_TYPES)
+                .flatMap(Set::stream).collect(Collectors.toSet())), 30);
     }
 
     @Override

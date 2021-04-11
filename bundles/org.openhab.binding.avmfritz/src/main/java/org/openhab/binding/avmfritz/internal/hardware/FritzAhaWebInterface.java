@@ -15,6 +15,7 @@ package org.openhab.binding.avmfritz.internal.hardware;
 import static org.eclipse.jetty.http.HttpMethod.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,14 +29,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.*;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -49,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Joshua Bacher - Support for DECT!500 (being more detailed on http request)
  */
 @NonNullByDefault
 public class FritzAhaWebInterface {
@@ -232,7 +231,7 @@ public class FritzAhaWebInterface {
     /**
      * Sends a HTTP GET request using the synchronous client
      *
-     * @param path Path of the requested resource
+     * @param url Path of the requested resource
      * @return response
      */
     public @Nullable String syncGet(String url) {
@@ -263,9 +262,14 @@ public class FritzAhaWebInterface {
         if (!isAuthenticated()) {
             authenticate();
         }
+
         FritzAhaContentExchange getExchange = new FritzAhaContentExchange(callback);
-        httpClient.newRequest(getURL(path, addSID(args))).method(GET).onResponseSuccess(getExchange)
-                .onResponseFailure(getExchange).send(getExchange);
+        Request request = httpClient.newRequest(getURL(path, addSID(args))).method(GET).onResponseSuccess(getExchange)
+                .onResponseFailure(getExchange);
+        request.send(getExchange);
+
+        logger.trace("http request send: '{}'", getURL(path, addSID(args)));
+
         return getExchange;
     }
 
@@ -301,6 +305,11 @@ public class FritzAhaWebInterface {
         return asyncGet(callback);
     }
 
+    public FritzAhaContentExchange setLevel(String ain, BigInteger level) {
+        FritzAhaSetLevelCallback callback = new FritzAhaSetLevelCallback(this, ain, level);
+        return asyncGet(callback);
+    }
+
     public FritzAhaContentExchange setSetTemp(String ain, BigDecimal temperature) {
         FritzAhaSetHeatingTemperatureCallback callback = new FritzAhaSetHeatingTemperatureCallback(this, ain,
                 temperature);
@@ -317,6 +326,11 @@ public class FritzAhaWebInterface {
 
     private FritzAhaContentExchange setHeatingMode(String ain, String command, long endTime) {
         FritzAhaSetHeatingModeCallback callback = new FritzAhaSetHeatingModeCallback(this, ain, command, endTime);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setHueAndSaturation(String ain, Integer hue, Integer saturation) {
+        FritzAhaSetHSCallback callback = new FritzAhaSetHSCallback(this, ain, hue, saturation);
         return asyncGet(callback);
     }
 }

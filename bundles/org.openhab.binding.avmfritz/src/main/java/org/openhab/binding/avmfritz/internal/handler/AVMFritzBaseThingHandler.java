@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * 
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.handler;
@@ -16,46 +16,27 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
-import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.dto.AlertModel;
-import org.openhab.binding.avmfritz.internal.dto.BatteryModel;
-import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
-import org.openhab.binding.avmfritz.internal.dto.HeatingModel;
-import org.openhab.binding.avmfritz.internal.dto.HeatingModel.NextChangeModel;
-import org.openhab.binding.avmfritz.internal.dto.HumidityModel;
-import org.openhab.binding.avmfritz.internal.dto.PowerMeterModel;
-import org.openhab.binding.avmfritz.internal.dto.SwitchModel;
-import org.openhab.binding.avmfritz.internal.dto.TemperatureModel;
+import org.openhab.binding.avmfritz.internal.dto.*;
+import org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.*;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -73,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Joshua Bacher - Added support for AVM FRITZ!DECT 500
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -131,6 +113,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.isSwitchableOutlet()) {
                 updateSwitchableOutlet(device.getSwitch());
             }
+            if (device.isOnOffUnit()) {
+                updateOnOffUnit(device.getSimpleOnOffUnit());
+            }
+            if (device.isDimmableLightDevice()) {
+                updateLightColor(device.getColorControlModel(), device.getLevelControlModel());
+                updateLightLevel(device.getLevelControlModel());
+            }
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
             }
@@ -147,6 +136,22 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
             }
         }
+    }
+
+    private void updateLightColor(ColorControlModel colorControlModel, LevelControlModel levelControlModel) {
+        DecimalType hue = new DecimalType(colorControlModel.hue);
+        PercentType brightness = new PercentType(levelControlModel.levelpercentage);
+        PercentType saturation = new PercentType(colorControlModel.saturation);
+        updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
+        updateThingChannelState(CHANNEL_BRIGHTNESS, brightness);
+    }
+
+    private void updateLightLevel(LevelControlModel levelControlModel) {
+        updateThingChannelState(CHANNEL_BRIGHTNESS, new PercentType(levelControlModel.levelpercentage));
+    }
+
+    private void updateOnOffUnit(SimpleOnOffModel simpleOnOffUnit) {
+        updateThingChannelState(CHANNEL_ONOFF_STATE, SimpleOnOffModel.asState(simpleOnOffUnit.getState()));
     }
 
     private void updateHANFUNAlarmSensor(@Nullable AlertModel alertModel) {
@@ -354,6 +359,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             case CHANNEL_LAST_CHANGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
+            case CHANNEL_ONOFF_STATE:
             case CHANNEL_OUTLET:
                 if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
@@ -361,6 +367,10 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                         state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
                     }
                 }
+                break;
+            case CHANNEL_COLOR:
+            case CHANNEL_BRIGHTNESS:
+                processLightBulbActions(command, fritzBox, ain);
                 break;
             case CHANNEL_SETTEMP:
                 BigDecimal temperature = null;
@@ -427,6 +437,36 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             default:
                 logger.debug("Received unknown channel {}", channelId);
                 break;
+        }
+    }
+
+    /**
+     * logic to ececute command on a dect500 bulb
+     *
+     * @param command
+     * @param fritzBox
+     * @param ain
+     */
+    private void processLightBulbActions(Command command, FritzAhaWebInterface fritzBox, String ain) {
+        BigInteger level = null;
+        Integer hue = null;
+        Integer saturation = null;
+        if (command instanceof PercentType) {
+            level = ((PercentType) command).toBigDecimal().toBigInteger();
+        }
+        if (command instanceof HSBType) {
+            HSBType hsbType = (HSBType) command;
+            if (level == null) {
+                level = hsbType.getBrightness().toBigDecimal().toBigInteger();
+            }
+            hue = hsbType.getHue().intValue();
+            saturation = hsbType.getSaturation().intValue();
+        }
+        if (Objects.nonNull(level)) {
+            fritzBox.setLevel(ain, level);
+        }
+        if (Objects.nonNull(saturation) && Objects.nonNull(hue)) {
+            fritzBox.setHueAndSaturation(ain, hue, saturation);
         }
     }
 
