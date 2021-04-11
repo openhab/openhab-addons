@@ -140,7 +140,9 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
         while (matcher.find()) {
             final String dateValue = matcher.group(1);
             try {
-                result.add(DATE_FORMAT.parse(dateValue));
+                synchronized (DATE_FORMAT) {
+                    result.add(DATE_FORMAT.parse(dateValue));
+                }
             } catch (final ParseException e) {
                 this.logger.warn("Could not parse date: {}", dateValue);
             }

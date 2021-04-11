@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.core.config.core.Configuration;
@@ -44,7 +45,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class AhaWasteCollectionHandlerTest {
 
-    private static final Configuration config = createConfig();
+    private static final Configuration CONFIG = createConfig();
 
     private static Configuration createConfig() {
         final Configuration config = new Configuration();
@@ -54,6 +55,18 @@ public class AhaWasteCollectionHandlerTest {
         config.put("houseNumberAddon", "");
         config.put("street", "02095@Oesterleystr.+/+Südstadt@Südstadt");
         return config;
+    }
+
+    /**
+     * Exception indicating that the execution of an script within the stub-Scheduler failed.
+     */
+    private static class SchedulerRuntimeException extends RuntimeException {
+
+        private static final long serialVersionUID = -1262671065082256315L;
+
+        public SchedulerRuntimeException(@Nullable final Throwable cause) {
+            super(cause);
+        }
     }
 
     /**
@@ -69,7 +82,7 @@ public class AhaWasteCollectionHandlerTest {
                 try {
                     cronJob.run(config);
                 } catch (final Exception e) {
-                    throw new RuntimeException(e);
+                    throw new SchedulerRuntimeException(e);
                 }
                 return Mockito.mock(ScheduledCompletableFuture.class);
             }
@@ -80,7 +93,7 @@ public class AhaWasteCollectionHandlerTest {
                 try {
                     runnable.run();
                 } catch (final Exception e) {
-                    throw new RuntimeException(e);
+                    throw new SchedulerRuntimeException(e);
                 }
                 return Mockito.mock(ScheduledCompletableFuture.class);
             }
@@ -115,7 +128,6 @@ public class AhaWasteCollectionHandlerTest {
             final Thing thing) {
         final AhaWasteCollectionHandler handler = new AhaWasteCollectionHandler(thing, createStubScheduler(),
                 ZoneId::systemDefault, new AhaCollectionScheduleStubFactory());
-
         handler.setCallback(callback);
         handler.initialize();
         return handler;
@@ -128,8 +140,7 @@ public class AhaWasteCollectionHandlerTest {
 
     @Test
     public void testUpdateChannels() {
-
-        final Thing thing = mockThing(config);
+        final Thing thing = mockThing(CONFIG);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final AhaWasteCollectionHandler handler = createAndInitHandler(callback, thing);
 
