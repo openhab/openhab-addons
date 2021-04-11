@@ -212,12 +212,12 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
         return result;
     }
 
-    private <Q2 extends Quantity<Q2>> @Nullable QuantityType<Q2> convertUnit(QuantityType<Q2> quantityType,
-            @Nullable Unit<Q2> unit) {
+    private <QU extends Quantity<QU>> @Nullable QuantityType<QU> convertUnit(QuantityType<QU> quantityType,
+            @Nullable Unit<QU> unit) {
         if (unit == null) {
             return quantityType;
         }
-        QuantityType<Q2> normalizedQt = quantityType.toUnit(unit);
+        QuantityType<QU> normalizedQt = quantityType.toUnit(unit);
         if (normalizedQt != null) {
             return normalizedQt;
         } else {
@@ -231,9 +231,10 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
      * When the conversion is towards the handler (towardsItem=false), unit will be ONE
      *
      */
-    @SuppressWarnings("unchecked")
-    private <T extends QuantityType<?>> T applyGainTowardsItem(QuantityType<Dimensionless> qtState, T gainDelta) {
-        return (T) qtState.multiply(gainDelta);
+    @SuppressWarnings("unchecked") // Safe cast since QU = Dimensionless * QU
+    private <QU extends Quantity<QU>> QuantityType<QU> applyGainTowardsItem(QuantityType<Dimensionless> qtState,
+            QuantityType<QU> gainDelta) {
+        return (QuantityType<QU>) qtState.multiply(gainDelta);
     }
 
     private QuantityType<Dimensionless> applyGainTowardsHandler(QuantityType<?> qtState, QuantityType<?> gainDelta) {
