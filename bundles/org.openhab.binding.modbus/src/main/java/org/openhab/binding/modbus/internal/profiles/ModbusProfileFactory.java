@@ -62,5 +62,4 @@ public class ModbusProfileFactory implements ProfileFactory, ProfileTypeProvider
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
         return SUPPORTED_PROFILE_TYPE_UIDS;
     }
-
 }
