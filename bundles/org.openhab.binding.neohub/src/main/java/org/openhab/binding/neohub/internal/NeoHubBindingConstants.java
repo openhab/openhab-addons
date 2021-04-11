@@ -194,5 +194,4 @@ public class NeoHubBindingConstants {
      */
     public static final String PROPERTY_FIRMWARE_VERSION = "Firmware version";
     public static final String PROPERTY_API_VERSION = "API version";
-
 }
