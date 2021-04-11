@@ -154,6 +154,7 @@ public class NeoHubTestData {
         NeoHubReadDcbResponse dcbResponse = NeoHubReadDcbResponse.createSystemData(load("dcb_celsius"));
         assertNotNull(dcbResponse);
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
+        assertEquals("2134", dcbResponse.getFirmwareVersion());
 
         // load READ_DCB JSON response string with valid CORF F response
         dcbResponse = NeoHubReadDcbResponse.createSystemData(load("dcb_fahrenheit"));
@@ -235,6 +236,7 @@ public class NeoHubTestData {
         dcbResponse = NeoHubReadDcbResponse.createSystemData(load("system"));
         assertNotNull(dcbResponse);
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
+        assertEquals("2134", dcbResponse.getFirmwareVersion());
     }
 
     /*
