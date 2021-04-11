@@ -611,7 +611,7 @@ Please refer to the comments for more explanations.
 
 `things/modbus_ex1.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCP [ host="127.0.0.1", port=502, id=2 ] {
 
     // read-write for coils. Reading 4 coils, with index 4, and 5.
@@ -659,7 +659,7 @@ Bridge modbus:tcp:localhostTCP [ host="127.0.0.1", port=502, id=2 ] {
 
 `items/modbus_ex1.items`:
 
-```xtend
+```
 Switch DO4            "Digital Output index 4 [%d]"    { channel="modbus:data:localhostTCP:coils:do4:switch" }
 Switch DO5            "Digital Output index 5 [%d]"    { channel="modbus:data:localhostTCP:coils:do5:switch" }
 
@@ -677,7 +677,7 @@ Number Holding5writeonly            "Holding index 5 [%.1f]"    { channel="modbu
 
 `sitemaps/modbus_ex1.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex1 label="modbus_ex1"
 {
     Frame {
@@ -709,7 +709,7 @@ Toggling these switches always have the same effect: either setting or resetting
 
 `things/modbus_ex2.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCPex2 [ host="127.0.0.1", port=502 ] {
 
     Bridge poller items [ start=4, length=2, refresh=1000, type="discrete" ] {
@@ -727,7 +727,7 @@ Bridge modbus:tcp:localhostTCPex2 [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex2.items`:
 
-```xtend
+```
 Switch ReadDI4WriteDO5            "Coil 4/5 mix [%d]"    { channel="modbus:data:localhostTCPex2:items:readDiscrete4WriteCoil5:switch" }
 Switch ResetDO5            "Flip to turn Coil 5 OFF [%d]"    { channel="modbus:data:localhostTCPex2:items:resetCoil5:switch" }
 Switch SetDO5            "Flip to turn Coil 5 ON [%d]"    { channel="modbus:data:localhostTCPex2:items:setCoil5:switch" }
@@ -737,7 +737,7 @@ Contact Coil5            "Coil 5 [%d]"    { channel="modbus:data:localhostTCPex2
 
 `sitemaps/modbus_ex2.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex2 label="modbus_ex2"
 {
     Frame {
@@ -764,7 +764,7 @@ The profile also works the other way round, scaling the commands sent to the ite
 
 `things/modbus_ex_scaling.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
         Thing data temperatureDeciCelsius [ readStart="5", readValueType="int16", writeStart="5", writeValueType="int16", writeType="holding" ]
@@ -774,13 +774,13 @@ Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex_scaling.items`:
 
-```xtend
+```
 Number:Temperature TemperatureItem            "Temperature [%.1f °C]"   { channel="modbus:data:localhostTCP3:holdingPoller:temperatureDeciCelsius:number"[ profile="modbus:gainOffset", gain="0.1 °C", offset="0" ] }
 ```
 
 `sitemaps/modbus_ex_scaling.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex_scaling label="modbus_ex_scaling"
 {
     Frame {
@@ -801,7 +801,7 @@ In order to use this feature, one specifies `writeStart="X.Y"` (register `X`, bi
 
 `things/modbus_ex_command_bit.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
         Thing data register5 [ readStart="5.1", readValueType="bit", writeStart="5.1", writeValueType="bit", writeType="holding" ]
@@ -812,14 +812,14 @@ Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex_command_bit.items`:
 
-```xtend
+```
 Switch SecondLeastSignificantBit            "2nd least significant bit write switch [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:switch" }
 Number SecondLeastSignificantBitAltRead            "2nd least significant bit is now [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5Bit1:number" }
 ```
 
 `sitemaps/modbus_ex_command_bit.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex_command_bit label="modbus_ex_command_bit"
 {
     Frame {
@@ -839,7 +839,7 @@ Example for a dimmer device where 255 register value = 100% for fully ON:
 
 `things/modbus_ex_dimmer.things`:
 
-```xtend
+```
 Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
    Bridge poller MBDimmer [ start=4700, length=2, refresh=1000, type="holding" ]  {
 	         Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS:dimread255.js", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS:dimwrite255.js" ]
@@ -848,13 +848,13 @@ Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
 ```
 
 `items/modbus_ex_dimmer.items`:
-```xtend
+```
 Dimmer myDimmer "My Dimmer d2 [%.1f]"   { channel="modbus:data:remoteTCP:MBDimmer:DimmerReg:dimmer" }
 ```
 
 `sitemaps/modbus_ex_dimmer.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
 {
     Frame {
@@ -917,7 +917,7 @@ The logic of processing commands are summarized in the table
 
 `things/modbus_ex_rollershutter.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCPRollerShutter [ host="127.0.0.1", port=502 ] {
     Bridge poller holding [ start=0, length=3, refresh=1000, type="holding" ] {
         // Since we are using advanced transformation outputting JSON,
@@ -934,7 +934,7 @@ Bridge modbus:tcp:localhostTCPRollerShutter [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex_rollershutter.items`:
 
-```xtend
+```
 // We disable auto-update to make sure that rollershutter position is updated from the slave, not "automatically" via commands
 Rollershutter RollershutterItem "Roller shutter position [%.1f]" <temperature> { autoupdate="false", channel="modbus:data:localhostTCPRollerShutter:holding:rollershutterData:rollershutter" }
 
@@ -946,7 +946,7 @@ Number RollershutterItemDebug2 "Roller shutter Debug 2 [%d]" <temperature> { cha
 
 `sitemaps/modbus_ex_rollershutter.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex_rollershutter label="modbus_ex_rollershutter" {
     Switch item=RollershutterItem label="Roller shutter [(%d)]" mappings=[UP="up", STOP="X", DOWN="down", MOVE="move"]
 
