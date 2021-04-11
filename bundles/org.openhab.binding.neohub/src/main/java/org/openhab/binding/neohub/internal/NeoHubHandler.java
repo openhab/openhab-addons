@@ -468,7 +468,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             getThing().setProperty(PROPERTY_API_VERSION, apiVersion.label);
         }
 
-        isApiOnline = true;
+        this.isApiOnline = true;
     }
 
     /*
