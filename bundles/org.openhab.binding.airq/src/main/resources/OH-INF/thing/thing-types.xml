@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="airq">
 		<label>air-Q</label>
 		<description>Thing for air-Q Device</description>
@@ -237,7 +236,7 @@
 	<channel-type id="mtime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Time Needed for Measurement</label>
-		<state readOnly="true" pattern="%f ms"></state>
+		<state readOnly="true" pattern="%d ms"></state>
 	</channel-type>
 
 	<channel-type id="no2" advanced="false">
@@ -313,15 +312,15 @@
 	</channel-type>
 
 	<channel-type id="tvoc" advanced="false">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>VOC Concentration</label>
 		<state readOnly="true" pattern="%.0f ppb"></state>
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
-		<state readOnly="true" pattern="%.0f s"></state>
+		<state readOnly="true" pattern="%d s"></state>
 	</channel-type>
 
 	<!-- Maximum error -->
@@ -593,6 +592,7 @@
 	<channel-type id="SecondsMeasurementDelay" advanced="true">
 		<item-type>Number</item-type>
 		<label>Rhythm Historic Average</label>
+        <state pattern="%d s"></state>
 	</channel-type>
 
 	<channel-type id="Rejection" advanced="true">

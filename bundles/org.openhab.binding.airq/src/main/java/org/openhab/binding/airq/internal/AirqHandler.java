@@ -267,7 +267,7 @@ public class AirqHandler extends BaseThingHandler {
                 case "logLevel":
                     String ll = command.toString();
                     if (ll.equals("Error") || ll.equals("Warning") || ll.equals("Info")) {
-                        newobj.addProperty("Logging", ll);
+                        newobj.addProperty("logging", ll);
                         changeSettings(newobj);
                     } else {
                         logger.warn(
@@ -347,12 +347,7 @@ public class AirqHandler extends BaseThingHandler {
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException exc) {
             logger.warn("Error while decrypting. Probably the provided password is wrong.");
             return null;
-        } /*
-           * catch (Exception e) {
-           * logger.warn("air-Q - airqHandler - decrypt(): Error while decrypting: {}", e.toString());
-           * return null;
-           * }
-           */
+        }
         return content;
     }
 
@@ -561,7 +556,7 @@ public class AirqHandler extends BaseThingHandler {
                             processType(decObj, "NightMode", "", "nightmode");
                             processType(decObj, "devicename", "deviceName", "string");
                             processType(decObj, "RoomType", "roomType", "string");
-                            processType(decObj, "Logging", "logLevel", "string");
+                            processType(decObj, "logging", "logLevel", "string");
                             processType(decObj, "DeleteKey", "deleteKey", "string");
                             processType(decObj, "FireAlarm", "fireAlarm", "boolean");
                             processType(decObj, "air-Q-Hardware-Version", "hardwareVersion", "property");

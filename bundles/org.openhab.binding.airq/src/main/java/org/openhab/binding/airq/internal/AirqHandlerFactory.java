@@ -19,11 +19,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -60,12 +58,5 @@ public class AirqHandlerFactory extends BaseThingHandlerFactory {
             return new AirqHandler(thing, httpClientFactory.getCommonHttpClient());
         }
         return null;
-    }
-
-    @Override
-    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
-            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        Thing th = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
-        return th;
     }
 }

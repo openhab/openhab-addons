@@ -1,15 +1,10 @@
-img[src*="#small"] {
-    width:400px;
-    height:324px;
-}
-
 # air-Q Binding
 
 The air-Q Binding integrates the air analyzer [air-Q](http://www.air-q.com) device into the openHAB system.
 
 With the binding, it is possible to subscribe to all data delivered by the air-Q device.
 
-![air-Q image](doc/image_air-Q.png#small)
+![air-Q image](doc/image_air-Q.png)
 
 ## Supported Things
 
@@ -23,12 +18,14 @@ Auto-discovery is not supported.
 ## Thing Configuration
 
 The air-Q Thing must be configured with (both mandatory):
+
 | Parameter | Description                        |
 |-----------|------------------------------------|
 | ipAddress | Network address, e.g. 192.168.0.68 |
 | password  | Password of the air-Q device       |
 
 The Thing provides the following properties:
+
 | Parameter              | Description                   |
 |------------------------|-------------------------------|
 | id                     | Device ID                     |
@@ -158,7 +155,7 @@ Number:Pressure       airQ_pressure               "Pressure"                    
 Number                airQ_so2                    "SO2 concentration"                     {channel="airq:airq:1:so2"}
 Number                airQ_sound                  "Noise"                                 {channel="airq:airq:1:sound"}
 Number:Temperature    airQ_temperature            "Temperature"                           {channel="airq:airq:1:temperature"}
-DateTime              airQ_timestamp              "Time stamp"                            {channel="airq:airq:1:timestamp"}
+DateTime              airQ_timestamp              "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                            {channel="airq:airq:1:timestamp"}
 Number                airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:tvoc"}
 Number                airQ_uptime                 "Uptime"                                {channel="airq:airq:1:uptime"}
 
