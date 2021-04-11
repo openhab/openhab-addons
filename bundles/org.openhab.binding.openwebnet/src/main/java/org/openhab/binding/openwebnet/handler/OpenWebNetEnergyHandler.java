@@ -15,15 +15,20 @@ package org.openhab.binding.openwebnet.handler;
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_POWER;
 
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -51,8 +56,67 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES;
 
+    // fix issue #10509
+    public final int ENERGY_SUBSCRIPTION_PERIOD = 10; // minutes
+    private @Nullable ScheduledFuture<?> notificationSchedule;
+    public Boolean isFirstSchedulerLaunch = true;
+
     public OpenWebNetEnergyHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+
+        // subscribe the scheduler only after the bridge is online
+        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
+            notificationSchedule = scheduler.scheduleAtFixedRate(() -> {
+                if (isFirstSchedulerLaunch) {
+                    logger.debug(
+                            "bridgeStatusChanged() For WHERE={} subscribing to active power changes notification for the next {}min",
+                            deviceWhere, ENERGY_SUBSCRIPTION_PERIOD);
+                } else {
+                    logger.debug(
+                            "bridgeStatusChanged() Refreshing subscription for the next {}min for WHERE={} to active power changes notification",
+                            ENERGY_SUBSCRIPTION_PERIOD, deviceWhere);
+                }
+
+                try {
+                    bridgeHandler.gateway.send(EnergyManagement.setActivePowerNotificationsTime(deviceWhere.value(),
+                            ENERGY_SUBSCRIPTION_PERIOD));
+                    isFirstSchedulerLaunch = false;
+                } catch (Exception e) {
+                    if (isFirstSchedulerLaunch) {
+                        logger.warn(
+                                "bridgeStatusChanged() For WHERE={} could not subscribe to active power changes notifications. Exception={}",
+                                deviceWhere, e.getMessage());
+                    } else {
+                        logger.warn(
+                                "bridgeStatusChanged() Unable to refresh subscription to active power changes notifications for WHERE={}. Exception={}",
+                                deviceWhere, e.getMessage());
+                    }
+                }
+            }, 0, ENERGY_SUBSCRIPTION_PERIOD - 1, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (notificationSchedule != null) {
+            notificationSchedule.cancel(false);
+        }
+        super.dispose();
+        scheduler.schedule(() -> {
+            try {
+                // switch off active power updates
+                bridgeHandler.gateway.send(EnergyManagement.setActivePowerNotificationsTime(deviceWhere.value(), 0));
+            } catch (Exception e) {
+                logger.warn(
+                        "dispose() For WHERE={} could not UN-subscribe from active power changes notifications. Exception={}",
+                        deviceWhere, e.getMessage());
+            }
+        }, 1, TimeUnit.MINUTES);
     }
 
     @Override
