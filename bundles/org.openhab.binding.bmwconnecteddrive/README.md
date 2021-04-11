@@ -426,12 +426,9 @@ The possible values are the same mentioned in [Thing Configuration](#thing-confi
 | Image Viewport             | view                | String | Write    |
 | Image Picture Size         | size                | Number | Write    |
 
-## Rule Actions
+## Actions
 
-## Charge Profile Action
-
-The Charge Profile is accessible and modifiable in rules via action. 
-Get the corresponding action from your car using the Thing ID
+Get the _Actions_ object for your vehicle using the Thing ID
 
 * bmwconnecteddrive - Binding ID, don't change!
 * bev_rex - [Thing UID](#things) of your car
@@ -439,8 +436,10 @@ Get the corresponding action from your car using the Thing ID
 * i3 - Thing ID of your car
 
 ```
-  val profile = getActions("chargeprofile", "bmwconnecteddrive:bev_rex:user:i3")
+  val profile = getActions("bmwconnecteddrive", "bmwconnecteddrive:bev_rex:user:i3")
 ```
+
+### Charge Profile Editing
 
 Like in the Charge Profile Channels 3 Timers are provided. Replace *X* with 1, 2 or 3 to address the right timer.
 
@@ -466,8 +465,8 @@ Like in the Charge Profile Channels 3 Timers are provided. Replace *X* with 1, 2
 | setOverrideTimerDeparture             | LocalTime        | void                      | Sets the override timer departure time                     | 
 | getOverrideTimerDays                  | void             | Set<DayOfWeek>            | Returns the days of week the overrideTimer is enabled for  | 
 | setOverrideTimerDays                  | Set<DayOfWeek>   | void                      | Sets the days of week the overrideTimer is enabled for     | 
-| cancel                                | void             | void                      | Sends the charging profile to the vehicle                  | 
-| send                                  | void             | void                      | Cancel current edit of charging profile                    | 
+| cancelEditChargeProfile               | void             | void                      | Sends the charging profile to the vehicle                  | 
+| sendChargeProfile                     | void             | void                      | Cancel current edit of charging profile                    | 
 
 Values for valid charging mode get/set
 
