@@ -25,17 +25,30 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.api.*;
-import org.jetbrains.annotations.NotNull;
+import org.eclipse.jetty.websocket.api.BatchMode;
+import org.eclipse.jetty.websocket.api.CloseStatus;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.SuspendToken;
+import org.eclipse.jetty.websocket.api.UpgradeRequest;
+import org.eclipse.jetty.websocket.api.UpgradeResponse;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
+import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 
@@ -276,8 +289,8 @@ public class WebthingTest {
         public final AtomicReference<WebSocketImpl> webSocketRef = new AtomicReference<>();
 
         @Override
-        public WebSocketConnection create(@NotNull URI webSocketURI, @NotNull ScheduledExecutorService executor,
-                @NotNull Consumer<String> errorHandler, @NotNull Duration pingPeriod) {
+        public WebSocketConnection create(@NonNull URI webSocketURI, @NonNull ScheduledExecutorService executor,
+                @NonNull Consumer<String> errorHandler, @NonNull Duration pingPeriod) {
             var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
             var webSocket = new WebSocketImpl(webSocketConnection);
             webSocketRef.set(webSocket);
@@ -396,6 +409,15 @@ public class WebthingTest {
 
                 @Override
                 public void flush() throws IOException {
+                }
+
+                @Override
+                public int getMaxOutgoingFrames() {
+                    return 0;
+                }
+
+                @Override
+                public void setMaxOutgoingFrames(int maxOutgoingFrames) {
                 }
             };
         }

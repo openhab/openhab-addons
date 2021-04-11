@@ -26,12 +26,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +88,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     }
 
     @Override
-    public void observeProperty(@NotNull String propertyName, @NotNull BiConsumer<String, Object> listener) {
+    public void observeProperty(@NonNull String propertyName, @NonNull BiConsumer<String, Object> listener) {
         propertyChangedListeners.put(propertyName, listener);
     }
 
