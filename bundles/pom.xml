@@ -40,6 +40,8 @@
 
     <module>org.openhab.io.imperihome</module>
 
+    <module>org.openhab.io.metrics</module>
+
     <module>org.openhab.io.neeo</module>
 
     <module>org.openhab.io.openhabcloud</module>
