@@ -592,7 +592,7 @@
 	<channel-type id="SecondsMeasurementDelay" advanced="true">
 		<item-type>Number</item-type>
 		<label>Rhythm Historic Average</label>
-        <state pattern="%d s"></state>
+		<state pattern="%d s"></state>
 	</channel-type>
 
 	<channel-type id="Rejection" advanced="true">
