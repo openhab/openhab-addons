@@ -11,7 +11,9 @@
 		<label>Somfy Tahoma Gateway</label>
 		<channels>
 			<channel id="status" typeId="status"></channel>
+			<channel id="scenarios" typeId="scenarios"></channel>
 		</channels>
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:gateway"/>
 	</thing-type>
 

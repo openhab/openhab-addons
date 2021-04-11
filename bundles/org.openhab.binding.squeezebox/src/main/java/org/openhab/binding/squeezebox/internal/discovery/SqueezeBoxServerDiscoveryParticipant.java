@@ -84,8 +84,8 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
             String representationPropertyName = "ipAddress";
             properties.put(representationPropertyName, host);
-            properties.put("webport", new Integer(webPort));
-            properties.put("cliPort", new Integer(cliPort));
+            properties.put("webport", Integer.valueOf(webPort));
+            properties.put("cliPort", Integer.valueOf(cliPort));
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withRepresentationProperty(representationPropertyName).withLabel(label).build();

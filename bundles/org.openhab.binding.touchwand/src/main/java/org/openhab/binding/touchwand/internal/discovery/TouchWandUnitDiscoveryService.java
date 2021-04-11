@@ -81,9 +81,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        JsonParser jsonParser = new JsonParser();
         try {
-            JsonArray jsonArray = jsonParser.parse(response).getAsJsonArray();
+            JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
             if (jsonArray.isJsonArray()) {
                 try {
                     for (JsonElement unit : jsonArray) {

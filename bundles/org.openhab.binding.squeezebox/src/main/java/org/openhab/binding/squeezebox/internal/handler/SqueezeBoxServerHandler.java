@@ -37,7 +37,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
@@ -333,7 +332,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * Login to server
      */
     public void login() {
-        if (StringUtils.isEmpty(userId)) {
+        if (userId.isEmpty()) {
             return;
         }
         // Create basic auth string for jsonrpc interface
@@ -390,7 +389,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.userId = config.userId;
         this.password = config.password;
 
-        if (StringUtils.isEmpty(this.host)) {
+        if (host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
             return;
         }
@@ -836,7 +835,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private String constructCoverArtUrl(String mac, boolean coverart, String coverid, String artwork_url) {
             String hostAndPort;
-            if (StringUtils.isNotEmpty(userId)) {
+            if (!userId.isEmpty()) {
                 hostAndPort = "http://" + encode(userId) + ":" + encode(password) + "@" + host + ":" + webport;
             } else {
                 hostAndPort = "http://" + host + ":" + webport;

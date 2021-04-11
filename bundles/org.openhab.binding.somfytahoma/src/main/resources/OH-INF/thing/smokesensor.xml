@@ -16,6 +16,7 @@
 			<channel id="radio_battery" typeId="radio_battery"></channel>
 			<channel id="sensor_battery" typeId="sensor_battery"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

@@ -32,7 +32,7 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Time;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -82,7 +82,6 @@ public class KeContactHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
 
-    protected final JsonParser parser = new JsonParser();
     private final KeContactTransceiver transceiver;
 
     private ScheduledFuture<?> pollingJob;
@@ -236,7 +235,7 @@ public class KeContactHandler extends BaseThingHandler {
         }
 
         try {
-            JsonObject readObject = parser.parse(response).getAsJsonObject();
+            JsonObject readObject = JsonParser.parseString(response).getAsJsonObject();
 
             for (Entry<String, JsonElement> entry : readObject.entrySet()) {
                 switch (entry.getKey()) {

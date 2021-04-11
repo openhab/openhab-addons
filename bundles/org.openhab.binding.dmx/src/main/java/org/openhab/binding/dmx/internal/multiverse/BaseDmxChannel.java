@@ -95,9 +95,10 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
         if (otherDmxChannel == null) {
             return -1;
         }
-        int universeCompare = new Integer(getUniverseId()).compareTo(new Integer(otherDmxChannel.getUniverseId()));
+        int universeCompare = Integer.valueOf(getUniverseId())
+                .compareTo(Integer.valueOf(otherDmxChannel.getUniverseId()));
         if (universeCompare == 0) {
-            return new Integer(getChannelId()).compareTo(new Integer(otherDmxChannel.getChannelId()));
+            return Integer.valueOf(getChannelId()).compareTo(Integer.valueOf(otherDmxChannel.getChannelId()));
         } else {
             return universeCompare;
         }

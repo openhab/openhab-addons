@@ -24,6 +24,9 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class TeleinfoBindingConstants {
 
+    private TeleinfoBindingConstants() {
+    }
+
     private static final String BINDING_ID = "teleinfo";
 
     // List of all Thing Type UIDs
@@ -35,7 +38,7 @@ public class TeleinfoBindingConstants {
     // List of HC frames channel ids
     public static final String CHANNEL_HC_FRAME_HCHC = "hchc";
     public static final String CHANNEL_HC_FRAME_HCHP = "hchp";
-    public static final String CHANNEL_HC_FRAME_HHPHC = "hhphc";
+    public static final String CHANNEL_HHPHC = "hhphc";
     // List of BASE frames channel ids
     public static final String CHANNEL_BASE_FRAME_BASE = "base";
     // List of TEMPO frames channel ids
@@ -46,7 +49,6 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_TEMPO_FRAME_BBRHPJB = "bbrhpjb";
     public static final String CHANNEL_TEMPO_FRAME_BBRHCJB = "bbrhcjb";
     public static final String CHANNEL_TEMPO_FRAME_DEMAIN = "demain";
-    public static final String CHANNEL_TEMPO_FRAME_HHPHC = "hhphc";
     public static final String CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1 = "programmeCircuit1";
     public static final String CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_2 = "programmeCircuit2";
     // List of EJP frames channel ids
@@ -54,31 +56,29 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_EJP_FRAME_EJPHPM = "ejphpm";
     public static final String CHANNEL_EJP_FRAME_EJPHN = "ejphn";
     // List of CBEMM Channel ids
-    public static final String CHANNEL_CBEMM_ISOUSC = "isousc";
-    public static final String CHANNEL_CBEMM_PTEC = "ptec";
+    public static final String CHANNEL_ISOUSC = "isousc";
+    public static final String CHANNEL_PTEC = "ptec";
     public static final String CHANNEL_CBEMM_IMAX = "imax";
     public static final String CHANNEL_CBEMM_ADPS = "adps";
     public static final String CHANNEL_CBEMM_IINST = "iinst";
-    public static final String CHANNEL_CBEMM_MOTDETAT = "motdetat";
+    public static final String CHANNEL_MOTDETAT = "motdetat";
     // List of CBEMM EVOLUTION ICC Channel ids
-    public static final String CHANNEL_CBEMM_EVOLUTION_ICC_PAPP = "papp";
+    public static final String CHANNEL_PAPP = "papp";
     // List of CBETM Channel ids
     public static final String CHANNEL_CBETM_IINST1 = "iinst1";
     public static final String CHANNEL_CBETM_IINST2 = "iinst2";
     public static final String CHANNEL_CBETM_IINST3 = "iinst3";
     public static final String CHANNEL_CBETM_FRAME_TYPE = "frameType";
-    public static final String CHANNEL_CBETM_LONG_ISOUSC = "isousc";
     public static final String CHANNEL_CBETM_LONG_IMAX1 = "imax1";
     public static final String CHANNEL_CBETM_LONG_IMAX2 = "imax2";
     public static final String CHANNEL_CBETM_LONG_IMAX3 = "imax3";
-    public static final String CHANNEL_CBETM_LONG_PTEC = "ptec";
     public static final String CHANNEL_CBETM_LONG_PMAX = "pmax";
-    public static final String CHANNEL_CBETM_LONG_PAPP = "papp";
-    public static final String CHANNEL_CBETM_LONG_MOTDETAT = "motdetat";
     public static final String CHANNEL_CBETM_LONG_PPOT = "ppot";
     public static final String CHANNEL_CBETM_SHORT_ADIR1 = "adir1";
     public static final String CHANNEL_CBETM_SHORT_ADIR2 = "adir2";
     public static final String CHANNEL_CBETM_SHORT_ADIR3 = "adir3";
+
+    public static final String NOT_A_CHANNEL = "";
 
     public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
 

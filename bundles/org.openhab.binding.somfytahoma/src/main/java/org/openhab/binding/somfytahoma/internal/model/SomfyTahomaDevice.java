@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * to TahomaLink account.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - Add attributes data
  */
 @NonNullByDefault
 public class SomfyTahomaDevice {
@@ -33,6 +34,8 @@ public class SomfyTahomaDevice {
     private String oid = "";
     private SomfyTahomaDeviceDefinition definition = new SomfyTahomaDeviceDefinition();
     private List<SomfyTahomaState> states = new ArrayList<>();
+    private List<SomfyTahomaState> attributes = new ArrayList<>();
+    private String placeOID = "";
 
     public String getLabel() {
         return label;
@@ -54,11 +57,27 @@ public class SomfyTahomaDevice {
         return widget;
     }
 
+    public void setWidget(String widget) {
+        this.widget = widget;
+    }
+
     public SomfyTahomaDeviceDefinition getDefinition() {
         return definition;
     }
 
     public List<SomfyTahomaState> getStates() {
         return states;
+    }
+
+    public List<SomfyTahomaState> getAttributes() {
+        return attributes;
+    }
+
+    public String getPlaceOID() {
+        return placeOID;
+    }
+
+    public void setPlaceOID(String placeOID) {
+        this.placeOID = placeOID;
     }
 }

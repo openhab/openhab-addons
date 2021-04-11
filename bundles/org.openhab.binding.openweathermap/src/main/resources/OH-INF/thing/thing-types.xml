@@ -116,6 +116,23 @@
 		<config-description-ref uri="thing-type:openweathermap:uvindex"/>
 	</thing-type>
 
+	<thing-type id="air-pollution">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="weather-api"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Pollution</label>
+		<description>Provides air pollution data from the OpenWeatherMap API.</description>
+
+		<channel-groups>
+			<channel-group id="current" typeId="airPollution"/>
+		</channel-groups>
+
+		<representation-property>location</representation-property>
+
+		<config-description-ref uri="thing-type:openweathermap:air-pollution"/>
+	</thing-type>
+
 	<thing-type id="onecall">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="weather-api"/>
@@ -215,7 +232,6 @@
 			<channel-group id="forecastHours22" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours23" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours24" typeId="oneCallHourly"/>
-
 
 			<channel-group id="forecastToday" typeId="oneCallDaily">
 				<label>One Call API Todays Forecast</label>

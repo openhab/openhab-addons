@@ -19,7 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Power;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
@@ -193,7 +192,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         if (device != null) {
             BluetoothAdapter adapter = device.getAdapter();
             String location = adapter.getLocation();
-            if (location != null || StringUtils.isBlank(location)) {
+            if (location != null && !location.isBlank()) {
                 updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, new StringType(location));
             } else {
                 updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, UnDefType.NULL);
@@ -215,7 +214,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         }
     }
 
-    private void onActivity() {
+    protected void onActivity() {
         this.lastActivityTime = ZonedDateTime.now();
     }
 
@@ -242,27 +241,12 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            onActivity();
-        }
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            onActivity();
-        }
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         onActivity();
     }
 
     @Override
-    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
+    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] value) {
         onActivity();
     }
 

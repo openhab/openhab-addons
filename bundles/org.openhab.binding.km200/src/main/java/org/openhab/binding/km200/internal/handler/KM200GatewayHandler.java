@@ -30,7 +30,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -177,7 +176,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
             switch (key) {
                 case "ip4Address":
                     String ip = (String) configuration.get("ip4Address");
-                    if (StringUtils.isNotBlank(ip)) {
+                    if (ip != null && !ip.isBlank()) {
                         try {
                             InetAddress.getByName(ip);
                         } catch (UnknownHostException e) {
@@ -190,25 +189,25 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                     break;
                 case "privateKey":
                     String privateKey = (String) configuration.get("privateKey");
-                    if (StringUtils.isNotBlank(privateKey)) {
+                    if (privateKey != null && !privateKey.isBlank()) {
                         getDevice().setCryptKeyPriv(privateKey);
                     }
                     break;
                 case "md5Salt":
                     String md5Salt = (String) configuration.get("md5Salt");
-                    if (StringUtils.isNotBlank(md5Salt)) {
+                    if (md5Salt != null && !md5Salt.isBlank()) {
                         getDevice().setMD5Salt(md5Salt);
                     }
                     break;
                 case "gatewayPassword":
                     String gatewayPassword = (String) configuration.get("gatewayPassword");
-                    if (StringUtils.isNotBlank(gatewayPassword)) {
+                    if (gatewayPassword != null && !gatewayPassword.isBlank()) {
                         getDevice().setGatewayPassword(gatewayPassword);
                     }
                     break;
                 case "privatePassword":
                     String privatePassword = (String) configuration.get("privatePassword");
-                    if (StringUtils.isNotBlank(privatePassword)) {
+                    if (privatePassword != null && !privatePassword.isBlank()) {
                         getDevice().setPrivatePassword(privatePassword);
                     }
                     break;

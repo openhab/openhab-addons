@@ -14,16 +14,36 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
-import org.openhab.core.library.types.*;
-import org.openhab.core.thing.*;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -38,6 +58,7 @@ import org.slf4j.LoggerFactory;
  * The {@link SomfyTahomaBaseThingHandler} is base thing handler for all things.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - Setting of channels at init + UoM for channels
  */
 @NonNullByDefault
 public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
@@ -46,23 +67,57 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private HashMap<String, Integer> typeTable = new HashMap<>();
     protected HashMap<String, String> stateNames = new HashMap<>();
 
+    protected String url = "";
+
+    private Map<String, Unit<?>> units = new HashMap<>();
+
     public SomfyTahomaBaseThingHandler(Thing thing) {
         super(thing);
+        // Define default units
+        units.put("Number:Temperature", SIUnits.CELSIUS);
+        units.put("Number:Energy", Units.WATT_HOUR);
+        units.put("Number:Illuminance", Units.LUX);
+        units.put("Number:Dimensionless", Units.PERCENT);
     }
 
     public HashMap<String, String> getStateNames() {
         return stateNames;
     }
 
-    protected String url = "";
-
     @Override
     public void initialize() {
-        url = getURL();
-        if (getThing().getProperties().containsKey(RSSI_LEVEL_STATE)) {
-            createRSSIChannel();
+        Bridge bridge = getBridge();
+        initializeThing(bridge != null ? bridge.getStatus() : null);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        initializeThing(bridgeStatusInfo.getStatus());
+    }
+
+    public void initializeThing(@Nullable ThingStatus bridgeStatus) {
+        SomfyTahomaBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null && bridgeStatus != null) {
+            url = getURL();
+            if (getThing().getProperties().containsKey(RSSI_LEVEL_STATE)) {
+                createRSSIChannel();
+            }
+            if (bridgeStatus == ThingStatus.ONLINE) {
+                SomfyTahomaDevice device = bridgeHandler.getCachedDevice(url);
+                if (device != null) {
+                    updateUnits(device.getAttributes());
+                    List<SomfyTahomaState> states = device.getStates();
+                    updateThingStatus(states);
+                    updateThingChannels(states);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void createRSSIChannel() {
@@ -91,16 +146,12 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return logger;
     }
 
-    protected boolean isAlwaysOnline() {
-        return false;
-    }
-
     protected @Nullable SomfyTahomaBridgeHandler getBridgeHandler() {
         Bridge localBridge = this.getBridge();
         return localBridge != null ? (SomfyTahomaBridgeHandler) localBridge.getHandler() : null;
     }
 
-    private String getURL() {
+    protected String getURL() {
         return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString()
                 : "";
     }
@@ -112,7 +163,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private void setUnavailable() {
-        if (ThingStatus.OFFLINE != thing.getStatus() && !isAlwaysOnline()) {
+        if (ThingStatus.OFFLINE != thing.getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
         }
     }
@@ -125,6 +176,17 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             handler.sendCommand(url, cmd, param, EXEC_URL + "apply");
+        }
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd) {
+        sendCommandToSameDevicesInPlace(cmd, "[]");
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd, String param) {
+        SomfyTahomaBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            handler.sendCommandToSameDevicesInPlace(url, cmd, param, EXEC_URL + "apply");
         }
     }
 
@@ -178,11 +240,53 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    protected Unit<?> getTemperatureUnit() {
+        return Objects.requireNonNull(units.get("Number:Temperature"));
+    }
+
+    private void updateUnits(List<SomfyTahomaState> attributes) {
+        for (SomfyTahomaState attr : attributes) {
+            if ("core:MeasuredValueType".equals(attr.getName()) && attr.getType() == TYPE_STRING) {
+                switch ((String) attr.getValue()) {
+                    case "core:TemperatureInCelcius":
+                    case "core:TemperatureInCelsius":
+                        units.put("Number:Temperature", SIUnits.CELSIUS);
+                        break;
+                    case "core:TemperatureInKelvin":
+                        units.put("Number:Temperature", Units.KELVIN);
+                        break;
+                    case "core:TemperatureInFahrenheit":
+                        units.put("Number:Temperature", ImperialUnits.FAHRENHEIT);
+                        break;
+                    case "core:RelativeValueInPercentage":
+                        units.put("Number:Dimensionless", Units.PERCENT);
+                        break;
+                    case "core:LuminanceInLux":
+                        units.put("Number:Illuminance", Units.LUX);
+                        break;
+                    case "core:ElectricalEnergyInWh":
+                        units.put("Number:Energy", Units.WATT_HOUR);
+                        break;
+                    case "core:ElectricalEnergyInKWh":
+                        units.put("Number:Energy", Units.KILOWATT_HOUR);
+                        break;
+                    case "core:ElectricalEnergyInMWh":
+                        units.put("Number:Energy", Units.MEGAWATT_HOUR);
+                        break;
+                    default:
+                        logger.warn("Unhandled value \"{}\" for attribute \"core:MeasuredValueType\"", attr.getValue());
+                        break;
+                }
+                break;
+            }
+        }
+    }
+
     protected @Nullable State parseTahomaState(@Nullable SomfyTahomaState state) {
         return parseTahomaState(null, state);
     }
 
-    protected @Nullable State parseTahomaState(@Nullable String acceptedState, @Nullable SomfyTahomaState state) {
+    protected @Nullable State parseTahomaState(@Nullable String acceptedItemType, @Nullable SomfyTahomaState state) {
         if (state == null) {
             return UnDefType.NULL;
         }
@@ -205,14 +309,32 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             switch (type) {
                 case TYPE_PERCENT:
                     Double valPct = Double.parseDouble(state.getValue().toString());
+                    if (acceptedItemType != null && acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
+                        Unit<?> unit = units.get(acceptedItemType);
+                        if (unit != null) {
+                            return new QuantityType<>(normalizePercent(valPct), unit);
+                        } else {
+                            logger.warn("Do not return a quantity for {} because the unit is unknown",
+                                    acceptedItemType);
+                        }
+                    }
                     return new PercentType(normalizePercent(valPct));
                 case TYPE_DECIMAL:
                     Double valDec = Double.parseDouble(state.getValue().toString());
+                    if (acceptedItemType != null && acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
+                        Unit<?> unit = units.get(acceptedItemType);
+                        if (unit != null) {
+                            return new QuantityType<>(valDec, unit);
+                        } else {
+                            logger.warn("Do not return a quantity for {} because the unit is unknown",
+                                    acceptedItemType);
+                        }
+                    }
                     return new DecimalType(valDec);
                 case TYPE_STRING:
                 case TYPE_BOOLEAN:
                     String value = state.getValue().toString();
-                    if ("String".equals(acceptedState)) {
+                    if ("String".equals(acceptedItemType)) {
                         return new StringType(value);
                     } else {
                         return parseStringState(value);
@@ -247,9 +369,11 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         switch (value.toLowerCase()) {
             case "on":
             case "true":
+            case "active":
                 return OnOffType.ON;
             case "off":
             case "false":
+            case "inactive":
                 return OnOffType.OFF;
             case "notdetected":
             case "nopersoninside":
@@ -276,12 +400,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private @Nullable SomfyTahomaState getStatusState(List<SomfyTahomaState> states) {
-        for (SomfyTahomaState state : states) {
-            if (STATUS_STATE.equals(state.getName()) && state.getType() == TYPE_STRING) {
-                return state;
-            }
-        }
-        return null;
+        return getState(states, STATUS_STATE, TYPE_STRING);
     }
 
     private void updateThingStatus(@Nullable SomfyTahomaState state) {
@@ -344,5 +463,30 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     public int toInteger(Command command) {
         return (command instanceof DecimalType) ? ((DecimalType) command).intValue() : 0;
+    }
+
+    public @Nullable BigDecimal toTemperature(Command command) {
+        BigDecimal temperature = null;
+        if (command instanceof QuantityType<?>) {
+            QuantityType<?> quantity = (QuantityType<?>) command;
+            QuantityType<?> convertedQuantity = quantity.toUnit(getTemperatureUnit());
+            if (convertedQuantity != null) {
+                quantity = convertedQuantity;
+            }
+            temperature = quantity.toBigDecimal();
+        } else if (command instanceof DecimalType) {
+            temperature = ((DecimalType) command).toBigDecimal();
+        }
+        return temperature;
+    }
+
+    public static @Nullable SomfyTahomaState getState(List<SomfyTahomaState> states, String stateName,
+            @Nullable Integer stateType) {
+        for (SomfyTahomaState state : states) {
+            if (stateName.equals(state.getName()) && (stateType == null || stateType == state.getType())) {
+                return state;
+            }
+        }
+        return null;
     }
 }

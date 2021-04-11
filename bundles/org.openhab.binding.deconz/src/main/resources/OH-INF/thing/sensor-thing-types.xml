@@ -539,7 +539,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Valve position</label>
 		<description>Current valve position</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

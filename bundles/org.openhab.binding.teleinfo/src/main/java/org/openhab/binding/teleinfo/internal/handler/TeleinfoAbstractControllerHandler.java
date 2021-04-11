@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.TeleinfoDiscoveryService;
-import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -34,7 +34,7 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
 
     private Set<TeleinfoControllerHandlerListener> listeners = new CopyOnWriteArraySet<>();
 
-    public TeleinfoAbstractControllerHandler(Bridge bridge) {
+    protected TeleinfoAbstractControllerHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -47,7 +47,7 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
     }
 
     protected void fireOnFrameReceivedEvent(final Frame frame) {
-        listeners.forEach(l -> l.onFrameReceived(this, frame));
+        listeners.forEach(l -> l.onFrameReceived(frame));
     }
 
     @Override
