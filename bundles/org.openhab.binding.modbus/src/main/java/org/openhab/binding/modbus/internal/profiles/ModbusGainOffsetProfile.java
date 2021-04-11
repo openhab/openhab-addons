@@ -180,8 +180,7 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
         return result;
     }
 
-    private <Q2 extends Quantity<Q2>> Optional<QuantityType<Q>> parameterAsQuantityType(String parameterName,
-            Object parameterValue) {
+    private Optional<QuantityType<Q>> parameterAsQuantityType(String parameterName, Object parameterValue) {
         return parameterAsQuantityType(parameterName, parameterValue, null);
     }
 
