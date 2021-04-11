@@ -58,14 +58,14 @@ public class NeoHubReadDcbResponse {
         return "F".equalsIgnoreCase(degreesCorF) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
     }
 
-    public String getFirmwareVersion() {
+    public @Nullable String getFirmwareVersion() {
         if (firmwareVersionNew != null) {
             return firmwareVersionNew.toString();
         }
         if (firmwareVersionOld != null) {
             return firmwareVersionOld.toString();
         }
-        return "unknown";
+        return null;
     }
 
     /**
