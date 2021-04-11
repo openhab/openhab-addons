@@ -287,10 +287,7 @@
 		<description>HAN-FUN blind (e.g. RolloTron DECT 1213)</description>
 
 		<channels>
-			<channel id="rollershutter" typeId="rollershutter">
-				<label>Rollershutter control</label>
-				<description>Controls the rollershutter and displays its opening level in percent</description>
-			</channel>
+			<channel id="rollershutter" typeId="rollershutter"/>
 		</channels>
 
 		<representation-property>ain</representation-property>
