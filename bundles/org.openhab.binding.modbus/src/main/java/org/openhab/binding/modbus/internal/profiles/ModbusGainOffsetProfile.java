@@ -143,10 +143,10 @@ public class ModbusGainOffsetProfile implements StateProfile {
         if (state instanceof QuantityType) {
             final QuantityType<?> qtState;
             if (towardsItem) {
-                qtState = ((QuantityType) state).toUnit(Units.ONE);
+                qtState = ((QuantityType<?>) state).toUnit(Units.ONE);
                 if (qtState == null) {
                     logger.warn("Profile can only process plain numbers from handler. Got unit {}. Returning UNDEF",
-                            ((QuantityType) state).getUnit());
+                            ((QuantityType<?>) state).getUnit());
                     return UnDefType.UNDEF;
                 }
             } else {
@@ -166,7 +166,7 @@ public class ModbusGainOffsetProfile implements StateProfile {
             }
         } else if (state instanceof DecimalType) {
             DecimalType decState = (DecimalType) state;
-            return applyGainOffset(new QuantityType(decState, Units.ONE), towardsItem);
+            return applyGainOffset(new QuantityType<>(decState, Units.ONE), towardsItem);
         } else if (state instanceof RefreshType) {
             result = state;
         } else {
