@@ -7,7 +7,7 @@
 
 	<config-description uri="profile:modbus:gainOffset">
 		<parameter name="pre-gain-offset" type="decimal">
-			<label>Pre-gain offset</label>
+			<label>Pre-gain Offset</label>
 			<description>Offset to add to raw value towards the item (before the gain). The negative
 				offset will be applied in the
 				reverse direction (before inverting the gain). If omitted, zero offset is used.</description>
