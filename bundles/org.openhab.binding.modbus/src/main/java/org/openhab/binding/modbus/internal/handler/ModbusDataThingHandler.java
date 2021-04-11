@@ -364,10 +364,12 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         } else {
             allBytes[byteIndex] &= ~(1 << indexWithinByte);
         }
-        logger.trace(
-                "Boolean-like command {} from item, combining command with internal register ({}) with registerIndex={} (relative {}), bitIndex={}, resulting register {}",
-                b, HexUtils.bytesToHex(registers.getBytes()), registerIndex, registerIndexRelative, bitIndex,
-                HexUtils.bytesToHex(allBytes));
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "Boolean-like command {} from item, combining command with internal register ({}) with registerIndex={} (relative {}), bitIndex={}, resulting register {}",
+                    b, HexUtils.bytesToHex(registers.getBytes()), registerIndex, registerIndexRelative, bitIndex,
+                    HexUtils.bytesToHex(allBytes));
+        }
         return new ModbusRegisterArray(allBytes);
     }
 
