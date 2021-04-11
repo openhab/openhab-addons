@@ -342,6 +342,8 @@
 
     <module>org.openhab.binding.lutron</module>
 
+    <module>org.openhab.binding.luxtronikheatpump</module>
+
     <module>org.openhab.binding.magentatv</module>
 
     <module>org.openhab.binding.mail</module>
