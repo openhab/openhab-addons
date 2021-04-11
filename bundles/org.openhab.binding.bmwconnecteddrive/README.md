@@ -821,6 +821,7 @@ sitemap BMW label="BMW" {
 ```
 
 ### Rules File
+
 ```
 rule "i3ChargeWindowStartSetpoint"
 when
@@ -946,7 +947,7 @@ end
 ### Action example
 
 ```
-  val profile = getActions("chargeprofile", "bmwconnecteddrive:bev_rex:user:i3")
+  val profile = getActions("bmwconnecteddrive", "bmwconnecteddrive:bev_rex:user:i3")
   val now = ZonedDateTime.now.toLocalTime
   profile.setChargingMode("DELAYED_CHARGING")
   profile.setTimer1Departure(now.minusHours(2))
@@ -956,7 +957,7 @@ end
   profile.setTimer3Enabled(false)
   profile.setPreferredWindowStart(now.minusHours(6))
   profile.setPreferredWindowEnd(now.minusHours(2))
-  profile.send()
+  profile.sendChargeProfile()
 ```
 
 ## Credits
