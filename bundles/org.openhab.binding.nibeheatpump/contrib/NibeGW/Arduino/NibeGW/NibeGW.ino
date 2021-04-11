@@ -30,6 +30,9 @@
 //#define PRODINO_BOARD
 // Enable if ENC28J60 LAN module is used
 //#define TRANSPORT_ETH_ENC28J60
+// Enable if you use STM32 NUCLEO-F429ZI
+//#define STM32_F429ZI_BOARD
+
 
 // Enable debug printouts, listen printouts e.g. via netcat (nc -l -u 50000)
 //#define ENABLE_DEBUG
@@ -54,6 +57,11 @@
 #ifdef PRODINO_BOARD
 #define RS485_PORT              Serial1
 #define RS485_DIRECTION_PIN     3
+#elif defined STM32_F429ZI_BOARD
+#include <HardwareSerial.h>
+HardwareSerial Serial1(PG9,PG14);
+#define RS485_PORT              Serial1
+#define RS485_DIRECTION_PIN     PF15
 #else
 #define RS485_PORT              Serial
 #define RS485_DIRECTION_PIN     2
@@ -70,6 +78,10 @@
 
 #ifdef TRANSPORT_ETH_ENC28J60
 #include <UIPEthernet.h>
+#elif defined STM32_F429ZI_BOARD
+#include <LwIP.h>
+#include <STM32Ethernet.h>
+#include <EthernetUdp.h> 
 #else
 #include <SPI.h>
 #include <Ethernet.h>
@@ -81,7 +93,11 @@
 #include "KMPCommon.h"
 #endif
 
+#ifdef STM32_F429ZI_BOARD
+#include <IWatchdog.h>
+#else
 #include <avr/wdt.h>
+#endif
 
 #include "NibeGw.h"
 
@@ -142,12 +158,24 @@ void debugPrint(char* data)
 }
 #endif
 
+// ######### FUNCTION DEFINITION ######################
+
+void nibeCallbackMsgReceived(const byte* const data, int len);
+int nibeCallbackTokenReceived(eTokenType token, byte* data);
+void sendUdpPacket(const byte * const data, int len);
+void initializeEthernet();
+
+
 // ######### SETUP #######################
 
 void setup()
 {
   // Start watchdog
+#ifdef STM32_F429ZI_BOARD
+  IWatchdog.begin(2000000); // 2 sec
+#else
   wdt_enable (WDTO_2S);
+#endif
 
   nibegw.setCallback(nibeCallbackMsgReceived, nibeCallbackTokenReceived);
   nibegw.setAckModbus40Address(ACK_MODBUS40);
@@ -174,7 +202,11 @@ void setup()
 
 void loop()
 {
+#ifdef STM32_F429ZI_BOARD
+  IWatchdog.reload();
+#else
   wdt_reset();
+#endif
 
   long now = millis() / 1000;
 
@@ -227,6 +259,7 @@ void initializeEthernet()
 {
   Ethernet.begin(mac, ip, gw, mask);
   ethernetInitialized = true;
+  udp.begin(TARGET_PORT);  
   udp4readCmnds.begin(INCOMING_PORT_READCMDS);
   udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
 }
