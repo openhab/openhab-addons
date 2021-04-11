@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_SERIAL_NO;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,12 +30,14 @@ import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscove
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openwebnet4j.BUSGateway;
 import org.openwebnet4j.GatewayListener;
 import org.openwebnet4j.OpenDeviceType;
@@ -71,6 +71,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
 
     private static final int GATEWAY_ONLINE_TIMEOUT_SEC = 20; // Time to wait for the gateway to become connected
+
+    private static final int REFRESH_ALL_DEVICES_DELAY_MSEC = 500; // Delay to wait before sending all devices refresh
+                                                                   // request after a connect/reconnect
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
@@ -184,11 +187,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand (command={} - channel={})", command, channelUID);
         OpenGateway gw = gateway;
-        if (gw != null && !gw.isConnected()) {
+        if (gw == null || !gw.isConnected()) {
             logger.warn("Gateway is NOT connected, skipping command");
             return;
         } else {
-            logger.warn("Channel not supported: channel={}", channelUID);
+            if (command instanceof RefreshType) {
+                refreshAllDevices();
+            } else {
+                logger.warn("Command or channel not supported: channel={} command={}", channelUID, command);
+            }
         }
     }
 
@@ -376,6 +383,16 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         return registeredDevices.get(ownId);
     }
 
+    private void refreshAllDevices() {
+        logger.debug("Refreshing all devices for bridge {}", thing.getUID());
+        for (Thing ownThing : getThing().getThings()) {
+            OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
+            if (hndlr != null) {
+                hndlr.refreshDevice(true);
+            }
+        }
+    }
+
     @Override
     public void onEventMessage(@Nullable OpenMessage msg) {
         logger.trace("RECEIVED <<<<< {}", msg);
@@ -448,6 +465,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.info("properties updated for bridge '{}'", thing.getUID());
         }
         updateStatus(ThingStatus.ONLINE);
+        // schedule a refresh for all devices
+        scheduler.schedule(() -> {
+            refreshAllDevices();
+        }, REFRESH_ALL_DEVICES_DELAY_MSEC, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -502,7 +523,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                                     + ")");
                 }
             } else {
-                logger.debug("---- reconnecting=true, do nothing");
+                logger.debug("---- reconnecting=true");
             }
         } else {
             logger.warn("---- cannot start RECONNECT, gateway is null");
@@ -520,6 +541,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 this.updateProperty(PROPERTY_FIRMWARE_VERSION, gw.getFirmwareVersion());
                 logger.debug("gw firmware version: {}", gw.getFirmwareVersion());
             }
+
+            // schedule a refresh for all devices
+            scheduler.schedule(() -> {
+                refreshAllDevices();
+            }, REFRESH_ALL_DEVICES_DELAY_MSEC, TimeUnit.MILLISECONDS);
         }
     }
 
