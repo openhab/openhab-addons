@@ -762,3 +762,23 @@ sitemap demo label="OpenWeatherMapOneCall" {
     }
 }
 ```
+
+# Displaying generated OpenWeatherMap widget
+
+OpenWeathermap provides a service to generate widgets that can be easily displayed. You can get the code at [widget constructor](https://openweathermap.org/widgets-constructor).
+
+Select the widget you like most and embedd the code into an html file e.g. in $OPENHAB_CONF/html/weather.html - of course with a valid CITYID and APPID
+
+```html
+<html>
+<!-- get widget from -->
+<!-- https://openweathermap.org/widgets-constructor -->
+<div id="openweathermap-widget-11"></div><script src='//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/d3.min.js'></script><script>window.myWidgetParam ? window.myWidgetParam : window.myWidgetParam = [];  window.myWidgetParam.push({id: 11, cityid: 'CITYID', appid: 'APPID', units: 'metric', lang: 'de', containerid: 'openweathermap-widget-11',   });  (function() {var script = document.createElement('script');script.async = true;script.charset = "utf-8";script.src = "//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js";var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(script, s);  })();</script>
+</html>
+```
+
+Then you can use it in your e.g.
+* sitemap with the [Webview](https://www.openhab.org/docs/ui/sitemaps.html#element-type-webview) type
+* HabPanel with the [Frame](https://www.openhab.org/docs/ui/habpanel/habpanel.html#frame-frame) widget
+
+the link you need to add it `http://<ip-adress of openHAB>:8080/static/weather.html`
