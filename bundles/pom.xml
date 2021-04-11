@@ -644,6 +644,8 @@
 
     <module>org.openhab.binding.weatherunderground</module>
 
+    <module>org.openhab.binding.webthing</module>
+
     <module>org.openhab.binding.wemo</module>
 
     <module>org.openhab.binding.wifiled</module>
