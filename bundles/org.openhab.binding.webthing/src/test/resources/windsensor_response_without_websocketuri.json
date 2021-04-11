@@ -1,0 +1,52 @@
+{
+  "id":"urn:dev:ops:eltakowsSensor-1",
+  "title":"Wind",
+  "@context":"https://iot.mozilla.org/schemas",
+  "properties":{
+    "windspeed":{
+      "@type":"LevelProperty",
+      "title":"Windspeed",
+      "type":"number",
+      "description":"The current windspeed",
+      "unit":"km/h",
+      "readOnly":true,
+      "links":[
+        {
+          "rel":"property",
+          "href":"/properties/windspeed"
+        }
+      ]
+    }
+  },
+  "actions":{
+
+  },
+  "events":{
+
+  },
+  "links":[
+    {
+      "rel":"properties",
+      "href":"/properties"
+    },
+    {
+      "rel":"actions",
+      "href":"/actions"
+    },
+    {
+      "rel":"events",
+      "href":"/events"
+    }
+  ],
+  "description":"A web connected Eltako windsensor measuring wind speed on Raspberry Pi",
+  "@type":[
+    "MultiLevelSensor"
+  ],
+  "base":"http://192.168.0.23:9060/",
+  "securityDefinitions":{
+    "nosec_sc":{
+      "scheme":"nosec"
+    }
+  },
+  "security":"nosec_sc"
+}
