@@ -24,9 +24,8 @@ import org.openhab.core.thing.profiles.StateProfileType;
  */
 @NonNullByDefault
 public interface ModbusProfiles {
-
-    public static final String MODBUS_SCOPE = "modbus";
-
-    ProfileTypeUID GAIN_OFFSET = new ProfileTypeUID(MODBUS_SCOPE, "gainOffset");
-    StateProfileType GAIN_OFFSET_TYPE = ProfileTypeBuilder.newState(GAIN_OFFSET, "Gain-Offset Correction").build();
+    static final String MODBUS_SCOPE = "modbus";
+    static final ProfileTypeUID GAIN_OFFSET = new ProfileTypeUID(MODBUS_SCOPE, "gainOffset");
+    static final StateProfileType GAIN_OFFSET_TYPE = ProfileTypeBuilder.newState(GAIN_OFFSET, "Gain-Offset Correction")
+            .build();
 }
