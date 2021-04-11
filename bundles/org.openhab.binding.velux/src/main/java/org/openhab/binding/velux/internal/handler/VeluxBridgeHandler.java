@@ -297,7 +297,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             refreshSchedulerJob();
         }, mSecs, mSecs, TimeUnit.MILLISECONDS);
         VeluxHandlerFactory.refreshBindingInfo();
-        logger.info("Velux Bridge '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
+        logger.debug("Velux Bridge '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
                 bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
                 bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
     }
@@ -335,7 +335,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("disposeSchedulerJob(): shut down SLIP connection interface.");
         mySlipBridge.shutdown();
         VeluxHandlerFactory.refreshBindingInfo();
-        logger.info("Velux Bridge '{}' is shut down.", getThing().getUID());
+        logger.debug("Velux Bridge '{}' is shut down.", getThing().getUID());
         return true;
     }
 
@@ -401,11 +401,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         logger.trace("bridgeParamsUpdated(): Fetching existing scenes.");
         bridgeParameters.scenes.getScenes(thisBridge);
-        logger.info("Found Velux scenes:\n\t{}",
+        logger.debug("Found Velux scenes:\n\t{}",
                 bridgeParameters.scenes.getChannel().existingScenes.toString(false, "\n\t"));
         logger.trace("bridgeParamsUpdated(): Fetching existing actuators/products.");
         bridgeParameters.actuators.getProducts(thisBridge);
-        logger.info("Found Velux actuators:\n\t{}",
+        logger.debug("Found Velux actuators:\n\t{}",
                 bridgeParameters.actuators.getChannel().existingProducts.toString(false, "\n\t"));
 
         if (thisBridge.bridgeAPI().setHouseStatusMonitor() != null) {
