@@ -334,7 +334,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
                     getThing().setProperty(PROPERTY_FIRMWARE_VERSION, physicalFirmware);
                     // log it only if the prior property value was neither null nor empty
                     if ((thingFirmware != null) && (thingFirmware.length() > 0)) {
-                        logger.info("hub '{}' firmware has updated from '{}' to '{}'", thingFirmware, physicalFirmware);
+                        logger.info("hub '{}' has updated its firmware from '{}' to '{}'", getThing().getUID(),
+                                thingFirmware, physicalFirmware);
                     }
                 }
             }
