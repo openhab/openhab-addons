@@ -132,6 +132,7 @@
     <module>org.openhab.binding.heliosventilation</module>
     <module>org.openhab.binding.heos</module>
     <module>org.openhab.binding.homematic</module>
+    <module>org.openhab.binding.homewizard</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.http</module>
     <module>org.openhab.binding.hue</module>
@@ -178,6 +179,7 @@
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcp23017</module>
+    <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
@@ -315,6 +317,7 @@
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.velux</module>
     <module>org.openhab.binding.venstarthermostat</module>
+    <module>org.openhab.binding.ventaair</module>
     <module>org.openhab.binding.verisure</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.vitotronic</module>

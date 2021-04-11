@@ -29,11 +29,13 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class PlayerItemPlayPauseIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "player_playpause";
     private static final PlayPauseType STATE1 = PlayPauseType.PAUSE;
     private static final PlayPauseType STATE2 = PlayPauseType.PLAY;
     private static final @Nullable PlayPauseType STATE_BETWEEN = null;
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         PlayerItem item = (PlayerItem) ITEMS.get(NAME);

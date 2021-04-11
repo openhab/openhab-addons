@@ -56,7 +56,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     class DeviceService<TState extends BoschSHCServiceState> {
         /**
          * Constructor.
-         * 
+         *
          * @param service Service which belongs to the device.
          * @param affectedChannels Channels which are affected by the state of this service.
          */
@@ -99,7 +99,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Returns the unique id of the Bosch device.
-     * 
+     *
      * @return Unique id of the Bosch device.
      */
     public @Nullable String getBoschID() {
@@ -132,7 +132,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Handles the refresh command of all registered services. Override it to handle custom commands (e.g. to update
      * states of services).
-     * 
+     *
      * @param channelUID {@link ChannelUID} of the channel to which the command was sent
      * @param command {@link Command}
      */
@@ -144,10 +144,15 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
                 if (deviceService.affectedChannels.contains(channelUID.getIdWithoutGroup())) {
                     try {
                         deviceService.service.refreshState();
-                    } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
+                    } catch (TimeoutException | ExecutionException | BoschSHCException e) {
                         this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                 String.format("Error when trying to refresh state from service %s: %s",
                                         deviceService.service.getServiceName(), e.getMessage()));
+                    } catch (InterruptedException e) {
+                        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                String.format("Interrupted refresh state from service %s: %s",
+                                        deviceService.service.getServiceName(), e.getMessage()));
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
@@ -156,7 +161,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Processes an update which is received from the bridge.
-     * 
+     *
      * @param serviceName Name of service the update came from.
      * @param stateData Current state of device service. Serialized as JSON.
      */
@@ -178,7 +183,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Returns the bridge handler for this thing handler.
-     * 
+     *
      * @return Bridge handler for this thing handler. Null if no or an invalid bridge was set in the configuration.
      * @throws BoschSHCException If bridge for handler is not set or an invalid bridge is set.
      */
@@ -196,7 +201,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Query the Bosch Smart Home Controller for the state of the service with the specified name.
-     * 
+     *
      * @note Use services instead of directly requesting a state.
      *
      * @param stateName Name of the service to query
@@ -210,16 +215,21 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
             return bridgeHandler.getState(deviceId, stateName, classOfT);
-        } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
+        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error when trying to refresh state from service %s: %s", stateName, e.getMessage()));
+            return null;
+        } catch (InterruptedException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Interrupted refresh state from service %s: %s", stateName, e.getMessage()));
+            Thread.currentThread().interrupt();
             return null;
         }
     }
 
     /**
      * Creates and registers a new service for this device.
-     * 
+     *
      * @param <TService> Type of service.
      * @param <TState> Type of service state.
      * @param newService Supplier function to create a new instance of the service.
@@ -240,7 +250,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Registers a service for this device.
-     * 
+     *
      * @param <TService> Type of service.
      * @param <TState> Type of service state.
      * @param service Service to register.
@@ -269,7 +279,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Updates the state of a device service.
      * Sets the status of the device to offline if setting the state fails.
-     * 
+     *
      * @param <TService> Type of service.
      * @param <TState> Type of service state.
      * @param service Service to set state for.
@@ -279,15 +289,19 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             TService service, TState state) {
         try {
             service.setState(state);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
                     "Error when trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
+        } catch (InterruptedException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+                    .format("Interrupted update state for service %s: %s", service.getServiceName(), e.getMessage()));
+            Thread.currentThread().interrupt();
         }
     }
 
     /**
      * Registers a service of this device.
-     * 
+     *
      * @param service Service which belongs to this device
      * @param affectedChannels Channels which are affected by the state of this
      *            service

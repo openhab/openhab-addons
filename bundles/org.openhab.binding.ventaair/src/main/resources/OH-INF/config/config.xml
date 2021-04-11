@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:ventaair:humidifier">
+		<parameter name="ipAddress" type="text" required="true">
+			<label>IP Address</label>
+			<context>network-address</context>
+			<description>IP Address or hostname of the device</description>
+		</parameter>
+		<parameter name="macAddress" type="text" required="true">
+			<label>MAC Address</label>
+			<description>MAC Address of the device</description>
+		</parameter>
+		<parameter name="deviceType" type="integer" required="true">
+			<label>Device Type</label>
+			<description>Type of the device as integer</description>
+		</parameter>
+		<parameter name="pollingTime" type="integer" required="false" unit="s" min="1" max="86400">
+			<label>Polling Interval</label>
+			<default>10</default>
+			<description>Time in seconds between fetching data from the device</description>
+		</parameter>
+		<parameter name="hash" type="integer" required="false" max="-1">
+			<label>Hash</label>
+			<description>Optional negative number that relates to a connection (like from the VentaApp) to the device</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

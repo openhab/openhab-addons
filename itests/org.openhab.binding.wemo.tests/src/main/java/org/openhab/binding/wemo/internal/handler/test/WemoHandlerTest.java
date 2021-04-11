@@ -40,23 +40,23 @@ import org.openhab.core.types.State;
  */
 public class WemoHandlerTest {
 
-    private final ThingTypeUID THING_TYPE = WemoBindingConstants.THING_TYPE_INSIGHT;
-    private final String THING_ID = "test";
+    private static final ThingTypeUID THING_TYPE = WemoBindingConstants.THING_TYPE_INSIGHT;
+    private static final String THING_ID = "test";
 
     private MockWemoHandler handler;
 
-    private final String SERVICE_ID = "insight";
-    private final String PARAMS_NAME = "InsightParams";
+    private static final String SERVICE_ID = "insight";
+    private static final String PARAMS_NAME = "InsightParams";
     private WemoInsightParams insightParams;
 
     /** Used for all tests, where expected value is time in seconds **/
-    private final int TIME_PARAM = 4702;
+    private static final int TIME_PARAM = 4702;
 
     /** Represents a state parameter, where 1 stays for ON and 0 stays for OFF **/
-    private final int STATE_PARAM = 1;
+    private static final int STATE_PARAM = 1;
 
     /** Represents power in Wats **/
-    private final int POWER_PARAM = 54;
+    private static final int POWER_PARAM = 54;
 
     private final Thing thing = mock(Thing.class);
 

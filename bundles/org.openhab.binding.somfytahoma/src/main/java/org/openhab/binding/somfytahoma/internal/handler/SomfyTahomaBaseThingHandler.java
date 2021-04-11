@@ -146,16 +146,12 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return logger;
     }
 
-    protected boolean isAlwaysOnline() {
-        return false;
-    }
-
     protected @Nullable SomfyTahomaBridgeHandler getBridgeHandler() {
         Bridge localBridge = this.getBridge();
         return localBridge != null ? (SomfyTahomaBridgeHandler) localBridge.getHandler() : null;
     }
 
-    private String getURL() {
+    protected String getURL() {
         return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString()
                 : "";
     }
@@ -167,7 +163,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private void setUnavailable() {
-        if (ThingStatus.OFFLINE != thing.getStatus() && !isAlwaysOnline()) {
+        if (ThingStatus.OFFLINE != thing.getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
         }
     }
@@ -180,6 +176,17 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             handler.sendCommand(url, cmd, param, EXEC_URL + "apply");
+        }
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd) {
+        sendCommandToSameDevicesInPlace(cmd, "[]");
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd, String param) {
+        SomfyTahomaBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            handler.sendCommandToSameDevicesInPlace(url, cmd, param, EXEC_URL + "apply");
         }
     }
 
