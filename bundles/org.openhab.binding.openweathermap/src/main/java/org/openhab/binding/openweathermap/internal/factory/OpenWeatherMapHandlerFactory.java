@@ -16,7 +16,6 @@ import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingC
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,7 +25,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.openweathermap.internal.discovery.OpenWeatherMapDiscoveryService;
-import org.openhab.binding.openweathermap.internal.handler.*;
+import org.openhab.binding.openweathermap.internal.handler.AbstractOpenWeatherMapHandler;
+import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
+import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAirPollutionHandler;
+import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHandler;
+import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHistoryHandler;
+import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapUVIndexHandler;
+import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeatherAndForecastHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
@@ -90,13 +95,15 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
             // register discovery service
             OpenWeatherMapDiscoveryService discoveryService = new OpenWeatherMapDiscoveryService(handler,
                     locationProvider, localeProvider, i18nProvider);
-            discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
-                    .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+            discoveryServiceRegs.put(handler.getThing().getUID(),
+                    bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
             return handler;
         } else if (THING_TYPE_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
             return new OpenWeatherMapWeatherAndForecastHandler(thing, timeZoneProvider);
         } else if (THING_TYPE_UVINDEX.equals(thingTypeUID)) {
             return new OpenWeatherMapUVIndexHandler(thing, timeZoneProvider);
+        } else if (THING_TYPE_AIR_POLLUTION.equals(thingTypeUID)) {
+            return new OpenWeatherMapAirPollutionHandler(thing, timeZoneProvider);
         } else if (THING_TYPE_ONECALL_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
             return new OpenWeatherMapOneCallHandler(thing, timeZoneProvider);
         } else if (THING_TYPE_ONECALL_HISTORY.equals(thingTypeUID)) {

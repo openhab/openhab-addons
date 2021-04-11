@@ -23,10 +23,9 @@
 		<representation-property>macAddress</representation-property>
 
 		<config-description uri="thing-type:magentatv:receiver">
-			<parameter name="ipAddress" type="text">
+			<parameter name="ipAddress" type="text" required="true">
 				<label>Device IP Address</label>
 				<description>IP address of the receiver</description>
-				<required>true</required>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="accountName" type="text">
@@ -42,10 +41,9 @@
 				<label>User ID</label>
 				<description>Technical User ID required for pairing process</description>
 			</parameter>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the Media Receiver</description>
-				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="port" type="text">

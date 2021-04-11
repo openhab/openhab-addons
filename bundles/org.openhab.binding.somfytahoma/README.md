@@ -62,6 +62,7 @@ Please see the example below.
 |-------------------------------------------------------------------------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | bridge                                                                        | N.A                          | bridge does not expose any channel                                                                                          |
 | gateway                                                                       | status                       | status of your Tahoma gateway                                                                                               |
+| gateway                                                                       | scenarios                    | used to run the scenarios defined in the cloud portal                                                                       |
 | gate                                                                          | gate_command                 | used for controlling your gate (open, close, stop, pedestrian)                                                              |
 | gate                                                                          | gate_state                   | get state of your gate (open, closed, pedestrian)                                                                           |
 | gate                                                                          | gate_position                | get position (0-100%) of your gate (where supported)                                                                        |
@@ -119,6 +120,9 @@ Please see the example below.
 | myfox camera, myfox alarm                                                     | cloud_status                 | cloud connection status                                                                                                     |
 | myfox camera                                                                  | shutter                      | controlling of the camera shutter                                                                                           |
 | myfox alarm                                                                   | myfox_alarm_command          | used for sending commands to Somfy Myfox alarm device                                                                       |
+
+To run a scenario inside a rule for example, the ID of the scenario will be required.
+You can list all the scenarios IDs with the following console command: `somfytahoma <bridgeUID> scenarios`.
 
 ### Remarks
 

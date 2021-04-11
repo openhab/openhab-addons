@@ -134,7 +134,14 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     public boolean sendMessage(PushoverMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendMessage(messageBuilder);
+            try {
+                return connection.sendMessage(messageBuilder);
+            } catch (PushoverCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushoverConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return false;
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
@@ -142,7 +149,14 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     public String sendPriorityMessage(PushoverMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendPriorityMessage(messageBuilder);
+            try {
+                return connection.sendPriorityMessage(messageBuilder);
+            } catch (PushoverCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushoverConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return "";
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
@@ -150,12 +164,20 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     public boolean cancelPriorityMessage(String receipt) {
         if (connection != null) {
-            return connection.cancelPriorityMessage(receipt);
+            try {
+                return connection.cancelPriorityMessage(receipt);
+            } catch (PushoverCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushoverConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return false;
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
     }
 
+    @SuppressWarnings("null")
     private void asyncValidateUser() {
         try {
             connection.validateUser();

@@ -371,7 +371,7 @@ public class SonosXMLParser {
                 int trackNumberVal = 0;
                 try {
                     trackNumberVal = Integer.parseInt(trackNumber.toString());
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                 }
 
                 SonosResourceMetaData md = null;
