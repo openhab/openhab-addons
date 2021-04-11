@@ -22,9 +22,6 @@ import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.core.config.core.Configuration;
@@ -38,7 +35,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
 
@@ -48,28 +44,28 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class AhaWasteCollectionHandlerTest {
 
-    private @Nullable ThingHandler handler;
-    private @Nullable ThingHandlerCallback callback;
-    private @Nullable Thing thing;
+    private static final Configuration config = createConfig();
 
-    @BeforeEach
-    public void setUp() {
+    private static Configuration createConfig() {
         final Configuration config = new Configuration();
         config.put("commune", "Hannover");
         config.put("collectionPlace", "02095-0010+");
         config.put("houseNumber", "10");
         config.put("houseNumberAddon", "");
         config.put("street", "02095@Oesterleystr.+/+Südstadt@Südstadt");
+        return config;
+    }
 
-        this.thing = mockThing(config);
-
-        // Stub-Scheduler that executes the command synchronous
-        @SuppressWarnings("unchecked")
-        final CronScheduler scheduler = new CronScheduler() {
+    /**
+     * Creates an {@link CronScheduler} that executes all commands synchronous.
+     */
+    @SuppressWarnings("unchecked")
+    private static CronScheduler createStubScheduler() {
+        return new CronScheduler() {
 
             @Override
-            public ScheduledCompletableFuture<Void> schedule(final CronJob cronJob, final Map<String, Object> config,
-                    final String cronExpression) {
+            public final ScheduledCompletableFuture<Void> schedule(final CronJob cronJob,
+                    final Map<String, Object> config, final String cronExpression) {
                 try {
                     cronJob.run(config);
                 } catch (final Exception e) {
@@ -79,7 +75,7 @@ public class AhaWasteCollectionHandlerTest {
             }
 
             @Override
-            public ScheduledCompletableFuture<Void> schedule(final SchedulerRunnable runnable,
+            public final ScheduledCompletableFuture<Void> schedule(final SchedulerRunnable runnable,
                     final String cronExpression) {
                 try {
                     runnable.run();
@@ -89,11 +85,6 @@ public class AhaWasteCollectionHandlerTest {
                 return Mockito.mock(ScheduledCompletableFuture.class);
             }
         };
-
-        this.handler = new AhaWasteCollectionHandler(this.getThing(), scheduler, ZoneId::systemDefault,
-                new AhaCollectionScheduleStubFactory());
-        this.callback = mock(ThingHandlerCallback.class);
-        this.handler.setCallback(this.callback);
     }
 
     private static Thing mockThing(final Configuration config) {
@@ -120,43 +111,46 @@ public class AhaWasteCollectionHandlerTest {
         return channel;
     }
 
-    // Needed because of NotNullCheck will fail otherwise when using attribute thing in mockito verify.
-    private Thing getThing() {
-        if (this.thing != null) {
-            return this.thing;
-        } else {
-            throw new AssertionError();
-        }
-    }
+    private static AhaWasteCollectionHandler createAndInitHandler(final ThingHandlerCallback callback,
+            final Thing thing) {
+        final AhaWasteCollectionHandler handler = new AhaWasteCollectionHandler(thing, createStubScheduler(),
+                ZoneId::systemDefault, new AhaCollectionScheduleStubFactory());
 
-    @AfterEach
-    public void tearDown() {
-        this.handler.dispose();
-    }
-
-    @Test
-    public void testUpdateChannels() {
-        this.handler.initialize();
-        verify(this.callback).statusUpdated(eq(this.getThing()),
-                argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-        verify(this.callback, timeout(1000)).statusUpdated(eq(this.thing),
-                argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-        verify(this.callback, timeout(1000)).stateUpdated(
-                new ChannelUID(this.thing.getUID(), AhaWasteCollectionBindingConstants.BIOWASTE),
-                getDateTime(AhaCollectionScheduleStub.BIO_WASTE_DATE));
-        verify(this.callback, timeout(1000)).stateUpdated(
-                new ChannelUID(this.thing.getUID(), AhaWasteCollectionBindingConstants.GENERAL_WASTE),
-                getDateTime(AhaCollectionScheduleStub.GENERAL_WASTE_DATE));
-        verify(this.callback, timeout(1000)).stateUpdated(
-                new ChannelUID(this.thing.getUID(), AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING),
-                getDateTime(AhaCollectionScheduleStub.LEIGHTWEIGHT_PACKAGING_DATE));
-        verify(this.callback, timeout(1000)).stateUpdated(
-                new ChannelUID(this.thing.getUID(), AhaWasteCollectionBindingConstants.PAPER),
-                getDateTime(AhaCollectionScheduleStub.PAPER_DATE));
+        handler.setCallback(callback);
+        handler.initialize();
+        return handler;
     }
 
     private static State getDateTime(final Date day) {
         final ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(day.toInstant(), ZoneId.systemDefault());
         return new DateTimeType(zonedDateTime);
+    }
+
+    @Test
+    public void testUpdateChannels() {
+
+        final Thing thing = mockThing(config);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final AhaWasteCollectionHandler handler = createAndInitHandler(callback, thing);
+
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback, timeout(1000)).statusUpdated(eq(thing),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback, timeout(1000)).stateUpdated(
+                    new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.BIOWASTE),
+                    getDateTime(AhaCollectionScheduleStub.BIO_WASTE_DATE));
+            verify(callback, timeout(1000)).stateUpdated(
+                    new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.GENERAL_WASTE),
+                    getDateTime(AhaCollectionScheduleStub.GENERAL_WASTE_DATE));
+            verify(callback, timeout(1000)).stateUpdated(
+                    new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING),
+                    getDateTime(AhaCollectionScheduleStub.LEIGHTWEIGHT_PACKAGING_DATE));
+            verify(callback, timeout(1000)).stateUpdated(
+                    new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.PAPER),
+                    getDateTime(AhaCollectionScheduleStub.PAPER_DATE));
+        } finally {
+            handler.dispose();
+        }
     }
 }
