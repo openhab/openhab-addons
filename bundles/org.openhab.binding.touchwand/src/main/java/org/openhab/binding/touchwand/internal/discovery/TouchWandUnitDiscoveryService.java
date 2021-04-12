@@ -105,11 +105,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                                 break;
                             case TYPE_SWITCH:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
-                                notifyListeners(touchWandUnit);
                                 break;
                             case TYPE_DIMMER:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_DIMMER);
-                                notifyListeners(touchWandUnit);
                                 break;
                             case TYPE_SHUTTER:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
@@ -120,6 +118,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                             default:
                                 continue;
                         }
+                        notifyListeners(touchWandUnit);
                     }
                 } catch (JsonSyntaxException e) {
                     logger.warn("Could not parse unit {}", e.getMessage());
