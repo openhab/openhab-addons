@@ -465,8 +465,8 @@ Like in the Charge Profile Channels 3 Timers are provided. Replace *X* with 1, 2
 | setOverrideTimerDeparture             | LocalTime        | void                      | Sets the override timer departure time                     | 
 | getOverrideTimerDays                  | void             | Set<DayOfWeek>            | Returns the days of week the overrideTimer is enabled for  | 
 | setOverrideTimerDays                  | Set<DayOfWeek>   | void                      | Sets the days of week the overrideTimer is enabled for     | 
-| cancelEditChargeProfile               | void             | void                      | Sends the charging profile to the vehicle                  | 
-| sendChargeProfile                     | void             | void                      | Cancel current edit of charging profile                    | 
+| cancelEditChargeProfile               | void             | void                      | Cancel current edit of charging profile                    | 
+| sendChargeProfile                     | void             | void                      | Sends the charging profile to the vehicle                  | 
 
 Values for valid charging mode get/set
 
