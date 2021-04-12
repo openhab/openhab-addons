@@ -28,7 +28,7 @@ import org.openhab.core.library.types.DecimalType;
 /**
  * The {@link SolarMaxDataTest} class is used to test the {@link SolaMaxData} class.
  *
- * @author Johann Richard - Initial contribution
+ * @author Jamie Townsend - Initial contribution
  */
 @NonNullByDefault
 public class SolarMaxDataTest {
