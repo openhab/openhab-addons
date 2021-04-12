@@ -383,8 +383,6 @@ public class DefaultMieleWebserviceTest {
 
             // then:
             verify(request).send();
-            verify(request, atLeast(1)).getMethod();
-            verify(request).getURI();
             verifyNoMoreInteractions(request);
         }
     }
@@ -454,8 +452,6 @@ public class DefaultMieleWebserviceTest {
 
             // then:
             verify(request).send();
-            verify(request, atLeast(1)).getMethod();
-            verify(request).getURI();
             verifyNoMoreInteractions(request);
         }
     }
@@ -480,8 +476,6 @@ public class DefaultMieleWebserviceTest {
 
             // then:
             verify(request).send();
-            verify(request, atLeast(1)).getMethod();
-            verify(request).getURI();
             verifyNoMoreInteractions(request);
         }
     }
@@ -534,8 +528,6 @@ public class DefaultMieleWebserviceTest {
             // then:
             assertFalse(webservice.hasAccessToken());
             verify(request).send();
-            verify(request, atLeast(1)).getMethod();
-            verify(request).getURI();
             verifyNoMoreInteractions(request);
         }
     }
@@ -631,8 +623,6 @@ public class DefaultMieleWebserviceTest {
 
             // then:
             verify(request).send();
-            verify(request, atLeast(1)).getMethod();
-            verify(request).getURI();
             verifyNoMoreInteractions(request);
         }
     }
@@ -658,8 +648,6 @@ public class DefaultMieleWebserviceTest {
 
             // then:
             verify(request).send();
-            verify(request, atLeast(1)).getMethod();
-            verify(request).getURI();
             verifyNoMoreInteractions(request);
         }
     }
@@ -711,8 +699,6 @@ public class DefaultMieleWebserviceTest {
 
             // then:
             verify(request).send();
-            verify(request, atLeast(1)).getMethod();
-            verify(request).getURI();
             verifyNoMoreInteractions(request);
         }
     }
