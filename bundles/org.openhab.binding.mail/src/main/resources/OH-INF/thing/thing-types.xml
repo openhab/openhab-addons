@@ -118,7 +118,6 @@
 		<config-description>
 			<parameter name="folder" type="text" required="true">
 				<label>Folder Name</label>
-				<required>true</required>
 			</parameter>
 			<parameter name="type" type="text" required="false">
 				<options>

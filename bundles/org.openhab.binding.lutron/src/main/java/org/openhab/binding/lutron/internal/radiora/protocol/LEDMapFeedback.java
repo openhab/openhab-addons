@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lutron.internal.radiora.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Feedback (LMP) that gives the state of all phantom LEDs
  * <p>
@@ -34,6 +36,7 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class LEDMapFeedback extends RadioRAFeedback {
 
     private String bitmap; // 15 bit String of (0,1). 1 is ON, 0 is OFF

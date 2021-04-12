@@ -24,4 +24,5 @@ features/**/src/main/feature
 .vscode
 .factorypath
 pom.xml.versionsBackup
-bundles/org.openhab.binding.tapocontrol/src/main/java/org/openhab/binding/tapocontrol/test/*
+bundles/org.openhab.binding.tapocontrol/src/main/java/org/openhab/binding/tapocontrol/internal/device/TestDevice.java
+bundles/org.openhab.binding.tapocontrol/src/main/resources/OH-INF/thing/test-thing-types.xml

@@ -31,6 +31,9 @@ import org.openhab.binding.tacmi.internal.message.Message;
 import org.openhab.binding.tacmi.internal.message.MessageType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -286,7 +289,7 @@ public class TACmiHandler extends BaseThingHandler {
         if (analog) {
             final TACmiMeasureType measureType = TACmiMeasureType
                     .values()[((TACmiChannelConfigurationAnalog) channelConfig).type];
-            final DecimalType dt = (DecimalType) command;
+            final Number dt = (Number) command;
             final double val = dt.doubleValue() * measureType.getOffset();
             modified = message.setValue(outputIdx, (short) val, measureType.ordinal());
         } else {
@@ -352,7 +355,29 @@ public class TACmiHandler extends BaseThingHandler {
 
             if (message.getType() == MessageType.ANALOG) {
                 final AnalogValue value = ((AnalogMessage) message).getAnalogValue(output);
-                updateState(channel.getUID(), new DecimalType(value.value));
+                State newState;
+                switch (value.measureType) {
+                    case TEMPERATURE:
+                        newState = new QuantityType<>(value.value, SIUnits.CELSIUS);
+                        break;
+                    case KILOWATT:
+                        // TA uses kW, in OH we use W
+                        newState = new QuantityType<>(value.value * 1000, Units.WATT);
+                        break;
+                    case KILOWATTHOURS:
+                        newState = new QuantityType<>(value.value, Units.KILOWATT_HOUR);
+                        break;
+                    case MEGAWATTHOURS:
+                        newState = new QuantityType<>(value.value, Units.MEGAWATT_HOUR);
+                        break;
+                    case SECONDS:
+                        newState = new QuantityType<>(value.value, Units.SECOND);
+                        break;
+                    default:
+                        newState = new DecimalType(value.value);
+                        break;
+                }
+                updateState(channel.getUID(), newState);
             } else {
                 final boolean state = ((DigitalMessage) message).getPortState(output);
                 updateState(channel.getUID(), state ? OnOffType.ON : OnOffType.OFF);

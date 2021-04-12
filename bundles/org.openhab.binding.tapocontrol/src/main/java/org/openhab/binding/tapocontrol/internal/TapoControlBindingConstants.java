@@ -45,6 +45,7 @@ public class TapoControlBindingConstants {
     public static final Integer TAPO_DISCOVERY_TIMEOUT_MS = 10000;
     public static final Integer TAPO_REFRESH_MIN_GAP_MS = 1000;
     public static final Integer TAPO_SEND_MIN_GAP_MS = 100;
+    public static final Boolean IGNORE_CONFIG_ERROR = true;
 
     // LIST OF SUPPORTED DEVICE NAMES
     public static final String DEVICE_P100 = "P100";

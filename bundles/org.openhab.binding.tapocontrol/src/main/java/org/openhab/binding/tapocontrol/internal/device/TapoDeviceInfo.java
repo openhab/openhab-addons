@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -28,6 +30,8 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class TapoDeviceInfo {
+    private final Logger logger = LoggerFactory.getLogger(TapoDeviceInfo.class);
+
     private String deviceId = "";
     private String fwVer = "";
     private String hwVer = "";
@@ -130,10 +134,15 @@ public class TapoDeviceInfo {
      */
     private Boolean getBool(String name, Boolean defVal) {
         if (jsonObject.has(name)) {
-            return jsonObject.get(name).getAsBoolean();
-        } else {
-            return false;
+            String s = jsonObject.get(name).getAsString();
+            try {
+                Boolean b = Boolean.parseBoolean(s);
+                return b;
+            } catch (Exception e) {
+                logger.warn("Value is not valid boolean '{}':  {}", s, e.getMessage());
+            }
         }
+        return false;
     }
 
     /**
@@ -153,10 +162,19 @@ public class TapoDeviceInfo {
      */
     private Integer getInt(String name, Integer defVal) {
         if (jsonObject.has(name)) {
-            return jsonObject.get(name).getAsInt();
-        } else {
-            return defVal;
+            String s = jsonObject.get(name).getAsString();
+            try {
+                Integer i = Integer.parseInt(s);
+                return i;
+            } catch (NumberFormatException e) {
+                logger.warn("Value is not valid integer (NumberFormatException): '{}'", s);
+            } catch (NullPointerException e) {
+                logger.warn("Value is not valid integer (NullPointerException): '{}'", s);
+            } catch (Exception e) {
+                logger.warn("Value is not valid integer '{}:  {}", s, e.getMessage());
+            }
         }
+        return defVal;
     }
 
     /**

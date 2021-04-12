@@ -794,7 +794,12 @@ end
 This binding integrates with the legacy Lutron RadioRA (Classic) lighting system.
 
 This binding depends on RS232 communication.
-It has only been tested using the Chronos time module but the RS232 module should work as well.
+It has only been tested using the Chronos System Bridge and Timeclock (RA-SBT-CHR) module, but Lutron's RA-RS232 or RB-RS232 module should work as well.
+
+Support has been added for bridged RadioRA systems.
+A system is considered “bridged” when a Chronos System Bridge and Timeclock is used to integrate two RadioRA Systems in a single residence.
+In a bridged system, the `system` parameter of each configured ra-dimmer, ra-switch, or ra-phantomButton thing should be set to indicate which RadioRA system it is a part of (i.e. 1 or 2).
+In a non-bridged system, these parameters should be left at their default of 0.
 
 ## Supported Things
 
@@ -808,17 +813,20 @@ This binding currently supports the following thing types:
 | ra-phantomButton | Thing   | Phantom Button to control multiple controls (Scenes) |
 
 
-## Thing Configurations
+## Thing Configuration Parameters
 
-| Thing            | Config       | Description                                                           |
-|------------------|--------------|-----------------------------------------------------------------------|
-| ra-rs232         | portName     | The serial port to use to communicate with Chronos or RS232 module    |
-|                  | baud         | (Optional) Baud Rate (defaults to 9600)                               |
-| ra-dimmer        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                 |
-|                  | fadeOutSec   | (Optional) Time in seconds dimmer should take when lowering the level |
-|                  | fadeInSec    | (Optional) Time in seconds dimmer should take when lowering the level |
-| ra-switch        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                 |
-| ra-phantomButton | buttonNumber | Phantom Button Number within the Lutron RadioRA system                |
+| Thing            | Parameter    | Description                                                            |
+|------------------|--------------|------------------------------------------------------------------------|
+| ra-rs232         | portName     | The serial port to use to communicate with Chronos or RS232 module     |
+|                  | baud         | (Optional) Baud Rate (defaults to 9600)                                |
+| ra-dimmer        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                  |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
+|                  | fadeOutSec   | (Optional) Time in seconds dimmer should take when lowering the level  |
+|                  | fadeInSec    | (Optional) Time in seconds dimmer should take when lowering the level  |
+| ra-switch        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                  |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
+| ra-phantomButton | buttonNumber | Phantom Button Number within the Lutron RadioRA system                 |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
 
 ## Channels
 

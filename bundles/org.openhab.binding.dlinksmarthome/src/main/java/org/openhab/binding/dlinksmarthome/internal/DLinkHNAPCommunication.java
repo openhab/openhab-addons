@@ -363,6 +363,9 @@ public abstract class DLinkHNAPCommunication {
             } catch (final NoSuchAlgorithmException e) {
                 logger.debug("login - Internal error", e);
                 status = HNAPStatus.INTERNAL_ERROR;
+            } catch (final InterruptedException e) {
+                status = HNAPStatus.COMMUNICATION_ERROR;
+                Thread.currentThread().interrupt();
             } catch (final Exception e) {
                 // Assume there has been some problem trying to send one of the messages
                 if (status != HNAPStatus.COMMUNICATION_ERROR) {

@@ -1,0 +1,60 @@
+    <div class="navigation">
+        <table><tr><td>
+            Device Filter&nbsp;
+            <select name="thingFilter" id="thingFilter" onchange="location = '${uri}/overview?filter='+this.options[this.selectedIndex].value;">
+                <option value="" selected disabled>select</option>
+                <option value="*">All</option>
+                <option value="online">Online only</option>
+                <option value="inactive">Inactive only</option>
+                <option value="attention">Needs Attention</option>
+                <option value="update">Update available</option>
+                <option value="unprotected">Unprotected</option>
+            </select>
+            <a href="${uri}/overview?action=refresh">
+                <img src="${uri}/images/refresh.png" class="navRefIcon" title="Refresh Status for all Devices"/>&nbsp;&nbsp;
+            </a>
+            <a href="${uri}/overview?action=reset_stat">
+                <img src="${uri}/images/resetstat.png" class="navRefIcon" title="Reset Statistics for all Devices"/>&nbsp;&nbsp;
+            </a>
+            <a href="${uri}/overview?action=otacheck">
+                <img src="${uri}/images/otacheck.png" class="navRefIcon" title="Trigger Firmware Check for all Devices"/>&nbsp;&nbsp;
+            </a>
+        </td></tr></table>
+    </div>
+    
+    <div class="overview">
+	    &nbsp;<hr/>
+	    &nbsp;<br/>
+	    
+	    <table class="devTable">
+	        <tbody>
+	        <tr>
+	            <th>S</th>
+	            <th align="left">Name</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+	            <th align="left">Device IP</th>
+	            <th align="left">WiFi Network</th>
+	            <th colspan = "2">WiFi Signal</th>
+	            <th>Battery Level</th>
+	            <th align="left">Heartbeat</th>
+	            <th>Actions</th>
+	            <th align="left">Firmware</th>
+	            <th>Update avail</th>
+	            <th align="left">Versions</th>
+	            <th>Uptime</th>
+	            <th>Internal Temp</th>
+	            <th>Update Period</th>
+	            <th>Remaining Watchdog</th>
+	            <th>Events</th>
+	            <th>Last Event</th>
+	            <th>Event Time</th>
+	            <th>Device Restarts</th>
+	            <th>Timeout Errors</th>
+	            <th>Timeouts Recovered</th>
+	            <th>CoIOT Messages</th>
+	            <th>CoIOT Errors</th>
+	        </tr>

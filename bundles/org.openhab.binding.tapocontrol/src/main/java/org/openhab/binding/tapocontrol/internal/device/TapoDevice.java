@@ -140,18 +140,18 @@ public abstract class TapoDevice extends BaseThingHandler {
      * @return true if is connected
      */
     protected Boolean checkDeviceConnection() {
-        ThingStatusDetail deviceState = getThing().getStatusInfo().getStatusDetail();
-        if (deviceState != ThingStatusDetail.CONFIGURATION_ERROR) {
+        ThingStatus deviceState = getThing().getStatus();
+        ThingStatusDetail deviceStateDetail = getThing().getStatusInfo().getStatusDetail();
+        if (IGNORE_CONFIG_ERROR || deviceStateDetail != ThingStatusDetail.CONFIGURATION_ERROR) {
             if (this.connector.isOnline(true)) {
                 /* try to login if not */
-                if (this.connector.loggedIn()) {
-                    updateStatus(ThingStatus.ONLINE);
+                if (deviceState == ThingStatus.ONLINE && this.connector.loggedIn()) {
                     return true;
                 } else {
                     return connect();
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
+                updateStatus(ThingStatus.OFFLINE);
             }
         }
         return false;
@@ -172,6 +172,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         TapoDeviceInfo deviceInfo = connector.queryInfo();
         devicePropertiesChanged(deviceInfo);
         if (connector.hasError()) {
+            logger.debug("({}) queryDeviceInfo received error : {}", uid, connector.errorMessage());
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
         }
     }
@@ -184,22 +185,26 @@ public abstract class TapoDevice extends BaseThingHandler {
         Boolean loginSuccess = false;
 
         try {
-            loginSuccess = connector.login();
-            if (loginSuccess) {
-                TapoDeviceInfo deviceInfo = connector.queryInfo();
-                if (isThingModel(deviceInfo.getModel())) {
-                    updateStatus(ThingStatus.ONLINE);
-                    devicePropertiesChanged(deviceInfo);
+            if (connector.isOnline(true)) {
+                loginSuccess = connector.login();
+                if (loginSuccess) {
+                    TapoDeviceInfo deviceInfo = connector.queryInfo();
+                    if (isThingModel(deviceInfo.getModel())) {
+                        updateStatus(ThingStatus.ONLINE);
+                        devicePropertiesChanged(deviceInfo);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "wrong device found: '" + deviceInfo.getModel() + "'");
+                        return false;
+                    }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "wrong device found: " + deviceInfo.getModel());
-                    return false;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.errorMessage());
+                updateStatus(ThingStatus.OFFLINE);
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return loginSuccess;
     }

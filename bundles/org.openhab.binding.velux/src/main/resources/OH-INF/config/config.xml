@@ -39,10 +39,10 @@
 			<!-- Velux Bridge factory default -->
 			<default>velux123</default>
 		</parameter>
-		<parameter name="timeoutMsecs" type="integer" min="500" step="1" max="5000" required="false">
+		<parameter name="timeoutMsecs" type="integer" min="500" step="1" max="10000" required="false">
 			<label>@text/config.velux.bridge.timeoutMsecs.label</label>
 			<description>@text/config.velux.bridge.timeoutMsecs.description</description>
-			<default>2000</default>
+			<default>3000</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="retries" type="integer" min="0" step="1" max="10" required="false">

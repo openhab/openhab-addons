@@ -173,6 +173,28 @@ public class TapoConnector {
         }
     }
 
+    /**
+     * Secure (encrypt) Payload
+     * 
+     * @param unencryptedPayload String unsecured payload
+     * @return String encrypted payload (securePassthrouh)
+     */
+    private String securePassthrough(String unencryptedPayload) {
+        try {
+            String encryptedPayload = this.tapoCipher.encode(unencryptedPayload);
+
+            /* create secured payload */
+            PayloadBuilder plBuilder = new PayloadBuilder();
+            plBuilder.method = "securePassthrough";
+            plBuilder.addParameter("request", encryptedPayload);
+            return plBuilder.getPayload();
+        } catch (Exception ex) {
+            logger.debug("({}) error building payload '{}'", uid, ex.toString());
+            tapoError.raiseError(ex, "error building payload for send command");
+            return "";
+        }
+    }
+
     /***********************************
      *
      * HTTP ACTIONS
@@ -208,13 +230,7 @@ public class TapoConnector {
                 plBuilder.addParameter("username", this.credentials.getEncodedEmail());
                 plBuilder.addParameter("password", this.credentials.getEncodedPassword());
                 String payload = plBuilder.getPayload();
-                String encryptedPayload = tapoCipher.encode(payload);
-
-                /* create secured login informations */
-                plBuilder = new PayloadBuilder();
-                plBuilder.method = "securePassthrough";
-                plBuilder.addParameter("request", encryptedPayload);
-                securePassthroughPayload = plBuilder.getPayload();
+                securePassthroughPayload = securePassthrough(payload);
             } catch (Exception ex) {
                 logger.debug("({}) error building payload '{}'", uid, ex.toString());
                 tapoError.raiseError(ex, "error building payload for login request");
@@ -269,6 +285,18 @@ public class TapoConnector {
      */
     @Nullable
     protected JsonObject sendPayload(PayloadBuilder plBuilder) {
+        return sendPayload(plBuilder, true);
+    }
+
+    /**
+     * sendPayload
+     *
+     * @param PayloadBuilder payload
+     * @param encryptPayload true if data must be encrypted
+     * @return JsonObject with response
+     */
+    @Nullable
+    protected JsonObject sendPayload(PayloadBuilder plBuilder, Boolean encryptPayload) {
         String payload = plBuilder.getPayload();
         logger.trace("({}) sending payload '{}'", uid, payload);
         tapoError.reset(); // reset ErrorHandler
@@ -277,19 +305,9 @@ public class TapoConnector {
         String url = deviceURL + "?token=" + this.token;
 
         if (checkConnection(true)) {
-            try {
-                /* encrypt command payload */
-                String encryptedPayload = this.tapoCipher.encode(payload);
-
-                /* create secured payload */
-                plBuilder = new PayloadBuilder();
-                plBuilder.method = "securePassthrough";
-                plBuilder.addParameter("request", encryptedPayload);
-                securePassthroughPayload = plBuilder.getPayload();
-            } catch (Exception ex) {
-                logger.debug("({}) error building payload '{}'", uid, ex.toString());
-                tapoError.raiseError(ex, "error building payload for send command");
-                return tapoError.getJson();
+            /* encrypt command payload */
+            if (encryptPayload) {
+                securePassthroughPayload = securePassthrough(payload);
             }
 
             /* send request */
@@ -299,14 +317,18 @@ public class TapoConnector {
             TapoHttpResponse response = tapoHttp.send();
 
             /* work with response */
-            if (response.responseIsOK()) {
+            if (response.responseIsValid()) {
                 String rBody = response.getResponseBody();
+                logger.trace("({}) received result: {}", uid, rBody);
                 try {
                     JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
-                    /* decrypt response */
-                    String decryptedResponse = decryptResponse(rBody);
-                    jsonObject = gson.fromJson(decryptedResponse, JsonObject.class);
-                    logger.trace("({}) received result: {}", uid, decryptedResponse);
+                    if (encryptPayload) {
+                        /* decrypt response */
+                        String decryptedResponse = decryptResponse(rBody);
+                        jsonObject = gson.fromJson(decryptedResponse, JsonObject.class);
+                        logger.trace("({}) decrypted result: {}", uid, decryptedResponse);
+                    }
+
                     /* get errocode (0=success) */
                     Integer errorCode = jsonObject.get("error_code").getAsInt();
                     if (errorCode == 0) {
@@ -328,7 +350,9 @@ public class TapoConnector {
                     tapoError.raiseError(e);
                 }
             } else {
-                logger.debug("({}) sendPayload response NOK {}", uid, response.getResponseStatus());
+                logger.debug("({}) sendPayload response not valid ({})", uid, response.getResponseStatus());
+                logger.trace("({}) sendPayload got invalid response ({}) {}", uid, response.getResponseStatus(),
+                        response.getResponseBody());
                 tapoError.raiseError(ERR_HTTP_RESPONSE);
             }
         }
@@ -419,7 +443,7 @@ public class TapoConnector {
      * perform logout (dispose cookie)
      */
     public void logout() {
-        logger.trace("logout");
+        logger.trace("({}) logout", uid);
         this.token = "";
         this.cookie = "";
     }

@@ -1203,6 +1203,11 @@
 				<label>Zone Number</label>
 				<description>Assigned Zone Number within the Lutron RadioRA system.</description>
 			</parameter>
+			<parameter name="system" type="integer" min="0" max="2" required="false">
+				<label>System Number</label>
+				<description>System number (bridged systems only). Set to 1 or 2. 0 = NA (default).</description>
+				<default>0</default>
+			</parameter>
 			<parameter name="fadeOutSec" type="integer" required="false">
 				<label>Fade Out (sec)</label>
 				<description>Time in seconds dimmer should take when lowering the level</description>
@@ -1231,6 +1236,11 @@
 				<label>Zone Number</label>
 				<description>Assigned Zone Number within the Lutron RadioRA system.</description>
 			</parameter>
+			<parameter name="system" type="integer" min="0" max="2" required="false">
+				<label>System Number</label>
+				<description>System number (bridged systems only). Set to 1 or 2. 0 = NA (default).</description>
+				<default>0</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -1249,6 +1259,11 @@
 			<parameter name="buttonNumber" type="integer" required="true">
 				<label>Phantom Button Number</label>
 				<description>Phantom Button Number within the Lutron RadioRA system.</description>
+			</parameter>
+			<parameter name="system" type="integer" min="0" max="2" required="false">
+				<label>System Number</label>
+				<description>System number (bridged systems only). Set to 1 or 2. 0 = NA (default).</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>

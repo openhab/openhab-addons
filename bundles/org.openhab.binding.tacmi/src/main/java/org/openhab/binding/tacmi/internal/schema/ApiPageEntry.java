@@ -67,6 +67,12 @@ public class ApiPageEntry {
      */
     private State lastState;
 
+    /**
+     * Timestamp (epoch ms) when last 'outgoing' command was sent.
+     * Required for de-bounce overlapping effects when status-poll's and updates overlap.
+     */
+    private long lastCommandTS;
+
     protected ApiPageEntry(final Type type, final Channel channel, @Nullable final String address,
             @Nullable ChangerX2Entry changerX2Entry, State lastState) {
         this.type = type;
@@ -82,5 +88,13 @@ public class ApiPageEntry {
 
     public State getLastState() {
         return lastState;
+    }
+
+    public long getLastCommandTS() {
+        return lastCommandTS;
+    }
+
+    public void setLastCommandTS(long lastCommandTS) {
+        this.lastCommandTS = lastCommandTS;
     }
 }

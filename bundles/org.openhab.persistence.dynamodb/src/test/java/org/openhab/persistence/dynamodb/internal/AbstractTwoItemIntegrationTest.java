@@ -21,7 +21,6 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Operator;
@@ -85,23 +84,15 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
         assertEquals(expected, actual);
     }
 
-    @BeforeAll
-    public static void checkService() throws InterruptedException {
-        String msg = "DynamoDB integration tests will be skipped. Did you specify AWS credentials for testing? "
-                + "See BaseIntegrationTest for more details";
-        if (service == null) {
-            System.out.println(msg);
-        }
-        assumeTrue(service != null, msg);
-    }
-
     /**
      * Asserts that iterable contains correct items and nothing else
      *
      */
-    private void assertIterableContainsItems(Iterable<HistoricItem> iterable, boolean ascending) {
+    protected void assertIterableContainsItems(Iterable<HistoricItem> iterable, boolean ascending) {
         Iterator<HistoricItem> iterator = iterable.iterator();
+        assertTrue(iterator.hasNext());
         HistoricItem actual1 = iterator.next();
+        assertTrue(iterator.hasNext());
         HistoricItem actual2 = iterator.next();
         assertFalse(iterator.hasNext());
 
@@ -129,228 +120,287 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
 
     @Test
     public void testQueryUsingName() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOrdering(Ordering.ASCENDING);
-        criteria.setItemName(getItemName());
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertIterableContainsItems(iterable, true);
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOrdering(Ordering.ASCENDING);
+            criteria.setItemName(getItemName());
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertIterableContainsItems(iterable, true);
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStart() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOrdering(Ordering.ASCENDING);
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertIterableContainsItems(iterable, true);
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOrdering(Ordering.ASCENDING);
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertIterableContainsItems(iterable, true);
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartNoMatch() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertFalse(iterable.iterator().hasNext());
+        waitForAssert(() -> {
+
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertFalse(iterable.iterator().hasNext());
+        });
     }
 
     @Test
     public void testQueryUsingNameAndEnd() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOrdering(Ordering.ASCENDING);
-        criteria.setItemName(getItemName());
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertIterableContainsItems(iterable, true);
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOrdering(Ordering.ASCENDING);
+            criteria.setItemName(getItemName());
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertIterableContainsItems(iterable, true);
+        });
     }
 
     @Test
     public void testQueryUsingNameAndEndNoMatch() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName(getItemName());
-        criteria.setEndDate(beforeStore);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertFalse(iterable.iterator().hasNext());
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setItemName(getItemName());
+            criteria.setEndDate(beforeStore);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertFalse(iterable.iterator().hasNext());
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEnd() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOrdering(Ordering.ASCENDING);
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertIterableContainsItems(iterable, true);
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOrdering(Ordering.ASCENDING);
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertIterableContainsItems(iterable, true);
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndDesc() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOrdering(Ordering.DESCENDING);
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertIterableContainsItems(iterable, false);
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOrdering(Ordering.DESCENDING);
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertIterableContainsItems(iterable, false);
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithNEQOperator() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.NEQ);
-        criteria.setState(getSecondItemState());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        HistoricItem actual1 = iterator.next();
-        assertFalse(iterator.hasNext());
-        assertStateEquals(getFirstItemState(), actual1.getState());
-        assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
-        assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.NEQ);
+            criteria.setState(getSecondItemState());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertTrue(iterator.hasNext());
+            HistoricItem actual1 = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertStateEquals(getFirstItemState(), actual1.getState());
+            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
+            assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithEQOperator() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.EQ);
-        criteria.setState(getFirstItemState());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        HistoricItem actual1 = iterator.next();
-        assertFalse(iterator.hasNext());
-        assertStateEquals(getFirstItemState(), actual1.getState());
-        assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
-        assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.EQ);
+            criteria.setState(getFirstItemState());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertTrue(iterator.hasNext());
+            HistoricItem actual1 = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertStateEquals(getFirstItemState(), actual1.getState());
+            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
+            assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithLTOperator() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.LT);
-        criteria.setState(getSecondItemState());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        HistoricItem actual1 = iterator.next();
-        assertFalse(iterator.hasNext());
-        assertStateEquals(getFirstItemState(), actual1.getState());
-        assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
-        assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.LT);
+            criteria.setState(getSecondItemState());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertTrue(iterator.hasNext());
+            HistoricItem actual1 = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertStateEquals(getFirstItemState(), actual1.getState());
+            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
+            assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithLTOperatorNoMatch() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.LT);
-        criteria.setState(getFirstItemState());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        assertFalse(iterator.hasNext());
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.LT);
+            criteria.setState(getFirstItemState());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertFalse(iterator.hasNext());
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithLTEOperator() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.LTE);
-        criteria.setState(getFirstItemState());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        HistoricItem actual1 = iterator.next();
-        assertFalse(iterator.hasNext());
-        assertStateEquals(getFirstItemState(), actual1.getState());
-        assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
-        assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.LTE);
+            criteria.setState(getFirstItemState());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertTrue(iterator.hasNext());
+            HistoricItem actual1 = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertStateEquals(getFirstItemState(), actual1.getState());
+            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
+            assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithGTOperator() {
-        // Skip for subclasses which have null "state between"
-        assumeTrue(getQueryItemStateBetween() != null);
+        waitForAssert(() -> {
+            // Skip for subclasses which have null "state between"
+            assumeTrue(getQueryItemStateBetween() != null);
 
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.GT);
-        criteria.setState(getQueryItemStateBetween());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        HistoricItem actual1 = iterator.next();
-        assertFalse(iterator.hasNext());
-        assertStateEquals(getSecondItemState(), actual1.getState());
-        assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore2.toInstant()));
-        assertTrue(actual1.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.GT);
+            criteria.setState(getQueryItemStateBetween());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertTrue(iterator.hasNext());
+            HistoricItem actual1 = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertStateEquals(getSecondItemState(), actual1.getState());
+            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore2.toInstant()));
+            assertTrue(actual1.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithGTOperatorNoMatch() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.GT);
-        criteria.setState(getSecondItemState());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        assertFalse(iterator.hasNext());
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.GT);
+            criteria.setState(getSecondItemState());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertFalse(iterator.hasNext());
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndWithGTEOperator() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOperator(Operator.GTE);
-        criteria.setState(getSecondItemState());
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore2);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        HistoricItem actual1 = iterator.next();
-        assertFalse(iterator.hasNext());
-        assertStateEquals(getSecondItemState(), actual1.getState());
-        assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore2.toInstant()));
-        assertTrue(actual1.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOperator(Operator.GTE);
+            criteria.setState(getSecondItemState());
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore2);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertTrue(iterator.hasNext());
+            HistoricItem actual1 = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertStateEquals(getSecondItemState(), actual1.getState());
+            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore2.toInstant()));
+            assertTrue(actual1.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndFirst() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setOrdering(Ordering.ASCENDING);
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(afterStore1);
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setOrdering(Ordering.ASCENDING);
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(afterStore1);
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
 
-        Iterator<HistoricItem> iterator = iterable.iterator();
-        HistoricItem actual1 = iterator.next();
-        assertFalse(iterator.hasNext());
-        assertStateEquals(getFirstItemState(), actual1.getState());
-        assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
-        assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+            Iterator<HistoricItem> iterator = iterable.iterator();
+            assertTrue(iterator.hasNext());
+            HistoricItem actual1 = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertStateEquals(getFirstItemState(), actual1.getState());
+            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
+            assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        });
     }
 
     @Test
     public void testQueryUsingNameAndStartAndEndNoMatch() {
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName(getItemName());
-        criteria.setBeginDate(beforeStore);
-        criteria.setEndDate(beforeStore); // sic
-        Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
-        assertFalse(iterable.iterator().hasNext());
+        waitForAssert(() -> {
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setItemName(getItemName());
+            criteria.setBeginDate(beforeStore);
+            criteria.setEndDate(beforeStore); // sic
+            @SuppressWarnings("null")
+            Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
+            assertFalse(iterable.iterator().hasNext());
+        });
     }
 }
