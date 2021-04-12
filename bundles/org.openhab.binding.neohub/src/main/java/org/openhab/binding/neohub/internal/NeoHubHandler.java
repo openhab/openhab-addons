@@ -332,7 +332,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 if (!physicalFirmware.equals(thingFirmware)) {
                     // update the thing firmware property to the hub's physical firmware value
                     getThing().setProperty(PROPERTY_FIRMWARE_VERSION, physicalFirmware);
-                    // log it only if the prior property value was neither null nor empty
+                    // log changes, but only if the prior property value was neither null nor empty
                     if ((thingFirmware != null) && (thingFirmware.length() > 0)) {
                         logger.info("hub '{}' has updated its firmware from '{}' to '{}'", getThing().getUID(),
                                 thingFirmware, physicalFirmware);
@@ -372,9 +372,11 @@ public class NeoHubHandler extends BaseBridgeHandler {
             // evaluate and update the state of our RF mesh QoS channel
             List<? extends AbstractRecord> devices = deviceData.getDevices();
             State state;
+            String property;
 
             if (devices == null || devices.isEmpty()) {
                 state = UnDefType.UNDEF;
+                property = "[?/?]";
             } else {
                 int totalDeviceCount = devices.size();
                 int onlineDeviceCount = 0;
@@ -385,6 +387,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
                     @Nullable
                     Boolean onlineBefore = connectionStates.put(deviceName, online);
+                    // log changes, but only a) if the device is already known, or b) in debug mode
                     if (!online.equals(onlineBefore) && ((onlineBefore != null) || logger.isDebugEnabled())) {
                         logger.info("hub '{}' device \"{}\" has {} the RF mesh network", getThing().getUID(),
                                 deviceName, online.booleanValue() ? "joined" : "left");
@@ -394,8 +397,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
                         onlineDeviceCount++;
                     }
                 }
+                property = String.format("[%d/%d]", onlineDeviceCount, totalDeviceCount);
                 state = new QuantityType<>((100.0 * onlineDeviceCount) / totalDeviceCount, Units.PERCENT);
             }
+            getThing().setProperty(PROPERTY_API_DEVICEINFO, property);
             updateState(CHAN_MESH_NETWORK_QOS, state);
         }
         if (fastPollingCallsToGo.get() > 0) {
