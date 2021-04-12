@@ -61,6 +61,7 @@
 #define ETH_INIT_DELAY          5
 
 // Used serial port and direction change pin for RS-485 port
+// Note! Select if Serial is SW or HW serial port in NibeGw.h
 #ifdef PRODINO_BOARD
  #define RS485_PORT              Serial1
  #define RS485_DIRECTION_PIN     3
@@ -245,9 +246,11 @@ void initializeEthernet()
 {
   DEBUG_PRINT(1, "Initializing Ethernet\n");
   Ethernet.begin(mac, ip, gw, mask);
+
 #ifdef PRODINO_BOARD
   W5100.setRetransmissionCount(1);
 #endif
+
   ethernetInitialized = true;
   udp.begin(INCOMING_PORT_READCMDS); 
   udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
@@ -293,7 +296,7 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
     if (token == READ_TOKEN)
     {
       DEBUG_PRINT(3, "Read token received from nibe\n");
-      int packetSize = udp4readCmnds.parsePacket();
+      int packetSize = udp.parsePacket();
       if (packetSize) {
         len = udp.read(data, packetSize);
         DEBUG_PRINTDATA(2, "Send read command to nibe, len=%d, ", len);
@@ -301,9 +304,9 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
         DEBUG_PRINTARRAY(1, data, len)
         DEBUG_PRINT(1, "\n");
 #ifdef TRANSPORT_ETH_ENC28J60
-        udp4readCmnds.flush();
-        udp4readCmnds.stop();
-        udp4readCmnds.begin(INCOMING_PORT_READCMDS);
+        udp.flush();
+        udp.stop();
+        udp.begin(INCOMING_PORT_READCMDS);
 #endif
       }
     }
