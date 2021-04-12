@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -268,7 +267,7 @@ public class IAqualinkHandler extends BaseThingHandler {
         String confSerialId = configuration.serialId;
         String confApiKey = configuration.apiKey;
 
-        if (StringUtils.isNotBlank(confApiKey)) {
+        if (confApiKey != null && !confApiKey.isBlank()) {
             this.apiKey = confApiKey;
         } else {
             this.apiKey = DEFAULT_API_KEY;
@@ -291,7 +290,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                 return;
             }
 
-            if (StringUtils.isNotBlank(confSerialId)) {
+            if (confSerialId != null && !confSerialId.isBlank()) {
                 serialNumber = confSerialId.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
                 if (!Arrays.stream(devices).anyMatch(device -> device.getSerialNumber().equals(serialNumber))) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -438,8 +437,7 @@ public class IAqualinkHandler extends BaseThingHandler {
      */
     private State toState(String name, @Nullable String type, @Nullable String value) {
         try {
-            // @nullable checker does not recognize isBlank as checking null here, so must use == null to make happy
-            if (value == null || StringUtils.isBlank(value)) {
+            if (value == null || value.isBlank()) {
                 return UnDefType.UNDEF;
             }
 

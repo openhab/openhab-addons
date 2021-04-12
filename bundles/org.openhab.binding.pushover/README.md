@@ -17,7 +17,7 @@ You are able to create multiple instances of this Thing to broadcast to differen
 | `apikey`                | text    | Your API token / key (APP_TOKEN) to access the Pushover Message API. **mandatory**                                                                   |
 | `user`                  | text    | Your user key or group key (USER_KEY) to which you want to push notifications. **mandatory**                                                         |
 | `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                 |
-| `format`                | text    | The default format (`none`, `HTML` or `monospace`) of a message (default: `none`).                                                                   |
+| `format`                | text    | The default format (`none`, `html` or `monospace`) of a message (default: `none`).                                                                   |
 | `sound`                 | text    | The default notification sound on target device (default: `default`) (see [supported notification sounds](https://pushover.net/api#sounds)).         |
 | `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user (default: `300`). **advanced** |
 | `expire`                | integer | The expire parameter specifies how long (in seconds) your notification will continue to be retried (default: `3600`). **advanced**                   |
@@ -31,7 +31,13 @@ Currently the binding does not support any Channels.
 ## Thing Actions
 
 All actions return a `Boolean` value to indicate if the message was sent successfully or not.
+If the communication to Pushover servers fails the binding does not try to send the message again.
+One has to take care of that on its own if it is important.
 The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
+Parameters declared as `@Nullable` are not optional.
+One has to pass a `null` value if it should be skipped or the default value for it should be used.
+
+- `sendMessage(String message, @Nullable String title, @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment, @Nullable String contentType, @Nullable Integer priority, @Nullable String device)` - This method is used to send a plain text message providing all available parameters.
 
 - `sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
 

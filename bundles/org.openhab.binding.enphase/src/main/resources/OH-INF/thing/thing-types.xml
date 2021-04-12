@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enphase"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<bridge-type id="envoy">
+		<label>Envoy</label>
+		<description>Envoy gateway</description>
+
+		<channel-groups>
+			<channel-group id="production" typeId="envoy-data">
+				<label>Production</label>
+				<description>Production data from the solar panels</description>
+			</channel-group>
+			<channel-group id="consumption" typeId="envoy-data">
+				<label>Consumption</label>
+				<description>Consumption data from the solar panels</description>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" pattern="[0-9]{12}" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the Envoy gateway which can be found on the gateway</description>
+			</parameter>
+			<parameter name="hostname" type="text">
+				<label>Host Name / IP Address</label>
+				<description>The host name/ip address of the Envoy gateway. Leave empty to auto detect</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>User Name</label>
+				<description>The user name to the Envoy gateway. Leave empty when using the default user name</description>
+				<default>envoy</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password to the Envoy gateway. Leave empty when using the default password</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="min">
+				<label>Refresh Time</label>
+				<description>Period between updates. The default is 5 minutes, the refresh frequency of the Envoy itself</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+
+	<thing-type id="inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="envoy"/>
+		</supported-bridge-type-refs>
+
+		<label>Inverter</label>
+		<description>Inverter</description>
+
+		<channels>
+			<channel id="lastReportWatts" typeId="last-report-watts"/>
+			<channel id="maxReportWatts" typeId="max-report-watts"/>
+			<channel id="lastReportDate" typeId="last-report-date"/>
+			<channel id="status" typeId="status"/>
+			<channel id="producing" typeId="producing"/>
+			<channel id="communicating" typeId="communicating"/>
+			<channel id="provisioned" typeId="provisioned"/>
+			<channel id="operating" typeId="operating"/>
+		</channels>
+
+		<properties>
+			<property name="partNumber"/>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" pattern="[0-9]{12}" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the inverter</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="relay">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="envoy"/>
+		</supported-bridge-type-refs>
+
+		<label>Relay Controller</label>
+		<description>Network system relay controller</description>
+
+		<channels>
+			<channel id="relay" typeId="relay"/>
+			<channel id="line1Connected" typeId="line-connected">
+				<label>Line 1 Connection Status</label>
+			</channel>
+			<channel id="line2Connected" typeId="line-connected">
+				<label>Line 2 Connection Status</label>
+			</channel>
+			<channel id="line3Connected" typeId="line-connected">
+				<label>Line 3 Connection Status</label>
+			</channel>
+			<channel id="status" typeId="status"/>
+			<channel id="producing" typeId="producing"/>
+			<channel id="communicating" typeId="communicating"/>
+			<channel id="provisioned" typeId="provisioned"/>
+			<channel id="operating" typeId="operating"/>
+		</channels>
+
+		<properties>
+			<property name="partNumber"/>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" pattern="[0-9]{12}" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the inverter</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Envoy gateway channels -->
+	<channel-group-type id="envoy-data">
+		<label>Envoy Data</label>
+		<channels>
+			<channel id="wattHoursToday" typeId="watt-hours-today"/>
+			<channel id="wattHoursSevenDays" typeId="watt-hours-seven-days"/>
+			<channel id="wattHoursLifetime" typeId="watt-hours-lifetime"/>
+			<channel id="wattsNow" typeId="watts-now"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="watt-hours-today">
+		<item-type>Number:Energy</item-type>
+		<label>Produced Today</label>
+		<description>Watt hours produced today</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="watt-hours-seven-days">
+		<item-type>Number:Energy</item-type>
+		<label>Produced 7 Days</label>
+		<description>Watt hours produced the last 7 days</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="watt-hours-lifetime">
+		<item-type>Number:Energy</item-type>
+		<label>Produced Lifetime</label>
+		<description>Watt hours produced over the lifetime</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="watts-now">
+		<item-type>Number:Power</item-type>
+		<label>Latest Power</label>
+		<description>Latest watts produced</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<!-- Inverter channels -->
+	<channel-type id="last-report-watts">
+		<item-type>Number:Power</item-type>
+		<label>Last Report</label>
+		<description>Last reported power delivery</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="max-report-watts">
+		<item-type>Number:Power</item-type>
+		<label>Max Report</label>
+		<description>Maximum reported power</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-report-date">
+		<item-type>DateTime</item-type>
+		<label>Last Report Date</label>
+		<description>Date of last reported power delivery</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Relay channels -->
+	<channel-type id="relay">
+		<item-type>Contact</item-type>
+		<label>Relay Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="line-connected">
+		<item-type>Contact</item-type>
+		<label>Line Connection Status</label>
+		<description>When closed power line is connected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Generic device channels -->
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>The status of the Enphase device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="producing" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Producing</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="communicating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Communicating</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="provisioned" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Provisioned</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="operating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Operating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

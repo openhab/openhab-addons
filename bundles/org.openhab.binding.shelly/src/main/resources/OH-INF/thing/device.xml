@@ -65,11 +65,11 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="batVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Battery Voltage</label>
-		<description>Battery voltage in V</description>
-		<state readOnly="true" pattern="%.1f %unit%">
+	<channel-type id="externalPower" advanced="true">
+		<item-type>Switch</item-type>
+		<label>External Power</label>
+		<description>ON: External power is connected</description>
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">

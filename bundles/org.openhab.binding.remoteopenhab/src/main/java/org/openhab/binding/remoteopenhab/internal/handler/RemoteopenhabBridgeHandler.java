@@ -150,13 +150,10 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
 
         String urlStr = url.toString();
-        if (urlStr.endsWith("/")) {
-            urlStr = urlStr.substring(0, urlStr.length() - 1);
-        }
         logger.debug("REST URL = {}", urlStr);
 
         restClient.setRestUrl(urlStr);
-        restClient.setAccessToken(config.token);
+        restClient.setAuthenticationData(config.authenticateAnyway, config.token, config.username, config.password);
         if (config.useHttps && config.trustedCertificate) {
             restClient.setHttpClient(httpClientTrustingCert);
             restClient.setTrustedCertificate(true);

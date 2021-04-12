@@ -13,6 +13,7 @@
 package org.openhab.binding.omnilink.internal;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,8 +35,7 @@ public enum SystemType {
         this.modelNumbers = Set.of(modelNumbers);
     }
 
-    public static SystemType getType(int modelNumber) {
-        return Arrays.stream(values()).filter(s -> s.modelNumbers.contains(modelNumber)).findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+    public static Optional<SystemType> getType(int modelNumber) {
+        return Arrays.stream(values()).filter(s -> s.modelNumbers.contains(modelNumber)).findFirst();
     }
 }

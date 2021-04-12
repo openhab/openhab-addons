@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Enumeration;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
 import org.openhab.core.thing.Thing;

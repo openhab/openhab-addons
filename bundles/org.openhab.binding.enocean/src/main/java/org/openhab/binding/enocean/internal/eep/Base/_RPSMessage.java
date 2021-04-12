@@ -51,4 +51,6 @@ public abstract class _RPSMessage extends EEP {
 
         return this;
     }
+
+    public abstract boolean isValidForTeachIn();
 }

@@ -22,15 +22,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
@@ -76,7 +74,7 @@ public class HDPowerViewJUnitTests {
 
     /**
      * Run a series of ONLINE tests on the communication with a hub
-     * 
+     *
      * @param hubIPAddress must be a valid hub IP address to run the
      *            tests on; or an INVALID IP address to
      *            suppress the tests
@@ -99,10 +97,18 @@ public class HDPowerViewJUnitTests {
         boolean allowShadeMovementCommands = false;
 
         if (VALID_IP_V4_ADDRESS.matcher(hubIPAddress).matches()) {
-            // initialize stuff
-            Client client = ClientBuilder.newClient();
+            // ==== initialize stuff ====
+            HttpClient client = new HttpClient();
             assertNotNull(client);
-            // client.register(new Logger());
+
+            // ==== start the client ====
+            try {
+                client.start();
+                assertTrue(client.isStarted());
+            } catch (Exception e) {
+                fail(e.getMessage());
+            }
+
             HDPowerViewWebTargets webTargets = new HDPowerViewWebTargets(client, hubIPAddress);
             assertNotNull(webTargets);
 
@@ -180,7 +186,7 @@ public class HDPowerViewJUnitTests {
                     String shadeName = shadexData.getName();
                     assertNotNull(shadeName);
                 }
-            } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
+            } catch (JsonParseException | HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -203,7 +209,7 @@ public class HDPowerViewJUnitTests {
                     String sceneName = scene.getName();
                     assertNotNull(sceneName);
                 }
-            } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
+            } catch (JsonParseException | HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -214,7 +220,7 @@ public class HDPowerViewJUnitTests {
                 assertNotEquals(0, shadeId);
                 shade = webTargets.refreshShade(shadeId);
                 assertNotNull(shade);
-            } catch (ProcessingException | HubMaintenanceException e) {
+            } catch (HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -245,7 +251,7 @@ public class HDPowerViewJUnitTests {
                 if (allowShadeMovementCommands) {
                     webTargets.moveShade(shadeId, newPos);
                 }
-            } catch (ProcessingException | HubMaintenanceException e) {
+            } catch (HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -254,7 +260,26 @@ public class HDPowerViewJUnitTests {
                 try {
                     assertNotNull(sceneId);
                     webTargets.activateScene(sceneId);
-                } catch (ProcessingException | HubMaintenanceException e) {
+                } catch (HubProcessingException | HubMaintenanceException e) {
+                    fail(e.getMessage());
+                }
+            }
+
+            // ==== test stop command ====
+            if (allowShadeMovementCommands) {
+                try {
+                    assertNotNull(sceneId);
+                    webTargets.stopShade(shadeId);
+                } catch (HubProcessingException | HubMaintenanceException e) {
+                    fail(e.getMessage());
+                }
+            }
+
+            // ==== stop the client ====
+            if (client.isRunning()) {
+                try {
+                    client.stop();
+                } catch (Exception e) {
                     fail(e.getMessage());
                 }
             }

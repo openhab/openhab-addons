@@ -54,12 +54,12 @@ public class SecondGenerationConfigurationHandler {
         String getAuthenticateResponse = httpClient.GET(urlLogin).getContentAsString();
 
         try {
-            JsonObject getAuthenticateResponseJsonObject = (JsonObject) new JsonParser()
-                    .parse(transformJsonResponse(getAuthenticateResponse));
+            JsonObject getAuthenticateResponseJsonObject = (JsonObject) JsonParser
+                    .parseString(transformJsonResponse(getAuthenticateResponse));
 
             sessionId = extractSessionId(getAuthenticateResponseJsonObject);
 
-            JsonObject authenticateJsonObject = new JsonParser().parse(getAuthenticateResponse.toString())
+            JsonObject authenticateJsonObject = JsonParser.parseString(getAuthenticateResponse.toString())
                     .getAsJsonObject();
             salt = authenticateJsonObject.get("salt").getAsString();
 
@@ -84,8 +84,8 @@ public class SecondGenerationConfigurationHandler {
             String loginPostResponse = new String(loginPostJsonDataContentResponse.getContent(),
                     StandardCharsets.UTF_8);
 
-            JsonObject loginPostJsonObject = (JsonObject) new JsonParser()
-                    .parse(transformJsonResponse(loginPostResponse));
+            JsonObject loginPostJsonObject = (JsonObject) JsonParser
+                    .parseString(transformJsonResponse(loginPostResponse));
 
             sessionId = extractSessionId(loginPostJsonObject);
 

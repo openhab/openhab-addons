@@ -6,14 +6,14 @@
 
 	<thing-type id="synopanalyzer">
 		<label>Synop Message</label>
-		<description>The Synop Analyzer binding decodes Synop messages</description>
+		<description>This is the interpretation of the last message of a given station.</description>
 
 		<channels>
 			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="pressure" typeId="system.barometric-pressure"/>
 			<channel id="wind-angle" typeId="system.wind-direction"/>
-			<channel id="wind-direction" typeId="wind-direction"/>
 			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="wind-direction"/>
 			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort"/>
 			<channel id="overcast" typeId="overcast"/>
 			<channel id="octa" typeId="octa"/>
@@ -29,9 +29,8 @@
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="stationId" type="integer">
+			<parameter name="stationId" type="integer" required="true">
 				<label>Station Number</label>
-				<required>true</required>
 			</parameter>
 		</config-description>
 
@@ -75,14 +74,16 @@
 	<channel-type id="octa">
 		<item-type>Number</item-type>
 		<label>Octa</label>
-		<description>Octa</description>
+		<description>Cloud cover estimation.</description>
+		<category>sun_clouds</category>
 		<state readOnly="true" pattern="%d/8" min="0" max="8"/>
 	</channel-type>
 
-	<channel-type id="attenuation-factor">
+	<channel-type id="attenuation-factor" advanced="true">
 		<item-type>Number</item-type>
 		<label>Mitigation Factor</label>
 		<description>Cloud layer mitigation factor</description>
+		<category>sun_clouds</category>
 		<state readOnly="true" pattern="%.1f" max="1" min="0"/>
 	</channel-type>
 
@@ -90,6 +91,7 @@
 		<item-type>String</item-type>
 		<label>Overcast</label>
 		<description>Overcast</description>
+		<category>sun_clouds</category>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="CLEAR_SKY">Clear sky</option>
@@ -117,6 +119,7 @@
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
 		<description>Timestamp when data was observed</description>
+		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
 

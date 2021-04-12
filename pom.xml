@@ -69,12 +69,12 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <ohc.version>3.1.0-SNAPSHOT</ohc.version>
-    <bnd.version>5.2.0</bnd.version>
+    <bnd.version>5.3.0</bnd.version>
     <commons.net.version>3.7.2</commons.net.version>
     <eea.version>2.2.1</eea.version>
-    <karaf.version>4.2.7</karaf.version>
+    <jackson.version>2.12.2</jackson.version>
+    <karaf.version>4.3.1</karaf.version>
     <sat.version>0.10.0</sat.version>
-    <slf4j.version>1.7.21</slf4j.version>
     <spotless.version>2.0.3</spotless.version>
 
     <bnd.importpackage/>

@@ -936,6 +936,11 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 			<channel id="enablePrivacyMode" typeId="enablePrivacyMode"/>
+			<channel id="carAlarm" typeId="carAlarm"/>
+			<channel id="humanAlarm" typeId="humanAlarm"/>
+			<channel id="tooDarkAlarm" typeId="tooDarkAlarm"/>
+			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
+			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
 		</channels>
 		<config-description>
 
@@ -2538,6 +2543,22 @@
 		<item-type>Switch</item-type>
 		<label>Item Left Alarm</label>
 		<description>An item has been left.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humanAlarm" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Human Alarm</label>
+		<description>A person has triggered the Human Detection.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="carAlarm" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Car Alarm</label>
+		<description>A car has triggered the Vehicle Detection.</description>
 		<category>Alarm</category>
 		<state readOnly="true"/>
 	</channel-type>

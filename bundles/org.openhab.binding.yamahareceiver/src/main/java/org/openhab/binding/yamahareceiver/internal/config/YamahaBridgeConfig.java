@@ -14,7 +14,6 @@ package org.openhab.binding.yamahareceiver.internal.config;
 
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -65,7 +64,7 @@ public class YamahaBridgeConfig {
 
     public Optional<String> getHostWithPort() {
         final String str = host;
-        if (StringUtils.isEmpty(str)) {
+        if (str == null || str.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(str + ":" + port);

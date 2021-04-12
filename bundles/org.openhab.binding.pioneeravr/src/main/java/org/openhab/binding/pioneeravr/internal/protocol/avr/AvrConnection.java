@@ -97,6 +97,13 @@ public interface AvrConnection {
     public boolean sendListeningModeQuery(int zone);
 
     /**
+     * Send an MCACC Memory query to the AVR
+     *
+     * @return
+     */
+    public boolean sendMCACCMemoryQuery();
+
+    /**
      * Send a power command ot the AVR based on the openHAB command
      *
      * @param command
@@ -140,6 +147,15 @@ public interface AvrConnection {
      * @return
      */
     public boolean sendMuteCommand(Command command, int zone) throws CommandTypeNotSupportedException;
+
+    /**
+     * Send an MCACC Memory selection command to the AVR based on the openHAB command
+     *
+     * @param command
+     * @param zone
+     * @return
+     */
+    public boolean sendMCACCMemoryCommand(Command command) throws CommandTypeNotSupportedException;
 
     /**
      * Return the connection name
