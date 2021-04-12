@@ -20,7 +20,7 @@
  *  27.6.2014   v1.02   Fixed compile error and added Ethernet initialization delay.
  *  29.6.2015   v2.00   Bidirectional support.
  *  18.2.2017   v3.00   Redesigned.
- *  14.3.2021   v3.01   Fix Prodino build + fixed UDP issue + debug improvements
+ *  14.3.2021   v3.01   Fix Prodino build + fixed UDP issue + debug improvements.
  */
 
 // ######### CONFIGURATION #######################
@@ -28,6 +28,7 @@
 #define VERSION                 "3.01"
 
 // Enable if you use ProDiNo board
+// Have been tested with KMPDinoEthernet v1.6.1 (https://github.com/kmpelectronics/Arduino/tree/master/KMPDinoEthernet/Releases)
 //#define PRODINO_BOARD
 
 // Enable if ENC28J60 LAN module is used
