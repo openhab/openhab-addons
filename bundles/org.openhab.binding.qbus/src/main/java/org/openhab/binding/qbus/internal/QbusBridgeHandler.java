@@ -175,6 +175,7 @@ import org.slf4j.LoggerFactory;
         }
 
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Timer started");
             QbusCommunication comm = getCommunication();
             Integer serverCheck = getServerCheck();
 
