@@ -1,6 +1,6 @@
 # Qbus Binding
 
-![Qbus Logo](doc/Logo.JPG)
+![Qbus Logo](doc/qbus.JPG)
 
 This binding for [Qbus](https://qbus.be) communicates with all controllers of the Qbus home automation system.
 
