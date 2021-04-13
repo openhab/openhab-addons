@@ -56,15 +56,15 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void initialize() {
-        Integer serverCheck = getServerCheck();
-
         readConfig();
 
-        createCommunicationObject();
+        Integer serverCheck = getServerCheck();
 
         if (serverCheck != null) {
             this.setupRefreshTimer(serverCheck);
         }
+
+        createCommunicationObject();
     }
 
     /**
