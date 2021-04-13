@@ -52,7 +52,7 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
             }
             updateState(CHANNEL_SWITCH, state);
         } else {
-            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
+            logger.debug("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
 
