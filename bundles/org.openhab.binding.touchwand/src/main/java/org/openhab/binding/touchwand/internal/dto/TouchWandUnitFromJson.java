@@ -47,7 +47,7 @@ public class TouchWandUnitFromJson {
             type = TYPE_UNKNOWN;
         }
 
-        if (!jsonUnit.has("currStatus") || (jsonUnit.get("currStatus") == null)) {
+        if (!jsonUnit.has("currStatus") || jsonUnit.get("currStatus").isJsonNull()) {
             type = TYPE_UNKNOWN;
         }
 
