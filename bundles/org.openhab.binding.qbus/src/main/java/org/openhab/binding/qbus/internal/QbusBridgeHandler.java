@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
+public class QbusBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable QbusCommunication qbusComm;
 
