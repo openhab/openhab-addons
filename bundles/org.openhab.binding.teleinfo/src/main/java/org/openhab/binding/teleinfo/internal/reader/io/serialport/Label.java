@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
+import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
+
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.CouleurDemain;
-import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
-import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link Label} enum defines all Teleinfo labels and their format.
@@ -25,56 +27,60 @@ import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
 @NonNullByDefault
 public enum Label {
 
-    ADCO(String.class, 12),
-    OPTARIF(String.class, 4),
-    BASE(Integer.class, 9),
-    HCHC(Integer.class, 9),
-    HCHP(Integer.class, 9),
-    EJPHN(Integer.class, 9),
-    EJPHPM(Integer.class, 9),
-    GAZ(Integer.class, 7),
-    AUTRE(Integer.class, 7),
-    PTEC(Ptec.class, 4),
-    MOTDETAT(String.class, 6),
-    ISOUSC(Integer.class, 2),
-    IINST(Integer.class, 3),
-    IINST1(Integer.class, 3),
-    IINST2(Integer.class, 3),
-    IINST3(Integer.class, 3),
-    ADIR1(Integer.class, 3),
-    ADIR2(Integer.class, 3),
-    ADIR3(Integer.class, 3),
-    ADPS(Integer.class, 3),
-    IMAX(Integer.class, 3),
-    IMAX1(Integer.class, 3),
-    IMAX2(Integer.class, 3),
-    IMAX3(Integer.class, 3),
-    PMAX(Integer.class, 5),
-    PPOT(String.class, 2),
-    HHPHC(Hhphc.class, 1),
-    PAPP(Integer.class, 5),
-    BBRHCJB(Integer.class, 9),
-    BBRHPJB(Integer.class, 9),
-    BBRHCJW(Integer.class, 9),
-    BBRHPJW(Integer.class, 9),
-    BBRHCJR(Integer.class, 9),
-    BBRHPJR(Integer.class, 9),
-    PEJP(Integer.class, 2),
-    DEMAIN(CouleurDemain.class, 4);
+    ADCO(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    OPTARIF(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    BASE(ValueType.INTEGER, CHANNEL_BASE_FRAME_BASE, Units.WATT_HOUR),
+    HCHC(ValueType.INTEGER, CHANNEL_HC_FRAME_HCHC, Units.WATT_HOUR),
+    HCHP(ValueType.INTEGER, CHANNEL_HC_FRAME_HCHP, Units.WATT_HOUR),
+    EJPHN(ValueType.INTEGER, CHANNEL_EJP_FRAME_EJPHN, Units.WATT_HOUR),
+    EJPHPM(ValueType.INTEGER, CHANNEL_EJP_FRAME_EJPHN, Units.WATT_HOUR),
+    PTEC(ValueType.STRING, CHANNEL_PTEC, Units.ONE),
+    MOTDETAT(ValueType.STRING, CHANNEL_MOTDETAT, Units.AMPERE),
+    ISOUSC(ValueType.INTEGER, CHANNEL_ISOUSC, Units.AMPERE),
+    IINST(ValueType.INTEGER, CHANNEL_CBEMM_IINST, Units.AMPERE),
+    IINST1(ValueType.INTEGER, CHANNEL_CBETM_IINST1, Units.AMPERE),
+    IINST2(ValueType.INTEGER, CHANNEL_CBETM_IINST2, Units.AMPERE),
+    IINST3(ValueType.INTEGER, CHANNEL_CBETM_IINST3, Units.AMPERE),
+    ADIR1(ValueType.INTEGER, CHANNEL_CBETM_SHORT_ADIR1, Units.AMPERE),
+    ADIR2(ValueType.INTEGER, CHANNEL_CBETM_SHORT_ADIR2, Units.AMPERE),
+    ADIR3(ValueType.INTEGER, CHANNEL_CBETM_SHORT_ADIR3, Units.AMPERE),
+    ADPS(ValueType.INTEGER, CHANNEL_CBEMM_ADPS, Units.AMPERE),
+    IMAX(ValueType.INTEGER, CHANNEL_CBEMM_IMAX, Units.AMPERE),
+    IMAX1(ValueType.INTEGER, CHANNEL_CBETM_LONG_IMAX1, Units.AMPERE),
+    IMAX2(ValueType.INTEGER, CHANNEL_CBETM_LONG_IMAX2, Units.AMPERE),
+    IMAX3(ValueType.INTEGER, CHANNEL_CBETM_LONG_IMAX3, Units.AMPERE),
+    PMAX(ValueType.INTEGER, CHANNEL_CBETM_LONG_PMAX, Units.WATT),
+    HHPHC(ValueType.STRING, CHANNEL_HHPHC, Units.ONE),
+    PPOT(ValueType.STRING, CHANNEL_CBETM_LONG_PPOT, Units.ONE),
+    PAPP(ValueType.INTEGER, CHANNEL_PAPP, Units.VOLT_AMPERE),
+    BBRHCJB(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHCJB, Units.WATT_HOUR),
+    BBRHPJB(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHPJB, Units.WATT_HOUR),
+    BBRHCJW(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHCJW, Units.WATT_HOUR),
+    BBRHPJW(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHPJW, Units.WATT_HOUR),
+    BBRHCJR(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHCJR, Units.WATT_HOUR),
+    BBRHPJR(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHPJR, Units.WATT_HOUR),
+    PEJP(ValueType.INTEGER, CHANNEL_EJP_FRAME_PEJP, Units.MINUTE),
+    DEMAIN(ValueType.STRING, CHANNEL_TEMPO_FRAME_DEMAIN, Units.ONE);
 
-    private Class<?> type;
-    private int size;
+    private ValueType type;
+    private String channelName;
+    private Unit<?> unit;
 
-    Label(Class<?> type, int size) {
+    Label(ValueType type, String channelName, Unit<?> unit) {
         this.type = type;
-        this.size = size;
+        this.channelName = channelName;
+        this.unit = unit;
     }
 
-    public Class<?> getType() {
+    public ValueType getType() {
         return type;
     }
 
-    public int getSize() {
-        return size;
+    public String getChannelName() {
+        return channelName;
+    }
+
+    public Unit<?> getUnit() {
+        return unit;
     }
 }

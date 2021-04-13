@@ -15,12 +15,15 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Requests an updated ZoneMap.
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ZoneMapInquiryCommand extends RadioRACommand {
 
     @Override

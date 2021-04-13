@@ -9,10 +9,9 @@
 		<label>Smart Meter</label>
 		<description>The meter device to read the SML or IEC 62056-21 messages from</description>
 		<config-description>
-			<parameter name="port" type="text">
+			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
 				<description>The device serial port (e.g. /dev/tty0 or COM1)</description>
-				<required>true</required>
 				<limitToOptions>false</limitToOptions>
 				<context>serial-port</context>
 			</parameter>

@@ -135,6 +135,11 @@
 			<description>Number of minutes for minutely precipitation forecast.</description>
 			<default>0</default>
 		</parameter>
+		<parameter name="numberOfAlerts" type="integer" min="0" max="5" step="1">
+			<label>Number of Alerts</label>
+			<description>Number of alerts to be shown.</description>
+			<default>0</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:openweathermap:onecall-history">

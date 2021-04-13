@@ -132,7 +132,9 @@ then
 end 
 
 ```
+
 dwdunwetter_de.map
+
 ```
 ON=aktiv
 OFF=inaktiv
@@ -150,8 +152,6 @@ Extreme=Extreme Unwetterwarnung
 NULL=undefiniert
 UNDEF=undefiniert
 ```
-
-
 
 dwdunwetter_urgency_de.map
 

@@ -9,16 +9,14 @@
 		<description>Access to Neato Account. Used to discover robots tied to account.</description>
 
 		<config-description>
-			<parameter name="email" type="text">
+			<parameter name="email" type="text" required="true">
 				<label>E-mail Address</label>
 				<description>E-mail address for your Neato Cloud account.</description>
-				<required>true</required>
 				<context>email</context>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<description>Password for your Neato Cloud account.</description>
-				<required>true</required>
 				<context>password</context>
 			</parameter>
 		</config-description>

@@ -858,6 +858,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 scheduleReconnectJob();
             } catch (InterruptedException e) {
                 logger.debug("Command {} from channel {} interrupted: {}", command, channel, e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -1686,6 +1687,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);
@@ -1729,6 +1731,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 2 interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);
@@ -1772,6 +1775,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 3 interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);
@@ -1815,6 +1819,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 4 interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);

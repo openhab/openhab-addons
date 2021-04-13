@@ -32,6 +32,8 @@ public class TACmiBindingConstants {
     public static final ThingTypeUID THING_TYPE_COE_BRIDGE = new ThingTypeUID(BINDING_ID, "coe-bridge");
     public static final ThingTypeUID THING_TYPE_CMI_SCHEMA = new ThingTypeUID(BINDING_ID, "cmiSchema");
 
+    public static final String CONFIG_DESCRIPTION_API_SCHEMA_DEFAULTS = "channel-type:tacmi:schemaApiDefaults";
+
     public static final ChannelTypeUID CHANNEL_TYPE_COE_DIGITAL_IN_UID = new ChannelTypeUID(BINDING_ID,
             "coe-digital-in");
     public static final ChannelTypeUID CHANNEL_TYPE_COE_ANALOG_IN_UID = new ChannelTypeUID(BINDING_ID, "coe-analog-in");

@@ -158,7 +158,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             logger.debug("Binding will schedule a job to establish a connection...");
             if (authorizeJob == null || authorizeJob.isCancelled()) {
-                authorizeJob = scheduler.schedule(this::authorize, 1, TimeUnit.SECONDS);
+                authorizeJob = scheduler.schedule(() -> {
+                    try {
+                        authorize();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }, 1, TimeUnit.SECONDS);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -196,7 +202,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
     }
 
-    private void authorize() {
+    private void authorize() throws InterruptedException {
         logger.debug("Authorize job...");
 
         String fqdn = configuration.fqdn;

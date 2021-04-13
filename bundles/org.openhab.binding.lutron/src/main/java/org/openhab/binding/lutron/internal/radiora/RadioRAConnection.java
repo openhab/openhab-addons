@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.lutron.internal.radiora;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface to the RadioRA Classic system
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public interface RadioRAConnection {
 
     public void open(String portName, int baud) throws RadioRAConnectionException;

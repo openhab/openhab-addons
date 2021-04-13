@@ -302,6 +302,7 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
             logger.debug("RXTX library CPU load workaround, sleep forever");
             Thread.sleep(Long.MAX_VALUE);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }

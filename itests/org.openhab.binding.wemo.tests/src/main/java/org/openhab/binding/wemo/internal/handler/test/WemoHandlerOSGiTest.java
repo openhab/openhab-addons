@@ -28,10 +28,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.handler.WemoHandler;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -50,14 +48,14 @@ import org.openhab.core.types.RefreshType;
 public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
 
     // Thing information
-    private final String DEFAULT_TEST_CHANNEL = WemoBindingConstants.CHANNEL_STATE;
-    private final String DEFAULT_TEST_CHANNEL_TYPE = "Switch";
-    private final ThingTypeUID THING_TYPE_UID = WemoBindingConstants.THING_TYPE_SOCKET;
+    private static final String DEFAULT_TEST_CHANNEL = WemoBindingConstants.CHANNEL_STATE;
+    private static final String DEFAULT_TEST_CHANNEL_TYPE = "Switch";
+    private static final ThingTypeUID THING_TYPE_UID = WemoBindingConstants.THING_TYPE_SOCKET;
 
     // UPnP information
-    private final String MODEL_NAME = WemoBindingConstants.THING_TYPE_SOCKET.getId();
-    private final String SERVICE_ID = "basicevent";
-    private final String SERVICE_NUMBER = "1";
+    private static final String MODEL_NAME = WemoBindingConstants.THING_TYPE_SOCKET.getId();
+    private static final String SERVICE_ID = "basicevent";
+    private static final String SERVICE_NUMBER = "1";
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -74,8 +72,7 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
             throws MalformedURLException, URISyntaxException, ValidationException {
         Command command = OnOffType.OFF;
 
-        WemoHttpCall mockCaller = Mockito.spy(new WemoHttpCall());
-        Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE, mockCaller);
+        Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
             assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
@@ -111,8 +108,7 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
             throws MalformedURLException, URISyntaxException, ValidationException {
         Command command = RefreshType.REFRESH;
 
-        WemoHttpCall mockCaller = Mockito.spy(new WemoHttpCall());
-        Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE, mockCaller);
+        Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
             assertThat(thing.getStatus(), is(ThingStatus.ONLINE));

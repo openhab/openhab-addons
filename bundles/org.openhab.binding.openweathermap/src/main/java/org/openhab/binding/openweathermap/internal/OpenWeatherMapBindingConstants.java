@@ -65,6 +65,8 @@ public class OpenWeatherMapBindingConstants {
             BINDING_ID, "oneCallDaily");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_CURRENT = new ChannelGroupTypeUID(BINDING_ID,
             "oneCallCurrent");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_ALERTS = new ChannelGroupTypeUID(BINDING_ID,
+            "oneCallAlerts");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_STATION = "station";
@@ -123,6 +125,11 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_SULPHUR_DIOXIDE = "sulphurDioxide";
     public static final String CHANNEL_AMMONIA = "ammonia";
     public static final String CHANNEL_PRECIPITATION = "precipitation";
+    public static final String CHANNEL_ALERT_EVENT = "event";
+    public static final String CHANNEL_ALERT_DESCRIPTION = "description";
+    public static final String CHANNEL_ALERT_ONSET = "onset";
+    public static final String CHANNEL_ALERT_EXPIRES = "expires";
+    public static final String CHANNEL_ALERT_SOURCE = "source";
 
     // List of all configuration
     public static final String CONFIG_FORECAST_DAYS = "forecastDays";

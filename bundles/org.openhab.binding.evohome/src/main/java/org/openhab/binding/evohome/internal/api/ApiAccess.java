@@ -119,8 +119,11 @@ public class ApiAccess {
                     retVal = new Gson().fromJson(reply, outClass);
                 }
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException e) {
             logger.debug("Error in handling request: ", e);
+        } catch (InterruptedException e) {
+            logger.debug("Handling request interrupted: ", e);
+            Thread.currentThread().interrupt();
         }
 
         return retVal;

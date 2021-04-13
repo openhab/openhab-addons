@@ -29,9 +29,8 @@
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="stationId" type="integer">
+			<parameter name="stationId" type="integer" required="true">
 				<label>Station Number</label>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

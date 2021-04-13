@@ -46,7 +46,6 @@ public class HomematicConfig {
     private int groupPort;
 
     private String callbackHost;
-    private String bindAddress;
     private int xmlCallbackPort;
     private int binCallbackPort;
 
@@ -86,30 +85,6 @@ public class HomematicConfig {
      */
     public void setCallbackHost(String callbackHost) {
         this.callbackHost = callbackHost;
-    }
-
-    /**
-     * Returns the bind address.
-     */
-    public String getBindAddress() {
-        return bindAddress;
-    }
-
-    /**
-     * Sets the bind address.
-     */
-    public void setBindAddress(String bindAddress) {
-        this.bindAddress = bindAddress;
-    }
-
-    /**
-     * Sets the callback host port.
-     *
-     * @deprecated use setBinCallbackPort
-     */
-    @Deprecated
-    public void setCallbackPort(int callbackPort) {
-        this.binCallbackPort = callbackPort;
     }
 
     /**
@@ -404,11 +379,11 @@ public class HomematicConfig {
     @Override
     public String toString() {
         return String.format(
-                "%s[gatewayAddress=%s,callbackHost=%s,bindAddress=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
+                "%s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
                         + "gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,"
                         + "discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]",
-                getClass().getSimpleName(), gatewayAddress, callbackHost, bindAddress, xmlCallbackPort, binCallbackPort,
-                gatewayType, getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout,
-                discoveryTimeToLive, installModeDuration, socketMaxAlive);
+                getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort, gatewayType,
+                getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout, discoveryTimeToLive,
+                installModeDuration, socketMaxAlive);
     }
 }

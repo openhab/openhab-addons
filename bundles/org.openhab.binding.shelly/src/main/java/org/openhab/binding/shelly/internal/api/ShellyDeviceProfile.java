@@ -29,6 +29,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsIn
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +45,13 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
-    private final static Pattern VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+");
+    private final static Pattern VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
 
     public boolean initialized = false; // true when initialized
 
     public String thingName = "";
     public String deviceType = "";
+    public boolean extFeatures = false;
 
     public String settingsJson = "";
     public ShellySettingsGlobal settings = new ShellySettingsGlobal();
@@ -64,7 +66,6 @@ public class ShellyDeviceProfile {
     public String hwRev = "";
     public String hwBatchId = "";
     public String mac = "";
-    public String fwId = "";
     public String fwVersion = "";
     public String fwDate = "";
 
@@ -126,7 +127,8 @@ public class ShellyDeviceProfile {
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(settings.fw, "/");
         fwVersion = extractFwVersion(settings.fw);
-        fwId = substringAfter(settings.fw, "@");
+        ShellyVersionDTO version = new ShellyVersionDTO();
+        extFeatures = version.compare(fwVersion, SHELLY_API_FW_110) >= 0;
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
@@ -314,7 +316,8 @@ public class ShellyDeviceProfile {
 
         logger.trace("{}: Checking for trigger, button-type[{}] is {}", thingName, idx, btnType);
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
-                || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON);
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);
     }
 
     public int getRollerFav(int id) {
@@ -327,9 +330,12 @@ public class ShellyDeviceProfile {
 
     public static String extractFwVersion(@Nullable String version) {
         if (version != null) {
-            Matcher matcher = VERSION_PATTERN.matcher(version);
+            // fix version e.g. 20210319-122304/v.1.10-Dimmer1-gfd4cc10 (with v.1. instead of v1.)
+            String vers = version.replace("/v.1.10-", "/v1.10.0-");
+
+            // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
+            Matcher matcher = VERSION_PATTERN.matcher(vers);
             if (matcher.find()) {
-                // e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
                 return matcher.group(0);
             }
         }

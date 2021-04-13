@@ -20,10 +20,10 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author Marcin Czeczko - Added support for planner & calendar data
  */
 @NonNullByDefault
 public class AutomowerBindingConstants {
-
     private static final String BINDING_ID = "automower";
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
@@ -32,7 +32,7 @@ public class AutomowerBindingConstants {
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
 
     // List of all Channel ids
-    public static final String CHANNEL_MOWER_NAME = "name";
+    public static final String CHANNEL_STATUS_NAME = "name";
     public static final String CHANNEL_STATUS_MODE = "mode";
     public static final String CHANNEL_STATUS_ACTIVITY = "activity";
     public static final String CHANNEL_STATUS_STATE = "state";
@@ -40,6 +40,17 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_BATTERY = "battery";
     public static final String CHANNEL_STATUS_ERROR_CODE = "error-code";
     public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = "error-timestamp";
+    public static final String CHANNEL_PLANNER_NEXT_START = "planner-next-start";
+    public static final String CHANNEL_PLANNER_OVERRIDE_ACTION = "planner-override-action";
+    public static final String CHANNEL_CALENDAR_TASKS = "calendar-tasks";
+
+    // Command channels
+    public static final String CHANNEL_COMMAND_START = "start";
+    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = "resume_schedule";
+    public static final String CHANNEL_COMMAND_PAUSE = "pause";
+    public static final String CHANNEL_COMMAND_PARK = "park";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = "park_until_next_schedule";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = "park_until_further_notice";
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";

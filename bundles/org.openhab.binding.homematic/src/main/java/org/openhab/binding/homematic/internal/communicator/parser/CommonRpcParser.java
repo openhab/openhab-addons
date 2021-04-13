@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -179,6 +180,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (dp.getUnit() == null && dp.getName() != null && dp.getName().startsWith("RSSI_")) {
             dp.setUnit("dBm");
         }
+        // Bypass: For at least one device the CCU does not send a unit together with the value
+        if (dp.getUnit() == null && dp.getName().startsWith(HomematicConstants.DATAPOINT_NAME_OPERATING_VOLTAGE))
+            dp.setUnit("V");
 
         HmValueType valueType = HmValueType.parse(type);
         if (valueType == null || valueType == HmValueType.UNKNOWN) {
