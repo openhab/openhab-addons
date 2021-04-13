@@ -55,15 +55,15 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public void initialize() {
-        Integer serverCheck = getServerCheck();
-
         readConfig();
 
-        createCommunicationObject();
+        Integer serverCheck = getServerCheck();
 
         if (serverCheck != null) {
             this.setupRefreshTimer(serverCheck);
         }
+
+        createCommunicationObject();
     }
 
     /**
