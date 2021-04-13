@@ -71,7 +71,16 @@ The OpenTherm Gateway binding supports the following channels:
 | airpressfault             | Switch               | Air pressure fault                                       | R      |
 | waterovtemp               | Switch               | Water over-temperature fault                             | R      |
 | oemfaultcode              | Switch               | OEM fault code                                           | R      |
-| diag                      | Switch               | Diagr / wstics indication                                | R      |
+| diag                      | Switch               | Diagnostics indication                                   | R      |
+| unsuccessfulburnerstarts  | Number:Dimensionless | Unsuccessful burner starts                               | R      |
+| burnerstarts              | Number:Dimensionless | Burner starts                                            | R      |
+| chpumpstarts              | Number:Dimensionless | Central heating pump starts                              | R      |
+| dhwpvstarts               | Number:Dimensionless | Domestic hot water pump/valve starts                     | R      |
+| dhwburnerstarts           | Number:Dimensionless | Domestic hot water burner starts                         | R      |
+| burnerhours               | Number:Dimensionless | Burner hours                                             | R      |
+| chpumphours               | Number:Dimensionless | Central heating pump hours                               | R      |
+| dhwpvhours                | Number:Dimensionless | Domestic hot water pump/valve hours                      | R      |
+| dhwburnerhours            | Number:Dimensionless | Domestic hot water burner hours                          | R      |
 | sendcommand               | Text                 | Channel to send commands to the OpenTherm Gateway device | W      |
 
 ## Full Example
@@ -123,6 +132,15 @@ Switch AirPressFault "Air pressure fault" <switch> { channel="openthermgateway:o
 Switch WaterOvTemp "Water over-temperature fault" <switch> { channel="openthermgateway:otgw:1:waterovtemp" }
 Number OemFaultCode "OEM fault code" { channel="openthermgateway:otgw:1:oemfaultcode" }
 Switch Diagnostics "Diagnostics indication" { channel="openthermgateway:otgw:1:diag" }
+Number:Dimensionless UnsuccessfulBurnerStarts "Unsuccessful burner starts" { channel="openthermgateway:otgw:1:unsuccessfulburnerstarts" }
+Number:Dimensionless BurnerStarts "Burner starts" { channel="openthermgateway:otgw:1:burnerstarts" }
+Number:Dimensionless CentralHeatingPumpStarts "Central heating pump starts" { channel="openthermgateway:otgw:1:chpumpstarts" }
+Number:Dimensionless DomesticHotWaterPumpValveStarts "Domestic hot water pump/valve starts" { channel="openthermgateway:otgw:1:dhwpvstarts" }
+Number:Dimensionless DomesticHotWaterBurnerStarts "Domestic hot water burner starts" { channel="openthermgateway:otgw:1:dhwburnerstarts" }
+Number:Time BurnerHours "Burner hours" { channel="openthermgateway:otgw:1:burnerhours" }
+Number:Time CentralHeatingPumpHours "Central heating pump hours" { channel="openthermgateway:otgw:1:chpumphours" }
+Number:Time DomesticHotWaterPumpValveHours "Domestic hot water pump/valve hours" { channel="openthermgateway:otgw:1:dhwpvhours" }
+Number:Time DomesticHotWaterBurnerHours "Domestic hot water burner hours" { channel="openthermgateway:otgw:1:dhwburnerhours" }
 Text SendCommand "Send command channel" { channel="openthermgateway:otgw:1:sendcommand" }
 ```
 
@@ -163,6 +181,15 @@ sitemap demo label="Main Menu" {
         Switch item="waterOvTemp" icon="" label="Water over-temperature fault"
         Text item="OemFaultCode" icon="" label="OEM fault code"
         Switch item="Diagnostics" icon="" label="Diagnostics indication"
+        Text item="UnsuccessfulBurnerStarts" icon="" label="Unsuccessful burner starts"
+        Text item="BurnerStarts" icon="" label="Burner starts"
+        Text item="CentralHeatingPumpStarts" icon="" label="Central heating pump starts"
+        Text item="DomesticHotWaterPumpValveStarts" icon="" label="Domestic hot water pump/valve starts"
+        Text item="DomesticHotWaterBurnerStarts" icon="" label="Domestic hot water burner starts"
+        Text item="BurnerHours" icon="" label="Burner hours"
+        Text item="CentralHeatingPumpHours" icon="" label="Central heating pump hours"
+        Text item="DomesticHotWaterPumpValveHours" icon="" label="Domestic hot water pump/valve hours"
+        Text item="DomesticHotWaterBurnerHours" icon="" label="Domestic hot water burner hours"
     }
 }
 ```

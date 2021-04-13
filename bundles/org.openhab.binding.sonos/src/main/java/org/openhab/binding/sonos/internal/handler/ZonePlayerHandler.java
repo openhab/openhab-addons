@@ -2552,6 +2552,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 coordinator.play();
             } catch (IllegalStateException e) {
                 logger.debug("Cannot play URI ({})", e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug("Play URI interrupted ({})", e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -2592,7 +2595,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     notificationLock.notify();
                 }
             } catch (IllegalStateException e) {
-                logger.debug("Cannot play sound ({})", e.getMessage());
+                logger.debug("Cannot play notification sound ({})", e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug("Play notification sound interrupted ({})", e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -2637,9 +2643,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param currentStreamURI - the currently loaded stream's URI
      * @param notificationURL - the notification url in the format of //host/folder/filename.mp3
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
+     * @throws InterruptedException
      */
     private void handleRadioStream(@Nullable String currentStreamURI, Command notificationURL,
-            ZonePlayerHandler coordinator) {
+            ZonePlayerHandler coordinator) throws InterruptedException {
         String nextAction = coordinator.getTransportState();
         SonosMetaData track = coordinator.getTrackMetadata();
         SonosMetaData currentUriMetaData = coordinator.getCurrentURIMetadata();
@@ -2660,9 +2667,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param currentLineInURI - the currently loaded line-in URI
      * @param notificationURL - the notification url in the format of //host/folder/filename.mp3
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
+     * @throws InterruptedException
      */
-    private void handleLineIn(@Nullable String currentLineInURI, Command notificationURL,
-            ZonePlayerHandler coordinator) {
+    private void handleLineIn(@Nullable String currentLineInURI, Command notificationURL, ZonePlayerHandler coordinator)
+            throws InterruptedException {
         logger.debug("Handling notification while sound from line-in was being played");
         String nextAction = coordinator.getTransportState();
 
@@ -2682,9 +2690,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param currentQueueURI - the currently loaded queue URI
      * @param notificationURL - the notification url in the format of //host/folder/filename.mp3
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
+     * @throws InterruptedException
      */
     private void handleSharedQueue(@Nullable String currentQueueURI, Command notificationURL,
-            ZonePlayerHandler coordinator) {
+            ZonePlayerHandler coordinator) throws InterruptedException {
         String nextAction = coordinator.getTransportState();
         String trackPosition = coordinator.getRefreshedPosition();
         long currentTrackNumber = coordinator.getRefreshedCurrenTrackNr();
@@ -2705,8 +2714,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      *
      * @param notificationURL - the notification url in the format of //host/folder/filename.mp3
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
+     * @throws InterruptedException
      */
-    private void handleNotificationSound(Command notificationURL, ZonePlayerHandler coordinator) {
+    private void handleNotificationSound(Command notificationURL, ZonePlayerHandler coordinator)
+            throws InterruptedException {
         boolean sourceStoppable = !isPlayingOpticalLineIn(coordinator.getCurrentURI());
         String originalVolume = (isAdHocGroup() || isStandalonePlayer()) ? getVolume() : coordinator.getVolume();
         if (sourceStoppable) {
@@ -2731,7 +2742,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         coordinator.removeRangeOfTracksFromQueue(new StringType(Long.toString(notificationPosition) + ",1"));
     }
 
-    private void restoreLastTransportState(ZonePlayerHandler coordinator, @Nullable String nextAction) {
+    private void restoreLastTransportState(ZonePlayerHandler coordinator, @Nullable String nextAction)
+            throws InterruptedException {
         if (nextAction != null) {
             switch (nextAction) {
                 case STATE_PLAYING:
@@ -2752,8 +2764,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      *
      * @param notificationURL - the notification url in the format of //host/folder/filename.mp3
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
+     * @throws InterruptedException
      */
-    private void handleEmptyQueue(Command notificationURL, ZonePlayerHandler coordinator) {
+    private void handleEmptyQueue(Command notificationURL, ZonePlayerHandler coordinator) throws InterruptedException {
         String originalVolume = coordinator.getVolume();
         coordinator.applyNotificationSoundVolume();
         coordinator.playURI(notificationURL);
@@ -2773,54 +2786,42 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         setNotificationSoundVolume(getNotificationSoundVolume());
     }
 
-    private void waitForFinishedNotification() {
+    private void waitForFinishedNotification() throws InterruptedException {
         waitForTransportState(STATE_PLAYING);
 
         // check Sonos state events to determine the end of the notification sound
         String notificationTitle = getCurrentTitle();
         long playstart = System.currentTimeMillis();
         while (System.currentTimeMillis() - playstart < (long) configuration.notificationTimeout * 1000) {
-            try {
-                Thread.sleep(50);
-                String currentTitle = getCurrentTitle();
-                if ((notificationTitle == null && currentTitle != null)
-                        || (notificationTitle != null && !notificationTitle.equals(currentTitle))
-                        || !STATE_PLAYING.equals(getTransportState())) {
-                    break;
-                }
-            } catch (InterruptedException e) {
-                logger.debug("InterruptedException during playing a notification sound");
+            Thread.sleep(50);
+            String currentTitle = getCurrentTitle();
+            if ((notificationTitle == null && currentTitle != null)
+                    || (notificationTitle != null && !notificationTitle.equals(currentTitle))
+                    || !STATE_PLAYING.equals(getTransportState())) {
+                break;
             }
         }
     }
 
-    private void waitForTransportState(String state) {
+    private void waitForTransportState(String state) throws InterruptedException {
         if (getTransportState() != null) {
             long start = System.currentTimeMillis();
             while (!state.equals(getTransportState())) {
-                try {
-                    Thread.sleep(50);
-                    if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
-                        break;
-                    }
-                } catch (InterruptedException e) {
-                    logger.debug("InterruptedException during playing a notification sound");
+                Thread.sleep(50);
+                if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
+                    break;
                 }
             }
         }
     }
 
-    private void waitForNotTransportState(String state) {
+    private void waitForNotTransportState(String state) throws InterruptedException {
         if (getTransportState() != null) {
             long start = System.currentTimeMillis();
             while (state.equals(getTransportState())) {
-                try {
-                    Thread.sleep(50);
-                    if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
-                        break;
-                    }
-                } catch (InterruptedException e) {
-                    logger.debug("InterruptedException during playing a notification sound");
+                Thread.sleep(50);
+                if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
+                    break;
                 }
             }
         }

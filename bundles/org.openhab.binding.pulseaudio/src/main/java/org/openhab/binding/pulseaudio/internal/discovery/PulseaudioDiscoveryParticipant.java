@@ -73,7 +73,6 @@ public class PulseaudioDiscoveryParticipant implements MDNSDiscoveryParticipant 
                 }
                 return result;
             } catch (IOException e) {
-                result = null;
             }
         }
         return result;

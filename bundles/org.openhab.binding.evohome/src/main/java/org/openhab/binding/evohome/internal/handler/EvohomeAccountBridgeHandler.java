@@ -74,30 +74,22 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(EvohomeAccountConfiguration.class);
 
         if (checkConfig()) {
-            try {
-                apiClient = new EvohomeApiClient(configuration, this.httpClient);
-            } catch (Exception e) {
-                logger.error("Could not start API client", e);
-                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not create evohome API client");
-            }
+            apiClient = new EvohomeApiClient(configuration, this.httpClient);
 
-            if (apiClient != null) {
-                // Initialization can take a while, so kick it off on a separate thread
-                scheduler.schedule(() -> {
-                    if (apiClient.login()) {
-                        if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
-                            startRefreshTask();
-                        } else {
-                            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "System Information Sanity Check failed");
-                        }
+            // Initialization can take a while, so kick it off on a separate thread
+            scheduler.schedule(() -> {
+                if (apiClient.login()) {
+                    if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
+                        startRefreshTask();
                     } else {
                         updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Authentication failed");
+                                "System Information Sanity Check failed");
                     }
-                }, 0, TimeUnit.SECONDS);
-            }
+                } else {
+                    updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Authentication failed");
+                }
+            }, 0, TimeUnit.SECONDS);
         }
     }
 

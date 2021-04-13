@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Object that represents a Homematic device.
@@ -26,6 +28,8 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HmDevice {
+    private final Logger logger = LoggerFactory.getLogger(HmDevice.class);
+
     public static final String TYPE_GATEWAY_EXTRAS = "GATEWAY-EXTRAS";
     public static final String ADDRESS_GATEWAY_EXTRAS = "GWE00000000";
 
@@ -43,10 +47,15 @@ public class HmDevice {
             String firmware) {
         this.address = address;
         this.hmInterface = hmInterface;
-        this.type = type;
+        this.firmware = firmware;
+        if ("HM-ES-TX-WM".equals(type) && Float.valueOf(firmware) > 2.0) {
+            logger.debug("Found HM-ES-TX-WM with firmware version > 2.0, creating virtual type");
+            this.type = type + "2";
+        } else {
+            this.type = type;
+        }
         this.gatewayId = gatewayId;
         this.homegearId = homegearId;
-        this.firmware = firmware;
     }
 
     /**

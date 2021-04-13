@@ -151,22 +151,26 @@
 		<label>Switch State (Read-Only)</label>
 		<description>An On/Off state read from C.M.I.</description>
 		<state readOnly="true"/>
+		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
 	<channel-type id="schema-switch-rw">
 		<item-type>Switch</item-type>
 		<label>Switch State (Changeable)</label>
 		<description>A modifiable On/Off state read from C.M.I.</description>
+		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
 	<channel-type id="schema-numeric-ro">
 		<item-type>Number</item-type>
 		<label>Value</label>
 		<description>A numeric value read from C.M.I.</description>
 		<state readOnly="true"/>
+		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
 	<channel-type id="schema-state-ro">
 		<item-type>String</item-type>
 		<label>Value</label>
 		<description>A state value read from C.M.I.</description>
 		<state readOnly="true"/>
+		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
 </thing:thing-descriptions>

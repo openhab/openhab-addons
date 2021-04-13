@@ -79,7 +79,7 @@ public class XmlRpcServer implements RpcServer {
     public void start() throws IOException {
         logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
-        InetSocketAddress callbackAddress = new InetSocketAddress(config.getBindAddress(), config.getXmlCallbackPort());
+        InetSocketAddress callbackAddress = new InetSocketAddress(config.getXmlCallbackPort());
         xmlRpcHTTPD = new Server(callbackAddress);
         xmlRpcHTTPD.setHandler(jettyResponseHandler);
 

@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpMethod.PUT;
+import static org.eclipse.jetty.http.HttpMethod.*;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,7 +29,10 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceStatusUpdate;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
@@ -233,12 +235,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
         } catch (InterruptedException e) {
             this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.interrupted");
+            Thread.currentThread().interrupt();
         }
     }
 
     /**
      * Get a list of connected devices from the Smart-Home Controller
-     * 
+     *
      * @throws InterruptedException in case bridge is stopped
      */
     private boolean getDevices() throws InterruptedException {
@@ -354,7 +357,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Get a list of rooms from the Smart-Home controller
-     * 
+     *
      * @throws InterruptedException in case bridge is stopped
      */
     private boolean getRooms() throws InterruptedException {
@@ -451,11 +454,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Sends a state change for a device to the controller
-     * 
+     *
      * @param deviceId Id of device to change state for
      * @param serviceName Name of service of device to change state for
      * @param state New state data to set for service
-     * 
+     *
      * @return Response of request
      * @throws InterruptedException
      * @throws ExecutionException

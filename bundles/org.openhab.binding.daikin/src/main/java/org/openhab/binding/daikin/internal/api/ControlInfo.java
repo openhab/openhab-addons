@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ControlInfo {
-    private static final Logger logger = LoggerFactory.getLogger(ControlInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
 
     public String ret = "";
     public boolean power = false;
@@ -50,7 +50,7 @@ public class ControlInfo {
     }
 
     public static ControlInfo parse(String response) {
-        logger.debug("Parsing string: \"{}\"", response);
+        LOGGER.debug("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

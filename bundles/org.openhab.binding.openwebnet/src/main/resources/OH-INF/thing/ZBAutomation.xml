@@ -27,20 +27,18 @@
 		<representation-property>ownId</representation-property>
 
 		<config-description>
-			<parameter name="shutterRun" type="text">
+			<parameter name="shutterRun" type="text" required="true">
 				<label>Shutter Run</label>
 				<description>Time (in ms) to go from max position (e.g. CLOSED) to the other position (e.g. OPEN). Example: 12000
 					(=12sec).
 					Use AUTO (default) to calibrate the shutter automatically (UP->DOWN->Position%) the first time a Position
 					command (%)
 					is sent.</description>
-				<required>true</required>
 				<default>AUTO</default>
 			</parameter>
-			<parameter name="where" type="text">
+			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Device Address (where)</label>
 				<description>It identifies one ZigBee device. Example: 765432101#9</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

@@ -37,11 +37,6 @@
 				<label>Callback Network Address</label>
 				<description>Callback network address of the runtime, default is auto-discovery</description>
 			</parameter>
-			<parameter name="bindAddress" type="text">
-				<context>network-address</context>
-				<label>Bind Address</label>
-				<description>The address the XML-/BINRPC server binds to, default is callbackHost</description>
-			</parameter>
 			<parameter name="xmlCallbackPort" type="integer">
 				<label>XML-RPC Callback Port</label>
 				<description>Callback port of the binding's XML-RPC server. If no value is specified, xmlCallbackPort starts with

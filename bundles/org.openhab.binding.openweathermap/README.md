@@ -103,12 +103,13 @@ Once the parameter `forecastHours` will be changed, the available channel groups
 
 ### One Call API Weather and Forecast
 
-| Parameter      | Description                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
+| Parameter      | Description                                                                                                                                                           |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                                                          |
 | forecastMinutes| Number of minutes for minutely precipitation forecast. Optional, the default value is 0, so by default **no** minutely forecast data is fetched. (min="0", max="60"). |
-| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="48").                                    |
-| forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="8").            |
+| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="48").                                                                           |
+| forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="8").                                                   |
+| numberOfAlerts | Number of alerts to be shown. Optional, the default value is 0 (min="0", max="5").                                                                                    |
     
 ### One Call API History Data
 
@@ -232,7 +233,17 @@ See above for a description of the available channels.
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-day         | Number:Temperature   | Expected apparent temperature in the day. Only available in the One Call API      |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-evening     | Number:Temperature   | Expected apparent temperature in the evening. Only available in the One Call API  |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-night       | Number:Temperature   | Expected apparent temperature in the night. Only available in the One Call API    |
-     
+
+### One Call API Weather Warnings
+
+| Channel Group ID      | Channel ID  | Item Type | Description                                         |
+|-----------------------|-------------|-----------|-----------------------------------------------------|
+| alerts1, alerts2, ... | event       | String    | Type of the warning, e.g. FROST.                    |
+| alerts1, alerts2, ... | description | String    | A detailed description of the alert.                |
+| alerts1, alerts2, ... | onset       | DateTime  | Start Date and Time for which the warning is valid. |
+| alerts1, alerts2, ... | expires     | DateTime  | End Date and Time for which the warning is valid.   |
+| alerts1, alerts2, ... | source      | String    | The source of the alert. **Advanced**               |
+
 ### UV Index
 
 | Channel Group ID                                          | Channel ID | Item Type | Description                          |

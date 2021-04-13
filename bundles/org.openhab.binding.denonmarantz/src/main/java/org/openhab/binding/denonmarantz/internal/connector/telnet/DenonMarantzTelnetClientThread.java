@@ -145,6 +145,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
                 listener.telnetClientConnected(false);
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while connecting to {}", config.getHost(), e);
+                Thread.currentThread().interrupt();
             }
             delay = RECONNECT_DELAY;
         }

@@ -72,6 +72,15 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_WATER_OVER_TEMP = "waterovtemp";
     public static final String CHANNEL_OEM_FAULTCODE = "oemfaultcode";
     public static final String CHANNEL_DIAGNOSTICS_INDICATION = "diag";
+    public static final String CHANNEL_UNSUCCESSFUL_BURNER_STARTS = "unsuccessfulburnerstarts";
+    public static final String CHANNEL_BURNER_STARTS = "burnerstarts";
+    public static final String CHANNEL_CH_PUMP_STARTS = "chpumpstarts";
+    public static final String CHANNEL_DHW_PV_STARTS = "dhwpvstarts";
+    public static final String CHANNEL_DHW_BURNER_STARTS = "dhwburnerstarts";
+    public static final String CHANNEL_BURNER_HOURS = "burnerhours";
+    public static final String CHANNEL_CH_PUMP_HOURS = "chpumphours";
+    public static final String CHANNEL_DHW_PV_HOURS = "dhwpvhours";
+    public static final String CHANNEL_DHW_BURNER_HOURS = "dhwburnerhours";
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(CHANNEL_ROOM_TEMPERATURE, CHANNEL_ROOM_SETPOINT,
             CHANNEL_FLOW_TEMPERATURE, CHANNEL_RETURN_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE,
@@ -86,5 +95,7 @@ public class OpenThermGatewayBindingConstants {
             CHANNEL_DOMESTIC_HOT_WATER_SETPOINT, CHANNEL_FLAME, CHANNEL_RELATIVE_MODULATION_LEVEL,
             CHANNEL_MAXIMUM_MODULATION_LEVEL, CHANNEL_FAULT, CHANNEL_SERVICEREQUEST, CHANNEL_REMOTE_RESET,
             CHANNEL_LOW_WATER_PRESSURE, CHANNEL_GAS_FLAME_FAULT, CHANNEL_AIR_PRESSURE_FAULT, CHANNEL_WATER_OVER_TEMP,
-            CHANNEL_OEM_FAULTCODE, CHANNEL_DIAGNOSTICS_INDICATION);
+            CHANNEL_OEM_FAULTCODE, CHANNEL_DIAGNOSTICS_INDICATION, CHANNEL_UNSUCCESSFUL_BURNER_STARTS,
+            CHANNEL_BURNER_STARTS, CHANNEL_CH_PUMP_STARTS, CHANNEL_DHW_PV_STARTS, CHANNEL_DHW_BURNER_STARTS,
+            CHANNEL_BURNER_HOURS, CHANNEL_CH_PUMP_HOURS, CHANNEL_DHW_PV_HOURS, CHANNEL_DHW_BURNER_HOURS);
 }

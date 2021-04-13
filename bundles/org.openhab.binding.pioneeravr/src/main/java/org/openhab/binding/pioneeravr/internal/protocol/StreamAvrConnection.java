@@ -196,6 +196,11 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
+    public boolean sendMCACCMemoryQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.MCACC_MEMORY_QUERY));
+    }
+
+    @Override
     public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException {
         AvrCommand commandToSend = null;
 
@@ -300,6 +305,23 @@ public abstract class StreamAvrConnection implements AvrConnection {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_ON, zone);
         } else if (command == OnOffType.OFF) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_OFF, zone);
+        } else {
+            throw new CommandTypeNotSupportedException("Command type not supported.");
+        }
+
+        return sendCommand(commandToSend);
+    }
+
+    @Override
+    public boolean sendMCACCMemoryCommand(Command command) throws CommandTypeNotSupportedException {
+        AvrCommand commandToSend = null;
+
+        if (command == IncreaseDecreaseType.INCREASE) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MCACC_MEMORY_CHANGE_CYCLIC);
+        } else if (command instanceof StringType) {
+            String MCACCMemoryValue = ((StringType) command).toString();
+            commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.MCACC_MEMORY_SET)
+                    .setParameter(MCACCMemoryValue);
         } else {
             throw new CommandTypeNotSupportedException("Command type not supported.");
         }

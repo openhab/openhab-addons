@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.openweathermap.internal.connection;
 
-import static java.util.stream.Collectors.joining;
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.*;
 
@@ -21,6 +20,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -293,12 +294,12 @@ public class OpenWeatherMapConnection {
     }
 
     /**
-     * Get Weather data from the OneCall API for the given location. See https://openweathermap.org/api/one-call-api for
-     * details
+     * Get Weather data from the One Call API for the given location. See https://openweathermap.org/api/one-call-api
+     * for details.
      *
      * @param location location represented as {@link PointType}
      * @param excludeMinutely if true, will not fetch minutely forecast data from the server
-     * @param excludeHourly if true, will not fethh hourly forecast data from the server
+     * @param excludeHourly if true, will not fetch hourly forecast data from the server
      * @param excludeDaily if true, will not fetch hourly forecast data from the server
      * @return
      * @throws JsonSyntaxException
@@ -306,32 +307,33 @@ public class OpenWeatherMapConnection {
      * @throws OpenWeatherMapConfigurationException
      */
     public synchronized @Nullable OpenWeatherMapOneCallAPIData getOneCallAPIData(@Nullable PointType location,
-            boolean excludeMinutely, boolean excludeHourly, boolean excludeDaily)
+            boolean excludeMinutely, boolean excludeHourly, boolean excludeDaily, boolean excludeAlerts)
             throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
         Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
-        StringBuilder exclude = new StringBuilder("");
+        List<String> exclude = new ArrayList<>();
         if (excludeMinutely) {
-            exclude.append("minutely");
+            exclude.add("minutely");
         }
         if (excludeHourly) {
-            exclude.append(exclude.length() > 0 ? "," : "").append("hourly");
+            exclude.add("hourly");
         }
         if (excludeDaily) {
-            exclude.append(exclude.length() > 0 ? "," : "").append("daily");
+            exclude.add("daily");
+        }
+        if (excludeAlerts) {
+            exclude.add("alerts");
         }
         logger.debug("Exclude: '{}'", exclude);
-        if (exclude.length() > 0) {
-            params.put(PARAM_EXCLUDE, exclude.toString());
+        if (!exclude.isEmpty()) {
+            params.put(PARAM_EXCLUDE, exclude.stream().collect(Collectors.joining(",")));
         }
         return gson.fromJson(getResponseFromCache(buildURL(ONECALL_URL, params)), OpenWeatherMapOneCallAPIData.class);
     }
 
     /**
-     * Get the historical weather data from the OneCall API for the given location and the given number of days in the
-     * past.
-     * As of now, OpenWeatherMap supports this function for up to 5 days in the past. However, this may change in the
-     * future,
-     * so we don't enforce this limit here. See https://openweathermap.org/api/one-call-api for details
+     * Get the historical weather data from the One Call API for the given location and the given number of days in the
+     * past. As of now, OpenWeatherMap supports this function for up to 5 days in the past. However, this may change in
+     * the future, so we don't enforce this limit here. See https://openweathermap.org/api/one-call-api for details.
      *
      * @param location location represented as {@link PointType}
      * @param days number of days in the past, relative to the current time.
@@ -381,7 +383,7 @@ public class OpenWeatherMapConnection {
 
     private String buildURL(String url, Map<String, String> requestParams) {
         return requestParams.keySet().stream().map(key -> key + "=" + encodeParam(requestParams.get(key)))
-                .collect(joining("&", url + "?", ""));
+                .collect(Collectors.joining("&", url + "?", ""));
     }
 
     private String encodeParam(@Nullable String value) {

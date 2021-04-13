@@ -290,6 +290,17 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="oneCallAlerts">
+		<label>Weather Warnings</label>
+		<description>Weather warnings issued for the requested location.</description>
+		<channels>
+			<channel id="event" typeId="alert-event"/>
+			<channel id="description" typeId="alert-description"/>
+			<channel id="onset" typeId="alert-onset"/>
+			<channel id="expires" typeId="alert-expires"/>
+			<channel id="source" typeId="alert-source"/>
+		</channels>
+	</channel-group-type>
 
 	<!-- Channels for OpenWeatherMap Binding -->
 	<channel-type id="station-id">
@@ -768,5 +779,42 @@
 		<description>Forecasted precipitation probability.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="alert-event">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>Type of the warning, e.g. FROST.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alert-description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>A detailed description of the alert.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alert-onset">
+		<item-type>DateTime</item-type>
+		<label>Valid From</label>
+		<description>Start Date and Time for which the warning is valid.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="alert-expires">
+		<item-type>DateTime</item-type>
+		<label>Valid To</label>
+		<description>End Date and Time for which the warning is valid.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="alert-source" advanced="true">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>Source of the alert.</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

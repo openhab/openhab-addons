@@ -92,6 +92,7 @@ public class PioneerAvrBindingConstants {
     public static final String LISTENING_MODE_CHANNEL = "listeningMode";
     public static final String PLAYING_LISTENING_MODE_CHANNEL = "playingListeningMode";
     public static final String DISPLAY_INFORMATION_CHANNEL = "displayInformation#displayInformation";
+    public static final String MCACC_MEMORY_CHANNEL = "MCACCMemory#MCACCMemory";
 
     public static final String GROUP_CHANNEL_PATTERN = "zone%s#%s";
     public static final Pattern GROUP_CHANNEL_ZONE_PATTERN = Pattern.compile("zone([0-4])#.*");

@@ -180,7 +180,6 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                 thingDiscovered(result);
                 return true;
             }
-
         } catch (Exception e) {
             return false;
         }

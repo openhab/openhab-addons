@@ -14,21 +14,18 @@
 		</properties>
 
 		<config-description>
-			<parameter name="username" type="text">
+			<parameter name="username" type="text" required="true">
 				<label>Username</label>
 				<description>Username of a registered SleepIQ account owner</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password of a registered SleepIQ account owner</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="30" step="30">
+			<parameter name="pollingInterval" type="integer" min="30" step="30" required="true">
 				<label>Polling Interval</label>
 				<description>Seconds between fetching values from the cloud service</description>
-				<required>true</required>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -49,10 +46,9 @@
 		</channel-groups>
 
 		<config-description>
-		<parameter name="bedId" type="text">
+		<parameter name="bedId" type="text" required="true">
 		<label>Bed ID</label>
 		<description>The bed identifier identifies a specific bed</description>
-		<required>true</required>
 		</parameter>
 		</config-description>
 		</thing-type>
@@ -73,10 +69,9 @@
 		</channel-groups>
 
 		<config-description>
-			<parameter name="bedId" type="text">
+			<parameter name="bedId" type="text" required="true">
 				<label>Bed ID</label>
 				<description>The bed identifier identifies a specific bed</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

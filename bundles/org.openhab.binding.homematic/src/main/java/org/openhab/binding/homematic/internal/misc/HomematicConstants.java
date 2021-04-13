@@ -83,6 +83,7 @@ public class HomematicConstants {
     public static final String DATAPOINT_NAME_CALIBRATION = "CALIBRATION";
     public static final String DATAPOINT_NAME_LOWBAT_IP = "LOW_BAT";
     public static final String DATAPOINT_NAME_CHANNEL_FUNCTION = "CHANNEL_FUNCTION";
+    public static final String DATAPOINT_NAME_OPERATING_VOLTAGE = "OPERATING_VOLTAGE";
 
     public static final String VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE = "BATTERY_TYPE";
     public static final String VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE = "DELETE_DEVICE_MODE";

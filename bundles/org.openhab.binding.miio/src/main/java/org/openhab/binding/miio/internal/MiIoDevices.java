@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public enum MiIoDevices {
     AUX_AIRCONDITION_V1("aux.aircondition.v1", "AUX Smart Air Conditioner", THING_TYPE_UNSUPPORTED),
+    CGLLC_AIRM_CGDN1("cgllc.airm.cgdn1", "Qingping Air Monitor Lite", THING_TYPE_BASIC),
     CGLLC_AIRMONITOR_B1("cgllc.airmonitor.b1", "Mi Multifunction Air Monitor", THING_TYPE_BASIC),
     CGLLC_AIRMONITOR_S1("cgllc.airmonitor.s1", "Qingping Air Monitor", THING_TYPE_BASIC),
     CHUANGMI_IR_V2("chuangmi.ir.v2", "Mi Universal Remote", THING_TYPE_UNSUPPORTED),

@@ -25,6 +25,7 @@ import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
@@ -32,6 +33,7 @@ import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
 import org.openhab.binding.daikin.internal.api.Enums.SpecialModeKind;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -49,8 +51,10 @@ import org.slf4j.LoggerFactory;
  * Handles communicating with a Daikin air conditioning unit.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Lukas Agethen - Added support for Energy Year reading, compressor frequency and powerful mode
+ * @author Wouter Denayer - Added to support for weekly & daily energy reading
+ *
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
@@ -118,16 +122,36 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             EnergyInfoYear energyInfoYear = webTargets.getEnergyInfoYear();
 
             if (energyInfoYear.energyHeatingThisYear.isPresent()) {
-                updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_CURRENTYEAR_PREFIX,
+                updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_CURRENTYEAR,
                         energyInfoYear.energyHeatingThisYear);
             }
             if (energyInfoYear.energyCoolingThisYear.isPresent()) {
-                updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_CURRENTYEAR_PREFIX,
+                updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_CURRENTYEAR,
                         energyInfoYear.energyCoolingThisYear);
             }
         } catch (DaikinCommunicationException e) {
             // Suppress any error if energy info is not supported.
             logger.debug("getEnergyInfoYear() error: {}", e.getMessage());
+        }
+
+        try {
+            EnergyInfoDayAndWeek energyInfoDayAndWeek = webTargets.getEnergyInfoDayAndWeek();
+
+            updateEnergyDayAndWeekChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_TODAY,
+                    energyInfoDayAndWeek.energyHeatingToday);
+            updateEnergyDayAndWeekChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_THISWEEK,
+                    energyInfoDayAndWeek.energyHeatingThisWeek);
+            updateEnergyDayAndWeekChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_LASTWEEK,
+                    energyInfoDayAndWeek.energyHeatingLastWeek);
+            updateEnergyDayAndWeekChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_TODAY,
+                    energyInfoDayAndWeek.energyCoolingToday);
+            updateEnergyDayAndWeekChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_THISWEEK,
+                    energyInfoDayAndWeek.energyCoolingThisWeek);
+            updateEnergyDayAndWeekChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_LASTWEEK,
+                    energyInfoDayAndWeek.energyCoolingLastWeek);
+        } catch (DaikinCommunicationException e) {
+            // Suppress any error if energy info is not supported.
+            logger.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
         }
     }
 
@@ -243,17 +267,30 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     /**
      * Updates energy year channels. Values are provided in hundreds of Watt
      *
-     * @param channelPrefix
+     * @param channel
      * @param maybePower
      */
-    protected void updateEnergyYearChannel(String channelPrefix, Optional<Integer[]> maybePower) {
+    protected void updateEnergyYearChannel(String channel, Optional<Integer[]> maybePower) {
         IntStream.range(1, 13).forEach(i -> updateState(
-                String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channelPrefix, i),
+                String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channel, i),
                 maybePower.<State> map(
                         t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1), Units.KILOWATT_HOUR))
                         .orElse(UnDefType.UNDEF))
 
         );
+    }
+
+    /**
+     *
+     * @param channel
+     * @param maybePower
+     */
+    protected void updateEnergyDayAndWeekChannel(String channel, Optional<Double> maybePower) {
+        if (maybePower.isPresent()) {
+            updateState(channel,
+                    maybePower.<State> map(t -> new QuantityType<>(new DecimalType(t), Units.KILOWATT_HOUR))
+                            .orElse(UnDefType.UNDEF));
+        }
     }
 
     @Override
@@ -267,7 +304,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                 return;
             }
             webTargets.registerUuid(key);
-        } catch (Exception e) {
+        } catch (DaikinCommunicationException e) {
             // suppress exceptions
             logger.debug("registerUuid({}) error: {}", key, e.getMessage());
         }

@@ -12,24 +12,21 @@
  */
 package org.openhab.binding.wemo.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 
 /**
- *
- * @author Stefan Triller
- *
+ * @author Stefan Triller - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractWemoHandler extends BaseThingHandler {
-
-    public AbstractWemoHandler(Thing thing) {
-        super(thing);
-    }
 
     protected WemoHttpCall wemoHttpCaller;
 
-    public void setWemoHttpCaller(WemoHttpCall wemoHttpCaller) {
+    public AbstractWemoHandler(Thing thing, WemoHttpCall wemoHttpCaller) {
+        super(thing);
         this.wemoHttpCaller = wemoHttpCaller;
     }
 }
