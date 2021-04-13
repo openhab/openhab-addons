@@ -95,12 +95,7 @@ public final class QbusBistabiel {
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeBistabiel").withId(this.id).withState(value);
         QbusCommunication comm = this.qComm;
         if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command for bistabiel {}, {}", this.id, e.getMessage());
-
-            }
+            comm.sendMessage(qCmd);
         }
     }
 }

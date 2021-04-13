@@ -92,14 +92,6 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
 
             setBridgeCallBack();
 
-            if (qbusCommunication != null) {
-                try {
-                    qbusCommunication.startCommunication();
-                } catch (InterruptedException | IOException e) {
-                    bridgeOffline("Communication could not be established " + e.getMessage());
-                    return;
-                }
-
             Integer serverCheck = getServerCheck();
             String sn = getSn();
             if (serverCheck != null) {
@@ -184,6 +176,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
         }
 
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Timer started");
             QbusCommunication comm = getCommunication();
             Integer serverCheck = getServerCheck();
 

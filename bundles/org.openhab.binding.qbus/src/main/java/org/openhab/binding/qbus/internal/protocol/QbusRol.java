@@ -132,8 +132,7 @@ public final class QbusRol {
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeSlats").withId(this.id).withState(value);
         QbusCommunication comm = qComm;
         if (comm != null) {
-            try {
-                comm.sendMessage(qCmd);
-            } catch (InterruptedException e) {
-                logger.warn("Could not send command for slat {}, {}", this.id, e.getMessage());
-            }
+            comm.sendMessage(qCmd);
+        }
+    }
+}

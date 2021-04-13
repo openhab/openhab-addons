@@ -184,22 +184,12 @@ public class QbusSceneHandler extends QbusGlobalHandler {
     /**
      * Sets the serial number of the controller
      */
-    private void handleSwitchCommand(QbusScene qScene, ChannelUID channelUID, Command command) {
-        String snr = getSN();
-        if (command instanceof OnOffType) {
-            if (command == OnOffType.OFF) {
-                if (snr != null) {
-                    qScene.execute(0, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + sceneId);
-                }
-            } else {
-                if (snr != null) {
-                    qScene.execute(100, snr);
-                } else {
-                    thingOffline("No serial number configured for  " + sceneId);
-                }
-            }
+    public void setSN() {
+        QbusBridgeHandler qBridgeHandler = getBridgeHandler("Scene", this.sceneId);
+        if (qBridgeHandler == null) {
+            thingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No communication with Qbus Bridge for SCENE " + this.sceneId);
+            return;
         }
         sn = qBridgeHandler.getSn();
     }
