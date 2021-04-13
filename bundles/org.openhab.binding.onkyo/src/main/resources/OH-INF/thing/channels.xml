@@ -110,7 +110,7 @@
 	<channel-type id="audioinfo" advanced="true">
 		<item-type>String</item-type>
 		<label>Audio Info</label>
-		<description>Audio info - refresh timer must be set for updates</description>
+		<description>Detailed audio info</description>
 	</channel-type>
 	<channel-type id="netControl" advanced="true">
 		<item-type>String</item-type>
