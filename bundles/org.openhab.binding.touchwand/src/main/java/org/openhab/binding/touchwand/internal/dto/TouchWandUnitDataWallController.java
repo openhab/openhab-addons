@@ -25,8 +25,15 @@ public class TouchWandUnitDataWallController extends TouchWandUnitData {
 
     private CurrStatus currStatus = new CurrStatus();
 
+    // currStatus actually can be null since the object is created by gson fromJson
+    // in case the key is null or not exist , the variable will be null.
+
+    @SuppressWarnings({ "unused", "null" })
     @Override
     public Csc getCurrStatus() {
+        if (currStatus == null) {
+            currStatus = new CurrStatus();
+        }
         return currStatus.getCsc();
     }
 
