@@ -18,7 +18,7 @@ import static org.openhab.core.library.unit.MetricPrefix.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;

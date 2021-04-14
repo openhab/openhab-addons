@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
-import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,8 +62,9 @@ public class HueLightHandlerTest {
     private static final int MAX_COLOR_TEMPERATURE = 500;
     private static final int COLOR_TEMPERATURE_RANGE = MAX_COLOR_TEMPERATURE - MIN_COLOR_TEMPERATURE;
 
-    private static final String OSRAM_MODEL_TYPE = "PAR16 50 TW";
-    private static final String OSRAM_MODEL_TYPE_ID = "PAR16_50_TW";
+    private static final String OSRAM = "OSRAM";
+    private static final String OSRAM_MODEL_TYPE = HueLightHandler.OSRAM_PAR16_50_TW_MODEL_ID;
+    private static final String OSRAM_MODEL_TYPE_ID = HueLightHandler.OSRAM_PAR16_50_TW_MODEL_ID;
 
     private Gson gson;
 
@@ -75,25 +76,26 @@ public class HueLightHandlerTest {
     @Test
     public void assertCommandForOsramPar1650ForColorTemperatureChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
-        assertSendCommandForColorTempForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForColorTempForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE, OSRAM), expectedReply);
     }
 
     @Test
     public void assertCommandForOsramPar1650ForColorTemperatureChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
-        assertSendCommandForColorTempForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForColorTempForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE, OSRAM), expectedReply);
     }
 
     @Test
     public void assertCommandForOsramPar1650ForBrightnessChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
-        assertSendCommandForBrightnessForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForBrightnessForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE, OSRAM), expectedReply);
     }
 
     @Test
     public void assertCommandForOsramPar1650ForBrightnessChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
-        assertSendCommandForBrightnessForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForBrightnessForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE, OSRAM),
+                expectedReply);
     }
 
     @Test
@@ -341,12 +343,12 @@ public class HueLightHandlerTest {
 
     private void assertSendCommandForColorTempForPar16(Command command, HueLightState currentState,
             String expectedReply) {
-        assertSendCommand(CHANNEL_COLORTEMPERATURE, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, "OSRAM");
+        assertSendCommand(CHANNEL_COLORTEMPERATURE, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, OSRAM);
     }
 
     private void assertSendCommandForBrightnessForPar16(Command command, HueLightState currentState,
             String expectedReply) {
-        assertSendCommand(CHANNEL_BRIGHTNESS, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, "OSRAM");
+        assertSendCommand(CHANNEL_BRIGHTNESS, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, OSRAM);
     }
 
     private void assertSendCommandForColor(Command command, HueLightState currentState, String expectedReply) {
@@ -390,7 +392,7 @@ public class HueLightHandlerTest {
         when(mockBridge.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         Thing mockThing = mock(Thing.class);
-        when(mockThing.getConfiguration()).thenReturn(new Configuration(Collections.singletonMap(LIGHT_ID, "1")));
+        when(mockThing.getConfiguration()).thenReturn(new Configuration(Map.of(LIGHT_ID, "1")));
 
         HueClient mockClient = mock(HueClient.class);
         when(mockClient.getLightById(any())).thenReturn(light);
@@ -423,9 +425,8 @@ public class HueLightHandlerTest {
     }
 
     private void assertJson(String expected, String actual) {
-        JsonParser parser = new JsonParser();
-        JsonElement jsonExpected = parser.parse(expected);
-        JsonElement jsonActual = parser.parse(actual);
+        JsonElement jsonExpected = JsonParser.parseString(expected);
+        JsonElement jsonActual = JsonParser.parseString(actual);
         assertEquals(jsonExpected, jsonActual);
     }
 }

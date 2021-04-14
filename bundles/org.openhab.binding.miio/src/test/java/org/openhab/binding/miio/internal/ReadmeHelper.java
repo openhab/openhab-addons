@@ -292,8 +292,7 @@ public class ReadmeHelper {
         JsonObject jsonObject = new JsonObject();
 
         try {
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(new FileReader(fileName));
+            JsonElement jsonElement = JsonParser.parseReader(new FileReader(fileName));
             jsonObject = jsonElement.getAsJsonObject();
         } catch (FileNotFoundException e) {
             //

@@ -16,6 +16,7 @@
 			<channel id="short_beep" typeId="short_beep"></channel>
 			<channel id="long_beep" typeId="long_beep"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

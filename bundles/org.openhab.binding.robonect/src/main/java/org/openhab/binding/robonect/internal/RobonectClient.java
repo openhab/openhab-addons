@@ -14,11 +14,11 @@ package org.openhab.binding.robonect.internal;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
@@ -26,7 +26,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.B64Code;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.ModelParser;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
@@ -142,14 +141,17 @@ public class RobonectClient {
             this.value = value;
         }
 
+        @Override
         public URI getURI() {
             return this.uri;
         }
 
+        @Override
         public void apply(Request request) {
             request.header(this.header, this.value);
         }
 
+        @Override
         public String toString() {
             return String.format("Basic authentication result for %s", this.uri);
         }
@@ -175,8 +177,9 @@ public class RobonectClient {
     private void addPreemptiveAuthentication(HttpClient httpClient, RobonectEndpoint endpoint) {
         AuthenticationStore auth = httpClient.getAuthenticationStore();
         URI uri = URI.create(baseUrl);
-        auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic "
-                + B64Code.encode(endpoint.getUser() + ":" + endpoint.getPassword(), StandardCharsets.ISO_8859_1)));
+        auth.addAuthenticationResult(
+                new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + Base64.getEncoder().encodeToString(
+                        (endpoint.getUser() + ":" + endpoint.getPassword()).getBytes(StandardCharsets.ISO_8859_1))));
     }
 
     /**
@@ -291,7 +294,7 @@ public class RobonectClient {
             String responseString = null;
 
             // jetty uses UTF-8 as default encoding. However, HTTP 1.1 specifies ISO_8859_1
-            if (StringUtils.isBlank(response.getEncoding())) {
+            if (response.getEncoding() == null || response.getEncoding().isBlank()) {
                 responseString = new String(response.getContent(), StandardCharsets.ISO_8859_1);
             } else {
                 // currently v0.9e Robonect does not specifiy the encoding. But if later versions will

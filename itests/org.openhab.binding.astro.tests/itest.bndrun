@@ -10,15 +10,8 @@ Fragment-Host: org.openhab.binding.astro
 #
 -runbundles: \
 	javax.measure.unit-api;version='[1.0.0,1.0.1)',\
-	org.apache.commons.lang;version='[2.6.0,2.6.1)',\
-	org.apache.felix.configadmin;version='[1.9.8,1.9.9)',\
-	org.apache.felix.scr;version='[2.1.10,2.1.11)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
 	org.osgi.service.event;version='[1.4.0,1.4.1)',\
-	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
-	slf4j.api;version='[1.7.25,1.7.26)',\
-	com.google.gson;version='[2.8.2,2.8.3)',\
-	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)',\
 	org.opentest4j;version='[1.2.0,1.2.1)',\
@@ -43,5 +36,12 @@ Fragment-Host: org.openhab.binding.astro
 	net.bytebuddy.byte-buddy-agent;version='[1.10.19,1.10.20)',\
 	org.mockito.mockito-core;version='[3.7.0,3.7.1)',\
 	org.objenesis;version='[3.1.0,3.1.1)',\
-	biz.aQute.tester.junit-platform;version='[5.2.0,5.2.1)',\
-	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)'
+	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
+	biz.aQute.tester.junit-platform;version='[5.3.0,5.3.1)',\
+	com.google.gson;version='[2.8.6,2.8.7)',\
+	org.apache.commons.lang3;version='[3.12.0,3.12.1)',\
+	org.apache.felix.configadmin;version='[1.9.20,1.9.21)',\
+	org.apache.felix.scr;version='[2.1.26,2.1.27)',\
+	org.ops4j.pax.logging.pax-logging-api;version='[2.0.8,2.0.9)',\
+	org.osgi.util.function;version='[1.1.0,1.1.1)',\
+	org.osgi.util.promise;version='[1.1.1,1.1.2)'

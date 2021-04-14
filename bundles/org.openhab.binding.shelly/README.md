@@ -1,6 +1,7 @@
 # Shelly Binding
 
 This Binding integrates [Shelly devices](https://shelly.cloud) devloped by Allterco.
+
 ![](https://shop.shelly.cloud/image/cache/catalog/shelly_1/s1_x1-80x80.jpg)  ![](https://shop.shelly.cloud/image/cache/catalog/shelly_dimmer2/shelly_dimmer2_x1-80x80.jpg)  ![](https://shop.shelly.cloud/image/cache/catalog/shelly_vintage/shelly_vintage_A60-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_plug_s/s_plug_s_x1-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_button1/shelly_button1_x1-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_gas/shelly_gas_eu-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_ht/s_ht_x1-80x80.jpg)
 
 Allterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API. 
@@ -14,6 +15,14 @@ Initial setup and device configuration has to be performed using the Shelly Apps
 The binding gets in sync with the next status refresh.
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
+
+Also check out the [Shelly Manager](doc/ShellyManager.md), which
+- provides detailed information on your Shellys
+- helps to diagnose WiFi issues or device instabilities
+- includes some common actions and 
+- simplifies firmware updates.
+
+[Shelly Manager](doc/ShellyManager.md) could also act as a firmware upgrade proxy - the device doesn't need to connect directly to the Internet, instead openHAB services as a download proxy, which improves device security.
 
 ## Supported Devices
 
@@ -30,6 +39,7 @@ Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB 
 | shellydimmer       | Shelly Dimmer                                          | SHDM-1    |
 | shellydimmer2      | Shelly Dimmer2                                         | SHDM-2    |
 | shellyix3          | Shelly ix3                                             | SHIX3-1   |
+| shellyuni          | Shelly UNI                                             | SHUNI-1   |
 | shellyplug         | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
@@ -255,15 +265,19 @@ The following trigger types are sent:
 
 |Event Type         |Description                                                                                                    |
 |-------------------|---------------------------------------------------------------------------------------------------------------|
-|SHORT_PRESSED      |The button was pressed once for a short time                                                                   |
-|DOUBLE_PRESSED     |The button was pressed twice with short delay                                                                  |
-|TRIPLE_PRESSED     |The button was pressed three times with short delay                                                            |
-|LONG_PRESSED       |The button was pressed for a longer time                                                                       |
-|SHORT_LONG_PRESSED |A short followed by a long button push                                                                         |
-|LONG_SHORT_PRESSED |A long followed by a short button push                                                                         |
+|SHORT_PRESSED      |The button was pressed once for a short time (lastEvent=S)                                                     |
+|DOUBLE_PRESSED     |The button was pressed twice with short delay (lastEvent=SS)                                                   |
+|TRIPLE_PRESSED     |The button was pressed three times with short delay (lastEvent=SSS)                                            |
+|LONG_PRESSED       |The button was pressed for a longer time (lastEvent=L)                                                         |
+|SHORT_LONG_PRESSED |A short followed by a long button push (lastEvent=SL)                                                          |
+|LONG_SHORT_PRESSED |A long followed by a short button push (lastEvent=LS)                                                          |
  
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events. 
+
+If you want to use those events triggering a rule:
+- If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
+- For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event 
 
 ### Alarms
 
@@ -578,6 +592,23 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
 
+### Shelly UNI - Low voltage sensor/actor: shellyuni)
+
+|Group     |Channel      |Type     |read-only|Description                                                                 |
+|----------|-------------|---------|---------|----------------------------------------------------------------------------|
+|relay1    |             |         |         |See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels       |
+|relay2    |             |         |         |See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels       |
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)    |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)    |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)    |
+|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                        |
+|          |voltage      |Number   |yes      |ADCS voltage                                                                |
+|status    |input1       |Switch   |yes      |State of Input 1                                                            |
+|          |input2       |Switch   |yes      |State of Input 2                                                            |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                    |
+|          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                             |
+|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.       |
+
 ### Shelly Bulb (thing-type: shellybulb)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
@@ -775,6 +806,11 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 ### Shelly Motion (thing-type: shellymotion)
 
+Important: The Shelly Motion does only support CoIoT Unicast, which means you need to set the CoIoT peer address.
+
+- Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
+- Use [Shelly Manager](doc/ShellyManager.md, select Action 'Set CoIoT peer' and the Manager will sets the openHAB IP address as peer address
+
 |Group     |Channel        |Type     |read-only|Description                                                          |
 |----------|---------------|---------|---------|---------------------------------------------------------------------|
 |sensors   |motion         |Switch   |yes      |ON: Motion was detected                                              |
@@ -783,9 +819,16 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |illumination   |String   |yes      |Current illumination: dark/twilight/bright                           |
 |          |vibration      |Switch   |yes      |ON: Vibration detected                                               |
 |          |charger        |Switch   |yes      |ON: USB charging cable is connected external power supply activated. |
+|          |motionActive   |Switch   |yes      |ON: Motion detection is currently active                             |
+|          |sensorSleepTime|Number   |no       |Specifies the number of sec the sensor should not report events      ]
 |          |lastUpdate     |DateTime |yes      |Timestamp of the last update (any sensor value changed)              |
 |battery   |batteryLevel   |Number   |yes      |Battery Level in %                                                   |
 |          |lowBattery     |Switch   |yes      |Low battery alert (< 20%)                                            |
+
+Use case for the 'sensorSleepTime': 
+You have a Motion controlling your light. 
+You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
+Using 'sensorSleepTime' you could suppress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on. 
 
 ### Shelly Button 1 (thing-type: shellybutton1)
 

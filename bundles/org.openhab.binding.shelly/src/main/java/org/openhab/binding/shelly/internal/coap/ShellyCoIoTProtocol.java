@@ -22,6 +22,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
@@ -50,6 +51,7 @@ public class ShellyCoIoTProtocol {
     protected final String thingName;
     protected final ShellyBaseHandler thingHandler;
     protected final ShellyDeviceProfile profile;
+    protected final ShellyHttpApi api;
     protected final Map<String, CoIotDescrBlk> blkMap;
     protected final Map<String, CoIotDescrSen> sensorMap;
     private final Gson gson = new GsonBuilder().create();
@@ -68,6 +70,7 @@ public class ShellyCoIoTProtocol {
         this.blkMap = blkMap;
         this.sensorMap = sensorMap;
         this.profile = thingHandler.getProfile();
+        this.api = thingHandler.getApi();
     }
 
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
@@ -83,7 +86,7 @@ public class ShellyCoIoTProtocol {
         switch (sen.type.toLowerCase()) {
             case "b": // BatteryLevel +
                 updateChannel(updates, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                        toQuantityType(s.value, DIGITS_PERCENT, Units.PERCENT));
+                        toQuantityType(s.value, 0, Units.PERCENT));
                 break;
             case "h" /* Humidity */:
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,

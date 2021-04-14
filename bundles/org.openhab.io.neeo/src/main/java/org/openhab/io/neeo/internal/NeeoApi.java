@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -148,8 +147,7 @@ public class NeeoApi implements AutoCloseable {
                 throw resp.createException();
             }
 
-            final JsonParser parser = new JsonParser();
-            final JsonObject root = parser.parse(resp.getContent()).getAsJsonObject();
+            final JsonObject root = JsonParser.parseString(resp.getContent()).getAsJsonObject();
             for (Map.Entry<String, JsonElement> room : root.getAsJsonObject("rooms").entrySet()) {
                 final JsonObject roomObj = (JsonObject) room.getValue();
 
@@ -521,11 +519,11 @@ public class NeeoApi implements AutoCloseable {
         }
 
         for (NeeoRecipe recipe : GSON.fromJson(resp.getContent(), NeeoRecipe[].class)) {
-            if (StringUtils.equalsIgnoreCase(recipe.getUid(), deviceKey)) {
+            if (deviceKey.equalsIgnoreCase(recipe.getUid())) {
                 final NeeoRecipeUrls urls = recipe.getUrls();
                 final String url = urls == null ? null : (on ? urls.getSetPowerOn() : urls.getSetPowerOff());
 
-                if (url != null && StringUtils.isNotEmpty(url)) {
+                if (url != null && !url.isEmpty()) {
                     final HttpResponse cmdResp = rqst.sendGetCommand(url);
                     if (cmdResp.getHttpCode() != HttpStatus.OK_200) {
                         throw cmdResp.createException();

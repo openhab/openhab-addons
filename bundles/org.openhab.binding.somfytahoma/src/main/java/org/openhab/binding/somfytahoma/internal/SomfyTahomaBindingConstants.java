@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -156,6 +160,7 @@ public class SomfyTahomaBindingConstants {
 
     // Gateway
     public static final String STATUS = "status";
+    public static final String SCENARIOS = "scenarios";
 
     // Roller shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";

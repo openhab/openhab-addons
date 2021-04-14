@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
@@ -127,6 +127,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
                     Thread.sleep(300);
                 } catch (InterruptedException e) {
                     logger.trace("requestStateOverTelnet() - Interrupted while requesting state.");
+                    Thread.currentThread().interrupt();
                 }
             }
         });
@@ -263,7 +264,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
     @Override
     protected void internalSendCommand(String command) {
         logger.debug("Sending command '{}'", command);
-        if (StringUtils.isBlank(command)) {
+        if (command == null || command.isBlank()) {
             logger.warn("Trying to send empty command");
             return;
         }

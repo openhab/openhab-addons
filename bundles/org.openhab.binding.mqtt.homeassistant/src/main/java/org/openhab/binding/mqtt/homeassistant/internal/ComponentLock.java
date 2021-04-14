@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
@@ -46,7 +45,7 @@ public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfig
         super(componentConfiguration, ChannelConfiguration.class);
 
         // We do not support all HomeAssistant quirks
-        if (channelConfiguration.optimistic && StringUtils.isNotBlank(channelConfiguration.state_topic)) {
+        if (channelConfiguration.optimistic && !channelConfiguration.state_topic.isBlank()) {
             throw new UnsupportedOperationException("Component:Lock does not support forced optimistic mode");
         }
 

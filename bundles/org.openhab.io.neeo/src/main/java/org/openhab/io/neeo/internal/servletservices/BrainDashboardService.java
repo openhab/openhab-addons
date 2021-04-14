@@ -20,7 +20,6 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.NeeoService;
 import org.openhab.io.neeo.internal.NeeoBrainServlet;
@@ -69,11 +68,9 @@ public class BrainDashboardService extends DefaultServletService {
      */
     @Override
     public boolean canHandleRoute(String[] paths) {
-        return paths.length >= 1 && (StringUtils.equalsIgnoreCase(paths[0], "brainstatus")
-                || StringUtils.equalsIgnoreCase(paths[0], "addbrain")
-                || StringUtils.equalsIgnoreCase(paths[0], "removebrain")
-                || StringUtils.equalsIgnoreCase(paths[0], "getlog")
-                || StringUtils.equalsIgnoreCase(paths[0], "blinkled"));
+        return paths.length >= 1 && (paths[0].equalsIgnoreCase("brainstatus") || paths[0].equalsIgnoreCase("addbrain")
+                || paths[0].equalsIgnoreCase("removebrain") || paths[0].equalsIgnoreCase("getlog")
+                || paths[0].equalsIgnoreCase("blinkled"));
     }
 
     /**
@@ -88,13 +85,13 @@ public class BrainDashboardService extends DefaultServletService {
         Objects.requireNonNull(resp, "resp cannot be null");
 
         try {
-            if (StringUtils.equalsIgnoreCase(paths[0], "brainstatus")) {
+            if (paths[0].equalsIgnoreCase("brainstatus")) {
                 final List<BrainStatus> status = new ArrayList<>();
                 for (NeeoBrainServlet servlet : service.getServlets()) {
                     status.add(servlet.getBrainStatus());
                 }
                 NeeoUtil.write(resp, gson.toJson(status));
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "blinkled")) {
+            } else if (paths[0].equalsIgnoreCase("blinkled")) {
                 final String brainId = req.getParameter("brainid");
                 if (brainId == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainID is null")));
@@ -112,7 +109,7 @@ public class BrainDashboardService extends DefaultServletService {
                         }
                     }
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "getlog")) {
+            } else if (paths[0].equalsIgnoreCase("getlog")) {
                 final String brainId = req.getParameter("brainid");
                 if (brainId == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainID is null")));
@@ -131,7 +128,7 @@ public class BrainDashboardService extends DefaultServletService {
                     }
                 }
             } else {
-                logger.debug("Unknown get path: {}", StringUtils.join(paths, ','));
+                logger.debug("Unknown get path: {}", String.join(",", paths));
             }
         } catch (JsonParseException | IllegalArgumentException | NullPointerException e) {
             logger.debug("Exception handling get: {}", e.getMessage(), e);
@@ -154,7 +151,7 @@ public class BrainDashboardService extends DefaultServletService {
         }
 
         try {
-            if (StringUtils.equalsIgnoreCase(paths[0], "removebrain")) {
+            if (paths[0].equalsIgnoreCase("removebrain")) {
                 final BrainInfo info = gson.fromJson(req.getReader(), BrainInfo.class);
                 final String brainId = info.getBrainId();
                 if (brainId == null) {
@@ -165,7 +162,7 @@ public class BrainDashboardService extends DefaultServletService {
                     NeeoUtil.write(resp,
                             gson.toJson(new ReturnStatus("BrainID (" + brainId + ") could not be removed")));
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "addbrain")) {
+            } else if (paths[0].equalsIgnoreCase("addbrain")) {
                 final BrainInfo info = gson.fromJson(req.getReader(), BrainInfo.class);
                 final String brainIp = info.getBrainIp();
                 if (brainIp == null) {
@@ -177,7 +174,7 @@ public class BrainDashboardService extends DefaultServletService {
                             "Brain (" + brainIp + ") could not be added - no brain at that IP Address")));
                 }
             } else {
-                logger.debug("Unknown get path: {}", StringUtils.join(paths, ','));
+                logger.debug("Unknown get path: {}", String.join(",", paths));
             }
         } catch (JsonParseException | IllegalArgumentException | NullPointerException e) {
             logger.debug("Exception handling get: {}", e.getMessage(), e);

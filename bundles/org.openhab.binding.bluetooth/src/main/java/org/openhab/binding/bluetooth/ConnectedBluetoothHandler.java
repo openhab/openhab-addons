@@ -12,21 +12,26 @@
  */
 package org.openhab.binding.bluetooth;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ScheduledFuture;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
-import org.openhab.core.thing.ChannelUID;
+import org.openhab.binding.bluetooth.util.RetryFuture;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,17 +41,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution and API
  */
-@NonNullByDefault({ DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE, DefaultLocation.ARRAY_CONTENTS,
-        DefaultLocation.TYPE_ARGUMENT, DefaultLocation.TYPE_BOUND, DefaultLocation.TYPE_PARAMETER })
+@NonNullByDefault
 public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ConnectedBluetoothHandler.class);
-    private ScheduledFuture<?> connectionJob;
+    private @Nullable Future<?> reconnectJob;
+    private @Nullable Future<?> pendingDisconnect;
 
-    // internal flag for the service resolution status
-    protected volatile boolean resolved = false;
+    private boolean alwaysConnected;
+    private int idleDisconnectDelay = 1000;
 
-    protected final Set<BluetoothCharacteristic> deviceCharacteristics = new CopyOnWriteArraySet<>();
+    // we initially set the to scheduler so that we can keep this field non-null
+    private ScheduledExecutorService connectionTaskExecutor = scheduler;
 
     public ConnectedBluetoothHandler(Thing thing) {
         super(thing);
@@ -54,55 +60,198 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void initialize() {
+
+        // super.initialize adds callbacks that might require the connectionTaskExecutor to be present, so we initialize
+        // the connectionTaskExecutor first
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,
+                new NamedThreadFactory("bluetooth-connection" + thing.getThingTypeUID(), true));
+        executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        executor.setRemoveOnCancelPolicy(true);
+        connectionTaskExecutor = executor;
+
         super.initialize();
 
-        connectionJob = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                if (device.getConnectionState() != ConnectionState.CONNECTED) {
-                    device.connect();
-                    // we do not set the Thing status here, because we will anyhow receive a call to
-                    // onConnectionStateChange
-                } else {
-                    // just in case it was already connected to begin with
-                    updateStatus(ThingStatus.ONLINE);
-                    if (!resolved && !device.discoverServices()) {
-                        logger.debug("Error while discovering services");
+        if (thing.getStatus() == ThingStatus.OFFLINE) {
+            // something went wrong in super.initialize() so we shouldn't initialize further here either
+            return;
+        }
+
+        Object alwaysConnectRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_ALWAYS_CONNECTED);
+        alwaysConnected = !Boolean.FALSE.equals(alwaysConnectRaw);
+
+        Object idleDisconnectDelayRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_IDLE_DISCONNECT_DELAY);
+        idleDisconnectDelay = 1000;
+        if (idleDisconnectDelayRaw instanceof Number) {
+            idleDisconnectDelay = ((Number) idleDisconnectDelayRaw).intValue();
+        }
+
+        if (alwaysConnected) {
+            reconnectJob = connectionTaskExecutor.scheduleWithFixedDelay(() -> {
+                try {
+                    if (device.getConnectionState() != ConnectionState.CONNECTED) {
+                        if (!device.connect()) {
+                            logger.debug("Failed to connect to {}", address);
+                        }
+                        // we do not set the Thing status here, because we will anyhow receive a call to
+                        // onConnectionStateChange
+                    } else {
+                        // just in case it was already connected to begin with
+                        updateStatus(ThingStatus.ONLINE);
+                        if (!device.isServicesDiscovered() && !device.discoverServices()) {
+                            logger.debug("Error while discovering services");
+                        }
                     }
+                } catch (RuntimeException ex) {
+                    logger.warn("Unexpected error occurred", ex);
                 }
-            } catch (RuntimeException ex) {
-                logger.warn("Unexpected error occurred", ex);
-            }
-        }, 0, 30, TimeUnit.SECONDS);
+            }, 0, 30, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     public void dispose() {
-        if (connectionJob != null) {
-            connectionJob.cancel(true);
-            connectionJob = null;
-        }
+        cancel(reconnectJob, true);
+        reconnectJob = null;
+        cancel(pendingDisconnect, true);
+        pendingDisconnect = null;
+
         super.dispose();
+
+        // just in case something goes really wrong in the core and it tries to dispose a handler before initializing it
+        if (scheduler != connectionTaskExecutor) {
+            connectionTaskExecutor.shutdownNow();
+        }
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
+    private static void cancel(@Nullable Future<?> future, boolean interrupt) {
+        if (future != null) {
+            future.cancel(interrupt);
+        }
+    }
 
-        // Handle REFRESH
-        if (command == RefreshType.REFRESH) {
-            for (BluetoothCharacteristic characteristic : deviceCharacteristics) {
-                if (characteristic.getGattCharacteristic() != null
-                        && channelUID.getId().equals(characteristic.getGattCharacteristic().name())) {
-                    device.readCharacteristic(characteristic);
-                    break;
-                }
+    public void connect() {
+        connectionTaskExecutor.execute(() -> {
+            if (!device.connect()) {
+                logger.debug("Failed to connect to {}", address);
+            }
+        });
+    }
+
+    public void disconnect() {
+        connectionTaskExecutor.execute(device::disconnect);
+    }
+
+    private void scheduleDisconnect() {
+        cancel(pendingDisconnect, false);
+        pendingDisconnect = connectionTaskExecutor.schedule(device::disconnect, idleDisconnectDelay,
+                TimeUnit.MILLISECONDS);
+    }
+
+    private void connectAndWait() throws ConnectionException, TimeoutException, InterruptedException {
+        if (device.getConnectionState() == ConnectionState.CONNECTED) {
+            return;
+        }
+        if (device.getConnectionState() != ConnectionState.CONNECTING) {
+            if (!device.connect()) {
+                throw new ConnectionException("Failed to start connecting");
+            }
+        }
+        if (!device.awaitConnection(1, TimeUnit.SECONDS)) {
+            throw new TimeoutException("Connection attempt timeout.");
+        }
+        if (!device.isServicesDiscovered()) {
+            device.discoverServices();
+            if (!device.awaitServiceDiscovery(10, TimeUnit.SECONDS)) {
+                throw new TimeoutException("Service discovery timeout");
             }
         }
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
+    private BluetoothCharacteristic connectAndGetCharacteristic(UUID serviceUUID, UUID characteristicUUID)
+            throws BluetoothException, TimeoutException, InterruptedException {
+        connectAndWait();
+        BluetoothService service = device.getServices(serviceUUID);
+        if (service == null) {
+            throw new BluetoothException("Service with uuid " + serviceUUID + " could not be found");
+        }
+        BluetoothCharacteristic characteristic = service.getCharacteristic(characteristicUUID);
+        if (characteristic == null) {
+            throw new BluetoothException("Characteristic with uuid " + characteristicUUID + " could not be found");
+        }
+        return characteristic;
+    }
+
+    private <T> CompletableFuture<T> executeWithConnection(UUID serviceUUID, UUID characteristicUUID,
+            Function<BluetoothCharacteristic, CompletableFuture<T>> callable) {
+        if (connectionTaskExecutor == scheduler) {
+            return CompletableFuture
+                    .failedFuture(new IllegalStateException("connectionTaskExecutor has not been initialized"));
+        }
+        if (connectionTaskExecutor.isShutdown()) {
+            return CompletableFuture.failedFuture(new IllegalStateException("connectionTaskExecutor is shut down"));
+        }
+        // we use a RetryFuture because it supports running Callable instances
+        return RetryFuture.callWithRetry(() -> {
+            // we block for completion here so that we keep the lock on the connectionTaskExecutor active.
+            return callable.apply(connectAndGetCharacteristic(serviceUUID, characteristicUUID)).get();
+        }, connectionTaskExecutor)// we make this completion async so that operations chained off the returned future
+                                  // will not run on the connectionTaskExecutor
+                .whenCompleteAsync((r, th) -> {
+                    // we us a while loop here in case the exceptions get nested
+                    while (th instanceof CompletionException || th instanceof ExecutionException) {
+                        th = th.getCause();
+                    }
+                    if (th instanceof InterruptedException) {
+                        // we don't want to schedule anything if we receive an interrupt
+                        return;
+                    }
+                    if (th instanceof TimeoutException) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, th.getMessage());
+                    }
+                    if (!alwaysConnected) {
+                        scheduleDisconnect();
+                    }
+                }, scheduler);
+    }
+
+    public CompletableFuture<@Nullable Void> enableNotifications(UUID serviceUUID, UUID characteristicUUID) {
+        return executeWithConnection(serviceUUID, characteristicUUID, device::enableNotifications);
+    }
+
+    public CompletableFuture<@Nullable Void> writeCharacteristic(UUID serviceUUID, UUID characteristicUUID, byte[] data,
+            boolean enableNotification) {
+        var future = executeWithConnection(serviceUUID, characteristicUUID, characteristic -> {
+            if (enableNotification) {
+                return device.enableNotifications(characteristic)
+                        .thenCompose((v) -> device.writeCharacteristic(characteristic, data));
+            } else {
+                return device.writeCharacteristic(characteristic, data);
+            }
+        });
+        if (logger.isDebugEnabled()) {
+            future = future.whenComplete((v, t) -> {
+                if (t == null) {
+                    logger.debug("Characteristic {} from {} has written value {}", characteristicUUID, address,
+                            HexUtils.bytesToHex(data));
+                }
+            });
+        }
+        return future;
+    }
+
+    public CompletableFuture<byte[]> readCharacteristic(UUID serviceUUID, UUID characteristicUUID) {
+        var future = executeWithConnection(serviceUUID, characteristicUUID, device::readCharacteristic);
+        if (logger.isDebugEnabled()) {
+            future = future.whenComplete((data, t) -> {
+                if (t == null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Characteristic {} from {} has been read - value {}", characteristicUUID, address,
+                                HexUtils.bytesToHex(data));
+                    }
+                }
+            });
+        }
+        return future;
     }
 
     @Override
@@ -110,10 +259,12 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         // if there is no signal, we can be sure we are OFFLINE, but if there is a signal, we also have to check whether
         // we are connected.
         if (receivedSignal) {
-            if (device.getConnectionState() == ConnectionState.CONNECTED) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected.");
+            if (alwaysConnected) {
+                if (device.getConnectionState() == ConnectionState.CONNECTED) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected.");
+                }
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -126,24 +277,30 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         switch (connectionNotification.getConnectionState()) {
             case DISCOVERED:
                 // The device is now known on the Bluetooth network, so we can do something...
-                scheduler.submit(() -> {
-                    if (device.getConnectionState() != ConnectionState.CONNECTED) {
-                        if (!device.connect()) {
-                            logger.debug("Error connecting to device after discovery.");
+                if (alwaysConnected) {
+                    connectionTaskExecutor.submit(() -> {
+                        if (device.getConnectionState() != ConnectionState.CONNECTED) {
+                            if (!device.connect()) {
+                                logger.debug("Error connecting to device after discovery.");
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 break;
             case CONNECTED:
-                updateStatus(ThingStatus.ONLINE);
-                scheduler.submit(() -> {
-                    if (!resolved && !device.discoverServices()) {
-                        logger.debug("Error while discovering services");
-                    }
-                });
+                if (alwaysConnected) {
+                    connectionTaskExecutor.submit(() -> {
+                        if (!device.isServicesDiscovered() && !device.discoverServices()) {
+                            logger.debug("Error while discovering services");
+                        }
+                    });
+                }
                 break;
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                cancel(pendingDisconnect, false);
+                if (alwaysConnected) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
                 break;
             default:
                 break;
@@ -151,51 +308,19 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     }
 
     @Override
-    public void onServicesDiscovered() {
-        super.onServicesDiscovered();
-        if (!resolved) {
-            resolved = true;
-            logger.debug("Service discovery completed for '{}'", address);
-        }
-    }
-
-    @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        super.onCharacteristicReadComplete(characteristic, status);
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(), address,
-                        HexUtils.bytesToHex(characteristic.getByteValue()));
-            }
-        } else {
-            logger.debug("Characteristic {} from {} has been read - ERROR", characteristic.getUuid(), address);
-        }
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        super.onCharacteristicWriteComplete(characteristic, status);
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
+        super.onCharacteristicUpdate(characteristic, value);
         if (logger.isDebugEnabled()) {
-            logger.debug("Wrote {} to characteristic {} of device {}: {}",
-                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address, status);
+            logger.debug("Recieved update {} to characteristic {} of device {}", HexUtils.bytesToHex(value),
+                    characteristic.getUuid(), address);
         }
     }
 
     @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        super.onCharacteristicUpdate(characteristic);
+    public void onDescriptorUpdate(BluetoothDescriptor descriptor, byte[] value) {
+        super.onDescriptorUpdate(descriptor, value);
         if (logger.isDebugEnabled()) {
-            logger.debug("Recieved update {} to characteristic {} of device {}",
-                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
-        }
-    }
-
-    @Override
-    public void onDescriptorUpdate(BluetoothDescriptor descriptor) {
-        super.onDescriptorUpdate(descriptor);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(descriptor.getValue()),
+            logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(value),
                     descriptor.getUuid(), address);
         }
     }

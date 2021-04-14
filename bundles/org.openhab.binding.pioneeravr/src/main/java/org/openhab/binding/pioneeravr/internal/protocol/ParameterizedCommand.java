@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.pioneeravr.internal.protocol;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrCommand;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionException;
 
@@ -31,7 +30,8 @@ public class ParameterizedCommand extends SimpleCommand {
 
         VOLUME_SET("[0-9]{2,3}", "VL", "ZV", "YV", "HZV"),
         INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT", "ZEA"),
-        LISTENING_MODE_SET("[0-9]{4}", "SR");
+        LISTENING_MODE_SET("[0-9]{4}", "SR"),
+        MCACC_MEMORY_SET("[1-6]{1}", "MC");
 
         private String[] zoneCommands;
         private String parameterPattern;
@@ -39,6 +39,11 @@ public class ParameterizedCommand extends SimpleCommand {
         private ParameterizedCommandType(String parameterPattern, String... zoneCommands) {
             this.zoneCommands = zoneCommands;
             this.parameterPattern = parameterPattern;
+        }
+
+        @Override
+        public String getCommand() {
+            return zoneCommands[0];
         }
 
         @Override
@@ -54,6 +59,10 @@ public class ParameterizedCommand extends SimpleCommand {
     private String parameter;
 
     private String parameterPattern;
+
+    protected ParameterizedCommand(ParameterizedCommandType command) {
+        this(command, 0);
+    }
 
     protected ParameterizedCommand(ParameterizedCommandType command, int zone) {
         super(command, zone);
@@ -72,7 +81,7 @@ public class ParameterizedCommand extends SimpleCommand {
                     "The parameter of the command " + super.getCommand() + " must not be null.");
         }
 
-        if (StringUtils.isNotEmpty(parameterPattern) && !parameter.matches(parameterPattern)) {
+        if (parameterPattern != null && !parameterPattern.isEmpty() && !parameter.matches(parameterPattern)) {
             throw new AvrConnectionException("The parameter value " + parameter + " of the command "
                     + super.getCommand() + " does not match the pattern " + parameterPattern);
         }

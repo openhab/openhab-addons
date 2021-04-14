@@ -27,6 +27,7 @@ import org.openhab.binding.powermax.internal.config.PowermaxIpConfiguration;
 import org.openhab.binding.powermax.internal.config.PowermaxSerialConfiguration;
 import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
 import org.openhab.binding.powermax.internal.message.PowermaxCommManager;
+import org.openhab.binding.powermax.internal.message.PowermaxSendType;
 import org.openhab.binding.powermax.internal.state.PowermaxArmMode;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettingsListener;
@@ -48,6 +49,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     private final TimeZoneProvider timeZoneProvider;
 
     private static final long ONE_MINUTE = TimeUnit.MINUTES.toMillis(1);
+    private static final long FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5);
 
     /** Default delay in milliseconds to reset a motion detection */
     private static final long DEFAULT_MOTION_OFF_DELAY = TimeUnit.MINUTES.toMillis(3);
@@ -252,24 +255,31 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     }
 
     /*
-     * Check that we receive a keep alive message during the last minute
+     * Check that we're actively communicating with the panel
      */
     private void checkKeepAlive() {
         long now = System.currentTimeMillis();
         if (Boolean.TRUE.equals(currentState.powerlinkMode.getValue())
                 && (currentState.lastKeepAlive.getValue() != null)
                 && ((now - currentState.lastKeepAlive.getValue()) > ONE_MINUTE)) {
-            // Let Powermax know we are alive
+            // In Powerlink mode: let Powermax know we are alive
             commManager.sendRestoreMessage();
             currentState.lastKeepAlive.setValue(now);
+        } else if (!Boolean.TRUE.equals(currentState.downloadMode.getValue())
+                && (currentState.lastMessageReceived.getValue() != null)
+                && ((now - currentState.lastMessageReceived.getValue()) > FIVE_MINUTES)) {
+            // In Standard mode: ping the panel every so often to detect disconnects
+            commManager.sendMessage(PowermaxSendType.STATUS);
         }
     }
 
     private void tryReconnect() {
-        logger.debug("trying to reconnect...");
+        logger.info("Trying to connect or reconnect...");
         closeConnection();
         currentState = commManager.createNewState();
-        if (openConnection()) {
+        try {
+            openConnection();
+            logger.debug("openConnection(): connected");
             updateStatus(ThingStatus.ONLINE);
             if (forceStandardMode) {
                 currentState.powerlinkMode.setValue(false);
@@ -278,8 +288,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             } else {
                 commManager.startDownload();
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reconnection failed");
+        } catch (Exception e) {
+            logger.debug("openConnection(): {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setAllChannelsOffline();
         }
     }
 
@@ -288,14 +300,12 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      *
      * @return true if the connection has been opened
      */
-    private synchronized boolean openConnection() {
+    private synchronized void openConnection() throws Exception {
         if (commManager != null) {
             commManager.addEventListener(this);
             commManager.open();
         }
         remainingDownloadAttempts = MAX_DOWNLOAD_ATTEMPTS;
-        logger.debug("openConnection(): {}", isConnected() ? "connected" : "disconnected");
-        return isConnected();
     }
 
     /**
@@ -474,6 +484,12 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
     }
 
+    @Override
+    public void onCommunicationFailure(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        setAllChannelsOffline();
+    }
+
     private void processPanelSettings() {
         if (commManager.processPanelSettings(Boolean.TRUE.equals(currentState.powerlinkMode.getValue()))) {
             for (PowermaxPanelSettingsListener listener : listeners) {
@@ -489,10 +505,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
         updatePropertiesFromPanelSettings();
         if (Boolean.TRUE.equals(currentState.powerlinkMode.getValue())) {
-            logger.debug("Powermax alarm binding: running in Powerlink mode");
+            logger.info("Powermax alarm binding: running in Powerlink mode");
             commManager.sendRestoreMessage();
         } else {
-            logger.debug("Powermax alarm binding: running in Standard mode");
+            logger.info("Powermax alarm binding: running in Standard mode");
             commManager.getInfosWhenInStandardMode();
         }
     }
@@ -513,7 +529,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      * @param state: the alarm system state
      */
     private synchronized void updateChannelsFromAlarmState(String channel, PowermaxState state) {
-        if (state == null) {
+        if (state == null || !isConnected()) {
             return;
         }
 
@@ -558,6 +574,13 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 }
             }
         }
+    }
+
+    /**
+     * Update all channels to an UNDEF state to indicate that communication with the panel is offline
+     */
+    private synchronized void setAllChannelsOffline() {
+        getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
 
     /**

@@ -14,6 +14,8 @@ package org.openhab.binding.bluetooth;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Refactored class to use Integer instead of int, fixed bugs, diverse improvements
  * @author Connor Petty - Made most of the methods abstract
+ * @author Peter Rosenberg - Improve notifications
  */
 @NonNullByDefault
 public abstract class BluetoothDevice {
@@ -68,8 +71,6 @@ public abstract class BluetoothDevice {
     protected enum BluetoothEventType {
         CONNECTION_STATE,
         SCAN_RECORD,
-        CHARACTERISTIC_READ_COMPLETE,
-        CHARACTERISTIC_WRITE_COMPLETE,
         CHARACTERISTIC_UPDATED,
         DESCRIPTOR_UPDATED,
         SERVICES_DISCOVERED,
@@ -226,28 +227,34 @@ public abstract class BluetoothDevice {
      * Reads a characteristic. Only a single read or write operation can be requested at once. Attempting to perform an
      * operation when one is already in progress will result in subsequent calls returning false.
      * <p>
-     * This is an asynchronous method. Once the read is complete
-     * {@link BluetoothDeviceListener.onCharacteristicReadComplete}
-     * method will be called with the completion state.
-     * <p>
-     * Note that {@link BluetoothDeviceListener.onCharacteristicUpdate} will be called when the read value is received.
+     * This is an asynchronous method. Once the read is complete the returned future will be updated with the result.
      *
      * @param characteristic the {@link BluetoothCharacteristic} to read.
-     * @return true if the characteristic read is started successfully
+     * @return a future that returns the read data is successful, otherwise throws an exception
      */
-    public abstract boolean readCharacteristic(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic);
 
     /**
      * Writes a characteristic. Only a single read or write operation can be requested at once. Attempting to perform an
      * operation when one is already in progress will result in subsequent calls returning false.
      * <p>
-     * This is an asynchronous method. Once the write is complete
-     * {@link BluetoothDeviceListener.onCharacteristicWriteComplete} method will be called with the completion state.
+     * This is an asynchronous method. Once the write is complete the returned future will be updated with the result.
      *
-     * @param characteristic the {@link BluetoothCharacteristic} to read.
-     * @return true if the characteristic write is started successfully
+     * @param characteristic the {@link BluetoothCharacteristic} to write.
+     * @param value the data to write
+     * @return a future that returns null upon a successful write, otherwise throws an exception
      */
-    public abstract boolean writeCharacteristic(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic,
+            byte[] value);
+
+    /**
+     * Returns if notification is enabled for the given characteristic.
+     *
+     * @param characteristic the {@link BluetoothCharacteristic} to check if notifications are enabled.
+     * @return true if notification is enabled, false if notification is disabled, characteristic is missing on device
+     *         or notifications are not supported.
+     */
+    public abstract boolean isNotifying(BluetoothCharacteristic characteristic);
 
     /**
      * Enables notifications for a characteristic. Only a single read or write operation can be requested at once.
@@ -259,7 +266,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to receive notifications for.
      * @return true if the characteristic notification is started successfully
      */
-    public abstract boolean enableNotifications(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic);
 
     /**
      * Disables notifications for a characteristic. Only a single read or write operation can be requested at once.
@@ -269,7 +276,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to disable notifications for.
      * @return true if the characteristic notification is stopped successfully
      */
-    public abstract boolean disableNotifications(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic);
 
     /**
      * Enables notifications for a descriptor. Only a single read or write operation can be requested at once.
@@ -366,6 +373,12 @@ public abstract class BluetoothDevice {
 
     protected abstract Collection<BluetoothDeviceListener> getListeners();
 
+    public abstract boolean awaitConnection(long timeout, TimeUnit unit) throws InterruptedException;
+
+    public abstract boolean awaitServiceDiscovery(long timeout, TimeUnit unit) throws InterruptedException;
+
+    public abstract boolean isServicesDiscovered();
+
     /**
      * Notify the listeners of an event
      *
@@ -385,19 +398,11 @@ public abstract class BluetoothDevice {
                     case SERVICES_DISCOVERED:
                         listener.onServicesDiscovered();
                         break;
-                    case CHARACTERISTIC_READ_COMPLETE:
-                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_WRITE_COMPLETE:
-                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
                     case CHARACTERISTIC_UPDATED:
-                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0]);
+                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0], (byte[]) args[1]);
                         break;
                     case DESCRIPTOR_UPDATED:
-                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
+                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0], (byte[]) args[1]);
                         break;
                     case ADAPTER_CHANGED:
                         listener.onAdapterChanged((BluetoothAdapter) args[0]);

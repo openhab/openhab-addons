@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.enocean.internal.EnOceanChannelDescription;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelTransformationConfig;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_01;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_02;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_03;
@@ -164,15 +165,9 @@ public enum EEPType {
     UTEResponse(RORG.UTE, 0, 0, false, UTEResponse.class, null),
     _4BSTeachInVariation3Response(RORG._4BS, 0, 0, false, _4BSTeachInVariation3Response.class, null),
 
-    GenericRPS(RORG.RPS, 0xFF, 0xFF, false, GenericRPS.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
-            CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
-            CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
-    Generic4BS(RORG._4BS, 0xFF, 0xFF, false, Generic4BS.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
-            CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
-            CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD, CHANNEL_VIBRATION),
-    GenericVLD(RORG.VLD, 0xFF, 0xFF, false, GenericVLD.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
-            CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
-            CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
+    GenericRPS(RORG.RPS, 0xFF, 0xFF, false, GenericRPS.class, THING_TYPE_GENERICTHING),
+    Generic4BS(RORG._4BS, 0xFF, 0xFF, false, Generic4BS.class, THING_TYPE_GENERICTHING, CHANNEL_VIBRATION),
+    GenericVLD(RORG.VLD, 0xFF, 0xFF, false, GenericVLD.class, THING_TYPE_GENERICTHING),
 
     PTM200(RORG.RPS, 0x00, 0x00, false, PTM200Message.class, null, CHANNEL_GENERAL_SWITCHING, CHANNEL_ROLLERSHUTTER,
             CHANNEL_CONTACT),
@@ -391,8 +386,8 @@ public enum EEPType {
 
     // UniversalCommand(RORG._4BS, 0x3f, 0x7f, false, A5_3F_7F_Universal.class, THING_TYPE_UNIVERSALACTUATOR,
     // CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_LIGHT_SWITCHING, CHANNEL_GENERIC_DIMMER, CHANNEL_TEACHINCMD),
-    EltakoFSB(RORG._4BS, 0x3f, 0x7f, false, "EltakoFSB", 0, A5_3F_7F_EltakoFSB.class, THING_TYPE_ROLLERSHUTTER, 0,
-            new Hashtable<String, Configuration>() {
+    EltakoFSB(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFSB", 0, A5_3F_7F_EltakoFSB.class, THING_TYPE_ROLLERSHUTTER,
+            0, new Hashtable<String, Configuration>() {
                 private static final long serialVersionUID = 1L;
                 {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
@@ -404,10 +399,10 @@ public enum EEPType {
                 }
             }),
 
-    Thermostat(RORG._4BS, 0x20, 0x04, false, A5_20_04.class, THING_TYPE_THERMOSTAT, CHANNEL_VALVE_POSITION,
+    Thermostat(RORG._4BS, 0x20, 0x04, false, true, A5_20_04.class, THING_TYPE_THERMOSTAT, CHANNEL_VALVE_POSITION,
             CHANNEL_BUTTON_LOCK, CHANNEL_DISPLAY_ORIENTATION, CHANNEL_TEMPERATURE_SETPOINT, CHANNEL_TEMPERATURE,
             CHANNEL_FEED_TEMPERATURE, CHANNEL_MEASUREMENT_CONTROL, CHANNEL_FAILURE_CODE, CHANNEL_WAKEUPCYCLE,
-            CHANNEL_SERVICECOMMAND, CHANNEL_STATUS_REQUEST_EVENT, CHANNEL_SEND_COMMAND),
+            CHANNEL_SERVICECOMMAND),
 
     SwitchWithEnergyMeasurment_00(RORG.VLD, 0x01, 0x00, true, D2_01_00.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE),
@@ -512,23 +507,36 @@ public enum EEPType {
 
     private boolean supportsRefresh;
 
+    private boolean requestsResponse;
+
     EEPType(RORG rorg, int func, int type, boolean supportsRefresh, Class<? extends EEP> eepClass,
             ThingTypeUID thingTypeUID, String... channelIds) {
         this(rorg, func, type, supportsRefresh, eepClass, thingTypeUID, -1, channelIds);
     }
 
+    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, boolean requestsResponse,
+            Class<? extends EEP> eepClass, ThingTypeUID thingTypeUID, String... channelIds) {
+        this(rorg, func, type, supportsRefresh, requestsResponse, eepClass, thingTypeUID, -1, channelIds);
+    }
+
     EEPType(RORG rorg, int func, int type, boolean supportsRefresh, String manufactorSuffix, int manufId,
             Class<? extends EEP> eepClass, ThingTypeUID thingTypeUID, String... channelIds) {
-        this(rorg, func, type, supportsRefresh, manufactorSuffix, manufId, eepClass, thingTypeUID, 0, channelIds);
+        this(rorg, func, type, supportsRefresh, false, manufactorSuffix, manufId, eepClass, thingTypeUID, 0,
+                channelIds);
     }
 
     EEPType(RORG rorg, int func, int type, boolean supportsRefresh, Class<? extends EEP> eepClass,
             ThingTypeUID thingTypeUID, int command, String... channelIds) {
-        this(rorg, func, type, supportsRefresh, "", 0, eepClass, thingTypeUID, command, channelIds);
+        this(rorg, func, type, supportsRefresh, false, "", 0, eepClass, thingTypeUID, command, channelIds);
     }
 
-    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, String manufactorSuffix, int manufId,
+    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, boolean requestsResponse,
             Class<? extends EEP> eepClass, ThingTypeUID thingTypeUID, int command, String... channelIds) {
+        this(rorg, func, type, supportsRefresh, requestsResponse, "", 0, eepClass, thingTypeUID, command, channelIds);
+    }
+
+    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, boolean requestsResponse, String manufactorSuffix,
+            int manufId, Class<? extends EEP> eepClass, ThingTypeUID thingTypeUID, int command, String... channelIds) {
         this.rorg = rorg;
         this.func = func;
         this.type = type;
@@ -538,24 +546,18 @@ public enum EEPType {
         this.manufactorSuffix = manufactorSuffix;
         this.manufactorId = manufId;
         this.supportsRefresh = supportsRefresh;
+        this.requestsResponse = requestsResponse;
 
         for (String id : channelIds) {
             this.channelIdsWithConfig.put(id, new Configuration());
             this.supportedChannels.put(id, CHANNELID2CHANNELDESCRIPTION.get(id));
         }
 
-        this.channelIdsWithConfig.put(CHANNEL_RSSI, new Configuration());
-        this.supportedChannels.put(CHANNEL_RSSI, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_RSSI));
-
-        this.channelIdsWithConfig.put(CHANNEL_REPEATCOUNT, new Configuration());
-        this.supportedChannels.put(CHANNEL_REPEATCOUNT, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_REPEATCOUNT));
-
-        this.channelIdsWithConfig.put(CHANNEL_LASTRECEIVED, new Configuration());
-        this.supportedChannels.put(CHANNEL_LASTRECEIVED, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_LASTRECEIVED));
+        addDefaultChannels();
     }
 
-    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, String manufactorSuffix, int manufId,
-            Class<? extends EEP> eepClass, ThingTypeUID thingTypeUID, int command,
+    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, boolean requestsResponse, String manufactorSuffix,
+            int manufId, Class<? extends EEP> eepClass, ThingTypeUID thingTypeUID, int command,
             Hashtable<String, Configuration> channelConfigs) {
         this.rorg = rorg;
         this.func = func;
@@ -567,9 +569,44 @@ public enum EEPType {
         this.manufactorSuffix = manufactorSuffix;
         this.manufactorId = manufId;
         this.supportsRefresh = supportsRefresh;
+        this.requestsResponse = requestsResponse;
 
         for (String id : channelConfigs.keySet()) {
             this.supportedChannels.put(id, CHANNELID2CHANNELDESCRIPTION.get(id));
+        }
+
+        addDefaultChannels();
+    }
+
+    private void addDefaultChannels() {
+
+        if (THING_TYPE_GENERICTHING.equals(this.thingTypeUID)) {
+            this.channelIdsWithConfig.put(CHANNEL_GENERIC_SWITCH, new EnOceanChannelTransformationConfig());
+            this.supportedChannels.put(CHANNEL_GENERIC_SWITCH,
+                    CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_GENERIC_SWITCH));
+
+            this.channelIdsWithConfig.put(CHANNEL_GENERIC_ROLLERSHUTTER, new EnOceanChannelTransformationConfig());
+            this.supportedChannels.put(CHANNEL_GENERIC_ROLLERSHUTTER,
+                    CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_GENERIC_ROLLERSHUTTER));
+
+            this.channelIdsWithConfig.put(CHANNEL_GENERIC_DIMMER, new EnOceanChannelTransformationConfig());
+            this.supportedChannels.put(CHANNEL_GENERIC_DIMMER,
+                    CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_GENERIC_DIMMER));
+
+            this.channelIdsWithConfig.put(CHANNEL_GENERIC_NUMBER, new EnOceanChannelTransformationConfig());
+            this.supportedChannels.put(CHANNEL_GENERIC_NUMBER,
+                    CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_GENERIC_NUMBER));
+
+            this.channelIdsWithConfig.put(CHANNEL_GENERIC_STRING, new EnOceanChannelTransformationConfig());
+            this.supportedChannels.put(CHANNEL_GENERIC_STRING,
+                    CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_GENERIC_STRING));
+
+            this.channelIdsWithConfig.put(CHANNEL_GENERIC_COLOR, new EnOceanChannelTransformationConfig());
+            this.supportedChannels.put(CHANNEL_GENERIC_COLOR, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_GENERIC_COLOR));
+
+            this.channelIdsWithConfig.put(CHANNEL_GENERIC_TEACHINCMD, new EnOceanChannelTransformationConfig());
+            this.supportedChannels.put(CHANNEL_GENERIC_TEACHINCMD,
+                    CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_GENERIC_TEACHINCMD));
         }
 
         this.channelIdsWithConfig.put(CHANNEL_RSSI, new Configuration());
@@ -580,6 +617,12 @@ public enum EEPType {
 
         this.channelIdsWithConfig.put(CHANNEL_LASTRECEIVED, new Configuration());
         this.supportedChannels.put(CHANNEL_LASTRECEIVED, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_LASTRECEIVED));
+
+        if (requestsResponse) {
+            this.channelIdsWithConfig.put(CHANNEL_STATUS_REQUEST_EVENT, new Configuration());
+            this.supportedChannels.put(CHANNEL_STATUS_REQUEST_EVENT,
+                    CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_STATUS_REQUEST_EVENT));
+        }
     }
 
     public Class<? extends EEP> getEEPClass() {
@@ -602,6 +645,10 @@ public enum EEPType {
         return supportsRefresh;
     }
 
+    public boolean getRequstesResponse() {
+        return requestsResponse;
+    }
+
     public Map<String, EnOceanChannelDescription> GetSupportedChannels() {
         return Collections.unmodifiableMap(supportedChannels);
     }
@@ -614,7 +661,7 @@ public enum EEPType {
     }
 
     public boolean isChannelSupported(String channelId, String channelTypeId) {
-        return supportedChannels.containsKey(channelId)
+        return supportedChannels.containsKey(channelId) || VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)
                 || supportedChannels.values().stream().anyMatch(c -> c.channelTypeUID.getId().equals(channelTypeId));
     }
 

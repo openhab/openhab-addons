@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.Generic;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.PARAMETER_EEPID;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -161,6 +161,7 @@ public class GenericEEP extends EEP {
 
     @Override
     public void addConfigPropertiesTo(DiscoveryResultBuilder discoveredThingResultBuilder) {
-        discoveredThingResultBuilder.withProperty(PARAMETER_EEPID, getEEPType().getId());
+        discoveredThingResultBuilder.withProperty(PARAMETER_SENDINGEEPID, getEEPType().getId())
+                .withProperty(PARAMETER_RECEIVINGEEPID, getEEPType().getId());
     }
 }

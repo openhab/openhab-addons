@@ -6,7 +6,7 @@ If you are not familiar with adb I suggest you to search "How to enable adb over
 
 ## Supported Things
 
-This binding was tested on the Fire TV Stick (android version 7.1.2, volume control not working) and Nexus5x (android version 8.1.0, everything works nice), please update this document if you tested it with other android versions to reflect the compatibility of the biding. 
+This binding was tested on the Fire TV Stick (android version 7.1.2, volume control not working) and Nexus5x (android version 8.1.0, everything works nice), please update this document if you tested it with other android versions to reflect the compatibility of the binding. 
 
 ## Discovery
 

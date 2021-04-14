@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.LcnBindingConstants;
 import org.openhab.binding.lcn.internal.LcnModuleHandler;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
-import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.openhab.binding.lcn.internal.common.LcnException;
 import org.openhab.binding.lcn.internal.common.PckGenerator;
 import org.openhab.binding.lcn.internal.common.Variable;
@@ -51,21 +50,7 @@ public class LcnModuleRvarSetpointSubHandler extends AbstractLcnModuleVariableSu
     @Override
     public void handleCommandDecimal(DecimalType command, LcnChannelGroup channelGroup, int number)
             throws LcnException {
-        Variable variable = getVariable(channelGroup, number);
-
-        if (info.hasExtendedMeasurementProcessing()) {
-            handler.sendPck(PckGenerator.setSetpointAbsolute(number, command.intValue()));
-        } else {
-            try {
-                int relativeVariableChange = getRelativeChange(command, variable);
-                handler.sendPck(
-                        PckGenerator.setSetpointRelative(number, LcnDefs.RelVarRef.CURRENT, relativeVariableChange));
-            } catch (LcnException e) {
-                // current value unknown for some reason, refresh it in case we come again here
-                info.refreshVariable(variable);
-                throw e;
-            }
-        }
+        handler.sendPck(PckGenerator.setSetpointAbsolute(number, command.intValue()));
     }
 
     @Override
