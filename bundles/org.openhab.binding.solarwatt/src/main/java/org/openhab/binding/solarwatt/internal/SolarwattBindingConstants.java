@@ -59,7 +59,6 @@ public class SolarwattBindingConstants {
     public static final SolarwattTag CHANNEL_WORK_IN = new SolarwattTag("WorkIn");
     public static final SolarwattTag CHANNEL_WORK_OUT = new SolarwattTag("WorkOut");
     public static final SolarwattTag CHANNEL_CONSUMPTION_ENERGY_SUM = new SolarwattTag("ConsumptionEnergySum");
-    public static final SolarwattTag CHANNEL_STATE_DEVICE = new SolarwattTag("StateDevice");
     public static final SolarwattTag CHANNEL_MODE_STATION = new SolarwattTag("ModeStation");
     public static final SolarwattTag CHANNEL_CONNECTIVITY_STATUS = new SolarwattTag("ConnectivityStatus");
     public static final SolarwattTag CHANNEL_TIMESTAMP = new SolarwattTag("Timestamp");

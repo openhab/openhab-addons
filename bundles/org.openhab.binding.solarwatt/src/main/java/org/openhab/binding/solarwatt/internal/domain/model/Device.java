@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.solarwatt.internal.domain.model;
 
-import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.CHANNEL_STATE_DEVICE;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,8 +86,6 @@ public class Device {
         } else {
             this.stateDevice = ThingStatus.OFFLINE;
         }
-
-        this.addStringState(CHANNEL_STATE_DEVICE, deviceDTO);
     }
 
     public BigDecimal getBigDecimalFromChannel(String channelName) {

@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.solarwatt.internal.handler;
 
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
+
+import java.text.MessageFormat;
+import java.util.Map;
+
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.channel.SolarwattChannelTypeProvider;
@@ -31,12 +38,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.measure.Unit;
-import java.text.MessageFormat;
-import java.util.Map;
-
-import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
 
 /**
  * The {@link SimpleDeviceHandler} bundles everything related to generic talking to devices.
