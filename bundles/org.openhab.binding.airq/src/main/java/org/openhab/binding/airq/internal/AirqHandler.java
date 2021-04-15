@@ -48,6 +48,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -63,6 +64,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import tec.uom.se.unit.Units;
 
 /**
  * The {@link $AirqHandler} is responsible for retrieving all information from the air-Q device
@@ -517,7 +520,7 @@ public class AirqHandler extends BaseThingHandler {
                     processType(decObj, "measuretime", "measureTime", "number");
                     processType(decObj, "performance", "performance", "number");
                     processType(decObj, "timestamp", "timestamp", "datetime");
-                    processType(decObj, "uptime", "uptime", "number");
+                    processType(decObj, "uptime", "uptime", "numberQuantity");
                     processType(decObj, "tvoc", "tvoc", "pair");
                 } else {
                     logger.warn("The air-Q data could not be extracted from this string: {}", decEl);
@@ -580,6 +583,7 @@ public class AirqHandler extends BaseThingHandler {
                             processType(decObj, "Averaging", "averaging", "boolean");
                             processType(decObj, "SensorInfo", "sensorInfo", "property");
                             processType(decObj, "ErrorBars", "errorBars", "boolean");
+                            processType(decObj, "warmup-phase", "warmupPhase", "boolean");
                         } else {
                             logger.warn(
                                     "air-Q - airqHandler - getConfigData(): The air-Q data could not be extracted from this string: {}",
@@ -623,6 +627,11 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "number":
                     updateState(channelName, new DecimalType(dec.get(airqName).toString()));
+                    break;
+                case "numberQuantity":
+                    logger.trace("air-Q - airqHandler - processType(): setting numberQuantity: value={}, unit={}",
+                            dec.get(airqName).getAsBigInteger(), Units.SECOND);
+                    updateState(channelName, new QuantityType<>(dec.get(airqName).getAsBigInteger(), Units.SECOND));
                     break;
                 case "pair":
                     ResultPair pair = new ResultPair(dec.get(airqName).toString());

@@ -114,6 +114,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | initialCalFinished        | Switch               |    | Initial calibration has finished                                    |
 | averaging                 | Switch               | rw | Do an average                                                       |
 | errorBars                 | Switch               | rw | Calculate Maximum Errors                                            |
+| warmupPhase               | Switch               | rw | Output data as Warmup Phase                                         |
 
 ## Example
 
@@ -218,4 +219,5 @@ String airQ_userCalib               "Last sensor calibration"                   
 Switch airQ_initialCalFinished      "Initial calibration has finished"               {channel="airq:airq:1:initialCalFinished"}
 Switch airQ_averaging               "Do an average"                                  {channel="airq:airq:1:averaging"}
 Switch airQ_errorBars               "Calculate Maximum Errors"                       {channel="airq:airq:1:errorBars"}
+Switch airQ_warmupPhase             "Output Data as Warmup Phase"                    {channel="airq:airq:1:warmupPhase"}
 ```

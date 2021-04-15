@@ -105,6 +105,7 @@
 			<channel id="initialCalFinished" typeId="InitialCalFinished"/>
 			<channel id="averaging" typeId="Averaging"/>
 			<channel id="errorBars" typeId="ErrorBars"/>
+			<channel id="warmupPhase" typeId="WarmupPhase"/>
 		</channels>
 
 		<properties>
@@ -320,7 +321,7 @@
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
-		<state readOnly="true" pattern="%d s"></state>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<!-- Maximum error -->
@@ -656,5 +657,10 @@
 		<item-type>Switch</item-type>
 		<label>Calculate Maximum Errors</label>
 	</channel-type>
+
+    <channel-type id="WarmupPhase" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Send data as in Warmup Phase</label>
+    </channel-type>
 
 </thing:thing-descriptions>
