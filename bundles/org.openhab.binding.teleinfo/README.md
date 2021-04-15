@@ -36,14 +36,18 @@ The Teleinfo binding provides support for both single phase and three phase conn
 
 ## Discovery
 
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will automatically appear when trying to add a new thing, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port.
+If you want to place the teleinfo modem apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
+In this case you have to define the path to the gateway like this `rfc2217://ip:port`. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _ser2net_ config file.
+
+Once the serial controller added, electricity meters will automatically appear after starting discovery, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
 
 ## Thing Configuration
 
-| Thing type           | Parameter    | Meaning                               | Possible values  |
-|----------------------|--------------|---------------------------------------|------------------|
-| `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX     |
-| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number |
+| Thing type           | Parameter    | Meaning                               | Possible values                 |
+|----------------------|--------------|---------------------------------------|---------------------------------|
+| `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX, rfc2217://ip:port |
+| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number                |
 
 ## Channels
 
