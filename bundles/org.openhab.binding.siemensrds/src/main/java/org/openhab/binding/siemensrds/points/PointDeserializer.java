@@ -76,8 +76,9 @@ public class PointDeserializer implements JsonDeserializer<BasePoint> {
             if (valueIsPrimitive) {
                 JsonPrimitive primitiveType = value.getAsJsonPrimitive();
                 pointType = primitiveType.isString() ? PointType.STRING : PointType.NUMBER;
-            } else
+            } else {
                 pointType = PointType.NESTED_NUMBER;
+            }
         }
 
         BasePoint point;
