@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Christoph Weitkamp - Added channels 'voltage' and 'battery_level'
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @NonNullByDefault
 public class AVMFritzBindingConstants {
@@ -52,6 +53,7 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_COMETDECT = "Comet_DECT";
     public static final String DEVICE_HAN_FUN_CONTACT = "HAN_FUN_CONTACT";
     public static final String DEVICE_HAN_FUN_SWITCH = "HAN_FUN_SWITCH";
+    public static final String DEVICE_HAN_FUN_BLINDS = "HAN_FUN_BLINDS";
 
     // List of main group types
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
@@ -72,6 +74,7 @@ public class AVMFritzBindingConstants {
     public static final ThingTypeUID COMETDECT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_COMETDECT);
     public static final ThingTypeUID HAN_FUN_CONTACT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_CONTACT);
     public static final ThingTypeUID HAN_FUN_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SWITCH);
+    public static final ThingTypeUID HAN_FUN_BLINDS_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_BLINDS);
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
 
@@ -125,6 +128,7 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_CONTACT_STATE = "contact_state";
     public static final String CHANNEL_PRESS = "press";
     public static final String CHANNEL_LAST_CHANGE = "last_change";
+    public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
 
     // List of all Channel config ids
     public static final String CONFIG_CHANNEL_TEMP_OFFSET = "offset";
@@ -164,7 +168,8 @@ public class AVMFritzBindingConstants {
             COMETDECT_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
-            DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE);
+            DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE,
+            HAN_FUN_BLINDS_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
             GROUP_SWITCH_THING_TYPE);

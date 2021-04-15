@@ -43,6 +43,7 @@ import org.openhab.core.thing.ThingUID;
  * Tests for {@link AVMFritzDiscoveryService}.
  *
  * @author Christoph Weitkamp - Initial contribution
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @NonNullByDefault
 public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTest {
@@ -86,7 +87,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
 
     @Test
     public void correctSupportedTypes() {
-        assertEquals(13, discovery.getSupportedThingTypes().size());
+        assertEquals(14, discovery.getSupportedThingTypes().size());
         assertTrue(discovery.getSupportedThingTypes().contains(DECT100_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT200_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT210_THING_TYPE));
@@ -98,6 +99,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertTrue(discovery.getSupportedThingTypes().contains(COMETDECT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_CONTACT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_SWITCH_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_BLINDS_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_HEATING_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_SWITCH_THING_TYPE));
     }
@@ -723,6 +725,59 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertEquals("0x0feb", discoveryResult.getProperties().get(PROPERTY_VENDOR));
         assertEquals("HAN-FUN", discoveryResult.getProperties().get(PRODUCT_NAME));
         assertEquals("119340059578-1", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
+        assertEquals("0.0", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
+        assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
+    }
+
+    @Test
+    public void validHANFUNBlindDiscoveryResult() throws JAXBException {
+        //@formatter:off
+        String xml =
+                "<devicelist version=\"1\">" +
+                    "<device identifier=\"14276 0503450-1\" id=\"2000\" functionbitmask=\"335888\" fwversion=\"0.0\" manufacturer=\"0x37c4\" productname=\"Rollotron 1213\">"+
+                        "<present>1</present>"+
+                        "<txbusy>0</txbusy>"+
+                        "<name>Rollotron 1213 #1</name>"+
+                        "<blind>"+
+                            "<endpositionsset>1</endpositionsset>"+
+                            "<mode>manuell</mode>"+
+                        "</blind>"+
+                        "<levelcontrol>"+
+                            "<level>26</level>"+
+                            "<levelpercentage>10</levelpercentage>"+
+                        "</levelcontrol>"+
+                        "<etsiunitinfo>"+
+                            "<etsideviceid>406</etsideviceid>"+
+                            "<unittype>281</unittype>"+
+                            "<interfaces>256,513,516,517</interfaces>"+
+                        "</etsiunitinfo>"+
+                        "<alert>"+
+                            "<state>0</state>"+
+                            "<lastalertchgtimestamp></lastalertchgtimestamp>"+
+                        "</alert>"+
+                    "</device>" +
+                "</devicelist>";
+        //@formatter:on
+
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+
+        discovery.onDeviceAdded(device);
+        assertNotNull(discoveryResult);
+
+        assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
+        assertEquals(new ThingUID("avmfritz:HAN_FUN_BLINDS:1:142760503450_1"), discoveryResult.getThingUID());
+        assertEquals(HAN_FUN_BLINDS_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
+        assertEquals("142760503450-1", discoveryResult.getProperties().get(CONFIG_AIN));
+        assertEquals("0x37c4", discoveryResult.getProperties().get(PROPERTY_VENDOR));
+        assertEquals("Rollotron 1213", discoveryResult.getProperties().get(PRODUCT_NAME));
+        assertEquals("142760503450-1", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
         assertEquals("0.0", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
         assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
     }
