@@ -262,7 +262,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                     logger.debug(
                             "{} channels defined (with {} different channel types) for the thing {} (from {} items including {} groups)",
                             channels.size(), nbChannelTypesCreated, getThing().getUID(), items.size(), nbGroups);
-                } else if (channels.size() > 0) {
+                } else if (!channels.isEmpty()) {
                     int nbRemoved = 0;
                     for (Channel channel : channels) {
                         if (getThing().getChannel(channel.getUID()) != null) {
@@ -319,7 +319,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             Channel channel = getThing().getChannel(item.name);
             RemoteopenhabStateDescription descr = item.stateDescription;
             List<RemoteopenhabStateOption> options = descr == null ? null : descr.options;
-            if (channel != null && options != null && options.size() > 0) {
+            if (channel != null && options != null && !options.isEmpty()) {
                 List<StateOption> stateOptions = new ArrayList<>();
                 for (RemoteopenhabStateOption option : options) {
                     stateOptions.add(new StateOption(option.value, option.label));
