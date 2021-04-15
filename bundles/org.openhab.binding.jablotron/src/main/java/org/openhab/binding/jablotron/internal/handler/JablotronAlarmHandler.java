@@ -187,7 +187,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         }
 
         List<JablotronHistoryDataEvent> events = sendGetEventHistory();
-        if (events != null && events.size() > 0) {
+        if (events != null && !events.isEmpty()) {
             JablotronHistoryDataEvent event = events.get(0);
             updateLastEvent(event);
         }
@@ -221,7 +221,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     protected void updateEventChannel(String channel) {
         List<JablotronHistoryDataEvent> events = eventCache.getValue();
-        if (events != null && events.size() > 0) {
+        if (events != null && !events.isEmpty()) {
             JablotronHistoryDataEvent event = events.get(0);
             switch (channel) {
                 case CHANNEL_LAST_EVENT_TIME:

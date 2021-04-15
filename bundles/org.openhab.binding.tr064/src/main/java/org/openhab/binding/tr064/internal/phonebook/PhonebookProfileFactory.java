@@ -130,7 +130,7 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
                         thingName + " - " + phonebook.getName()))
                 .collect(Collectors.toList());
 
-        if (parameterOptions.size() > 0) {
+        if (!parameterOptions.isEmpty()) {
             parameterOptions.add(new ParameterOption(thingUid, thingName));
         }
 

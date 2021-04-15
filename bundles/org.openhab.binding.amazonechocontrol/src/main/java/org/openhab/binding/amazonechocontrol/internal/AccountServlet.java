@@ -611,7 +611,7 @@ public class AccountServlet extends HttpServlet {
             if ((stateDeviceSerialNumber == null && device.serialNumber == null)
                     || (stateDeviceSerialNumber != null && stateDeviceSerialNumber.equals(device.serialNumber))) {
                 List<PairedDevice> pairedDeviceList = state.getPairedDeviceList();
-                if (pairedDeviceList.size() > 0) {
+                if (!pairedDeviceList.isEmpty()) {
                     html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
                     for (PairedDevice pairedDevice : pairedDeviceList) {
                         html.append("<tr><td>");

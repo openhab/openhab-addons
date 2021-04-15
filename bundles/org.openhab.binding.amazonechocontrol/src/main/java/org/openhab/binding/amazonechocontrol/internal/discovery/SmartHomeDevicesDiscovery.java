@@ -212,7 +212,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                 }
                 Set<SmartHomeDevice> supportedChildren = SmartHomeDeviceHandler.getSupportedSmartHomeDevices(shg,
                         deviceList);
-                if (supportedChildren.size() == 0) {
+                if (supportedChildren.isEmpty()) {
                     // No children with an supported interface
                     continue;
                 }

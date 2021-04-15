@@ -91,7 +91,7 @@ public class WlanThermoEsp32CommandHandler {
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList != null && channelList.size() > 0 && channelId < channelList.size()) {
+            if (channelList != null && !channelList.isEmpty() && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -176,7 +176,7 @@ public class WlanThermoEsp32CommandHandler {
 
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList.size() > 0 && channelId < channelList.size()) {
+            if (!channelList.isEmpty() && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -283,7 +283,7 @@ public class WlanThermoEsp32CommandHandler {
 
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList.size() > 0 && channelId < channelList.size()) {
+            if (!channelList.isEmpty() && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
                     if (channel.getTemp() != 999) {
