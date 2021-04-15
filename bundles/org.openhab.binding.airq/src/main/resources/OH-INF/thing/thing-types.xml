@@ -189,7 +189,7 @@
 	<channel-type id="co2" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO₂ Concentration</label>
-		<state readOnly="true" pattern="%.0f ppm"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="dco2dt" advanced="false">
@@ -295,9 +295,9 @@
 	</channel-type>
 
 	<channel-type id="sound" advanced="false">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
-		<state readOnly="true" pattern="%.1f db(A)"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="temperature" advanced="false">
@@ -315,7 +315,7 @@
 	<channel-type id="tvoc" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>VOC Concentration</label>
-		<state readOnly="true" pattern="%.0f ppb"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
@@ -658,9 +658,9 @@
 		<label>Calculate Maximum Errors</label>
 	</channel-type>
 
-    <channel-type id="WarmupPhase" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Send data as in Warmup Phase</label>
-    </channel-type>
+	<channel-type id="WarmupPhase" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Send data as in Warmup Phase</label>
+	</channel-type>
 
 </thing:thing-descriptions>

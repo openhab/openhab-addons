@@ -491,7 +491,7 @@ public class AirqHandler extends BaseThingHandler {
                     processType(decObj, "cnt5", "fineDustCnt05", "pair");
                     processType(decObj, "cnt10", "fineDustCnt10", "pair");
                     processType(decObj, "co", "co", "pair");
-                    processType(decObj, "co2", "co2", "pair");
+                    processType(decObj, "co2", "co2", "pairPPM");
                     processType(decObj, "dewpt", "dewpt", "pair");
                     processType(decObj, "humidity", "humidityRelative", "pair");
                     processType(decObj, "humidity_abs", "humidityAbsolute", "pair");
@@ -503,7 +503,7 @@ public class AirqHandler extends BaseThingHandler {
                     processType(decObj, "pm10", "fineDustConc10", "pair");
                     processType(decObj, "pressure", "pressure", "pair");
                     processType(decObj, "so2", "so2", "pair");
-                    processType(decObj, "sound", "sound", "pair");
+                    processType(decObj, "sound", "sound", "pairDB");
                     processType(decObj, "temperature", "temperature", "pair");
                     // We have two places where the Device ID is delivered: with the measurement data and
                     // with the configuration.
@@ -520,8 +520,8 @@ public class AirqHandler extends BaseThingHandler {
                     processType(decObj, "measuretime", "measureTime", "number");
                     processType(decObj, "performance", "performance", "number");
                     processType(decObj, "timestamp", "timestamp", "datetime");
-                    processType(decObj, "uptime", "uptime", "numberQuantity");
-                    processType(decObj, "tvoc", "tvoc", "pair");
+                    processType(decObj, "uptime", "uptime", "numberTimePeriod");
+                    processType(decObj, "tvoc", "tvoc", "pairPPB");
                 } else {
                     logger.warn("The air-Q data could not be extracted from this string: {}", decEl);
                 }
@@ -602,8 +602,8 @@ public class AirqHandler extends BaseThingHandler {
     }
 
     private void processType(JsonObject dec, String airqName, String channelName, String type) {
-        logger.trace("air-Q - airqHandler - processType(): airqName={}, channelName={}, type={}, dec={}", airqName,
-                channelName, type, dec);
+        logger.trace("air-Q - airqHandler - processType(): airqName={}, channelName={}, type={}", airqName, channelName,
+                type);
         if (dec.get(airqName) == null) {
             logger.trace("air-Q - airqHandler - processType(): get({}) is null", airqName);
             updateState(channelName, UnDefType.UNDEF);
@@ -628,15 +628,33 @@ public class AirqHandler extends BaseThingHandler {
                 case "number":
                     updateState(channelName, new DecimalType(dec.get(airqName).toString()));
                     break;
-                case "numberQuantity":
-                    logger.trace("air-Q - airqHandler - processType(): setting numberQuantity: value={}, unit={}",
-                            dec.get(airqName).getAsBigInteger(), Units.SECOND);
+                case "numberTimePeriod":
                     updateState(channelName, new QuantityType<>(dec.get(airqName).getAsBigInteger(), Units.SECOND));
                     break;
                 case "pair":
                     ResultPair pair = new ResultPair(dec.get(airqName).toString());
                     updateState(channelName, new DecimalType(pair.getValue()));
                     updateState(channelName + "_maxerr", new DecimalType(pair.getMaxdev()));
+                    break;
+                case "pairPPM":
+                    ResultPair pairPPM = new ResultPair(dec.get(airqName).toString());
+                    updateState(channelName, new QuantityType<>(pairPPM.getValue(),
+                            org.openhab.core.library.unit.Units.PARTS_PER_MILLION));
+                    updateState(channelName + "_maxerr", new DecimalType(pairPPM.getMaxdev()));
+                    break;
+                case "pairPPB":
+                    ResultPair pairPPB = new ResultPair(dec.get(airqName).toString());
+                    updateState(channelName, new QuantityType<>(pairPPB.getValue(),
+                            org.openhab.core.library.unit.Units.PARTS_PER_BILLION));
+                    updateState(channelName + "_maxerr", new DecimalType(pairPPB.getMaxdev()));
+                    break;
+                case "pairDB":
+                    ResultPair pairDB = new ResultPair(dec.get(airqName).toString());
+                    logger.trace("air-Q - airqHandler - processType(): db transmitted as {} with unit {}",
+                            pairDB.getValue(), org.openhab.core.library.unit.Units.DECIBEL);
+                    updateState(channelName,
+                            new QuantityType<>(pairDB.getValue(), org.openhab.core.library.unit.Units.DECIBEL));
+                    updateState(channelName + "_maxerr", new DecimalType(pairDB.getMaxdev()));
                     break;
                 case "datetime":
                     Long timest = Long.valueOf(dec.get(airqName).toString());
@@ -726,7 +744,6 @@ public class AirqHandler extends BaseThingHandler {
                 case "property":
                     String propstr = dec.get(airqName).toString();
                     getThing().setProperty(channelName, propstr);
-                    logger.trace("air-Q - airqHandler - processType(): property {} set to {}", channelName, propstr);
                     break;
                 case "proparr":
                     JsonElement proparr = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
