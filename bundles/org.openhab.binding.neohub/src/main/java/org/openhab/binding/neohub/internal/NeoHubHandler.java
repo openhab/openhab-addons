@@ -254,7 +254,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
             @Nullable
             List<? extends AbstractRecord> devices = deviceData.getDevices();
-            if (devices == null || devices.size() == 0) {
+            if (devices == null || devices.isEmpty()) {
                 logger.warn(MSG_FMT_DEVICE_POLL_ERR, getThing().getUID(), "no devices found");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return null;
