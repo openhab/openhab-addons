@@ -417,8 +417,9 @@ public class HomematicThingHandler extends BaseThingHandler {
         loadHomematicChannelValues(device.getChannel(0));
 
         ThingStatus oldStatus = thing.getStatus();
-        if (oldStatus == ThingStatus.UNINITIALIZED)
+        if (oldStatus == ThingStatus.UNINITIALIZED) {
             return;
+        }
         ThingStatus newStatus = ThingStatus.ONLINE;
         ThingStatusDetail newDetail = ThingStatusDetail.NONE;
 
