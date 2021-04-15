@@ -14,7 +14,8 @@ package org.openhab.binding.automower.internal.things;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -335,7 +336,7 @@ public class AutomowerHandler extends BaseThingHandler {
      * Timestamp returned by the API doesn't have offset and it always in the current time zone - it can be treated as
      * UTC.
      * Method builds a ZonedDateTime with same hour value but in the current system timezone.
-     * 
+     *
      * @param timestamp - Automower API timestamp
      * @return ZonedDateTime in system timezone
      */

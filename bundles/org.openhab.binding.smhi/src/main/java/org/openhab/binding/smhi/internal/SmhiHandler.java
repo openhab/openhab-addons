@@ -17,7 +17,9 @@ import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -130,7 +132,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Update channels with new forecast data.
-     * 
+     *
      * @param timeSeries A {@link TimeSeries} object containing forecasts.
      */
     private void updateChannels(TimeSeries timeSeries) {
@@ -246,6 +248,7 @@ public class SmhiHandler extends BaseThingHandler {
     /**
      * Dispose the {@link org.openhab.core.thing.binding.ThingHandler}. Cancel scheduled jobs
      */
+    @Override
     public void dispose() {
         cancelPolling();
     }
@@ -284,7 +287,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Checks if it is a new hour.
-     * 
+     *
      * @return true if the current time is more than one hour after currentHour, otherwise false.
      */
     private boolean isItNewHour() {
@@ -293,7 +296,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Call Smhi's endpoint to check for the time of the last forecast, to see if a new one is available.
-     * 
+     *
      * @return true if the time of the latest forecast is equal to or after currentHour, otherwise false
      */
     private boolean isForecastUpdated() {
@@ -344,7 +347,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Get the current time rounded down to hour
-     * 
+     *
      * @return A {@link ZonedDateTime} corresponding to the last even hour
      */
     private ZonedDateTime calculateCurrentHour() {
@@ -358,7 +361,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Get the current time rounded down to day
-     * 
+     *
      * @return A {@link ZonedDateTime} corresponding to the last even day.
      */
     private ZonedDateTime calculateCurrentDay() {
@@ -371,7 +374,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Creates channels based on selections in thing configuration
-     * 
+     *
      * @return
      */
     private List<Channel> createChannels() {
