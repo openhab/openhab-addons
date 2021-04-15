@@ -84,7 +84,7 @@ The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!B
 - [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor (thing type `HAN_FUN_CONTACT`)
 - [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector (thing type `HAN_FUN_CONTACT`)
 - [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons (thing type `HAN_FUN_SWITCH`)
-- [Rollershutter/Blind](https://www.rademacher.de/shop/rollladen-sonnenschutz/elektrischer-gurtwickler/rollotron-dect-1213) - an electronic belt winder (thing type `HAN_FUN_BLIND`)
+- [Rollershutter/Blinds](https://www.rademacher.de/shop/rollladen-sonnenschutz/elektrischer-gurtwickler/rollotron-dect-1213) - an electronic belt winder (thing type `HAN_FUN_BLINDS`)
 
 The use of other Sensors should be possible, if these are compatible with DECT-ULE / HAN-FUN standards.
 

@@ -283,8 +283,8 @@
 			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
 		</supported-bridge-type-refs>
 
-		<label>HAN-FUN Blind</label>
-		<description>HAN-FUN blind (e.g. RolloTron DECT 1213)</description>
+		<label>HAN-FUN Blinds</label>
+		<description>HAN-FUN blinds (e.g. RolloTron DECT 1213)</description>
 
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
