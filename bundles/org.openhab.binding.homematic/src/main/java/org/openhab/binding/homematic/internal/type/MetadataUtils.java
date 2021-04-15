@@ -332,8 +332,9 @@ public class MetadataUtils {
                     case "m3":
                         return ITEM_TYPE_NUMBER + ":Volume";
                     case "":
-                        if (dpName.startsWith(DATAPOINT_NAME_OPERATING_VOLTAGE))
+                        if (dpName.startsWith(DATAPOINT_NAME_OPERATING_VOLTAGE)) {
                             return ITEM_TYPE_NUMBER + ":ElectricPotential";
+                        }
                     case "s":
                     case "min":
                     case "minutes":

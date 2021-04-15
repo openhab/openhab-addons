@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import java.awt.*;
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
@@ -32,7 +37,7 @@ class TypeConverters {
 
     /**
      * create a TypeConverter for a given Item type and property type
-     * 
+     *
      * @param itemType the item type
      * @param propertyType the property type
      * @return the type converter

@@ -50,8 +50,9 @@ public class AirbaseZoneInfo {
 
         String[] zones = zoneinfo.split("%3b");
 
-        for (int i = 1; i < 9; i++)
+        for (int i = 1; i < 9; i++) {
             info.zone[i] = "1".equals(zones[i - 1]);
+        }
         return info;
     }
 

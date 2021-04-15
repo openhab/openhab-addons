@@ -181,8 +181,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             dp.setUnit("dBm");
         }
         // Bypass: For at least one device the CCU does not send a unit together with the value
-        if (dp.getUnit() == null && dp.getName().startsWith(HomematicConstants.DATAPOINT_NAME_OPERATING_VOLTAGE))
+        if (dp.getUnit() == null && dp.getName().startsWith(HomematicConstants.DATAPOINT_NAME_OPERATING_VOLTAGE)) {
             dp.setUnit("V");
+        }
 
         HmValueType valueType = HmValueType.parse(type);
         if (valueType == null || valueType == HmValueType.UNKNOWN) {

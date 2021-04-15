@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.androiddebugbridge.internal;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
@@ -22,7 +24,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,8 +104,9 @@ public class AndroidDebugBridgeDevice {
     public void startPackage(String packageName)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
         var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1");
-        if (out.contains("monkey aborted"))
+        if (out.contains("monkey aborted")) {
             throw new AndroidDebugBridgeDeviceException("Unable to open package");
+        }
     }
 
     public void stopPackage(String packageName)
@@ -114,8 +121,9 @@ public class AndroidDebugBridgeDevice {
         var lineParts = targetLine.split(" ");
         if (lineParts.length >= 2) {
             var packageActivityName = lineParts[lineParts.length - 2];
-            if (packageActivityName.contains("/"))
+            if (packageActivityName.contains("/")) {
                 return packageActivityName.split("/")[0];
+            }
         }
         throw new AndroidDebugBridgeDeviceReadException("Unable to read package name");
     }
@@ -222,8 +230,9 @@ public class AndroidDebugBridgeDevice {
         String volumeResp = runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--get", "|",
                 "grep", "volume");
         Matcher matcher = VOLUME_PATTERN.matcher(volumeResp);
-        if (!matcher.find())
+        if (!matcher.find()) {
             throw new AndroidDebugBridgeDeviceReadException("Unable to get volume info");
+        }
         var volumeInfo = new VolumeInfo(Integer.parseInt(matcher.group("current")),
                 Integer.parseInt(matcher.group("min")), Integer.parseInt(matcher.group("max")));
         logger.debug("Device {}:{} VolumeInfo: current {}, min {}, max {}", this.ip, this.port, volumeInfo.current,
