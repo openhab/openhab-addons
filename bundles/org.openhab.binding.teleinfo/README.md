@@ -12,7 +12,7 @@ These values can be used to
 
 ## Supported Things
 
-The Teleinfo binding provides support for both single phase and three phase connection, ICC evolution and the following pricing modes:
+The Teleinfo binding provides support for both single-phase and three-phase connection, ICC evolution and the following pricing modes:
 
 - HCHP mode
 - Base mode
@@ -37,7 +37,7 @@ The Teleinfo binding provides support for both single phase and three phase conn
 ## Discovery
 
 Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port.
-If you want to place the teleinfo modem apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
+If you want to place the Teleinfo modem apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
 In this case you have to define the path to the gateway like this `rfc2217://ip:port`. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _ser2net_ config file.
 
 Once the serial controller added, electricity meters will automatically appear after starting discovery, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
@@ -51,7 +51,7 @@ Once the serial controller added, electricity meters will automatically appear a
 
 ## Channels
 
-Channel availability depends on the electricity connection (single or three phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
+Channel availability depends on the electricity connection (single or three-phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
 
 | Channel  | Type                      | Description                                              | Phase  | Mode  |
 |----------|---------------------------|----------------------------------------------------------|--------|-------|
@@ -97,7 +97,7 @@ Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
 }
 ```
 
-`adco` is a 12 digit number writen on the electricity meter (There might be two additional digits on the electricity meter, in this case the two last digits must be omitted to obtain 12 digits). The first 6 digits of `adco` can also be retrieved by pushing 6 times the `selection` button of your electricity meter, and the last 6 digits by pushing the `defilement` button.
+`adco` is a 12-digit number written on the electricity meter (There might be two additional digits on the electricity meter, in this case the two last digits must be omitted to obtain 12 digits). The first 6 digits of `adco` can also be retrieved by pushing 6 times the `selection` button of your electricity meter, and the last 6 digits by pushing the `defilement` button.
 
 This `items` file links some supported channels to items: 
 
@@ -113,13 +113,13 @@ Number:Energy TLInfoEDF_HCHP "HCHP" <energy> {channel="teleinfo:cbemm_evolution_
 String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hhphc"}
 ```
 
-## Tested hardwares
+## Tested hardware
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
 
 | Serial interface | Power Energy Meter model    | Mode(s)                   |
 |----------|--------|------------------------------|
-| GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | - Single-phase HCHP & Base |
+| GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHP & Base |
 | Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Sagem S10C4 | Single-phase HCHP |
 
 
