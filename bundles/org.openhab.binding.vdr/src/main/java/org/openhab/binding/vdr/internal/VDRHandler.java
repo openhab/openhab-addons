@@ -311,7 +311,8 @@ public class VDRHandler extends BaseThingHandler {
      */
     private void stopRefreshThread(boolean force) {
         ScheduledFuture<?> refreshThread = refreshThreadFuture;
-        if (refreshThread != null)
+        if (refreshThread != null) {
             refreshThread.cancel(force);
+        }
     }
 }

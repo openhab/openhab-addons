@@ -15,7 +15,7 @@ package org.openhab.binding.wlanthermo.internal.api.nano;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoUtil.requireNonNull;
 
-import java.awt.*;
+import java.awt.Color;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -30,7 +30,11 @@ import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Pm;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.System;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.settings.Settings;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
