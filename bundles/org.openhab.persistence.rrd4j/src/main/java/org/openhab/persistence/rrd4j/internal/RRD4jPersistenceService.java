@@ -671,7 +671,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         public boolean isValid() { // a valid configuration must be initialized
             // and contain at least one function
-            return (isInitialized && (archives.size() > 0));
+            return isInitialized && !archives.isEmpty();
         }
 
         @Override

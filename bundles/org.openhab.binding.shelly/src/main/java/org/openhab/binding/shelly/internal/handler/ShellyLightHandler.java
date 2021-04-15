@@ -492,7 +492,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             logger.debug("{}: Setting effect to {}", thingName, newCol.effect);
             parms.put(SHELLY_COLOR_EFFECT, newCol.effect.toString());
         }
-        if (parms.size() > 0) {
+        if (!parms.isEmpty()) {
             logger.debug("{}: Send light settings: {}", thingName, parms);
             api.setLightParms(lightId, parms);
             updateCurrentColors(lightId, newCol);
