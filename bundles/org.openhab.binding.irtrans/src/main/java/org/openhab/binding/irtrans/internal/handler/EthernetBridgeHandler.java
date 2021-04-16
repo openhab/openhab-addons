@@ -849,7 +849,6 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
         if (matcher.matches()) {
-            String byteCountAsString = matcher.group(1);
             message = matcher.group(2);
         }
 
