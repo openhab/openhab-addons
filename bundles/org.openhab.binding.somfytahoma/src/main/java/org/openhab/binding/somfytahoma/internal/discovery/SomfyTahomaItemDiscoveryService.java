@@ -275,7 +275,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 deviceDiscovered(device, THING_TYPE_DOOR_LOCK, place);
                 break;
             case CLASS_PERGOLA:
-                deviceDiscovered(device, THING_TYPE_PERGOLA, place);
+                if ("BioclimaticPergola".equals(device.getWidget())) {
+                    // widget: BioclimaticPergola
+                    deviceDiscovered(device, THING_TYPE_BIOCLIMATIC_PERGOLA, place);
+                } else {
+                    deviceDiscovered(device, THING_TYPE_PERGOLA, place);
+                }
                 break;
             case CLASS_WINDOW_HANDLE:
                 // widget: ThreeWayWindowHandle
