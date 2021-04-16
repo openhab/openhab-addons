@@ -430,6 +430,7 @@ public class ValloxMVWebSocket {
                 BigDecimal bdTempIncoming = getTemperature(bytes, 138);
 
                 int iHumidity = getNumberBE(bytes, 148);
+                @SuppressWarnings("unused")
                 int iCo2 = getNumberBE(bytes, 150);
 
                 int iStateOrig = getNumberBE(bytes, 214);

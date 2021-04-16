@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceOperation;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.openhab.core.thing.Bridge;
@@ -158,15 +157,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                         dp.Value = StringUtils.strip(dp.Value);
 
                         onAppliancePropertyChanged(UID, dp);
-                    } catch (Exception p) {
-                        // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
-                    }
-                }
-
-                for (JsonElement operation : dco.Operations.getAsJsonArray()) {
-                    try {
-                        DeviceOperation devop = gson.fromJson(operation, DeviceOperation.class);
-                        DeviceMetaData pmd = gson.fromJson(devop.Metadata, DeviceMetaData.class);
                     } catch (Exception p) {
                         // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
                     }
