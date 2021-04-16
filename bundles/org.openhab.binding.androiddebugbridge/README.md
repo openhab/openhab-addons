@@ -64,7 +64,7 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 | start-package  | String | Run application by package name |
 | stop-package  | String | Stop application by package name |
 | current-package  | String | Package name of the top application in screen |
-| reboot  | Switch | Reboot device on ON command |
+| shutdown  | String | Power off/reboot device (allowed values POWER_OFF, REBOOT) |
 | wake-lock  | Number | Power wake lock value |
 | screen-state  | Switch | Screen power state |
 

@@ -256,6 +256,15 @@ public class AndroidDebugBridgeDevice {
     public void rebootDevice()
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
         try {
+            runAdbShell("reboot", "&", "sleep", "0.1", "&&", "exit");
+        } finally {
+            disconnect();
+        }
+    }
+
+    public void powerOffDevice()
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        try {
             runAdbShell("reboot", "-p", "&", "sleep", "0.1", "&&", "exit");
         } finally {
             disconnect();

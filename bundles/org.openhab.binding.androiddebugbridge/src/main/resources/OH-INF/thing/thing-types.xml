@@ -388,10 +388,16 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="reboot-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Reboot</label>
-		<description>Reboot Device</description>
+	<channel-type id="shutdown-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Shutdown</label>
+		<description>Shutdown/Reboot Device</description>
+		<state>
+			<options>
+				<option value="POWER_OFF">POWER_OFF</option>
+				<option value="REBOOT">REBOOT</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="wake-lock-channel" advanced="true">

@@ -52,6 +52,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     public static final String KEY_EVENT_PREVIOUS = "88";
     public static final String KEY_EVENT_MEDIA_REWIND = "89";
     public static final String KEY_EVENT_MEDIA_FAST_FORWARD = "90";
+    private static final String SHUTDOWN_POWER_OFF = "POWER_OFF";
+    private static final String SHUTDOWN_REBOOT = "REBOOT";
     private static final Gson GSON = new Gson();
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeHandler.class);
     private final AndroidDebugBridgeDevice adbConnection;
@@ -151,11 +153,16 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     updateState(channelUID, OnOffType.from(screenState));
                 }
                 break;
-            case REBOOT_CHANNEL:
-                if (OnOffType.from(command.toFullString()) == OnOffType.ON) {
-                    adbConnection.rebootDevice();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Rebooting");
-                    break;
+            case SHUTDOWN_CHANNEL:
+                switch (command.toFullString()) {
+                    case SHUTDOWN_POWER_OFF:
+                        adbConnection.powerOffDevice();
+                        updateStatus(ThingStatus.OFFLINE);
+                        break;
+                    case SHUTDOWN_REBOOT:
+                        adbConnection.rebootDevice();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Rebooting");
+                        break;
                 }
         }
     }
