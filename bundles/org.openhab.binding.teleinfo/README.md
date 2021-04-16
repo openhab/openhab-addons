@@ -67,7 +67,7 @@ Channel availability depends on the electricity connection (single or three phas
 | iinst3   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 3                | Three  | All   |
 | ppot     | `String`                  | Electrical potential presence                            | Three  | All   |
 | pmax     | `Number:Energy`           | Maximum consumed electric power on all phases            | Three  | All   |
-| papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)                | Three, single (ICC evolution only) | All   |
+| papp     | `Number:Power`            | Instantaneous apparent power                             | Three, single (ICC evolution only) | All   |
 | hhphc    | `String`                  | Pricing schedule group                                   | All    | HCHP  |
 | hchc     | `Number:Energy`           | Total consumed energy at low rate pricing                | All    | HCHP  |
 | hchp     | `Number:Energy`           | Total consumed energy at high rate pricing               | All    | HCHP  |
@@ -98,7 +98,7 @@ Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
 This `items` file links some supported channels to items: 
 
 ```
-Number TLInfoEDF_PAPP "PAPP" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:papp"}
+Number:Power TLInfoEDF_PAPP "PAPP" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:papp"}
 Number:ElectricCurrent TLInfoEDF_ISOUSC "ISOUSC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:isousc"}
 String TLInfoEDF_PTEC "PTEC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:ptec"}
 Number:ElectricCurrent TLInfoEDF_IMAX "IMAX" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:imax"}
