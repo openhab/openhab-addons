@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,6 +79,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.HexUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -133,7 +135,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private volatile @Nullable CascadedValueTransformationImpl writeTransformation;
     private volatile Optional<Integer> readIndex = Optional.empty();
     private volatile Optional<Integer> readSubIndex = Optional.empty();
-    private volatile @Nullable Integer writeStart;
+    private volatile Optional<Integer> writeStart = Optional.empty();
+    private volatile Optional<Integer> writeSubIndex = Optional.empty();
     private volatile int pollStart;
     private volatile int slaveId;
     private volatile @Nullable ModbusReadFunctionCode functionCode;
@@ -200,8 +203,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
         // We did not have JSON output from the transformation, so writeStart is absolute required. Abort if it is
         // missing
-        Integer writeStart = this.writeStart;
-        if (writeStart == null) {
+        Optional<Integer> writeStart = this.writeStart;
+        if (writeStart.isEmpty()) {
             logger.debug(
                     "Thing {} '{}': not processing command {} since writeStart is missing and transformation output is not a JSON",
                     getThing().getUID(), getThing().getLabel(), command);
@@ -216,7 +219,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         }
 
         ModbusWriteRequestBlueprint request = requestFromCommand(channelUID, command, config, transformedCommand.get(),
-                writeStart);
+                writeStart.get());
         if (request == null) {
             return;
         }
@@ -267,7 +270,9 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         ModbusWriteRequestBlueprint request;
         boolean writeMultiple = config.isWriteMultipleEvenWithSingleRegisterOrCoil();
         String writeType = config.getWriteType();
+        ModbusPollerThingHandler pollerHandler = this.pollerHandler;
         if (writeType == null) {
+            // disposed thing
             return null;
         }
         if (writeType.equals(WRITE_TYPE_COIL)) {
@@ -289,7 +294,44 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 logger.warn("Received command but write value type not set! Ignoring command");
                 return null;
             }
-            ModbusRegisterArray data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
+            final ModbusRegisterArray data;
+            if (writeValueType.equals(ValueType.BIT)) {
+                if (writeSubIndex.isEmpty()) {
+                    // Should not happen! should be in configuration error
+                    logger.error("Bug: sub index not present but writeValueType=BIT. Should be in configuration error");
+                    return null;
+                }
+                Optional<Boolean> commandBool = ModbusBitUtilities.translateCommand2Boolean(transformedCommand);
+                if (commandBool.isEmpty()) {
+                    logger.warn(
+                            "Data thing is configured to write individual bit but we received command that is not convertible to 0/1 bit. Ignoring.");
+                    return null;
+                } else if (pollerHandler == null) {
+                    logger.warn("Bug: sub index present but not child of poller. Should be in configuration erro");
+                    return null;
+                }
+
+                // writing bit of an individual register. Using cache from poller
+                AtomicReference<@Nullable ModbusRegisterArray> cachedRegistersRef = pollerHandler
+                        .getLastPolledDataCache();
+                ModbusRegisterArray mutatedRegisters = cachedRegistersRef
+                        .updateAndGet(cachedRegisters -> cachedRegisters == null ? null
+                                : combineCommandWithRegisters(cachedRegisters, writeStart, writeSubIndex.get(),
+                                        commandBool.get()));
+                if (mutatedRegisters == null) {
+                    logger.warn(
+                            "Received command to thing with writeValueType=bit (pointing to individual bit of a holding register) but internal cache not yet populated. Ignoring command");
+                    return null;
+                }
+                // extract register (first byte index = register index * 2)
+                byte[] allMutatedBytes = mutatedRegisters.getBytes();
+                int writeStartRelative = writeStart - pollStart;
+                data = new ModbusRegisterArray(allMutatedBytes[writeStartRelative * 2],
+                        allMutatedBytes[writeStartRelative * 2 + 1]);
+
+            } else {
+                data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
+            }
             writeMultiple = writeMultiple || data.size() > 1;
             request = new ModbusWriteRegisterRequestBlueprint(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
@@ -302,6 +344,33 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                     WRITE_TYPE_COIL, WRITE_TYPE_HOLDING));
         }
         return request;
+    }
+
+    /**
+     * Combine boolean-like command with registers. Updated registers are returned
+     *
+     * @return
+     */
+    private ModbusRegisterArray combineCommandWithRegisters(ModbusRegisterArray registers, int registerIndex,
+            int bitIndex, boolean b) {
+        byte[] allBytes = registers.getBytes();
+        int bitIndexWithinRegister = bitIndex % 16;
+        boolean hiByte = bitIndexWithinRegister >= 8;
+        int indexWithinByte = bitIndexWithinRegister % 8;
+        int registerIndexRelative = registerIndex - pollStart;
+        int byteIndex = 2 * registerIndexRelative + (hiByte ? 0 : 1);
+        if (b) {
+            allBytes[byteIndex] |= 1 << indexWithinByte;
+        } else {
+            allBytes[byteIndex] &= ~(1 << indexWithinByte);
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "Boolean-like command {} from item, combining command with internal register ({}) with registerIndex={} (relative {}), bitIndex={}, resulting register {}",
+                    b, HexUtils.bytesToHex(registers.getBytes()), registerIndex, registerIndexRelative, bitIndex,
+                    HexUtils.bytesToHex(allBytes));
+        }
+        return new ModbusRegisterArray(allBytes);
     }
 
     private void processJsonTransform(Command command, String transformOutput) {
@@ -398,7 +467,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         writeTransformation = null;
         readIndex = Optional.empty();
         readSubIndex = Optional.empty();
-        writeStart = null;
+        writeStart = Optional.empty();
+        writeSubIndex = Optional.empty();
         pollStart = 0;
         slaveId = 0;
         comms = null;
@@ -553,19 +623,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 }
             }
 
-            if (writingCoil && !ModbusConstants.ValueType.BIT.equals(localWriteValueType)) {
-                String errmsg = String.format(
-                        "Invalid writeValueType: Only writeValueType='%s' (or undefined) supported with coils. Value type was: %s",
-                        ModbusConstants.ValueType.BIT, config.getWriteValueType());
-                throw new ModbusConfigurationException(errmsg);
-            } else if (!writingCoil && localWriteValueType.getBits() < 16) {
-                // trying to write holding registers with < 16 bit value types. Not supported
-                String errmsg = String.format(
-                        "Invalid writeValueType: Only writeValueType with larger or equal to 16 bits are supported holding registers. Value type was: %s",
-                        config.getWriteValueType());
-                throw new ModbusConfigurationException(errmsg);
-            }
-
             try {
                 if (!writeParametersHavingTransformationOnly) {
                     String localWriteStart = config.getWriteStart();
@@ -574,13 +631,57 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                                 config.getWriteStart());
                         throw new ModbusConfigurationException(errmsg);
                     }
-                    writeStart = Integer.parseInt(localWriteStart.trim());
+                    String[] writeParts = localWriteStart.split("\\.", 2);
+                    try {
+                        writeStart = Optional.of(Integer.parseInt(writeParts[0]));
+                        if (writeParts.length == 2) {
+                            writeSubIndex = Optional.of(Integer.parseInt(writeParts[1]));
+                        } else {
+                            writeSubIndex = Optional.empty();
+                        }
+                    } catch (IllegalArgumentException e) {
+                        String errmsg = String.format("Thing %s invalid writeStart: %s", getThing().getUID(),
+                                config.getReadStart());
+                        throw new ModbusConfigurationException(errmsg);
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 String errmsg = String.format("Thing %s invalid writeStart: %s", getThing().getUID(),
                         config.getWriteStart());
                 throw new ModbusConfigurationException(errmsg);
             }
+
+            if (writingCoil && !ModbusConstants.ValueType.BIT.equals(localWriteValueType)) {
+                String errmsg = String.format(
+                        "Invalid writeValueType: Only writeValueType='%s' (or undefined) supported with coils. Value type was: %s",
+                        ModbusConstants.ValueType.BIT, config.getWriteValueType());
+                throw new ModbusConfigurationException(errmsg);
+            } else if (writeSubIndex.isEmpty() && !writingCoil && localWriteValueType.getBits() < 16) {
+                // trying to write holding registers with < 16 bit value types. Not supported
+                String errmsg = String.format(
+                        "Invalid writeValueType: Only writeValueType with larger or equal to 16 bits are supported holding registers. Value type was: %s",
+                        config.getWriteValueType());
+                throw new ModbusConfigurationException(errmsg);
+            }
+
+            if (writeSubIndex.isPresent()) {
+                if (writeValueTypeMissing || writeTypeMissing || !WRITE_TYPE_HOLDING.equals(config.getWriteType())
+                        || !ModbusConstants.ValueType.BIT.equals(localWriteValueType) || childOfEndpoint) {
+                    String errmsg = String.format(
+                            "Thing %s invalid writeType, writeValueType or parent. Since writeStart=X.Y, one should set writeType=holding, writeValueType=bit and have the thing as child of poller",
+                            getThing().getUID(), config.getWriteStart());
+                    throw new ModbusConfigurationException(errmsg);
+                }
+                ModbusReadRequestBlueprint readRequest = this.readRequest;
+                if (readRequest == null
+                        || readRequest.getFunctionCode() != ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS) {
+                    String errmsg = String.format(
+                            "Thing %s invalid. Since writeStart=X.Y, expecting poller reading holding registers.",
+                            getThing().getUID());
+                    throw new ModbusConfigurationException(errmsg);
+                }
+            }
+            validateWriteIndex();
         } else {
             isWriteEnabled = false;
         }
@@ -642,6 +743,41 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                     "Out-of-bounds: Poller is reading from index %d to %d (inclusive) but this thing configured to read '%s' starting from element %d. Exceeds polled data bounds.",
                     pollStartBitIndex / dataElementBits, pollEndBitIndex / dataElementBits, readValueType,
                     readIndex.get());
+            throw new ModbusConfigurationException(errmsg);
+        }
+    }
+
+    private void validateWriteIndex() throws ModbusConfigurationException {
+        @Nullable
+        ModbusReadRequestBlueprint readRequest = this.readRequest;
+        if (!writeStart.isPresent() || !writeSubIndex.isPresent()) {
+            //
+            // this validation is really about writeStart=X.Y validation
+            //
+            return;
+        } else if (readRequest == null) {
+            // should not happen, already validated
+            throw new ModbusConfigurationException("Must poll data with writeStart=X.Y");
+        }
+
+        if (writeSubIndex.isPresent() && (writeSubIndex.get() + 1) > 16) {
+            // the sub index Y (in X.Y) is above the register limits
+            String errmsg = String.format("readStart=X.Y, the value Y is too large");
+            throw new ModbusConfigurationException(errmsg);
+        }
+
+        // Determine bit positions polled, both start and end inclusive
+        int pollStartBitIndex = readRequest.getReference() * 16;
+        int pollEndBitIndex = pollStartBitIndex + readRequest.getDataLength() * 16 - 1;
+
+        // Determine bit positions read, both start and end inclusive
+        int writeStartBitIndex = writeStart.get() * 16 + readSubIndex.orElse(0);
+        int writeEndBitIndex = writeStartBitIndex - 1;
+
+        if (writeStartBitIndex < pollStartBitIndex || writeEndBitIndex > pollEndBitIndex) {
+            String errmsg = String.format(
+                    "Out-of-bounds: Poller is reading from index %d to %d (inclusive) but this thing configured to write  starting from element %d. Must write within polled limits",
+                    pollStartBitIndex / 16, pollEndBitIndex / 16, writeStart.get());
             throw new ModbusConfigurationException(errmsg);
         }
     }
