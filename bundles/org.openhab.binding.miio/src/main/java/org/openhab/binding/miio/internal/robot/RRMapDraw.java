@@ -180,7 +180,7 @@ public class RRMapDraw {
                 g2d.draw(new Line2D.Float(xPos, yP, xPos, yP));
             }
         }
-        if (logger.isDebugEnabled() && roomIds.size() > 0) {
+        if (logger.isDebugEnabled() && !roomIds.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Integer r : roomIds) {
                 sb.append(" " + r.toString());

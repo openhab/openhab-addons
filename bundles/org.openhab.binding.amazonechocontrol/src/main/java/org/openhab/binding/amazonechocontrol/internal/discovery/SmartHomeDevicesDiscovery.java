@@ -14,7 +14,12 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -207,7 +212,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                 }
                 Set<SmartHomeDevice> supportedChildren = SmartHomeDeviceHandler.getSupportedSmartHomeDevices(shg,
                         deviceList);
-                if (supportedChildren.size() == 0) {
+                if (supportedChildren.isEmpty()) {
                     // No children with an supported interface
                     continue;
                 }

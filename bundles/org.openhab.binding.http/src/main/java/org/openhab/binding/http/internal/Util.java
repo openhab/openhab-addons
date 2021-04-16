@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.http.internal;
 
-import java.net.*;
+import java.net.IDN;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;

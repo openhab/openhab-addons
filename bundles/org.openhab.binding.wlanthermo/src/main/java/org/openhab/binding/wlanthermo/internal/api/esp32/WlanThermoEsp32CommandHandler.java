@@ -31,7 +31,11 @@ import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Pm;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.System;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.settings.Settings;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -87,7 +91,7 @@ public class WlanThermoEsp32CommandHandler {
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList != null && channelList.size() > 0 && channelId < channelList.size()) {
+            if (channelList != null && !channelList.isEmpty() && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -172,7 +176,7 @@ public class WlanThermoEsp32CommandHandler {
 
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList.size() > 0 && channelId < channelList.size()) {
+            if (!channelList.isEmpty() && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -279,7 +283,7 @@ public class WlanThermoEsp32CommandHandler {
 
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList.size() > 0 && channelId < channelList.size()) {
+            if (!channelList.isEmpty() && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
                     if (channel.getTemp() != 999) {

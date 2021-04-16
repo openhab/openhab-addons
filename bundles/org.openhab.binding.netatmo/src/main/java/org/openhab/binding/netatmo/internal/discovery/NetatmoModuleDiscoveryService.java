@@ -34,7 +34,12 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import io.swagger.client.model.*;
+import io.swagger.client.model.NAHealthyHomeCoach;
+import io.swagger.client.model.NAMain;
+import io.swagger.client.model.NAPlug;
+import io.swagger.client.model.NAStationModule;
+import io.swagger.client.model.NAWelcomeCamera;
+import io.swagger.client.model.NAWelcomeHome;
 
 /**
  * The {@link NetatmoModuleDiscoveryService} searches for available Netatmo

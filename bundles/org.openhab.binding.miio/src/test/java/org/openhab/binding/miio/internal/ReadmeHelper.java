@@ -166,7 +166,7 @@ public class ReadmeHelper {
         StateDescriptionDTO stateDescription = channel.getStateDescription();
         if (stateDescription != null && stateDescription.getOptions() != null) {
             final List<OptionsValueListDTO> options = stateDescription.getOptions();
-            if (options != null && options.size() > 0) {
+            if (options != null && !options.isEmpty()) {
                 StringBuilder mapping = new StringBuilder();
                 mapping.append("Value mapping [");
                 options.forEach((option) -> {
