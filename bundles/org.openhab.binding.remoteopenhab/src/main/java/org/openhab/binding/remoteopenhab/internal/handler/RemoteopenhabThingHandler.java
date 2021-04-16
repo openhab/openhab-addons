@@ -158,7 +158,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                     .withLabel(channelDTO.label).withDescription(channelDTO.description)
                     .withConfiguration(channelConfig).build());
         }
-        if (channels.size() > 0) {
+        if (!channels.isEmpty()) {
             ThingBuilder thingBuilder = editThing();
             int nbRemoved = 0;
             for (Channel channel : channels) {

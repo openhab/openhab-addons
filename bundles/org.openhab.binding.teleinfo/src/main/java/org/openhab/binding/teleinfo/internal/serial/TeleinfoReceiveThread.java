@@ -55,8 +55,9 @@ public class TeleinfoReceiveThread extends Thread {
                 if (listener != null) {
                     try {
                         Frame nextFrame = teleinfoStream.readNextFrame();
-                        if (nextFrame != null)
+                        if (nextFrame != null) {
                             listener.onFrameReceived(nextFrame);
+                        }
                     } catch (InvalidFrameException e) {
                         logger.warn("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
                         listener.onInvalidFrameReceived(this, e);

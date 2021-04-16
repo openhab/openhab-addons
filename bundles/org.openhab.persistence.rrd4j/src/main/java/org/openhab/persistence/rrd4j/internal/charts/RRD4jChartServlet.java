@@ -17,7 +17,11 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.servlet.Servlet;

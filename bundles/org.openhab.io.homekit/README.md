@@ -718,6 +718,7 @@ String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           
 Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
+
 ## Additional Notes
 
 HomeKit allows only a single pairing to be established with the bridge.
@@ -753,6 +754,7 @@ openhab> log:tail io.github.hapjava
 ## Troubleshooting 
 
 ### openHAB is not listed in home app
+
 if you don't see openHAB in the home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to home app device or openHAB is already in paired state. 
 You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow: 
 
@@ -774,4 +776,4 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
 - verify the flag "sf". 
   - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
-- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device. 
+- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.
