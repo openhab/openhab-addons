@@ -107,6 +107,11 @@
 		<label>Play URI</label>
 		<description>Plays a given URI</description>
 	</channel-type>
+	<channel-type id="audioinfo" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Info</label>
+		<description>Detailed audio info</description>
+	</channel-type>
 	<channel-type id="netControl" advanced="true">
 		<item-type>String</item-type>
 		<label>Control</label>
