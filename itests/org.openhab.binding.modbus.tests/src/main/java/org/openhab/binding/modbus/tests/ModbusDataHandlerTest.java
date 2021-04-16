@@ -70,7 +70,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -154,7 +153,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     private Bridge createTcpMock() {
-        ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502, false);
         Bridge tcpBridge = ModbusPollerThingHandlerTest.createTcpThingBuilder("tcp1").build();
         ModbusTcpThingHandler tcpThingHandler = Mockito.mock(ModbusTcpThingHandler.class);
         tcpBridge.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
@@ -824,7 +822,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         verify(comms, never()).submitOneTimePoll(eq(request), notNull(), notNull());
-        ModbusPollerThingHandler handler = (ModbusPollerThingHandler) poller.getHandler();
         // Wait for all channels to receive the REFRESH command (initiated by the core)
         waitForAssert(
                 () -> verify((ModbusPollerThingHandler) poller.getHandler(), times(CHANNEL_TO_ACCEPTED_TYPE.size()))
@@ -854,7 +851,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         Bridge parent;
         if (pollerFunctionCode == null) {
             parent = createTcpMock();
-            ThingHandler foo = parent.getHandler();
             addThing(parent);
         } else {
             ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502, false);
