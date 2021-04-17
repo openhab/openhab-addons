@@ -4,7 +4,7 @@
 
 This binding for [Qbus](https://qbus.be) communicates with all controllers of the Qbus home automation system.
 
-We also host a site which contains a [manual](https://manualoh.schockaert.tk/) where you can find lots of information to set up openHAB with Qbus client and server (for the moment only in Dutch).
+We also host a site which contains a [manual](https://iot.qbus.be/) where you can find lots of information to set up openHAB with Qbus client and server (for the moment only in Dutch).
 
 The controllers can not communicate directly with openHAB, therefore we developed a client/server application which you must install prior to enable this binding.
 More information can be found here:
@@ -49,16 +49,13 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverC
 }
 ```
 
-
-
 | Property      | Default   | Required | Description                                                                                                                          |
-| ------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+|---------------|-----------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
 | `addr`        | localhost | YES      | The ip address of the machine where the Qbus Server runs                                                                             |
 | `sn`          |           | YES      | The serial number of your controller                                                                                                 |
 | `port`        | 8447      | YES      | The communication port of the client/server                                                                                          |
-| `serverCheck` | 10     | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
+| `serverCheck` | 10        | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
 
- 
 
 ## Things configuration
 
@@ -81,30 +78,30 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverC
 
 ```
 Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverCheck=10 ] {
-    dimmer                   1     "ToonzaalLED"      [ dimmerId=100 ]
-    onOff                    30    "Toonzaal230V"     [ bistabielId=76 ]
-    thermostat               50    "Service"          [ thermostatId=99 ]
-    scene                    70    "Disco"            [ sceneId=36 ]
-    co2                      100   "Productie"        [ co2Id=26 ]
-    rollershutter            120    "Roller1"         [ rolId=268 ]
-    rollershutter_slats      121    "Roller2"         [ rolId=264 ]
+    dimmer                   1      "ToonzaalLED"       [ dimmerId=100 ]
+    onOff                    30     "Toonzaal230V"      [ bistabielId=76 ]
+    thermostat               50     "Service"           [ thermostatId=99 ]
+    scene                    70     "Disco"             [ sceneId=36 ]
+    co2                      100    "Productie"         [ co2Id=26 ]
+    rollershutter            120    "Roller1"           [ rolId=268 ]
+    rollershutter_slats      121    "Roller2"           [ rolId=264 ]
 }
 ```
 
 ### Items
 
 ```
-Dimmer              ToonzaalLED          <light>    [ "Lighting" ]      {channel="qbus:dimmer:CTD007841:1:brightness"}
-Switch              Toonzaal230V         <light>                        {channel="qbus:onOff:CTD007841:30:switch"}
-Number:Temperature  ServiceSP"[%.1f %unit%]" (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:setpoint"}
-Number:Temperature  ServiceCT"[%.1f %unit%]" (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:measured"}
-Number              ServiceMode          (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:mode",ihc="0x33c311" , autoupdate="true"}
-Switch              Disco                <light>                        {channel="qbus:scene:CTD007841:36:scene"}
-Number              ProductieCO2                                        {channel="qbus:co2:CTD007841:100:co2"}
-Rollershutter       Roller1                                             {channel="qbus:rollershutter:CTD007841:120:rollershutter"}
-Rollershutter       Roller2                                             {channel="qbus:rollershutter_slats:CTD007841:121:rollershutter"}
-Dimmer              Roller2_slats                                       {channel="qbus:rollershutter_slats:CTD007841:121:slats"}
+Dimmer              ToonzaalLED                 <light>                         ["Lighting"]        {channel="qbus:dimmer:CTD001122:1:brightness"}
+Switch              Toonzaal230V                <light>                         ["Switchable"]      {channel="qbus:onOff:CTD001122:30:switch"}
+Group gThermostaat ["HVAC"]
+Number:Temperature  ServiceSP"[%.1f %unit%]"    <temperature>   (gThermostaat)  ["Setpoint"]        {channel="qbus:thermostat:CTD001122:50:setpoint"}
+Number:Temperature  ServiceCT"[%.1f %unit%]"    <temperature>   (gThermostaat)  ["Measurement"]     {channel="qbus:thermostat:CTD001122:50:measured"}
+Number              ServiceMode                 <temperature>   (gThermostaat)  ["Control"]         {channel="qbus:thermostat:CTD001122:50:mode",ihc="0x33c311" , autoupdate="true"}
+Switch              Disco                       <light>                         ["Switchable"]      {channel="qbus:scene:CTD001122:36:scene"}
+Number              ProductieCO2                <carbondioxide>                 ["CO2"]             {channel="qbus:co2:CTD001122:100:co2"}
+Rollershutter       Roller1                     <rollershutter>                 ["Blinds"]          {channel="qbus:rollershutter:CTD001122:120:rollershutter"}
+Rollershutter       Roller2                     <rollershutter>                 ["Blinds"]          {channel="qbus:rollershutter_slats:CTD001122:121:rollershutter"}
+Dimmer              Roller2_slats               <rollershutter>                 ["Blinds"]          {channel="qbus:rollershutter_slats:CTD001122:121:slats"}
 ```
 
 This is the link to the [Qbus forum](https://qbusforum.be). This forum is mainly in dutch and you can find a lot of information about the pre testings of this binding and offers a way to communicate with other users.
-
