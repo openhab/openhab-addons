@@ -37,8 +37,9 @@ The Teleinfo binding provides support for both single-phase and three-phase conn
 ## Discovery
 
 Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port.
+
 If you want to place the Teleinfo modem apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
-In this case you have to define the path to the gateway like this `rfc2217://ip:port`. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _ser2net_ config file.
+In this case you have to define the serial port of your Teleinfo modem like this `rfc2217://ip:port`. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _ser2net_ config file.
 
 Once the serial controller added, electricity meters will automatically appear after starting discovery, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
 
