@@ -12,23 +12,20 @@
  */
 package org.openhab.binding.touchwand.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link TouchWandUnitDataWallController} implements WallController unit
  * property.
  *
  * @author Roie Geron - Initial contribution
  */
-@NonNullByDefault
 public class TouchWandUnitDataWallController extends TouchWandUnitData {
 
     private CurrStatus currStatus = new CurrStatus();
 
-    // currStatus actually can be null since the object is created by gson fromJson
+    // currStatus can be null since the object is created by gson fromJson
     // in case the key is null or not exist , the variable will be null.
+    // if this is the case , default status is created
 
-    @SuppressWarnings({ "unused", "null" })
     @Override
     public Csc getCurrStatus() {
         if (currStatus == null) {
