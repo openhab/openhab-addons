@@ -125,9 +125,11 @@ public class ShellyManagerServlet extends HttpServlet {
             } else {
                 // binary data
                 byte[] data = (byte[]) output.data;
-                response.setContentLength(data.length);
-                bin = response.getOutputStream();
-                bin.write(data, 0, data.length);
+                if (data != null) {
+                    response.setContentLength(data.length);
+                    bin = response.getOutputStream();
+                    bin.write(data, 0, data.length);
+                }
             }
         } catch (ShellyApiException | RuntimeException e) {
             logger.debug("{}: Exception uri={}, parameters={}", className, path, request.getParameterMap().toString(),

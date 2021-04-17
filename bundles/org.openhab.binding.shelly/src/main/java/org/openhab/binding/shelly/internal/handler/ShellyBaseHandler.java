@@ -274,9 +274,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     logger.debug("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
                 }
             } else if (!devpeer.isEmpty() && !devpeer.equals(ourpeer)) {
-                logger.warn("{}: CoIoT peer in device settings does not point this to this host, disabling CoIoT",
-                        thingName);
-                config.eventsCoIoT = autoCoIoT = false;
+                logger.warn("{}: CoIoT peer in device settings does not point this to this host", thingName);
             }
         }
         if (autoCoIoT) {
@@ -575,8 +573,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
 
     private boolean checkRestarted(ShellySettingsStatus status) {
-        if (profile.isInitialized() && (status.uptime < stats.lastUptime || !profile.status.update.oldVersion.isEmpty()
-                && !status.update.oldVersion.equals(profile.status.update.oldVersion))) {
+        if (profile.isInitialized() && profile.alwaysOn /* exclude battery powered devices */
+                && (status.uptime < stats.lastUptime || !profile.status.update.oldVersion.isEmpty()
+                        && !status.update.oldVersion.equals(profile.status.update.oldVersion))) {
             updateProperties(profile, status);
             return true;
         }
@@ -706,13 +705,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                         updateChannel(group, CHANNEL_SENSOR_ILLUM, getStringType(event));
                         break;
 
-                    case SHELLY_EVENT_VIBRATION:
-                        updateChannel(group, CHANNEL_SENSOR_VIBRATION, OnOffType.ON);
-                        break;
-
                     case SHELLY_EVENT_ALARM_MILD: // Shelly Gas
                     case SHELLY_EVENT_ALARM_HEAVY:
                     case SHELLY_EVENT_ALARM_OFF:
+                    case SHELLY_EVENT_VIBRATION: // DW2
                         channel = CHANNEL_SENSOR_ALARM_STATE;
                         payload = event.toUpperCase();
                         break;
@@ -949,7 +945,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public boolean updateWakeupReason(@Nullable List<Object> valueArray) {
         boolean changed = false;
-        if ((valueArray != null) && (valueArray.size() > 0)) {
+        if ((valueArray != null) && !valueArray.isEmpty()) {
             String reason = getString((String) valueArray.get(0));
             String newVal = valueArray.toString();
             changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));

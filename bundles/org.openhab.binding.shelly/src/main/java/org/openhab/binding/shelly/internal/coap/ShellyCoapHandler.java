@@ -133,8 +133,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
             @Nullable
             Endpoint endpoint = null;
-            if (statusClient != null) {
-                endpoint = statusClient.getEndpoint();
+            CoapClient client = statusClient;
+            if (client != null) {
+                endpoint = client.getEndpoint();
             }
             if ((endpoint == null) || !endpoint.isStarted()) {
                 logger.warn("{}: Unable to initialize CoAP access (network error)", thingName);

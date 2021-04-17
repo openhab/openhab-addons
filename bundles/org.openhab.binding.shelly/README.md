@@ -17,6 +17,7 @@ The binding gets in sync with the next status refresh.
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
 Also check out the [Shelly Manager](doc/ShellyManager.md), which
+
 - provides detailed information on your Shellys
 - helps to diagnose WiFi issues or device instabilities
 - includes some common actions and 
@@ -276,6 +277,7 @@ Check the channel definitions for the various devices to see if the device suppo
 You could use the Shelly App to set the timing for those events. 
 
 If you want to use those events triggering a rule:
+
 - If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
 - For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event 
 

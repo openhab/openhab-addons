@@ -96,6 +96,7 @@ public class ShellyUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> Class<T> wrap(Class<T> type) {
         if (type == int.class) {
             return (Class<T>) Integer.class;

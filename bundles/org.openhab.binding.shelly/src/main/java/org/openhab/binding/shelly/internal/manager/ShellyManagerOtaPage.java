@@ -115,7 +115,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
             properties.put(ATTRIBUTE_UPDATE_URL, "http://" + getDeviceIp(properties) + "/ota?" + updateUrl);
             properties.put(URLPARM_CONNECTION, connection);
 
-            if (update.equalsIgnoreCase("yes")) {
+            if ("yes".equalsIgnoreCase(update)) {
                 // do the update
                 th.setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
                 html += loadHTML(FWUPDATE2_HTML, properties);

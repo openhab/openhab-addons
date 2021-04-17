@@ -337,6 +337,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_LOADERR = "LOAD_ERROR";
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
+    public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types
     public static final String EVENT_TYPE_RELAY = "relay";

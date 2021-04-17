@@ -34,11 +34,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 @NonNullByDefault
 public class ShellyManager {
     private final Map<String, ShellyManagerPage> pages = new LinkedHashMap<>();
-    private final ShellyHandlerFactory handlerFactory;
 
     public ShellyManager(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
             HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
         pages.put(SHELLY_MGR_OVERVIEW_URI, new ShellyManagerOverviewPage(configurationAdmin, translationProvider,
                 httpClient, localIp, localPort, handlerFactory));
         pages.put(SHELLY_MGR_ACTION_URI, new ShellyManagerActionPage(configurationAdmin, translationProvider,
