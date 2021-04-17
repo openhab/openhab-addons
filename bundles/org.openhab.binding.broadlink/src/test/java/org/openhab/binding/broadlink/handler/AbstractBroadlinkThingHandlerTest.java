@@ -24,6 +24,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.transform.TransformationService;
 
 /**
  * Abstract thing handler test.
@@ -39,6 +40,7 @@ public abstract class AbstractBroadlinkThingHandlerTest {
     protected RetryableSocket mockSocket = Mockito.mock(RetryableSocket.class);
     protected NetworkTrafficObserver trafficObserver = Mockito.mock(NetworkTrafficObserver.class);
     protected ThingHandlerCallback mockCallback = Mockito.mock(ThingHandlerCallback.class);
+    protected TransformationService mockTransformService = Mockito.mock(TransformationService.class);
 
     protected void configureUnderlyingThing(ThingTypeUID thingTypeUID, String thingId) {
         properties = new HashMap<>();

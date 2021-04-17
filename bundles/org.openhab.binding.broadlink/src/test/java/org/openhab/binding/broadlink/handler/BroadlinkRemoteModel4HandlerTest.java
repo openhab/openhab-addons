@@ -61,7 +61,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
 
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, mockTransformService);
         setMocksForTesting(model4);
         model4.getStatusFromDevice();
 
@@ -82,7 +82,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCode() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, mockTransformService);
         setMocksForTesting(model4);
         // Note the length is 10 so as to not require padding (6 byte preamble)
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
@@ -117,7 +117,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCodeIncludingPadding() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, mockTransformService);
         setMocksForTesting(model4);
         // Note the length is such that padding up to the next multiple of 16 will be needed
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b };
@@ -161,7 +161,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, };
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, mockTransformService);
         setMocksForTesting(model4);
 
         model4.getStatusFromDevice();
@@ -183,7 +183,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), BroadlinkBindingConstants.CHANNEL_HUMIDITY);
         assertEquals(expectedHumidityChannel, channelCaptures.get(1));
 
-        QuantityType<Dimensionless> expectedHumidity = new QuantityType(-85.82D, Units.PERCENT);
+        QuantityType<Dimensionless> expectedHumidity = new QuantityType<>(-85.82D, Units.PERCENT);
         assertEquals(expectedHumidity, stateCaptures.get(1));
     }
 }

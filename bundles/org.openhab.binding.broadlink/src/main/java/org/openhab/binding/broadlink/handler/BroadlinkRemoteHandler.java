@@ -24,13 +24,10 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.transform.TransformationException;
-import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +39,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
-    public BroadlinkRemoteHandler(Thing thing) {
+    protected TransformationService transformService;
+
+    public BroadlinkRemoteHandler(Thing thing, TransformationService transformService) {
         super(thing, LoggerFactory.getLogger(BroadlinkRemoteHandler.class));
+        this.transformService = transformService;
     }
 
-    public BroadlinkRemoteHandler(Thing thing, Logger logger) {
+    public BroadlinkRemoteHandler(Thing thing, TransformationService transformService, Logger logger) {
         super(thing, logger);
+        this.transformService = transformService;
     }
 
     protected void sendCode(byte code[]) {
@@ -106,13 +107,6 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         String mapFile = (String) thing.getConfiguration().get("mapFilename");
         if (Utils.isEmpty(mapFile)) {
             thingLogger.logDebug("MAP file is not defined in configuration of thing " + getThing().getLabel());
-            return null;
-        }
-        BundleContext bundleContext = FrameworkUtil.getBundle(BroadlinkRemoteHandler.class).getBundleContext();
-        TransformationService transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
-        if (transformService == null) {
-            thingLogger.logError("Failed to get MAP transformation service for thing " + getThing().getLabel()
-                    + "; is bundle installed?");
             return null;
         }
 

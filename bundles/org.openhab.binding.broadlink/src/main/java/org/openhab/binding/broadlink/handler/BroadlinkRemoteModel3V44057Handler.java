@@ -14,6 +14,7 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.transform.TransformationService;
 
 /**
  * Supports quirks in V44057 firmware.
@@ -23,8 +24,8 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteModel4Handler {
 
-    public BroadlinkRemoteModel3V44057Handler(Thing thing) {
-        super(thing);
+    public BroadlinkRemoteModel3V44057Handler(Thing thing, TransformationService transformService) {
+        super(thing, transformService);
     }
 
     protected boolean getStatusFromDevice() {

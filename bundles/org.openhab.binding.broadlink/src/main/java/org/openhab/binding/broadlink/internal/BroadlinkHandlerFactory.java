@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.handler.*;
@@ -20,6 +22,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.transform.TransformationHelper;
+import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,32 +44,54 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet().contains(thingTypeUID);
     }
 
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (logger.isDebugEnabled())
-            logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
+    private static final Set<ThingTypeUID> REMOTE_THING_UIDS = Set.of(BroadlinkBindingConstants.THING_TYPE_RM,
+            BroadlinkBindingConstants.THING_TYPE_RM2, BroadlinkBindingConstants.THING_TYPE_RM3,
+            BroadlinkBindingConstants.THING_TYPE_RM3Q, BroadlinkBindingConstants.THING_TYPE_RM4);
+
+    // Remotes need the MAP transform injected into them:
+    private @Nullable ThingHandler createRemoteHandler(Thing thing, ThingTypeUID thingTypeUID) {
+        TransformationService transformService = TransformationHelper.getTransformationService(getBundleContext(),
+                "MAP");
+        if (transformService == null) {
+            logger.error("Failed to get MAP transformation service for thing {}; is bundle installed?",
+                    thing.getLabel());
+            return null;
+        }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM))
-            return new BroadlinkRemoteModel2Handler(thing);
+            return new BroadlinkRemoteModel2Handler(thing, transformService);
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM2)) {
             if (logger.isDebugEnabled())
                 logger.debug("RM 2 handler requested created");
-            return new BroadlinkRemoteModel2Handler(thing);
+            return new BroadlinkRemoteModel2Handler(thing, transformService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM3)) {
             if (logger.isDebugEnabled())
                 logger.debug("RM 3 handler requested created");
-            return new BroadlinkRemoteHandler(thing);
+            return new BroadlinkRemoteHandler(thing, transformService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM3Q)) {
             if (logger.isDebugEnabled())
                 logger.debug("RM 3 v11057 handler requested created");
-            return new BroadlinkRemoteModel3V44057Handler(thing);
+            return new BroadlinkRemoteModel3V44057Handler(thing, transformService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM4)) {
             if (logger.isDebugEnabled())
                 logger.debug("RM 4 handler requested created");
-            return new BroadlinkRemoteModel4Handler(thing);
+            return new BroadlinkRemoteModel4Handler(thing, transformService);
         }
+        logger.error("Can't create handler for Broadlink remote thing type UID: {}", thingTypeUID.getAsString());
+        return null;
+    }
+
+    protected @Nullable ThingHandler createHandler(Thing thing) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (logger.isDebugEnabled())
+            logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
+
+        if (REMOTE_THING_UIDS.contains(thingTypeUID)) {
+            return createRemoteHandler(thing, thingTypeUID);
+        }
+
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_A1)) {
             if (logger.isDebugEnabled())
                 logger.debug("A1 handler requested created");

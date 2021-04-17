@@ -14,6 +14,7 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.*;
+import org.openhab.core.transform.TransformationService;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -24,8 +25,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
 
-    public BroadlinkRemoteModel2Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkRemoteModel2Handler.class));
+    public BroadlinkRemoteModel2Handler(Thing thing, TransformationService transformService) {
+        super(thing, transformService, LoggerFactory.getLogger(BroadlinkRemoteModel2Handler.class));
     }
 
     protected boolean onBroadlinkDeviceBecomingReachable() {
