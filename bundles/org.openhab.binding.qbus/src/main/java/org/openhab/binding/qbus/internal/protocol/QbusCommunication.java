@@ -139,11 +139,7 @@ public final class QbusCommunication extends BaseThingHandler {
             qOut = new PrintWriter(socket.getOutputStream(), true);
             qIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
-            String msg = e.getMessage();
-            logger.warn("Could not start listening thread, IOException: {}", msg);
-            Integer serverCheck = handler.getServerCheck();
-            handler.bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
-                    "No communication with Qbus Server, will try to reconnect every " + serverCheck + " minutes");
+            handler.bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, "No communication with Qbus Server");
             return;
         }
 
