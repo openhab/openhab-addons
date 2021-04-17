@@ -670,7 +670,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         ThingProperty.setValue(this, itemType.getIdentifier(), val);
                     }
                 } else {
-                    logger.info("handleCommandCommsJob({},{}): updating of item {} (type {}) failed.",
+                    logger.warn("handleCommandCommsJob({},{}): updating of item {} (type {}) failed.",
                             channelUID.getAsString(), command, itemName, itemType);
                 }
             }
