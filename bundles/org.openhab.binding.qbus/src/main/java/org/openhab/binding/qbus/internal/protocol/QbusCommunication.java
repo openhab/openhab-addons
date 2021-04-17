@@ -139,7 +139,8 @@ public final class QbusCommunication extends BaseThingHandler {
             qOut = new PrintWriter(socket.getOutputStream(), true);
             qIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
-            handler.bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, "No communication with Qbus Server");
+            String msg = e.getMessage();
+            handler.bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, "No communication with Qbus Server. " + msg);
             return;
         }
 
