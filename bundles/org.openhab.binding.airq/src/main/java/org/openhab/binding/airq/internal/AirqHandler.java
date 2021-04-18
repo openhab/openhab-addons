@@ -50,6 +50,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -64,8 +65,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link $AirqHandler} is responsible for retrieving all information from the air-Q device
@@ -638,22 +637,19 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "pairPPM":
                     ResultPair pairPPM = new ResultPair(dec.get(airqName).toString());
-                    updateState(channelName, new QuantityType<>(pairPPM.getValue(),
-                            org.openhab.core.library.unit.Units.PARTS_PER_MILLION));
+                    updateState(channelName, new QuantityType<>(pairPPM.getValue(), Units.PARTS_PER_MILLION));
                     updateState(channelName + "_maxerr", new DecimalType(pairPPM.getMaxdev()));
                     break;
                 case "pairPPB":
                     ResultPair pairPPB = new ResultPair(dec.get(airqName).toString());
-                    updateState(channelName, new QuantityType<>(pairPPB.getValue(),
-                            org.openhab.core.library.unit.Units.PARTS_PER_BILLION));
+                    updateState(channelName, new QuantityType<>(pairPPB.getValue(), Units.PARTS_PER_BILLION));
                     updateState(channelName + "_maxerr", new DecimalType(pairPPB.getMaxdev()));
                     break;
                 case "pairDB":
                     ResultPair pairDB = new ResultPair(dec.get(airqName).toString());
                     logger.trace("air-Q - airqHandler - processType(): db transmitted as {} with unit {}",
-                            pairDB.getValue(), org.openhab.core.library.unit.Units.DECIBEL);
-                    updateState(channelName,
-                            new QuantityType<>(pairDB.getValue(), org.openhab.core.library.unit.Units.DECIBEL));
+                            pairDB.getValue(), Units.DECIBEL);
+                    updateState(channelName, new QuantityType<>(pairDB.getValue(), Units.DECIBEL));
                     updateState(channelName + "_maxerr", new DecimalType(pairDB.getMaxdev()));
                     break;
                 case "datetime":

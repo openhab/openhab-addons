@@ -235,7 +235,7 @@
 	</channel-type>
 
 	<channel-type id="mtime" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Time Needed for Measurement</label>
 		<state readOnly="true" pattern="%d ms"></state>
 	</channel-type>

@@ -8,7 +8,7 @@ With the binding, it is possible to subscribe to all data delivered by the air-Q
 
 ## Supported Things
 
-Only one Thing is supported: The `air-Q` device.
+Only one Thing is supported: The `airq` device.
 This Binding was tested with an `air-Q Pro` device with 14 sensors. It also works with an `air-Q` device with 11 sensors.
 
 ## Discovery
@@ -53,8 +53,8 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fineDustCnt02_5           | Number:Dimensionless |    | Fine Dust >2,5 µm                                                   |
 | fineDustCnt05             | Number:Dimensionless |    | Fine Dust >5 µm                                                     |
 | fineDustCnt10             | Number:Dimensionless |    | Fine Dust >10 µm                                                    |
-| co                        | Number:Dimensionless |    | CO concentration                                                    |
-| co2                       | Number               |    | CO₂ concentration                                                   |
+| co                        | Number               |    | CO concentration                                                    |
+| co2                       | Number:Dimensionless |    | CO₂ concentration                                                   |
 | dCO2dt                    | Number               |    | Change of CO₂ concentration                                         |
 | dHdt                      | Number               |    | Change of Humidity                                                  |
 | dewpt                     | Number:Temperature   |    | Dew Point                                                           |
@@ -72,11 +72,11 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fineDustConc10            | Number               |    | Fine Dust concentration >10 µm             fni                      |
 | pressure                  | Number:Pressure      |    | Pressure                                                            |
 | so2                       | Number               |    | SO₂ concentration                                                   |
-| sound                     | Number               |    | Noise                                                               |
+| sound                     | Number:Dimensionless |    | Noise                                                               |
 | temperature               | Number:Temperature   |    | Temperature                                                         |
 | timestamp                 | DateTime             |    | Timestamp of measurement                                            |
-| tvoc                      | Number               |    | VOC concentration                                                   |
-| uptime                    | Number               |    | uptime in seconds                                                   |
+| tvoc                      | Number:Dimensionless |    | VOC concentration                                                   |
+| uptime                    | Number:Time          |    | uptime in seconds                                                   |
 | wifi                      | Switch               |    | WLAN on or off                                                      |
 | ssid                      | String               |    | WLAN SSID                                                           |
 | password                  | String               | w  | Device Password                                                     |
@@ -136,7 +136,7 @@ Number:Dimensionless  airQ_fineDustCnt02_5        "Fine Dust >2,5 µm"          
 Number:Dimensionless  airQ_fineDustCnt05          "Fine Dust >5 µm"                       {channel="airq:airq:1:fineDustCnt05"}
 Number:Dimensionless  airQ_fineDustCnt10          "Fine Dust >10 µm"                      {channel="airq:airq:1:fineDustCnt10"}
 Number                airQ_co                     "CO Concentration"                      {channel="airq:airq:1:co"}
-Number                airQ_co2                    "CO2 Concentration"                     {channel="airq:airq:1:co2"}
+Number:Dimensionless  airQ_co2                    "CO2 Concentration"                     {channel="airq:airq:1:co2"}
 Number                airQ_dCO2dt                 "Change of CO2 Concentration"           {channel="airq:airq:1:dCO2dt"}
 Number                airQ_dHdt                   "Change of Humidity"                    {channel="airq:airq:1:dHdt"}
 Number:Temperature    airQ_dewpt                  "Dew Point"                             {channel="airq:airq:1:dewpt"}
@@ -154,11 +154,11 @@ Number                airQ_fineDustConc02_5       "Fine Dust Concentration >2.5�
 Number                airQ_fineDustConc10         "Fine Dust Concentration >10µ"          {channel="airq:airq:1:fineDustConc10"}
 Number:Pressure       airQ_pressure               "Pressure"                              {channel="airq:airq:1:pressure"}
 Number                airQ_so2                    "SO2 concentration"                     {channel="airq:airq:1:so2"}
-Number                airQ_sound                  "Noise"                                 {channel="airq:airq:1:sound"}
+Number:Dimensionless  airQ_sound                  "Noise"                                 {channel="airq:airq:1:sound"}
 Number:Temperature    airQ_temperature            "Temperature"                           {channel="airq:airq:1:temperature"}
 DateTime              airQ_timestamp              "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                            {channel="airq:airq:1:timestamp"}
-Number                airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:tvoc"}
-Number                airQ_uptime                 "Uptime"                                {channel="airq:airq:1:uptime"}
+Number:Dimensionless  airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:tvoc"}
+Number:Time           airQ_uptime                 "Uptime"                                {channel="airq:airq:1:uptime"}
 
 Number:Dimensionless  airQ_cnt03_maxerr        "Maximum error of Fine Dust >0,3 µm"             {channel="airq:airq:1:cnt0_3_maxerr"}
 Number:Dimensionless  airQ_cnt05_maxerr        "Maximum error of Fine Dust >0,5 µm"             {channel="airq:airq:1:cnt0_5_maxerr"}
