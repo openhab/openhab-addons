@@ -128,7 +128,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.info("Initializing haassohnpelletstove handler for thing {}", getThing().getUID());
+        logger.debug("Initializing haassohnpelletstove handler for thing {}", getThing().getUID());
         config = getConfigAs(HaasSohnpelletstoveConfiguration.class);
         boolean validConfig = true;
         String errors = "";
@@ -241,7 +241,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
         if (linkedChannels.isEmpty()) {
             automaticRefreshing = false;
             stopScheduler();
-            logger.info("Stop automatic refreshing");
+            logger.debug("Stop automatic refreshing");
         }
     }
 
