@@ -19,7 +19,7 @@
 			<channel id="current-package" typeId="current-package-channel"/>
 			<channel id="wake-lock" typeId="wake-lock-channel"/>
 			<channel id="screen-state" typeId="screen-state-channel"/>
-			<channel id="reboot" typeId="reboot-channel"/>
+			<channel id="shutdown" typeId="shutdown-channel"/>
 			<channel id="awake-state" typeId="awake-state-channel"/>
 		</channels>
 		<representation-property>serial</representation-property>
