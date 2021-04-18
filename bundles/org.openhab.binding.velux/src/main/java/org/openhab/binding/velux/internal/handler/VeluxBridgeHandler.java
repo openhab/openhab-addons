@@ -16,10 +16,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +42,7 @@ import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunReboot;
+import org.openhab.binding.velux.internal.bridge.common.SetHouseStatusMonitor;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
@@ -99,6 +98,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements VeluxBridgeInstance, VeluxBridgeProvider {
 
+    private static final int COMMUNICATION_TASK_MAX_WAIT_SECS = 10;
+
     private final Logger logger = LoggerFactory.getLogger(VeluxBridgeHandler.class);
 
     // Class internal
@@ -125,8 +126,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
     private VeluxBridge mySlipBridge = new SlipVeluxBridge(this);
-
-    private static final Map<String, Future<Boolean>> disposeSchedulerJobs = new ConcurrentHashMap<>();
 
     /*
      * **************************************
@@ -260,11 +259,16 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     public void initialize() {
         // set the thing status to UNKNOWN temporarily and let the background task decide the real status
         updateStatus(ThingStatus.UNKNOWN);
+
         // take care of unusual situations...
         if (scheduler.isShutdown()) {
             logger.warn("initialize(): scheduler is shutdown, aborting initialization.");
             return;
         }
+
+        logger.trace("initialize(): initialize bridge configuration parameters.");
+        veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
+
         scheduler.execute(() -> {
             initializeSchedulerJob();
         });
@@ -272,71 +276,100 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     /**
      * Various initialisation actions to be executed on a background thread
-     *
-     * Note: if a disposeSchedulerJob() has been scheduled for the same ThingUID, then execution of this method
-     * will be paused until that job has finished.
      */
-    private synchronized void initializeSchedulerJob() {
-        logger.trace("initializeSchedulerJob(): initialize bridge configuration parameters.");
-        veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
-        Future<Boolean> disposeJob = disposeSchedulerJobs.remove(veluxBridgeConfiguration.ipAddress);
-        if ((disposeJob != null) && (!disposeJob.isDone())) {
-            logger.trace("initializeSchedulerJob(): wait for pending disposeSchedulerJob() to finish.");
-            try {
-                disposeJob.get();
-            } catch (InterruptedException | ExecutionException e) {
-                logger.warn("initializeSchedulerJob(): unexpected exception waiting for disposeSchedulerJob() '{}'.",
-                        e.getMessage());
+    private void initializeSchedulerJob() {
+        /*
+         * synchronize disposeSchedulerJob() and initializeSchedulerJob() on the IP address Strings.intern() object to
+         * prevent overlap of initialization and disposal communications towards the same physical bridge
+         */
+        synchronized (veluxBridgeConfiguration.ipAddress.intern()) {
+            logger.trace("initializeSchedulerJob(): adopt new bridge configuration parameters.");
+            bridgeParamsUpdated();
+
+            long mSecs = veluxBridgeConfiguration.refreshMSecs;
+            logger.trace("initializeSchedulerJob(): scheduling refresh at {} milliseconds.", mSecs);
+            refreshSchedulerJob = scheduler.scheduleWithFixedDelay(() -> {
+                refreshSchedulerJob();
+            }, mSecs, mSecs, TimeUnit.MILLISECONDS);
+
+            VeluxHandlerFactory.refreshBindingInfo();
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Velux Bridge '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
+                        bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
+                        bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
             }
         }
-        logger.trace("initializeSchedulerJob(): adopt new bridge configuration parameters.");
-        bridgeParamsUpdated();
-        long mSecs = veluxBridgeConfiguration.refreshMSecs;
-        logger.trace("initializeSchedulerJob(): scheduling refresh at {} milliseconds.", mSecs);
-        refreshSchedulerJob = scheduler.scheduleWithFixedDelay(() -> {
-            refreshSchedulerJob();
-        }, mSecs, mSecs, TimeUnit.MILLISECONDS);
-        VeluxHandlerFactory.refreshBindingInfo();
-        logger.debug("Velux Bridge '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
-                bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
-                bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
     }
 
     @Override
     public void dispose() {
-        disposeSchedulerJobs.put(veluxBridgeConfiguration.ipAddress, scheduler.submit(() -> {
-            return disposeSchedulerJob();
-        }));
+        scheduler.submit(() -> {
+            disposeSchedulerJob();
+        });
     }
 
     /**
      * Various disposal actions to be executed on a background thread
      */
-    private synchronized Boolean disposeSchedulerJob() {
-        logger.trace("disposeSchedulerJob(): cancel the refresh polling job.");
-        ScheduledFuture<?> refreshSchedulerJob = this.refreshSchedulerJob;
-        if (refreshSchedulerJob != null) {
-            refreshSchedulerJob.cancel(false);
-        }
-        logger.trace("disposeSchedulerJob(): cancel any other scheduled jobs.");
-        ExecutorService commsJobExecutor = this.communicationsJobExecutor;
-        if (commsJobExecutor != null) {
-            try {
-                commsJobExecutor.shutdown();
-                if (!commsJobExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
-                    logger.warn("disposeSchedulerJob(): unexpected awaitTermination() timeout.");
-                }
-            } catch (InterruptedException e) {
-                logger.warn("disposeSchedulerJob(): unexpected exception awaitTermination() '{}'.", e.getMessage());
+    private synchronized void disposeSchedulerJob() {
+        /*
+         * synchronize disposeSchedulerJob() and initializeSchedulerJob() on the IP address Strings.intern() object to
+         * prevent overlap of initialization and disposal communications towards the same physical bridge
+         */
+        synchronized (veluxBridgeConfiguration.ipAddress.intern()) {
+            /*
+             * cancel the regular refresh polling job
+             */
+            ScheduledFuture<?> refreshSchedulerJob = this.refreshSchedulerJob;
+            if (refreshSchedulerJob != null) {
+                logger.trace("disposeSchedulerJob(): cancel the refresh polling job.");
+                refreshSchedulerJob.cancel(false);
             }
+
+            ExecutorService commsJobExecutor = this.communicationsJobExecutor;
+            if (commsJobExecutor != null) {
+                logger.trace("disposeSchedulerJob(): cancel any other scheduled jobs.");
+                /*
+                 * remove un-started communication tasks from the execution queue; and stop accepting more tasks
+                 */
+                commsJobExecutor.shutdownNow();
+                /*
+                 * if the bridge is online, wait for already started task(s) to complete (so the bridge won't lock up);
+                 * but to prevent stalling the OH shutdown process, time out after MAX_COMMUNICATION_TASK_WAIT_TIME_SECS
+                 */
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    try {
+                        if (!commsJobExecutor.awaitTermination(COMMUNICATION_TASK_MAX_WAIT_SECS, TimeUnit.SECONDS)) {
+                            logger.warn("disposeSchedulerJob(): unexpected awaitTermination() timeout.");
+                        }
+                    } catch (InterruptedException e) {
+                        logger.warn("disposeSchedulerJob(): unexpected exception awaitTermination() '{}'.",
+                                e.getMessage());
+                    }
+                }
+            }
+            /*
+             * if the bridge is online, tell it to disable House Status Monitor and stop queueing more HSM events
+             */
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                SetHouseStatusMonitor bcp = thisBridge.bridgeAPI().setHouseStatusMonitor();
+                if (bcp != null) {
+                    logger.trace("disposeSchedulerJob(): turn off House Status Monitor.");
+                    bcp.serviceActivation(false);
+                    thisBridge.bridgeCommunicate(bcp);
+                }
+            }
+            /*
+             * finally clean up everything else
+             */
+            logger.trace("disposeSchedulerJob(): shut down JSON connection interface.");
+            myJsonBridge.shutdown();
+            logger.trace("disposeSchedulerJob(): shut down SLIP connection interface.");
+            mySlipBridge.shutdown();
+            VeluxHandlerFactory.refreshBindingInfo();
+            logger.debug("Velux Bridge '{}' is shut down.", getThing().getUID());
         }
-        logger.trace("disposeSchedulerJob(): shut down JSON connection interface.");
-        myJsonBridge.shutdown();
-        logger.trace("disposeSchedulerJob(): shut down SLIP connection interface.");
-        mySlipBridge.shutdown();
-        VeluxHandlerFactory.refreshBindingInfo();
-        logger.debug("Velux Bridge '{}' is shut down.", getThing().getUID());
-        return true;
     }
 
     /**
