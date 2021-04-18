@@ -231,4 +231,12 @@
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter Control</label>
+		<description>Controls the rollershutter and states its opening level in percent</description>
+		<category>Blinds</category>
+	</channel-type>
+
 </thing:thing-descriptions>

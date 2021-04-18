@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.core.io.transport.serial.PortInUseException;
@@ -103,7 +103,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     @Override
-    public void onFrameReceived(TeleinfoReceiveThread receiveThread, Frame frame) {
+    public void onFrameReceived(Frame frame) {
         updateStatus(ThingStatus.ONLINE);
         fireOnFrameReceivedEvent(frame);
     }
@@ -161,7 +161,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             }
             logger.debug("Starting receive thread");
             TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
-                    config.autoRepairInvalidADPSgroupLine, scheduler);
+                    config.autoRepairInvalidADPSgroupLine);
             this.receiveThread = receiveThread;
             receiveThread.start();
 

@@ -23,7 +23,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.NextPreviousType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.RewindFastforwardType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -287,8 +293,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     public void checkConnection() {
         var currentConfig = config;
-        if (currentConfig == null)
+        if (currentConfig == null) {
             return;
+        }
         try {
             logger.debug("Refresh device {} status", currentConfig.ip);
             if (adbConnection.isConnected()) {

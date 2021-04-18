@@ -15,22 +15,11 @@ This service is provided "AS IS", and the user takes full responsibility of any 
 
 ## Table of Contents
 
-<!-- Using MarkdownTOC plugin for Sublime Text to update the table of contents (TOC) -->
-<!-- MarkdownTOC depth=3 autolink=true bracket=round -->
+{::options toc_levels="2..4"/}
 
-- [Prerequisites](#prerequisites)
-	- [Setting Up an Amazon Account](#setting-up-an-amazon-account)
-- [Configuration](#configuration)
-	- [Basic configuration](#basic-configuration)
-	- [Configuration Using Credentials File](#configuration-using-credentials-file)
-	- [Advanced Configuration](#advanced-configuration)
-- [Details](#details)
-	- [Tables Creation](#tables-creation)
-	- [Caveats](#caveats)
-- [Developer Notes](#developer-notes)
-	- [Updating Amazon SDK](#updating-amazon-sdk)
+- TOC
 
-<!-- /MarkdownTOC -->
+{:toc}
 
 ## Prerequisites
 
@@ -55,9 +44,53 @@ Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 
 ## Configuration
 
-This service can be configured in the file `services/dynamodb.cfg`.
+This service can be configured using the MainUI or using persistence configuration file `services/dynamodb.cfg`.
 
-### Basic configuration
+In order to configure the persistence service, you need to configure two things:
+
+1. Table schema revision to use
+2. AWS credentials to access DynamoDB
+
+### Table schema
+
+The DynamoDB persistence addon provides two different table schemas: "new" and "legacy".
+As the name implies, "legacy" is offered for backwards-compatibility purpose for old users who like to access the data that is already stored in DynamoDB.
+All users are advised to transition to "new" table schema, which is more optimized.
+
+At this moment there is no supported way to migrate data from old format to new.
+
+#### New table schema
+
+Configure the addon to use new schema by setting `table` parameter (name of the table).
+
+Only one table will be created for all data. The table will have the following fields
+
+
+| Attribute | Type   | Data type | Description                                   |
+| --------- | ------ | --------- | --------------------------------------------- |
+| `i`       | String | Yes       | Item name                                     |
+| `t`       | Number | Yes       | Timestamp in milliepoch                       |
+| `s`       | String | Yes       | State of the item, stored as DynamoDB string. |
+| `n`       | Number | Yes       | State of the item, stored as DynamoDB number. |
+| `exp`     | Number | Yes       | Expiry date for item, in epoch seconds        |
+
+Other notes
+
+- `i` and `t` forms the composite primary key (partition key, sort key) for the table
+- Only one of `s` or `n` attributes are specified, not both. Most items are converted to number type for most compact representation.
+- Compared to legacy format, data overhead is minimizing by using short attribute names, number timestamps and having only single table.
+- `exp` attribute is used with DynamoDB Time To Live (TTL) feature to automatically delete old data
+
+#### Legacy schema
+
+Configure the addon to use legacy schema by setting `tablePrefix` parameter.
+
+- When an item is persisted via this service, a table is created (if necessary).
+- The service will create at most two tables for different item types.
+- The tables will be named `<tablePrefix><item-type>`, where the `<item-type>` is either `bigdecimal` (numeric items) or `string` (string and complex items).
+- Each table will have three columns: `itemname` (item name), `timeutc` (in ISO 8601 format with millisecond accuracy), and `itemstate` (either a number or string representing item state).
+
+### Credentials Configuration Using Access Key and Secret Key
 
 | Property  | Default | Required | Description                                                                                                                                                      |
 | --------- | ------- | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -65,7 +98,7 @@ This service can be configured in the file `services/dynamodb.cfg`.
 | secretKey |         |   Yes    | secret key as shown in [Setting up Amazon account](#setting-up-an-amazon-account).                                                                               |
 | region    |         |   Yes    | AWS region ID as described in [Setting up Amazon account](#setting-up-an-amazon-account). The region needs to match the region that was used to create the user. |
 
-### Configuration Using Credentials File
+### Credentials Configuration Using Credentials File
 
 Alternatively, instead of specifying `accessKey` and `secretKey`, one can configure a configuration profile file.
 
@@ -95,46 +128,26 @@ aws_secret_access_key=testSecretKey
 
 In addition to the configuration properties above, the following are also available:
 
-| Property                   | Default    | Required | Description                                                                                        |
-| -------------------------- | ---------- | :------: | -------------------------------------------------------------------------------------------------- |
-| readCapacityUnits          | 1          |    No    | read capacity for the created tables                                                               |
-| writeCapacityUnits         | 1          |    No    | write capacity for the created tables                                                              |
-| tablePrefix                | `openhab-` |    No    | table prefix used in the name of created tables                                                    |
-| bufferCommitIntervalMillis | 1000       |    No    | Interval to commit (write) buffered data. In milliseconds.                                         |
-| bufferSize                 | 1000       |    No    | Internal buffer size in datapoints which is used to batch writes to DynamoDB every `bufferCommitIntervalMillis`. |
-
-Typically you should not need to modify parameters related to buffering. 
+| Property           | Default | Required | Description                                                 |
+| ------------------ | ------- | :------: | ----------------------------------------------------------- |
+| expireDays         | (null)  |    No    | Expire time for data in days (relative to stored timestamp) |
+| readCapacityUnits  | 1       |    No    | read capacity for the created tables                        |
+| writeCapacityUnits | 1       |    No    | write capacity for the created tables                       |
 
 Refer to Amazon documentation on [provisioned throughput](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ProvisionedThroughput.html) for details on read/write capacity.
+DynamoDB Time to Live (TTL) setting is configured using `expireDays`.
 
 All item- and event-related configuration is done in the file `persistence/dynamodb.persist`.
 
 ## Details
-
-### Tables Creation
-
-When an item is persisted via this service, a table is created (if necessary).
-Currently, the service will create at most two tables for different item types.
-The tables will be named `<tablePrefix><item-type>`, where the `<item-type>` is either `bigdecimal` (numeric items) or `string` (string and complex items).
-
-Each table will have three columns: `itemname` (item name), `timeutc` (in ISO 8601 format with millisecond accuracy), and `itemstate` (either a number or string representing item state).
-
-## Buffering
-
-By default, the service is asynchronous which means that data is not written immediately to DynamoDB but instead buffered in-memory.
-The size of the buffer, in terms of datapoints, can be configured with `bufferSize`.
-Every `bufferCommitIntervalMillis` the whole buffer of data is flushed to DynamoDB.
-
-It is recommended to have the buffering enabled since the synchronous behaviour (writing data immediately) might have adverse impact to the whole system when there is many items persisted at the same time.
-The buffering can be disabled by setting `bufferSize` to zero.
-
-The defaults should be suitable in many use cases.
 
 ### Caveats
 
 When the tables are created, the read/write capacity is configured according to configuration.
 However, the service does not modify the capacity of existing tables.
 As a workaround, you can modify the read/write capacity of existing tables using the [Amazon console](https://aws.amazon.com/console/).
+
+Similar caveat applies for DynamoDB Time to Live (TTL) setting `expireDays`.
 
 ## Developer Notes
 
@@ -143,20 +156,15 @@ As a workaround, you can modify the read/write capacity of existing tables using
 1. Clean `lib/*`
 2. Update SDK version in `scripts/fetch_sdk_pom.xml`. You can use the [maven online repository browser](https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb) to find the latest version available online.
 3. `scripts/fetch_sdk.sh`
-4. Copy `scripts/target/site/dependencies.html` and `scripts/target/dependency/*.jar` to `lib/`
-5. Generate `build.properties` entries
-    `ls lib/*.jar | python -c "import sys; print('  ' + ',\\\\\\n  '.join(map(str.strip, sys.stdin.readlines())))"`
-6. Generate `META-INF/MANIFEST.MF` `Bundle-ClassPath` entries
-    `ls lib/*.jar | python -c "import sys; print('  ' + ',\\n  '.join(map(str.strip, sys.stdin.readlines())))"`
-7. Generate `.classpath` entries
-    `ls lib/*.jar | python -c "import sys;pre='<classpathentry exported=\"true\" kind=\"lib\" path=\"';post='\"/>'; print('\\t' + pre + (post + '\\n\\t' + pre).join(map(str.strip, sys.stdin.readlines())) + post)"`
+4. Copy printed dependencies to `pom.xml`
 
 After these changes, it's good practice to run integration tests (against live AWS DynamoDB) in `org.openhab.persistence.dynamodb.test` bundle.
 See README.md in the test bundle for more information how to execute the tests.
 
 ### Running integration tests
 
-To run integration tests, one needs to provide AWS credentials.
+When running integration tests, local temporary DynamoDB server is used, emulating the real AWS DynamoDB API.
+One can configure AWS credentials to run the test against real AWS DynamoDB for most realistic tests.
 
 Eclipse instructions
 
@@ -169,6 +177,3 @@ Eclipse instructions
 -DDYNAMODBTEST_ACCESS=ACCESS-KEY
 -DDYNAMODBTEST_SECRET=SECRET
 ````
-
-The tests will create tables with prefix `dynamodb-integration-tests-`.
-Note that when tests are begun, all data is removed from that table!

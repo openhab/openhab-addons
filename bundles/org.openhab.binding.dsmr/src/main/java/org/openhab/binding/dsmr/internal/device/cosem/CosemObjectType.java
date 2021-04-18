@@ -240,7 +240,7 @@ public enum CosemObjectType {
      * @return true if this CosemObjectType support the requested number of values, false otherwise.
      */
     public boolean supportsNrOfValues(int nrOfValues) {
-        if (repeatingDescriptors.size() == 0) {
+        if (repeatingDescriptors.isEmpty()) {
             return nrOfValues == descriptors.size();
         } else {
             /* There are repeating descriptors */

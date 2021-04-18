@@ -46,8 +46,9 @@ public class WlanThermoUtil {
     }
 
     public static <T> T requireNonNull(@Nullable T obj) throws WlanThermoInputException {
-        if (obj == null)
+        if (obj == null) {
             throw new WlanThermoInputException();
+        }
         return obj;
     }
 }

@@ -14,25 +14,19 @@ package org.openhab.binding.bluetooth.airthings.internal;
 
 import static org.openhab.binding.bluetooth.airthings.internal.AirthingsBindingConstants.*;
 
-import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
-import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
-import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
-import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
+import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,211 +35,63 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Kai Kreuzer - Added Airthings Wave Mini support
  */
 @NonNullByDefault
-public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
+public class AirthingsWavePlusHandler extends AbstractAirthingsHandler {
 
     private static final String DATA_UUID = "b42e2a68-ade7-11e4-89d3-123b93f75cba";
-    private static final int CHECK_PERIOD_SEC = 10;
-
-    private final Logger logger = LoggerFactory.getLogger(AirthingsWavePlusHandler.class);
-    private final UUID uuid = UUID.fromString(DATA_UUID);
-
-    private AtomicInteger sinceLastReadSec = new AtomicInteger();
-    private Optional<AirthingsConfiguration> configuration = Optional.empty();
-    private @Nullable ScheduledFuture<?> scheduledTask;
-
-    private volatile int refreshInterval;
-
-    private volatile ServiceState serviceState = ServiceState.NOT_RESOLVED;
-    private volatile ReadState readState = ReadState.IDLE;
-
-    private enum ServiceState {
-        NOT_RESOLVED,
-        RESOLVING,
-        RESOLVED,
-    }
-
-    private enum ReadState {
-        IDLE,
-        READING,
-    }
 
     public AirthingsWavePlusHandler(Thing thing) {
         super(thing);
     }
 
-    @Override
-    public void initialize() {
-        logger.debug("Initialize");
-        super.initialize();
-        configuration = Optional.of(getConfigAs(AirthingsConfiguration.class));
-        logger.debug("Using configuration: {}", configuration.get());
-        cancelScheduledTask();
-        configuration.ifPresent(cfg -> {
-            refreshInterval = cfg.refreshInterval;
-            logger.debug("Start scheduled task to read device in every {} seconds", refreshInterval);
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::executePeridioc, CHECK_PERIOD_SEC, CHECK_PERIOD_SEC,
-                    TimeUnit.SECONDS);
-        });
-        sinceLastReadSec.set(refreshInterval); // update immediately
-    }
+    private final Logger logger = LoggerFactory.getLogger(AirthingsWavePlusHandler.class);
+    private final UUID uuid = UUID.fromString(DATA_UUID);
 
     @Override
-    public void dispose() {
-        logger.debug("Dispose");
-        cancelScheduledTask();
-        serviceState = ServiceState.NOT_RESOLVED;
-        readState = ReadState.IDLE;
-        super.dispose();
-    }
-
-    private void cancelScheduledTask() {
-        if (scheduledTask != null) {
-            scheduledTask.cancel(true);
-            scheduledTask = null;
-        }
-    }
-
-    private void executePeridioc() {
-        sinceLastReadSec.addAndGet(CHECK_PERIOD_SEC);
-        execute();
-    }
-
-    private synchronized void execute() {
-        ConnectionState connectionState = device.getConnectionState();
-        logger.debug("Device {} state is {}, serviceState {}, readState {}", address, connectionState, serviceState,
-                readState);
-
-        switch (connectionState) {
-            case DISCOVERED:
-            case DISCONNECTED:
-                if (isTimeToRead()) {
-                    connect();
-                }
-                break;
-            case CONNECTED:
-                read();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void connect() {
-        logger.debug("Connect to device {}...", address);
-        if (!device.connect()) {
-            logger.debug("Connecting to device {} failed", address);
-        }
-    }
-
-    private void disconnect() {
-        logger.debug("Disconnect from device {}...", address);
-        if (!device.disconnect()) {
-            logger.debug("Disconnect from device {} failed", address);
-        }
-    }
-
-    private void read() {
-        switch (serviceState) {
-            case NOT_RESOLVED:
-                discoverServices();
-                break;
-            case RESOLVED:
-                switch (readState) {
-                    case IDLE:
-                        logger.debug("Read data from device {}...", address);
-                        BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
-                        if (characteristic != null && device.readCharacteristic(characteristic)) {
-                            readState = ReadState.READING;
-                        } else {
-                            logger.debug("Read data from device {} failed", address);
-                            disconnect();
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            default:
-                break;
-        }
-    }
-
-    private void discoverServices() {
-        logger.debug("Discover services for device {}", address);
-        serviceState = ServiceState.RESOLVING;
-        device.discoverServices();
-    }
-
-    @Override
-    public void onServicesDiscovered() {
-        serviceState = ServiceState.RESOLVED;
-        logger.debug("Service discovery completed for device {}", address);
-        printServices();
-        execute();
-    }
-
-    private void printServices() {
-        device.getServices().forEach(service -> logger.debug("Device {} Service '{}'", address, service));
-    }
-
-    @Override
-    public void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification) {
-        switch (connectionNotification.getConnectionState()) {
-            case DISCONNECTED:
-                if (serviceState == ServiceState.RESOLVING) {
-                    serviceState = ServiceState.NOT_RESOLVED;
-                }
-                readState = ReadState.IDLE;
-                break;
-            default:
-                break;
-
-        }
-        execute();
-    }
-
-    @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
+    protected void updateChannels(int[] is) {
+        Map<String, Number> data;
         try {
-            if (status == BluetoothCompletionStatus.SUCCESS) {
-                logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address,
-                        characteristic.getValue());
-                updateStatus(ThingStatus.ONLINE);
-                sinceLastReadSec.set(0);
-                try {
-                    updateChannels(new AirthingsWavePlusDataParser(characteristic.getValue()));
-                } catch (AirthingsParserException e) {
-                    logger.warn("Data parsing error occured, when parsing data from device {}, cause {}", address,
-                            e.getMessage(), e);
-                }
-            } else {
-                logger.debug("Characteristic {} from device {} failed", characteristic.getUuid(), address);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
+            data = AirthingsDataParser.parseWavePlusData(is);
+            logger.debug("Parsed data: {}", data);
+            Number humidity = data.get(AirthingsDataParser.HUMIDITY);
+            if (humidity != null) {
+                updateState(CHANNEL_ID_HUMIDITY, new QuantityType<Dimensionless>(humidity, Units.PERCENT));
             }
-        } finally {
-            readState = ReadState.IDLE;
-            disconnect();
+            Number temperature = data.get(AirthingsDataParser.TEMPERATURE);
+            if (temperature != null) {
+                updateState(CHANNEL_ID_TEMPERATURE, new QuantityType<Temperature>(temperature, SIUnits.CELSIUS));
+            }
+            Number pressure = data.get(AirthingsDataParser.PRESSURE);
+            if (pressure != null) {
+                updateState(CHANNEL_ID_PRESSURE, new QuantityType<Pressure>(pressure, Units.MILLIBAR));
+            }
+            Number co2 = data.get(AirthingsDataParser.CO2);
+            if (co2 != null) {
+                updateState(CHANNEL_ID_CO2, new QuantityType<Dimensionless>(co2, Units.PARTS_PER_MILLION));
+            }
+            Number tvoc = data.get(AirthingsDataParser.TVOC);
+            if (tvoc != null) {
+                updateState(CHANNEL_ID_TVOC, new QuantityType<Dimensionless>(tvoc, PARTS_PER_BILLION));
+            }
+            Number radonShortTermAvg = data.get(AirthingsDataParser.RADON_SHORT_TERM_AVG);
+            if (radonShortTermAvg != null) {
+                updateState(CHANNEL_ID_RADON_ST_AVG,
+                        new QuantityType<Density>(radonShortTermAvg, BECQUEREL_PER_CUBIC_METRE));
+            }
+            Number radonLongTermAvg = data.get(AirthingsDataParser.RADON_LONG_TERM_AVG);
+            if (radonLongTermAvg != null) {
+                updateState(CHANNEL_ID_RADON_LT_AVG,
+                        new QuantityType<Density>(radonLongTermAvg, BECQUEREL_PER_CUBIC_METRE));
+            }
+        } catch (AirthingsParserException e) {
+            logger.error("Failed to parse data received from Airthings sensor: {}", e.getMessage());
         }
     }
 
-    private void updateChannels(AirthingsWavePlusDataParser parser) {
-        logger.debug("Parsed data: {}", parser);
-        updateState(CHANNEL_ID_HUMIDITY, QuantityType.valueOf(Double.valueOf(parser.getHumidity()), Units.PERCENT));
-        updateState(CHANNEL_ID_TEMPERATURE,
-                QuantityType.valueOf(Double.valueOf(parser.getTemperature()), SIUnits.CELSIUS));
-        updateState(CHANNEL_ID_PRESSURE, QuantityType.valueOf(Double.valueOf(parser.getPressure()), Units.MILLIBAR));
-        updateState(CHANNEL_ID_CO2, QuantityType.valueOf(Double.valueOf(parser.getCo2()), Units.PARTS_PER_MILLION));
-        updateState(CHANNEL_ID_TVOC, QuantityType.valueOf(Double.valueOf(parser.getTvoc()), PARTS_PER_BILLION));
-        updateState(CHANNEL_ID_RADON_ST_AVG,
-                QuantityType.valueOf(Double.valueOf(parser.getRadonShortTermAvg()), BECQUEREL_PER_CUBIC_METRE));
-        updateState(CHANNEL_ID_RADON_LT_AVG,
-                QuantityType.valueOf(Double.valueOf(parser.getRadonLongTermAvg()), BECQUEREL_PER_CUBIC_METRE));
-    }
-
-    private boolean isTimeToRead() {
-        int sinceLastRead = sinceLastReadSec.get();
-        logger.debug("Time since last update: {} sec", sinceLastRead);
-        return sinceLastRead >= refreshInterval;
+    @Override
+    protected UUID getDataUUID() {
+        return uuid;
     }
 }

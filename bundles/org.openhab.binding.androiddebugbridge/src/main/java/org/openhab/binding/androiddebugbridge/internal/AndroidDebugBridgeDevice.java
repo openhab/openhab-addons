@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.androiddebugbridge.internal;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
@@ -26,7 +28,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
@@ -116,8 +117,9 @@ public class AndroidDebugBridgeDevice {
             return;
         }
         var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1");
-        if (out.contains("monkey aborted"))
+        if (out.contains("monkey aborted")) {
             throw new AndroidDebugBridgeDeviceException("Unable to open package");
+        }
     }
 
     public void stopPackage(String packageName)
@@ -136,8 +138,9 @@ public class AndroidDebugBridgeDevice {
         var lineParts = targetLine.split(" ");
         if (lineParts.length >= 2) {
             var packageActivityName = lineParts[lineParts.length - 2];
-            if (packageActivityName.contains("/"))
+            if (packageActivityName.contains("/")) {
                 return packageActivityName.split("/")[0];
+            }
         }
         throw new AndroidDebugBridgeDeviceReadException("Unable to read package name");
     }
@@ -244,8 +247,9 @@ public class AndroidDebugBridgeDevice {
         String volumeResp = runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--get", "|",
                 "grep", "volume");
         Matcher matcher = VOLUME_PATTERN.matcher(volumeResp);
-        if (!matcher.find())
+        if (!matcher.find()) {
             throw new AndroidDebugBridgeDeviceReadException("Unable to get volume info");
+        }
         var volumeInfo = new VolumeInfo(Integer.parseInt(matcher.group("current")),
                 Integer.parseInt(matcher.group("min")), Integer.parseInt(matcher.group("max")));
         logger.debug("Device {}:{} VolumeInfo: current {}, min {}, max {}", this.ip, this.port, volumeInfo.current,

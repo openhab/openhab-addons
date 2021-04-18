@@ -29,11 +29,13 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class StringItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "string";
     private static final StringType STATE1 = new StringType("b001");
     private static final StringType STATE2 = new StringType("c002");
     private static final StringType STATE_BETWEEN = new StringType("b001");
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         StringItem item = (StringItem) ITEMS.get(NAME);
