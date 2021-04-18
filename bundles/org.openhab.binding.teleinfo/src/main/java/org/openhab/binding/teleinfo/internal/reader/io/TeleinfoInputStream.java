@@ -24,6 +24,7 @@ import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
+import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,19 +44,21 @@ public class TeleinfoInputStream extends InputStream {
     private BufferedReader bufferedReader;
     private @Nullable String groupLine;
     private boolean autoRepairInvalidADPSgroupLine;
+    private final TeleinfoTicMode ticMode;
     private final Frame frame = new Frame();
 
-    public TeleinfoInputStream(final InputStream teleinfoInputStream) {
-        this(teleinfoInputStream, false);
+    public TeleinfoInputStream(final InputStream teleinfoInputStream, TeleinfoTicMode ticMode) {
+        this(teleinfoInputStream, false, ticMode);
     }
 
-    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream,
-            boolean autoRepairInvalidADPSgroupLine) {
+    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine,
+            TeleinfoTicMode ticMode) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
+        this.ticMode = ticMode;
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
 
         groupLine = null;
@@ -96,7 +99,7 @@ public class TeleinfoInputStream extends InputStream {
             logger.trace("groupLine = {}", groupLine);
             String groupLineRef = groupLine;
             if (groupLineRef != null) {
-                String[] groupLineTokens = groupLineRef.split("\\s");
+                String[] groupLineTokens = groupLineRef.split(ticMode.getSeparator());
                 if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
                     final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
                     throw new InvalidFrameException(error);

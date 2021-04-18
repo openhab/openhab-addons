@@ -15,14 +15,28 @@ package org.openhab.binding.teleinfo.internal.serial;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TeleinfoSerialControllerConfiguration} class contains fields mapping thing configuration parameters.
+ * Define an enum for TIC mode of Linky telemeters
  *
- * @author Nicolas SIBERIL - Initial contribution
+ * @author Olivier MARCEAU - Initial contribution
  */
 @NonNullByDefault
-public class TeleinfoSerialControllerConfiguration {
+public enum TeleinfoTicMode {
+    HISTORICAL(1200, "\\s"),
+    STANDARD(9600, "\\t");
 
-    public String serialport = "";
-    public String ticMode = "";
-    public boolean autoRepairInvalidADPSgroupLine = true;
+    private final int bitrate;
+    private final String separator;
+
+    TeleinfoTicMode(int bitrate, String separator) {
+        this.bitrate = bitrate;
+        this.separator = separator;
+    }
+
+    public int getBitrate() {
+        return bitrate;
+    }
+
+    public String getSeparator() {
+        return separator;
+    }
 }
