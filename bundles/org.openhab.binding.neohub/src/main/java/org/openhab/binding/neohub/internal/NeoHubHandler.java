@@ -330,13 +330,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             if (physicalFirmware != null) {
                 String thingFirmware = getThing().getProperties().get(PROPERTY_FIRMWARE_VERSION);
                 if (!physicalFirmware.equals(thingFirmware)) {
-                    // update the thing firmware property to the hub's physical firmware value
                     getThing().setProperty(PROPERTY_FIRMWARE_VERSION, physicalFirmware);
-                    // log changes, but only if the prior property value was neither null nor empty
-                    if ((thingFirmware != null) && (thingFirmware.length() > 0)) {
-                        logger.info("hub '{}' has updated its firmware from '{}' to '{}'", getThing().getUID(),
-                                thingFirmware, physicalFirmware);
-                    }
                 }
             }
 
@@ -387,7 +381,12 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
                     @Nullable
                     Boolean onlineBefore = connectionStates.put(deviceName, online);
-                    // log changes, but only a) if the device is already known, or b) in debug mode
+                    /*
+                     * note: we use logger.info() here to log changes; reason is that the average user does really need
+                     * to know if a device (very occasionally) drops out of the normally reliable RF mesh; however we
+                     * only log it if 1) the state has changed, and 2) either 2a) the device has already been discovered
+                     * by the bridge handler, or 2b) logger debug mode is set
+                     */
                     if (!online.equals(onlineBefore) && ((onlineBefore != null) || logger.isDebugEnabled())) {
                         logger.info("hub '{}' device \"{}\" has {} the RF mesh network", getThing().getUID(),
                                 deviceName, online.booleanValue() ? "joined" : "left");
