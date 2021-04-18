@@ -45,8 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DaliDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaliDeviceHandler.class);
-    @Nullable
-    private Integer targetId;
+    private @Nullable Integer targetId;
 
     public DaliDeviceHandler(Thing thing) {
         super(thing);
@@ -72,9 +71,9 @@ public class DaliDeviceHandler extends BaseThingHandler {
                     || CHANNEL_DIM_IMMEDIATELY.equals(channelUID.getId())) {
                 DaliAddress address;
                 if (THING_TYPE_DEVICE.equals(this.thing.getThingTypeUID())) {
-                    address = DaliAddress.Short(targetId);
+                    address = DaliAddress.createShortAddress(targetId);
                 } else if (THING_TYPE_GROUP.equals(this.thing.getThingTypeUID())) {
-                    address = DaliAddress.Group(targetId);
+                    address = DaliAddress.createGroupAddress(targetId);
                 } else {
                     throw new DaliException("unknown device type");
                 }
@@ -89,20 +88,20 @@ public class DaliDeviceHandler extends BaseThingHandler {
                     if ((OnOffType) command == OnOffType.ON) {
                         getBridgeHandler().sendCommand(new DaliDAPCCommand(address, (byte) DALI_SWITCH_100_PERCENT));
                     } else {
-                        getBridgeHandler().sendCommand(DaliStandardCommand.Off(address));
+                        getBridgeHandler().sendCommand(DaliStandardCommand.createOffCommand(address));
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (CHANNEL_DIM_AT_FADE_RATE.equals(channelUID.getId())) {
                         if ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE) {
-                            getBridgeHandler().sendCommand(DaliStandardCommand.Up(address));
+                            getBridgeHandler().sendCommand(DaliStandardCommand.createUpCommand(address));
                         } else {
-                            getBridgeHandler().sendCommand(DaliStandardCommand.Down(address));
+                            getBridgeHandler().sendCommand(DaliStandardCommand.createDownCommand(address));
                         }
                     } else {
                         if ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE) {
-                            getBridgeHandler().sendCommand(DaliStandardCommand.StepUp(address));
+                            getBridgeHandler().sendCommand(DaliStandardCommand.createStepUpCommand(address));
                         } else {
-                            getBridgeHandler().sendCommand(DaliStandardCommand.StepDown(address));
+                            getBridgeHandler().sendCommand(DaliStandardCommand.createStepDownCommand(address));
                         }
                     }
                     queryDeviceState = true;
@@ -111,9 +110,11 @@ public class DaliDeviceHandler extends BaseThingHandler {
                 }
 
                 if (queryDeviceState) {
-                    getBridgeHandler().sendCommandWithResponse(DaliStandardCommand.QueryActualLevel(address),
-                            DaliResponse.NumericMask.class).thenAccept(response -> {
-                                if (response != null && response.mask == false) {
+                    getBridgeHandler()
+                            .sendCommandWithResponse(DaliStandardCommand.createQueryActualLevelCommand(address),
+                                    DaliResponse.NumericMask.class)
+                            .thenAccept(response -> {
+                                if (response != null && !response.mask) {
                                     Integer value = response.value != null ? response.value : 0;
                                     int percentValue = (int) (value.floatValue() * 100 / DALI_SWITCH_100_PERCENT);
                                     updateState(channelUID, new PercentType(percentValue));
@@ -129,7 +130,7 @@ public class DaliDeviceHandler extends BaseThingHandler {
         }
     }
 
-    protected DaliserverBridgeHandler getBridgeHandler() {
+    protected DaliserverBridgeHandler getBridgeHandler() throws DaliException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
             throw new DaliException("No bridge was found");

@@ -13,6 +13,7 @@
 package org.openhab.binding.dali.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dali.internal.handler.DaliException;
 
 /**
  * The {@link DaliStandardCommand} represents different types of commands for
@@ -23,64 +24,64 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DaliStandardCommand extends DaliGearCommandBase {
 
-    private DaliStandardCommand(DaliAddress target, int cmdval, int param, boolean sendTwice) {
+    private DaliStandardCommand(DaliAddress target, int cmdval, int param, boolean sendTwice) throws DaliException {
         super(target.addToFrame(new DaliForwardFrame(16, new byte[] { 0x1, (byte) (cmdval | (param & 0b1111)) })),
                 sendTwice);
     }
 
-    public static DaliStandardCommand Off(DaliAddress target) {
+    public static DaliStandardCommand createOffCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x00, 0, false);
     }
 
-    public static DaliStandardCommand Up(DaliAddress target) {
+    public static DaliStandardCommand createUpCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x01, 0, false);
     }
 
-    public static DaliStandardCommand Down(DaliAddress target) {
+    public static DaliStandardCommand createDownCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x02, 0, false);
     }
 
-    public static DaliStandardCommand StepUp(DaliAddress target) {
+    public static DaliStandardCommand createStepUpCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x03, 0, false);
     }
 
-    public static DaliStandardCommand StepDown(DaliAddress target) {
+    public static DaliStandardCommand createStepDownCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x04, 0, false);
     }
 
-    public static DaliStandardCommand RecallMaxLevel(DaliAddress target) {
+    public static DaliStandardCommand createRecallMaxLevelCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x05, 0, false);
     }
 
-    public static DaliStandardCommand RecallMinLevel(DaliAddress target) {
+    public static DaliStandardCommand createRecallMinLevelCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x06, 0, false);
     }
 
-    public static DaliStandardCommand StepDownAndOff(DaliAddress target) {
+    public static DaliStandardCommand createStepDownAndOffCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x07, 0, false);
     }
 
-    public static DaliStandardCommand OnAndStepUp(DaliAddress target) {
+    public static DaliStandardCommand createOnAndStepUpCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x08, 0, false);
     }
 
-    public static DaliStandardCommand EnableDAPCSequence(DaliAddress target) {
+    public static DaliStandardCommand createEnableDAPCSequenceCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x09, 0, false);
     }
 
-    public static DaliStandardCommand GoToScene(DaliAddress target, int scene) {
+    public static DaliStandardCommand createGoToSceneCommand(DaliAddress target, int scene) throws DaliException {
         return new DaliStandardCommand(target, 0x10, scene, false);
     }
 
-    public static DaliStandardCommand Reset(DaliAddress target) {
+    public static DaliStandardCommand createResetCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x20, 0, true);
     }
 
-    public static DaliStandardCommand QueryStatus(DaliAddress target) {
+    public static DaliStandardCommand createQueryStatusCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0x90, 0, false);
     }
 
-    public static DaliStandardCommand QueryActualLevel(DaliAddress target) {
+    public static DaliStandardCommand createQueryActualLevelCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0xa0, 0, false);
     }
 }

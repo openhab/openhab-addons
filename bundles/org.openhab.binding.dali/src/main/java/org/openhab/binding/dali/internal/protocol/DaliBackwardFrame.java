@@ -13,6 +13,7 @@
 package org.openhab.binding.dali.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dali.internal.handler.DaliException;
 
 /**
  * The {@link DaliBackwardFrame} represents a response message on the DALI bus.
@@ -22,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DaliBackwardFrame extends DaliFrame {
 
-    public DaliBackwardFrame(byte data) {
+    public DaliBackwardFrame(byte data) throws DaliException {
         super(8, new byte[] { data });
     }
 }

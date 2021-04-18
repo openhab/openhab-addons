@@ -14,7 +14,7 @@ Currently, these things are supported:
  - group (group of DALI devices)
  - rgb (virtual device consisting of three directly addressed devices that represent r/g/b (LED) color channels)
  
-This binding was tested on a DALI 1-bus with daliserver 0.2.
+This binding was tested on a DALI 1 bus with daliserver 0.2.
 
 ## Discovery
 
@@ -22,11 +22,7 @@ Automatic device discovery is not yet implemented.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-### daliserver
+### Bridge `daliserver`
 
 | Parameter   | Parameter ID | Required/Optional |  description                           |
 |-------------|--------------|-------------------|----------------------------------------|
@@ -53,11 +49,23 @@ _Note that it is planned to generate some part of this based on the XML files wi
 | G Device ID | targetIdG    | Required          | Address of device in the DALI bus      |
 | B Device ID | targetIdB    | Required          | Address of device in the DALI bus      |
 
-## Channels
+## Full Example
 
-The following channels are supported by the binding.
+.things file
 
-| channel  | type   | description                                |
-|----------|--------|--------------------------------------------|
-| dimmer   | Dimmer | Dimmer for a single device or device group |
-| color    | HSB    | Combined light color for rgb things        |
+```
+Bridge dali:daliserver:237dbae7 "Daliserver" [ host="localhost", port=55825] {
+    Thing rgb 87bf0403-a45d-4037-b874-28f4ece30004 "RGB Lights" [ targetIdR=0, targetIdG=1, targetIdB=2 ]
+    Thing device 995e16ca-07c4-4111-9cda-504cb5120f82 "Warm White" [ targetId=3 ]
+    Thing group 31da8dac-8e09-455a-bc7a-6ed70f740001 "Living Room Lights" [ targetId=0 ]
+}
+```
+
+
+.items file
+
+```
+Dimmer WarmWhiteLivingRoom "Warm White Living Room"  {channel="dali:device:237dbae7:995e16ca-07c4-4111-9cda-504cb5120f82:dimImmediately"}
+Color ColorLivingRoom "Light Color Living Room"  {channel="dali:device:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:color"}
+Switch LightsLivingRoom "Lights Living Room On/Off"  {channel="dali:device:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:dimImmediately"}
+```

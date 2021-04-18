@@ -49,8 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DaliRgbHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaliRgbHandler.class);
-    @Nullable
-    List<Integer> outputs;
+    private @Nullable List<Integer> outputs;
 
     public DaliRgbHandler(Thing thing) {
         super(thing);
@@ -82,28 +81,31 @@ public class DaliRgbHandler extends BaseThingHandler {
 
                     for (int i = 0; i < 3; i++) {
                         byte dimmValue = (byte) ((rgb[i].floatValue() * DALI_SWITCH_100_PERCENT) / 100);
-                        getBridgeHandler()
-                                .sendCommand(new DaliDAPCCommand(DaliAddress.Short(outputs.get(i)), dimmValue));
+                        getBridgeHandler().sendCommand(
+                                new DaliDAPCCommand(DaliAddress.createShortAddress(outputs.get(i)), dimmValue));
                     }
                 } else if (command instanceof OnOffType) {
                     if ((OnOffType) command == OnOffType.ON) {
                         for (Integer output : outputs) {
-                            getBridgeHandler().sendCommand(
-                                    new DaliDAPCCommand(DaliAddress.Short(output), (byte) DALI_SWITCH_100_PERCENT));
+                            getBridgeHandler().sendCommand(new DaliDAPCCommand(DaliAddress.createShortAddress(output),
+                                    (byte) DALI_SWITCH_100_PERCENT));
                         }
                     } else {
                         for (Integer output : outputs) {
-                            getBridgeHandler().sendCommand(DaliStandardCommand.Off(DaliAddress.Short(output)));
+                            getBridgeHandler().sendCommand(
+                                    DaliStandardCommand.createOffCommand(DaliAddress.createShortAddress(output)));
                         }
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     if ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE) {
                         for (Integer output : outputs) {
-                            getBridgeHandler().sendCommand(DaliStandardCommand.Up(DaliAddress.Short(output)));
+                            getBridgeHandler().sendCommand(
+                                    DaliStandardCommand.createUpCommand(DaliAddress.createShortAddress(output)));
                         }
                     } else {
                         for (Integer output : outputs) {
-                            getBridgeHandler().sendCommand(DaliStandardCommand.Down(DaliAddress.Short(output)));
+                            getBridgeHandler().sendCommand(
+                                    DaliStandardCommand.createDownCommand(DaliAddress.createShortAddress(output)));
                         }
                     }
 
@@ -113,21 +115,26 @@ public class DaliRgbHandler extends BaseThingHandler {
                 }
 
                 if (queryDeviceState) {
-                    CompletableFuture<@Nullable NumericMask> responseR = getBridgeHandler().sendCommandWithResponse(
-                            DaliStandardCommand.QueryActualLevel(DaliAddress.Short(outputs.get(0))),
-                            DaliResponse.NumericMask.class);
-                    CompletableFuture<@Nullable NumericMask> responseG = getBridgeHandler().sendCommandWithResponse(
-                            DaliStandardCommand.QueryActualLevel(DaliAddress.Short(outputs.get(1))),
-                            DaliResponse.NumericMask.class);
-                    CompletableFuture<@Nullable NumericMask> responseB = getBridgeHandler().sendCommandWithResponse(
-                            DaliStandardCommand.QueryActualLevel(DaliAddress.Short(outputs.get(2))),
-                            DaliResponse.NumericMask.class);
+                    CompletableFuture<@Nullable NumericMask> responseR = getBridgeHandler()
+                            .sendCommandWithResponse(
+                                    DaliStandardCommand.createQueryActualLevelCommand(
+                                            DaliAddress.createShortAddress(outputs.get(0))),
+                                    DaliResponse.NumericMask.class);
+                    CompletableFuture<@Nullable NumericMask> responseG = getBridgeHandler()
+                            .sendCommandWithResponse(
+                                    DaliStandardCommand.createQueryActualLevelCommand(
+                                            DaliAddress.createShortAddress(outputs.get(1))),
+                                    DaliResponse.NumericMask.class);
+                    CompletableFuture<@Nullable NumericMask> responseB = getBridgeHandler()
+                            .sendCommandWithResponse(
+                                    DaliStandardCommand.createQueryActualLevelCommand(
+                                            DaliAddress.createShortAddress(outputs.get(2))),
+                                    DaliResponse.NumericMask.class);
 
                     CompletableFuture.allOf(responseR, responseG, responseB).thenAccept(x -> {
                         @Nullable
                         NumericMask r = responseR.join(), g = responseG.join(), b = responseB.join();
-                        if (r != null && r.mask == false && g != null && g.mask == false && b != null
-                                && b.mask == false) {
+                        if (r != null && !r.mask && g != null && !g.mask && b != null && !b.mask) {
                             Integer rValue = r.value != null ? r.value : 0;
                             Integer gValue = g.value != null ? g.value : 0;
                             Integer bValue = b.value != null ? b.value : 0;
@@ -147,7 +154,7 @@ public class DaliRgbHandler extends BaseThingHandler {
         }
     }
 
-    protected DaliserverBridgeHandler getBridgeHandler() {
+    protected DaliserverBridgeHandler getBridgeHandler() throws DaliException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
             throw new DaliException("No bridge was found");

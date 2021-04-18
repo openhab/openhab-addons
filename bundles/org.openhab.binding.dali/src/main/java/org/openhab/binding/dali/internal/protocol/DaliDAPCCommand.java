@@ -13,6 +13,7 @@
 package org.openhab.binding.dali.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dali.internal.handler.DaliException;
 
 /**
  * The {@link DaliDAPCCommand} represents a DALI Direct Arc Power Command.
@@ -22,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DaliDAPCCommand extends DaliGearCommandBase {
 
-    public DaliDAPCCommand(DaliAddress target, Byte power) {
+    public DaliDAPCCommand(DaliAddress target, Byte power) throws DaliException {
         super(target.addToFrame(new DaliForwardFrame(16, new byte[] { power })), false);
     }
 }

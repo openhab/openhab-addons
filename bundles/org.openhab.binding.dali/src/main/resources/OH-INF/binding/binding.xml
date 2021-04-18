@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>DALI Binding</name>
-	<description>This is the binding for DALI.</description>
+	<description>This is the binding for controlling lights using the Digital Addressable Lighting Interface (DALI).</description>
 
 </binding:binding>

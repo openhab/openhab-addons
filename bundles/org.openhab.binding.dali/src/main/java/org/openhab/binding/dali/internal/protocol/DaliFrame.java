@@ -28,7 +28,7 @@ public class DaliFrame {
     int bits;
     int data;
 
-    public DaliFrame(int bits, byte[] data) {
+    public DaliFrame(int bits, byte[] data) throws DaliException {
         if (bits < 1) {
             throw new DaliException("Frames must contain at least 1 data bit");
         }

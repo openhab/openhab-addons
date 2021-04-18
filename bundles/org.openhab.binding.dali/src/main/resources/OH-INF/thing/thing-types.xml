@@ -8,8 +8,6 @@
 		<label>Daliserver</label>
 		<description>A running daliserver.</description>
 
-		<representation-property>UDN</representation-property>
-
 		<config-description-ref uri="thing-type:dali:daliserver"/>
 	</bridge-type>
 
@@ -21,14 +19,14 @@
 		<label>DALI Device</label>
 		<description>Controls a single device/ballast</description>
 		<channels>
-			<channel id="dimAtFadeRate" typeId="dimmer"/>
-			<channel id="dimImmediately" typeId="dimmer"/>
+			<channel id="dimAtFadeRate" typeId="system.brightness"/>
+			<channel id="dimImmediately" typeId="system.brightness"/>
 		</channels>
 
 		<config-description>
 			<parameter name="targetId" type="integer" required="true" min="0" max="63">
 				<label>Device ID</label>
-				<description>Address of device in the DALI bus</description>
+				<description>Address of the device in the DALI bus</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -41,24 +39,17 @@
 		<label>DALI Group</label>
 		<description>Controls a group of devices/ballasts</description>
 		<channels>
-			<channel id="dimAtFadeRate" typeId="dimmer"/>
-			<channel id="dimImmediately" typeId="dimmer"/>
+			<channel id="dimAtFadeRate" typeId="system.brightness"/>
+			<channel id="dimImmediately" typeId="system.brightness"/>
 		</channels>
 
 		<config-description>
 			<parameter name="targetId" type="integer" required="true" min="0" max="31">
 				<label>Group ID</label>
-				<description>Address of group in the DALI bus</description>
+				<description>Address of the group in the DALI bus</description>
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="dimmer">
-		<item-type>Dimmer</item-type>
-		<label>Dimmer</label>
-		<description>Dimmer</description>
-		<category>Light</category>
-	</channel-type>
 
 	<!-- RGB Type -->
 	<thing-type id="rgb">
@@ -68,30 +59,23 @@
 		<label>DALI RGB Device</label>
 		<description>Controls three DALI devices representing R,G,B lighting channels</description>
 		<channels>
-			<channel id="color" typeId="color"/>
+			<channel id="color" typeId="system.color"/>
 		</channels>
 
 		<config-description>
 			<parameter name="targetIdR" type="integer" required="true" min="0" max="63">
 				<label>R Device ID</label>
-				<description>Address of device in the DALI bus</description>
+				<description>Address of the device in the DALI bus</description>
 			</parameter>
 			<parameter name="targetIdG" type="integer" required="true" min="0" max="63">
 				<label>G Device ID</label>
-				<description>Address of device in the DALI bus</description>
+				<description>Address of the device in the DALI bus</description>
 			</parameter>
 			<parameter name="targetIdB" type="integer" required="true" min="0" max="63">
 				<label>B Device ID</label>
-				<description>Address of device in the DALI bus</description>
+				<description>Address of the device in the DALI bus</description>
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="color">
-		<item-type>HSB</item-type>
-		<label>Color</label>
-		<description>Light Color</description>
-		<category>ColorLight</category>
-	</channel-type>
 
 </thing:thing-descriptions>

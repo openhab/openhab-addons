@@ -25,15 +25,15 @@ public abstract class DaliAddress {
     private DaliAddress() {
     }
 
-    protected abstract <T extends DaliFrame> T addToFrame(T frame);
+    protected abstract <T extends DaliFrame> T addToFrame(T frame) throws DaliException;
 
-    public static DaliAddress Short(int address) {
+    public static DaliAddress createShortAddress(int address) throws DaliException {
         if (address < 0 || address > 63) {
             throw new DaliException("address must be in the range 0..63");
         }
         return new DaliAddress() {
             @Override
-            protected <T extends DaliFrame> T addToFrame(T frame) {
+            protected <T extends DaliFrame> T addToFrame(T frame) throws DaliException {
                 if (frame.length() == 16) {
                     frame.data &= ~(1 << 15); // unset bit 15
                     frame.data |= ((address & 0b11111) << 9);
@@ -48,10 +48,10 @@ public abstract class DaliAddress {
         };
     }
 
-    public static DaliAddress Broadcast() {
+    public static DaliAddress createBroadcastAddress() {
         return new DaliAddress() {
             @Override
-            protected <T extends DaliFrame> T addToFrame(T frame) {
+            protected <T extends DaliFrame> T addToFrame(T frame) throws DaliException {
                 if (frame.length() == 16) {
                     frame.data |= 0x7f << 9;
                 } else if (frame.length() == 24) {
@@ -64,10 +64,10 @@ public abstract class DaliAddress {
         };
     }
 
-    public static DaliAddress BroadcastUnaddressed() {
+    public static DaliAddress createBroadcastUnaddressedAddress() {
         return new DaliAddress() {
             @Override
-            protected <T extends DaliFrame> T addToFrame(T frame) {
+            protected <T extends DaliFrame> T addToFrame(T frame) throws DaliException {
                 if (frame.length() == 16) {
                     frame.data |= 0x7e << 9;
                 } else if (frame.length() == 24) {
@@ -80,13 +80,13 @@ public abstract class DaliAddress {
         };
     }
 
-    public static DaliAddress Group(int address) {
+    public static DaliAddress createGroupAddress(int address) throws DaliException {
         if (address < 0 || address > 31) {
             throw new DaliException("address must be in the range 0..31");
         }
         return new DaliAddress() {
             @Override
-            protected <T extends DaliFrame> T addToFrame(T frame) {
+            protected <T extends DaliFrame> T addToFrame(T frame) throws DaliException {
                 if (frame.length() == 16) {
                     if (address > 15) {
                         throw new DaliException("Groups 16..31 are not supported in 16-bit forward frames");

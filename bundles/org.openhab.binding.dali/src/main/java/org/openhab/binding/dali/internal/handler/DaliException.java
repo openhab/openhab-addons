@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Robert Schmid - Initial contribution
  */
 @NonNullByDefault
-public class DaliException extends RuntimeException {
+public class DaliException extends Exception {
 
     private static final long serialVersionUID = 1L;
 

@@ -26,8 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dali.internal.protocol.DaliBackwardFrame;
@@ -41,6 +39,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,9 +111,10 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
                 try (Socket socket = getConnection();
                         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                         DataInputStream in = new DataInputStream(socket.getInputStream())) {
-
                     // send the command
-                    logger.debug("Sending: {}", DatatypeConverter.printHexBinary(frame));
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Sending: {}", HexUtils.bytesToHex(frame));
+                    }
                     out.write(frame);
                     if (command.sendTwice) {
                         out.flush();
@@ -152,23 +152,24 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
     }
 
     private <T extends DaliResponse> @Nullable T parseResponse(DataInputStream reader, Class<T> responseType)
-            throws IOException {
+            throws IOException, DaliException {
         try {
             T result = responseType.getDeclaredConstructor().newInstance();
             byte[] response = reader.readNBytes(4);
-            logger.debug("Received: {}", DatatypeConverter.printHexBinary(response));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Received: {}", HexUtils.bytesToHex(response));
+            }
             byte status = response[1], rval = response[2];
             if (status == 0) {
                 result.parse(null);
             } else if (status == 1) {
                 result.parse(new DaliBackwardFrame(rval));
             } else if (status == 255) {
-                // This is "failure" - daliserver reports
-                // this for a garbled response when several ballasts
-                // reply. It should be interpreted as "Yes".
+                // This is "failure" - daliserver reports this for a garbled response when several ballasts reply. It
+                // should be interpreted as "Yes".
                 result.parse(null);
             } else {
-                throw new DaliException("status was" + status);
+                throw new DaliException("Invalid response status: " + status);
             }
 
             return result;

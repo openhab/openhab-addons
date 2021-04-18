@@ -13,6 +13,7 @@
 package org.openhab.binding.dali.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dali.internal.handler.DaliException;
 
 /**
  * The {@link DaliForwardFrame} represents an outgoing DALI command.
@@ -22,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DaliForwardFrame extends DaliFrame {
 
-    public DaliForwardFrame(int bits, byte[] data) {
+    public DaliForwardFrame(int bits, byte[] data) throws DaliException {
         super(bits, data);
     }
 }
