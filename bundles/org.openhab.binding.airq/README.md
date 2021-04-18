@@ -62,7 +62,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | health                    | Number:Dimensionless |    | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)   |
 | humidityRelative          | Number:Dimensionless |    | Humidity in percent                                                 |
 | humidityAbsolute          | Number               |    | Absolute Humidity                                                   |
-| measureTime               | Number               |    | Milliseconds needed for measurement                                 |
+| measureTime               | Number:Time          |    | Milliseconds needed for measurement                                 |
 | no2                       | Number               |    | NO₂ concentration                                                   |
 | o3                        | Number               |    | Ozone (O₃) concentration                                            |
 | o2                        | Number:Dimensionless |    | Oxygen (O₂) concentration                                           |
@@ -144,7 +144,7 @@ Number                airQ_doorEvent              "Door Event (exp.)"           
 Number:Dimensionless  airQ_health                 "Health Index"                          {channel="airq:airq:1:health"}
 Number:Dimensionless  airQ_humidityRelative       "Humidity"                              {channel="airq:airq:1:humidityRelative"}
 Number                airQ_humidityAbsolute       "Absolute Humidity"                     {channel="airq:airq:1:humidityAbsolute"}
-Number                airQ_measureTime            "Time needed for measurement"           {channel="airq:airq:1:measureTime"}
+Number:Time           airQ_measureTime            "Time needed for measurement"           {channel="airq:airq:1:measureTime"}
 Number                airQ_no2                    "NO2 concentration"                     {channel="airq:airq:1:no2"}
 Number                airQ_o3                     "O3 concentration"                      {channel="airq:airq:1:o3"}
 Number:Dimensionless  airQ_o2                     "Oxygen concentration"                  {channel="airq:airq:1:o2"}
