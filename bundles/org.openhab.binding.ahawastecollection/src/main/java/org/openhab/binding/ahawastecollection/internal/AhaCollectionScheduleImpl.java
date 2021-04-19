@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -77,18 +78,35 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
                 .data("ladeort", this.collectionPlace) //
                 .data("anzeigen", "Suchen") //
                 .get();
-        final Elements tableRows = doc.select("table").select("tr");
-        if (tableRows.size() < 2) {
-            this.logger.warn("No waste collection dates found.");
+
+        final Elements table = doc.select("table");
+
+        if (table.size() == 0) {
+            logger.warn("No result table found.");
             return Collections.emptyMap();
         }
 
-        // Skip first row, that contains the header
-        // Than skip every second row, because it contains only the ical download buttons.
+        final Iterator<Element> rowIt = table.get(0).getElementsByTag("tr").iterator();
         final Map<WasteType, CollectionDate> result = new HashMap<>();
-        for (int offset = 1; offset < tableRows.size(); offset += 2) {
-            final Element row = tableRows.get(offset);
-            final CollectionDate date = this.parseRow(row);
+
+        while (rowIt.hasNext()) {
+            final Element currentRow = rowIt.next();
+            if (!currentRow.tagName().equals("tr")) {
+                continue;
+            }
+            // Skip header, empty and download button rows.
+            if (isHeader(currentRow) || isDelimiterOrDownloadRow(currentRow)) {
+                continue;
+            }
+
+            // If no following row is present, no collection dates can be parsed
+            if (!rowIt.hasNext()) {
+                logger.warn("No row with collection dates found.");
+                break;
+            }
+            final Element collectionDatesRow = rowIt.next();
+
+            final CollectionDate date = this.parseRows(currentRow, collectionDatesRow);
             if (date != null) {
                 result.put(date.getType(), date);
             }
@@ -97,25 +115,50 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
     }
 
     /**
-     * Parses the {@link CollectionDate} from the given {@link Element table row}.
-     *
-     * @return The {@link CollectionDate} or <code>null</code> if no dates could be parsed.
+     * Parses the row with the waste type and the following row with the collection dates.
+     * 
+     * @param wasteTypeRow Row that contains the waste type information
+     * @param collectionDatesRow Row that contains the collection date informations.
+     * @return The parsed {@link CollectionDate} or <code>null</code> if information could not be parsed.
      */
-    private @Nullable CollectionDate parseRow(final Element row) {
-        final Elements columns = row.select("td");
-        if (columns.size() != 5) {
-            this.logger.debug("Could not parse row: {}", row.toString());
+    @Nullable
+    private CollectionDate parseRows(Element wasteTypeRow, Element collectionDatesRow) {
+        // Try to extract the waste Type from the first row
+        final Elements wasteTypeElement = wasteTypeRow.select("td").select("strong");
+        if (wasteTypeElement.size() != 1) {
+            this.logger.warn("Could not parse waste type row: {}", wasteTypeRow.toString());
+            return null;
+        }
+        final WasteType wasteType = parseWasteType(wasteTypeElement.get(0));
+
+        // Try to extract the collection dates from the second row
+        final Elements collectionDatesColumns = collectionDatesRow.select("td");
+        if (collectionDatesColumns.size() != 3) {
+            this.logger.warn("collection dates row could not be parsed.");
             return null;
         }
 
-        final WasteType wasteType = parseWasteType(columns.get(1));
-        final List<Date> times = this.parseTimes(columns.get(3));
+        final Element collectionDatesColumn = collectionDatesColumns.get(1);
+        final List<Date> collectionDates = parseTimes(collectionDatesColumn);
 
-        if (times.isEmpty()) {
+        if (!collectionDates.isEmpty()) {
+            return new CollectionDate(wasteType, collectionDates);
+        } else {
             return null;
         }
+    }
 
-        return new CollectionDate(wasteType, times);
+    /**
+     * Returns <code>true</code> if the row is an (empty) delimiter row or if its an row that contains the download
+     * buttons for ical.
+     */
+    private boolean isDelimiterOrDownloadRow(Element currentRow) {
+        final Elements columns = currentRow.select("td");
+        return columns.size() == 1 && columns.get(0).text().isBlank() || !columns.select("form").isEmpty();
+    }
+
+    private boolean isHeader(Element currentRow) {
+        return !currentRow.select("th").isEmpty();
     }
 
     /**
