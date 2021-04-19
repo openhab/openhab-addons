@@ -141,4 +141,44 @@ public class HAConfigurationTests {
             assertThat(device.identifiers, is(Arrays.asList("A")));
         }
     }
+
+    @Test
+    public void testTS0601ClimateConfig() {
+        String json = readTestJson("configTS0601ClimateThermostat.json");
+        ComponentClimate.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
+                ComponentClimate.ChannelConfiguration.class);
+        assertThat(config.device, is(notNullValue()));
+        assertThat(config.device.identifiers, is(notNullValue()));
+        assertThat(config.device.identifiers.get(0), is("zigbee2mqtt_0x847127fffe11dd6a"));
+        assertThat(config.device.manufacturer, is("TuYa"));
+        assertThat(config.device.model, is("Radiator valve with thermostat (TS0601_thermostat)"));
+        assertThat(config.device.name, is("th1"));
+        assertThat(config.device.sw_version, is("Zigbee2MQTT 1.18.2"));
+
+        assertThat(config.action_template, is("{% set values = {'idle':'off','heat':'heating','cool':'cooling','fan only':'fan'} %}{{ values[value_json.running_state] }}"));
+        assertThat(config.action_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.away_mode_command_topic, is("zigbee2mqtt/th1/set/away_mode"));
+        assertThat(config.away_mode_state_template, is("{{ value_json.away_mode }}"));
+        assertThat(config.away_mode_state_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.current_temperature_template, is("{{ value_json.local_temperature }}"));
+        assertThat(config.current_temperature_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.hold_command_topic, is("zigbee2mqtt/th1/set/preset"));
+        assertThat(config.hold_modes, is(List.of("schedule", "manual", "boost", "complex", "comfort", "eco")));
+        assertThat(config.hold_state_template, is("{{ value_json.preset }}"));
+        assertThat(config.hold_state_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.json_attributes_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.max_temp, is(35f));
+        assertThat(config.min_temp, is(5f));
+        assertThat(config.mode_command_topic, is("zigbee2mqtt/th1/set/system_mode"));
+        assertThat(config.mode_state_template, is("{{ value_json.system_mode }}"));
+        assertThat(config.mode_state_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.modes, is(List.of("heat", "auto", "off")));
+        assertThat(config.name, is("th1"));
+        assertThat(config.temp_step, is(0.5f));
+        assertThat(config.temperature_command_topic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
+        assertThat(config.temperature_state_template, is("{{ value_json.current_heating_setpoint }}"));
+        assertThat(config.temperature_state_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.temperature_unit, is("C"));
+        assertThat(config.unique_id, is("0x847127fffe11dd6a_climate_zigbee2mqtt"));
+    }
 }

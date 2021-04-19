@@ -130,6 +130,7 @@ public class CChannel {
         private ChannelStateUpdateListener channelStateUpdateListener;
 
         private @Nullable String templateIn;
+        private @Nullable String templateOut;
 
         public Builder(AbstractComponent<?> component, ComponentConfiguration componentConfiguration, String channelID,
                 Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
@@ -173,9 +174,17 @@ public class CChannel {
         }
 
         public Builder commandTopic(@Nullable String command_topic, boolean retain, int qos) {
+            return commandTopic(command_topic, retain, qos, null);
+        }
+
+        public Builder commandTopic(@Nullable String command_topic, boolean retain, int qos,
+                @Nullable String template) {
             this.command_topic = command_topic;
             this.retain = retain;
             this.qos = qos;
+            if (command_topic != null && !command_topic.isBlank()) {
+                this.templateOut = template;
+            }
             return this;
         }
 
@@ -232,6 +241,11 @@ public class CChannel {
             if (templateIn != null && transformationProvider != null) {
                 channelState
                         .addTransformation(new ChannelStateTransformation(JINJA, templateIn, transformationProvider));
+            }
+            final String templateOut = this.templateOut;
+            if (templateOut != null && transformationProvider != null) {
+                channelState.addTransformationOut(
+                        new ChannelStateTransformation(JINJA, templateOut, transformationProvider));
             }
             if (addToComponent) {
                 component.channels.put(channelID, result);

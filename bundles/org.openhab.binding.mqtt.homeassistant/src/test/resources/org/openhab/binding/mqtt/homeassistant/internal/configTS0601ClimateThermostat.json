@@ -1,0 +1,52 @@
+{
+  "action_template": "{% set values = {'idle':'off','heat':'heating','cool':'cooling','fan only':'fan'} %}{{ values[value_json.running_state] }}",
+  "action_topic": "zigbee2mqtt/th1",
+  "availability": [
+    {
+      "topic": "zigbee2mqtt/bridge/state"
+    }
+  ],
+  "away_mode_command_topic": "zigbee2mqtt/th1/set/away_mode",
+  "away_mode_state_template": "{{ value_json.away_mode }}",
+  "away_mode_state_topic": "zigbee2mqtt/th1",
+  "current_temperature_template": "{{ value_json.local_temperature }}",
+  "current_temperature_topic": "zigbee2mqtt/th1",
+  "device": {
+    "identifiers": [
+      "zigbee2mqtt_0x847127fffe11dd6a"
+    ],
+    "manufacturer": "TuYa",
+    "model": "Radiator valve with thermostat (TS0601_thermostat)",
+    "name": "th1",
+    "sw_version": "Zigbee2MQTT 1.18.2"
+  },
+  "hold_command_topic": "zigbee2mqtt/th1/set/preset",
+  "hold_modes": [
+    "schedule",
+    "manual",
+    "boost",
+    "complex",
+    "comfort",
+    "eco"
+  ],
+  "hold_state_template": "{{ value_json.preset }}",
+  "hold_state_topic": "zigbee2mqtt/th1",
+  "json_attributes_topic": "zigbee2mqtt/th1",
+  "max_temp": "35",
+  "min_temp": "5",
+  "mode_command_topic": "zigbee2mqtt/th1/set/system_mode",
+  "mode_state_template": "{{ value_json.system_mode }}",
+  "mode_state_topic": "zigbee2mqtt/th1",
+  "modes": [
+    "heat",
+    "auto",
+    "off"
+  ],
+  "name": "th1",
+  "temp_step": 0.5,
+  "temperature_command_topic": "zigbee2mqtt/th1/set/current_heating_setpoint",
+  "temperature_state_template": "{{ value_json.current_heating_setpoint }}",
+  "temperature_state_topic": "zigbee2mqtt/th1",
+  "temperature_unit": "C",
+  "unique_id": "0x847127fffe11dd6a_climate_zigbee2mqtt"
+}
