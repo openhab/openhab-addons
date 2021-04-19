@@ -42,7 +42,6 @@ import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunReboot;
-import org.openhab.binding.velux.internal.bridge.common.SetHouseStatusMonitor;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
@@ -98,7 +97,17 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements VeluxBridgeInstance, VeluxBridgeProvider {
 
+    /*
+     * timeout to ensure that the binding shutdown will not block and stall the shutdown of OH itself
+     */
     private static final int COMMUNICATION_TASK_MAX_WAIT_SECS = 10;
+
+    /*
+     * a modifier string to avoid the (small) risk of other tasks (outside this binding) locking on the same ip address
+     * Strings.intern() object
+     *
+     */
+    private static final String LOCK_MODIFIER = "velux.ipaddr.";
 
     private final Logger logger = LoggerFactory.getLogger(VeluxBridgeHandler.class);
 
@@ -279,10 +288,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     private void initializeSchedulerJob() {
         /*
-         * synchronize disposeSchedulerJob() and initializeSchedulerJob() on the IP address Strings.intern() object to
+         * synchronize disposeSchedulerJob() and initializeSchedulerJob() based an IP address Strings.intern() object to
          * prevent overlap of initialization and disposal communications towards the same physical bridge
          */
-        synchronized (veluxBridgeConfiguration.ipAddress.intern()) {
+        synchronized (LOCK_MODIFIER.concat(veluxBridgeConfiguration.ipAddress).intern()) {
             logger.trace("initializeSchedulerJob(): adopt new bridge configuration parameters.");
             bridgeParamsUpdated();
 
@@ -312,12 +321,12 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     /**
      * Various disposal actions to be executed on a background thread
      */
-    private synchronized void disposeSchedulerJob() {
+    private void disposeSchedulerJob() {
         /*
-         * synchronize disposeSchedulerJob() and initializeSchedulerJob() on the IP address Strings.intern() object to
+         * synchronize disposeSchedulerJob() and initializeSchedulerJob() based an IP address Strings.intern() object to
          * prevent overlap of initialization and disposal communications towards the same physical bridge
          */
-        synchronized (veluxBridgeConfiguration.ipAddress.intern()) {
+        synchronized (LOCK_MODIFIER.concat(veluxBridgeConfiguration.ipAddress).intern()) {
             /*
              * cancel the regular refresh polling job
              */
@@ -350,14 +359,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 }
             }
             /*
-             * if the bridge is online, tell it to disable House Status Monitor and stop queueing more HSM events
+             * if bridge is online, and supports House Status Monitor, disable HSM to stop queueing more events
              */
             if (getThing().getStatus() == ThingStatus.ONLINE) {
-                SetHouseStatusMonitor bcp = thisBridge.bridgeAPI().setHouseStatusMonitor();
-                if (bcp != null) {
-                    logger.trace("disposeSchedulerJob(): turn off House Status Monitor.");
-                    bcp.serviceActivation(false);
-                    thisBridge.bridgeCommunicate(bcp);
+                if (new VeluxBridgeSetHouseStatusMonitor().modifyHSM(thisBridge, false)) {
+                    logger.trace("disposeSchedulerJob(): House Status Monitor turned off.");
                 }
             }
             /*
