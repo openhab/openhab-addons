@@ -58,11 +58,13 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 |----------|--------|------------------------------|
 | key-event  | String | Send key event to android device. Possible values listed below |
 | text  | String | Send text to android device |
+| tap  | String | Send tap event to android device (format x,y) |
 | media-volume  | Dimmer | Set or get media volume level on android device |
 | media-control  | Player | Control media on android device |
 | start-package  | String | Run application by package name |
 | stop-package  | String | Stop application by package name |
 | current-package  | String | Package name of the top application in screen |
+| shutdown  | String | Power off/reboot device (allowed values POWER_OFF, REBOOT) |
 | wake-lock  | Number | Power wake lock value |
 | screen-state  | Switch | Screen power state |
 
