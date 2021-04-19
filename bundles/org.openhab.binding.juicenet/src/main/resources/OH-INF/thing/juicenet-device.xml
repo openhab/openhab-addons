@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="juicenet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="juicenet-device">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="juicenet-account"/>
+        </supported-bridge-type-refs>
+        
+		<label>JuiceNet Device</label>
+		<description>JuiceNet device</description>
+		
+		<channels>
+            <channel id="state" typeId="state_type"/>
+        </channels>
+		
+        <properties>
+            <property name="name"></property>
+            <property name="token"></property>
+            <property name="unit_id"></property>
+        </properties>
+        <representation-property>unit_id</representation-property>
+        
+
+	</thing-type>
+	
+	<channel-type id="state_type">
+        <item-type>String</item-type>
+        <label>Device State</label>
+        <description>This is the current device state (stanby, plugged, charging, error, disconnect).</description>
+        <state readOnly="true">
+            <options>
+                <option value="standby">Standby</option>
+                <option value="plugged">Plugged In</option>
+                <option value="charging">Charging</option>
+                <option value="error">Error</option>
+                <option value="disconnect">Disconnected</option>
+            </options>
+        </state>
+    </channel-type>
+</thing:thing-descriptions>
