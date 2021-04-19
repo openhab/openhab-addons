@@ -24,11 +24,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,6 +52,9 @@ public class AndroidDebugBridgeDevice {
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
+    private static final Pattern TAP_EVENT_PATTERN = Pattern.compile("(?<x>\\d+),(?<y>\\d+)");
+    private static final Pattern PACKAGE_NAME_PATTERN = Pattern
+            .compile("^([A-Za-z]{1}[A-Za-z\\d_]*\\.)+[A-Za-z][A-Za-z\\d_]*$");
 
     private static @Nullable AdbCrypto adbCrypto;
 
@@ -73,6 +73,7 @@ public class AndroidDebugBridgeDevice {
     }
 
     private final ScheduledExecutorService scheduler;
+    private final ReentrantLock commandLock = new ReentrantLock();
 
     private String ip = "127.0.0.1";
     private int port = 5555;
@@ -101,8 +102,21 @@ public class AndroidDebugBridgeDevice {
         runAdbShell("input", "text", URLEncoder.encode(text, StandardCharsets.UTF_8));
     }
 
+    public void sendTap(String point)
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        var match = TAP_EVENT_PATTERN.matcher(point);
+        if (!match.matches()) {
+            throw new AndroidDebugBridgeDeviceException("Unable to parse tap event");
+        }
+        runAdbShell("input", "mouse", "tap", match.group("x"), match.group("y"));
+    }
+
     public void startPackage(String packageName)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
+            logger.warn("{} is not a valid package name", packageName);
+            return;
+        }
         var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1");
         if (out.contains("monkey aborted")) {
             throw new AndroidDebugBridgeDeviceException("Unable to open package");
@@ -111,6 +125,10 @@ public class AndroidDebugBridgeDevice {
 
     public void stopPackage(String packageName)
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
+            logger.warn("{} is not a valid package name", packageName);
+            return;
+        }
         runAdbShell("am", "force-stop", packageName);
     }
 
@@ -240,6 +258,24 @@ public class AndroidDebugBridgeDevice {
         return volumeInfo;
     }
 
+    public void rebootDevice()
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        try {
+            runAdbShell("reboot", "&", "sleep", "0.1", "&&", "exit");
+        } finally {
+            disconnect();
+        }
+    }
+
+    public void powerOffDevice()
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        try {
+            runAdbShell("reboot", "-p", "&", "sleep", "0.1", "&&", "exit");
+        } finally {
+            disconnect();
+        }
+    }
+
     public boolean isConnected() {
         var currentSocket = socket;
         return currentSocket != null && currentSocket.isConnected();
@@ -281,25 +317,35 @@ public class AndroidDebugBridgeDevice {
         if (adb == null) {
             throw new AndroidDebugBridgeDeviceException("Device not connected");
         }
-        var commandFuture = scheduler.submit(() -> {
-            var byteArrayOutputStream = new ByteArrayOutputStream();
-            String cmd = String.join(" ", args);
-            logger.debug("{} - shell:{}", ip, cmd);
-            try {
-                AdbStream stream = adb.open("shell:" + cmd);
-                do {
-                    byteArrayOutputStream.writeBytes(stream.read());
-                } while (!stream.isClosed());
-            } catch (IOException e) {
-                String message = e.getMessage();
-                if (message != null && !message.equals("Stream closed")) {
-                    throw e;
+        try {
+            commandLock.lock();
+            var commandFuture = scheduler.submit(() -> {
+                var byteArrayOutputStream = new ByteArrayOutputStream();
+                String cmd = String.join(" ", args);
+                logger.debug("{} - shell:{}", ip, cmd);
+                try {
+                    AdbStream stream = adb.open("shell:" + cmd);
+                    do {
+                        byteArrayOutputStream.writeBytes(stream.read());
+                    } while (!stream.isClosed());
+                } catch (IOException e) {
+                    String message = e.getMessage();
+                    if (message != null && !message.equals("Stream closed")) {
+                        throw e;
+                    }
                 }
+                return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
+            });
+            this.commandFuture = commandFuture;
+            return commandFuture.get(timeoutSec, TimeUnit.SECONDS);
+        } finally {
+            var commandFuture = this.commandFuture;
+            if (commandFuture != null) {
+                commandFuture.cancel(true);
+                this.commandFuture = null;
             }
-            return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
-        });
-        this.commandFuture = commandFuture;
-        return commandFuture.get(timeoutSec, TimeUnit.SECONDS);
+            commandLock.unlock();
+        }
     }
 
     private static AdbBase64 getBase64Impl() {

@@ -10,6 +10,7 @@
 		<channels>
 			<channel id="key-event" typeId="key-event-channel"/>
 			<channel id="text" typeId="text-channel"/>
+			<channel id="tap" typeId="tap-channel"/>
 			<channel id="media-volume" typeId="system.volume"/>
 			<channel id="media-control" typeId="system.media-control"/>
 			<channel id="start-package" typeId="start-package-channel"/>
@@ -18,6 +19,7 @@
 			<channel id="current-package" typeId="current-package-channel"/>
 			<channel id="wake-lock" typeId="wake-lock-channel"/>
 			<channel id="screen-state" typeId="screen-state-channel"/>
+			<channel id="shutdown" typeId="shutdown-channel"/>
 			<channel id="awake-state" typeId="awake-state-channel"/>
 		</channels>
 		<representation-property>serial</representation-property>
@@ -355,6 +357,12 @@
 		<description>Send text to android device</description>
 	</channel-type>
 
+	<channel-type id="tap-channel">
+		<item-type>String</item-type>
+		<label>Send Tap</label>
+		<description>Send tap event to android device</description>
+	</channel-type>
+
 	<channel-type id="start-package-channel">
 		<item-type>String</item-type>
 		<label>Start Package</label>
@@ -378,6 +386,18 @@
 		<label>Current Package</label>
 		<description>Package name of the top application in screen</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shutdown-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Shutdown</label>
+		<description>Shutdown/Reboot Device</description>
+		<state>
+			<options>
+				<option value="POWER_OFF">POWER_OFF</option>
+				<option value="REBOOT">REBOOT</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="wake-lock-channel" advanced="true">
