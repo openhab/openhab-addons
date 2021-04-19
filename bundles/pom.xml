@@ -156,6 +156,8 @@
 
     <module>org.openhab.binding.daikin</module>
 
+    <module>org.openhab.binding.dali</module>
+
     <module>org.openhab.binding.danfossairunit</module>
 
     <module>org.openhab.binding.darksky</module>
