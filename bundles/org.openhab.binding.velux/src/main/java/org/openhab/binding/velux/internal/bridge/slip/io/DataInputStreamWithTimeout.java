@@ -210,7 +210,6 @@ class DataInputStreamWithTimeout implements Closeable {
                 Thread.sleep(SLEEP_INTERVAL_MSECS);
             } catch (InterruptedException e) {
                 logger.debug("readSlipMessage() => thread interrupt");
-                throw new IOException("Thread Interrupted");
             }
         }
         logger.debug("readSlipMessage() => no slip message after {}mS => time out", timeoutMSecs);
