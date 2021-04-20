@@ -166,4 +166,42 @@ public class TeleinfoInputStreamTest {
             assertEquals(37, frame.getAsInt(Label.ADPS));
         }
     }
+
+    @Test
+    public void testReadNextFrameLinkyTICModeStandard() throws Exception {
+        try (TeleinfoInputStream in = new TeleinfoInputStream(
+                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard.raw")), false,
+                TeleinfoTicMode.STANDARD, true)) {
+            Frame frame = in.readNextFrame();
+            assertNotNull(frame);
+            assertEquals(FrameType.CBEMM_ICC_BASE, frame.getType());
+            assertEquals("031762120162", frame.get(Label.ADCO));
+            assertEquals(30, frame.getAsInt(Label.ISOUSC));
+            assertEquals(190575, frame.getAsInt(Label.BASE));
+            assertEquals("TH..", frame.get(Label.PTEC));
+            assertEquals(1, frame.getAsInt(Label.IINST));
+            assertEquals(90, frame.getAsInt(Label.IMAX));
+            assertEquals(270, frame.getAsInt(Label.PAPP));
+            assertNull(frame.get(Label.ADPS));
+        }
+    }
+
+    @Test
+    public void testReadNextFrameLinkyTICModeStandardProd() throws Exception {
+        try (TeleinfoInputStream in = new TeleinfoInputStream(
+                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-prod.raw")),
+                TeleinfoTicMode.STANDARD, true)) {
+            Frame frame = in.readNextFrame();
+            assertNotNull(frame);
+            assertEquals(FrameType.CBEMM_ICC_BASE, frame.getType());
+            assertEquals("031762120162", frame.get(Label.ADCO));
+            assertEquals(30, frame.getAsInt(Label.ISOUSC));
+            assertEquals(190575, frame.getAsInt(Label.BASE));
+            assertEquals("TH..", frame.get(Label.PTEC));
+            assertEquals(1, frame.getAsInt(Label.IINST));
+            assertEquals(90, frame.getAsInt(Label.IMAX));
+            assertEquals(270, frame.getAsInt(Label.PAPP));
+            assertNull(frame.get(Label.ADPS));
+        }
+    }
 }

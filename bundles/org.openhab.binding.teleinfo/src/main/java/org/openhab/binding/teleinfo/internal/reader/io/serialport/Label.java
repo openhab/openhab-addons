@@ -27,6 +27,7 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public enum Label {
 
+    // Historical labels
     ADCO(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     OPTARIF(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     BASE(ValueType.INTEGER, CHANNEL_BASE_FRAME_BASE, Units.WATT_HOUR),
@@ -60,7 +61,11 @@ public enum Label {
     BBRHCJR(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHCJR, Units.WATT_HOUR),
     BBRHPJR(ValueType.INTEGER, CHANNEL_TEMPO_FRAME_BBRHPJR, Units.WATT_HOUR),
     PEJP(ValueType.INTEGER, CHANNEL_EJP_FRAME_PEJP, Units.MINUTE),
-    DEMAIN(ValueType.STRING, CHANNEL_TEMPO_FRAME_DEMAIN, Units.ONE);
+    DEMAIN(ValueType.STRING, CHANNEL_TEMPO_FRAME_DEMAIN, Units.ONE),
+
+    // Standard TIC mode labels
+    ADSC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    UMOY1(ValueType.INTEGER, NOT_A_CHANNEL, Units.ONE);
 
     private ValueType type;
     private String channelName;
