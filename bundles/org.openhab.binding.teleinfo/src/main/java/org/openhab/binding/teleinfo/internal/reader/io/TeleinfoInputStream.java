@@ -45,20 +45,31 @@ public class TeleinfoInputStream extends InputStream {
     private @Nullable String groupLine;
     private boolean autoRepairInvalidADPSgroupLine;
     private final TeleinfoTicMode ticMode;
+    private final boolean verifyChecksum;
     private final Frame frame = new Frame();
 
     public TeleinfoInputStream(final InputStream teleinfoInputStream, TeleinfoTicMode ticMode) {
-        this(teleinfoInputStream, false, ticMode);
+        this(teleinfoInputStream, false, ticMode, true);
+    }
+
+    public TeleinfoInputStream(final InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine,
+            TeleinfoTicMode ticMode) {
+        this(teleinfoInputStream, autoRepairInvalidADPSgroupLine, ticMode, true);
+    }
+
+    public TeleinfoInputStream(final InputStream teleinfoInputStream, TeleinfoTicMode ticMode, boolean verifyChecksum) {
+        this(teleinfoInputStream, false, ticMode, verifyChecksum);
     }
 
     public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine,
-            TeleinfoTicMode ticMode) {
+            TeleinfoTicMode ticMode, boolean verifyChecksum) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
         this.ticMode = ticMode;
+        this.verifyChecksum = verifyChecksum;
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
 
         groupLine = null;
@@ -100,24 +111,42 @@ public class TeleinfoInputStream extends InputStream {
             String groupLineRef = groupLine;
             if (groupLineRef != null) {
                 String[] groupLineTokens = groupLineRef.split(ticMode.getSeparator());
-                if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
+                if (ticMode == TeleinfoTicMode.HISTORICAL && groupLineTokens.length != 2 && groupLineTokens.length != 3
+                        || ticMode == TeleinfoTicMode.STANDARD && groupLineTokens.length != 3
+                                && groupLineTokens.length != 4) {
                     final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
                     throw new InvalidFrameException(error);
                 }
                 String labelStr = groupLineTokens[0];
-                String valueString = groupLineTokens[1];
+                String valueString;
+                String timestampString;
+                switch (ticMode) {
+                    default:
+                        valueString = groupLineTokens[1];
+                        break;
+                    case STANDARD:
+                        if (groupLineTokens.length == 3) {
+                            valueString = groupLineTokens[1];
+                        } else {
+                            timestampString = groupLineTokens[1];
+                            valueString = groupLineTokens[2];
+                        }
+                        break;
+                }
 
                 // verify integrity (through checksum)
-                char checksum = groupLineRef.charAt(groupLineRef.length() - 1);
-                char computedChecksum = FrameUtil
-                        .computeGroupLineChecksum(groupLineRef.substring(0, groupLineRef.length() - 2), ticMode);
-                if (computedChecksum != checksum) {
-                    logger.trace("computedChecksum = {}", computedChecksum);
-                    logger.trace("checksum = {}", checksum);
-                    final String error = String.format(
-                            "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
-                            groupLineRef, checksum, computedChecksum);
-                    throw new InvalidFrameException(error);
+                if (verifyChecksum) {
+                    char checksum = groupLineRef.charAt(groupLineRef.length() - 1);
+                    char computedChecksum = FrameUtil
+                            .computeGroupLineChecksum(groupLineRef.substring(0, groupLineRef.length() - 2), ticMode);
+                    if (computedChecksum != checksum) {
+                        logger.trace("computedChecksum = {}", computedChecksum);
+                        logger.trace("checksum = {}", checksum);
+                        final String error = String.format(
+                                "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
+                                groupLineRef, checksum, computedChecksum);
+                        throw new InvalidFrameException(error);
+                    }
                 }
 
                 Label label;

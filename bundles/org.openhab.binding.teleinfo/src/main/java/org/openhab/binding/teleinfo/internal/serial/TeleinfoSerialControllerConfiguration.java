@@ -24,5 +24,6 @@ public class TeleinfoSerialControllerConfiguration {
 
     public String serialport = "";
     public String ticMode = "";
+    public boolean verifyChecksum = true;
     public boolean autoRepairInvalidADPSgroupLine = true;
 }

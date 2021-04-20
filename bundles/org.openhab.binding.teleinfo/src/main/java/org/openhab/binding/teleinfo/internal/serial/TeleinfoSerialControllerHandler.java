@@ -163,7 +163,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             }
             logger.debug("Starting receive thread");
             TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
-                    config.autoRepairInvalidADPSgroupLine, ticMode);
+                    config.autoRepairInvalidADPSgroupLine, ticMode, config.verifyChecksum);
             this.receiveThread = receiveThread;
             receiveThread.start();
 
