@@ -97,8 +97,8 @@ class DataInputStreamWithTimeout implements Closeable {
             pollException = null;
             slipMessageQueue.clear();
 
-            // loop forever or until externally interrupted
-            while (!Thread.interrupted()) {
+            // loop forever; on shutdown interrupt() gets called to break out of the loop
+            while (true) {
                 try {
                     if (interrupted) {
                         // fully flush the input buffer
