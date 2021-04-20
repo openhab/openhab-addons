@@ -1,7 +1,5 @@
 # Qbus Binding
 
-![Qbus Logo](doc/qbus.JPG)
-
 This binding for [Qbus](https://qbus.be) communicates with all controllers of the Qbus home automation system.
 
 We also host a site which contains a [manual](https://iot.qbus.be/) where you can find lots of information to set up openHAB with Qbus client and server (for the moment only in Dutch).
