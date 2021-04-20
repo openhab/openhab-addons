@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
-import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
+import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.CGROUP_STATUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +96,7 @@ public class HPPrinterHandler extends BaseThingHandler {
         return false;
     }
 
+    @Override
     protected void updateStatus(final ThingStatus status) {
         super.updateStatus(status);
     }
@@ -116,13 +117,16 @@ public class HPPrinterHandler extends BaseThingHandler {
         }
     }
 
+    @Override
     protected void updateStatus(final ThingStatus status, final ThingStatusDetail thingStatusDetail,
             @Nullable final String message) {
         super.updateStatus(status, thingStatusDetail, message);
     }
 
     public void updateState(final String group, final String channel, final State state) {
-        super.updateState(new ChannelUID(thing.getUID(), group, channel), state);
+        if (thing.getStatus() == ThingStatus.ONLINE) {
+            super.updateState(new ChannelUID(thing.getUID(), group, channel), state);
+        }
     }
 
     public void binderAddChannels(final List<Channel> channels) {
@@ -135,14 +139,17 @@ public class HPPrinterHandler extends BaseThingHandler {
         updateThing(editThing().withChannels(thingChannels).build());
     }
 
+    @Override
     protected ThingBuilder editThing() {
         return super.editThing();
     }
 
+    @Override
     protected @Nullable ThingHandlerCallback getCallback() {
         return super.getCallback();
     }
 
+    @Override
     protected void updateProperties(final Map<String, String> properties) {
         super.updateProperties(properties);
     }
