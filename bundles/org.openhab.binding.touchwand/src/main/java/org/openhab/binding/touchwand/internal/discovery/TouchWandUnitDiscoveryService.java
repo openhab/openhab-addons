@@ -115,6 +115,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                             case TYPE_ALARMSENSOR:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_ALARMSENSOR);
                                 break;
+                            case TYPE_BSENSOR:
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_BSENSOR);
+                                break;
                             default:
                                 continue;
                         }

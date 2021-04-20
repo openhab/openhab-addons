@@ -144,8 +144,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
                     toBeRemovedChannels.remove(thing.getChannel(CHANNEL_DOORWINDOW));
                     break;
                 case SENSOR_TYPE_LEAK:
-                    Channel channel = thing.getChannel(CHANNEL_LEAK);
-                    toBeRemovedChannels.remove(channel);
+                    toBeRemovedChannels.remove(thing.getChannel(CHANNEL_LEAK));
                     break;
             }
         }
