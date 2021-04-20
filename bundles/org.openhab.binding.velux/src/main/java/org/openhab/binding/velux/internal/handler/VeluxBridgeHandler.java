@@ -338,16 +338,18 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
             ExecutorService commsJobExecutor = this.communicationsJobExecutor;
             if (commsJobExecutor != null) {
+                this.communicationsJobExecutor = null;
                 logger.trace("disposeSchedulerJob(): cancel any other scheduled jobs.");
                 /*
                  * remove un-started communication tasks from the execution queue; and stop accepting more tasks
                  */
                 commsJobExecutor.shutdownNow();
                 /*
-                 * if the bridge is online, wait for already started task(s) to complete (so the bridge won't lock up);
-                 * but to prevent stalling the OH shutdown process, time out after MAX_COMMUNICATION_TASK_WAIT_TIME_SECS
+                 * if the last bridge communication was OK, wait for already started task(s) to complete (so the bridge
+                 * won't lock up); but to prevent stalling the OH shutdown process, time out after
+                 * MAX_COMMUNICATION_TASK_WAIT_TIME_SECS
                  */
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                if (thisBridge.lastCommunicationOk()) {
                     try {
                         if (!commsJobExecutor.awaitTermination(COMMUNICATION_TASK_MAX_WAIT_SECS, TimeUnit.SECONDS)) {
                             logger.warn("disposeSchedulerJob(): unexpected awaitTermination() timeout.");
@@ -358,14 +360,15 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     }
                 }
             }
+
             /*
-             * if bridge is online, and supports House Status Monitor, disable HSM to stop queueing more events
+             * if the last bridge communication was OK, deactivate HSM to prevent queueing more HSM events
              */
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                if (new VeluxBridgeSetHouseStatusMonitor().modifyHSM(thisBridge, false)) {
-                    logger.trace("disposeSchedulerJob(): House Status Monitor turned off.");
-                }
+            if (thisBridge.lastCommunicationOk()
+                    && (new VeluxBridgeSetHouseStatusMonitor().modifyHSM(thisBridge, false))) {
+                logger.trace("disposeSchedulerJob(): HSM deactivated.");
             }
+
             /*
              * finally clean up everything else
              */
