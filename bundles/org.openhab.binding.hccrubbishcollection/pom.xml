@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.hccrubbishcollection</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: HCCRubbishCollection Binding</name>
+  <name>openHAB Add-ons :: Bundles :: HCC Rubbish Collection Binding</name>
 
 </project>
