@@ -57,7 +57,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
-    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE };
+    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE, CONNECTIVITY_RISCO,
+            CONNECTIVITY_PIMA };
     private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
@@ -128,7 +129,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                 }
             }
         } catch (JsonSyntaxException msg) {
-            logger.warn("Could not parse list units response {}", msg.getMessage());
+            logger.warn("Could not parse list units response error:{} ", msg.getMessage());
         }
     }
 
