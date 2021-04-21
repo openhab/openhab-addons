@@ -65,6 +65,10 @@ public class HPPrinterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        scheduler.submit(() -> initialize0());
+    }
+
+    private void initialize0() {
         final HPPrinterConfiguration config = getConfigAs(HPPrinterConfiguration.class);
 
         if (!"".equals(config.ipAddress)) {
@@ -124,9 +128,7 @@ public class HPPrinterHandler extends BaseThingHandler {
     }
 
     public void updateState(final String group, final String channel, final State state) {
-        if (thing.getStatus() == ThingStatus.ONLINE) {
-            super.updateState(new ChannelUID(thing.getUID(), group, channel), state);
-        }
+        super.updateState(new ChannelUID(thing.getUID(), group, channel), state);
     }
 
     public void binderAddChannels(final List<Channel> channels) {
