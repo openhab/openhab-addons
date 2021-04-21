@@ -26,6 +26,5 @@ public class TouchwandBridgeConfiguration {
     public String password = "";
     public String ipAddress = "";
     public int port;
-    public int statusrefresh;
     public boolean addSecondaryUnits;
 }

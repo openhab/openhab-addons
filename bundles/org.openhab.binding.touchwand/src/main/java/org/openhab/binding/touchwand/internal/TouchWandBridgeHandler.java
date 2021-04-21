@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWandUnitStatusUpdateListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
-    private int statusRefreshRateSec;
     private boolean addSecondaryUnits;
     private @Nullable TouchWandWebSockets touchWandWebSockets;
     private Map<String, TouchWandUnitUpdateListener> unitUpdateListeners = new ConcurrentHashMap<>();
@@ -73,7 +72,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
         host = config.ipAddress;
         port = config.port;
-        statusRefreshRateSec = config.statusrefresh;
         addSecondaryUnits = config.addSecondaryUnits;
 
         isRunning = true;
@@ -106,10 +104,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
     public boolean isAddSecondaryControllerUnits() {
         return addSecondaryUnits;
-    }
-
-    public int getStatusRefreshTime() {
-        return statusRefreshRateSec;
     }
 
     @Override
