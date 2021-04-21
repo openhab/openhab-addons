@@ -51,7 +51,7 @@ public class State {
         HS,
 
         /**
-         * Color temperature in mirek
+         * Color temperature in mired
          */
         CT
     }
