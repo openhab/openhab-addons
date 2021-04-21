@@ -17,6 +17,7 @@ This binding supports switches, shutters dimmers alarm sensors and wall controll
 3. **dimmer**  - control - ON/OFF/BRIGHTNESS
 4. **wallcontroller** - control - LONG/SHORT
 5. **alarmsensor** - status channels depend on alarm sensor type
+5. **bsensor** - binary status channels depend on alarm sensor type (motion, door , smoke)
 
 ## Discovery
 
@@ -55,6 +56,7 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 | temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.    |
 | leak              | Switch             | This channel alert when water leak is detected by the sensor          |
 | motion            | Switch             | This channel alert when motion detected by the sensor.                |
+| smoke             | Switch             | This channel alert when smoke detected by the sensor.                |
 | isOpen            | Contact            | This channel shows the status of Door/Window sensor.                  |
 | battery_level     | Number             | This channel shows the battery level.                                 |
 | battery_low       | Switch             | This channel indicates whether the battery is low or not.             |
@@ -97,7 +99,7 @@ Rollershutter   Rollershutter_346      "Living Room South shutter"    {channel="
 
 ```
 /* Switches and Dimmers */
-Switch  Switch_408      "Strairs light"                 {channel="touchwand:switch:1921681116:408:switch"}
+Switch  Switch_408      "Stairs light"                  {channel="touchwand:switch:1921681116:408:switch"}
 Switch  Switch_411      "South Garden light"            {channel="touchwand:switch:1921681116:411:switch"}
 Dimmer  Switch_415      "Living Room Ceiling dimmer"    {channel="touchwand:switch:1921681116:415:switch"}
 Switch  Switch_418      "South Garden light"            {channel="touchwand:switch:1921681116:418:switch"}
