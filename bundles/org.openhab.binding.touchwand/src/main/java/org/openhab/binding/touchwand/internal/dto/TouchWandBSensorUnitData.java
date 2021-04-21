@@ -26,6 +26,9 @@ public class TouchWandBSensorUnitData extends TouchWandUnitData {
 
     @Override
     public String getCurrStatus() {
+        if (currStatus == null) {
+            currStatus = new String("");
+        }
         return currStatus;
     }
 

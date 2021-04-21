@@ -79,7 +79,7 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
         } else if (isOpen.equals(BSENSOR_STATUS_CLOSE)) {
             myOpenClose = OpenClosedType.CLOSED;
         } else {
-            logger.warn("TouchWandBSensorUnitData illegal update value {}", isOpen);
+            logger.debug("TouchWandBSensorUnitData illegal update value {}", isOpen);
             return;
         }
         updateState(CHANNEL_DOORWINDOW, myOpenClose);
@@ -93,7 +93,7 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
         } else if (motion.equals(BSENSOR_STATUS_CLOSE)) {
             status = OnOffType.OFF;
         } else {
-            logger.warn("TouchWandBSensorUnitData illegal update value {}", motion);
+            logger.debug("TouchWandBSensorUnitData illegal update value {}", motion);
             return;
         }
         updateState(CHANNEL_MOTION, status);
@@ -107,7 +107,7 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
         } else if (hasSmoke.equals(BSENSOR_STATUS_CLOSE)) {
             status = OnOffType.OFF;
         } else {
-            logger.warn("TouchWandBSensorUnitData illegal update value {}", hasSmoke);
+            logger.debug("TouchWandBSensorUnitData illegal update value {}", hasSmoke);
             return;
         }
         updateState(CHANNEL_SMOKE, status);
