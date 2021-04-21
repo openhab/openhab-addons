@@ -5,39 +5,259 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="juicenet-device">
-	    <supported-bridge-type-refs>
-            <bridge-type-ref id="juicenet-account"/>
-        </supported-bridge-type-refs>
-        
-		<label>JuiceNet Device</label>
-		<description>JuiceNet device</description>
-		
-		<channels>
-            <channel id="state" typeId="state_type"/>
-        </channels>
-		
-        <properties>
-            <property name="name"></property>
-            <property name="token"></property>
-            <property name="unit_id"></property>
-        </properties>
-        <representation-property>unit_id</representation-property>
-        
+		<supported-bridge-type-refs>
 
+			<bridge-type-ref id="juicenet-account"/>
+		</supported-bridge-type-refs>
+
+		<label>JuiceBox Charger</label>
+		<description>JuiceBox EV-Charger</description>
+
+		<channels>
+			<channel id="charging_state" typeId="charging_state_type"/>
+
+			<channel id="state" typeId="state_type"/>
+			<channel id="override" typeId="override_type"/>
+			<channel id="charging_time_left" typeId="charging_time_left_type"/>
+			<channel id="plug_unplug_time" typeId="plug_unplug_time_type"/>
+			<channel id="target_time" typeId="target_time_type"/>
+			<channel id="unit_time" typeId="unit_time_type"/>
+			<channel id="temperature" typeId="temperature_type"/>
+
+			<channel id="amps_limit" typeId="amps_limit_type"/>
+			<channel id="amps_current" typeId="amps_current_type"/>
+			<channel id="voltage" typeId="voltage_type"/>
+			<channel id="wh_energy" typeId="wh_energy_type"/>
+			<channel id="savings" typeId="savings_type"/>
+			<channel id="watt_power" typeId="watt_power_type"/>
+			<channel id="seconds_charging" typeId="seconds_charging_type"/>
+			<channel id="wh_energy_at_plugin" typeId="wh_energy_at_plugin_type"/>
+			<channel id="wh_energy_to_add" typeId="wh_energy_to_add_type"/>
+
+			<channel id="lifetime_wh_energy" typeId="lifetime_wh_energy_type"/>
+			<channel id="lifetime_savings" typeId="lifetime_savings_type"/>
+
+			<channel id="gascost" typeId="gascost_type"/>
+			<channel id="mpg" typeId="mpg_type"/>
+			<channel id="ecost" typeId="ecost_type"/>
+			<channel id="whpermile" typeId="whpermile_type"/>
+
+			<channel id="car_description" typeId="car_description_type"/>
+			<channel id="car_battery_size_wh" typeId="car_battery_size_wh_type"/>
+			<channel id="car_battery_range_m" typeId="car_battery_range_m_type"/>
+			<channel id="car_charging_rate_w" typeId="car_charging_rate_w_type"/>
+		</channels>
+
+		<properties>
+			<property name="name"></property>
+			<property name="token"></property>
+			<property name="unit_id"></property>
+		</properties>
+		<representation-property>unit_id</representation-property>
 	</thing-type>
-	
+
+	<channel-type id="charging_state_type">
+		<item-type>String</item-type>
+		<label>Charging State</label>
+		<description>The charing state (Start Charging, Smart Charging, Stop Charging).</description>
+		<state>
+			<options>
+				<option value="start">Start Charging</option>
+				<option value="smart">Smart Charging</option>
+				<option value="stop">Stop Charging</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
+	</channel-type>
+
 	<channel-type id="state_type">
-        <item-type>String</item-type>
-        <label>Device State</label>
-        <description>This is the current device state (stanby, plugged, charging, error, disconnect).</description>
-        <state readOnly="true">
-            <options>
-                <option value="standby">Standby</option>
-                <option value="plugged">Plugged In</option>
-                <option value="charging">Charging</option>
-                <option value="error">Error</option>
-                <option value="disconnect">Disconnected</option>
-            </options>
-        </state>
-    </channel-type>
+		<item-type>String</item-type>
+		<label>Device State</label>
+		<description>This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).</description>
+		<state readOnly="true">
+			<options>
+				<option value="standby">Available</option>
+				<option value="plugged">Plugged-In</option>
+				<option value="charging">Charging</option>
+				<option value="error">Error</option>
+				<option value="disconnect">Disconnected</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="override_type">
+		<item-type>Switch</item-type>
+		<label>Override State</label>
+		<description>Smart charging is overridden.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging_time_left_type">
+		<item-type>Number:Time</item-type>
+		<label>Charging Time Left</label>
+		<description>Charging time left (seconds).</description>
+		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="plug_unplug_time_type">
+		<item-type>DateTime</item-type>
+		<label>Plug/Unplug Time</label>
+		<description>Last time of either plug-in or plug-out.</description>
+		<state readOnly="true" pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
+	</channel-type>
+
+	<channel-type id="target_time_type">
+		<item-type>DateTime</item-type>
+		<label>Target Time</label>
+		<description>“Start charging” start time, or time to start when overriding smart charging.</description>
+		<state readOnly="true" pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
+	</channel-type>
+
+	<channel-type id="unit_time_type">
+		<item-type>DateTime</item-type>
+		<label>Unit Time</label>
+		<description>Current time on the unit.</description>
+		<state readOnly="true" pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
+	</channel-type>
+
+	<channel-type id="temperature_type">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature at the unit.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="amps_limit_type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current Limit</label>
+		<description>Max charging current allowed. (A)</description>
+		<state pattern="%d A"/>
+	</channel-type>
+
+	<channel-type id="amps_current_type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current charging current. (A)</description>
+		<state readOnly="true" pattern="%.1f A"/>
+	</channel-type>
+
+	<channel-type id="voltage_type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current voltage. (V)</description>
+		<state readOnly="true" pattern="%d V"/>
+	</channel-type>
+
+	<channel-type id="wh_energy_type">
+		<item-type>Number:Energy</item-type>
+		<label>Current Energy</label>
+		<description>Current amount of energy poured to the vehicle. (Wh)</description>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="savings_type">
+		<item-type>Number</item-type>
+		<label>Savings</label>
+		<description>Current session EV savings.</description>
+		<state readOnly="true" pattern="$%.2f"/>
+	</channel-type>
+
+	<channel-type id="watt_power_type">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Current charging power. (W)</description>
+		<state readOnly="true" pattern="%.2f kW"/>
+	</channel-type>
+
+	<channel-type id="seconds_charging_type">
+		<item-type>Number:Time</item-type>
+		<label>Charging Time</label>
+		<description>Charging time since plug-in time. (s)</description>
+		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="wh_energy_at_plugin_type">
+		<item-type>Number:Energy</item-type>
+		<label>Energy at Plugin</label>
+		<description>Energy value at the plugging time. (Wh)</description>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="wh_energy_to_add_type">
+		<item-type>Number:Energy</item-type>
+		<label>Energy to Add</label>
+		<description>Amount of energy to be added in current session. (Wh)</description>
+		<state pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="lifetime_wh_energy_type">
+		<item-type>Number:Energy</item-type>
+		<label>Lifetime Energy</label>
+		<description>Total energy poured to vehicles during lifetime. (Wh)</description>
+		<state readOnly="true" pattern="%,.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="lifetime_savings_type">
+		<item-type>Number</item-type>
+		<label>Lifetime Savings</label>
+		<description>EV driving saving during lifetime.</description>
+		<state readOnly="true" pattern="$%.2f"/>
+	</channel-type>
+
+	<channel-type id="gascost_type">
+		<item-type>Number</item-type>
+		<label>Gas Cost</label>
+		<description>Cost of gasoline used in savings calculations.</description>
+		<state readOnly="true" pattern="$%.2f"/>
+	</channel-type>
+
+	<channel-type id="mpg_type">
+		<item-type>Number</item-type>
+		<label>MPG</label>
+		<description>Miles per gallon used in savings calculations.</description>
+		<state readOnly="true" pattern="%.1f mpg"/>
+	</channel-type>
+
+	<channel-type id="ecost_type">
+		<item-type>Number</item-type>
+		<label>Utility Energy Cost</label>
+		<description>Cost of electricity from utility company. ($/kWh)</description>
+		<state readOnly="true" pattern="$%.2f"/>
+	</channel-type>
+
+	<channel-type id="whpermile_type">
+		<item-type>Number:Power</item-type>
+		<label>Watts per mile</label>
+		<description>Watts per mile.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="car_description_type">
+		<item-type>String</item-type>
+		<label>Car Description</label>
+		<description>Car description of vehicle currently or last charged.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="car_battery_size_wh_type">
+		<item-type>Number:Energy</item-type>
+		<label>Car Battery Pack Size</label>
+		<description>Car battery pack size. (Wh)</description>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="car_battery_range_m_type">
+		<item-type>Number:Length</item-type>
+		<label>Mileage Range</label>
+		<description>Car mileage range.</description>
+		<state readOnly="true" pattern="%,d miles"/>
+	</channel-type>
+
+	<channel-type id="car_charging_rate_w_type">
+		<item-type>Number:Power</item-type>
+		<label>Car Charging Rate</label>
+		<description>Car charging rate. (W)</description>
+		<state readOnly="true" pattern="%.2f kW"/>
+	</channel-type>
+
 </thing:thing-descriptions>

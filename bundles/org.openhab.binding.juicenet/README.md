@@ -1,56 +1,52 @@
 # JuiceNet Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The JuiceNet binding will interface with the cloud portal to get status and manage your JuiceBox EV charger(s). In addition to getting the status of various items from the ev-charger, it is also possible to start and stop charging sessions.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding supports the following things:
 
-## Discovery
+| thing  | type   | description                  |
+|----------|--------|------------------------------|
+| JuiceNet Account  | Bridge | This represents the cloud account to interface with the JuiceNet API.  |
+| JuiceBox EV-Charger | Device | This interfaces to a specific JuiceBox EV-charger associated with the JuiceNet account. |
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+This binding should work with multiple JuiceBox EV-chargers associated with the account, however it is currently only tested with a single EV-charger.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The only configuration required is to create a JuiceNet account thing and fill in the appropriate API Token.  The API token can be found on the Account page at https://home.juice.net/Manage.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers associated with that account will be discovered and added to the inbox.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+| channel           | type              | read-only | description                  |
+|----------         |--------           |------------------------------|
+| charging_state    | String            | N         | Current charging state (Start Charging, Smart Charging, Stop Charging). |
+| state             | String            | Y         | This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).  |
+| override          | Switch            | Y         | Smart charging is overridden. |
+| charging_time_left | Number:Time      | Y         | Charging time left (seconds). |
+| plug_unplug_time  | DateTime          | Y         | Last time of either plug-in or plug-out. |
+| target_time       | DateTime          | Y         | “Start charging” start time, or time to start when overriding smart charging. |
+| unit_time         | DateTime          | Y         | Current time on the unit. |
+| temperature       | Number:Temperature | Y        | Current temperature at the unit. |
+| amps_limit        | Number:ElectricCurrent | N    | Max charging current allowed. (A) |
+| amps_current      | Number:ElectricCurrent | Y    | Current charging current. (A) |
+| voltage           | Number:ElectricPotential | Y  | Current voltage. (V) |
+| wh_energy         | Number:Energy     | Y         | Current amount of energy poured to the vehicle. (Wh) |
+| savings           | Number            | Y         | Current session EV savings. |
+| watt_power        | Number:Power      | Y         | Current charging power. (W) |
+| seconds_charging  | Number:Time       | Y         | Charging time since plug-in time. (s) |
+| wh_energy_at_plugin | Number:Energy   | Y         | Energy value at the plugging time. (Wh) |
+| wh_energy_to_add  | Number:Energy     | N         | Amount of energy to be added in current session. (Wh) |
+| lifetime_wh_energy_type | Number:Energy | Y |     | Total energy poured to vehicles during lifetime. (Wh) |
+| lifetime_savings  | Number            | Y         | EV driving saving during lifetime. |
+| gascost           | Number            | Y         | Cost of gasoline used in savings calculations. |
+| mpg               | Number            | Y         | Miles per gallon used in savings calculations. |
+| ecost             | Number            | Y         | Cost of electricity from utility company. ($/kWh) |
+| whpermile         | Number            | Y         | Watts per mile. |
+| car_description   | String            | Y         | Car description of vehicle currently or last charged. |
+| car_battery_size_wh   | Number:Energy | Y         | Car battery pack size. (Wh) |
+| car_battery_range_m   | Number:Length | Y         | Car mileage range. (miles) |
+| car_charging_rate_w   | Number:Power  | Y         | Car charging rate. (W) |
