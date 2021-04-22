@@ -186,6 +186,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     @Override
+    public void dispose() {
+        cancelScheduledZoneStateUpdate();
+    }
+
+    @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             try {
@@ -219,9 +224,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     private void updateZoneState(boolean forceUpdate) {
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
         TadoHomeHandler home = getHomeHandler();
         if (home != null) {
             home.updateHomeState();
