@@ -121,12 +121,26 @@ public final class QbusCommunication extends BaseThingHandler {
         InetAddress addr = InetAddress.getByName(handler.getAddress());
         Integer port = handler.getPort();
 
-        if (port != null) {
-            Socket socket = new Socket(addr, port);
+        if (port == null) {
+            handler.bridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Please set a correct port.");
+            return;
+        }
+
+        if (addr == null) {
+            handler.bridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Please set the hostname of the Qbus server.");
+            return;
+        }
+
+        Socket socket = null;
+
+        try {
+            socket = new Socket(addr, port);
             qSocket = socket;
             qOut = new PrintWriter(socket.getOutputStream(), true);
             qIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } else {
+        } catch (IOException e) {
+            String msg = e.getMessage();
+            handler.bridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, "No communication with Qbus Server. " + msg);
             return;
         }
 
@@ -338,7 +352,6 @@ public final class QbusCommunication extends BaseThingHandler {
             logger.trace("Not acted on unsupported json {} : {}", qMessage, msg);
             return;
         }
-
         QbusBridgeHandler handler = bridgeCallBack;
 
         if (handler != null) {
