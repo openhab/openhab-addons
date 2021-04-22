@@ -629,29 +629,31 @@ public class HPPrinterBinder {
     private void checkScannerStatus() {
         HPServerResult<HPScannerStatus> result = printerClient.getScannerStatus();
 
-        if (!handlerDisposed) {
-            if (result.getStatus() == RequestStatus.SUCCESS) {
-                handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_STATUS,
-                        new StringType(result.getData().getScannerStatus()));
-                handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_ADFLOADED,
-                        convertToOnOffType(result.getData().getAdfLoaded()));
-            } else {
-                goneOffline();
-            }
+        if (handlerDisposed) {
+            return;
+        }
+        if (result.getStatus() == RequestStatus.SUCCESS) {
+            handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_STATUS,
+                    new StringType(result.getData().getScannerStatus()));
+            handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_ADFLOADED,
+                    convertToOnOffType(result.getData().getAdfLoaded()));
+        } else {
+            goneOffline();
         }
     }
 
     private void checkStatus() {
         HPServerResult<HPStatus> result = printerClient.getStatus();
 
-        if (!handlerDisposed) {
-            if (result.getStatus() == RequestStatus.SUCCESS) {
-                handler.updateState(CGROUP_STATUS, CHANNEL_STATUS, new StringType(result.getData().getPrinterStatus()));
-                handler.updateState(CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN,
-                        convertToOnOffType(result.getData().getTrayEmptyOrOpen()));
-            } else {
-                goneOffline();
-            }
+        if (handlerDisposed) {
+            return;
+        }
+        if (result.getStatus() == RequestStatus.SUCCESS) {
+            handler.updateState(CGROUP_STATUS, CHANNEL_STATUS, new StringType(result.getData().getPrinterStatus()));
+            handler.updateState(CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN,
+                    convertToOnOffType(result.getData().getTrayEmptyOrOpen()));
+        } else {
+            goneOffline();
         }
     }
 
@@ -666,117 +668,115 @@ public class HPPrinterBinder {
     private void checkUsage() {
         HPServerResult<HPUsage> result = printerClient.getUsage();
 
-        if (!handlerDisposed) {
-            if (result.getStatus() == RequestStatus.SUCCESS) {
-                // Inks
-                handler.updateState(CGROUP_INK, CHANNEL_BLACK_LEVEL,
-                        new QuantityType<>(result.getData().getInkBlack(), Units.PERCENT));
-                handler.updateState(CGROUP_INK, CHANNEL_COLOR_LEVEL,
-                        new QuantityType<>(result.getData().getInkColor(), Units.PERCENT));
-                handler.updateState(CGROUP_INK, CHANNEL_CYAN_LEVEL,
-                        new QuantityType<>(result.getData().getInkCyan(), Units.PERCENT));
-                handler.updateState(CGROUP_INK, CHANNEL_MAGENTA_LEVEL,
-                        new QuantityType<>(result.getData().getInkMagenta(), Units.PERCENT));
-                handler.updateState(CGROUP_INK, CHANNEL_YELLOW_LEVEL,
-                        new QuantityType<>(result.getData().getInkYellow(), Units.PERCENT));
+        if (handlerDisposed) {
+            return;
+        }
+        if (result.getStatus() == RequestStatus.SUCCESS) {
+            // Inks
+            handler.updateState(CGROUP_INK, CHANNEL_BLACK_LEVEL,
+                    new QuantityType<>(result.getData().getInkBlack(), Units.PERCENT));
+            handler.updateState(CGROUP_INK, CHANNEL_COLOR_LEVEL,
+                    new QuantityType<>(result.getData().getInkColor(), Units.PERCENT));
+            handler.updateState(CGROUP_INK, CHANNEL_CYAN_LEVEL,
+                    new QuantityType<>(result.getData().getInkCyan(), Units.PERCENT));
+            handler.updateState(CGROUP_INK, CHANNEL_MAGENTA_LEVEL,
+                    new QuantityType<>(result.getData().getInkMagenta(), Units.PERCENT));
+            handler.updateState(CGROUP_INK, CHANNEL_YELLOW_LEVEL,
+                    new QuantityType<>(result.getData().getInkYellow(), Units.PERCENT));
 
-                handler.updateState(CGROUP_USAGE, CHANNEL_JAM_EVENTS, new DecimalType(result.getData().getJamEvents()));
-                handler.updateState(CGROUP_USAGE, CHANNEL_SUBSCRIPTION,
-                        new DecimalType(result.getData().getTotalSubscriptionImpressions()));
-                handler.updateState(CGROUP_USAGE, CHANNEL_TOTAL_COLORPAGES,
-                        new DecimalType(result.getData().getTotalColorImpressions()));
-                handler.updateState(CGROUP_USAGE, CHANNEL_TOTAL_MONOPAGES,
-                        new DecimalType(result.getData().getTotalMonochromeImpressions()));
-                handler.updateState(CGROUP_USAGE, CHANNEL_TOTAL_PAGES,
-                        new DecimalType(result.getData().getTotalImpressions()));
-                handler.updateState(CGROUP_USAGE, CHANNEL_MISPICK_EVENTS,
-                        new DecimalType(result.getData().getMispickEvents()));
-                handler.updateState(CGROUP_USAGE, CHANNEL_FRONT_PANEL_CANCEL,
-                        new DecimalType(result.getData().getFrontPanelCancelCount()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_JAM_EVENTS, new DecimalType(result.getData().getJamEvents()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_SUBSCRIPTION,
+                    new DecimalType(result.getData().getTotalSubscriptionImpressions()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_TOTAL_COLORPAGES,
+                    new DecimalType(result.getData().getTotalColorImpressions()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_TOTAL_MONOPAGES,
+                    new DecimalType(result.getData().getTotalMonochromeImpressions()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_TOTAL_PAGES,
+                    new DecimalType(result.getData().getTotalImpressions()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_MISPICK_EVENTS,
+                    new DecimalType(result.getData().getMispickEvents()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_FRONT_PANEL_CANCEL,
+                    new DecimalType(result.getData().getFrontPanelCancelCount()));
 
-                handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_MARKING,
-                        new QuantityType<>(result.getData().getInkBlackMarking(), MetricPrefix.MILLI(Units.LITRE)));
-                handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_MARKING,
-                        new QuantityType<>(result.getData().getInkColorMarking(), MetricPrefix.MILLI(Units.LITRE)));
-                handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_MARKING,
-                        new QuantityType<>(result.getData().getInkCyanMarking(), MetricPrefix.MILLI(Units.LITRE)));
-                handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_MARKING,
-                        new QuantityType<>(result.getData().getInkMagentaMarking(), MetricPrefix.MILLI(Units.LITRE)));
-                handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_MARKING,
-                        new QuantityType<>(result.getData().getInkYellowMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_MARKING,
+                    new QuantityType<>(result.getData().getInkBlackMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_MARKING,
+                    new QuantityType<>(result.getData().getInkColorMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_MARKING,
+                    new QuantityType<>(result.getData().getInkCyanMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_MARKING,
+                    new QuantityType<>(result.getData().getInkMagentaMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_MARKING,
+                    new QuantityType<>(result.getData().getInkYellowMarking(), MetricPrefix.MILLI(Units.LITRE)));
 
-                handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING,
-                        new DecimalType(result.getData().getInkBlackPagesRemaining()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING,
+                    new DecimalType(result.getData().getInkBlackPagesRemaining()));
 
-                handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_PAGES_REMAINING,
-                        new DecimalType(result.getData().getInkColorPagesRemaining()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_PAGES_REMAINING,
+                    new DecimalType(result.getData().getInkColorPagesRemaining()));
 
-                handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_PAGES_REMAINING,
-                        new DecimalType(result.getData().getInkCyanPagesRemaining()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_PAGES_REMAINING,
+                    new DecimalType(result.getData().getInkCyanPagesRemaining()));
 
-                handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_PAGES_REMAINING,
-                        new DecimalType(result.getData().getInkMagentaPagesRemaining()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_PAGES_REMAINING,
+                    new DecimalType(result.getData().getInkMagentaPagesRemaining()));
 
-                handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_PAGES_REMAINING,
-                        new DecimalType(result.getData().getInkYellowPagesRemaining()));
+            handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_PAGES_REMAINING,
+                    new DecimalType(result.getData().getInkYellowPagesRemaining()));
 
-                // Scan
-                handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_ADF,
-                        new DecimalType(result.getData().getScanAdfCount()));
+            // Scan
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_ADF, new DecimalType(result.getData().getScanAdfCount()));
 
-                handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_FLATBED,
-                        new DecimalType(result.getData().getScanFlatbedCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_FLATBED,
+                    new DecimalType(result.getData().getScanFlatbedCount()));
 
-                handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOEMAIL,
-                        new DecimalType(result.getData().getScanToEmailCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOEMAIL,
+                    new DecimalType(result.getData().getScanToEmailCount()));
 
-                handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOFOLDER,
-                        new DecimalType(result.getData().getScanToFolderCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOFOLDER,
+                    new DecimalType(result.getData().getScanToFolderCount()));
 
-                handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOHOST,
-                        new DecimalType(result.getData().getScanToHostCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOHOST,
+                    new DecimalType(result.getData().getScanToHostCount()));
 
-                // Scanner
-                handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_ADF,
-                        new DecimalType(result.getData().getScannerAdfCount()));
-                handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_FLATBED,
-                        new DecimalType(result.getData().getScannerFlatbedCount()));
-                handler.updateState(CGROUP_SCANNER, CHANNEL_JAM_EVENTS,
-                        new DecimalType(result.getData().getScannerJamEvents()));
-                handler.updateState(CGROUP_SCANNER, CHANNEL_MISPICK_EVENTS,
-                        new DecimalType(result.getData().getScannerMispickEvents()));
+            // Scanner
+            handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_ADF,
+                    new DecimalType(result.getData().getScannerAdfCount()));
+            handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_FLATBED,
+                    new DecimalType(result.getData().getScannerFlatbedCount()));
+            handler.updateState(CGROUP_SCANNER, CHANNEL_JAM_EVENTS,
+                    new DecimalType(result.getData().getScannerJamEvents()));
+            handler.updateState(CGROUP_SCANNER, CHANNEL_MISPICK_EVENTS,
+                    new DecimalType(result.getData().getScannerMispickEvents()));
 
-                // Copy
-                handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_ADF,
-                        new DecimalType(result.getData().getCopyAdfCount()));
-                handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_FLATBED,
-                        new DecimalType(result.getData().getCopyFlatbedCount()));
-                handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_PAGES,
-                        new DecimalType(result.getData().getCopyTotalImpressions()));
-                handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_COLORPAGES,
-                        new DecimalType(result.getData().getCopyTotalColorImpressions()));
-                handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_MONOPAGES,
-                        new DecimalType(result.getData().getCopyTotalMonochromeImpressions()));
+            // Copy
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_ADF, new DecimalType(result.getData().getCopyAdfCount()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_FLATBED,
+                    new DecimalType(result.getData().getCopyFlatbedCount()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_PAGES,
+                    new DecimalType(result.getData().getCopyTotalImpressions()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_COLORPAGES,
+                    new DecimalType(result.getData().getCopyTotalColorImpressions()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_MONOPAGES,
+                    new DecimalType(result.getData().getCopyTotalMonochromeImpressions()));
 
-                // App Usage
-                handler.updateState(CGROUP_APP, CHANNEL_TOTAL_WIN,
-                        new DecimalType(result.getData().getAppWindowsCount()));
-                handler.updateState(CGROUP_APP, CHANNEL_TOTAL_OSX, new DecimalType(result.getData().getAppOSXCount()));
-                handler.updateState(CGROUP_APP, CHANNEL_TOTAL_IOS, new DecimalType(result.getData().getAppIosCount()));
-                handler.updateState(CGROUP_APP, CHANNEL_TOTAL_ANDROID,
-                        new DecimalType(result.getData().getAppAndroidCount()));
-                handler.updateState(CGROUP_APP, CHANNEL_TOTAL_SAMSUNG,
-                        new DecimalType(result.getData().getAppSamsungCount()));
-                handler.updateState(CGROUP_APP, CHANNEL_TOTAL_CHROME,
-                        new DecimalType(result.getData().getAppChromeCount()));
+            // App Usage
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_WIN, new DecimalType(result.getData().getAppWindowsCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_OSX, new DecimalType(result.getData().getAppOSXCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_IOS, new DecimalType(result.getData().getAppIosCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_ANDROID,
+                    new DecimalType(result.getData().getAppAndroidCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_SAMSUNG,
+                    new DecimalType(result.getData().getAppSamsungCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_CHROME,
+                    new DecimalType(result.getData().getAppChromeCount()));
 
-                // Other
-                handler.updateState(CGROUP_OTHER, CHANNEL_CLOUD_PRINT,
-                        new DecimalType(result.getData().getCloudPrintImpressions()));
+            // Other
+            handler.updateState(CGROUP_OTHER, CHANNEL_CLOUD_PRINT,
+                    new DecimalType(result.getData().getCloudPrintImpressions()));
 
-            } else {
-                goneOffline();
-            }
+        } else {
+            goneOffline();
         }
     }
 
@@ -797,15 +797,15 @@ public class HPPrinterBinder {
     private void checkOnline() {
         HPServerResult<HPStatus> result = printerClient.getStatus();
 
-        if (!handlerDisposed) {
-            if (result.getStatus() == RequestStatus.SUCCESS) {
-                goneOnline();
-            } else if (result.getStatus() == RequestStatus.TIMEOUT) {
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        result.getErrorMessage());
-            } else {
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, result.getErrorMessage());
-            }
+        if (handlerDisposed) {
+            return;
+        }
+        if (result.getStatus() == RequestStatus.SUCCESS) {
+            goneOnline();
+        } else if (result.getStatus() == RequestStatus.TIMEOUT) {
+            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, result.getErrorMessage());
+        } else {
+            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, result.getErrorMessage());
         }
     }
 }
