@@ -367,7 +367,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return;
         }
         if (!hasChannelStructure) {
-            if (configuration.model == null || configuration.model.isEmpty()) {
+            if (configuration.model.isEmpty()) {
                 logger.debug("Model needs to be determined");
                 isIdentified = false;
             } else {
@@ -579,7 +579,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     } else {
                         String strVal = val.getAsString().toLowerCase();
                         updateState(basicChannel.getChannel(),
-                                strVal.equals("on") || strVal.equals("true") ? OnOffType.ON : OnOffType.OFF);
+                                "on".equals(strVal) || "true".equals(strVal) ? OnOffType.ON : OnOffType.OFF);
                     }
                     break;
                 case "color":
