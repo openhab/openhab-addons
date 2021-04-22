@@ -56,15 +56,15 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void initialize() {
-        Integer serverCheck = getServerCheck();
-
         readConfig();
 
-        createCommunicationObject();
+        Integer serverCheck = getServerCheck();
 
         if (serverCheck != null) {
             this.setupRefreshTimer(serverCheck);
         }
+
+        createCommunicationObject();
     }
 
     /**
@@ -176,6 +176,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
         }
 
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Timer started");
             QbusCommunication comm = getCommunication();
             Integer serverCheck = getServerCheck();
 
