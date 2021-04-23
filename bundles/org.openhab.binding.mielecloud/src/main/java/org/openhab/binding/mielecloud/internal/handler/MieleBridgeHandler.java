@@ -129,8 +129,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler
             tokenRefresher.setRefreshListener(this, getOAuthServiceHandle());
         } catch (OAuthException e) {
             logger.debug("Could not initialize Miele Cloud bridge.", e);
-            logger.warn("The account has not been authorized. Please consult the documentation on how to do that.");
-            logger.warn("If using things-files reload your thing configuration afterwards.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED);
             // When the authorization takes place a new initialization will be triggered. Therefore, we can leave the
