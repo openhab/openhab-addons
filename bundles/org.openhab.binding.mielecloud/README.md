@@ -14,22 +14,24 @@ Appliances from recent generations will support all functionality.
 
 The following types of appliances are supported:
 
-- Coffee Machine
-- Dishwasher
-- Dish Warmer
-- Freezer
-- Fridge
-- Fridge-Freezer Combination
-- Hob
-- Hood
-- Microwave Oven
-- Oven
-- Robotic Vacuum Cleaner
-- Tumble Dryer
-- Washer Dryer
-- Washing Machine
-- Wine Cabinet
-- Wine Cabinet Freezer Combination
+| Appliance type                   | Thing type               |
+| -------------------------------- | ------------------------ |
+| Coffee Machine                   | `coffee_system`          |
+| Dishwasher                       | `dishwasher`             |
+| Dish Warmer                      | `dish_warmer`            |
+| Freezer                          | `freezer`                |
+| Fridge                           | `fridge`                 |
+| Fridge-Freezer Combination       | `fridge_freezer`         |
+| Hob                              | `hob`                    |
+| Hood                             | `hood`                   |
+| Microwave Oven                   | `oven`                   |
+| Oven                             | `oven`                   |
+| Robotic Vacuum Cleaner           | `robotic_vacuum_cleaner` |
+| Tumble Dryer                     | `dryer`                  |
+| Washer Dryer                     | `washer_dryer`           |
+| Washing Machine                  | `washing_machine`        |
+| Wine Cabinet                     | `wine_storage`           |
+| Wine Cabinet Freezer Combination | `wine_storage`           |
 
 ## Discovery
 
