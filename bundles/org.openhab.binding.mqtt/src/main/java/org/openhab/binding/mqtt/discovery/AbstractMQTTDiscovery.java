@@ -48,11 +48,34 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
 
     private @Nullable ScheduledFuture<?> scheduledStop;
 
+    private boolean isSubscribed;
+
     public AbstractMQTTDiscovery(@Nullable Set<ThingTypeUID> supportedThingTypes, int timeout,
             boolean backgroundDiscoveryEnabledByDefault, String baseTopic) {
         super(supportedThingTypes, 0, backgroundDiscoveryEnabledByDefault);
         this.subscribeTopic = baseTopic;
         this.timeout = timeout;
+        isSubscribed = false;
+    }
+
+    /**
+     * Only subscribe if we were not already subscribed
+     */
+    private void subscribe() {
+        if (!isSubscribed) {
+            getDiscoveryService().subscribe(this, subscribeTopic);
+            isSubscribed = true;
+        }
+    }
+
+    /**
+     * Only unsubscribe if we were already subscribed
+     */
+    private void unSubscribe() {
+        if (isSubscribed) {
+            getDiscoveryService().unsubscribe(this);
+            isSubscribed = false;
+        }
     }
 
     /**
@@ -94,7 +117,7 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
             return;
         }
         resetTimeout();
-        getDiscoveryService().subscribe(this, subscribeTopic);
+        subscribe();
     }
 
     @Override
@@ -104,7 +127,7 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
             return;
         }
         stopTimeout();
-        getDiscoveryService().unsubscribe(this);
+        unSubscribe();
         super.stopScan();
     }
 
@@ -118,11 +141,11 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
     protected void startBackgroundDiscovery() {
         // Remove results that are restored after a restart
         removeOlderResults(new Date().getTime());
-        getDiscoveryService().subscribe(this, subscribeTopic);
+        subscribe();
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        getDiscoveryService().unsubscribe(this);
+        unSubscribe();
     }
 }
