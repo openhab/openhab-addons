@@ -1,7 +1,5 @@
 # Miele Cloud Binding
 
-![Miele](doc/miele.png)
-
 This binding integrates [Miele@home](https://www.miele.de/brand/smarthome-42801.htm) appliances via a cloud connection.
 A Miele cloud account and a set of developer credentials is required to use the binding.
 The latter can be requested from the [Miele Developer Portal](https://www.miele.com/f/com/en/register_api.aspx).
