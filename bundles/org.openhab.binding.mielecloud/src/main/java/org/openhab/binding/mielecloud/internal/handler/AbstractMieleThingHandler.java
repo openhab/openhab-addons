@@ -100,7 +100,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
 
         // If no device state update was received so far, set the device to OFFLINE.
         if (getThing().getStatus() == ThingStatus.INITIALIZING) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
