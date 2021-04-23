@@ -80,21 +80,6 @@ The binding configuration UI will show a things-file template containing things 
 This can be used as a starting point for a custom things-file.
 All Miele cloud appliance things have no configuration parameters.
 
-Example things-file:
-
-```
-Bridge mielecloud:account:home [ locale="en" ] {
-    Thing coffee_system 000703261234 "Coffee machine CVA7440" [ ]
-    Thing hob 000160102345 "Cooktop KM7677" [ ]
-    Thing washing_machine 000148503456 "Washing Machine WWV980" [ ]
-    Thing oven 000137434567 "Oven" [ ]
-    Thing fridge 007109235678 "Refrigerator K34483" [ ]
-    Thing dishwasher 000159456789 "Dishwasher G5000" [ ]
-    Thing fridge_freezer 711397890 "Fridge-freezer" [ ]
-    Thing dryer 000091098901 "Dryer" [ ]
-}
-```
-
 ## Channels
 
 The following table lists all available channels.
