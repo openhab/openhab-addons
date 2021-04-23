@@ -73,11 +73,6 @@ The account has the following parameters:
 | ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | locale      | mandatory | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`. | Prior to the 7th January 2021 `da`, `es`, `fr`, `it`, `nl` and `nb` will default to English. |
 
-Example things-file:
-
-```
-Bridge mielecloud:account:home [ locale="en" ]
-```
 
 ### Appliance Configuration
 
