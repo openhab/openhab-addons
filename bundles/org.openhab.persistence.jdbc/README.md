@@ -48,8 +48,10 @@ This service can be configured in the file `services/jdbc.cfg`.
 | sqltype.CONTACT           | `VARCHAR(6)`                                                 |    No     | see above                                                    |
 | sqltype.DATETIME          | `DATETIME`                                                   |    No     | see above                                                    |
 | sqltype.DIMMER            | `TINYINT`                                                    |    No     | see above                                                    |
-| sqltype.LOCATION          | `VARCHAR(30)`                                                |    No     | see above                                                    |
+| sqltype.IMAGE             | `VARCHAR(65500)`                                             |    No     | see above                                                    |
+| sqltype.LOCATION          | `VARCHAR(50)`                                                |    No     | see above                                                    |
 | sqltype.NUMBER            | `DOUBLE`                                                     |    No     | see above                                                    |
+| sqltype.PLAYER            | `VARCHAR(20)`                                                |    No     | see above                                                    |
 | sqltype.ROLLERSHUTTER     | `TINYINT`                                                    |    No     | see above                                                    |
 | sqltype.STRING            | `VARCHAR(65500)`                                             |    No     | see above                                                    |
 | sqltype.SWITCH            | `VARCHAR(6)`                                                 |    No     | see above                                                    |
