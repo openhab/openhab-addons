@@ -120,7 +120,7 @@
 		<description>Simple Light with Auto Mode</description>
 		<channels>
 			<channel id="onOff" typeId="onoff"/>
-			<channel id="automode" typeId="automode"/>
+			<channel id="autoMode" typeId="autoMode"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
@@ -177,10 +177,10 @@
 
 		<channels>
 			<channel id="onOff" typeId="onoff"/>
-			<channel id="whitemode" typeId="whitemode"/>
+			<channel id="whiteMode" typeId="whiteMode"/>
 			<channel id="rollerBrightness" typeId="rollerBrightness"/>
 			<channel id="dimmerBrightness" typeId="dimmerBrightness"/>
-			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="ledColor" typeId="ledColor"/>
 			<channel id="sleep" typeId="sleep"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
@@ -355,7 +355,7 @@
 			<channel id="fire" typeId="buttonReadOnly">
 				<label>Fire</label>
 			</channel>
-			<channel id="setpoint" typeId="float6n"/>
+			<channel id="setPoint" typeId="float6n"/>
 			<channel id="setAsMeasured" typeId="button">
 				<label>As Measured</label>
 			</channel>
@@ -713,7 +713,7 @@
 		<description>The output will be timed for nCYCLES of the Node associated timer</description>
 	</channel-type>
 
-	<channel-type id="automode">
+	<channel-type id="autoMode">
 		<item-type>Switch</item-type>
 		<label>On/Off Auto Mode</label>
 		<description>Switch on/off</description>
@@ -880,7 +880,7 @@
 		<state readOnly="true" pattern="%.1f hPa"></state>
 	</channel-type>
 
-	<channel-type id="ledcolor">
+	<channel-type id="ledColor">
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>Color of the LED. Bind to a Dimmer to just set the brightness, bind to a Color chooser for the full
@@ -896,7 +896,7 @@
 		<state min="0" max="100" step="1" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="whitemode">
+	<channel-type id="whiteMode">
 		<item-type>Switch</item-type>
 		<label>White Mode</label>
 		<description>Switch lamp to white mode</description>
