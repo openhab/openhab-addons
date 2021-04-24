@@ -38,7 +38,6 @@
 			<channel id="outdoorBattery" typeId="outdoorBattery"/>
 			<channel id="indoorBattery" typeId="indoorBattery"/>
 			<channel id="responseTime" typeId="responseTime"/>
-			<channel id="reboot" typeId="reboot"/>
 			<channel id="lastUpdatedTime" typeId="lastUpdatedTime"/>
 		</channels>
 
