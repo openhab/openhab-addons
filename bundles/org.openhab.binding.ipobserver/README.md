@@ -1,14 +1,21 @@
 # IpObserver Binding
 
-This binding is for any weather station that sends data to an IP Observer module. The weather stations that do this are made by a company in China called `Fine Offset` and then re-branded by many importing companies around the world.
+This binding is for any weather station that sends data to an IP Observer module.
+The weather stations that do this are made by a company in China called `Fine Offset` and then re-branded by many distribution companies around the world.
+Some of the brands include Aercus (433mhz), Ambient Weather (915mhz), Frogitt, Misol (433mhz), Pantech (433mhz), Sainlogic and many more.
+Whilst Ambient Weather has it own cloud based binding, the other brands will not work with that binding and Ambient Weather do not sell outside of the United States.
+This binding works fully offline and uses local scraping of the weather station data at 12 second resolution if you wish and is easy to setup.
+The other binding worth mentioning is the weather underground binding that allows the data to be intercepted on its way to WU, however many of the weather stations do not allow the redirection of the WU data and require you to know how to do redirections with a custom DNS server on your network.
+This binding is by far the easiest method and works for all the brands and will not stop the data still being sent to WU if you wish to do both at the same time.
+If your weather station came with a LCD screen instead of the IP Observer, you can add on the unit and the LCD screen will still work in parallel as the RF data is sent 1 way from the outdoor unit to the inside screens and IP Observer units.
 
 ## Supported Things
 
-There is only one thing called `weatherstation`.
+There is only one thing that can be added and is called `weatherstation`.
 
 ## Discovery
 
-Discovery is not supported.
+Auto discovery is not supported as it would require a IP scan that would take longer than simply adding an IP or host name to the binding.
 
 ## Thing Configuration
 
@@ -38,7 +45,7 @@ Discovery is not supported.
 | uv                    | Number                | UV measurement. |
 | uvIndex               | Number                | The UV index. |
 | hourlyRainRate        | Number:Length         | The amount of rain that will fall, if it continues to fall at the same rate for an hour. Measures how heavy the current rain is falling. |
-| rainToday             | Number:Length         | Amount of rain since 12:00am |
+| rainToday             | Number:Length         | Amount of rain since 12:00am. |
 | rainForWeek           | Number:Length         | Amount of rain for the week. |
 | rainForMonth          | Number:Length         | Amount of rain for the month. |
 | rainForYear           | Number:Length         | Amount of rain for the year. |
