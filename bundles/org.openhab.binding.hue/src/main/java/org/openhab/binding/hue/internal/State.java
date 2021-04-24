@@ -287,9 +287,6 @@ public class State {
         if (sat != other.sat) {
             return false;
         }
-        if (!Arrays.equals(xy, other.xy)) {
-            return false;
-        }
-        return true;
+        return Arrays.equals(xy, other.xy);
     }
 }
