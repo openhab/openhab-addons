@@ -110,7 +110,7 @@ public class HPPrinterBinder {
 
     public synchronized void channelsChanged() {
         logger.trace("Channels have been changed");
-        close0();
+        closeInternal();
         open();
     }
 
@@ -558,13 +558,13 @@ public class HPPrinterBinder {
      */
     public void close() {
         handlerDisposed = true;
-        close0();
+        closeInternal();
     }
 
     /**
      * Private (internal) method to close the connection to the Embedded Web Server
      */
-    private void close0() {
+    private void closeInternal() {
         stopBackgroundSchedules();
 
         final ScheduledFuture<?> localOfflineScheduler = offlineScheduler;
@@ -581,7 +581,7 @@ public class HPPrinterBinder {
     private void goneOffline() {
         handler.updateStatus(ThingStatus.OFFLINE);
 
-        close0();
+        closeInternal();
         runOfflineScheduler();
     }
 

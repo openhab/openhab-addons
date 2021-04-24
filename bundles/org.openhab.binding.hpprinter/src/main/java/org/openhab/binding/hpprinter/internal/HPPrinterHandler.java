@@ -65,10 +65,13 @@ public class HPPrinterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        scheduler.submit(() -> initialize0());
+        scheduler.submit(() -> initializeScheduled());
     }
 
-    private void initialize0() {
+    /**
+     * Scheduled initialization task which will be executed on a separate thread
+     */
+    private void initializeScheduled() {
         final HPPrinterConfiguration config = getConfigAs(HPPrinterConfiguration.class);
 
         if (!"".equals(config.ipAddress)) {
