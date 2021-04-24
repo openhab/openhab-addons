@@ -75,7 +75,9 @@ A few known operating systems are:
 
 ## Setup Dash Button
 
-Amazon itself doesn't support Dash Buttons anymore. Instructions how to use them without having to rely on Amazon's servers can be found at https://blog.christophermullins.com/2019/12/20/rescue-your-amazon-dash-buttons/ - at least for some firmware versions. Take care to block internet access for the button or it will be bricked.
+Amazon itself doesn't support Dash Buttons anymore.
+Instructions how to use them without having to rely on Amazon's servers can be found at https://blog.christophermullins.com/2019/12/20/rescue-your-amazon-dash-buttons/ - at least for some firmware versions.
+Take care to block internet access for the button or it will be bricked.
 
 {: #no-phonehome}
 ## Preventing Communication with Amazon Servers
