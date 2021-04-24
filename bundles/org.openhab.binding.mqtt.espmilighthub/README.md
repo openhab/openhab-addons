@@ -1,8 +1,8 @@
 # EspMilightHub Binding
 
 This binding allows an open source esp8266 based bridge to automatically find and add Milight globes.
-The hubs can be built from 2 ready made boards and only need connecting with 7 wires. 
-They can be very easy to build with no soldering needed. 
+The hubs can be built from 2 ready made boards and only need connecting with 7 wires.
+They can be very easy to build with no soldering needed.
 
 Advantages to using this DIY bridge over the OEM bridge:
 
@@ -12,7 +12,7 @@ Advantages to using this DIY bridge over the OEM bridge:
 
 ## Setup the hardware
 
-In depth details on how to build and what the bridge is can be found here: <http://blog.christophermullins.com/2017/02/11/milight-wifi-gateway-emulator-on-an-esp8266>
+In depth details on how to build and what the bridge is can be found here: <https://blog.christophermullins.com/2017/02/11/milight-wifi-gateway-emulator-on-an-esp8266>
 
 A quick overview of the steps to get the hardware going are:
 
@@ -29,7 +29,7 @@ A quick overview of the steps to get the hardware going are:
 
 ## Setup the Firmware
 
-Enter the control panel for the ESP8266 by using any browser and enter the IP address. 
+Enter the control panel for the ESP8266 by using any browser and enter the IP address.
 The following options need to be changed in the firmware for the binding to work.
 Click on SETTINGS>MQTT>:
 
@@ -42,7 +42,7 @@ Leave this blank.
 **mqtt_state_topic_pattern:**
 `milight/states/:device_id/:device_type/:group_id`
 
-**group_state_fields:** 
+**group_state_fields:**
 IMPORTANT: Make sure only the following are ticked:
 
 + state
@@ -138,17 +138,17 @@ This binding requires things to have a specific format for the unique ID, the au
 If doing textual configuration you need to add the Device ID and Group ID together to create the things unique ID.
 The DeviceID is different for each remote.
 The GroupID can be 0 (all channels on the remote), or 1 to 8 for each of the individual channels on the remote).
-If you do not understand this please use auto discovery to do it for you. 
+If you do not understand this please use auto discovery to do it for you.
 
 The formula is
 DeviceID + GroupID = ThingUID
 
 For example:
 
-| Device ID | Group ID |ThingUID  | 
+| Device ID | Group ID |ThingUID  |
 |-----------|----------|----------|
-| 0xE6C     | 4        | 0xE6C4   | 
-| 0xB4CA    | 4        | 0xB4CA4  | 
+| 0xE6C     | 4        | 0xE6C4   |
+| 0xB4CA    | 4        | 0xB4CA4  |
 | 0xB4CA    | 8        | 0xB4CA8  |
 | 0xB4CA    | 0        | 0xB4CA0  |
 
@@ -180,7 +180,7 @@ String Hallway_BulbMode "Bulb Mode" {channel="mqtt:rgb_cct:0xE6C4:bulbMode"}
 *.sitemap
 
 ```
-        Text label="Hallway" icon="light" 
+        Text label="Hallway" icon="light"
         {
             Switch      item=Hallway_Level
             Slider      item=Hallway_Level
@@ -188,6 +188,6 @@ String Hallway_BulbMode "Bulb Mode" {channel="mqtt:rgb_cct:0xE6C4:bulbMode"}
             Colorpicker item=Hallway_Colour
             Selection   item=Hallway_DiscoMode
             Text        item=Hallway_BulbMode
-            Switch item=Hallway_BulbCommand mappings=[next_mode='Mode +', previous_mode='Mode -', mode_speed_up='Speed +', mode_speed_down='Speed -', set_white='White', night_mode='Night' ]   
+            Switch item=Hallway_BulbCommand mappings=[next_mode='Mode +', previous_mode='Mode -', mode_speed_up='Speed +', mode_speed_down='Speed -', set_white='White', night_mode='Night' ]
         }
 ```

@@ -1,6 +1,6 @@
 # C-Bus Binding
 
-This is the binding for the [Clipsal C-Bus System](http://www2.clipsal.com/cis/technical/product_groups/cbus).
+This is the binding for the [Clipsal C-Bus System](https://www.clipsal.com/products/c-bus-control-and-management-system).
 This binding allows you to view and control groups on C-Bus networks from openHAB.
 
 ## Configuration
@@ -10,7 +10,7 @@ This binding connects to C-Gate software which can be downloaded from the [Clips
 Whilst all versions of C-Gate should work 2.11.2 contained a fix for handling Indicator Kill messages for trigger groups. Without that they will remain on the last value set and wont match what is shown on CBus devices.
 
 First the CGate Connection bridge needs to be configured with the ip address of the computer running the C-Gate software.
-After this a Bridge is creaed for each network configured on the CBus Network. The CBus Project Name and the network Id for that network 
+After this a Bridge is creaed for each network configured on the CBus Network. The CBus Project Name and the network Id for that network
 
 
 ## Supported Things
