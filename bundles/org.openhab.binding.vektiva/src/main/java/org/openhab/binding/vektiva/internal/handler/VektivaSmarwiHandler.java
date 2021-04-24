@@ -17,7 +17,11 @@ import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

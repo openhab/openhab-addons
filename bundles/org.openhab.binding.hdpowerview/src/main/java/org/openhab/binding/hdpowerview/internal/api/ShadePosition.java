@@ -17,7 +17,8 @@ import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.types.*;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The position of a single shade, as returned by the HD PowerView hub
@@ -35,7 +36,7 @@ public class ShadePosition {
 
     /**
      * Secondary actuator position
-     * 
+     *
      * here we have to use Integer objects rather than just int primitives because
      * these are secondary optional position elements in the JSON payload, so the
      * GSON de-serializer might leave them as null
@@ -46,7 +47,7 @@ public class ShadePosition {
     /**
      * Create a ShadePosition position instance with just a primary actuator
      * position
-     * 
+     *
      * @param coordSys the Coordinate System to be used
      * @param percent the percentage position within that Coordinate System
      * @return the ShadePosition instance
@@ -58,7 +59,7 @@ public class ShadePosition {
     /**
      * Create a ShadePosition position instance with both a primary and a secondary
      * actuator position
-     * 
+     *
      * @param primaryCoordSys the Coordinate System to be used for the primary
      *            position
      * @param primaryPercent the percentage position for primary position
@@ -75,7 +76,7 @@ public class ShadePosition {
     /**
      * Constructor for ShadePosition position with both a primary and a secondary
      * actuator position
-     * 
+     *
      * @param primaryCoordSys the Coordinate System to be used for the primary
      *            position
      * @param primaryPercent the percentage position for primary position
@@ -92,7 +93,7 @@ public class ShadePosition {
     /**
      * For a given Actuator Class and Coordinate System, map the ShadePosition's
      * state to an OpenHAB State
-     * 
+     *
      * @param actuatorClass the requested Actuator Class
      * @param coordSys the requested Coordinate System
      * @return the corresponding OpenHAB State
@@ -110,7 +111,7 @@ public class ShadePosition {
 
     /**
      * Determine the Coordinate System used for the given Actuator Class (if any)
-     * 
+     *
      * @param actuatorClass the requested Actuator Class
      * @return the Coordinate System used for that Actuator Class, or ERROR_UNKNOWN
      *         if the Actuator Class is not implemented
@@ -170,7 +171,7 @@ public class ShadePosition {
                  *
                  * All these types use the same coordinate system; which is inverted in relation
                  * to that of OpenHAB
-                 * 
+                 *
                  * If the slats have a defined position then the shade position must by
                  * definition be 100%
                  */
@@ -180,11 +181,11 @@ public class ShadePosition {
             case VANE_COORDS:
                 /*
                  * Vane angle of the primary rail of a bottom-up single action shade
-                 * 
+                 *
                  * If the shades are not open, the vane position is undefined; if the the shades
                  * are exactly open then the vanes are at zero; otherwise return the actual vane
                  * position itself
-                 * 
+                 *
                  * note: sometimes the hub may return a value of position1 > MAX_VANE (seems to
                  * be a bug in the hub) so we avoid an out of range exception via the Math.min()
                  * function below..
@@ -207,7 +208,7 @@ public class ShadePosition {
             case ZERO_IS_OPEN:
                 /*
                  * Secondary, upper, top-down rail of a dual action shade
-                 * 
+                 *
                  * Uses a coordinate system that is NOT inverted in relation to OpenHAB
                  */
                 position2 = Integer.valueOf((int) Math.round(percent.doubleValue() / 100 * MAX_SHADE));
@@ -231,7 +232,7 @@ public class ShadePosition {
             case ZERO_IS_OPEN:
                 /*
                  * Secondary, upper, top-down rail of a dual action shade
-                 * 
+                 *
                  * Uses a coordinate system that is NOT inverted in relation to OpenHAB
                  */
                 if (posKind2.intValue() != 3) {

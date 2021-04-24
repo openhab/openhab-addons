@@ -61,7 +61,7 @@ public class DummyMetadataRegistry implements MetadataRegistry {
 
     @Override
     public Metadata add(Metadata element) {
-        Metadata put = items.put(element.getUID(), element);
+        items.put(element.getUID(), element);
         for (RegistryChangeListener<Metadata> l : listeners) {
             l.added(element);
         }

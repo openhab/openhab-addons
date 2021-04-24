@@ -25,12 +25,11 @@ import org.openhab.core.util.HexUtils;
  */
 public class ModbusReadResponseMessageTest {
 
-    private final int coilAddress = 513;
-    private final int value = 100992003;
-    private final String okMessage = "5C00206A060102030405064B";
-
     @Test
     public void createMessageTest() throws NibeHeatPumpException {
+        final int coilAddress = 513;
+        final int value = 100992003;
+        final String okMessage = "5C00206A060102030405064B";
         ModbusReadResponseMessage m = new ModbusReadResponseMessage.MessageBuilder().coilAddress(coilAddress)
                 .value(value).build();
         byte[] byteMessage = m.decodeMessage();
@@ -39,23 +38,35 @@ public class ModbusReadResponseMessageTest {
 
     @Test
     public void parseMessageTest() throws NibeHeatPumpException {
-        byte[] msg = HexUtils.hexToBytes(okMessage);
-        ModbusReadResponseMessage m = (ModbusReadResponseMessage) MessageFactory.getMessage(msg);
+        final int coilAddress = 513;
+        final int value = 100992003;
+        final String message = "5C00206A060102030405064B";
+        ModbusReadResponseMessage m = (ModbusReadResponseMessage) MessageFactory
+                .getMessage(HexUtils.hexToBytes(message));
         assertEquals(coilAddress, m.getCoilAddress());
         assertEquals(value, m.getValue());
     }
 
     @Test
     public void badCrcTest() {
-        final String strMessage = "5C00206A060102030405064C";
-        final byte[] byteMessage = HexUtils.hexToBytes(strMessage);
-        assertThrows(NibeHeatPumpException.class, () -> MessageFactory.getMessage(byteMessage));
+        final String message = "5C00206A060102030405064C";
+        assertThrows(NibeHeatPumpException.class, () -> MessageFactory.getMessage(HexUtils.hexToBytes(message)));
     }
 
     @Test
     public void notReadResponseMessageTest() {
-        final String strMessage = "5C00206B060102030405064A";
-        final byte[] byteMessage = HexUtils.hexToBytes(strMessage);
-        assertThrows(NibeHeatPumpException.class, () -> new ModbusReadResponseMessage(byteMessage));
+        final String message = "5C00206B060102030405064A";
+        assertThrows(NibeHeatPumpException.class, () -> new ModbusReadResponseMessage(HexUtils.hexToBytes(message)));
+    }
+
+    @Test
+    public void parseEscapedMessageTest() throws NibeHeatPumpException {
+        final int coilAddress = 513;
+        final int value = 0x05E65C;
+        final String message = "5C00206A0701025C5CE60500AD";
+        ModbusReadResponseMessage m = (ModbusReadResponseMessage) MessageFactory
+                .getMessage(HexUtils.hexToBytes(message));
+        assertEquals(coilAddress, m.getCoilAddress());
+        assertEquals(value, m.getValue());
     }
 }

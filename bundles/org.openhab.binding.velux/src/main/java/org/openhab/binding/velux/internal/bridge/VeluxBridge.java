@@ -281,4 +281,13 @@ public abstract class VeluxBridge {
      */
     protected abstract boolean bridgeDirectCommunicate(BridgeCommunicationProtocol communication,
             boolean useAuthentication);
+
+    /**
+     * Check is the last communication was a good one
+     *
+     * @return true if the last communication was a good one
+     */
+    public boolean lastCommunicationOk() {
+        return lastCommunication() != 0 && lastSuccessfulCommunication() == lastCommunication();
+    }
 }

@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaActionGroupHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAdjustableSlatsRollerShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAwningHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBioclimaticPergolaHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaContactSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaCurtainHandler;
@@ -159,6 +160,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaDoorLockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_PERGOLA)) {
             return new SomfyTahomaPergolaHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_BIOCLIMATIC_PERGOLA)) {
+            return new SomfyTahomaBioclimaticPergolaHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WINDOW_HANDLE)) {
             return new SomfyTahomaWindowHandleHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TEMPERATURESENSOR)) {

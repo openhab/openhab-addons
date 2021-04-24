@@ -333,7 +333,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     control = "undef";
                     break;
             }
-            if (control.equals("undef")) {
+            if ("undef".equals(control)) {
                 updateState(CHANNEL_CONTROL, UnDefType.UNDEF);
             } else {
                 updateState(CHANNEL_CONTROL, new StringType(control));
@@ -646,8 +646,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         final MiIoBindingConfiguration configuration = this.configuration;
         if (configuration != null && cloudConnector.isConnected()) {
             try {
-                final @Nullable RawType mapDl = cloudConnector.getMap(map,
-                        (configuration.cloudServer != null) ? configuration.cloudServer : "");
+                final @Nullable RawType mapDl = cloudConnector.getMap(map, configuration.cloudServer);
                 if (mapDl != null) {
                     byte[] mapData = mapDl.getBytes();
                     RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));

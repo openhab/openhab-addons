@@ -137,7 +137,7 @@ public class AVMFritzButtonHandler extends DeviceHandler {
     }
 
     private void updateShortLongPressButton(List<ButtonModel> buttons) {
-        ButtonModel shortPressButton = buttons.size() > 0 ? buttons.get(0) : null;
+        ButtonModel shortPressButton = !buttons.isEmpty() ? buttons.get(0) : null;
         ButtonModel longPressButton = buttons.size() > 1 ? buttons.get(1) : null;
         ButtonModel lastPressedButton = shortPressButton != null && (longPressButton == null
                 || shortPressButton.getLastpressedtimestamp() > longPressButton.getLastpressedtimestamp())

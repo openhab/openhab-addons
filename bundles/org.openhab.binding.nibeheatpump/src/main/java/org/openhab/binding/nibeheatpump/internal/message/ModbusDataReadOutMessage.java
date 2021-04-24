@@ -25,7 +25,7 @@ import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocol;
  */
 public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
 
-    private List<ModbusValue> values;
+    private List<ModbusValue> values = new ArrayList<>();
 
     private ModbusDataReadOutMessage(MessageBuilder builder) {
         super.msgType = MessageType.MODBUS_DATA_READ_OUT_MSG;
@@ -42,27 +42,44 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
-        values = parseMessage(data);
+        if (NibeHeatPumpProtocol.isModbus40DataReadOut(data)) {
+            super.encodeMessage(data);
+            final int msglen = NibeHeatPumpProtocol.RES_HEADER_LEN + rawMessage[NibeHeatPumpProtocol.RES_OFFS_LEN];
+
+            values.clear();
+
+            try {
+                for (int i = NibeHeatPumpProtocol.RES_OFFS_DATA; i < (msglen - 1); i += 4) {
+
+                    int id = ((rawMessage[i + 1] & 0xFF) << 8 | (rawMessage[i + 0] & 0xFF));
+                    int value = (rawMessage[i + 3] & 0xFF) << 8 | (rawMessage[i + 2] & 0xFF);
+
+                    if (id != 0xFFFF) {
+                        values.add(new ModbusValue(id, value));
+                    }
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                throw new NibeHeatPumpException("Error occurred during data parsing", e);
+            }
+        } else {
+            throw new NibeHeatPumpException("Not Modbus data readout message");
+        }
     }
 
     @Override
     public byte[] decodeMessage() {
-        return createDataReadOutPdu(values);
-    }
-
-    private byte[] createDataReadOutPdu(List<ModbusValue> values) {
         byte datalen = (byte) (values.size() * 4);
-        byte msglen = (byte) (6 + datalen);
+        byte msglen = (byte) (NibeHeatPumpProtocol.RES_HEADER_LEN + datalen + NibeHeatPumpProtocol.PDU_CHECKSUM_LEN);
 
         byte[] data = new byte[msglen];
 
-        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_FROM_NIBE;
+        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_RES;
         data[1] = 0x00;
         data[2] = NibeHeatPumpProtocol.ADR_MODBUS40;
         data[3] = NibeHeatPumpProtocol.CMD_MODBUS_DATA_MSG;
         data[4] = datalen;
 
-        int i = NibeHeatPumpProtocol.OFFSET_DATA;
+        int i = NibeHeatPumpProtocol.RES_OFFS_DATA;
 
         for (ModbusValue value : values) {
 
@@ -77,7 +94,6 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
         }
 
         data[msglen - 1] = NibeHeatPumpProtocol.calculateChecksum(data, 2, msglen);
-
         return data;
     }
 
@@ -87,34 +103,6 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
         str += ", Values: ";
         str += values.toString();
         return str;
-    }
-
-    private List<ModbusValue> parseMessage(byte[] data) throws NibeHeatPumpException {
-        if (NibeHeatPumpProtocol.isModbus40DataReadOut(data)) {
-            super.encodeMessage(data);
-            final int msglen = 5 + rawMessage[NibeHeatPumpProtocol.OFFSET_LEN];
-
-            List<ModbusValue> vals = new ArrayList<>();
-
-            try {
-                for (int i = NibeHeatPumpProtocol.OFFSET_DATA; i < (msglen - 1); i += 4) {
-
-                    int id = ((rawMessage[i + 1] & 0xFF) << 8 | (rawMessage[i + 0] & 0xFF));
-                    int value = (rawMessage[i + 3] & 0xFF) << 8 | (rawMessage[i + 2] & 0xFF);
-
-                    if (id != 0xFFFF) {
-                        vals.add(new ModbusValue(id, value));
-                    }
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                throw new NibeHeatPumpException("Error occurred during data parsing", e);
-            }
-
-            return vals;
-
-        } else {
-            throw new NibeHeatPumpException("Not Modbus data readout message");
-        }
     }
 
     public static class MessageBuilder {

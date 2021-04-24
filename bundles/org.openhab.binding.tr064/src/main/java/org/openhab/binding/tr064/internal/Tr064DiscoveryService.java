@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.tr064.internal;
 
-import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_SUBDEVICE;
-import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_SUBDEVICE_LAN;
+import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

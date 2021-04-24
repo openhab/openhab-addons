@@ -222,7 +222,7 @@ public class MagentaTVOAuth {
             if (method.equals(HttpMethod.POST)) {
                 fillPostData(request, data);
             }
-            if (cookies.size() > 0) {
+            if (!cookies.isEmpty()) {
                 // Add cookies
                 String cookieValue = "";
                 for (HttpCookie c : cookies) {

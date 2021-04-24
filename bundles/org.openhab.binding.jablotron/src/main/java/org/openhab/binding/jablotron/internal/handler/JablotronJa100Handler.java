@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
-import static org.openhab.binding.jablotron.JablotronBindingConstants.BINDING_ID;
-import static org.openhab.binding.jablotron.JablotronBindingConstants.CACHE_TIMEOUT_MS;
-import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LAST_CHECK_TIME;
+import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 
 import java.util.List;
 
@@ -199,7 +197,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
 
     private void updateTemperatureChannel(Channel channel, JablotronServiceDetailSegment segment) {
         List<JablotronServiceDetailSegmentInfo> infos = segment.getSegmentInfos();
-        if (infos.size() > 0) {
+        if (!infos.isEmpty()) {
             logger.debug("Found value: {} and type: {}", infos.get(0).getValue(), infos.get(0).getType());
             updateState(channel.getUID(), QuantityType.valueOf(infos.get(0).getValue(), SIUnits.CELSIUS));
         } else {

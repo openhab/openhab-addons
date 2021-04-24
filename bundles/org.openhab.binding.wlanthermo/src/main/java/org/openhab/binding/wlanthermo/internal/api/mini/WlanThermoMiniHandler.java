@@ -16,9 +16,14 @@ import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wlanthermo.internal.*;
+import org.openhab.binding.wlanthermo.internal.WlanThermoException;
+import org.openhab.binding.wlanthermo.internal.WlanThermoHandler;
+import org.openhab.binding.wlanthermo.internal.WlanThermoInputException;
+import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
 import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.App;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 

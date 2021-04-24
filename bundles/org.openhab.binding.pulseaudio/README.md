@@ -21,7 +21,7 @@ The Pulseaudio bridge is discovered through mDNS in the local network.
 ## Thing Configuration
 
 The Pulseaudio bridge requires the host (ip address or a hostname) and a port (default: 4712) as a configuration value in order for the binding to know where to access it.
-You can use `pactl -s <ip-address|hostname> list-sinks | grep "name:"` to find the name of a sink.
+You can use `pactl -s <ip-address|hostname> list sinks | grep "name:"` to find the name of a sink.
 
 ## Channels
 
@@ -46,7 +46,7 @@ This requires the module **module-simple-protocol-tcp** to be present on the ser
 ```
 Bridge pulseaudio:bridge:<bridgname> "<Bridge Label>" @ "<Room>" [ host="<ipAddress>", port=4712 ] {
   Things:
-  	Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink="true", simpleProtocolSinkPort="4711"] // the name corresponds to pactl list-sinks output
+  	Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink="true", simpleProtocolSinkPort="4711"] // the name corresponds to `pactl list sinks` output
 	Thing source        microphone      "microphone"         @ "Room"       [name="alsa_input.pci-0000_00_14.2.analog-stereo"]
 	Thing sink-input    openhabTTS      "OH-Voice"           @ "Room"       [name="alsa_output.pci-0000_00_1f.3.hdmi-stereo-extra1"]
 	Thing source-output remotePulseSink "Other Room Speaker" @ "Other Room" [name="alsa_input.pci-0000_00_14.2.analog-stereo"]

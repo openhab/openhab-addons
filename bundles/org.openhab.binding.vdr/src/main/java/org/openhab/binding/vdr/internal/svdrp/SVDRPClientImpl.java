@@ -101,10 +101,12 @@ public class SVDRPClientImpl implements SVDRPClient {
         } catch (IOException e) {
             // cleanup after timeout
             try {
-                if (localOut != null)
+                if (localOut != null) {
                     localOut.close();
-                if (localIn != null)
+                }
+                if (localIn != null) {
                     localIn.close();
+                }
                 localSocket.close();
             } catch (IOException ex) {
             }

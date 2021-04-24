@@ -14,7 +14,11 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link ConnectionDeserializer} will de-serialize a connection-list

@@ -14,7 +14,10 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
 import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.location.Location;

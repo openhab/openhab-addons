@@ -6,10 +6,11 @@
     <suppress files=".+DTO\.java" checks="JavadocType|JavadocVariable|JavadocMethod|MissingJavadocFilterCheck|NullAnnotationsCheck"/>
     <suppress files=".+[\\/]dto[\\/].+\.java" checks="JavadocType|JavadocVariable|JavadocMethod|MissingJavadocFilterCheck|NullAnnotationsCheck"/>
     <suppress files=".+Impl\.java" checks="JavadocType|JavadocVariable|JavadocMethod|MissingJavadocFilterCheck"/>
+    <suppress files=".+[\\/]OH-INF[\\/].+\.xml" checks="OhInfXmlLabelCheck"/>
 
     <!-- Homematic and Tellstick bindings are creating and configuring things dynamically, they will log false positives for unused configuration -->
     <!-- IO and Voice bundles have specific use cases - they use only the config .xml files and will log false positives as well -->
-    <suppress files=".+org.openhab.binding.homematic.+|.+org.openhab.binding.tellstick.+|.+org.openhab.io.+|.+org.openhab.voice.+" checks="EshInfXmlCheck"/>
+    <suppress files=".+org.openhab.binding.homematic.+|.+org.openhab.binding.tellstick.+|.+org.openhab.io.+|.+org.openhab.voice.+" checks="OhInfXmlCheck"/>
     <!-- Some checks will be supressed for test bundles -->
     <suppress files=".+.test[\\/].+" checks="RequireBundleCheck"/>
     <!--  There is a single class inside org.openhab.voice.voicerss.tool, which is meant to be called from the command line.

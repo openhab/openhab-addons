@@ -12,15 +12,25 @@
  */
 package org.openhab.binding.webthing.internal.discovery;
 
-import static org.openhab.binding.webthing.internal.WebThingBindingConstants.MDNS_SERVICE_TYPE;
-import static org.openhab.binding.webthing.internal.WebThingBindingConstants.THING_TYPE_UID;
+import static org.openhab.binding.webthing.internal.WebThingBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;

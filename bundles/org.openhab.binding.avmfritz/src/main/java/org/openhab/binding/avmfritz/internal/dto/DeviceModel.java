@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "device")
@@ -32,6 +33,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     private TemperatureModel temperature;
     private HumidityModel humidity;
     private AlertModel alert;
+    private LevelcontrolModel levelcontrol;
 
     @XmlElement(name = "button", type = ButtonModel.class)
     private List<ButtonModel> buttons;
@@ -60,6 +62,14 @@ public class DeviceModel extends AVMFritzBaseModel {
 
     public void setAlert(AlertModel alertModel) {
         this.alert = alertModel;
+    }
+
+    public LevelcontrolModel getLevelcontrol() {
+        return levelcontrol;
+    }
+
+    public void setLevelcontrol(LevelcontrolModel levelcontrol) {
+        this.levelcontrol = levelcontrol;
     }
 
     public List<ButtonModel> getButtons() {

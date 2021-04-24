@@ -949,7 +949,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public boolean updateWakeupReason(@Nullable List<Object> valueArray) {
         boolean changed = false;
-        if ((valueArray != null) && (valueArray.size() > 0)) {
+        if (valueArray != null && !valueArray.isEmpty()) {
             String reason = getString((String) valueArray.get(0));
             String newVal = valueArray.toString();
             changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));

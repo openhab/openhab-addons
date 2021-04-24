@@ -139,7 +139,7 @@ public class MagentaTVDeviceManager {
             MagentaTVDevice dev = deviceList.get(udn.toUpperCase());
             return dev.properties;
         }
-        if (deviceList.size() > 0) {
+        if (!deviceList.isEmpty()) {
             logger.debug("getDiscoveredProperties(): Unknown UDN: {}", udn);
         }
         return null;

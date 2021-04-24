@@ -31,30 +31,28 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
-import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
-import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
-import org.openhab.persistence.jdbc.model.ItemVO;
-import org.openhab.persistence.jdbc.model.ItemsVO;
-import org.openhab.persistence.jdbc.model.JdbcHistoricItem;
+import org.openhab.core.types.TypeParser;
+import org.openhab.persistence.jdbc.dto.ItemVO;
+import org.openhab.persistence.jdbc.dto.ItemsVO;
+import org.openhab.persistence.jdbc.dto.JdbcHistoricItem;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
@@ -157,7 +155,7 @@ public class JdbcBaseDAO {
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "TINYINT");
         sqlTypes.put("IMAGEITEM", "VARCHAR(65500)");// jdbc max 21845
-        sqlTypes.put("LOCATIONITEM", "VARCHAR(30)");
+        sqlTypes.put("LOCATIONITEM", "VARCHAR(50)");
         sqlTypes.put("NUMBERITEM", "DOUBLE");
         sqlTypes.put("PLAYERITEM", "VARCHAR(20)");
         sqlTypes.put("ROLLERSHUTTERITEM", "TINYINT");
@@ -505,23 +503,17 @@ public class JdbcBaseDAO {
             }
             return unit == null ? DecimalType.valueOf(((String) v).toString())
                     : QuantityType.valueOf(((String) v).toString());
-        } else if (item instanceof ColorItem) {
-            return HSBType.valueOf(((String) v).toString());
-        } else if (item instanceof DimmerItem) {
-            return new PercentType(objectAsInteger(v));
-        } else if (item instanceof SwitchItem) {
-            return OnOffType.valueOf(((String) v).toString().trim());
-        } else if (item instanceof ContactItem) {
-            return OpenClosedType.valueOf(((String) v).toString().trim());
-        } else if (item instanceof RollershutterItem) {
-            return new PercentType(objectAsInteger(v));
         } else if (item instanceof DateTimeItem) {
             return new DateTimeType(
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsLong(v)), ZoneId.systemDefault()));
-        } else if (item instanceof StringItem) {
-            return StringType.valueOf(((String) v).toString());
-        } else {// Call, Image, Location, Player, String
-            return StringType.valueOf(((String) v).toString());
+        } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
+            return new PercentType(objectAsInteger(v));
+        } else if (item instanceof ImageItem) {
+            return RawType.valueOf(objectAsString(v));
+        } else if (item instanceof ContactItem || item instanceof PlayerItem || item instanceof SwitchItem) {
+            return TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v).toString().trim());
+        } else {
+            return TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v).toString());
         }
     }
 
@@ -546,6 +538,13 @@ public class JdbcBaseDAO {
             return ((Byte) v).intValue();
         }
         return ((Integer) v).intValue();
+    }
+
+    protected String objectAsString(Object v) {
+        if (v instanceof byte[]) {
+            return new String((byte[]) v);
+        }
+        return ((String) v).toString();
     }
 
     public String getItemType(Item i) {

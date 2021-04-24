@@ -122,6 +122,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 updateStatus(ThingStatus.ONLINE);
 
                 sendCommand(EiscpCommand.INFO_QUERY);
+                sendCommand(EiscpCommand.AUDIOINFO_QUERY);
             }
         });
 
@@ -324,7 +325,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     sendCommand(EiscpCommand.NETUSB_TITLE_QUERY);
                 }
                 break;
-
+            case CHANNEL_AUDIOINFO:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.AUDIOINFO_QUERY);
+                }
+                break;
             /*
              * MISC
              */
@@ -477,7 +482,10 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 /*
                  * MISC
                  */
-
+                case AUDIOINFO:
+                    updateState(CHANNEL_AUDIOINFO, convertDeviceValueToOpenHabState(data.getValue(), StringType.class));
+                    logger.debug("audioinfo message: '{}'", data.getValue());
+                    break;
                 case INFO:
                     processInfo(data.getValue());
                     logger.debug("Info message: '{}'", data.getValue());
@@ -797,6 +805,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             sendCommand(EiscpCommand.NETUSB_TITLE_QUERY);
             sendCommand(EiscpCommand.LISTEN_MODE_QUERY);
             sendCommand(EiscpCommand.INFO_QUERY);
+            sendCommand(EiscpCommand.AUDIOINFO_QUERY);
 
             if (isChannelAvailable(CHANNEL_POWERZONE2)) {
                 sendCommand(EiscpCommand.ZONE2_POWER_QUERY);

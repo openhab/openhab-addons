@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
-import static org.openhab.binding.jablotron.JablotronBindingConstants.BINDING_ID;
-import static org.openhab.binding.jablotron.JablotronBindingConstants.CACHE_TIMEOUT_MS;
-import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LAST_CHECK_TIME;
+import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 
 import java.util.List;
 
@@ -181,7 +179,7 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
             // update events
             List<JablotronHistoryDataEvent> events = sendGetEventHistory();
-            if (events != null && events.size() > 0) {
+            if (events != null && !events.isEmpty()) {
                 JablotronHistoryDataEvent event = events.get(0);
                 updateLastEvent(event);
             }

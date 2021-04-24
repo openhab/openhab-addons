@@ -227,7 +227,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                         actionUrl = buildActionUrl(uid, action);
                     } else {
                         try {
-                            String result = api.resetStaCache();
+                            api.resetStaCache();
                             message = getMessage("action.resetsta-confirm");
                         } catch (ShellyApiException e) {
                             message = getMessageP("action.resetsta-failed", e.toString());
@@ -243,7 +243,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                         actionUrl = buildActionUrl(uid, action);
                     } else {
                         try {
-                            String result = api.setWiFiRecovery(enable);
+                            api.setWiFiRecovery(enable);
                             message = getMessage("action.setwifirec-confirm", enable ? "enabled" : "disabled");
                         } catch (ShellyApiException e) {
                             message = getMessage("action.setwifirec-failed", e.toString());
@@ -260,7 +260,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                         actionUrl = buildActionUrl(uid, action);
                     } else {
                         try {
-                            String result = api.setApRoaming(enable);
+                            api.setApRoaming(enable);
                             message = getMessage("action.aproaming-confirm", enable ? "enabled" : "disabled");
                         } catch (ShellyApiException e) {
                             message = getMessage("action.aproaming-failed", e.toString());

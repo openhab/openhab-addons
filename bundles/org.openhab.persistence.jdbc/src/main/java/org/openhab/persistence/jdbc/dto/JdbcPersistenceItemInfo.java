@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.model;
+package org.openhab.persistence.jdbc.dto;
 
 import java.util.Date;
 

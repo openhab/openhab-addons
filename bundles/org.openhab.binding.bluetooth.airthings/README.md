@@ -8,7 +8,8 @@ Following thing types are supported by this extension:
 
 | Thing Type ID       | Description               |
 | ------------------- | ------------------------- |
-| airthings_wave_plus | Airthings Wave+           |
+| airthings_wave_plus | Airthings Wave Plus       |
+| airthings_wave_mini | Airthings Wave Mini       |
 
 
 ## Discovery
@@ -17,7 +18,7 @@ As any other Bluetooth device, Airthings devices are discovered automatically by
 
 ## Thing Configuration
 
-Supported configuration parameters for `Airthings Wave+` thing:
+Supported configuration parameters for the things:
 
 | Property                        | Type    | Default | Required | Description                                                     |
 |---------------------------------|---------|---------|----------|-----------------------------------------------------------------|
@@ -26,17 +27,23 @@ Supported configuration parameters for `Airthings Wave+` thing:
 
 ## Channels
 
-Following channels are supported for `Airthings Wave+` thing:
+Following channels are supported for `Airthings Wave Mini` thing:
 
 | Channel ID         | Item Type                | Description                                 |
 | ------------------ | ------------------------ | ------------------------------------------- |
 | temperature        | Number:Temperature       | The measured temperature                    |
 | humidity           | Number:Dimensionless     | The measured humidity                       |
+| tvoc               | Number:Dimensionless     | The measured TVOC level                     |
+
+The `Airthings Wave Plus` thing has additionally the following channels:
+
+| Channel ID         | Item Type                | Description                                 |
+| ------------------ | ------------------------ | ------------------------------------------- |
 | pressure           | Number:Pressure          | The measured air pressure                   |
 | co2                | Number:Dimensionless     | The measured CO2 level                      |
-| tvoc               | Number:Dimensionless     | The measured TVOC level                     |
 | radon_st_avg       | Number:Density           | The measured radon short term average level |
 | radon_lt_avg       | Number:Density           | The measured radon long term average level  |
+
 
 ## Example
 

@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.neato.internal;
 
-import static org.openhab.binding.neato.internal.classes.Category.HOUSE;
-import static org.openhab.binding.neato.internal.classes.Category.MAP;
+import static org.openhab.binding.neato.internal.classes.Category.*;
 import static org.openhab.binding.neato.internal.classes.Mode.TURBO;
 import static org.openhab.binding.neato.internal.classes.NavigationMode.DEEP;
 
@@ -34,7 +33,10 @@ import java.util.TimeZone;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.openhab.binding.neato.internal.classes.*;
+import org.openhab.binding.neato.internal.classes.ErrorMessage;
+import org.openhab.binding.neato.internal.classes.NeatoGeneralInfo;
+import org.openhab.binding.neato.internal.classes.NeatoRobotInfo;
+import org.openhab.binding.neato.internal.classes.NeatoState;
 import org.openhab.binding.neato.internal.config.NeatoRobotConfig;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.util.HexUtils;

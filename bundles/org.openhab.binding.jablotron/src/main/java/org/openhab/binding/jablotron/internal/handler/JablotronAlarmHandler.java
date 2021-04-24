@@ -25,11 +25,22 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jablotron.internal.config.JablotronDeviceConfig;
-import org.openhab.binding.jablotron.internal.model.*;
+import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDataUpdateResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDiscoveredService;
+import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
+import org.openhab.binding.jablotron.internal.model.JablotronService;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceData;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceDetail;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -176,7 +187,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         }
 
         List<JablotronHistoryDataEvent> events = sendGetEventHistory();
-        if (events != null && events.size() > 0) {
+        if (events != null && !events.isEmpty()) {
             JablotronHistoryDataEvent event = events.get(0);
             updateLastEvent(event);
         }
@@ -210,7 +221,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     protected void updateEventChannel(String channel) {
         List<JablotronHistoryDataEvent> events = eventCache.getValue();
-        if (events != null && events.size() > 0) {
+        if (events != null && !events.isEmpty()) {
             JablotronHistoryDataEvent event = events.get(0);
             switch (channel) {
                 case CHANNEL_LAST_EVENT_TIME:

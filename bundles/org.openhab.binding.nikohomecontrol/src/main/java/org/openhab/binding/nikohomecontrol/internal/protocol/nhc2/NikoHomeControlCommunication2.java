@@ -577,7 +577,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         deviceProperties.stream().map(p -> p.electricalPower).filter(Objects::nonNull).findFirst()
                 .ifPresent(electricalPower -> {
                     try {
-                        energyMeter.setPower(Integer.parseInt(electricalPower));
+                        // Sometimes API sends a fractional part, although API should only send whole units in W,
+                        // therefore drop fractional part
+                        energyMeter.setPower((int) Double.parseDouble(electricalPower));
                         logger.trace("setting energy meter {} power to {}", energyMeter.getId(), electricalPower);
                     } catch (NumberFormatException e) {
                         energyMeter.setPower(null);

@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.tr064.internal;
 
-import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_SUBDEVICE;
-import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_SUBDEVICE_LAN;
+import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +29,13 @@ import org.openhab.binding.tr064.internal.soap.SOAPConnector;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.cache.ExpiringCacheMap;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;

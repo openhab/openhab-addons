@@ -131,7 +131,7 @@ public class ThermostatHandler extends BaseThingHandler {
      */
     public @Nullable Thermostat tryHandleAndGetUpdatedThermostat() {
         final LinkedList<SimpleImmutableEntry<String, Command>> updatedValues = this.updatedValues;
-        if (updatedValues.size() == 0) {
+        if (updatedValues.isEmpty()) {
             return null;
         }
         this.updatedValues = new LinkedList<>();
