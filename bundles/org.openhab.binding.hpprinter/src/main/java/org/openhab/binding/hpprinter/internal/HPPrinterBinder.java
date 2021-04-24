@@ -554,7 +554,7 @@ public class HPPrinterBinder {
      * Public method to close the connection to the Embedded Web Server
      *
      * Set handlerDisposed to prevent call-backs to the handler after it has been disposed
-     * Then call the internal close0()
+     * Then call the closeinternal() method
      */
     public void close() {
         handlerDisposed = true;
