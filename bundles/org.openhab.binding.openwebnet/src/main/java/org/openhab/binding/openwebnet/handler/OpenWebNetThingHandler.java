@@ -67,22 +67,22 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
             OpenWebNetBridgeHandler brH = (OpenWebNetBridgeHandler) bridge.getHandler();
             if (brH != null) {
                 bridgeHandler = brH;
-                Object deviceWhereConfig = getConfig().get(CONFIG_PROPERTY_WHERE);
-                if (!(deviceWhereConfig instanceof String)) {
+
+                final String configDeviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
+                if (configDeviceWhere == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "WHERE parameter in configuration is null or invalid");
+                            "@text/offline.conf-error-where");
                 } else {
-                    String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
                     Where w;
                     try {
                         if (brH.isBusGateway()) {
-                            w = buildBusWhere(deviceWhereStr);
+                            w = buildBusWhere(configDeviceWhere);
                         } else {
-                            w = new WhereZigBee(deviceWhereStr);
+                            w = new WhereZigBee(configDeviceWhere);
                         }
                     } catch (IllegalArgumentException ia) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "WHERE parameter in configuration is invalid");
+                                "@text/offline.conf-error-where");
                         return;
                     }
                     deviceWhere = w;
@@ -93,12 +93,12 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     updateProperties(properties);
                     brH.registerDevice(oid, this);
                     logger.debug("associated thing to bridge with ownId={}", ownId);
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/unknown.waiting-state");
                 }
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No bridge associated, please assign a bridge in thing configuration.");
+                    "@text/offline.conf-error-no-bridge");
         }
     }
 
@@ -157,16 +157,17 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Helper method to send OWN messages from ThingsHandlers
+     * Helper method to send OWN messages from ThingHandlers
      */
     protected @Nullable Response send(OpenMessage msg) throws OWNException {
-        OpenWebNetBridgeHandler handler = bridgeHandler;
-        if (handler != null) {
-            OpenGateway gw = handler.gateway;
+        OpenWebNetBridgeHandler bh = bridgeHandler;
+        if (bh != null) {
+            OpenGateway gw = bh.gateway;
             if (gw != null) {
                 return gw.send(msg);
             }
         }
+        logger.warn("Couldn't send message {}: handler or gateway is null", msg);
         return null;
     }
 
@@ -185,11 +186,18 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Request to gateway state for thing channel. It must be implemented by each specific device handler.
+     * Request the state for the specified channel
      *
-     * @param channel the channel to request the state for
+     * @param channel the {@link ChannelUID} to request the state for
      */
     protected abstract void requestChannelState(ChannelUID channel);
+
+    /**
+     * Refresh the device
+     *
+     * @param refreshAll set true if all devices of the binding should be refreshed with one command, if possible
+     */
+    protected abstract void refreshDevice(boolean refreshAll);
 
     /**
      * Abstract builder for device Where address, to be implemented by each subclass to choose the right Where subclass
