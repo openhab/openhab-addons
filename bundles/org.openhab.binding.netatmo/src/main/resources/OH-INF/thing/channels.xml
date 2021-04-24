@@ -833,6 +833,14 @@
 				<option value="TAG_SMALL_MOVE">tag_small_move</option>
 				<option value="TAG_UNINSTALLED">tag_uninstalled</option>
 				<option value="TAG_OPEN">tag_open</option>
+				<option value="OUTDOOR">outdoor</option>
+				<option value="DAILY_SUMMARY">daily_summery</option>
+				<option value="HUMAN">human</option>
+				<option value="ANIMAL">animal</option>
+				<option value="VEHICLE">vehicle</option>
+				<option value="INCOMING_CALL">incoming_call</option>
+				<option value="ACCEPTED_CALL">accepted_call</option>
+				<option value="MISSED_CALL">missed_call</option>
 			</options>
 		</event>
 	</channel-type>

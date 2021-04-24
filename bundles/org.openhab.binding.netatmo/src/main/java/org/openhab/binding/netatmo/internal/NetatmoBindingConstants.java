@@ -97,6 +97,8 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID WELCOME_PERSON_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomePerson");
     // Presence camera
     public static final ThingTypeUID PRESENCE_CAMERA_THING_TYPE = new ThingTypeUID(BINDING_ID, "NOC");
+    // Video doorbell
+    public static final ThingTypeUID DOORBELL_CAMERA_THING_TYPE = new ThingTypeUID(BINDING_ID, "NDB");
 
     // Weather Station Channel ids
     public static final String CHANNEL_TEMPERATURE = "Temperature";
@@ -276,10 +278,10 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_CAMERA_FLOODLIGHT = "cameraFloodlight";
 
     // List of all supported physical devices and modules
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
-            .of(MAIN_THING_TYPE, MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE,
-                    HOMECOACH_THING_TYPE, PLUG_THING_TYPE, THERM1_THING_TYPE, WELCOME_HOME_THING_TYPE,
-                    WELCOME_CAMERA_THING_TYPE, WELCOME_PERSON_THING_TYPE, PRESENCE_CAMERA_THING_TYPE)
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream.of(MAIN_THING_TYPE,
+            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, HOMECOACH_THING_TYPE,
+            PLUG_THING_TYPE, THERM1_THING_TYPE, WELCOME_HOME_THING_TYPE, WELCOME_CAMERA_THING_TYPE,
+            WELCOME_PERSON_THING_TYPE, PRESENCE_CAMERA_THING_TYPE, DOORBELL_CAMERA_THING_TYPE)
             .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
@@ -298,6 +300,10 @@ public class NetatmoBindingConstants {
             .collect(Collectors.toSet());
     public static final Set<EventTypeEnum> PERSON_EVENTS = Stream.of(EventTypeEnum.PERSON, EventTypeEnum.PERSON_AWAY)
             .collect(Collectors.toSet());
-    public static final Set<EventTypeEnum> PRESENCE_EVENTS = Stream
-            .of(EventTypeEnum.OUTDOOR, EventTypeEnum.ALIM, EventTypeEnum.DAILY_SUMMARY).collect(Collectors.toSet());
+    public static final Set<EventTypeEnum> PRESENCE_EVENTS = Stream.of(EventTypeEnum.OUTDOOR, EventTypeEnum.ALIM,
+            EventTypeEnum.DAILY_SUMMARY, EventTypeEnum.HUMAN, EventTypeEnum.ANIMAL, EventTypeEnum.VEHICLE)
+            .collect(Collectors.toSet());
+    public static final Set<EventTypeEnum> DOORBELL_EVENTS = Stream.of(EventTypeEnum.OUTDOOR, EventTypeEnum.HUMAN,
+            EventTypeEnum.INCOMING_CALL, EventTypeEnum.ACCEPTED_CALL, EventTypeEnum.MISSED_CALL)
+            .collect(Collectors.toSet());
 }

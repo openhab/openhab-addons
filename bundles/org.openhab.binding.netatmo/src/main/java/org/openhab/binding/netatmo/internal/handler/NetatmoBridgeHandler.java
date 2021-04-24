@@ -18,11 +18,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +39,7 @@ import org.openhab.binding.netatmo.internal.config.NetatmoBridgeConfiguration;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEventPerson;
 import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -49,6 +48,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,6 +239,12 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             scopes.add("access_presence");
         }
 
+        if (configuration.readDoorbell) {
+            scopes.add("read_doorbell");
+            scopes.add("access_doorbell");
+            scopes.add("write_doorbell");
+        }
+
         return String.join(" ", scopes);
     }
 
@@ -346,46 +352,90 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     }
 
     public void webHookEvent(NAWebhookCameraEvent event) {
-        // This currently the only known event type but I suspect usage can grow in the future...
-        if (event.getAppType() == NAWebhookCameraEvent.AppTypeEnum.CAMERA) {
-            Set<AbstractNetatmoThingHandler> modules = new HashSet<>();
-            if (WELCOME_EVENTS.contains(event.getEventType()) || PRESENCE_EVENTS.contains(event.getEventType())) {
-                String cameraId = event.getCameraId();
-                if (cameraId != null) {
-                    Optional<AbstractNetatmoThingHandler> camera = findNAThing(cameraId);
-                    camera.ifPresent(modules::add);
-                }
+
+        if (WELCOME_EVENTS.contains(event.getEventType()) || PRESENCE_EVENTS.contains(event.getEventType())
+                || DOORBELL_EVENTS.contains(event.getEventType())) {
+
+            String cameraId = event.getCameraId();
+            if (cameraId != null) {
+                Optional<AbstractNetatmoThingHandler> camera = findNAThing(cameraId);
+                updateEventSnapshotChannels(camera, event.getSnapshotURL());
+                triggerHomeChannel(camera, event.getEventType().name());
+
+                Optional<AbstractNetatmoThingHandler> home = findNAThing(event.getHomeId());
+                updateEventSnapshotChannels(home, event.getSnapshotURL());
+                triggerHomeChannel(home, event.getEventType().name());
             }
-            if (HOME_EVENTS.contains(event.getEventType())) {
-                String homeId = event.getHomeId();
-                if (homeId != null) {
-                    Optional<AbstractNetatmoThingHandler> home = findNAThing(homeId);
-                    home.ifPresent(modules::add);
-                }
+        }
+        if (NAWebhookCameraEvent.PUSH_TYPE_DOORBELL_PRESS.equals(event.getPushType())) {
+            Optional<AbstractNetatmoThingHandler> home = findNAThing(event.getHomeId());
+            String eventName = NAWebhookCameraEvent.EventTypeEnum.DOORBELL_PRESS.name();
+            triggerHomeChannel(home, eventName);
+
+            String cameraId = event.getDeviceId();
+
+            if (cameraId != null) {
+                Optional<AbstractNetatmoThingHandler> camera = findNAThing(cameraId);
+                triggerHomeChannel(camera, eventName);
             }
-            if (PERSON_EVENTS.contains(event.getEventType())) {
-                List<NAWebhookCameraEventPerson> persons = event.getPersons();
-                persons.forEach(person -> {
-                    String personId = person.getId();
-                    if (personId != null) {
-                        Optional<AbstractNetatmoThingHandler> personHandler = findNAThing(personId);
-                        personHandler.ifPresent(modules::add);
-                    }
-                });
+        }
+        if (HOME_EVENTS.contains(event.getEventType())) {
+            String homeId = event.getHomeId();
+            if (homeId != null) {
+                triggerHomeChannel(findNAThing(homeId), event.getEventType().name());
             }
-            modules.forEach(module -> {
-                Channel channel = module.getThing().getChannel(CHANNEL_WELCOME_HOME_EVENT);
-                if (channel != null) {
-                    triggerChannel(channel.getUID(), event.getEventType().toString());
+        }
+        if (PERSON_EVENTS.contains(event.getEventType())) {
+            List<NAWebhookCameraEventPerson> persons = event.getPersons();
+            persons.forEach(person -> {
+                String personId = person.getId();
+                if (personId != null) {
+                    triggerHomeChannel(findNAThing(personId), event.getEventType().name());
                 }
             });
+        }
+    }
+
+    private void triggerHomeChannel(Optional<AbstractNetatmoThingHandler> thingHandler, String command) {
+        if (thingHandler.isPresent()) {
+            @Nullable
+            Channel channel = thingHandler.get().getThing().getChannel(CHANNEL_WELCOME_HOME_EVENT);
+            triggerChannel(channel, command);
+        }
+    }
+
+    private void triggerChannel(@Nullable Channel channel, String command) {
+        if (channel != null) {
+            triggerChannel(channel.getUID(), command);
+        }
+    }
+
+    private void updateEventSnapshotChannels(Optional<AbstractNetatmoThingHandler> thingHandler,
+            @Nullable String snapshotURL) {
+        if (thingHandler.isPresent() && snapshotURL != null) {
+            StringType snapshotURLType = new StringType(snapshotURL);
+
+            @Nullable
+            Channel snapshotURLChannel = thingHandler.get().getThing().getChannel(CHANNEL_WELCOME_EVENT_SNAPSHOT_URL);
+            updateChannel(snapshotURLChannel, snapshotURLType);
+
+            @Nullable
+            Channel snapshotChannel = thingHandler.get().getThing().getChannel(CHANNEL_WELCOME_EVENT_SNAPSHOT);
+            updateChannel(snapshotChannel, snapshotURLType);
+        }
+    }
+
+    private void updateChannel(@Nullable Channel channel, State state) {
+        if (channel != null) {
+            updateState(channel.getUID(), state);
         }
     }
 
     private @Nullable String getWebHookURI() {
         String webHookURI = null;
         WelcomeWebHookServlet webHookServlet = this.webHookServlet;
-        if (configuration.webHookUrl != null && (configuration.readWelcome || configuration.readPresence)
+        if (configuration.webHookUrl != null
+                && (configuration.readWelcome || configuration.readPresence || configuration.readDoorbell)
                 && webHookServlet != null) {
             webHookURI = configuration.webHookUrl + webHookServlet.getPath();
         }

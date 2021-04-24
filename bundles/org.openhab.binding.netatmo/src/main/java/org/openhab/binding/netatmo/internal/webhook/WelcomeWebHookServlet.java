@@ -59,7 +59,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
     /**
      * OSGi activation callback.
      *
-     * @param config Service config.
+     * @param bridgeHandler bridge handler.
      */
     public void activate(NetatmoBridgeHandler bridgeHandler) {
         this.bridgeHandler = bridgeHandler;
@@ -81,8 +81,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         if (req == null || resp == null) {
             return;
         }
@@ -91,7 +90,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
         NetatmoBridgeHandler handler = bridgeHandler;
         if (!data.isEmpty() && handler != null) {
             NAWebhookCameraEvent event = gson.fromJson(data, NAWebhookCameraEvent.class);
-            logger.debug("Event transmitted from restService");
+            logger.debug("Netatmo - Event transmitted from restService: {}", data);
             handler.webHookEvent(Objects.requireNonNull(event));
         }
 

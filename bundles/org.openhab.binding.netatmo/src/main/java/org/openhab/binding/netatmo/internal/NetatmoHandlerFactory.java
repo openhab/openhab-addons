@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
+import org.openhab.binding.netatmo.internal.doorbell.NADoorbellCameraHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
 import org.openhab.binding.netatmo.internal.presence.NAPresenceCameraHandler;
@@ -137,6 +138,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAWelcomeCameraHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
             return new NAPresenceCameraHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(DOORBELL_CAMERA_THING_TYPE)) {
+            return new NADoorbellCameraHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing, timeZoneProvider);
         } else {

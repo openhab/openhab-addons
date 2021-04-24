@@ -6,6 +6,7 @@ The Netatmo binding integrates the following Netatmo products:
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
+- *Video Doorbell*. Reports last event, consult picture and video from event/camera.
 
 See https://www.netatmo.com/ for details on their product.
 
@@ -44,7 +45,7 @@ Once you will get needed informations from the Netatmo API, you will be able to 
 E.g.
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false, readWelcome=true|false, readPresence=true|false] {
+Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false, readWelcome=true|false, readPresence=true|false, readDoorbell=true|false] {
     Thing NAMain    inside  [ id="aa:aa:aa:aa:aa:aa" ]
     Thing NAModule1 outside  [ id="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
     Thing NHC       homecoach  [ id="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
@@ -53,6 +54,7 @@ Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_S
     Thing NAWelcomeHome home   [ id="58yyacaaexxxebca99x999x", refreshInterval=600000 ]
     Thing NACamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
     Thing NOC presenceOutdoorCamera [ id="dd:dd:dd:dd:dd:dd", parentId="58yyacaaexxxebca99x999x" ]
+    Thing NDB videoDoorbell [ id="ee:ee:ee:ee:ee:ee", parentId="58yyacaaexxxebca99x999x" ]
     Thing NAWelcomePerson sysadmin [ id="aaaaaaaa-bbbb-cccc-eeee-zzzzzzzzzzzz", parentId="58yyacaaexxxebca99x999x" ]
     ...
 }
@@ -509,8 +511,16 @@ All these channels are read only.
 |                  | TAG_SMALL_MOVE         | Triggered when a small movement of a tag was detected |
 |                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                 |
 |                  | TAG_OPEN               | Triggered when an open event of a tag was detected    |
+|                  | HUMAN                  | Triggered when a human (or person) was detected       |
+|                  | ANIMAL                 | Triggered when an animal was detected                 |
+|                  | MOVEMENT               | Triggered when an unspecified movement was detected   |
+|                  | VEHICLE                | Triggered when a vehicle was detected                 |
+|                  | DOORBELL_PRESS         | Triggered when the button of the doorbell is pressed  |
+|                  | INCOMING_CALL          | Triggered when the doorbell executes the video call   |
+|                  | ACCEPTED_CALL          | Triggered when the doorbell video call was accepted   |
+|                  | MISSED_CALL            | Triggered when the doorbell video call was missed     |
 
-### Welcome and Presence Camera
+### Cameras
 
 Warnings:
 
@@ -546,6 +556,18 @@ Warnings:
 | cameraLiveStreamUrl         | String    | Read-only  | Url of the live stream for this camera                       |
 | cameraFloodlightAutoMode    | Switch    | Read-write | When set the floodlight gets switched to auto instead of off |
 | cameraFloodlight            | Switch    | Read-write | Switch for the floodlight                                    |
+
+**Supported channels for the Video Doorbell thing:**
+
+| Channel ID                  | Item Type | Read/Write | Description                                                  |
+|-----------------------------|-----------|------------|--------------------------------------------------------------|
+| cameraStatus                | Switch    | Read-only  | State of the camera (video surveillance on/off)              |
+| cameraSdStatus              | Switch    | Read-only  | State of the SD card                                         |
+| cameraAlimStatus            | Switch    | Read-only  | State of the power connector                                 |
+| cameraIsLocal               | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| cameraLivePicture           | Image     | Read-only  | Camera Live Snapshot                                         |
+| cameraLivePictureUrl        | String    | Read-only  | Url of the live snapshot for this camera                     |
+| cameraLiveStreamUrl         | String    | Read-only  | Url of the live stream for this camera                       |
 
 
 ### Welcome Person

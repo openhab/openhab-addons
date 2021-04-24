@@ -26,27 +26,49 @@ import com.google.gson.annotations.SerializedName;
  */
 public class NAWebhookCameraEvent {
 
-    public enum AppTypeEnum {
-        @SerializedName("app_camera")
-        CAMERA("camera");
+    public static final String PUSH_TYPE_DOORBELL_PRESS = "NDB-rtc";
 
-        private String value;
+    @SerializedName("event_type")
+    private EventTypeEnum eventType;
+    @SerializedName("device_id")
+    private String deviceId;
+    @SerializedName("camera_id")
+    private String cameraId;
+    @SerializedName("home_id")
+    private String homeId;
+    @SerializedName("push_type")
+    private String pushType;
+    @SerializedName("snapshot_url")
+    private String snapshotURL;
+    @SerializedName("persons")
+    private List<NAWebhookCameraEventPerson> persons = new ArrayList<>();
 
-        AppTypeEnum(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return value;
-        }
+    public EventTypeEnum getEventType() {
+        return eventType;
     }
 
-    @SerializedName("app_type")
-    private AppTypeEnum appType = null;
+    public String getDeviceId() {
+        return deviceId;
+    }
 
-    public AppTypeEnum getAppType() {
-        return appType;
+    public String getCameraId() {
+        return cameraId;
+    }
+
+    public String getHomeId() {
+        return homeId;
+    }
+
+    public String getSnapshotURL() {
+        return snapshotURL;
+    }
+
+    public String getPushType() {
+        return pushType;
+    }
+
+    public List<NAWebhookCameraEventPerson> getPersons() {
+        return persons;
     }
 
     public enum EventTypeEnum {
@@ -111,7 +133,34 @@ public class NAWebhookCameraEvent {
         TAG_UNINSTALLED("tag_uninstalled"),
 
         @SerializedName("tag_open")
-        TAG_OPEN("tag_open");
+        TAG_OPEN("tag_open"),
+
+        @SerializedName("human")
+        HUMAN("human"),
+
+        @SerializedName("animal")
+        ANIMAL("animal"),
+
+        @SerializedName("vehicle")
+        VEHICLE("vehicle"),
+
+        @SerializedName("incoming_call")
+        INCOMING_CALL("incoming_call"),
+
+        @SerializedName("accepted_call")
+        ACCEPTED_CALL("accepted_call"),
+
+        @SerializedName("missed_call")
+        MISSED_CALL("missed_call"),
+
+        /**
+         * This is not an event of the Netatmo API.
+         * It is triggered manually when the push_type {@link NAWebhookCameraEvent#PUSH_TYPE_DOORBELL_PRESS} occurs.
+         * This event is triggered when the button on the doorbell pressed and it is received about 10 seconds
+         * earlier than all other doorbell events.
+         */
+        @SerializedName("doorbell_press")
+        DOORBELL_PRESS("doorbell_press");
 
         private String value;
 
@@ -123,33 +172,5 @@ public class NAWebhookCameraEvent {
         public String toString() {
             return value;
         }
-    }
-
-    @SerializedName("event_type")
-    private EventTypeEnum eventType = null;
-
-    public EventTypeEnum getEventType() {
-        return eventType;
-    }
-
-    @SerializedName("camera_id")
-    String cameraId;
-
-    public String getCameraId() {
-        return cameraId;
-    }
-
-    @SerializedName("home_id")
-    String homeId;
-
-    public String getHomeId() {
-        return homeId;
-    }
-
-    @SerializedName("persons")
-    private List<NAWebhookCameraEventPerson> persons = new ArrayList<>();
-
-    public List<NAWebhookCameraEventPerson> getPersons() {
-        return persons;
     }
 }

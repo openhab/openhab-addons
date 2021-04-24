@@ -97,7 +97,8 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                 });
             });
         }
-        if (netatmoBridgeHandler.configuration.readWelcome || netatmoBridgeHandler.configuration.readPresence) {
+        if (netatmoBridgeHandler.configuration.readWelcome || netatmoBridgeHandler.configuration.readPresence
+                || netatmoBridgeHandler.configuration.readDoorbell) {
             netatmoBridgeHandler.getWelcomeDataBody(null).ifPresent(dataBody -> {
                 nonNullList(dataBody.getHomes()).forEach(home -> {
                     discoverWelcomeHome(home);

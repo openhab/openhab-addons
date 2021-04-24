@@ -195,8 +195,11 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         }
 
         nonNullList(event.getEventList()).forEach(subEvent -> {
-            String detectedObjectType = subEvent.getType().name();
-            detectedObjectTypes.add(detectedObjectType);
+            NAWelcomeSubEvent.TypeEnum subEventType = subEvent.getType();
+            if (subEventType != null) {
+                String detectedObjectType = subEventType.name();
+                detectedObjectTypes.add(detectedObjectType);
+            }
         });
         return detectedObjectTypes;
     }

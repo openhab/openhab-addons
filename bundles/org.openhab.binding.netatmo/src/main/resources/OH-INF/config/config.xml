@@ -58,6 +58,12 @@
 			<default>false</default>
 		</parameter>
 
+		<parameter name="readDoorbell" type="boolean">
+			<label>Access Doorbell Camera</label>
+			<description>Read and Access Doorbell camera's data.</description>
+			<default>false</default>
+		</parameter>
+
 		<parameter name="webHookUrl" type="text">
 			<label>Webhook Address</label>
 			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
