@@ -18,7 +18,7 @@ If there is need for another architecture/platform, please open a [ticket on Git
 ## Supported Things
 
 All AllPlay compatible speakers are supported by this binding.
-This includes for example the [Panasonic ALL series](http://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html).
+This includes for example the [Panasonic ALL series](https://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html).
 All AllPlay speakers are registered as an audio sink in the framework.
 
 ## Discovery
@@ -123,5 +123,5 @@ rule "Play Online Radio stream"
 when
     Item All2OnlineRadio changed to ON
 then
-    All2Stream.sendCommand("http://chromaradio.com:8008/listen.pls")
+    All2Stream.sendCommand("https://chromaradio.com:8008/listen.pls")
 ```

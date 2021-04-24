@@ -49,7 +49,7 @@ The binding supports following channels
 Things:
 
 ```java
-feed:feed:bbc [URL="http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk"]
+feed:feed:bbc [URL="https://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk"]
 feed:feed:techCrunch [URL="http://feeds.feedburner.com/TechCrunch/", refresh=60]
 ```
 
