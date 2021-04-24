@@ -53,4 +53,3 @@ Auto discovery is not supported as it would require a IP scan that would take lo
 | outdoorBattery        | String                | Battery status, if it is low or normal. |
 | responseTime          | Number:Time           | How long it took the weather station to reply to a request for the data. |
 | lastUpdatedTime       | String                | The time scraped from the weather station when it last read the sensors. |
-    
