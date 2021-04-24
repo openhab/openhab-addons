@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -89,6 +90,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     public @Nullable OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
     private boolean reconnecting = false; // we are trying to reconnect to gateway
+    private @Nullable ScheduledFuture<?> refreshSchedule;
+
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
     private boolean discoveryByActivation;
 
@@ -126,7 +129,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                         if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                             logger.info("status still UNKNOWN. Setting device={} to OFFLINE", thing.getUID());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                    "Could not connect to gateway before " + GATEWAY_ONLINE_TIMEOUT_SEC + "s");
+                                    "@text/offline.comm-error-timeout");
                         }
                     }, GATEWAY_ONLINE_TIMEOUT_SEC, TimeUnit.SECONDS);
                     logger.debug("bridge {} initialization completed", thing.getUID());
@@ -212,6 +215,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> rSc = refreshSchedule;
+        if (rSc != null) {
+            rSc.cancel(true);
+        }
         disconnectGateway();
         super.dispose();
     }
@@ -466,9 +473,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         updateStatus(ThingStatus.ONLINE);
         // schedule a refresh for all devices
-        scheduler.schedule(() -> {
-            refreshAllDevices();
-        }, REFRESH_ALL_DEVICES_DELAY_MSEC, TimeUnit.MILLISECONDS);
+        refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -481,7 +487,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         logger.info("---- ON CONNECTION ERROR for gateway {}: {}", gateway, errMsg);
         isGatewayConnected = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errMsg);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                "@text/offline.comm-error-connection" + " (onConnectionError - " + errMsg + ")");
         tryReconnectGateway();
     }
 
@@ -503,7 +510,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         logger.info("---- DISCONNECTED from gateway {}. OWNException: {}", gateway, errMsg);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Disconnected from gateway (onDisconnected - " + errMsg + ")");
+                "@text/offline.comm-error-disconnected" + " (onDisconnected - " + errMsg + ")");
         tryReconnectGateway();
     }
 
@@ -519,8 +526,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     logger.info("---- AUTH error from gateway. Stopping re-connect");
                     reconnecting = false;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                            "Authentication error. Check gateway password in Thing Configuration Parameters (" + e
-                                    + ")");
+                            "@text/offline.conf-error-auth" + " (" + e + ")");
                 }
             } else {
                 logger.debug("---- reconnecting=true");
@@ -543,9 +549,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             }
 
             // schedule a refresh for all devices
-            scheduler.schedule(() -> {
-                refreshAllDevices();
-            }, REFRESH_ALL_DEVICES_DELAY_MSEC, TimeUnit.MILLISECONDS);
+            refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
+                    TimeUnit.MILLISECONDS);
         }
     }
 
