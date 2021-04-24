@@ -10,6 +10,12 @@
 		<label>Weather Station</label>
 		<description>Use for any weather station sold under multiple brands that come with an IP Observer unit.</description>
 		<channels>
+<<<<<<< HEAD
+=======
+			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
+			<channel id="indoorHumidity" typeId="indoorHumidity"/>
+			<channel id="outdoorHumidity" typeId="outdoorHumidity"/>
+>>>>>>> Fix merge conflicts.
 			<channel id="temperatureIndoor" typeId="temperatureIndoor"/>
 			<channel id="temperatureOutdoor" typeId="temperatureOutdoor"/>
 			<channel id="indoorHumidity" typeId="indoorHumidity"/>

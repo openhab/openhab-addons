@@ -107,6 +107,7 @@ public class IpObserverHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(IpObserverHandler.class);
     private Map<String, ChannelHandler> channelHandlers = new HashMap<String, ChannelHandler>();
+<<<<<<< HEAD
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private IpObserverConfiguration config = new IpObserverConfiguration();
 
@@ -153,13 +154,23 @@ public class IpObserverHandler extends BaseThingHandler {
     private IpObserverConfiguration config = new IpObserverConfiguration();
 
     class UpdateHandler {
+=======
+    private @Nullable ScheduledFuture<?> pollingFuture = null;
+    private IpObserverConfiguration config = new IpObserverConfiguration();
+
+    class ChannelHandler {
+>>>>>>> Fix merge conflicts.
         private IpObserverHandler handler;
         private Channel channel;
         private String currentState = "";
         private Unit<?> unit;
         private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<Class<? extends State>>();
 
+<<<<<<< HEAD
         UpdateHandler(IpObserverHandler handler, Channel channel, Class<? extends State> acceptable, Unit<?> unit) {
+=======
+        ChannelHandler(IpObserverHandler handler, Channel channel, Class<? extends State> acceptable, Unit<?> unit) {
+>>>>>>> Fix merge conflicts.
             super();
             this.handler = handler;
             this.channel = channel;
@@ -168,7 +179,11 @@ public class IpObserverHandler extends BaseThingHandler {
         }
 
         public void processMessage(String sensorValue) {
+<<<<<<< HEAD
             if (!Objects.equals(sensorValue, this.currentState)) {
+=======
+            if (!sensorValue.equals(this.currentState)) {
+>>>>>>> Fix merge conflicts.
                 this.currentState = sensorValue;
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
                 if (state instanceof QuantityType) {
@@ -250,6 +265,7 @@ public class IpObserverHandler extends BaseThingHandler {
         request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
         String errorReason = "";
         try {
+<<<<<<< HEAD
             ContentResponse contentResponse = request.send();
             if (contentResponse.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
@@ -298,6 +314,8 @@ public class IpObserverHandler extends BaseThingHandler {
         request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
         String errorReason = "";
         try {
+=======
+>>>>>>> Fix merge conflicts.
             long start = System.currentTimeMillis();
             ContentResponse contentResponse = request.send();
             if (contentResponse.getStatus() == 200) {
@@ -341,6 +359,7 @@ public class IpObserverHandler extends BaseThingHandler {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -354,6 +373,8 @@ public class IpObserverHandler extends BaseThingHandler {
             updateHandlers.put(htmlName, new UpdateHandler(this, channel, type, unit));
 >>>>>>> Bulk updated to UOM.
 =======
+=======
+>>>>>>> Fix merge conflicts.
     private void createChannelHandler(String chanName, Class<? extends State> type, Unit<?> unit, String htmlName) {
         @Nullable
         Channel channel = this.getThing().getChannel(chanName);
@@ -513,6 +534,7 @@ public class IpObserverHandler extends BaseThingHandler {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         // Example for background initialization:
         scheduler.execute(() -> {
             boolean thingReachable = true; // <background task with long running initialization here>
@@ -536,6 +558,8 @@ public class IpObserverHandler extends BaseThingHandler {
         // "Can not access device as username and/or password are invalid");
 >>>>>>> ipObserver creation
 =======
+=======
+>>>>>>> Fix merge conflicts.
     @Override
     public void dispose() {
         channelHandlers.clear();
