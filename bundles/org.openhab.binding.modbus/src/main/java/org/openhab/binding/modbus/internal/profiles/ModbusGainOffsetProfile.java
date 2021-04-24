@@ -131,7 +131,7 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
         Optional<QuantityType<Q>> localGain = gain;
         Optional<QuantityType<Dimensionless>> localPregainOffset = pregainOffset;
         if (localGain.isEmpty() || localPregainOffset.isEmpty()) {
-            logger.warn("Gain or offset unavailable. Check logs for configuration errors.");
+            logger.warn("Gain or pre-gain-offset unavailable. Check logs for configuration errors.");
             return UnDefType.UNDEF;
         } else if (state instanceof UnDefType) {
             return UnDefType.UNDEF;
@@ -162,7 +162,7 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
                 logger.warn(
-                        "Cannot apply gain ('{}') and offset ('{}') to state ('{}') (formula {}) because types do not match (towardsItem={}): {}",
+                        "Cannot apply gain ('{}') and pre-gain-offset ('{}') to state ('{}') (formula {}) because types do not match (towardsItem={}): {}",
                         gain, pregainOffsetQt, state, formula, towardsItem, e.getMessage());
                 return UnDefType.UNDEF;
             }

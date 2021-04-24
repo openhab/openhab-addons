@@ -53,8 +53,8 @@ public class ModbusGainOffsetProfileTest {
                 //
                 // gain with same unit
                 //
-                // e.g. (handler) 3 <---> (item) 106K with raw-offset=50, gain=2K
-                // e.g. (handler) 3 K <---> (item) 106K^2 with raw-offset=50K, gain=2K
+                // e.g. (handler) 3 <---> (item) 106K with pre-gain-offset=50, gain=2K
+                // e.g. (handler) 3 K <---> (item) 106K^2 with pre-gain-offset=50K, gain=2K
                 //
                 Arguments.of("50", "2 K", "3", "106 K"),
                 //
@@ -98,9 +98,9 @@ public class ModbusGainOffsetProfileTest {
      */
     @ParameterizedTest
     @MethodSource({ "provideArgsForBoth", "provideAdditionalArgsForStateUpdateFromHandler" })
-    public void testOnStateUpdateFromHandler(String rawOffset, String gain, Object updateFromHandlerObj,
+    public void testOnStateUpdateFromHandler(String preGainOffset, String gain, Object updateFromHandlerObj,
             Object expectedUpdateTowardsItemObj) {
-        testOnUpdateFromHandlerGeneric(rawOffset, gain, updateFromHandlerObj, expectedUpdateTowardsItemObj, true);
+        testOnUpdateFromHandlerGeneric(preGainOffset, gain, updateFromHandlerObj, expectedUpdateTowardsItemObj, true);
     }
 
     /**
@@ -110,18 +110,18 @@ public class ModbusGainOffsetProfileTest {
      */
     @ParameterizedTest
     @MethodSource({ "provideArgsForBoth", "provideAdditionalArgsForStateUpdateFromHandler" })
-    public void testOnCommandFromHandler(String rawOffset, String gain, Object updateFromHandlerObj,
+    public void testOnCommandFromHandler(String preGainOffset, String gain, Object updateFromHandlerObj,
             Object expectedUpdateTowardsItemObj) {
         // UNDEF is not a command, cannot be sent by handler
         assumeTrue(updateFromHandlerObj != UnDefType.UNDEF);
-        testOnUpdateFromHandlerGeneric(rawOffset, gain, updateFromHandlerObj, expectedUpdateTowardsItemObj, false);
+        testOnUpdateFromHandlerGeneric(preGainOffset, gain, updateFromHandlerObj, expectedUpdateTowardsItemObj, false);
     }
 
     /**
      *
      * Test profile behaviour when handler updates the state
      *
-     * @param rawOffset profile raw offset
+     * @param preGainOffset profile pre-gain-offset offset
      * @param gain profile gain
      * @param updateFromHandlerObj state update from handler. String representing QuantityType or State/Command
      * @param expectedUpdateTowardsItemObj expected state/command update towards item. String representing QuantityType
@@ -130,10 +130,10 @@ public class ModbusGainOffsetProfileTest {
      * @param stateUpdateFromHandler whether there is state update from handler. Otherwise command
      */
     @SuppressWarnings("rawtypes")
-    private void testOnUpdateFromHandlerGeneric(String rawOffset, String gain, Object updateFromHandlerObj,
+    private void testOnUpdateFromHandlerGeneric(String preGainOffset, String gain, Object updateFromHandlerObj,
             Object expectedUpdateTowardsItemObj, boolean stateUpdateFromHandler) {
         ProfileCallback callback = mock(ProfileCallback.class);
-        ModbusGainOffsetProfile profile = createProfile(callback, gain, rawOffset);
+        ModbusGainOffsetProfile profile = createProfile(callback, gain, preGainOffset);
 
         final Type actualStateUpdateTowardsItem;
         if (stateUpdateFromHandler) {
@@ -213,7 +213,7 @@ public class ModbusGainOffsetProfileTest {
      *
      * Test profile behaviour when item receives command
      *
-     * @param rawOffset profile raw offset
+     * @param preGainOffset profile pre-gain-offset
      * @param gain profile gain
      * @param expectedCommandTowardsHandlerObj expected command towards handler. String representing QuantityType or
      *            Command. Use null to verify that no commands are sent to handler.
@@ -222,11 +222,11 @@ public class ModbusGainOffsetProfileTest {
     @SuppressWarnings({ "rawtypes" })
     @ParameterizedTest
     @MethodSource({ "provideArgsForBoth", "provideAdditionalArgsForCommandFromItem" })
-    public void testOnCommandFromItem(String rawOffset, String gain, @Nullable Object expectedCommandTowardsHandlerObj,
-            Object commandFromItemObj) {
+    public void testOnCommandFromItem(String preGainOffset, String gain,
+            @Nullable Object expectedCommandTowardsHandlerObj, Object commandFromItemObj) {
         assumeFalse(commandFromItemObj.equals(UnDefType.UNDEF));
         ProfileCallback callback = mock(ProfileCallback.class);
-        ModbusGainOffsetProfile profile = createProfile(callback, gain, rawOffset);
+        ModbusGainOffsetProfile profile = createProfile(callback, gain, preGainOffset);
 
         Command commandFromItem = (commandFromItemObj instanceof String) ? new QuantityType((String) commandFromItemObj)
                 : (Command) commandFromItemObj;
@@ -264,7 +264,7 @@ public class ModbusGainOffsetProfileTest {
 
     @Test
     public void testInvalidInit() {
-        // offset must be dimensionless
+        // preGainOffset must be dimensionless
         ProfileCallback callback = mock(ProfileCallback.class);
         ModbusGainOffsetProfile<?> profile = createProfile(callback, "1.0", "0.0 K");
         assertFalse(profile.isValid());
@@ -283,9 +283,9 @@ public class ModbusGainOffsetProfileTest {
     @ParameterizedTest
     @NullSource
     @EmptySource
-    public void testInitOffsetDefault(String offset) {
+    public void testInitOffsetDefault(String preGainOffset) {
         ProfileCallback callback = mock(ProfileCallback.class);
-        ModbusGainOffsetProfile<?> p = createProfile(callback, "1", offset);
+        ModbusGainOffsetProfile<?> p = createProfile(callback, "1", preGainOffset);
         assertTrue(p.isValid());
         assertEquals(p.getPregainOffset(), Optional.of(QuantityType.ZERO));
     }
