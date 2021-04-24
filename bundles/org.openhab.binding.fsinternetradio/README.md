@@ -14,7 +14,7 @@ Successfully tested are internet radios:
  * [TechniSat DIGITRADIO 350 IR and 850](https://www.technisat.com/en_XX/DAB+-Radios-with-Internetradio/352-10996/)
  * [TTMicro AS Pinell Supersound](https://www.ttmicro.no/radio)
  * [Revo SuperConnect](https://revo.co.uk/products/)
- * [Sangean WFR-28C](http://sg.sangean.com.tw/products/product_category.asp?cid=2)
+ * [Sangean WFR-28C](https://sg.sangean.com.tw/products/product_category.asp?cid=2)
  * [Roku SoundBridge M1001](https://soundbridge.roku.com/soundbridge/index.php)
  * [Dual IR 3a](https://www.dual.de/produkte/digitalradio/radio-station-ir-3a/)
  * [Teufel 3sixty](https://www.teufel.de/stereo/radio-3sixty-p16568.html)
@@ -67,7 +67,7 @@ All devices support some of the following channels:
 The radio mode depends on the internet radio model (and its firmware version!).
 This list is just an example how the mapping looks like for some of the devices, please try it out and adjust your sitemap for your particular radio.
 
-| Radio Mode               | 0              | 1                       | 2         | 3            | 4         | 5        | 6            | 7            | 8         | 9         | 10	
+| Radio Mode               | 0              | 1                       | 2         | 3            | 4         | 5        | 6            | 7            | 8         | 9         | 10
 |--------------------------|----------------|-------------------------|-----------|--------------|-----------|----------|--------------|--------------|-----------|-----------|--------|
 | Hama IR110               | Internet Radio | Spotify                 | Player    | AUX in       | -         | -        | -            | -            | -         | -         |-       |
 | Medion MD87180           | Internet Radio | Music Player (USB, LAN) | DAB Radio | FM Radio     | AUX in    | -        | -            | -            | -         | -         |-       |
