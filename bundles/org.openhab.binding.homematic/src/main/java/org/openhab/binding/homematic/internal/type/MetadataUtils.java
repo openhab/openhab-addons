@@ -310,6 +310,7 @@ public class MetadataUtils {
                         return ITEM_TYPE_NUMBER + ":Temperature";
                     case "V":
                         return ITEM_TYPE_NUMBER + ":ElectricPotential";
+                    case "100%":
                     case "%":
                         return ITEM_TYPE_NUMBER + ":Dimensionless";
                     case "mHz":
@@ -341,7 +342,6 @@ public class MetadataUtils {
                     case "day":
                     case "month":
                     case "year":
-                    case "100%":
                     default:
                         return ITEM_TYPE_NUMBER;
                 }
