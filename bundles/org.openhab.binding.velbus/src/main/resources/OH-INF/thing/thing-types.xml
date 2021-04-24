@@ -100,12 +100,12 @@
 		<label>VMB1RYNO</label>
 		<description>1-channel relay module with potential-free changeover contact</description>
 		<channels>
-			<channel id="CH1" typeId="switch"/>
-			<channel id="CH2" typeId="switch"/>
-			<channel id="CH3" typeId="switch"/>
-			<channel id="CH4" typeId="switch"/>
-			<channel id="CH5" typeId="switch"/>
-		</channels>
+            <channel id="CH1" typeId="switch"/>
+            <channel id="CH2" typeId="switch"/>
+            <channel id="CH3" typeId="switch"/>
+            <channel id="CH4" typeId="switch"/>
+            <channel id="CH5" typeId="switch"/>
+        </channels>
 
 		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
 	</thing-type>
@@ -119,12 +119,12 @@
 		<label>VMB1RYNOS</label>
 		<description>1-channel relay module with potential-free changeover contact</description>
 		<channels>
-			<channel id="CH1" typeId="switch"/>
-			<channel id="CH2" typeId="switch"/>
-			<channel id="CH3" typeId="switch"/>
-			<channel id="CH4" typeId="switch"/>
-			<channel id="CH5" typeId="switch"/>
-		</channels>
+            <channel id="CH1" typeId="switch"/>
+            <channel id="CH2" typeId="switch"/>
+            <channel id="CH3" typeId="switch"/>
+            <channel id="CH4" typeId="switch"/>
+            <channel id="CH5" typeId="switch"/>
+        </channels>
 
 		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
 	</thing-type>
@@ -136,16 +136,17 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB1RYS</label>
-		<description>1-channel relay module</description>
+		<description>1-channel relay module with input</description>
 		<channels>
-			<channel id="CH1" typeId="switch"/>
-			<channel id="CH2" typeId="switch"/>
-			<channel id="CH3" typeId="switch"/>
-			<channel id="CH4" typeId="switch"/>
-			<channel id="CH5" typeId="switch"/>
-		</channels>
+            <channel id="CH1" typeId="switch"/>
+            <channel id="CH2" typeId="switch"/>
+            <channel id="CH3" typeId="switch"/>
+            <channel id="CH4" typeId="switch"/>
+            <channel id="CH5" typeId="switch"/>
+            <channel id="CH6" typeId="button-channel"/>
+        </channels>
 
-		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+		<config-description-ref uri="thing-type:velbus:6channelDevice"/>
 	</thing-type>
 
 	<thing-type id="vmb1ts">
