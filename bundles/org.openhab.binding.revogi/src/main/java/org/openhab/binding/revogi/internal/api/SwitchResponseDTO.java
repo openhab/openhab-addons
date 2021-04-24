@@ -38,10 +38,12 @@ public class SwitchResponseDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         SwitchResponseDTO that = (SwitchResponseDTO) o;
         return response == that.response && code == that.code;
     }

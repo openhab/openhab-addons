@@ -252,9 +252,9 @@ public class BiweeklyPresentableCalendarTest {
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:55:00Z"),
                 Instant.parse("2020-01-28T16:05:00Z"));
         assertNotNull(events);
-        assertTrue(events.size() > 0);
+        assertTrue(!events.isEmpty());
         List<CommandTag> cmdTags = events.get(0).commandTags;
-        assertTrue(cmdTags.size() > 0);
+        assertTrue(!cmdTags.isEmpty());
         CommandTag cmd = cmdTags.get(0);
         // accept correct, empty or null configuration codes
         assertTrue(cmd.isAuthorized("abc"));

@@ -50,6 +50,7 @@
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.coronastats/ @DerOetzi
 /bundles/org.openhab.binding.daikin/ @caffineehacker
+/bundles/org.openhab.binding.dali/ @rs22
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
 /bundles/org.openhab.binding.darksky/ @cweitkamp
 /bundles/org.openhab.binding.deconz/ @openhab/add-ons-maintainers
@@ -69,6 +70,7 @@
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.enigma2/ @gdolfen
 /bundles/org.openhab.binding.enocean/ @fruggy83
+/bundles/org.openhab.binding.enphase/ @Hilbrand
 /bundles/org.openhab.binding.enturno/ @klocsson
 /bundles/org.openhab.binding.epsonprojector/ @mlobstein
 /bundles/org.openhab.binding.etherrain/ @dfad1469
@@ -144,6 +146,7 @@
 /bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.luftdateninfo/ @weymann
 /bundles/org.openhab.binding.lutron/ @actong @bobadair
+/bundles/org.openhab.binding.luxtronikheatpump/ @sgiehl
 /bundles/org.openhab.binding.magentatv/ @markus7017
 /bundles/org.openhab.binding.mail/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.max/ @marcelrv
@@ -222,10 +225,12 @@
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.pushbullet/ @hakan42
 /bundles/org.openhab.binding.pushover/ @cweitkamp
+/bundles/org.openhab.binding.qbus/ @QbusKoen
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.revogi/ @andibraeu
 /bundles/org.openhab.binding.remoteopenhab/ @lolodomo
+/bundles/org.openhab.binding.resol/ @ramack
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
@@ -282,6 +287,7 @@
 /bundles/org.openhab.binding.upnpcontrol/ @mherwege
 /bundles/org.openhab.binding.urtsi/ @OLibutzki
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
+/bundles/org.openhab.binding.vdr/ @MatthiasKlocke
 /bundles/org.openhab.binding.vektiva/ @octa22
 /bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.velux/ @gs4711
@@ -293,6 +299,7 @@
 /bundles/org.openhab.binding.volvooncall/ @clinique
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
+/bundles/org.openhab.binding.webthing/ @grro
 /bundles/org.openhab.binding.wemo/ @hmerk
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
@@ -308,6 +315,7 @@
 /bundles/org.openhab.io.homekit/ @beowulfe @yfre
 /bundles/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /bundles/org.openhab.io.imperihome/ @pdegeus
+/bundles/org.openhab.io.metrics/ @pravussum
 /bundles/org.openhab.io.neeo/ @tmrobert8
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.persistence.dynamodb/ @ssalonen

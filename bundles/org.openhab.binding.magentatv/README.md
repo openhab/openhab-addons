@@ -130,6 +130,7 @@ Please note:
 The binding tries to detect and maintain the correct state, but due to device limitations this is not always possible.
 Make sure the receiver's and binding's state are in sync when OH is restarted (binding assumes state is OFF).
 - Channels receiving event information get updated when changing the channel or playing a video.
+
 There is no way to read the current status, therefore they don't get initialized on startup nor being updated in real-time.
 
 The player channel supports the following actions:
