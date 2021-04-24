@@ -157,7 +157,7 @@ For example:
 ## Using the group 0
 
 The group 0 (or ALL group) with the Group ID 0 can be used to control all bulbs that are paired with one specific remote at once.
-While this functionality can also be achieved by using openHAB groups with even greater flexibility the group 0 must be setup if you want to capture remote events for the ALL group to keep physical devices synchronized to their openHAB representations.
+While this functionality can also be achieved by using openHAB groups with even greater flexibility, the group 0 must be setup if you want to capture physical remote control events for the ALL group, and keep physical devices synchronized to their openHAB representations.
 Milight remotes send all commands with the Group ID 0 after the master ON/OFF buttons have been used.
 If the group 0 has not been setup these events will be lost and your Item states will no longer be synchonized with the actual device states until you issue a command via openHAB.
 If you do not use a remote at all or you only control other bulbs than the ones controlled by openHAB you should not need to setup the ALL group.
