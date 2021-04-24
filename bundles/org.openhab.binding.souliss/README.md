@@ -156,13 +156,6 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 ## Manual Things Configuration
 
-If after discovery your thing is not listed you can add it manually.
-You have to choose it from the available things. 
-First gateway, after items!
-To configure Gateway you can leave default value on Thing ID and write your value on "IP or Host Name" and "Gateway port".
-
-To configure a typical (items) you have to choice your "Name" and "Location", you have to choice your "Gateway" and insert correct "Thing ID".
-
 Thing ID is [node]-[slot]
 For example, if you have two nodes and you want configure a typical on second node at slot seven, you must write 
 Thing ID: 
