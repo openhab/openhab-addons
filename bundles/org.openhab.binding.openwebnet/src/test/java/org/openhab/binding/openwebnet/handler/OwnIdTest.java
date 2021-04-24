@@ -93,7 +93,8 @@ public class OwnIdTest {
             try {
                 bmsg = (BaseOpenMessage) BaseOpenMessage.parse(msg);
             } catch (FrameException e) {
-                logger.warn("something is wrong in the test table. ownIdFromMessage test will be skipped");
+                logger.warn("something is wrong in the test table ({}). ownIdFromMessage test will be skipped",
+                        e.getMessage());
             }
             this.msg = bmsg;
             this.norm = norm;
