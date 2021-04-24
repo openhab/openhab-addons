@@ -163,7 +163,7 @@ If the group 0 has not been setup these events will be lost and your Item states
 If you do not use a remote at all or you only control other bulbs than the ones controlled by openHAB you should not need to setup the ALL group.
 
 Since the group 0 is not needed in every case the autodiscovery feature will not detect this group as a Thing automatically.
-To create the group manually proceed as described in section [Important for Textual Configuration](#important-for-textual-configuration) or use the openHAB 3 MainUI for this purpose.
+To create the group, use textual files or the openHAB UI to manually add a Thing with the correct Unique ID as described in section [Important for Textual Configuration](#important-for-textual-configuration).
 To create a Thing for the group 0 via MainUI simply create a new Thing that has the same type as one of autodiscovered Things of the same remote and modify the ThingUID as described in section linked above (replace the trailing 1-digit number of an autodiscovered ThingUID with a 0).
 
 If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the thing for group 0.
