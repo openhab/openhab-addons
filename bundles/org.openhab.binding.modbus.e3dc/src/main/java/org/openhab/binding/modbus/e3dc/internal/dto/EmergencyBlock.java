@@ -67,7 +67,7 @@ public class EmergencyBlock implements Data {
         BitSet bs = BitSet.valueOf(emsStatusBytes);
         batteryChargingLocked = OnOffType.from(bs.get(EMS_CHARGING_LOCK_BIT));
         batteryDischargingLocked = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
-        epPossible = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
+        epPossible = OnOffType.from(bs.get(EMS_AVAILABLE_BIT));
         weatherPredictedCharging = OnOffType.from(bs.get(EMS_WEATHER_CHARGING_BIT));
         regulationStatus = OnOffType.from(bs.get(EMS_REGULATION_BIT));
         chargeLockTime = OnOffType.from(bs.get(EMS_CHARGE_LOCKTIME_BIT));
