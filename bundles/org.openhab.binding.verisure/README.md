@@ -60,7 +60,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 *   `username` - The username used to connect to https://mypages.verisure.com
     * The user has to have Administrator rights to have full SmartLock functionality
 
-*   `password` - The password used to connect to https://mypage.verisure.com
+*   `password` - The password used to connect to https://mypages.verisure.com
 
 *   `refresh` - Specifies the refresh interval in seconds
 
