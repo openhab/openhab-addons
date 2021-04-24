@@ -319,7 +319,7 @@ The profile works also in the reverse direction, when commanding items.
 
 In addition, the profile allows attaching units to the raw numbers, as well as converting the quantity-aware numbers to bare numbers on write.
 
-Profile has two parameters, `gain` (bare number or number with unit) and `pre-offset` (bare number), both of which must be provided.
+Profile has two parameters, `gain` (bare number or number with unit) and `pre-gain-offset` (bare number), both of which must be provided.
 
 When reading from Modbus, the result will be `updateTowardsItem = (raw_value_from_modbus + preOffset) * gain`.
 When applying command, the calculation goes in reverse.
@@ -775,7 +775,7 @@ Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
 `items/modbus_ex_scaling.items`:
 
 ```
-Number:Temperature TemperatureItem            "Temperature [%.1f °C]"   { channel="modbus:data:localhostTCP3:holdingPoller:temperatureDeciCelsius:number"[ profile="modbus:gainOffset", gain="0.1 °C", offset="0" ] }
+Number:Temperature TemperatureItem            "Temperature [%.1f °C]"   { channel="modbus:data:localhostTCP3:holdingPoller:temperatureDeciCelsius:number"[ profile="modbus:gainOffset", gain="0.1 °C", pre-gain-offset="0" ] }
 ```
 
 `sitemaps/modbus_ex_scaling.sitemap`:
