@@ -123,5 +123,5 @@ rule "Play Online Radio stream"
 when
     Item All2OnlineRadio changed to ON
 then
-    All2Stream.sendCommand("https://chromaradio.com:8008/listen.pls")
+    All2Stream.sendCommand("http://chromaradio.com:8008/listen.pls")
 ```
