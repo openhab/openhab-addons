@@ -23,8 +23,7 @@ Auto discovery is not supported as it would require a IP scan that would take lo
 |-|-|-|
 | `address` | Y | Hostname or IP for the IP Observer |
 | `pollTime` | Y | Time in seconds between each Scan of the livedata.htm from the IP Observer |
-| `autoReboot` | Y | Time in milliseconds to wait for a reply before rebooting the IP Observer. A value of 0 disables this
-                    feature allowing you to manually trigger or use a rule to handle the reboots. |
+| `autoReboot` | Y | Time in milliseconds to wait for a reply before rebooting the IP Observer. A value of 0 disables this feature allowing you to manually trigger or use a rule to handle the reboots. |
 
 ## Channels
 
