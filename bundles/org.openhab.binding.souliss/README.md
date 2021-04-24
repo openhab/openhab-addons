@@ -43,36 +43,36 @@ Typicals match directly with openHAB Thing type.
 
 |Device type |Typical Code | Thing type | 
 |------------|---------|-------------------------------|
-|ON/OFF Digital Output with Timer Option|T11|souliss:t11|
-|ON/OFF Digital Output with AUTO mode|T12|souliss:t12|
-|Digital Input Value|T13|souliss:t13|
-|Pulse Digital Output|T14|souliss:t14|
-|RGB LED Strip|T16|souliss:t16|
-|ON/OFF Digital Output|T18|souliss:t18|
-|Single Color LED Strip|T19|souliss:t19|
-|Digital Input Pass Through|T1A|souliss:t1A|
-|Motorized devices with limit switches|T21|souliss:t21|
-|Motorized devices with limit switches and middle position|T22|souliss:t22|
-|Temperature control|T31|souliss:t31|
-|Anti-theft integration (Main)|T41|souliss:t41|
-|Anti-theft integration (Peer)|T42|souliss:t42|
-|Analog input, half-precision floating point|T51|souliss:t51|
-|Temperature measure (-20, +50) °C|T52|souliss:t52|
-|Humidity measure (0, 100) %|T53|souliss:t53|
-|Light Sensor (0, 40) kLux|T54|souliss:t54|
-|Voltage (0, 400) V|T55|souliss:t55|
-|Current (0, 25)  A|T56|souliss:t56|
-|Power (0, 6500)  W|T57|souliss:t57|
-|Pressure measure (0, 1500) hPa|T58|souliss:t58|
-|Analog Setpoint|T61|souliss:t61|
-|Analog Setpoint-Temperature measure (-20, +50) °C|T62|souliss:t62|
-|Analog Setpoint-Humidity measure (0, 100) %|T63|souliss:t63|
-|Analog Setpoint-Light Sensor (0, 40) kLux|T64|souliss:t64|
-|Analog Setpoint-Voltage (0, 400) V|T65|souliss:t65|
-|Analog Setpoint-Current (0, 25)  A|T66|souliss:t66|
-|Analog Setpoint-Power (0, 6500)  W|T67|souliss:t67|
-|Analog Setpoint-Pressure measure (0, 1500) hPa|T68|souliss:t68|
-|Broadcast messages|Action Message|souliss:topic|
+|ON/OFF Digital Output with Timer Option|T11|t11|
+|ON/OFF Digital Output with AUTO mode|T12|t12|
+|Digital Input Value|T13|t13|
+|Pulse Digital Output|T14|t14|
+|RGB LED Strip|T16|t16|
+|ON/OFF Digital Output|T18|t18|
+|Single Color LED Strip|T19|t19|
+|Digital Input Pass Through|T1A|t1A|
+|Motorized devices with limit switches|T21|t21|
+|Motorized devices with limit switches and middle position|T22|t22|
+|Temperature control|T31|t31|
+|Anti-theft integration (Main)|T41|t41|
+|Anti-theft integration (Peer)|T42|t42|
+|Analog input, half-precision floating point|T51|t51|
+|Temperature measure (-20, +50) °C|T52|t52|
+|Humidity measure (0, 100) %|T53|t53|
+|Light Sensor (0, 40) kLux|T54|t54|
+|Voltage (0, 400) V|T55|t55|
+|Current (0, 25)  A|T56|t56|
+|Power (0, 6500)  W|T57|t57|
+|Pressure measure (0, 1500) hPa|T58|t58|
+|Analog Setpoint|T61|t61|
+|Analog Setpoint-Temperature measure (-20, +50) °C|T62|t62|
+|Analog Setpoint-Humidity measure (0, 100) %|T63|t63|
+|Analog Setpoint-Light Sensor (0, 40) kLux|T64|t64|
+|Analog Setpoint-Voltage (0, 400) V|T65|t65|
+|Analog Setpoint-Current (0, 25)  A|T66|t66|
+|Analog Setpoint-Power (0, 6500)  W|T67|t67|
+|Analog Setpoint-Pressure measure (0, 1500) hPa|T68|t68|
+|Broadcast messages|Action Message|topic|
 
 ### Channels
 
@@ -80,22 +80,22 @@ The following matrix lists the capabilities (channels) for each type:
 
 |Thing type / Channel |Switch / onoff | Switch / sleep | DateTime / lastStatusStored | Number / healthy |Switch / automode|Contact / stateOnOff|Contact / stateOpenClose|Switch / pulse|Switch / whitemode|Rollershutter / roller_brightness|Dimmer / dimmer_brightness|Color / ledcolor|Switch / one|Switch / two|Switch / three|Switch / four|Switch / five|Switch / six|Switch / seven|Switch / eight|
 |-- |-- | -- | -- | -- |--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|
-|souliss:t11|x|x|x|x||||
-|souliss:t12|x| |x|x|x||||
-|souliss:t13|||x|x||x|x||
-|souliss:t14|||x|x||||x|
-|souliss:t16|x|x|x|x|||||x|x|x|x||
-|souliss:t18|x||x|x|||||||||
-|souliss:t19|x|x|x|x||||||x|x|
-|souliss:t1A|||x|x|||||||||x|x|x|x|x|x|x|x|
+|t11|x|x|x|x||||
+|t12|x| |x|x|x||||
+|t13|||x|x||x|x||
+|t14|||x|x||||x|
+|t16|x|x|x|x|||||x|x|x|x||
+|t18|x||x|x|||||||||
+|t19|x|x|x|x||||||x|x|
+|t1A|||x|x|||||||||x|x|x|x|x|x|x|x|
 
 |Thing type / Channel | DateTime / lastStatusStored | Number / healthy |Rollershutter / rollershutter|(see down) / rollershutterstate|(see down) / mode|(see down) / fan|Switch / status|Number / setpoint|Switch / setAsMeasured|Switch / measured|Switch / statusAlarm|Switch / onOffAlarm|Switch / rearmAlarm|
 |-- |-- | --|- | -- | -- |--|--|--|--|--|--|--|--|
-|souliss:t21|x|x||x|
-|souliss:t22|x|x|x|x|
-|souliss:t31|x|x|||x|x|x|x|x|x|
-|souliss:t41|x|x|||||||||x|x|x|
-|souliss:t42|x|x|||||||||x||x|
+|t21|x|x||x|
+|t22|x|x|x|x|
+|t31|x|x|||x|x|x|x|x|x|
+|t41|x|x|||||||||x|x|x|
+|t42|x|x|||||||||x||x|
 
 rollershutterstate = opening, closing, limSwitch_open , limSwitch_close, state_open, state_close, NoLimSwitch
 
@@ -106,26 +106,26 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 |Thing type / Channel| DateTime / lastStatusStored |Number / healthy|Number / value|
 |-- |-- | -- | --|
-|souliss:t51|x|x|x|
-|souliss:t52|x|x|x|
-|souliss:t53|x|x|x|
-|souliss:t54|x|x|x|
-|souliss:t55|x|x|x|
-|souliss:t56|x|x|x|
-|souliss:t57|x|x|x|
-|souliss:t58|x|x|x|
+|t51|x|x|x|
+|t52|x|x|x|
+|t53|x|x|x|
+|t54|x|x|x|
+|t55|x|x|x|
+|t56|x|x|x|
+|t57|x|x|x|
+|t58|x|x|x|
 
 |Thing type / Channel|  DateTime / lastStatusStored |Number / healthy|Number / value|
 |-- |-- | -- | --|
-|souliss:t61|x|x|x|
-|souliss:t62|x|x|x|
-|souliss:t63|x|x|x|
-|souliss:t64|x|x|x|
-|souliss:t65|x|x|x|
-|souliss:t66|x|x|x|
-|souliss:t67|x|x|x|
-|souliss:t68|x|x|x|
-|souliss:topic|x||x|
+|t61|x|x|x|
+|t62|x|x|x|
+|t63|x|x|x|
+|t64|x|x|x|
+|t65|x|x|x|
+|t66|x|x|x|
+|t67|x|x|x|
+|t68|x|x|x|
+|topic|x||x|
 
 ### Parameters
 
