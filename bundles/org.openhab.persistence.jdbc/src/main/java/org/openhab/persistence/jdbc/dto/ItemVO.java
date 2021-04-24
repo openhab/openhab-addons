@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.model;
+package org.openhab.persistence.jdbc.dto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -140,10 +140,7 @@ public class ItemVO implements Serializable {
         } else if (!value.equals(other.value)) {
             return false;
         }
-        if (time != other.time) {
-            return false;
-        }
-        return true;
+        return time == other.time;
     }
 
     @Override
