@@ -97,7 +97,7 @@ import org.slf4j.LoggerFactory;
  * The {@link IpObserverHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Thomas Hentschel - Based on parts from old binding.
+ * @author Thomas Hentschel - Initial contribution.
  * @author Matthew Skinner - Full re-write for BND, V3.0 and UOM
  */
 @NonNullByDefault
