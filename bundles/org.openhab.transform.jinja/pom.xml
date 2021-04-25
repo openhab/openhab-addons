@@ -15,7 +15,6 @@
   <name>openHAB Add-ons :: Bundles :: Transformation Service :: Jinja</name>
 
   <properties>
-    <jackson.version>2.10.3</jackson.version>
     <bnd.importpackage>
       javax.annotation;resolution:=optional
     </bnd.importpackage>
