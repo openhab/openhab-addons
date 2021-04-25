@@ -78,8 +78,8 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
      */
     protected void createdHandler(AbstractBrokerHandler handler) {
         handlers.add(handler);
-        discoveryTopics.forEach((topic, listenerList) -> {
-            listenerList.forEach(listener -> {
+        discoveryTopics.forEach((topic, listeners) -> {
+            listeners.forEach(listener -> {
                 handler.registerDiscoveryListener(listener, topic);
             });
         });
@@ -114,8 +114,8 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     @SuppressWarnings("null")
     public void subscribe(MQTTTopicDiscoveryParticipant listener, String topic) {
-        Set<MQTTTopicDiscoveryParticipant> listenerList = discoveryTopics.computeIfAbsent(topic, t -> new HashSet<>());
-        if (listenerList.add(listener)) {
+        Set<MQTTTopicDiscoveryParticipant> listeners = discoveryTopics.computeIfAbsent(topic, t -> new HashSet<>());
+        if (listeners.add(listener)) {
             handlers.forEach(broker -> broker.registerDiscoveryListener(listener, topic));
         }
     }
@@ -126,8 +126,8 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     @SuppressWarnings("null")
     public void unsubscribe(MQTTTopicDiscoveryParticipant listener) {
-        discoveryTopics.forEach((topic, listenerList) -> {
-            if (listenerList.remove(listener)) {
+        discoveryTopics.forEach((topic, listeners) -> {
+            if (listeners.remove(listener)) {
                 handlers.forEach(broker -> broker.unregisterDiscoveryListener(listener, topic));
             }
         });
