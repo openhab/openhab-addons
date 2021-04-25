@@ -94,13 +94,14 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         isActivated.set(true); // set with true, even though the connect may fail. In this case retries will be
                                // triggered
 
+        webThingURI = toUri(getConfigAs(WebThingConfiguration.class).webThingURI);
+
         // perform connect in background
         scheduler.execute(() -> {
             // WebThing URI present?
-            var uri = toUri(getConfigAs(WebThingConfiguration.class).webThingURI);
-            if (uri != null) {
-                logger.debug("try to connect WebThing {}", uri);
-                var connected = tryReconnect(uri);
+            if (webThingURI != null) {
+                logger.debug("try to connect WebThing {}", webThingURI);
+                var connected = tryReconnect(webThingURI);
                 if (connected) {
                     logger.debug("WebThing {} connected", getWebThingLabel());
                 }
