@@ -4503,7 +4503,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Air Purifier - Switch Status             |            |
-| fault                | Number               | Air Purifier - Fault                     | Value mapping ["0"="No faults","1"="马达故障","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"] |
+| fault                | Number               | Air Purifier - Fault                     | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"] |
 | mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite"] |
 | air_quality          | Number               | Environment - Air Quality                |            |
 | pm2_5_density        | Number               | Environment - PM2 5 Density              |            |

@@ -37,7 +37,7 @@
 						},
 						{
 							"value": "1",
-							"label": "马达故障"
+							"label": "m1_run"
 						},
 						{
 							"value": "2",
@@ -67,7 +67,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"无故障\",\"1\"\u003d\"马达故障\",\"2\"\u003d\"马达停转\",\"3\"\u003d\"传感器丢失\",\"4\"\u003d\"湿度异常\",\"5\"\u003d\"温度异常\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\",\"6\"\u003d\"timer_error1\",\"7\"\u003d\"timer_error2\"]"
 			},
 			{
 				"property": "mode",
@@ -405,7 +405,7 @@
 					"options": [
 						{
 							"value": "0",
-								"label": "waiting"
+							"label": "waiting"
 						},
 						{
 							"value": "1",
