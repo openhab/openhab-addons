@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
@@ -88,7 +87,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     }
 
     @Override
-    public void observeProperty(@NonNull String propertyName, @NonNull BiConsumer<String, Object> listener) {
+    public void observeProperty(String propertyName, BiConsumer<String, Object> listener) {
         propertyChangedListeners.put(propertyName, listener);
     }
 
