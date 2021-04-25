@@ -51,8 +51,8 @@
 
   <distributionManagement>
     <repository>
-      <id>bintray</id>
-      <url>${oh.repo.distBaseUrl}/openhab-addons/;publish=1</url>
+      <id>jfrog-release</id>
+      <url>${oh.repo.distBaseUrl}/libs-release-local</url>
     </repository>
     <snapshotRepository>
       <id>jfrog</id>

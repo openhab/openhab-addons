@@ -230,28 +230,27 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
      * @param topic the topic (as specified during registration)
      */
     public final void unregisterDiscoveryListener(MQTTTopicDiscoveryParticipant listener, String topic) {
-        Map<MQTTTopicDiscoveryParticipant, @Nullable TopicSubscribe> topicListeners = discoveryTopics.compute(topic,
-                (k, v) -> {
-                    if (v == null) {
-                        logger.warn(
-                                "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered at all. Check discovery logic!",
-                                listener, topic, thing.getUID());
-                        return null;
-                    }
-                    v.compute(listener, (l, w) -> {
-                        if (w == null) {
-                            logger.warn(
-                                    "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered for listener. Check discovery logic!",
-                                    listener, topic, thing.getUID());
-                        } else {
-                            w.stop();
-                            logger.trace("Unsubscribed {} from discovery topic {} on broker {}", listener, topic,
-                                    thing.getUID());
-                        }
-                        return null;
-                    });
-                    return v.isEmpty() ? null : v;
-                });
+        discoveryTopics.compute(topic, (k, v) -> {
+            if (v == null) {
+                logger.warn(
+                        "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered at all. Check discovery logic!",
+                        listener, topic, thing.getUID());
+                return null;
+            }
+            v.compute(listener, (l, w) -> {
+                if (w == null) {
+                    logger.warn(
+                            "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered for listener. Check discovery logic!",
+                            listener, topic, thing.getUID());
+                } else {
+                    w.stop();
+                    logger.trace("Unsubscribed {} from discovery topic {} on broker {}", listener, topic,
+                            thing.getUID());
+                }
+                return null;
+            });
+            return v.isEmpty() ? null : v;
+        });
     }
 
     /**

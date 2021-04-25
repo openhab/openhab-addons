@@ -53,13 +53,19 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         // do nothing
-        logger.warn("There are no channels");
+        logger.warn("Generic: there are no channels");
+    }
+
+    @Override
+    protected void refreshDevice(boolean refreshAll) {
+        // do nothing
+        logger.warn("Generic: nothing to refresh");
     }
 
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
         // do nothing
-        logger.warn("There are no channels");
+        logger.warn("Generic: there are no channels");
     }
 
     @Override
@@ -76,6 +82,6 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
         // do nothing
-        logger.warn("handleMessage(): Nothing to do!");
+        logger.warn("Generic: handleMessage() nothing to do!");
     }
 }

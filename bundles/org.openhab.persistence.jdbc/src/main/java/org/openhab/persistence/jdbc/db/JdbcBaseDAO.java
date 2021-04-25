@@ -50,9 +50,9 @@ import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
-import org.openhab.persistence.jdbc.model.ItemVO;
-import org.openhab.persistence.jdbc.model.ItemsVO;
-import org.openhab.persistence.jdbc.model.JdbcHistoricItem;
+import org.openhab.persistence.jdbc.dto.ItemVO;
+import org.openhab.persistence.jdbc.dto.ItemsVO;
+import org.openhab.persistence.jdbc.dto.JdbcHistoricItem;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
@@ -155,7 +155,7 @@ public class JdbcBaseDAO {
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "TINYINT");
         sqlTypes.put("IMAGEITEM", "VARCHAR(65500)");// jdbc max 21845
-        sqlTypes.put("LOCATIONITEM", "VARCHAR(30)");
+        sqlTypes.put("LOCATIONITEM", "VARCHAR(50)");
         sqlTypes.put("NUMBERITEM", "DOUBLE");
         sqlTypes.put("PLAYERITEM", "VARCHAR(20)");
         sqlTypes.put("ROLLERSHUTTERITEM", "TINYINT");

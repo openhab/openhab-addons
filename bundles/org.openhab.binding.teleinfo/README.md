@@ -1,8 +1,8 @@
 # Teleinfo Binding
 
-The Teleinfo binding supports an interface to ENEDIS/ERDF [Teleinfo protocol](http://www.linuxembarque.free.fr/electro/compt_energie/specifications_techniques_edf_teleinfo.pdf) for (French) Electricity Meter. This binding works with a Teleinfo modem plugged to the I1 and I2 terminals of your electricity meter. Teleinfo modems can be ordered (see the [list of tested hardware](#tested-hardware) below) or build by yourself (see [this example](http://bernard.lefrancois.free.fr)).
+The Teleinfo binding supports an interface to ENEDIS/ERDF [Teleinfo protocol](https://www.enedis.fr/sites/default/files/Enedis-NOI-CPT_54E.pdf) for (French) Electricity Meter. This binding works with a Teleinfo modem plugged to the I1 and I2 terminals of your electricity meter. Teleinfo modems can be ordered (see the [list of tested hardware](#tested-hardware) below) or build by yourself (see [this example](http://bernard.lefrancois.free.fr)).
 
-Teleinfo is a protocol to read many electrical statistics of your electricity meter: instantaneous power consumption, current price period, meter reading... 
+Teleinfo is a protocol to read many electrical statistics of your electricity meter: instantaneous power consumption, current price period, meter reading...
 These values can be used to
 
 - send your meter reading to your electricity provider with a simple copy/paste,
@@ -12,7 +12,7 @@ These values can be used to
 
 ## Supported Things
 
-The Teleinfo binding provides support for both single phase and three phase connection, ICC evolution and the following pricing modes:
+The Teleinfo binding provides support for both single-phase and three-phase connection, ICC evolution and the following pricing modes:
 
 - HCHP mode
 - Base mode
@@ -36,18 +36,23 @@ The Teleinfo binding provides support for both single phase and three phase conn
 
 ## Discovery
 
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will automatically appear when trying to add a new thing, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port.
+
+If you want to place the Teleinfo modem apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
+In this case you have to define the serial port of your Teleinfo modem like this `rfc2217://ip:port`. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _ser2net_ config file.
+
+Once the serial controller added, electricity meters will automatically appear after starting discovery, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
 
 ## Thing Configuration
 
-| Thing type           | Parameter    | Meaning                               | Possible values  |
-|----------------------|--------------|---------------------------------------|------------------|
-| `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX     |
-| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number |
+| Thing type           | Parameter    | Meaning                               | Possible values                 |
+|----------------------|--------------|---------------------------------------|---------------------------------|
+| `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX, rfc2217://ip:port |
+| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number                |
 
 ## Channels
 
-Channel availability depends on the electricity connection (single or three phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
+Channel availability depends on the electricity connection (single or three-phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
 
 | Channel  | Type                      | Description                                              | Phase  | Mode  |
 |----------|---------------------------|----------------------------------------------------------|--------|-------|
@@ -67,7 +72,7 @@ Channel availability depends on the electricity connection (single or three phas
 | iinst3   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 3                | Three  | All   |
 | ppot     | `String`                  | Electrical potential presence                            | Three  | All   |
 | pmax     | `Number:Energy`           | Maximum consumed electric power on all phases            | Three  | All   |
-| papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)                | Three, single (ICC evolution only) | All   |
+| papp     | `Number:Power`            | Instantaneous apparent power                             | Three, single (ICC evolution only) | All   |
 | hhphc    | `String`                  | Pricing schedule group                                   | All    | HCHP  |
 | hchc     | `Number:Energy`           | Total consumed energy at low rate pricing                | All    | HCHP  |
 | hchp     | `Number:Energy`           | Total consumed energy at high rate pricing               | All    | HCHP  |
@@ -93,12 +98,12 @@ Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
 }
 ```
 
-`adco` is a 12 digit number writen on the electricity meter (There might be two additional digits on the electricity meter, in this case the two last digits must be omitted to obtain 12 digits). The first 6 digits of `adco` can also be retrieved by pushing 6 times the `selection` button of your electricity meter, and the last 6 digits by pushing the `defilement` button.
+`adco` is a 12-digit number written on the electricity meter (There might be two additional digits on the electricity meter, in this case the two last digits must be omitted to obtain 12 digits). The first 6 digits of `adco` can also be retrieved by pushing 6 times the `selection` button of your electricity meter, and the last 6 digits by pushing the `defilement` button.
 
-This `items` file links some supported channels to items: 
+This `items` file links some supported channels to items:
 
 ```
-Number TLInfoEDF_PAPP "PAPP" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:papp"}
+Number:Power TLInfoEDF_PAPP "PAPP" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:papp"}
 Number:ElectricCurrent TLInfoEDF_ISOUSC "ISOUSC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:isousc"}
 String TLInfoEDF_PTEC "PTEC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:ptec"}
 Number:ElectricCurrent TLInfoEDF_IMAX "IMAX" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:imax"}
@@ -109,13 +114,14 @@ Number:Energy TLInfoEDF_HCHP "HCHP" <energy> {channel="teleinfo:cbemm_evolution_
 String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hhphc"}
 ```
 
-## Tested hardwares
+## Tested hardware
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
 
 | Serial interface | Power Energy Meter model    | Mode(s)                   |
 |----------|--------|------------------------------|
-| GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | - Single-phase HCHP & Base |
+| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHP & Base |
 | Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Sagem S10C4 | Single-phase HCHP |
 
-
+On Linky telemeters, only *historical* TIC mode is currently supported.
+The method for changing the TIC mode of a Linky telemeter is explained [here](https://forum.gce-electronics.com/t/comment-passer-un-cpt-linky-en-mode-standard/8206/7).
