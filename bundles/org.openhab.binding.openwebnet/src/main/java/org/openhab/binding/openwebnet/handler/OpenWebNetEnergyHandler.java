@@ -153,12 +153,21 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-        try {
-            bridgeHandler.gateway.send(EnergyManagement.requestActivePower(deviceWhere.value()));
-        } catch (OWNException e) {
-            logger.warn("requestChannelState() OWNException thingUID={} channel={}: {}", thing.getUID(),
-                    channel.getId(), e.getMessage());
+        Where w = deviceWhere;
+        if (w != null) {
+            try {
+                send(EnergyManagement.requestActivePower(w.value()));
+            } catch (OWNException e) {
+                logger.debug("Exception while requesting channel {} state: {}", channel, e.getMessage(), e);
+            }
+        } else {
+            logger.warn("Could not requestChannelState(): deviceWhere is null");
         }
+    }
+
+    @Override
+    protected void refreshDevice(boolean refreshAll) {
+        requestChannelState(new ChannelUID("any:any:any:any"));
     }
 
     @Override

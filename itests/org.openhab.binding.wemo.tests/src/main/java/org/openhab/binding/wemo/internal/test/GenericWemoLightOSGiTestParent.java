@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.handler.AbstractWemoHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -25,7 +24,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -85,12 +83,6 @@ public class GenericWemoLightOSGiTestParent extends GenericWemoOSGiTest {
                 .withBridge(bridgeUID).build();
 
         managedThingProvider.add(thing);
-
-        ThingHandler handler = thing.getHandler();
-        if (handler != null) {
-            AbstractWemoHandler h = (AbstractWemoHandler) handler;
-        }
-
         return thing;
     }
 

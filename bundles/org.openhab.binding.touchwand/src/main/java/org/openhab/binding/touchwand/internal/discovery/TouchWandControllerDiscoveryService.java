@@ -35,6 +35,10 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link TouchWandControllerDiscoveryService} Discovery service for Touchwand Controllers.
  *
@@ -132,13 +136,15 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
                     mySocket.receive(datagram);
                     InetAddress address = datagram.getAddress();
                     String sentence = new String(dgram.getData(), 0, dgram.getLength(), StandardCharsets.US_ASCII);
-                    addDeviceDiscoveryResult(sentence, address.getHostAddress().toString());
+                    JsonObject bridge = JsonParser.parseString(sentence).getAsJsonObject();//
+                    String name = bridge.get("name").getAsString();
+                    addDeviceDiscoveryResult(name, address.getHostAddress().toString());
                     logger.debug("Received Datagram from {}:{} on Port {} message {}", address.getHostAddress(),
                             dgram.getPort(), mySocket.getLocalPort(), sentence);
                 }
-            } catch (IOException e) {
+            } catch (IOException | JsonSyntaxException e) {
                 if (!isInterrupted()) {
-                    logger.warn("Error while receiving {}", e.getMessage());
+                    logger.debug("Error while receiving {}", e.getMessage());
                 } else {
                     logger.debug("Receiver thread was interrupted {}", e.getMessage());
                 }

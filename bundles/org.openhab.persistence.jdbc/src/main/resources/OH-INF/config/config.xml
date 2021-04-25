@@ -71,7 +71,7 @@
 			#sqltype.CONTACT = VARCHAR(6)
 			#sqltype.DATETIME = DATETIME
 			#sqltype.DIMMER = TINYINT
-			#sqltype.LOCATION = VARCHAR(30)
+			#sqltype.LOCATION = VARCHAR(50)
 			#sqltype.NUMBER = DOUBLE
 			#sqltype.ROLLERSHUTTER = TINYINT
 			#sqltype.STRING = VARCHAR(65500)
@@ -103,13 +103,21 @@
 			<label>SqlType DIMMER</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for DIMMER <br>(optional, default: "TINYINT").]]></description>
 		</parameter>
+		<parameter name="sqltype.IMAGE" type="text">
+			<label>SqlType IMAGE</label>
+			<description><![CDATA[Overrides used JDBC/SQL datatype for IMAGE <br>(optional, default: "VARCHAR(65500)").]]></description>
+		</parameter>
 		<parameter name="sqltype.LOCATION" type="text">
 			<label>SqlType LOCATION</label>
-			<description><![CDATA[Overrides used JDBC/SQL datatype for LOCATION <br>(optional, default: "VARCHAR(30)").]]></description>
+			<description><![CDATA[Overrides used JDBC/SQL datatype for LOCATION <br>(optional, default: "VARCHAR(50)").]]></description>
 		</parameter>
 		<parameter name="sqltype.NUMBER" type="text">
 			<label>SqlType NUMBER</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for NUMBER <br>(optional, default: "DOUBLE").]]></description>
+		</parameter>
+		<parameter name="sqltype.PLAYER" type="text">
+			<label>SqlType PLAYER</label>
+			<description><![CDATA[Overrides used JDBC/SQL datatype for PLAYER <br>(optional, default: "VARCHAR(20)").]]></description>
 		</parameter>
 		<parameter name="sqltype.ROLLERSHUTTER" type="text">
 			<label>SqlType ROLLERSHUTTER</label>

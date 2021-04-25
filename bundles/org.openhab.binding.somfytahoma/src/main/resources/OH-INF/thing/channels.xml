@@ -396,4 +396,24 @@
 		<description>The scenarios defined in the cloud portal</description>
 		<autoUpdatePolicy>recommend</autoUpdatePolicy>
 	</channel-type>
+
+	<channel-type id="slats">
+		<item-type>Contact</item-type>
+		<label>Slats</label>
+		<description>Slats having OPEN/CLOSED state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pergola_command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>A channel used for sending commands to Somfy Bioclimatic Pergola device</description>
+		<state>
+			<options>
+				<option value="closeSlats">Close slats</option>
+				<option value="openSlats">Open slats</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

@@ -133,7 +133,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
-        if (configuration.host == null || configuration.host.isEmpty()) {
+        if (configuration.host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "IP address required. Configure IP address");
             return;
@@ -142,7 +142,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
-        cloudServer = (configuration.cloudServer != null) ? configuration.cloudServer : "";
+        this.cloudServer = configuration.cloudServer;
         isIdentified = false;
         miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
@@ -262,7 +262,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         // use direct communications and in case of failures fall back to cloud communication. For now we keep it
         // simple and only have the option for cloud or direct.
         final MiIoBindingConfiguration configuration = this.configuration;
-        if (configuration != null && configuration.communication != null) {
+        if (configuration != null) {
             return configuration.communication.equals("cloud") ? cloudServer : "";
         }
         return "";
@@ -333,13 +333,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return miioCom;
         }
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
-        if (configuration.host == null || configuration.host.isEmpty()) {
+        if (configuration.host.isBlank()) {
             return null;
         }
         @Nullable
         String deviceId = configuration.deviceId;
         try {
-            if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
+            if (deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
                 final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
                         Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout, cloudConnector);
                 if (getCloudServer().isBlank()) {
@@ -444,7 +444,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         String model = miioInfo.get("model").getAsString();
         miDevice = MiIoDevices.getType(model);
-        if (configuration.model == null || configuration.model.isEmpty()) {
+        if (configuration.model.isEmpty()) {
             Configuration config = editConfiguration();
             config.put(PROPERTY_MODEL, model);
             updateConfiguration(config);
