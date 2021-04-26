@@ -158,7 +158,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
         // Connect to mongodb server if we're not already connected
         // If we can't connect, log.
-        if (!isConnected() || !tryConnectToDatabase()) {
+        if (!tryConnectToDatabase()) {
             logger.warn(
                     "mongodb: No connection to database. Cannot persist item '{}'! Will retry connecting to database next time.",
                     item);
@@ -244,6 +244,10 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
      * @return True, if the connection was successfully established.
      */
     private boolean tryConnectToDatabase() {
+        if (isConnected()) {
+            return true;
+        }
+
         try {
             logger.debug("Connect MongoDB");
             disconnectFromDatabase();
@@ -306,7 +310,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             return Collections.emptyList();
         }
 
-        if (!isConnected() && !tryConnectToDatabase()) {
+        if (!tryConnectToDatabase()) {
             return Collections.emptyList();
         }
 
