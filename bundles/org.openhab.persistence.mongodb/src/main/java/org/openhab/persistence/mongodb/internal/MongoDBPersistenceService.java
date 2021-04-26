@@ -209,7 +209,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     }
 
     /**
-     * @{inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void store(Item item) {
