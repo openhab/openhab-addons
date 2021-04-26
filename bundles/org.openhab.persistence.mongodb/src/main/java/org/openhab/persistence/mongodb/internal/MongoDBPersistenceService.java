@@ -330,7 +330,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         Item item = getItem(realItemName);
 
         List<HistoricItem> items = new ArrayList<>();
-        DBObject query = new BasicDBObject();
+        BasicDBObject query = new BasicDBObject();
         if (filter.getItemName() != null) {
             query.put(FIELD_ITEM, filter.getItemName());
         }
@@ -350,6 +350,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         if (!dateQueries.isEmpty()) {
             query.put(FIELD_TIMESTAMP, dateQueries);
         }
+
+        logger.debug("Query: {}", query);
 
         Integer sortDir = (filter.getOrdering() == Ordering.ASCENDING) ? 1 : -1;
         DBCursor cursor = collection.find(query).sort(new BasicDBObject(FIELD_TIMESTAMP, sortDir))
