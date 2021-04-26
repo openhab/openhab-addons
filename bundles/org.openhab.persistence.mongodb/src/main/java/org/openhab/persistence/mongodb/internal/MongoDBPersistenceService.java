@@ -94,7 +94,6 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     protected final ItemRegistry itemRegistry;
 
     private @NonNullByDefault({}) MongoClient cl;
-    private @NonNullByDefault({}) DBCollection mongoCollection;
 
     @Activate
     public MongoDBPersistenceService(final @Reference ItemRegistry itemRegistry) {
@@ -168,28 +167,26 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             return;
         }
 
-        String realName = item.getName();
+        String realItemName = item.getName();
+        String collectionName = collectionPerItem ? realItemName : this.collection;
 
-        // If collection Per Item is active, connect to the item Collection
-        if (collectionPerItem) {
-            connectToCollection(realName);
+        DBCollection collection = connectToCollection(collectionName);
+
+        if (collection == null) {
+            logger.warn("Failed to create collection {}", collectionName);
+            return;
         }
 
-        String name = (alias != null) ? alias : realName;
+        String name = (alias != null) ? alias : realItemName;
         Object value = this.convertValue(item.getState());
 
         DBObject obj = new BasicDBObject();
         obj.put(FIELD_ID, new ObjectId());
         obj.put(FIELD_ITEM, name);
-        obj.put(FIELD_REALNAME, realName);
+        obj.put(FIELD_REALNAME, realItemName);
         obj.put(FIELD_TIMESTAMP, new Date());
         obj.put(FIELD_VALUE, value);
-        this.mongoCollection.save(obj);
-
-        // If collection Per Item is active, disconnect after save.
-        if (collectionPerItem) {
-            disconnectFromCollection();
-        }
+        collection.save(obj);
 
         logger.debug("MongoDB save {}={}", name, value);
     }
@@ -255,14 +252,6 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
             this.cl = new MongoClient(new MongoClientURI(this.url));
 
-            if (!collectionPerItem) {
-                mongoCollection = cl.getDB(this.db).getCollection(this.collection);
-
-                BasicDBObject idx = new BasicDBObject();
-                idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
-                this.mongoCollection.createIndex(idx);
-            }
-
             logger.debug("Connect MongoDB ... done");
             return true;
         } catch (Exception e) {
@@ -283,25 +272,22 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     /**
      * Connects to the Collection
+     *
+     * @return The collection object when collection creation was successful. Null otherwise.
      */
-    private void connectToCollection(String collectionName) {
+    private DBCollection connectToCollection(String collectionName) {
         try {
             DBCollection mongoCollection = getDatabase().getDB(this.db).getCollection(collectionName);
 
             BasicDBObject idx = new BasicDBObject();
             idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
-            this.mongoCollection.createIndex(idx);
+            mongoCollection.createIndex(idx);
+
+            return mongoCollection;
         } catch (Exception e) {
             logger.error("Failed to connect to collection {}", collectionName);
-            throw new RuntimeException("Cannot connect to collection", e);
+            return null;
         }
-    }
-
-    /**
-     * Disconnects from the Collection
-     */
-    private void disconnectFromCollection() {
-        this.mongoCollection = null;
     }
 
     /**
@@ -325,13 +311,17 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             return Collections.emptyList();
         }
 
-        String name = filter.getItemName();
+        String realItemName = filter.getItemName();
+        String collectionName = collectionPerItem ? realItemName : this.collection;
+        DBCollection collection = connectToCollection(collectionName);
 
-        // If collection Per Item is active, connect to the item Collection
-        if (collectionPerItem) {
-            connectToCollection(name);
+        // If collection creation failed, return nothing.
+        if (collection == null) {
+            logger.warn("Failed to connect to collection {}", collectionName);
+            return Collections.emptyList();
         }
-        Item item = getItem(name);
+
+        Item item = getItem(realItemName);
 
         List<HistoricItem> items = new ArrayList<>();
         DBObject query = new BasicDBObject();
@@ -351,7 +341,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         Integer sortDir = (filter.getOrdering() == Ordering.ASCENDING) ? 1 : -1;
-        DBCursor cursor = this.mongoCollection.find(query).sort(new BasicDBObject(FIELD_TIMESTAMP, sortDir))
+        DBCursor cursor = collection.find(query).sort(new BasicDBObject(FIELD_TIMESTAMP, sortDir))
                 .skip(filter.getPageNumber() * filter.getPageSize()).limit(filter.getPageSize());
 
         while (cursor.hasNext()) {
@@ -375,14 +365,10 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 state = new StringType(obj.getString(FIELD_VALUE));
             }
 
-            items.add(new MongoDBItem(name, state,
+            items.add(new MongoDBItem(realItemName, state,
                     ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
         }
 
-        // If collection Per Item is active, disconnect after save.
-        if (collectionPerItem) {
-            disconnectFromCollection();
-        }
         return items;
     }
 
