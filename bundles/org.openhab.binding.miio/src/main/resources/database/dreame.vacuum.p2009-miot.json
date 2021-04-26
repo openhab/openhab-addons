@@ -26,6 +26,14 @@
 						{
 							"value": "dock",
 							"label": "Goto Dock"
+						},
+						{
+							"value": "findme",
+							"label": "Find me"
+						},
+						{
+							"value": "testsound",
+							"label": "Test Sound"
 						}
 					]
 				},
@@ -35,7 +43,7 @@
 						"command": "action",
 						"parameterType": "EMPTY",
 						"siid": 2,
-						"aiid": 2,
+						"aiid": 1,
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
@@ -69,6 +77,34 @@
 							"parameters": [
 								{
 									"matchValue": "dock"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters" : [
+								{
+									"matchValue": "findme"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters" : [
+								{
+									"matchValue": "testsound"
 								}
 							]
 						}
@@ -132,11 +168,125 @@
 				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f",
-					"readOnly": true
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Error"
+						},
+						{
+							"value": "1",
+							"label": "Drop"
+						},
+						{
+							"value": "2",
+							"label": "Cliff"
+						},
+						{
+							"value": "3",
+							"label": "Bumper"
+						},
+						{
+							"value": "4",
+							"label": "Gesture"
+						},
+						{
+							"value": "5",
+							"label": "Bumper Repeat"
+						},
+						{
+							"value": "6",
+							"label": "Drop Repeat"
+						},
+						{
+							"value": "7",
+							"label": "Optical Flow"
+						},
+						{
+							"value": "8",
+							"label": "No Box"
+						},
+						{
+							"value": "9",
+							"label": "No Tankbox"
+						},
+						{
+							"value": "10",
+							"label": "Waterbox Empty"
+						},
+						{
+							"value": "11",
+							"label": "Box full"
+						},
+						{
+							"value": "12",
+							"label": "Brush"
+						},
+						{
+							"value": "13",
+							"label": "Side Brush"
+						},
+						{
+							"value": "14",
+							"label": "Fan"
+						},
+						{
+							"value": "15",
+							"label": "Left Wheel motor"
+						},
+						{
+							"value": "16",
+							"label": "Right Wheel motor"
+						},
+						{
+							"value": "17",
+							"label": "Turn suffocate"
+						},
+						{
+							"value": "18",
+							"label": "Forward suffocate"
+						},
+						{
+							"value": "19",
+							"label": "Charger get"
+						},
+						{
+							"value": "20",
+							"label": "Battery low"
+						},
+						{
+							"value": "21",
+							"label": "Charge fault"
+						},
+						{
+							"value": "22",
+							"label": "Battery percentage"
+						},
+						{
+							"value": "23",
+							"label": "Heart"
+						},
+						{
+							"value": "24",
+							"label": "Camera occlusion"
+						},
+						{
+							"value": "25",
+							"label": "Camera fault"
+						},
+						{
+							"value": "26",
+							"label": "Event battery"
+						},
+						{
+							"value": "27",
+							"label": "Forward looking"
+						},
+						{
+							"value": "28",
+							"label": "Gyroscope"
+						}
+					]
 				},
 				"refresh": true,
 				"actions": []
