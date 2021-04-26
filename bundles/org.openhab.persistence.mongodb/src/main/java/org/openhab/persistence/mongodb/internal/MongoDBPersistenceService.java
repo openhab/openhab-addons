@@ -222,12 +222,25 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     }
 
     /**
-     * Checks if we have a database connection
+     * Checks if we have a database connection.
+     * Also tests if communication with the MongoDB-Server is available.
      *
      * @return true if connection has been established, false otherwise
      */
     private boolean isConnected() {
-        return cl != null;
+        if (cl == null) {
+            return false;
+        }
+
+        // Also check if the connection is valid.
+        // Network problems may cause failure sometimes,
+        // even if the connection object was successfully created before.
+        try {
+            cl.getAddress();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     /**
