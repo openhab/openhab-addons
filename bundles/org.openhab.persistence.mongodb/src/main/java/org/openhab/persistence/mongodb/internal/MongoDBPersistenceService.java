@@ -339,11 +339,16 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             Object value = convertValue(filter.getState());
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
+
+        BasicDBObject dateQueries = new BasicDBObject();
         if (filter.getBeginDate() != null) {
             dateQueries.put("$gte", Date.from(filter.getBeginDate().toInstant()));
         }
-        if (filter.getBeginDate() != null) {
-            query.put(FIELD_TIMESTAMP, new BasicDBObject("$lte", filter.getBeginDate()));
+        if (filter.getEndDate() != null) {
+            dateQueries.put("$lte", Date.from(filter.getEndDate().toInstant()));
+        }
+        if (!dateQueries.isEmpty()) {
+            query.put(FIELD_TIMESTAMP, dateQueries);
         }
 
         Integer sortDir = (filter.getOrdering() == Ordering.ASCENDING) ? 1 : -1;
