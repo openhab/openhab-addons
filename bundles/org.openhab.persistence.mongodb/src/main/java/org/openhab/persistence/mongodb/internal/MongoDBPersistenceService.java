@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -71,7 +70,6 @@ import com.mongodb.MongoClientURI;
  *
  * @author Thorsten Hoeger - Initial contribution
  */
-@NonNullByDefault
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.mongodb", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class MongoDBPersistenceService implements QueryablePersistenceService {
@@ -84,16 +82,16 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
 
-    private @NonNullByDefault({}) String url;
-    private @NonNullByDefault({}) String db;
-    private @NonNullByDefault({}) String collection;
+    private String url;
+    private String db;
+    private String collection;
     private boolean collectionPerItem;
 
     private boolean initialized = false;
 
     protected final ItemRegistry itemRegistry;
 
-    private @NonNullByDefault({}) MongoClient cl;
+    private MongoClient cl;
 
     @Activate
     public MongoDBPersistenceService(final @Reference ItemRegistry itemRegistry) {
