@@ -251,6 +251,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     private boolean tryConnectToDatabase() {
         try {
             logger.debug("Connect MongoDB");
+            disconnectFromDatabase();
+
             this.cl = new MongoClient(new MongoClientURI(this.url));
             if (collectionPerItem) {
                 mongoCollection = cl.getDB(this.db).getCollection(this.collection);
