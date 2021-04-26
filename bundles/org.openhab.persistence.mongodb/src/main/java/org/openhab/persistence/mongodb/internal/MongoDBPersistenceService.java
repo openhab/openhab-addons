@@ -108,19 +108,17 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             logger.warn("The MongoDB database URL is missing - please configure the mongodb:url parameter.");
             return;
         }
+
         db = (String) config.get("database");
         logger.debug("MongoDB database {}", db);
         if (db == null || db.isBlank()) {
             logger.warn("The MongoDB database name is missing - please configure the mongodb:database parameter.");
             return;
         }
+
         collection = (String) config.get("collection");
         logger.debug("MongoDB collection {}", collection);
-        if (collection == null || collection.isBlank()) {
-            collectionPerItem = false;
-        } else {
-            collectionPerItem = true;
-        }
+        collectionPerItem = collection == null || collection.isBlank();
 
         if (!tryConnectToDatabase()) {
             logger.warn("Failed to connect to MongoDB server. Trying to reconnect later.");
@@ -298,6 +296,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         if (this.cl != null) {
             this.cl.close();
         }
+
         cl = null;
     }
 
@@ -334,7 +333,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
         if (filter.getBeginDate() != null) {
-            query.put(FIELD_TIMESTAMP, new BasicDBObject("$gte", filter.getBeginDate()));
+            dateQueries.put("$gte", Date.from(filter.getBeginDate().toInstant()));
         }
         if (filter.getBeginDate() != null) {
             query.put(FIELD_TIMESTAMP, new BasicDBObject("$lte", filter.getBeginDate()));
