@@ -266,6 +266,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             return true;
         } catch (Exception e) {
             logger.error("Failed to connect to database {}", this.url);
+            disconnectFromDatabase();
             return false;
         }
     }
