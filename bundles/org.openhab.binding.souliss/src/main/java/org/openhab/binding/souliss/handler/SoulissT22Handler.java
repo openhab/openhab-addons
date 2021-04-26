@@ -175,7 +175,6 @@ public class SoulissT22Handler extends SoulissGenericHandler {
 
     @Override
     public byte getRawState() {
-        // TODO Auto-generated method stub
         return t2nRawState;
     }
 
