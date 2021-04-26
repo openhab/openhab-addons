@@ -31,6 +31,7 @@ class LxControlFactory {
         add(new LxControlAlarm.Factory());
         add(new LxControlColorPickerV2.Factory());
         add(new LxControlDimmer.Factory());
+        add(new LxControlEIBDimmer.Factory());
         add(new LxControlInfoOnlyAnalog.Factory());
         add(new LxControlInfoOnlyDigital.Factory());
         add(new LxControlIRoomControllerV2.Factory());

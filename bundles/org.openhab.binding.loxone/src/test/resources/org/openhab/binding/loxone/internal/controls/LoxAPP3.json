@@ -313,7 +313,20 @@
 				"step": "131b19cd-03c0-6407-ffffd2fd15b703b6"
 			}
 		},
-		"0e367c09-0161-e2c1-ffff403fb0c34b9e": {
+		"faa30f5c-4b4f-11e2-8928b8ba17ef51ee": {
+            "name": "Kitchen Dimmer",
+            "type": "EIBDimmer",
+            "uuidAction": "faa30f5c-4b4f-11e2-8928b8ba17ef51ee",
+            "room": "0b734138-037d-034e-ffff403fb0c34b9e",
+            "cat": "0fe650c2-0004-d446-ffff504f9410790f",
+            "defaultRating": 0,
+            "isFavorite": false,
+            "isSecured": false,
+            "states": {
+                "position": "faa30f5d-4b4f-11e2-892eb8ba17ef51ee"
+            }
+        },
+        "0e367c09-0161-e2c1-ffff403fb0c34b9e": {
 			"name": "Window Blinds",
 			"type": "Jalousie",
 			"uuidAction": "0e367c09-0161-e2c1-ffff403fb0c34b9e",

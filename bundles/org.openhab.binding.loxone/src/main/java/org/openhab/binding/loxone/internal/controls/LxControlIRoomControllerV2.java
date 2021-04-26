@@ -27,8 +27,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An Intelligent Room Controller V2.
@@ -72,8 +70,6 @@ class LxControlIRoomControllerV2 extends LxControl {
     private static final String CMD_SET_ABSENT_MIN_TEMPERATURE = "setAbsentMinTemperature/";
     private static final String CMD_SET_ABSENT_MAX_TEMPERATURE = "setAbsentMaxTemperature/";
     private static final String CMD_SET_MANUAL_TEMPERATURE = "setManualTemperature/";
-
-    private final Logger logger = LoggerFactory.getLogger(LxControlIRoomControllerV2.class);
 
     private LxControlIRoomControllerV2(LxUuid uuid) {
         super(uuid);
