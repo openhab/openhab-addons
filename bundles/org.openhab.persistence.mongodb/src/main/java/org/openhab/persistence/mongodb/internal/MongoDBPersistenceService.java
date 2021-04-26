@@ -273,11 +273,20 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     }
 
     /**
+     * Fetches the currently valid database.
+     *
+     * @return The database object
+     */
+    private MongoClient getDatabase() {
+        return cl;
+    }
+
+    /**
      * Connects to the Collection
      */
     private void connectToCollection(String collectionName) {
         try {
-            mongoCollection = cl.getDB(this.db).getCollection(collectionName);
+            DBCollection mongoCollection = getDatabase().getDB(this.db).getCollection(collectionName);
 
             BasicDBObject idx = new BasicDBObject();
             idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
