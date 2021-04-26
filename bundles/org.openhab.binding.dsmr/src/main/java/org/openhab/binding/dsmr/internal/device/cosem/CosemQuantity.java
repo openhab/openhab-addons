@@ -124,7 +124,15 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
      */
     private String prepare(String cosemValue) {
         Matcher matcher = COSEM_VALUE_WITH_UNIT_PATTERN.matcher(cosemValue.replace("m3", "m³"));
+        if (!matcher.find()) {
+            return cosemValue;
+        }
 
-        return matcher.find() ? matcher.group(1) + ' ' + matcher.group(2) : cosemValue;
+        try {
+            Integer.parseInt(matcher.group(2));
+            return cosemValue;
+        } catch (NumberFormatException e) {
+            return matcher.group(1) + ' ' + matcher.group(2);
+        }
     }
 }

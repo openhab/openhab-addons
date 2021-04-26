@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
-import javax.measure.format.ParserException;
+import javax.measure.format.MeasurementParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -161,7 +161,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                     qtc = ((QuantityType<?>) command).toUnit(unit);
                                 }
                             }
-                        } catch (ParserException e) {
+                        } catch (MeasurementParseException e) {
                             // swallow
                         }
                         if (qtc != null) {
