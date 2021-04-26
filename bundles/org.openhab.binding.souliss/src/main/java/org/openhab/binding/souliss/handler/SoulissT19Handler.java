@@ -137,8 +137,8 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                         PercentType.valueOf(String.valueOf(Math.round((t1nRawStateByte0 / 255) * 100))));
             }
         } catch (IllegalStateException ex) {
-            logger.debug("UUID: {}", this.getThing().getUID().getAsString());
-            logger.debug(" - Update state error (in setDimmerValue): {}", ex.getMessage());
+            logger.debug("UUID: {}, had an update dimmer state error:{}", this.getThing().getUID().getAsString(),
+                    ex.getMessage());
         }
     }
 

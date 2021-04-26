@@ -76,8 +76,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
                     decoder.decodeVNetDatagram(packet);
 
                 } catch (IOException e) {
-                    logger.debug("Error in Class SoulissBindingUDPServerThread");
-                    logger.error("Error: ", e);
+                    logger.warn("Error in Class SoulissBindingUDPServerThread: {}", e);
                 }
             }
         } else {
