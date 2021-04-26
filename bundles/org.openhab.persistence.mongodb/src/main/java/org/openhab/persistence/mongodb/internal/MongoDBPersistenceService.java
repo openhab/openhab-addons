@@ -143,7 +143,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "Mongo DB";
+        return "MongoDB";
     }
 
     @Override
