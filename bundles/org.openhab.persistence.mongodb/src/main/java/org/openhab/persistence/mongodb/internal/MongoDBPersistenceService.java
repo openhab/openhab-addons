@@ -169,7 +169,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         DBCollection collection = connectToCollection(collectionName);
 
         if (collection == null) {
-            logger.warn("Failed to create collection {}", collectionName);
+            // Logging is done in connectToCollection()
             return;
         }
 
@@ -317,7 +317,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
         // If collection creation failed, return nothing.
         if (collection == null) {
-            logger.warn("Failed to connect to collection {}", collectionName);
+            // Logging is done in connectToCollection()
             return Collections.emptyList();
         }
 
