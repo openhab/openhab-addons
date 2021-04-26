@@ -92,12 +92,10 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     @Override
     protected void startBackgroundDiscovery() {
-
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-
     }
 
     /**
