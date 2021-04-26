@@ -222,7 +222,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
      *
      * @return true if connection has been established, false otherwise
      */
-    private boolean isConnected() {
+    private synchronized boolean isConnected() {
         if (cl == null) {
             return false;
         }
@@ -243,7 +243,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
      *
      * @return True, if the connection was successfully established.
      */
-    private boolean tryConnectToDatabase() {
+    private synchronized boolean tryConnectToDatabase() {
         if (isConnected()) {
             return true;
         }
@@ -268,7 +268,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
      *
      * @return The database object
      */
-    private MongoClient getDatabase() {
+    private synchronized MongoClient getDatabase() {
         return cl;
     }
 
@@ -295,8 +295,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     /**
      * Disconnects from the database
      */
-    private void disconnectFromDatabase() {
-        this.mongoCollection = null;
+    private synchronized void disconnectFromDatabase() {
         if (this.cl != null) {
             this.cl.close();
         }
