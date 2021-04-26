@@ -286,7 +286,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             DBCollection mongoCollection = getDatabase().getDB(this.db).getCollection(collectionName);
 
             BasicDBObject idx = new BasicDBObject();
-            idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
+            idx.append(FIELD_ITEM, 1).append(FIELD_TIMESTAMP, 1);
             mongoCollection.createIndex(idx);
 
             return mongoCollection;
