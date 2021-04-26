@@ -5,6 +5,5 @@
 
 	<name>Souliss Binding</name>
 	<description>This is the binding for Souliss. The Arduino based SmartHome..</description>
-	<author>Tonino Fazio - Luca Remigio - Luca Calcaterra</author>
 
 </binding:binding>

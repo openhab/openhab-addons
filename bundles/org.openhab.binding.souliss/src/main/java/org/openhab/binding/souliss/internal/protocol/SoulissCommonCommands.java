@@ -206,7 +206,7 @@ public class SoulissCommonCommands {
                     SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
             SoulissBindingSendDispatcherJob.put(socket, packet, this.logger);
         } catch (IOException e) {
-            logger.error("Error: {} ", e.getMessage());
+            logger.warn("Error: {} ", e.getMessage());
         }
     }
 
@@ -255,9 +255,9 @@ public class SoulissCommonCommands {
                 }
             }
         } catch (SocketException e) {
-            logger.error("{}", e.getMessage());
+            logger.warn("{}", e.getMessage());
         } catch (UnknownHostException e) {
-            logger.error("{}", e.getMessage());
+            logger.warn("{}", e.getMessage());
         }
     }
 

@@ -76,7 +76,6 @@ public class SoulissTopicsHandler extends SoulissGenericActionMessage implements
 
     @Override
     public byte getExpectedRawState(byte bCommand) {
-        // TODO Auto-generated method stub
         return -1;
     }
 }

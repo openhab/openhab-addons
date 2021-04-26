@@ -45,7 +45,7 @@ public class SoulissDatagramSocketFactory {
             }
             logger.debug("Datagram Socket Created on port {}", soulissDatagramSocket.getLocalPort());
         } catch (SocketException e) {
-            logger.error("Error on creation of Socket: {}", e.getMessage());
+            logger.warn("Error on creation of Socket: {}", e.getMessage());
         }
 
         return soulissDatagramSocket;

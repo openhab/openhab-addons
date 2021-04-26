@@ -304,7 +304,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                 gateway = (SoulissGatewayHandler) bridge.getHandler();
             }
         } catch (Exception ex) {
-            logger.error("exception getting gw handler {}", ex.getMessage());
+            logger.warn("exception getting gw handler {}", ex.getMessage());
         }
 
         Iterator<Thing> thingsIterator;
@@ -337,10 +337,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         }
         return itemState == expectedState;
     }
-
-    // private static String expectedState(short soulissType, byte command) {
-    // return StateTraslator.translateCommandsToExpectedStates(soulissType, command);
-    // }
 
     private static boolean checkAllsSlotZero(DatagramPacket packet) {
         boolean bflag = true;

@@ -272,13 +272,11 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
     @Override
     public byte getRawState() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public byte getExpectedRawState(byte bCommand) {
-        // TODO Auto-generated method stub
         return 0;
     }
 

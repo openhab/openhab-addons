@@ -142,18 +142,15 @@ public class SoulissBindingUDPDecoder {
                         Integer.toHexString(functionalCode));
                 decodeDBStructRequest(lastByteGatewayIP, macacoPck);
                 break;
-            // case 0x83:
-            // logger.debug("Functional code not supported");
-            // break;
-            // case 0x84:
-            // logger.debug("Data out of range");
-            // break;
-            // case 0x85:
-            // logger.debug("Subscription refused");
-            // break;
-            // default:
-            // logger.debug("Unknown functional code");
-            // break;
+            case 0x83:
+                logger.debug("Functional code not supported");
+                break;
+            case 0x84:
+                logger.debug("Data out of range");
+                break;
+            case 0x85:
+                logger.debug("Subscription refused");
+                break;
             case (byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_ACTION_MESSAGE:
                 logger.debug("Received functional code: 0x{} - Action Message (Topic)",
                         Integer.toHexString(functionalCode));
@@ -309,7 +306,7 @@ public class SoulissBindingUDPDecoder {
             }
 
         } catch (Exception uy) {
-            logger.error("decodeActionMessages ERROR");
+            logger.warn("decodeActionMessages ERROR");
         }
     }
 

@@ -92,22 +92,12 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     @Override
     protected void startBackgroundDiscovery() {
-        // if (backgroundFuture != null) {
-        // return;
-        // }
-        // // per adesso non mi serve il discovery in background
-        // // startDiscoveryService();
-        //
-        // backgroundFuture = scheduler.scheduleAtFixedRate(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
+
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        // stopScan();
-        // if (backgroundFuture != null) {
-        // backgroundFuture.cancel(false);
-        // backgroundFuture = null;
-        // }
+
     }
 
     /**
