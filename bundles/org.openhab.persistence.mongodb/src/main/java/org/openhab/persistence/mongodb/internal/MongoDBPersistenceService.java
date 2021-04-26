@@ -254,7 +254,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             disconnectFromDatabase();
 
             this.cl = new MongoClient(new MongoClientURI(this.url));
-            if (collectionPerItem) {
+
+            if (!collectionPerItem) {
                 mongoCollection = cl.getDB(this.db).getCollection(this.collection);
 
                 BasicDBObject idx = new BasicDBObject();
