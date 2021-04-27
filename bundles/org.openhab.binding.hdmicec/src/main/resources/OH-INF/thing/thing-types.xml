@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hdmicec"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="equipment" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>HDMI-CEC Equipment</label>
+		<description>Represents your TV, Home Theater, Blu-Ray, etc. that speaks HDMI CEC</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="activeSource" typeId="activeSource"/>
+			<channel id="event" typeId="event"/>
+			<channel id="sendCEC" typeId="sendCEC"/>
+			<channel id="remoteButton" typeId="remoteButton"/>
+		</channels>
+
+		<config-description>
+			<parameter name="deviceIndex" type="text" required="true">
+				<label>device</label>
+				<description>CEC Device, a single HEX value such as 0, 1, 2, E (0 is TV)</description>
+			</parameter>
+			<parameter name="address" type="text" required="true">
+				<label>address</label>
+				<description>CEC Address, of the form 0.0.0.0</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- HDMI CEC Bridge -->
+	<bridge-type id="bridge" listed="true">
+		<label>HDMI-CEC Bridge</label>
+		<description>The HDMI-CEC Bridge.</description>
+
+		<config-description>
+			<parameter name="cecClientPath" type="text" required="true">
+				<label>cec-client executable path</label>
+				<description>e.g. /usr/bin/cec-client</description>
+			</parameter>
+			<parameter name="comPort" type="text" required="true">
+				<label>Device com port</label>
+				<description>e.g. /dev/ttyACM0</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power on/off your device</description>
+	</channel-type>
+
+	<channel-type id="activeSource">
+		<item-type>Switch</item-type>
+		<label>Active Source</label>
+		<description>Make source active/inactive</description>
+	</channel-type>
+
+	<!-- Event Channel Type -->
+	<channel-type id="event">
+		<kind>trigger</kind>
+		<label>Traffic Event</label>
+		<description>Triggers when something happens</description>
+	</channel-type>
+
+	<!-- Transmit Channel Type -->
+	<channel-type id="sendCEC">
+		<item-type>String</item-type>
+		<label>Send CEC Command</label>
+		<description>Used to send CEC commands</description>
+	</channel-type>
+
+	<!-- Transmit Channel Type -->
+	<channel-type id="remoteButton">
+		<item-type>String</item-type>
+		<label>Send Remote Command</label>
+		<description>Used to send Button commands</description>
+	</channel-type>
+</thing:thing-descriptions>

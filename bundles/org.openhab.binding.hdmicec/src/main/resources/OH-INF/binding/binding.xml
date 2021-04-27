@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="hdmicec" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>HdmiCec Binding</name>
+	<description>Binding to enable control of home theatre devices via HDMI-CEC.</description>
+	<author>David Masshardt, Eric Meeks, Sam Spencer</author>
+
+</binding:binding>
