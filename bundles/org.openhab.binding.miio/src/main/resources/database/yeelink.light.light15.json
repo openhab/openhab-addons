@@ -1,18 +1,10 @@
 {
 	"deviceMapping": {
 		"id": [
-			"yeelink.light.color1",
-			"yeelink.light.color2",
-			"yeelink.light.color3",
-			"yeelink.light.color4",
-			"yeelink.light.strip1",
-			"yeelink.light.strip2",
-			"yeelink.light.bslamp1",
-			"yeelink.light.bslamp2",
-			"yeelink.light.bslamp3",
-			"yeelink.light.colora"
+			"yeelink.light.lamp15"
 		],
-		"maxProperties": 7,
+		"propertyMethod": "get_prop",
+		"maxProperties": 2,
 		"channels": [
 			{
 				"property": "power",
@@ -86,12 +78,13 @@
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"stateDescription": {
 					"minimum": 1700,
 					"maximum": 6500,
 					"step": 1,
-					"pattern": "%.0f K"
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
@@ -209,18 +202,78 @@
 				]
 			},
 			{
-				"property": "name",
-				"friendlyName": "Name",
-				"channel": "name",
-				"type": "String",
+				"property": "bg_bright",
+				"friendlyName": "Ambient Brightness",
+				"channel": "ambientBrightness",
+				"channelType": "ambientBrightness",
+				"type": "Number",
 				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_name",
-						"parameterType": "STRING"
+						"command": "bg_set_bright",
+						"parameterType": "NUMBER"
 					}
-				],
-				"category": "text"
+				]
+			},
+			{
+				"property": "bg_power",
+				"friendlyName": "Ambient Power",
+				"channel": "ambientPower",
+				"channelType": "ambientPower",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bg_rgb",
+				"friendlyName": "Ambient Color",
+				"channel": "ambientColor",
+				"channelType": "ambientColor",
+				"type": "Color",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_rgb",
+						"parameterType": "COLOR"
+					}
+				]
+			},
+			{
+				"property": "bg_ct",
+				"friendlyName": "Ambient Color Temperature",
+				"channel": "ambientColorTemperature",
+				"channelType": "ambientColorTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_ct_abx",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
+					}
+				]
+			},
+			{
+				"property": "bg_lmode",
+				"friendlyName": "Ambient Color Mode",
+				"channel": "ambientColorMode",
+				"channelType": "ambientColorMode",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
 			}
 		]
 	}
