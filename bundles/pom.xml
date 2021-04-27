@@ -98,6 +98,7 @@
     <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.ecobee</module>
+    <module>org.openhab.binding.ecotouch</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
