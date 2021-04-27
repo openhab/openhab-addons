@@ -69,6 +69,7 @@ import com.mongodb.MongoClientURI;
  * This is the implementation of the MongoDB {@link PersistenceService}.
  *
  * @author Thorsten Hoeger - Initial contribution
+ * @author Stephan Brunner - Query fixes, Cleanup
  */
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.mongodb", configurationPolicy = ConfigurationPolicy.REQUIRE)
