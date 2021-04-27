@@ -348,6 +348,7 @@ public enum MiIoDevices {
     ZHIMI_AIRPURIFIER_VB2("zhimi.airpurifier.vb2", "Mi Air Purifier Pro H", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_VIRTUAL("zhimi.airpurifier.virtual", "Mi Air Purifier virtual", THING_TYPE_UNSUPPORTED),
     ZHIMI_AIRPURIFIER_VTL_M1("zhimi.airpurifier.vtl_m1", "Mi Air Purifier 2(Virtual)", THING_TYPE_UNSUPPORTED),
+    ZHIMI_AIRPURIFIER_ZA1("zhimi.airpurifier.za1", "Smartmi Air Purifier", THING_TYPE_BASIC),
     ZHIMI_FAN_SA1("zhimi.fan.sa1", "Mi Standing Fan", THING_TYPE_BASIC),
     ZHIMI_FAN_V1("zhimi.fan.v1", "Mi Smart Fan", THING_TYPE_BASIC),
     ZHIMI_FAN_V2("zhimi.fan.v2", "Smartmi DC Pedestal Fan", THING_TYPE_BASIC),
