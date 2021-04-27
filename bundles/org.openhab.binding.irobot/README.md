@@ -27,6 +27,8 @@ known, however, whether the password is eternal or can change during factory res
 |-----------|----------------------------------------|
 | ipaddress | IP address (or hostname) of your robot |
 | password  | Password for the robot                 |
+| mqttQos   | MQTT - Quality of Service              |
+
 
 ## Channels
 

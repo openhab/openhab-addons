@@ -24,4 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RoombaConfiguration {
     public String ipaddress = "";
     public String password = "";
+    public int mqttQos = 1;
 }

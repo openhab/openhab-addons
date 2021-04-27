@@ -62,6 +62,12 @@
 			<parameter name="password" type="text">
 				<label>Password</label>
 			</parameter>
+			<parameter name="mqttQos" type="integer">
+				<label>MQTT - Quality of Service</label>
+				<description>There are 3 QoS levels in MQTT: At most once (0), at least once (1), and exactly once (2)</description>
+				<advanced>true</advanced>
+				<default>1</default>
+			</parameter>
 
 		</config-description>
 	</thing-type>

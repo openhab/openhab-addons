@@ -214,9 +214,7 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
         if (conn != null) {
             String json = gson.toJson(request);
             logger.trace("Sending {}: {}", request.getTopic(), json);
-            // 1 here actually corresponds to MQTT qos 0 (AT_MOST_ONCE). Only this value is accepted
-            // by Roomba, others just cause it to reject the command and drop the connection.
-            conn.publish(request.getTopic(), json.getBytes(), 1, false);
+            conn.publish(request.getTopic(), json.getBytes(), config.mqttQos, false);
         }
     }
 
