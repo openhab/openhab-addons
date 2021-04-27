@@ -83,12 +83,8 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             }
         } else if (channelUID.getId().equals(CHANNELSPTEMP)) {
             if (command instanceof QuantityType<?>) {
-<<<<<<< HEAD
                 QuantityType<?> value = (QuantityType<?>) command;
-=======
-                @SuppressWarnings("unchecked")
-                QuantityType<Temperature> value = (QuantityType<Temperature>) command;
->>>>>>> 7502035b5 (Fixed bugs due to naming refactoring. Fixed code review comments.)
+
                 Unit<Temperature> unit = SIUnits.CELSIUS;
                 value = value.toUnit(unit);
                 if (value != null) {
@@ -223,20 +219,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     }
 
     private void run() {
-<<<<<<< HEAD
         updateOvenData(null);
         for (Channel channel : getThing().getChannels()) {
             updateChannel(channel.getUID().getId());
-=======
-        try {
-            updateOvenData(null);
-
-            for (Channel channel : getThing().getChannels()) {
-                updateChannel(channel.getUID().getId());
-            }
-        } catch (Exception e) {
-            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
->>>>>>> 1d4eab948 (One more try to fix a code review finding)
         }
     }
 
@@ -267,15 +252,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             HaasSohnpelletstoveJsonDataDTO data = serviceCommunication.getOvenData();
             if (data != null) {
                 switch (channelId) {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     case CHANNELISTEMP:
-=======
-                    case CHANNEL_ISTEMP:
->>>>>>> 2217548ad (Fixed latest code reviews and changed types. Fixed Typos and information in README.md)
-=======
-                    case CHANNELISTEMP:
->>>>>>> 1d4eab948 (One more try to fix a code review finding)
                         state = new QuantityType<Temperature>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;
