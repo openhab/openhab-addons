@@ -320,7 +320,7 @@ public class CloudClient {
                 logger.debug("Unsupported request method {}", requestMethod);
                 return;
             }
-            request.method(HttpMethod.fromString(requestMethod));
+            request.method(method);
             if (!requestBody.isEmpty()) {
                 request.content(new BytesContentProvider(requestBody.getBytes()));
             }
