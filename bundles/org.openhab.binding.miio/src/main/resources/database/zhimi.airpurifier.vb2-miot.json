@@ -201,7 +201,7 @@
 					"minimum": 0,
 					"maximum": 600,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -236,7 +236,7 @@
 				"stateDescription": {
 					"minimum": -40,
 					"maximum": 125,
-					"pattern": "%.1f",
+					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
