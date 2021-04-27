@@ -63,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * {@link ShellyManagerOtaPage} implements the Shelly Manager's page template
@@ -136,8 +137,10 @@ public class ShellyManagerPage {
         public @Nullable String url; // prod
         public @Nullable String version;
 
-        public @Nullable String beta_url; // beta version if avilable
-        public @Nullable String beta_ver;
+        @SerializedName("beta_url")
+        public @Nullable String betaUrl; // beta version if avilable
+        @SerializedName("beta_ver")
+        public @Nullable String betaVer;
     }
 
     public ShellyManagerPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
@@ -242,7 +245,7 @@ public class ShellyManagerPage {
         addAttribute(properties, th, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
         addAttribute(properties, th, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER);
 
-        properties.put(ATTRIBUTE_DEBUG_MODE, getOption(profile.settings.debug_enable));
+        properties.put(ATTRIBUTE_DEBUG_MODE, getOption(profile.settings.debugEnable));
         properties.put(ATTRIBUTE_DISCOVERABLE, String.valueOf(getBool(profile.settings.discoverable)));
         properties.put(ATTRIBUTE_WIFI_RECOVERY, String.valueOf(getBool(profile.settings.wifiRecoveryReboot)));
         properties.put(ATTRIBUTE_APR_MODE,
@@ -414,9 +417,9 @@ public class ShellyManagerPage {
                     fw.url = url;
                     logger.debug("ShellyManager: Release Split-URL for device type {} is {}", deviceType, url);
                 }
-                url = substringBefore(fw.beta_url, ".zip") + "-" + mode + ".zip";
+                url = substringBefore(fw.betaUrl, ".zip") + "-" + mode + ".zip";
                 if (testUrl(url)) {
-                    fw.beta_url = url;
+                    fw.betaUrl = url;
                     logger.debug("ShellyManager: Beta Split-URL for device type {} is {}", deviceType, url);
                 }
             }

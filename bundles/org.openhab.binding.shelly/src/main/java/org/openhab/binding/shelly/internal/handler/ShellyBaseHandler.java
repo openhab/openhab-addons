@@ -481,7 +481,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             updateStatus(ThingStatus.ONLINE);
 
             // request 3 updates in a row (during the first 2+3*3 sec)
-            requestUpdates(profile.alwaysOn ? 3 : 1, channelsCreated == false);
+            requestUpdates(profile.alwaysOn ? 3 : 1, !channelsCreated);
         }
         restartWatchdog();
     }

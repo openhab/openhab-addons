@@ -116,7 +116,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
             name = service.getName().toLowerCase();
             String[] hostAddresses = service.getHostAddresses();
-            if (hostAddresses != null) {
+            if ((hostAddresses != null) && (hostAddresses.length > 0)) {
                 address = hostAddresses[0];
             }
             if (address.isEmpty()) {

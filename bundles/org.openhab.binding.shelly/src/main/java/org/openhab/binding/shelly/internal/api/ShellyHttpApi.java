@@ -246,8 +246,8 @@ public class ShellyHttpApi {
     }
 
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
-        return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + user + "&password=" + password,
-                ShellySettingsLogin.class);
+        return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + urlEncode(user) + "&password="
+                + urlEncode(password), ShellySettingsLogin.class);
     }
 
     public String getCoIoTDescription() throws ShellyApiException {

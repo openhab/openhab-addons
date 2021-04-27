@@ -148,7 +148,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + FWPROD + "\">Release "
                         + pVersion + "</option>\n";
             }
-            bVersion = extractFwVersion(fw.beta_ver);
+            bVersion = extractFwVersion(fw.betaVer);
             if (!bVersion.isEmpty()) {
                 html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + FWBETA + "\">Beta "
                         + bVersion + "</option>\n";

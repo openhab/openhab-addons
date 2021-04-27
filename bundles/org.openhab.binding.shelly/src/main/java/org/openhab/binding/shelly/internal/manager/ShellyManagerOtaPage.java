@@ -199,9 +199,9 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
                 } else {
                     // convert prod/beta to full url
                     FwRepoEntry fw = getFirmwareRepoEntry(deviceType, mode);
-                    String url = getString(prod ? fw.url : fw.beta_url);
-                    logger.debug("ShellyManager: Map {} release to url {}, version {}", url,
-                            prod ? fw.url : fw.beta_url, prod ? fw.version : fw.beta_ver);
+                    String url = getString(prod ? fw.url : fw.betaUrl);
+                    logger.debug("ShellyManager: Map {} release to url {}, version {}", url, prod ? fw.url : fw.betaUrl,
+                            prod ? fw.version : fw.betaVer);
                     return url;
                 }
             default: // Update from firmware archive

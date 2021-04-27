@@ -332,7 +332,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
         list.put(ACTION_RESET, "-Factory Reset");
         if (profile.extFeatures) {
             list.put(ACTION_OTACHECK, "Check for Update");
-            boolean debug_enable = getBool(profile.settings.debug_enable);
+            boolean debug_enable = getBool(profile.settings.debugEnable);
             list.put(!debug_enable ? ACTION_ENDEBUG : ACTION_DISDEBUG,
                     !debug_enable ? "Enable Debug" : "Disable Debug");
             if (debug_enable) {

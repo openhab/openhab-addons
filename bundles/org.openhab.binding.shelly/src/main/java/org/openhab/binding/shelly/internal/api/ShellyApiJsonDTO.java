@@ -468,7 +468,8 @@ public class ShellyApiJsonDTO {
         public Boolean ison; // true: output is ON
         public Integer brightness;
         public Integer transition;
-        public String default_state;
+        @SerializedName("default_state")
+        public String defaultState;
         @SerializedName("auto_on")
         public Double autoOn; // Automatic flip back timer, seconds. Will engage after turning Shelly1 OFF.
         @SerializedName("auto_off")
@@ -565,7 +566,8 @@ public class ShellyApiJsonDTO {
         public ShellySensorSleepMode sleepMode; // FW 1.6
         @SerializedName("external_power")
         public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
-        public Boolean debug_enable; // FW 1.10+
+        @SerializedName("debug_enable") // FW 1.10+
+        public Boolean debugEnable;
 
         public String timezone;
         public Double lat;
