@@ -88,7 +88,7 @@
 						"aiid": 1,
 						"condition": {
 							"name": "matchValue",
-							"parameters" : [
+							"parameters": [
 								{
 									"matchValue": "findme"
 								}
@@ -102,7 +102,7 @@
 						"aiid": 2,
 						"condition": {
 							"name": "matchValue",
-							"parameters" : [
+							"parameters": [
 								{
 									"matchValue": "testsound"
 								}
@@ -110,7 +110,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\"]"
+				"readmeComment": "Value mapping [\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\",\"findme\"\u003d\"Find me\",\"testsound\"\u003d\"Test Sound\"]"
 			},
 			{
 				"property": "status",
