@@ -25,9 +25,9 @@ import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
-import org.openhab.persistence.jdbc.model.ItemVO;
-import org.openhab.persistence.jdbc.model.ItemsVO;
-import org.openhab.persistence.jdbc.model.JdbcPersistenceItemInfo;
+import org.openhab.persistence.jdbc.dto.ItemVO;
+import org.openhab.persistence.jdbc.dto.ItemsVO;
+import org.openhab.persistence.jdbc.dto.JdbcPersistenceItemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,9 +1,9 @@
 # Alarm Decoder Binding
 
-The [Alarm Decoder](http://www.alarmdecoder.com) from Nu Tech Software Solutions is a hardware adapter that interfaces with Ademco/Honeywell and DSC alarm panels.
+The [Alarm Decoder](https://www.alarmdecoder.com) from Nu Tech Software Solutions is a hardware adapter that interfaces with Ademco/Honeywell and DSC alarm panels.
 It acts essentially like a keypad, reading and writing messages on the serial bus that connects keypads with the main panel.
 
-There are several versions of the adapter available: 
+There are several versions of the adapter available:
 
 * *AD2PI* or *AD2PHAT* - A board that plugs into a Raspberry Pi and offers network-based TCP connectivity
 * *AD2SERIAL* - Attaches to a host via a serial port
@@ -174,8 +174,8 @@ Thing config file example:
 ### lrr
 
 The `lrr` thing reports messages sent to a Long Range Radio (LRR) or emulated LRR device.
-These are normally specifically formatted messages as described in the [SIA DC-05-1999.09](http://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
-They can also, depending on configuration, be other types of messages as described [here](http://www.alarmdecoder.com/wiki/index.php/LRR_Support).
+These are normally specifically formatted messages as described in the [SIA DC-05-1999.09](https://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
+They can also, depending on configuration, be other types of messages as described [here](https://www.alarmdecoder.com/wiki/index.php/LRR_Support).
 For panels that support multiple partitions, the partition for which a given lrr thing will receive messages can be defined.
 
 * `partition` (default = 0) Partition for which to receive LRR events (0 = All)

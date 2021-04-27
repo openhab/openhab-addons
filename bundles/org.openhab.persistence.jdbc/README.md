@@ -43,13 +43,15 @@ This service can be configured in the file `services/jdbc.cfg`.
 | user                      |                                                              | if needed | database user name                                           |
 | password                  |                                                              | if needed | database user password                                       |
 | errReconnectThreshold     | 0                                                            |    No     | when the service is deactivated (0 means ignore)             |
-| sqltype.CALL              | `VARCHAR(200)`                                               |    No     | All `sqlType` options allow you to change the SQL data type used to store values for different openHAB item states.  See the following links for further information: [mybatis](https://mybatis.github.io/mybatis-3/apidocs/reference/org/apache/ibatis/type/JdbcType.html) [H2](http://www.h2database.com/html/datatypes.html) [PostgresSQL](http://www.postgresql.org/docs/9.3/static/datatype.html) |
+| sqltype.CALL              | `VARCHAR(200)`                                               |    No     | All `sqlType` options allow you to change the SQL data type used to store values for different openHAB item states.  See the following links for further information: [mybatis](https://mybatis.github.io/mybatis-3/apidocs/reference/org/apache/ibatis/type/JdbcType.html) [H2](https://www.h2database.com/html/datatypes.html) [PostgresSQL](https://www.postgresql.org/docs/9.3/static/datatype.html) |
 | sqltype.COLOR             | `VARCHAR(70)`                                                |    No     | see above                                                    |
 | sqltype.CONTACT           | `VARCHAR(6)`                                                 |    No     | see above                                                    |
 | sqltype.DATETIME          | `DATETIME`                                                   |    No     | see above                                                    |
 | sqltype.DIMMER            | `TINYINT`                                                    |    No     | see above                                                    |
-| sqltype.LOCATION          | `VARCHAR(30)`                                                |    No     | see above                                                    |
+| sqltype.IMAGE             | `VARCHAR(65500)`                                             |    No     | see above                                                    |
+| sqltype.LOCATION          | `VARCHAR(50)`                                                |    No     | see above                                                    |
 | sqltype.NUMBER            | `DOUBLE`                                                     |    No     | see above                                                    |
+| sqltype.PLAYER            | `VARCHAR(20)`                                                |    No     | see above                                                    |
 | sqltype.ROLLERSHUTTER     | `TINYINT`                                                    |    No     | see above                                                    |
 | sqltype.STRING            | `VARCHAR(65500)`                                             |    No     | see above                                                    |
 | sqltype.SWITCH            | `VARCHAR(6)`                                                 |    No     | see above                                                    |
@@ -125,7 +127,7 @@ The SQL types `DECIMAL` or  `NUMERIC` are precise, but to work with `DOUBLE` is 
 
 The results of database queries of number items are rounded to three decimal places by default.
 With `numberDecimalcount` decimals can be changed.
-Especially if sql types `DECIMAL` or  `NUMERIC` are used for `sqltype.NUMBER`, rounding can be disabled by setting `numberDecimalcount=-1`. 
+Especially if sql types `DECIMAL` or  `NUMERIC` are used for `sqltype.NUMBER`, rounding can be disabled by setting `numberDecimalcount=-1`.
 
 ### For Developers
 
@@ -155,7 +157,7 @@ Used a script like this:
 ```
 var count = 0;
 rule "DB STRESS TEST"
-when 
+when
 	Time cron "30 * * * * ?"
 then
 	if( count = 24) count = 0

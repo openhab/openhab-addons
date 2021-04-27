@@ -2,7 +2,7 @@
 
 # Prepare Z-Way Server
 
-1. [Download](https://razberry.z-wave.me/z-way-server/) Z-Way v2.2.3 or newer (further information about installing Z-Way you can find [here](http://razberry.z-wave.me/index.php?id=24))
+1. [Download](https://razberry.z-wave.me/z-way-server/) Z-Way v2.2.3 or newer (further information about installing Z-Way you can find [here](https://razberry.z-wave.me/index.php?id=24))
 
 # Prepare openHAB
 
