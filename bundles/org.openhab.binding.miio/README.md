@@ -173,7 +173,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 280 different models.
+Currently the miio binding supports more than 290 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -300,6 +300,10 @@ Currently the miio binding supports more than 280 different models.
 | Roborock T7 Pro              | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-a09) | Yes       |            |
 | Roborock S6 MaxV             | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-a10) | Yes       |            |
 | Roborock T7                  | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-a11) | Yes       |            |
+| Roborock T7S                 | miio:vacuum      | [roborock.vacuum.a14](#roborock-vacuum-a14) | Yes       |            |
+| Roborock S7                  | miio:vacuum      | [roborock.vacuum.a15](#roborock-vacuum-a15) | Yes       |            |
+| Roborock S4 Max              | miio:vacuum      | [roborock.vacuum.a19](#roborock-vacuum-a19) | Yes       |            |
+| Roborock T7S Plus            | miio:vacuum      | [roborock.vacuum.a23](#roborock-vacuum-a23) | Yes       |            |
 | Xiaowa C1                    | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes       |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No        |            |
 | Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |            |
@@ -404,6 +408,7 @@ Currently the miio binding supports more than 280 different models.
 | Yeelight LED Bulb (Color)    | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |            |
 | Mi LED Smart Bulb (White and Color) | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
 | Yeelight LED Bulb 1S（Color）  | miio:basic       | [yeelink.light.color4](#yeelink-light-color4) | Yes       |            |
+| Mi Smart LED Bulb Essential (White and Color) | miio:basic       | [yeelink.light.color5](#yeelink-light-color5) | Yes       |            |
 | Yeelight Smart LED Bulb 1SE (color) | miio:basic       | [yeelink.light.colora](#yeelink-light-colora) | Yes       |            |
 | Yeelight LED Bulb (Tunable)  | miio:basic       | [yeelink.light.ct2](#yeelink-light-ct2) | Yes       |            |
 | Mi LED Desk Lamp             | miio:basic       | [yeelink.light.lamp1](#yeelink-light-lamp1) | Yes       |            |
@@ -414,6 +419,7 @@ Currently the miio binding supports more than 280 different models.
 | Yeelight                     | miio:basic       | [yeelink.light.lamp6](#yeelink-light-lamp6) | Yes       |            |
 | Yeelight LED Light Sensor Desk Lamp V1 | miio:basic       | [yeelink.light.lamp7](#yeelink-light-lamp7) | Yes       |            |
 | Yeelight                     | miio:basic       | [yeelink.light.lamp8](#yeelink-light-lamp8) | Yes       |            |
+| Yeelight Screen Light Bar    | miio:basic       | [yeelink.light.lamp15](#yeelink-light-lamp15) | Yes       |            |
 | Yeelight Bulb                | miio:basic       | [yeelink.light.mono1](#yeelink-light-mono1) | Yes       |            |
 | Yeelight White Bulb v2       | miio:basic       | [yeelink.light.mono2](#yeelink-light-mono2) | Yes       |            |
 | Yeelight LED Filament Bulb   | miio:basic       | [yeelink.light.mono5](#yeelink-light-mono5) | Yes       |            |
@@ -464,6 +470,7 @@ Currently the miio binding supports more than 280 different models.
 | Mi Air Purifier Pro H        | miio:basic       | [zhimi.airpurifier.vb2](#zhimi-airpurifier-vb2) | Yes       |            |
 | Mi Air Purifier virtual      | miio:unsupported | zhimi.airpurifier.virtual | No        |            |
 | Mi Air Purifier 2(Virtual)   | miio:unsupported | zhimi.airpurifier.vtl_m1 | No        |            |
+| Smartmi Air Purifier         | miio:basic       | [zhimi.airpurifier.za1](#zhimi-airpurifier-za1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Standing Fan              | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
 | Mi Smart Fan                 | miio:basic       | [zhimi.fan.v1](#zhimi-fan-v1) | Yes       |            |
 | Smartmi DC Pedestal Fan      | miio:basic       | [zhimi.fan.v2](#zhimi-fan-v2) | Yes       |            |
@@ -889,7 +896,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"] |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock","findme"="Find me","testsound"="Test Sound"] |
 | status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
@@ -931,7 +938,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"] |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock","findme"="Find me","testsound"="Test Sound"] |
 | status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
@@ -1057,7 +1064,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"] |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock","findme"="Find me","testsound"="Test Sound"] |
 | status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
@@ -3265,6 +3272,18 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
+### Mi Smart LED Bulb Essential (White and Color) (<a name="yeelink-light-color5">yeelink.light.color5</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number               | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Value mapping ["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"] |
+| rgbColor             | Color                | RGB Color                                |            |
+| name                 | String               | Name                                     |            |
+
 ### Yeelight Smart LED Bulb 1SE (color) (<a name="yeelink-light-colora">yeelink.light.colora</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -3375,6 +3394,22 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               |            |
 | name                 | String               | Name                                     |            |
+
+### Yeelight Screen Light Bar (<a name="yeelink-light-lamp15">yeelink.light.lamp15</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number:Temperature   | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Value mapping ["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"] |
+| rgbColor             | Color                | RGB Color                                |            |
+| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientPower         | Switch               | Ambient Power                            |            |
+| ambientColor         | Color                | Ambient Color                            |            |
+| ambientColorTemperature | Number               | Ambient Color Temperature                |            |
+| ambientColorMode     | Number               | Ambient Color Mode                       |            |
 
 ### Yeelight Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
 
@@ -4496,6 +4531,43 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | manual_level         | Number               | Others - Manual Level                    | Value mapping ["1"="level1","2"="level2","3"="level3"] |
 | powertime            | Number:duration      | Others - Powertime                       |            |
 | country_code         | Number               | Others - Country Code                    | Value mapping ["91"="India","44"="UK","852"="Hong Kong","886"="Taiwan","82"="Korea"] |
+
+### Smartmi Air Purifier (<a name="zhimi-airpurifier-za1">zhimi.airpurifier.za1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Air Purifier - Switch Status             |            |
+| fault                | Number               | Air Purifier - Fault                     | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"] |
+| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite"] |
+| air_quality          | Number               | Environment - Air Quality                |            |
+| pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
+| relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_used_time     | Number:Time          | Filter - Filter Used Time                |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Light","2"="Off"] |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+| filter_max_time      | Number:Time          | Filter Time - Filter Max Time            |            |
+| favorite_fan_level   | Number               | Motor Speed - Favorite Fan Level         |            |
+| motor_speed          | Number               | Motor Speed - Motor Speed                |            |
+| use_time             | Number:Time          | Use Time - Use Time                      |            |
+| purify_volume        | Number               | Aqi - Purify Volume                      |            |
+| average_aqi          | Number               | Aqi - Average Aqi                        |            |
+| aqi_zone             | String               | Aqi - Aqi Zone                           |            |
+| sensor_state         | Number               | Aqi - Sensor State                       | Value mapping ["0"="waiting","1"="ready"] |
+| rfid_tag             | String               | Rfid - Rfid Tag                          |            |
+| rfid_factory_id      | String               | Rfid - Rfid Factory Id                   |            |
+| rfid_product_id      | String               | Rfid - Rfid Product Id                   |            |
+| rfid_time            | String               | Rfid - Rfid Time                         |            |
+| rfid_serial_num      | String               | Rfid - Rfid Serial Num                   |            |
+| reboot_cause         | Number               | Others - Reboot Cause                    | Value mapping ["0"="hardware","1"="human","2"="upgrade","3"="watchdog"] |
+| hw_version           | Number               | Others - Hw Version                      |            |
+| sgp_ethanol          | Number               | Others - Sgp Ethanol                     |            |
+| sgp_serial           | Number               | Others - Sgp Serial                      |            |
+| sgp_version          | String               | Others - Sgp Version                     |            |
+| country_code         | Number               | Others - Country Code                    | Value mapping ["1"="America","2"="Canada","3"="Singapore","4"="Europe","5"="Australian","6"="Korea","7"="China","8"="France","9"="Japanese","10"="Taiwan"] |
+| gesture_status       | Switch               | Others - Gesture Status                  |            |
 
 ### Mi Standing Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
 
@@ -8256,6 +8328,21 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
+### Mi Smart LED Bulb Essential (White and Color) (yeelink.light.color5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Mi Smart LED Bulb Essential (White and Color)" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
 ### Yeelight Smart LED Bulb 1SE (color) (yeelink.light.colora) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -8395,6 +8482,25 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Screen Light Bar (yeelink.light.lamp15) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Yeelight Screen Light Bar" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 ```
 
 ### Yeelight Bulb (yeelink.light.mono1) item file lines
@@ -9657,6 +9763,46 @@ Number reboot_cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic
 Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
 Number:duration powertime "Others - Powertime" (G_airpurifier) {channel="miio:basic:airpurifier:powertime"}
 Number country_code "Others - Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
+```
+
+### Smartmi Air Purifier (zhimi.airpurifier.za1) item file lines
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_airpurifier "Smartmi Air Purifier" <status>
+Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fault "Air Purifier - Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number air_quality "Environment - Air Quality" (G_airpurifier) {channel="miio:basic:airpurifier:air_quality"}
+Number pm2_5_density "Environment - PM2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number:Time filter_max_time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
+Number favorite_fan_level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_fan_level"}
+Number motor_speed "Motor Speed - Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed"}
+Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
+Number purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
+Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
+String aqi_zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_zone"}
+Number sensor_state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor_state"}
+String rfid_tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_tag"}
+String rfid_factory_id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_factory_id"}
+String rfid_product_id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_product_id"}
+String rfid_time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_time"}
+String rfid_serial_num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_serial_num"}
+Number reboot_cause "Others - Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
+Number hw_version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw_version"}
+Number sgp_ethanol "Others - Sgp Ethanol" (G_airpurifier) {channel="miio:basic:airpurifier:sgp_ethanol"}
+Number sgp_serial "Others - Sgp Serial" (G_airpurifier) {channel="miio:basic:airpurifier:sgp_serial"}
+String sgp_version "Others - Sgp Version" (G_airpurifier) {channel="miio:basic:airpurifier:sgp_version"}
+Number country_code "Others - Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
+Switch gesture_status "Others - Gesture Status" (G_airpurifier) {channel="miio:basic:airpurifier:gesture_status"}
 ```
 
 ### Mi Standing Fan (zhimi.fan.sa1) item file lines

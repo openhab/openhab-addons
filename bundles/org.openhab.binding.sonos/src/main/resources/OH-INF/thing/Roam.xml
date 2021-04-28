@@ -4,18 +4,16 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Player One Thing Type -->
-	<thing-type id="One" listed="false">
-		<!-- Label without column (:) because of device pairing name restrictions -->
-		<label>One</label>
-		<description>Represents SONOS One Zone Player</description>
+	<!-- Sonos Roam Thing Type -->
+	<thing-type id="Roam" listed="false">
+		<label>Roam</label>
+		<description>Represents SONOS Roam speaker</description>
 
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>
 			<channel id="alarmproperties" typeId="alarmproperties"/>
 			<channel id="alarmrunning" typeId="alarmrunning"/>
-			<channel id="bass" typeId="bass"/>
 			<channel id="control" typeId="system.media-control"/>
 			<channel id="currentalbum" typeId="currentalbum"/>
 			<channel id="currentalbumart" typeId="currentalbumart"/>
@@ -28,7 +26,6 @@
 			<channel id="favorite" typeId="favorite"/>
 			<channel id="led" typeId="led"/>
 			<channel id="localcoordinator" typeId="localcoordinator"/>
-			<channel id="loudness" typeId="loudness"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="notificationsound" typeId="notificationsound"/>
 			<channel id="playlist" typeId="playlist"/>
@@ -47,7 +44,6 @@
 			<channel id="standalone" typeId="standalone"/>
 			<channel id="state" typeId="state"/>
 			<channel id="stop" typeId="stop"/>
-			<channel id="treble" typeId="treble"/>
 			<channel id="tuneinstationid" typeId="tuneinstationid"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="zonegroupid" typeId="zonegroupid"/>
@@ -57,13 +53,14 @@
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
 			<!-- Extended SONOS channels -->
+			<channel id="batterycharging" typeId="batterycharging"/>
+			<channel id="batterylevel" typeId="system.battery-level"/>
 			<channel id="microphone" typeId="microphone"/>
-			<channel id="speechenhancement" typeId="speechenhancement"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">SONOS</property>
-			<property name="modelId">One</property>
+			<property name="modelId">Roam</property>
 		</properties>
 
 		<representation-property>udn</representation-property>
