@@ -8,14 +8,14 @@ All supported values and devices were discovered while playing with my own energ
 
 | Thing Type ID | Devices |
 |------|---------------|
-|solarwatt:energymanager| EnergyManager itself
-|solarwatt:location| Location part of the EnergyManager 
-|solarwatt:pvplant| Power producing part of the EnergyManager
-|solarwatt:gridflow| Grid interaction part of the EnergyManager
-|solarwatt:inverter| inverter producing AC current; e.g. MyReserve, Fronius
-|solarwatt:batteryconverter| battery storage systems; e.g. MyReserve
-|solarwatt:powermeter| powermeters; e.g. S0BusCounter, MyReserve
-|solarwatt:evstation| electric-vehicle charging station; e.g. Keba Wallbox
+| energymanager | EnergyManager itself. |
+| location | Location part of the EnergyManager. | 
+| pvplant | Power producing part of the EnergyManager. |
+| gridflow | Grid interaction part of the EnergyManager. |
+| inverter | inverter producing AC current; e.g. MyReserve, Fronius |
+| batteryconverter | battery storage systems; e.g. MyReserve |
+| powermeter | powermeters; e.g. S0BusCounter, MyReserve |
+| evstation | electric-vehicle charging station; e.g. Keba Wallbox |
 
 ## Discovery
 
@@ -26,15 +26,9 @@ The attached devices and supported channels are discovered automatically.
 
 | Property | Default | Required | Description |
 |----------|---------|----------|-------------|
-| hostname | None | Yes | hostname or ip-address of the energy manager
+| hostname | None | Yes | hostname or ip-address of the energy manager. |
 
 ## Channels
-
-### All devices
-
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| stateDevice | String | value reflecting the state of the communication from the energy manager to the device. *ON* or *OFFLINE* |
 
 ### EnergyManager
 
