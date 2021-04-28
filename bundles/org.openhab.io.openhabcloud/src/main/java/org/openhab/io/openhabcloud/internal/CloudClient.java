@@ -315,19 +315,14 @@ public class CloudClient {
                 proto = data.getString("protocol");
             }
             request.header("X-Forwarded-Proto", proto);
-
-            if (requestMethod.equals("GET")) {
-                request.method(HttpMethod.GET);
-            } else if (requestMethod.equals("POST")) {
-                request.method(HttpMethod.POST);
-                request.content(new BytesContentProvider(requestBody.getBytes()));
-            } else if (requestMethod.equals("PUT")) {
-                request.method(HttpMethod.PUT);
-                request.content(new BytesContentProvider(requestBody.getBytes()));
-            } else {
-                // TODO: Reject unsupported methods
-                logger.warn("Unsupported request method {}", requestMethod);
+            HttpMethod method = HttpMethod.fromString(requestMethod);
+            if (method == null) {
+                logger.debug("Unsupported request method {}", requestMethod);
                 return;
+            }
+            request.method(method);
+            if (!requestBody.isEmpty()) {
+                request.content(new BytesContentProvider(requestBody.getBytes()));
             }
 
             request.onResponseHeaders(response -> {

@@ -96,6 +96,7 @@ public enum HeatpumpType {
     TYPE_MSW3_12(78, "MSW3-12"),
     TYPE_MSW3_12S(79, "MSW3-12S"),
     TYPE_MSW2_9S(80, "MSW2-9S"),
+    TYPE_LW8(81, "LW 8"),
     TYPE_LW12(82, "LW 12"),
     TYPE_UNKNOWN(-1, "Unknown");
 

@@ -3,7 +3,7 @@
 This binding is used to integrate the OpenTherm Gateway into openHAB.
 The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat and communicates using the OpenTherm protocol.
 
-More information on the OpenTherm Gateway device can be found at http://otgw.tclcode.com/
+More information on the OpenTherm Gateway device can be found at https://otgw.tclcode.com/
 
 ## Supported Things
 
@@ -171,7 +171,7 @@ sitemap demo label="Main Menu" {
         Switch item="DomesticHotWaterActive" icon="switch" label="Domestic hot water active"
         Switch item="BurnerActive" icon="switch" label="Burner active"
         Text item="RelativeModulationLevel" icon="" label="Relative modulation level [%.1f %%]"
-        Text item="MaximumRelativeModulationLevel" icon="" label="Maximum relative modulation level [%.1f %%]"        
+        Text item="MaximumRelativeModulationLevel" icon="" label="Maximum relative modulation level [%.1f %%]"
         Switch item="Fault" icon="" label="Fault indication"
         Switch item="ServiceRequest" icon="" label="Service required"
         Switch item="LockoutReset" icon="" label="Lockout-reset"

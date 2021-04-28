@@ -1,6 +1,6 @@
 # iRobot Binding
 
-This binding provides integration of products by iRobot company (http://www.irobot.com/). It is currently developed to support Roomba 900
+This binding provides integration of products by iRobot company (https://www.irobot.com/). It is currently developed to support Roomba 900
 series robotic vacuum cleaner with built-in Wi-Fi module. The binding interfaces to the robot directly without any need for a dedicated MQTT server.
 
 ## Supported Things
@@ -104,7 +104,7 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 | 19    | Undocking issue           |
 | 20    | Docking issue             |
 | 21    | Navigation problem        |
-| 22    | Navigation problem        | 
+| 22    | Navigation problem        |
 | 23    | Battery issue             |
 | 24    | Navigation problem        |
 | 25    | Reboot required           |
@@ -187,8 +187,8 @@ Text item=Roomba_Error label="Error"
 
 ## Credits
 
-This code is a result of development of an abandoned draft by hkunh42 (http://github.com/hkuhn42/openhab2.roomba)
+This code is a result of development of an abandoned draft by hkunh42 (https://github.com/hkuhn42/openhab2.roomba)
 and heavily uses the following projects as a reference:
 
-- Roomba980-Python by Nick Waterton (http://github.com/NickWaterton/Roomba980-Python)
+- Roomba980-Python by Nick Waterton (https://github.com/NickWaterton/Roomba980-Python)
 - Dorita980 by Facu ZAK (https://github.com/koalazak/dorita980)

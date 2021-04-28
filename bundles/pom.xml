@@ -184,6 +184,8 @@
 
     <module>org.openhab.binding.ecobee</module>
 
+    <module>org.openhab.binding.ecotouch</module>
+
     <module>org.openhab.binding.elerotransmitterstick</module>
 
     <module>org.openhab.binding.energenie</module>

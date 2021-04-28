@@ -1,12 +1,12 @@
 # pilight Binding
 
-The pilight binding allows openHAB to communicate with a [pilight](http://www.pilight.org/) instance running pilight
+The pilight binding allows openHAB to communicate with a [pilight](https://www.pilight.org/) instance running pilight
 version 6.0 or greater.
 
-> pilight is a free open source full fledge domotica solution that runs on a Raspberry Pi, HummingBoard, BananaPi, 
+> pilight is a free open source full fledge domotica solution that runs on a Raspberry Pi, HummingBoard, BananaPi,
 > Radxa, but also on *BSD and various linuxes (tested on Arch, Ubuntu and Debian). It's open source and freely available
-> for anyone. pilight works with a great deal of devices and is frequency independent. Therefor, it can control devices 
-> working at 315Mhz, 433Mhz, 868Mhz etc. Support for these devices are dependent on community, because we as developers 
+> for anyone. pilight works with a great deal of devices and is frequency independent. Therefor, it can control devices
+> working at 315Mhz, 433Mhz, 868Mhz etc. Support for these devices are dependent on community, because we as developers
 > don't own them all.
 
 pilight is a cheap way to control 'Click On Click Off' devices. It started as an application for the Raspberry Pi (using
@@ -113,7 +113,7 @@ sitemaps/fragment.sitemap
 ```
 Switch item=office_switch
 Slider item=piano_light
-Text item=weather_temperature 
-Text item=weather_humidity 
+Text item=weather_temperature
+Text item=weather_humidity
 ```
 

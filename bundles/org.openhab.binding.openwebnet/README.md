@@ -19,15 +19,15 @@ In order for this binding to work, a **BTicino/Legrand OpenWebNet gateway** is n
 
 These gateways have been tested with the binding:
 
-- **IP gateways** or scenario programmers, such as BTicino 
-[F454](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=006), 
-[MyHOMEServer1](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=067), 
-[MyHOME_Screen10](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=001), 
-[MH201](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=053),
-[MH202](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=059), 
-[F455](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=051),
-[MH200N](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=016), 
-[F453](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=027),  etc.
+- **IP gateways** or scenario programmers, such as BTicino
+[F454](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=006),
+[MyHOMEServer1](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=067),
+[MyHOME_Screen10](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=001),
+[MH201](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=053),
+[MH202](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=059),
+[F455](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=051),
+[MH200N](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=016),
+[F453](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=027),  etc.
 
 - **ZigBee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
 
@@ -82,7 +82,7 @@ If a device cannot be discovered automatically it's always possible to add it ma
 
     The user will need to logout and login to see the new group added. If you added your user to this group and still cannot get permission, reboot Linux to ensure the new group permission is attached to the `openhab` user.
 - Once the ZigBee USB Gateway is added and online, a second Inbox Scan will discover devices connected to it. Because of the ZigBee radio network, device discovery will take ~40-60 sec. Be patient!
-- Wireless devices must be part of the same ZigBee network of the ZigBee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a ZigBee wireless network which includes the ZigBee USB Gateway 
+- Wireless devices must be part of the same ZigBee network of the ZigBee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a ZigBee wireless network which includes the ZigBee USB Gateway
 - Only powered wireless devices part of the same ZigBee network and within radio coverage of the ZigBee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as *GENERIC* devices and cannot be controlled
 - Wireless control units cannot be discovered by the ZigBee USB Gateway and therefore are not supported
 
@@ -103,7 +103,7 @@ Configuration parameters are:
 
 Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
-### Configuring Wireless ZigBee USB Gateway 
+### Configuring Wireless ZigBee USB Gateway
 
 Configuration parameters are:
 
@@ -157,8 +157,8 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_on_off_switch        LR_switch        "Living Room Light"     [ where="51" ]
       bus_dimmer               LR_dimmer        "Living Room Dimmer"    [ where="0311#4#01" ]
       bus_automation           LR_shutter       "Living Room Shutter"   [ where="93", shutterRun="10050"]
-      bus_energy_meter         CENTRAL_Ta       "Energy Meter Ta"       [ where="51" ]	
-      bus_energy_meter         CENTRAL_Tb       "Energy Meter Tb"       [ where="52" ]	
+      bus_energy_meter         CENTRAL_Ta       "Energy Meter Ta"       [ where="51" ]
+      bus_energy_meter         CENTRAL_Tb       "Energy Meter Tb"       [ where="52" ]
 }
 ```
 
@@ -202,8 +202,8 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 {
     Frame label="Living Room"
     {
-          Default item=iLR_switch           icon="light"    
-          Default item=iLR_dimmer           icon="light" 
+          Default item=iLR_switch           icon="light"
+          Default item=iLR_dimmer           icon="light"
           Default item=iLR_shutter
     }
 
