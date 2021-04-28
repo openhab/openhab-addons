@@ -198,7 +198,16 @@ public class RachioApi {
                 clearAllCallbacks.toString());
 
         String json = "";
+        String url = callbackUrl;
         try {
+            if (url.contains(":") && url.contains("@") && !url.contains("%")) { // includes userid+password
+                // make sure special chars are url encoded
+                String user = substringBetween(url, "//", ":");
+                String password = substringBetween(substringAfter(url, "//"), ":", "@");
+                url = substringBefore(url, "//") + "//" + urlEncode(user) + ":" + urlEncode(password) + "@"
+                        + substringAfterLast(url, "@");
+            }
+
             json = httpApi.httpGet(APIURL_BASE + APIURL_DEV_QUERY_WEBHOOK + "/" + deviceId + "/webhook",
                     null).resultString; // throws
             logger.debug("Registered webhooks for device '{}': {}", deviceId, json);
@@ -209,7 +218,7 @@ public class RachioApi {
             for (int i = 0; i < list.webhooks.size(); i++) {
                 RachioApiWebHookEntry whe = list.webhooks.get(i);
                 logger.debug("WebHook #{}: id='{}', url='{}', externalId='{}'", i, whe.id, whe.url, whe.externalId);
-                if (clearAllCallbacks || whe.url.equals(callbackUrl)) {
+                if (clearAllCallbacks || whe.url.equals(url)) {
                     logger.debug("The callback url '{}' is already registered -> delete", callbackUrl);
                     httpApi.httpDelete(APIURL_BASE + APIURL_DEV_DELETE_WEBHOOK + "/" + whe.id, null);
                 }
@@ -226,14 +235,6 @@ public class RachioApi {
         // "eventTypes":[{"id":"1"},{"id":"2"}]
         // }
         //
-        String url = callbackUrl;
-        if (url.contains(":") && url.contains("@") && !url.contains("%")) { // includes userid+password
-            // make sure special chars are url encoded
-            String user = substringBetween(url, "//", ":");
-            String password = substringBetween(substringAfter(url, "//"), ":", "@");
-            url = substringBefore(url, "//") + "//" + urlEncode(user) + ":" + urlEncode(password) + "@"
-                    + substringAfterLast(url, "@");
-        }
         logger.debug("Register WebHook, callback url = '{}'", url);
         String jsonData = "{ " + "\"device\":{\"id\":\"" + deviceId + "\"}, " + "\"externalId\" : \"" + externalId
                 + "\", " + "\"url\" : \"" + url + "\", " + "\"eventTypes\" : [" + "{\"id\" : \"" + WHE_DEVICE_STATUS
