@@ -2591,6 +2591,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     handleSharedQueue(currentURI, notificationURL, coordinator);
                 } else if (isPlaylistEmpty(coordinator)) {
                     handleEmptyQueue(notificationURL, coordinator);
+                } else {
+                    logger.debug("Notification feature not yet implemented while the current media is being played");
                 }
                 synchronized (notificationLock) {
                     notificationLock.notify();
