@@ -154,7 +154,7 @@ For example:
 | 0xB4CA    | 8        | 0xB4CA8  |
 | 0xB4CA    | 0        | 0xB4CA0  |
 
-## Using the group 0
+## Using Group 0
 
 The group 0 (or ALL group) with the Group ID 0 can be used to control all bulbs that are paired with one specific remote at once.
 While this functionality can also be achieved by using openHAB groups with even greater flexibility, the group 0 must be setup if you want to capture physical remote control events for the ALL group, and keep physical devices synchronized to their openHAB representations.
