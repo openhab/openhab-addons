@@ -2582,15 +2582,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
                 if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
                         || isPlayingRadio(currentURI)) {
-                    handleRadioStream(currentURI, notificationURL, coordinator);
+                    handleNotifForRadioStream(currentURI, notificationURL, coordinator);
                 } else if (isPlayingLineIn(currentURI)) {
-                    handleLineIn(currentURI, notificationURL, coordinator);
+                    handleNotifForLineIn(currentURI, notificationURL, coordinator);
                 } else if (isPlayingVirtualLineIn(currentURI)) {
-                    handleVirtualLineIn(currentURI, notificationURL, coordinator);
+                    handleNotifForVirtualLineIn(currentURI, notificationURL, coordinator);
                 } else if (isPlayingQueue(currentURI)) {
-                    handleSharedQueue(currentURI, notificationURL, coordinator);
+                    handleNotifForSharedQueue(currentURI, notificationURL, coordinator);
                 } else if (isPlaylistEmpty(coordinator)) {
-                    handleEmptyQueue(notificationURL, coordinator);
+                    handleNotifForEmptyQueue(notificationURL, coordinator);
                 } else {
                     logger.debug("Notification feature not yet implemented while the current media is being played");
                 }
@@ -2652,7 +2652,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
      * @throws InterruptedException
      */
-    private void handleRadioStream(@Nullable String currentStreamURI, Command notificationURL,
+    private void handleNotifForRadioStream(@Nullable String currentStreamURI, Command notificationURL,
             ZonePlayerHandler coordinator) throws InterruptedException {
         String nextAction = coordinator.getTransportState();
         SonosMetaData track = coordinator.getTrackMetadata();
@@ -2676,8 +2676,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
      * @throws InterruptedException
      */
-    private void handleLineIn(@Nullable String currentLineInURI, Command notificationURL, ZonePlayerHandler coordinator)
-            throws InterruptedException {
+    private void handleNotifForLineIn(@Nullable String currentLineInURI, Command notificationURL,
+            ZonePlayerHandler coordinator) throws InterruptedException {
         logger.debug("Handling notification while sound from line-in was being played");
         String nextAction = coordinator.getTransportState();
 
@@ -2699,7 +2699,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
      * @throws InterruptedException
      */
-    private void handleVirtualLineIn(@Nullable String currentVirtualLineInURI, Command notificationURL,
+    private void handleNotifForVirtualLineIn(@Nullable String currentVirtualLineInURI, Command notificationURL,
             ZonePlayerHandler coordinator) throws InterruptedException {
         logger.debug("Handling notification while sound from virtual line-in was being played");
         String nextAction = coordinator.getTransportState();
@@ -2724,13 +2724,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
      * @throws InterruptedException
      */
-    private void handleSharedQueue(@Nullable String currentQueueURI, Command notificationURL,
+    private void handleNotifForSharedQueue(@Nullable String currentQueueURI, Command notificationURL,
             ZonePlayerHandler coordinator) throws InterruptedException {
         String nextAction = coordinator.getTransportState();
         String trackPosition = coordinator.getRefreshedPosition();
         long currentTrackNumber = coordinator.getRefreshedCurrenTrackNr();
-        logger.debug("handleSharedQueue: currentQueueURI {} trackPosition {} currentTrackNumber {}", currentQueueURI,
-                trackPosition, currentTrackNumber);
+        logger.debug(
+                "Handling notification while playing queue: currentQueueURI {} trackPosition {} currentTrackNumber {}",
+                currentQueueURI, trackPosition, currentTrackNumber);
 
         handleNotificationSound(notificationURL, coordinator);
         String queueUri = QUEUE_URI + coordinator.getUDN() + "#0";
@@ -2798,7 +2799,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
      * @throws InterruptedException
      */
-    private void handleEmptyQueue(Command notificationURL, ZonePlayerHandler coordinator) throws InterruptedException {
+    private void handleNotifForEmptyQueue(Command notificationURL, ZonePlayerHandler coordinator)
+            throws InterruptedException {
         String originalVolume = coordinator.getVolume();
         coordinator.applyNotificationSoundVolume();
         coordinator.playURI(notificationURL);
