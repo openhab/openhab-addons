@@ -53,11 +53,22 @@ import org.slf4j.LoggerFactory;
 @Component(service = { ThingHandlerFactory.class,
         MQTTTopicDiscoveryService.class }, configurationPid = "MqttBrokerHandlerFactory")
 public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements MQTTTopicDiscoveryService {
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER, MqttBindingConstants.BRIDGE_TYPE_BROKER)
             .collect(Collectors.toSet());
+
     private final Logger logger = LoggerFactory.getLogger(MqttBrokerHandlerFactory.class);
+
+    /**
+     * This Map provides a lookup between a Topic string (key) and a Set of MQTTTopicDiscoveryParticipants (value),
+     * where the Set itself is a list of participants which are subscribed to the respective Topic.
+     */
     protected final Map<String, Set<MQTTTopicDiscoveryParticipant>> discoveryTopics = new HashMap<>();
+
+    /**
+     * This Set contains a list of all the Broker handlers that have been created by this factory
+     */
     protected final Set<AbstractBrokerHandler> handlers = Collections
             .synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
@@ -74,7 +85,8 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     /**
-     * Add the given broker connection to all listeners.
+     * Add the given broker handler to the list of known handlers. And then iterate over all topics and their respective
+     * list of listeners, and register the respective new listener and topic with the given new broker handler.
      */
     protected void createdHandler(AbstractBrokerHandler handler) {
         handlers.add(handler);
@@ -110,6 +122,9 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     /**
      * This factory also implements {@link MQTTTopicDiscoveryService} so consumers can subscribe to
      * a MQTT topic that is registered on all available broker connections.
+     *
+     * Checks each topic, and if the listener is not already in the listener list for that topic, adds itself from that
+     * list, and registers itself and the respective topic with all the known brokers.
      */
     @Override
     @SuppressWarnings("null")
@@ -121,10 +136,13 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     /**
-     * Unsubscribe a listener from all available broker connections.
+     * This factory also implements {@link MQTTTopicDiscoveryService} so consumers can unsubscribe from
+     * a MQTT topic that is registered on all available broker connections.
+     *
+     * Checks each topic, and if the listener is in the listener list for that topic, removes itself from that list, and
+     * unregisters itself and the respective topic from all the known brokers.
      */
     @Override
-    @SuppressWarnings("null")
     public void unsubscribe(MQTTTopicDiscoveryParticipant listener) {
         discoveryTopics.forEach((topic, listeners) -> {
             if (listeners.remove(listener)) {
