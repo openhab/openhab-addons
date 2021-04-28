@@ -14,6 +14,7 @@ package org.openhab.binding.luftdateninfo.internal.handler;
 
 import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.*;
 import static org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler.*;
+import static org.openhab.core.library.unit.MetricPrefix.HECTO;
 
 import java.util.List;
 
@@ -38,11 +39,10 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class ConditionHandler extends BaseSensorHandler {
-
     protected QuantityType<Temperature> temperatureCache = QuantityType.valueOf(-1, SIUnits.CELSIUS);
     protected QuantityType<Dimensionless> humidityCache = QuantityType.valueOf(-1, Units.PERCENT);
-    protected QuantityType<Pressure> pressureCache = QuantityType.valueOf(-1, SIUnits.PASCAL);
-    protected QuantityType<Pressure> pressureSeaCache = QuantityType.valueOf(-1, SIUnits.PASCAL);
+    protected QuantityType<Pressure> pressureCache = QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL));
+    protected QuantityType<Pressure> pressureSeaCache = QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL));
 
     public ConditionHandler(Thing thing) {
         super(thing);
@@ -63,10 +63,14 @@ public class ConditionHandler extends BaseSensorHandler {
                             humidityCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.PERCENT);
                             updateState(HUMIDITY_CHANNEL, humidityCache);
                         } else if (v.getValueType().equals(PRESSURE)) {
-                            pressureCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), SIUnits.PASCAL);
+                            pressureCache = QuantityType.valueOf(
+                                    NumberUtils.round(NumberUtils.convert(v.getValue()) / 100, 1),
+                                    HECTO(SIUnits.PASCAL));
                             updateState(PRESSURE_CHANNEL, pressureCache);
                         } else if (v.getValueType().equals(PRESSURE_SEALEVEL)) {
-                            pressureSeaCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), SIUnits.PASCAL);
+                            pressureSeaCache = QuantityType.valueOf(
+                                    NumberUtils.round(NumberUtils.convert(v.getValue()) / 100, 1),
+                                    HECTO(SIUnits.PASCAL));
                             updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
                         }
                     });
