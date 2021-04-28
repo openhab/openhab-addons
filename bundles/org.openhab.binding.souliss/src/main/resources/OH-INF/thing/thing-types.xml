@@ -751,10 +751,10 @@
 				<option value="opening">Opening</option>
 				<option value="stop">Stop</option>
 				<option value="closing">Closing</option>
-				<option value="limSwitch_open">Limit Switch Open</option>
-				<option value="limSwitch_close">Limit Switch Close</option>
-				<option value="state_open">Opened</option>
-				<option value="state_close">Closed</option>
+				<option value="limSwitchOpen">Limit Switch Open</option>
+				<option value="limSwitchOlose">Limit Switch Close</option>
+				<option value="stateOpen">Opened</option>
+				<option value="stateClose">Closed</option>
 				<option value="NoLimSwitch">No Limit Switch</option>
 			</options>
 		</state>

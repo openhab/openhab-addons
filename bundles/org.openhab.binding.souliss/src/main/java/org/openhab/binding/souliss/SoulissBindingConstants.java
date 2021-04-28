@@ -111,11 +111,11 @@ public final class SoulissBindingConstants {
                     T67_THING_TYPE, T68_THING_TYPE, TOPICS_THING_TYPE).collect(Collectors.toSet()));
 
     // List of all Channel ids
-    public static final String ONOFF_CHANNEL = "onoff";
+    public static final String ONOFF_CHANNEL = "onOff";
 
     public static final String PULSE_CHANNEL = "pulse";
     public static final String SLEEP_CHANNEL = "sleep";
-    public static final String AUTOMODE_CHANNEL = "automode";
+    public static final String AUTOMODE_CHANNEL = "autoMode";
     public static final String STATEONOFF_CHANNEL = "stateOnOff";
     public static final String STATEOPENCLOSE_CHANNEL = "stateOpenClose";
     public static final String ROLLERSHUTTER_CHANNEL = "rollerShutter";
@@ -124,10 +124,10 @@ public final class SoulissBindingConstants {
     // public static final String ROLLERSHUTTER_STATE_NUMBER_CHANNEL = "rollershutter_state_number";
     public static final String ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL = "opening";
     public static final String ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL = "closing";
-    public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL = "limSwitch_open";
-    public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_CLOSE_CHANNEL = "limSwitch_close";
-    public static final String ROLLERSHUTTER_MESSAGE_STATE_OPEN_CHANNEL = "state_open";
-    public static final String ROLLERSHUTTER_MESSAGE_STATE_CLOSE_CHANNEL = "state_close";
+    public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL = "limSwitchOpen";
+    public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_CLOSE_CHANNEL = "limSwitchClose";
+    public static final String ROLLERSHUTTER_MESSAGE_STATE_OPEN_CHANNEL = "stateOpen";
+    public static final String ROLLERSHUTTER_MESSAGE_STATE_CLOSE_CHANNEL = "stateClose";
     public static final String ROLLERSHUTTER_MESSAGE_NO_LIMITSWITCH_CHANNEL = "NoLimSwitch";
     public static final String ROLLERSHUTTER_MESSAGE_STOP_CHANNEL = "stop";
     public static final String ROLLERSHUTTER_MESSAGE_TIMER_OFF = "timer off";
