@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -23,16 +26,18 @@ import com.google.gson.annotations.SerializedName;
  * @Nullable
  *
  */
-
+@NonNullByDefault
 public class PhilipsAirPurifierStateDTO {
     @SerializedName("reported")
     @Expose
+    @Nullable
     private JsonObject reported;
     @SerializedName("desired")
     @Expose
+    @Nullable
     private JsonObject desired;
 
-    public JsonObject getReported() {
+    public @Nullable JsonObject getReported() {
         return reported;
     }
 
@@ -40,7 +45,7 @@ public class PhilipsAirPurifierStateDTO {
         this.reported = reported;
     }
 
-    public JsonObject getDesired() {
+    public @Nullable JsonObject getDesired() {
         return desired;
     }
 

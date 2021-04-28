@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PhilipsAirHandler extends BaseThingHandler {
-    private static final long INITIAL_DELAY_IN_SECONDS = 5;
+    private static final long INITIAL_DELAY_IN_SECONDS = 10;
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable PhilipsAirAPIConnection connection;
@@ -83,7 +83,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
         if (connection == null) {
             return;
         }
-
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
             updateData(connection);
@@ -178,7 +177,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        PhilipsAirConfiguration config = getAirPurifierConfig();
+        final PhilipsAirConfiguration config = getAirPurifierConfig();
         int refreshInterval = config.getRefreshInterval();
         if (refreshInterval < PhilipsAirConfiguration.MIN_REFESH_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "refreshInterval too low");
@@ -190,17 +189,23 @@ public class PhilipsAirHandler extends BaseThingHandler {
         if (callback != null) {
             callback.configurationUpdated(thing);
         }
-
-        if (SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
-            connection = new PhilipsAirCoapAPIConnection(config);
-        } else {
-            connection = new PhilipsAirHttpAPIConnection(config, httpClient);
-        }
-        updateStatus(ThingStatus.UNKNOWN);
-        if (this.refreshJob == null || this.refreshJob.isCancelled()) {
+        updateStatus(ThingStatus.OFFLINE);
+        scheduler.submit(() -> getConnection(config));
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob == null || refreshJob.isCancelled()) {
             logger.debug("Start refresh job at interval {} sec.", refreshInterval);
             this.refreshJob = scheduler.scheduleWithFixedDelay(this::updateThing, INITIAL_DELAY_IN_SECONDS,
                     refreshInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void getConnection(PhilipsAirConfiguration config) {
+        if (SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
+            logger.debug("Starting Coap based connectivity");
+            connection = new PhilipsAirCoapAPIConnection(config);
+        } else {
+            logger.debug("Starting HTTP based connectivity");
+            connection = new PhilipsAirHttpAPIConnection(config, httpClient);
         }
     }
 
@@ -214,17 +219,16 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     private void updateThing() {
-        ThingStatus status = ThingStatus.OFFLINE;
-
-        if (connection != null) {
-            this.updateData(connection);
-            status = thing.getStatus();
-        } else {
-            logger.debug("Cannot update Air Purifier device {}", thing.getUID());
-            status = ThingStatus.OFFLINE;
+        try {
+            if (connection != null) {
+                this.updateData(connection);
+            } else {
+                logger.debug("Cannot update Air Purifier device {}", thing.getUID());
+                getConnection(getAirPurifierConfig());
+            }
+        } catch (Exception e) {
+            logger.info("Exception while updating thing: {}", e.getMessage(), e);
         }
-
-        updateStatus(status);
     }
 
     public void updateData(@Nullable PhilipsAirAPIConnection connection) {

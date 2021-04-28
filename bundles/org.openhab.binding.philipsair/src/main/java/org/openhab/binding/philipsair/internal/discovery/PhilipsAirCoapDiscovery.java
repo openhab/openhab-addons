@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal.discovery;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PROPERTY_DEV_TYPE;
 import static org.openhab.core.thing.Thing.*;
 
 import java.io.IOException;
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapHandler;
@@ -63,8 +64,11 @@ import com.google.gson.Gson;
  * new Philips Air Purifier things for COAP protocol devices
  *
  * @author Marcel Verpaalen - Initial contribution
+ *
  */
+
 @NonNullByDefault
+
 @Component(service = DiscoveryService.class, configurationPid = "discovery.philipsair")
 public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVERY_TIME = 10;
@@ -93,8 +97,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         ScheduledFuture<?> coapDiscoveryJob = this.coapDiscoveryJob;
         if (coapDiscoveryJob == null || coapDiscoveryJob.isCancelled()) {
             logger.debug("Starting PhilipsAir (COAP) background discovery job");
-            // coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, BACKGROUND_DISCOVERY_INTERVAL_,
-            // TimeUnit.SECONDS);
+            coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, BACKGROUND_DISCOVERY_INTERVAL_,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -115,7 +119,6 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Start COAP discovery");
-
         for (InetAddress host : getBroadcastAddresses()) {
             try {
                 mget(client, COAP_PORT, PATH, host.getHostName());
@@ -148,7 +151,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
         addProperty(properties, PhilipsAirConfiguration.CONFIG_HOST, host);
         addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, info.getDeviceId());
-        addProperty(properties, PROPERTY_MANUFACTURER, "Philips");
+        addProperty(properties, PhilipsAirBindingConstants.PROPERTY_MANUFACTURER, "Philips");
         addProperty(properties, PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
         addProperty(properties, PROPERTY_MODEL_ID, info.getModelId());
         addProperty(properties, PROPERTY_DEV_TYPE, info.getType());
@@ -169,7 +172,6 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         String uri;
         uri = "coap://" + CoAP.MULTICAST_IPV4.getHostAddress() + ":" + port + "/" + resourcePath;
         client.setURI(uri);
-        System.out.println("GET " + uri);
         Request multicastRequest = Request.newGet();
         multicastRequest.setType(Type.NON);
         // sends a multicast request
