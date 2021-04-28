@@ -133,7 +133,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * Dynnamically updates all known channel states of the energy manager.
      */
     public void updateChannels() {
-        this.logger.trace("{} updateChannels", this);
         Map<String, Device> devices = this.getDevices();
         if (devices != null) {
             if (this.energyManagerGuid == null) {
@@ -152,7 +151,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
                 properties.put(THING_PROPERTIES_GUID, energyManager.getGuid());
                 this.updateProperties(properties);
                 energyManager.getStateValues().forEach((stateName, stateValue) -> {
-                    this.logger.trace("{}: {} - {}", this.getThing().getUID(), stateName, stateValue.toFullString());
                     this.updateState(stateName, stateValue);
                 });
             } else {
@@ -265,8 +263,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      */
     @Override
     public void dispose() {
-        this.logger.debug("{} dispose", this);
-
         ScheduledFuture<?> localRefreshJob = this.refreshJob;
         if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
             localRefreshJob.cancel(true);
@@ -360,8 +356,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * @return map from guid to {@link Device}}
      */
     private @Nullable Map<String, Device> refreshDevices() {
-        this.logger.trace("{} refreshdevices", this);
-
         try {
             final Map<String, Device> devicesData = this.connector.retrieveDevices().getDevices();
             this.updateStatus(ThingStatus.ONLINE);
@@ -388,8 +382,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * Trigger an update on all child things of this bridge.
      */
     private void updateAllChildThings() {
-        this.logger.trace("{} updateAllChildThings", this);
-
         this.getThing().getThings().forEach(childThing -> {
             try {
                 ThingHandler childHandler = childThing.getHandler();

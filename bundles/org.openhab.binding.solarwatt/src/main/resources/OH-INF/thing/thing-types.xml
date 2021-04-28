@@ -18,7 +18,7 @@
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="refresh" type="integer" unit="s">
-				<label>Refresh Period</label>
+				<label>Refresh Data Period</label>
 				<description>Period between updates to the devices data in seconds.
 				</description>
 				<default>30</default>
@@ -26,7 +26,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="rescan" type="integer" unit="min">
-				<label>Refresh Period</label>
+				<label>Redetect Devices Period</label>
 				<description>Period between updates to the detected devices in minutes.
 				</description>
 				<default>5</default>

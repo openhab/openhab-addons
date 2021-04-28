@@ -64,7 +64,7 @@ public class EnergyManagerConnector {
         if (configuration != null) {
             String hostname = configuration.hostname;
 
-            if (!"".equals(hostname)) {
+            if (!hostname.isEmpty()) {
                 this.energyManagerURI = URI.create(PROTOCOL + hostname + WIZARD_DEVICES_URL);
             } else {
                 this.logger.debug("Hostname is empty");

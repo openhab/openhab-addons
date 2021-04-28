@@ -84,12 +84,11 @@ public class SimpleDeviceHandler extends BaseThingHandler {
         final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
         if (bridgeHandler != null) {
             if (command instanceof RefreshType) {
-                this.logger.debug("update command for {}", this.getThing().getUID());
                 this.updateDeviceProperties();
                 this.updateDeviceChannels();
             }
         } else {
-            this.logger.error("Thing {} has no bridgeHandler for Bridge {}", this.getThing().getUID(),
+            this.logger.warn("Thing {} has no bridgeHandler for Bridge {}", this.getThing().getUID(),
                     this.getThing().getBridgeUID());
         }
     }
@@ -98,15 +97,11 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      * Update the state of all channels.
      */
     protected void updateDeviceChannels() {
-        this.logger.trace("updateDeviceChannels for {}", this.getThing().getUID());
         // find device for the thing
         Device device = this.getDevice();
 
         if (device != null) {
-            device.getStateValues().forEach((stateName, stateValue) -> {
-                this.logger.trace("{}: {} - {}", this.getThing().getUID(), stateName, stateValue.toFullString());
-                this.updateState(stateName, stateValue);
-            });
+            device.getStateValues().forEach(this::updateState);
         }
     }
 
@@ -114,7 +109,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      * Assert that all {@link org.openhab.core.thing.type.ChannelType}s are registered for this thing.
      */
     protected void initDeviceChannels() {
-        this.logger.trace("initDeviceChannels for {}", this.getThing().getUID());
         // find device for the thing
         Device device = this.getDevice();
 
@@ -130,7 +124,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      * Update the properties for this device.
      */
     protected void updateDeviceProperties() {
-        this.logger.trace("updateDeviceProperties for {}", this.getThing().getUID());
         // find device for the thing
         Device device = this.getDevice();
 
@@ -219,11 +212,12 @@ public class SimpleDeviceHandler extends BaseThingHandler {
                 return (EnergyManagerHandler) bridgeHandler;
             } else {
                 // happens while dynamically reloading the binding
-                this.logger.error("BridgeHandler is not implementing EnergyManagerHandler {}", bridgeHandler);
+                this.logger.warn("BridgeHandler is not implementing EnergyManagerHandler {}", bridgeHandler);
             }
         } else {
             // this handler can't work without a bridge
-            this.logger.error("Bridge is null");
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Received null bridge while initializing!");
         }
 
         return null;
