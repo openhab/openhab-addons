@@ -34,7 +34,7 @@
 		<item-type>Number</item-type>
 		<label>Collection Day</label>
 		<description>The rubbish collection Day of the Week</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="1">Monday</option>
 				<option value="2">Tuesday</option>
@@ -49,7 +49,7 @@
 	<channel-type id="bin">
 		<item-type>DateTime</item-type>
 		<label>Collection Date</label>
-		<state pattern="%1$tY-%1$tm-%1$td"></state>
+		<state pattern="%1$tY-%1$tm-%1$td" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="collection-event">
 		<kind>trigger</kind>
@@ -69,5 +69,4 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-
 </thing:thing-descriptions>
