@@ -233,17 +233,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        synchronized (this) {
-            if (getThing().getStatus() == ThingStatus.REMOVING && status != ThingStatus.REMOVED) {
-                return;
-            }
-
-            super.updateStatus(status, statusDetail, description);
-        }
-    }
-
-    @Override
     public void onConnectionAlive() {
         updateStatus(ThingStatus.ONLINE);
     }
