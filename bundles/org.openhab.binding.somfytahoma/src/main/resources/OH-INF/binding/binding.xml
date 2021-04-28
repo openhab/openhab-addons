@@ -4,6 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>SomfyTahoma Binding</name>
-	<description>This is the binding for SomfyTahoma.</description>
+	<description>This is the binding for Somfy Tahoma and Somfy Connexoon home automation systems and for any other system
+		based on the OverKiz API.</description>
 
 </binding:binding>

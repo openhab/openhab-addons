@@ -5,13 +5,14 @@ This binding integrates the
 and
 [Somfy Connexoon](https://www.somfy.fr/produits/1811429/)
 home automation systems.
+Any home automation system based on the OverKiz API is potentially supported.
 
 ## Supported Things
 
  Currently these things are supported:
 
-- bridge (Somfy Tahoma bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
-- gateways (Somfy Tahoma gateway - gateway status)
+- bridge (cloud bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
+- gateways (gateway status)
 - gates (control gate, get state)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
 - blinds (UP, DOWN, STOP control of a blind). IO Homecontrol devices are allowed to set exact position of a blinds (0-100%) as well as orientation of slats (0-100%)
@@ -46,10 +47,10 @@ Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
 
 To start a discovery, just
  
-- Add a new Somfy Tahoma bridge thing.
-- Configure the bridge with your email (login) and password to the TahomaLink cloud portal.
+- Add a new bridge thing.
+- Configure the bridge selecting your cloud portal (www.tahomalink.com by default) and setting your email (login) and password to the cloud portal.
  
-If the supplied TahomaLink credentials are correct, the automatic discovery can be used to scan and detect roller shutters, awnings, switches and action groups that will appear in your Inbox. 
+If the supplied credentials are correct, the automatic discovery can be used to scan and detect roller shutters, awnings, switches and action groups that will appear in your Inbox. 
 
 ## Thing Configuration
 
@@ -61,7 +62,7 @@ Please see the example below.
 | Thing                                                                         | Channel                      | Note                                                                                                                        |
 |-------------------------------------------------------------------------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | bridge                                                                        | N.A                          | bridge does not expose any channel                                                                                          |
-| gateway                                                                       | status                       | status of your Tahoma gateway                                                                                               |
+| gateway                                                                       | status                       | status of your gateway                                                                                                      |
 | gateway                                                                       | scenarios                    | used to run the scenarios defined in the cloud portal                                                                       |
 | gate                                                                          | gate_command                 | used for controlling your gate (open, close, stop, pedestrian)                                                              |
 | gate                                                                          | gate_state                   | get state of your gate (open, closed, pedestrian)                                                                           |
