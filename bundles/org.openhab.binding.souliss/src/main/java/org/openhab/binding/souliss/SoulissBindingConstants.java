@@ -147,7 +147,7 @@ public final class SoulissBindingConstants {
     public static final String T31_FAN_CHANNEL = "fan";
     public static final String T31_BUTTON_CHANNEL = "setAsMeasured";
     public static final String T31_VALUE_CHANNEL = "measured";
-    public static final String T31_SETPOINT_CHANNEL = "setpoint";
+    public static final String T31_SETPOINT_CHANNEL = "setPoint";
 
     public static final String T31_COOLINGMODE_MESSAGE_MODE_CHANNEL = "COOLING_MODE";
     public static final String T31_HEATINGMODE_MESSAGE_MODE_CHANNEL = "HEATING_MODE";
