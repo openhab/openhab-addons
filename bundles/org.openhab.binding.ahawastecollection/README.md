@@ -64,7 +64,7 @@ Thing ahawastecollection:collectionSchedule:wasteCollectionSchedule "aha Abfuhrk
 wasteCollection.items
 
 ```
-DateTime collectionDay_generalWaste "Next genral waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:generalWaste"}
+DateTime collectionDay_generalWaste "Next general waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:generalWaste"}
 DateTime collectionDay_leightweightPackaging "Next lightweight packaging collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:leightweightPackaging"}
 DateTime collectionDay_bioWaste "Next bio waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:bioWaste"}
 DateTime collectionDay_paper "Next paper collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:paper"}
