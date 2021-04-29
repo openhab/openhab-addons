@@ -48,13 +48,10 @@ public class SoulissT42Handler extends SoulissGenericHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
             if (command instanceof OnOffType) {
-                switch (command.toFullString()) {
-                    case "ON":
-                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
-                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
-                        break;
+                if (command.equals(OnOffType.ON)) {
+                    commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
+                    this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
                 }
-
             }
         }
     }
