@@ -321,14 +321,11 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "6110": // A, vibration, 0/1, -1=unknown
                 if (profile.isMotion) {
                     // handle as status
-                    logger.debug("{}: Vibration={}, update channel {}", thingName, CHANNEL_SENSOR_VIBRATION, s.value);
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                             s.value == 1 ? OnOffType.ON : OnOffType.OFF);
                 } else if (s.value == 1) {
                     // handle as event
-                    logger.debug("{}: Vibration={}, post event {} to channel {}", thingName, s.value,
-                            CHANNEL_SENSOR_VIBRATION, CHANNEL_SENSOR_ALARM_STATE);
-                    thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE, EVENT_TYPE_VIBRATION);
+                    thingHandler.triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, EVENT_TYPE_VIBRATION);
                 }
                 break;
             case "9102": // EV, wakeupEvent, battery/button/periodic/poweron/sensor/ext_power, "unknown"=unknown

@@ -311,7 +311,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 |BATTERY     |Device reported an update to the battery status.                                                                 |
 |TEMP_UNDER  |Below "temperature under" threshold                                                                              |
 |TEMP_OVER   |Above "temperature over" threshold                                                                               |
-
+|VIBRATION   |A vibration/tamper was detected (DW2 only)                                                                       |
 
 Refer to section [Full Example:shelly.rules](#shelly-rules) for examples how to catch alarm triggers in openHAB rules
 
@@ -805,6 +805,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |lastError    |String   |yes      |Last device error.                                                     |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+|device    |alarm        |Trigger  |yes      |Will receive trigger VIBRATION if DW2 detects vibration                |
 
 ### Shelly Motion (thing-type: shellymotion)
 
@@ -1092,8 +1093,8 @@ when
     Channel "shelly:shelly25-roller:XXXXXX:device#alarm"    triggered
 then
     if (receivedEvent !== null) { // A (channel) event triggered the rule
-        eventSource = receivedEvent.getChannel().asString 
-        eventType = receivedEvent.getEvent()
+        eventSource = triggeredChannel
+        eventType = receivedEvent
         ...
     } 
 end

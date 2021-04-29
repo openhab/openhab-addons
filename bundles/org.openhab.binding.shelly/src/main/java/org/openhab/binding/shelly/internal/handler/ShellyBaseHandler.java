@@ -111,6 +111,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private String localPort = "";
 
     private String lastWakeupReason = "";
+    private int vibrationFilter = 0;
 
     /**
      * Constructor
@@ -382,6 +383,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     protected void refreshStatus() {
         try {
             boolean updated = false;
+
+            if (vibrationFilter > 0) {
+                vibrationFilter--;
+                logger.debug("{}: Vibration events are absorbed for {} more seconds", thingName,
+                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+            }
 
             skipUpdate++;
             ThingStatus thingStatus = getThing().getStatus();
@@ -1191,7 +1198,21 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     public void triggerChannel(String group, String channel, String payload) {
-        triggerChannel(mkChannelId(group, channel), payload);
+        String triggerCh = mkChannelId(group, channel);
+        logger.debug("{}: Send event {} to channel {}", thingName, triggerCh, payload);
+        if (EVENT_TYPE_VIBRATION.contentEquals(payload)) {
+            if (vibrationFilter == 0) {
+                vibrationFilter = VIBRATION_FILTER_SEC / UPDATE_STATUS_INTERVAL_SECONDS + 1;
+                logger.debug("{}: Duplicate vibration events will be absorbed for the next {} sec", thingName,
+                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+            } else {
+                logger.debug("{}: Vibration event absorbed, {} sec remaining", thingName,
+                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                return;
+            }
+        }
+
+        triggerChannel(triggerCh, payload);
     }
 
     public void stop() {
