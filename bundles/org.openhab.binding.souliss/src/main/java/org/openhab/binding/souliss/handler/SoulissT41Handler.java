@@ -52,22 +52,17 @@ public class SoulissT41Handler extends SoulissGenericHandler {
         if (!(command instanceof RefreshType)) {
             if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL)) {
                 if (command instanceof OnOffType) {
-                    switch (command.toFullString()) {
-                        case "OFF":
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_NOT_ARMED);
-                            break;
-                        case "ON":
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_ARMED);
-                            break;
+                    if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_NOT_ARMED);
+                    } else if (command.equals(OnOffType.ON)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_ARMED);
                     }
                 }
             } else if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
                 if (command instanceof OnOffType) {
-                    switch (command.toFullString()) {
-                        case "ON":
-                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
-                            this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
-                            break;
+                    if (command.equals(OnOffType.OFF)) {
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
+                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
                     }
 
                 }
