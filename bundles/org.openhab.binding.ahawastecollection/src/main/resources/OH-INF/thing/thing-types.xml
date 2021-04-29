@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="collectionSchedule">
 		<label>aha Waste Collection Schedule</label>
 		<description>aha Waste Collection Schedule from http://www.aha-region.de/abholtermine/abfuhrkalender</description>
@@ -45,25 +44,25 @@
 	<!-- Channel type that represents the collection time of an waste type. -->
 	<channel-type id="collectionDateGeneralWaste">
 		<item-type>DateTime</item-type>
-		<label>collection day general waste</label>
+		<label>General Waste</label>
 		<description>Next collection day for general waste</description>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 	<channel-type id="collectionDateLeightweightPackaging">
 		<item-type>DateTime</item-type>
-		<label>collection day leightweight packaging</label>
+		<label>Leightweight Packaging</label>
 		<description>Next collection day for leightweight packaging</description>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 	<channel-type id="collectionDateBioWaste">
 		<item-type>DateTime</item-type>
-		<label>collection day bio waste</label>
+		<label>Bio Waste</label>
 		<description>Next collection day for bio waste</description>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 	<channel-type id="collectionDatePaper">
 		<item-type>DateTime</item-type>
-		<label>collection day paper</label>
+		<label>Paper</label>
 		<description>Next collection day for paper</description>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>

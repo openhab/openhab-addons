@@ -91,7 +91,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             this.scheduler.execute(this::updateCollectionDates);
         } else {
-            this.logger.warn("The AHA Abfuhrkalender is a read-only binding and can not handle commands"); //$NON-NLS-1$
+            this.logger.warn("The AHA Abfuhrkalender is a read-only binding and can not handle commands");
         }
     }
 
