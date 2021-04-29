@@ -167,7 +167,7 @@ public final class SoulissBindingProtocolConstants {
 
     public static final byte SOULISS_T1N_ON_FEEDBACK = 0x23;
     public static final byte SOULISS_T1N_OFF_FEEDBACK = 0x24;
-    public static final String SOULISS_T12_USE_OF_SLOT_AUTO_MODE = "automode";
+    public static final String SOULISS_T12_USE_OF_SLOT_AUTO_MODE = "autoMode";
     public static final String SOULISS_T12_USE_OF_SLOT_SWITCH = "switch";
 
     public static final long SOULISS_T16_RED = 0x22FF0000; // Set a state
@@ -233,14 +233,14 @@ public final class SoulissBindingProtocolConstants {
     public static final byte SOULISS_T2N_COIL_OFF = 0x00;
 
     // General defines for T3n
-    public static final String SOULISS_T31_USE_OF_SLOT_SETPOINT = "setpoint";
+    public static final String SOULISS_T31_USE_OF_SLOT_SETPOINT = "setPoint";
     public static final String SOULISS_T31_USE_OF_SLOT_MEASURED = "measured";
-    public static final String SOULISS_T31_USE_OF_SLOT_SETASMEASURED = "setasmeasured";
+    public static final String SOULISS_T31_USE_OF_SLOT_SETASMEASURED = "setAsMeasured";
 
     public static final byte SOULISS_T31_USE_OF_SLOT_SETPOINT_COMMAND = 0x0C;
     public static final byte SOULISS_T31_USE_OF_SLOT_HEATING = 0x05;
     public static final byte SOULISS_T31_USE_OF_SLOT_COOLING = 0x04;
-    public static final String SOULISS_T31_USE_OF_SLOT_HEATING_COOLING = "heatingcooling";
+    public static final String SOULISS_T31_USE_OF_SLOT_HEATING_COOLING = "heatingCooling";
     public static final byte SOULISS_T31_USE_OF_SLOT_FAN_OFF = 0x06;
     public static final byte SOULISS_T31_USE_OF_SLOT_FAN_LOW = 0x07;
     public static final byte SOULISS_T31_USE_OF_SLOT_FAN_MED = 0x08;
