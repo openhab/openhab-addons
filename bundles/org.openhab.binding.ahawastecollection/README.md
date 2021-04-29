@@ -69,3 +69,71 @@ DateTime collectionDay_leightweightPackaging "Next lightweight packaging collect
 DateTime collectionDay_bioWaste "Next bio waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:bioWaste"}
 DateTime collectionDay_paper "Next paper collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:paper"}
 ```
+
+
+Example for rule that sends an notification with collected waste types on day before collection
+
+```
+triggers:
+  - id: "1"
+    configuration:
+      time: 18:00
+    type: timer.TimeOfDayTrigger
+conditions: []
+actions:
+  - inputs: {}
+    id: "2"
+    configuration:
+      type: application/javascript
+      script: >-
+        // Determine next day with time 00:00:00
+        var today = items['LokaleZeit_DatumundZeit'];
+
+        var tomorrow = today
+          .getZonedDateTime()
+          .plusDays(1)
+          .withHour(0)
+          .withMinute(0)
+          .withSecond(0)
+          .withNano(0);
+
+        // Get next collection dates from items
+        var biomuellDate = items['collectionDay_bioWaste'].getZonedDateTime();
+        var leichtverpackungDate = items['collectionDay_leightweightPackaging'].getZonedDateTime();
+        var papierDate = items['collectionDay_paper'].getZonedDateTime();
+        var restmuellDate = items['collectionDay_generalWaste'].getZonedDateTime();
+
+
+        // Check which waste types are collected on the next day
+        var biomuellCollection = biomuellDate.equals(tomorrow);
+        var leichtverpackungCollection = leichtverpackungDate.equals(tomorrow);
+        var papierCollection = papierDate.equals(tomorrow);
+        var restmuellCollection = restmuellDate.equals(tomorrow);
+
+        // Transfer booleans to waste type names
+        var toBeCollected = [];
+
+        if (biomuellCollection) {
+          toBeCollected.push('bio waste');
+        }
+
+        if (leichtverpackungCollection) {
+          toBeCollected.push('leihtweight packaging');
+        }
+
+        if (papierCollection) {
+          toBeCollected.push('paper');
+        }
+
+        if (restmuellCollection) {
+          toBeCollected.push('general waste');
+        }
+
+
+        // Send message (or something else) if at least one waste type is collected
+        if (toBeCollected.length > 0) {
+            var message = "Tomorrow the following waste will be collected:\n" + toBeCollected.join(', ');
+            events.sendCommand('SignalSmartHome_Eingabewert', message);
+        }
+    type: script.ScriptAction
+```
