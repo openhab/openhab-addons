@@ -76,7 +76,7 @@ public class HandlerConfiguration {
     /**
      * Add the <code>basetopic</code> and <code>objectid</code> to the properties.
      *
-     * @param properties
+     * @param properties properties
      * @return the modified properties
      */
     public <T extends Map<String, Object>> T appendToProperties(T properties) {

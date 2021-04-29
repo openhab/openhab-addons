@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -24,6 +24,8 @@ import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ChannelStateUpdateListenerProxy;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -36,7 +38,7 @@ import org.openhab.core.types.State;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentClimate extends AbstractComponent<ComponentClimate.ChannelConfiguration> {
+public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     private static final String ACTION_CH_ID = "action";
     private static final String AUX_CH_ID = "aux";
     private static final String AWAY_MODE_CH_ID = "awayMode";
@@ -62,7 +64,7 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Channel
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT HVAC");
         }
@@ -135,7 +137,7 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Channel
         protected Boolean send_if_off = true;
     }
 
-    public ComponentClimate(CFactory.ComponentConfiguration componentConfiguration) {
+    public Climate(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         @Nullable
@@ -149,9 +151,9 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Channel
                         : DEFAULT_CELSIUM_PRECISION);
 
         @Nullable
-        CChannel actionChannel = buildOptionalChannel(ACTION_CH_ID, new TextValue(ACTION_MODES.toArray(new String[0])),
-                componentConfiguration.getUpdateListener(), null, null, channelConfiguration.action_template,
-                channelConfiguration.action_topic);
+        ComponentChannel actionChannel = buildOptionalChannel(ACTION_CH_ID,
+                new TextValue(ACTION_MODES.toArray(new String[0])), componentConfiguration.getUpdateListener(), null,
+                null, channelConfiguration.action_template, channelConfiguration.action_topic);
 
         ChannelStateUpdateListener updateListener = getListener(channelConfiguration.send_if_off, actionChannel,
                 componentConfiguration.getUpdateListener());
@@ -214,19 +216,20 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Channel
     }
 
     @Nullable
-    private CChannel buildOptionalChannel(String channelId, Value valueState,
+    private ComponentChannel buildOptionalChannel(String channelId, Value valueState,
             ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
             @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
-            return buildChannel(channelId, valueState, channelConfiguration.name, channelStateUpdateListener)
-                    .stateTopic(stateTopic, stateTemplate, channelConfiguration.value_template)
-                    .commandTopic(commandTopic, channelConfiguration.retain, channelConfiguration.qos, commandTemplate)
+            return buildChannel(channelId, valueState, channelConfiguration.getName(), channelStateUpdateListener)
+                    .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
+                    .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
+                            commandTemplate)
                     .build();
         }
         return null;
     }
 
-    private ChannelStateUpdateListener getListener(boolean sendIfOff, @Nullable CChannel actionChannel,
+    private ChannelStateUpdateListener getListener(boolean sendIfOff, @Nullable ComponentChannel actionChannel,
             ChannelStateUpdateListener original) {
         if (!sendIfOff && actionChannel != null) {
             return new ChannelStateUpdateListenerProxy(original) {

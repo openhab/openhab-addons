@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
+import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
 
 /**
  * A MQTT Cover component, following the https://www.home-assistant.io/components/cover.mqtt/ specification.
@@ -24,13 +25,13 @@ import org.openhab.binding.mqtt.generic.values.RollershutterValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCover extends AbstractComponent<ComponentCover.ChannelConfiguration> {
+public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     public static final String switchChannelID = "cover"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Cover");
         }
@@ -42,14 +43,16 @@ public class ComponentCover extends AbstractComponent<ComponentCover.ChannelConf
         protected String payload_stop = "STOP";
     }
 
-    public ComponentCover(CFactory.ComponentConfiguration componentConfiguration) {
+    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         RollershutterValue value = new RollershutterValue(channelConfiguration.payload_open,
                 channelConfiguration.payload_close, channelConfiguration.payload_stop);
 
-        buildChannel(switchChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain).build();
+        buildChannel(switchChannelID, value, channelConfiguration.getName(), componentConfiguration.getUpdateListener())
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
+                .build();
     }
 }

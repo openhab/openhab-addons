@@ -26,7 +26,7 @@ import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.homeassistant.internal.CFactory.ComponentConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
@@ -55,7 +55,7 @@ import org.openhab.core.types.StateDescriptionFragment;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class CChannel {
+public class ComponentChannel {
     private static final String JINJA = "JINJA";
 
     private final ChannelUID channelUID;
@@ -65,7 +65,7 @@ public class CChannel {
     private final ChannelTypeUID channelTypeUID;
     private final ChannelStateUpdateListener channelStateUpdateListener;
 
-    private CChannel(ChannelUID channelUID, ChannelState channelState, Channel channel, ChannelType type,
+    private ComponentChannel(ChannelUID channelUID, ChannelState channelState, Channel channel, ChannelType type,
             ChannelTypeUID channelTypeUID, ChannelStateUpdateListener channelStateUpdateListener) {
         super();
         this.channelUID = channelUID;
@@ -117,25 +117,24 @@ public class CChannel {
     }
 
     public static class Builder {
-        private AbstractComponent<?> component;
-        private ComponentConfiguration componentConfiguration;
-        private String channelID;
-        private Value valueState;
-        private String label;
+        private final AbstractComponent<?> component;
+        private final String channelID;
+        private final Value valueState;
+        private final String label;
+        private final ChannelStateUpdateListener channelStateUpdateListener;
+
         private @Nullable String state_topic;
         private @Nullable String command_topic;
         private boolean retain;
         private boolean trigger;
         private @Nullable Integer qos;
-        private ChannelStateUpdateListener channelStateUpdateListener;
 
         private @Nullable String templateIn;
         private @Nullable String templateOut;
 
-        public Builder(AbstractComponent<?> component, ComponentConfiguration componentConfiguration, String channelID,
-                Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
+        public Builder(AbstractComponent<?> component, String channelID, Value valueState, String label,
+                ChannelStateUpdateListener channelStateUpdateListener) {
             this.component = component;
-            this.componentConfiguration = componentConfiguration;
             this.channelID = channelID;
             this.valueState = valueState;
             this.label = label;
@@ -150,7 +149,8 @@ public class CChannel {
         public Builder stateTopic(@Nullable String state_topic, @Nullable String... templates) {
             this.state_topic = state_topic;
             if (state_topic != null && !state_topic.isBlank()) {
-                for (String template : templates) {
+                for (@Nullable
+                String template : templates) {
                     if (template != null && !template.isBlank()) {
                         this.templateIn = template;
                         break;
@@ -162,9 +162,9 @@ public class CChannel {
 
         /**
          * @deprecated use commandTopic(String, boolean, int)
-         * @param command_topic
-         * @param retain
-         * @return
+         * @param command_topic topic
+         * @param retain retain
+         * @return this
          */
         @Deprecated
         public Builder commandTopic(@Nullable String command_topic, boolean retain) {
@@ -193,18 +193,18 @@ public class CChannel {
             return this;
         }
 
-        public CChannel build() {
+        public ComponentChannel build() {
             return build(true);
         }
 
-        public CChannel build(boolean addToComponent) {
+        public ComponentChannel build(boolean addToComponent) {
             ChannelUID channelUID;
             ChannelState channelState;
             Channel channel;
             ChannelType type;
             ChannelTypeUID channelTypeUID;
 
-            channelUID = new ChannelUID(component.channelGroupUID, channelID);
+            channelUID = new ChannelUID(component.getGroupUID(), channelID);
             channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new ChannelState(
@@ -212,6 +212,7 @@ public class CChannel {
                             .withCommandTopic(command_topic).makeTrigger(trigger).build(),
                     channelUID, valueState, channelStateUpdateListener);
 
+            @Nullable
             String localStateTopic = state_topic;
             if (localStateTopic == null || localStateTopic.isBlank() || this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
@@ -224,31 +225,32 @@ public class CChannel {
             }
 
             Configuration configuration = new Configuration();
-            configuration.put("config", component.channelConfigurationJson);
-            component.haID.toConfig(configuration);
+            configuration.put("config", component.getChannelConfigurationJson());
+            component.getHaID().toConfig(configuration);
 
             channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                     .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
 
-            CChannel result = new CChannel(channelUID, channelState, channel, type, channelTypeUID,
+            ComponentChannel result = new ComponentChannel(channelUID, channelState, channel, type, channelTypeUID,
                     channelStateUpdateListener);
 
             @Nullable
-            TransformationServiceProvider transformationProvider = componentConfiguration
-                    .getTransformationServiceProvider();
+            TransformationServiceProvider transformationProvider = component.getTransformationServiceProvider();
 
+            @Nullable
             final String templateIn = this.templateIn;
             if (templateIn != null && transformationProvider != null) {
                 channelState
                         .addTransformation(new ChannelStateTransformation(JINJA, templateIn, transformationProvider));
             }
+            @Nullable
             final String templateOut = this.templateOut;
             if (templateOut != null && transformationProvider != null) {
                 channelState.addTransformationOut(
                         new ChannelStateTransformation(JINJA, templateOut, transformationProvider));
             }
             if (addToComponent) {
-                component.channels.put(channelID, result);
+                component.getChannelMap().put(channelID, result);
             }
             return result;
         }

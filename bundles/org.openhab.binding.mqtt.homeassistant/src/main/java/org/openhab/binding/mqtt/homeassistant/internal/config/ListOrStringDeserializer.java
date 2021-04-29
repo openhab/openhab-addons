@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,7 +62,7 @@ public class ListOrStringDeserializer extends TypeAdapter<List<String>> {
                 in.nextNull();
                 return null;
             case STRING:
-                return Arrays.asList(in.nextString());
+                return Collections.singletonList(in.nextString());
             case BEGIN_ARRAY:
                 return readList(in);
             default:

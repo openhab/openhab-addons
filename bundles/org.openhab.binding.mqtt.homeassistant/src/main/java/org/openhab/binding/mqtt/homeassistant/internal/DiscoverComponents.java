@@ -27,6 +27,8 @@ import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
+import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
+import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.thing.ThingUID;
@@ -55,7 +57,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
 
     private @Nullable ScheduledFuture<?> stopDiscoveryFuture;
     private WeakReference<@Nullable MqttBrokerConnection> connectionRef = new WeakReference<>(null);
-    protected @NonNullByDefault({}) ComponentDiscovered discoveredListener;
+    protected @Nullable @NonNullByDefault({}) ComponentDiscovered discoveredListener;
     private int discoverTime;
     private Set<String> topics = new HashSet<>();
 
@@ -93,11 +95,12 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         HaID haID = new HaID(topic);
         String config = new String(payload);
 
+        @Nullable
         AbstractComponent<?> component = null;
 
         if (config.length() > 0) {
-            component = CFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler, gson,
-                    transformationServiceProvider);
+            component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler,
+                    gson, transformationServiceProvider);
         }
         if (component != null) {
             component.setConfigSeen();
@@ -122,9 +125,9 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      * @param connection A MQTT broker connection
      * @param discoverTime The time in milliseconds for the discovery to run. Can be 0 to disable the
      *            timeout.
-     *            You need to call {@link #stopDiscovery(MqttBrokerConnection)} at some
+     *            You need to call {@link #stopDiscovery()} at some
      *            point in that case.
-     * @param topicDescription Contains the object-id (=device id) and potentially a node-id as well.
+     * @param topicDescriptions Contains the object-id (=device id) and potentially a node-id as well.
      * @param componentsDiscoveredListener Listener for results
      * @return A future that completes normally after the given time in milliseconds or exceptionally on any error.
      *         Completes immediately if the timeout is disabled.
@@ -144,6 +147,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     }
 
     private void subscribeSuccess() {
+        @Nullable
         final MqttBrokerConnection connection = connectionRef.get();
         // Set up a scheduled future that will stop the discovery after the given time
         if (connection != null && discoverTime > 0) {
@@ -160,12 +164,14 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     }
 
     private @Nullable Void subscribeFail(Throwable e) {
+        @Nullable
         final ScheduledFuture<?> scheduledFuture = this.stopDiscoveryFuture;
         if (scheduledFuture != null) { // Cancel timeout
             scheduledFuture.cancel(false);
             this.stopDiscoveryFuture = null;
         }
         this.discoveredListener = null;
+        @Nullable
         final MqttBrokerConnection connection = connectionRef.get();
         if (connection != null) {
             this.topics.parallelStream().forEach(t -> connection.unsubscribe(t, this));
@@ -177,8 +183,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
 
     /**
      * Stops an ongoing discovery or do nothing if no discovery is running.
-     *
-     * @param connection A MQTT broker connection
      */
     public void stopDiscovery() {
         subscribeFail(new Throwable("Stopped"));

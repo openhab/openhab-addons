@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.lang.reflect.Type;
 
@@ -27,14 +27,11 @@ import com.google.gson.JsonParseException;
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class ConnectionDeserializer implements JsonDeserializer<BaseChannelConfiguration.Connection> {
+public class ConnectionDeserializer implements JsonDeserializer<Connection> {
     @Override
-    public BaseChannelConfiguration.Connection deserialize(JsonElement json, Type typeOfT,
-            JsonDeserializationContext context) throws JsonParseException {
+    public Connection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
         JsonArray list = json.getAsJsonArray();
-        BaseChannelConfiguration.Connection conn = new BaseChannelConfiguration.Connection();
-        conn.type = list.get(0).getAsString();
-        conn.identifier = list.get(1).getAsString();
-        return conn;
+        return new Connection(list.get(0).getAsString(), list.get(1).getAsString());
     }
 }

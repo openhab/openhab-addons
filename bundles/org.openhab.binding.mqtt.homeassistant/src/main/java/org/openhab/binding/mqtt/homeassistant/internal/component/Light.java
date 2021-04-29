@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -36,8 +38,7 @@ import org.openhab.core.types.State;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConfiguration>
-        implements ChannelStateUpdateListener {
+public class Light extends AbstractComponent<Light.ChannelConfiguration> implements ChannelStateUpdateListener {
     public static final String switchChannelID = "light"; // Randomly chosen channel "ID"
     public static final String brightnessChannelID = "brightness"; // Randomly chosen channel "ID"
     public static final String colorChannelID = "color"; // Randomly chosen channel "ID"
@@ -45,7 +46,7 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Light");
         }
@@ -93,30 +94,36 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
         protected String payload_off = "OFF";
     }
 
-    protected CChannel colorChannel;
-    protected CChannel switchChannel;
-    protected CChannel brightnessChannel;
+    protected ComponentChannel colorChannel;
+    protected ComponentChannel switchChannel;
+    protected ComponentChannel brightnessChannel;
     private final @Nullable ChannelStateUpdateListener channelStateUpdateListener;
 
-    public ComponentLight(CFactory.ComponentConfiguration builder) {
+    public Light(ComponentFactory.ComponentConfiguration builder) {
         super(builder, ChannelConfiguration.class);
         this.channelStateUpdateListener = builder.getUpdateListener();
         ColorValue value = new ColorValue(ColorMode.RGB, channelConfiguration.payload_on,
                 channelConfiguration.payload_off, 100);
 
         // Create three MQTT subscriptions and use this class object as update listener
-        switchChannel = buildChannel(switchChannelID, value, channelConfiguration.name, this)
+        switchChannel = buildChannel(switchChannelID, value, channelConfiguration.getName(), this)
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.state_value_template,
-                        channelConfiguration.value_template)
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain).build(false);
+                        channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
+                .build(false);
 
-        colorChannel = buildChannel(colorChannelID, value, channelConfiguration.name, this)
+        colorChannel = buildChannel(colorChannelID, value, channelConfiguration.getName(), this)
                 .stateTopic(channelConfiguration.rgb_state_topic, channelConfiguration.rgb_value_template)
-                .commandTopic(channelConfiguration.rgb_command_topic, channelConfiguration.retain).build(false);
+                .commandTopic(channelConfiguration.rgb_command_topic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
+                .build(false);
 
-        brightnessChannel = buildChannel(brightnessChannelID, value, channelConfiguration.name, this)
+        brightnessChannel = buildChannel(brightnessChannelID, value, channelConfiguration.getName(), this)
                 .stateTopic(channelConfiguration.brightness_state_topic, channelConfiguration.brightness_value_template)
-                .commandTopic(channelConfiguration.brightness_command_topic, channelConfiguration.retain).build(false);
+                .commandTopic(channelConfiguration.brightness_command_topic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
+                .build(false);
 
         channels.put(colorChannelID, colorChannel);
     }
@@ -141,6 +148,7 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
      */
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
+        @Nullable
         ChannelStateUpdateListener listener = channelStateUpdateListener;
         if (listener != null) {
             listener.updateChannelState(colorChannel.getChannelUID(), value);
@@ -152,6 +160,7 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
      */
     @Override
     public void postChannelCommand(ChannelUID channelUID, Command value) {
+        @Nullable
         ChannelStateUpdateListener listener = channelStateUpdateListener;
         if (listener != null) {
             listener.postChannelCommand(colorChannel.getChannelUID(), value);
@@ -163,6 +172,7 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
      */
     @Override
     public void triggerChannel(ChannelUID channelUID, String eventPayload) {
+        @Nullable
         ChannelStateUpdateListener listener = channelStateUpdateListener;
         if (listener != null) {
             listener.triggerChannel(colorChannel.getChannelUID(), eventPayload);

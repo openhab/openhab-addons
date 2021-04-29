@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,7 +24,10 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mqtt.homeassistant.internal.BaseChannelConfiguration.Connection;
+import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.config.Connection;
+import org.openhab.binding.mqtt.homeassistant.internal.config.Device;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,33 +60,33 @@ public class HAConfigurationTests {
     public void testAbbreviations() {
         String json = readTestJson("configA.json");
 
-        BaseChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson);
+        AbstractChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson);
 
-        assertThat(config.name, is("A"));
-        assertThat(config.icon, is("2"));
-        assertThat(config.qos, is(1));
-        assertThat(config.retain, is(true));
-        assertThat(config.value_template, is("B"));
-        assertThat(config.unique_id, is("C"));
-        assertThat(config.availability_topic, is("D/E"));
-        assertThat(config.payload_available, is("F"));
-        assertThat(config.payload_not_available, is("G"));
+        assertThat(config.getName(), is("A"));
+        assertThat(config.getIcon(), is("2"));
+        assertThat(config.getQos(), is(1));
+        assertThat(config.isRetain(), is(true));
+        assertThat(config.getValueTemplate(), is("B"));
+        assertThat(config.getUniqueId(), is("C"));
+        assertThat(config.getAvailabilityTopic(), is("D/E"));
+        assertThat(config.getPayloadAvailable(), is("F"));
+        assertThat(config.getPayloadNotAvailable(), is("G"));
 
-        assertThat(config.device, is(notNullValue()));
+        assertThat(config.getDevice(), is(notNullValue()));
 
-        BaseChannelConfiguration.Device device = config.device;
+        Device device = config.getDevice();
         if (device != null) {
-            assertThat(device.identifiers, contains("H"));
-            assertThat(device.connections, is(notNullValue()));
-            List<@NonNull Connection> connections = device.connections;
+            assertThat(device.getIdentifiers(), contains("H"));
+            assertThat(device.getConnections(), is(notNullValue()));
+            List<@NonNull Connection> connections = device.getConnections();
             if (connections != null) {
-                assertThat(connections.get(0).type, is("I1"));
-                assertThat(connections.get(0).identifier, is("I2"));
+                assertThat(connections.get(0).getType(), is("I1"));
+                assertThat(connections.get(0).getIdentifier(), is("I2"));
             }
-            assertThat(device.name, is("J"));
-            assertThat(device.model, is("K"));
-            assertThat(device.sw_version, is("L"));
-            assertThat(device.manufacturer, is("M"));
+            assertThat(device.getName(), is("J"));
+            assertThat(device.getModel(), is("K"));
+            assertThat(device.getSw_version(), is("L"));
+            assertThat(device.getManufacturer(), is("M"));
         }
     }
 
@@ -91,17 +94,17 @@ public class HAConfigurationTests {
     public void testTildeSubstritution() {
         String json = readTestJson("configB.json");
 
-        ComponentSwitch.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
-                ComponentSwitch.ChannelConfiguration.class);
+        Switch.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
+                Switch.ChannelConfiguration.class);
 
-        assertThat(config.availability_topic, is("D/E"));
+        assertThat(config.getAvailabilityTopic(), is("D/E"));
         assertThat(config.state_topic, is("O/D/"));
         assertThat(config.command_topic, is("P~Q"));
-        assertThat(config.device, is(notNullValue()));
+        assertThat(config.getDevice(), is(notNullValue()));
 
-        BaseChannelConfiguration.Device device = config.device;
+        Device device = config.getDevice();
         if (device != null) {
-            assertThat(device.identifiers, contains("H"));
+            assertThat(device.getIdentifiers(), contains("H"));
         }
     }
 
@@ -109,22 +112,22 @@ public class HAConfigurationTests {
     public void testSampleFanConfig() {
         String json = readTestJson("configFan.json");
 
-        ComponentFan.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
-                ComponentFan.ChannelConfiguration.class);
-        assertThat(config.name, is("Bedroom Fan"));
+        Fan.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
+                Fan.ChannelConfiguration.class);
+        assertThat(config.getName(), is("Bedroom Fan"));
     }
 
     @Test
     public void testDeviceListConfig() {
         String json = readTestJson("configDeviceList.json");
 
-        ComponentFan.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
-                ComponentFan.ChannelConfiguration.class);
-        assertThat(config.device, is(notNullValue()));
+        Fan.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
+                Fan.ChannelConfiguration.class);
+        assertThat(config.getDevice(), is(notNullValue()));
 
-        BaseChannelConfiguration.Device device = config.device;
+        Device device = config.getDevice();
         if (device != null) {
-            assertThat(device.identifiers, is(Arrays.asList("A", "B", "C")));
+            assertThat(device.getIdentifiers(), is(Arrays.asList("A", "B", "C")));
         }
     }
 
@@ -132,28 +135,28 @@ public class HAConfigurationTests {
     public void testDeviceSingleStringConfig() {
         String json = readTestJson("configDeviceSingleString.json");
 
-        ComponentFan.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
-                ComponentFan.ChannelConfiguration.class);
-        assertThat(config.device, is(notNullValue()));
+        Fan.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
+                Fan.ChannelConfiguration.class);
+        assertThat(config.getDevice(), is(notNullValue()));
 
-        BaseChannelConfiguration.Device device = config.device;
+        Device device = config.getDevice();
         if (device != null) {
-            assertThat(device.identifiers, is(Arrays.asList("A")));
+            assertThat(device.getIdentifiers(), is(Arrays.asList("A")));
         }
     }
 
     @Test
     public void testTS0601ClimateConfig() {
         String json = readTestJson("configTS0601ClimateThermostat.json");
-        ComponentClimate.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
-                ComponentClimate.ChannelConfiguration.class);
-        assertThat(config.device, is(notNullValue()));
-        assertThat(config.device.identifiers, is(notNullValue()));
-        assertThat(config.device.identifiers.get(0), is("zigbee2mqtt_0x847127fffe11dd6a"));
-        assertThat(config.device.manufacturer, is("TuYa"));
-        assertThat(config.device.model, is("Radiator valve with thermostat (TS0601_thermostat)"));
-        assertThat(config.device.name, is("th1"));
-        assertThat(config.device.sw_version, is("Zigbee2MQTT 1.18.2"));
+        Climate.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
+                Climate.ChannelConfiguration.class);
+        assertThat(config.getDevice(), is(notNullValue()));
+        assertThat(config.getDevice().getIdentifiers(), is(notNullValue()));
+        assertThat(config.getDevice().getIdentifiers().get(0), is("zigbee2mqtt_0x847127fffe11dd6a"));
+        assertThat(config.getDevice().getManufacturer(), is("TuYa"));
+        assertThat(config.getDevice().getModel(), is("Radiator valve with thermostat (TS0601_thermostat)"));
+        assertThat(config.getDevice().getName(), is("th1"));
+        assertThat(config.getDevice().getSw_version(), is("Zigbee2MQTT 1.18.2"));
 
         assertThat(config.action_template, is(
                 "{% set values = {'idle':'off','heat':'heating','cool':'cooling','fan only':'fan'} %}{{ values[value_json.running_state] }}"));
@@ -174,13 +177,13 @@ public class HAConfigurationTests {
         assertThat(config.mode_state_template, is("{{ value_json.system_mode }}"));
         assertThat(config.mode_state_topic, is("zigbee2mqtt/th1"));
         assertThat(config.modes, is(List.of("heat", "auto", "off")));
-        assertThat(config.name, is("th1"));
+        assertThat(config.getName(), is("th1"));
         assertThat(config.temp_step, is(0.5f));
         assertThat(config.temperature_command_topic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
         assertThat(config.temperature_state_template, is("{{ value_json.current_heating_setpoint }}"));
         assertThat(config.temperature_state_topic, is("zigbee2mqtt/th1"));
         assertThat(config.temperature_unit, is("C"));
-        assertThat(config.unique_id, is("0x847127fffe11dd6a_climate_zigbee2mqtt"));
+        assertThat(config.getUniqueId(), is("0x847127fffe11dd6a_climate_zigbee2mqtt"));
 
         assertThat(config.initial, is(21));
         assertThat(config.send_if_off, is(true));
@@ -189,8 +192,8 @@ public class HAConfigurationTests {
     @Test
     public void testClimateConfig() {
         String json = readTestJson("configClimate.json");
-        ComponentClimate.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
-                ComponentClimate.ChannelConfiguration.class);
+        Climate.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
+                Climate.ChannelConfiguration.class);
         assertThat(config.action_template, is("a"));
         assertThat(config.action_topic, is("b"));
         assertThat(config.aux_command_topic, is("c"));
