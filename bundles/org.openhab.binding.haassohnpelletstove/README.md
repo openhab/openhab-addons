@@ -27,10 +27,6 @@ The following channels are yet supported:
 | Channel | Type  | Access| Description|
 |---------|-------|-------|------------|
 | power| Switch | read/write|Turn the stove on/off|
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 2217548ad (Fixed latest code reviews and changed types. Fixed Typos and information in README.md)
 |channelIsTemp|Number:Temperature|read|Receives the actual temperature of the stove|
 |channelSpTemp|Number:Temperature|read/write|Receives and sets the target temperature of the stove|
 |channelMode|String|read|Receives the actual mode the stove is in like heating, cooling, error, ....|
@@ -40,20 +36,6 @@ The following channels are yet supported:
 |channelCleaningIn|String|read|States the next cleaning window in hours:minutes as string|
 |channelConsumption|Number:Mass|read|Total consumption of the stove|
 |channelOnTime|Number|read|Operation hours of the stove|
-<<<<<<< HEAD
-=======
-|channelIsTemp|Number:Temperature|read|Receivestheactualtemperatureofthestove|
-|channelSpTemp|Number:Temperature|read/write|Receivesandsetsthetargettemperatureofthestove|
-|channelMode|String|read|Receivestheactualmodethestoveisinlikeheating,cooling,error,....|
-|channelEcoMode|Switch|read/write|Turntheecomodeofthestoveon/off|
-|channelIngitions|String|read|Amountofignition'softhestove|
-|channelMaintenanceIn|String|read|Statesthenextmaintenanceinkg|
-|channelCleaningIn|String|read|Statesthenextcleaningwindowinhours|
-|channelConsumption|String|read|Totalconsumptionofthestove|
-|channelOnTime|String|read|Operationhoursofthestove|
->>>>>>> 7502035b5 (Fixed bugs due to naming refactoring. Fixed code review comments.)
-=======
->>>>>>> 2217548ad (Fixed latest code reviews and changed types. Fixed Typos and information in README.md)
 
 ## Full Example
 
@@ -64,28 +46,14 @@ Number:Temperature isTemp { channel="oven:channelIsTemp" }
 Number:Temperature spTemp { channel="oven:channelSpTemp" }
 String mode { channel="oven:channelMode" }
 Switch power { channel="oven:power" }
-<<<<<<< HEAD
 ```
 
-## Google Assistant configuation
+## Google Assistant configuration
 
 See also: https://www.openhab.org/docs/ecosystem/google-assistant/
 
 googleassistantdemo.items
-```
-Group g_FeuerThermostat "FeuerThermostat" {ga="Thermostat" }
-Number StatusFeuer "Status Feuer" (g_FeuerThermostat) { ga="thermostatMode" }
-Number ZieltemperaturFeuer "ZieltemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemperatureSetpoint"}
-Number TemperaturFeuer "TemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemperatureAmbient"}
-=======
->>>>>>> 2217548ad (Fixed latest code reviews and changed types. Fixed Typos and information in README.md)
-```
 
-## Google Assistant configuation
-
-See also: https://www.openhab.org/docs/ecosystem/google-assistant/
-
-googleassistantdemo.items
 ```
 Group g_FeuerThermostat "FeuerThermostat" {ga="Thermostat" }
 Number StatusFeuer "Status Feuer" (g_FeuerThermostat) { ga="thermostatMode" }
@@ -95,7 +63,7 @@ Number TemperaturFeuer "TemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemp
 
 ## Tested Hardware
 
-The binding was succesfully tested with the following ovens:
+The binding was successfully tested with the following ovens:
 
 - HSP 7 DIANA
 - HSP6 434.08
