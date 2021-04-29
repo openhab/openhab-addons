@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.State;
-import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.dto.ColorTemperature;
 import org.openhab.core.library.types.DecimalType;
@@ -48,7 +47,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -325,13 +323,13 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private @Nullable Integer getCurrentColorTemp(@Nullable State groupState) {
         Integer colorTemp = lastSentColorTemp;
         if (colorTemp == null && groupState != null) {
-            colorTemp = groupState.getColorTemperature();
+            return groupState.getColorTemperature();
         }
         return colorTemp;
     }
 
     private @Nullable StateUpdate convertBrightnessChangeToStateUpdate(IncreaseDecreaseType command, FullGroup group) {
-        Integer currentBrightness = getCurrentBrightness(group);
+        Integer currentBrightness = getCurrentBrightness(group.getState());
         if (currentBrightness == null) {
             return null;
         }
@@ -339,15 +337,11 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         return createBrightnessStateUpdate(currentBrightness, newBrightness);
     }
 
-    private @Nullable Integer getCurrentBrightness(FullGroup group) {
-        if (lastSentBrightness != null) {
-            return lastSentBrightness;
+    private @Nullable Integer getCurrentBrightness(@Nullable State groupState) {
+        if (lastSentBrightness == null && groupState != null) {
+            return groupState.isOn() ? groupState.getBrightness() : 0;
         }
-        State currentState = group.getState();
-        if (currentState == null) {
-            return null;
-        }
-        return currentState.isOn() ? currentState.getBrightness() : 0;
+        return lastSentBrightness;
     }
 
     private StateUpdate createBrightnessStateUpdate(int currentBrightness, int newBrightness) {
@@ -406,23 +400,15 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         }
         updateState(CHANNEL_COLOR, hsbType);
 
-        ColorMode colorMode = state.getColorMode();
-        if (ColorMode.CT.equals(colorMode)) {
-            updateState(CHANNEL_COLORTEMPERATURE,
-                    LightStateConverter.toColorTemperaturePercentType(state, colorTemperatureCapabilties));
-            updateState(CHANNEL_COLORTEMPERATURE_ABS, LightStateConverter.toColorTemperature(state));
-        } else {
-            updateState(CHANNEL_COLORTEMPERATURE, UnDefType.UNDEF);
-            updateState(CHANNEL_COLORTEMPERATURE_ABS, UnDefType.UNDEF);
-        }
-
-        PercentType brightnessPercentType = LightStateConverter.toBrightnessPercentType(state);
-        if (!state.isOn()) {
-            brightnessPercentType = PercentType.ZERO;
-        }
+        PercentType brightnessPercentType = state.isOn() ? LightStateConverter.toBrightnessPercentType(state)
+                : PercentType.ZERO;
         updateState(CHANNEL_BRIGHTNESS, brightnessPercentType);
 
         updateState(CHANNEL_SWITCH, OnOffType.from(state.isOn()));
+
+        updateState(CHANNEL_COLORTEMPERATURE,
+                LightStateConverter.toColorTemperaturePercentType(state, colorTemperatureCapabilties));
+        updateState(CHANNEL_COLORTEMPERATURE_ABS, LightStateConverter.toColorTemperature(state));
 
         return true;
     }

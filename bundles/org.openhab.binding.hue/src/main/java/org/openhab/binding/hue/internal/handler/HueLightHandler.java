@@ -394,21 +394,19 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     }
 
     private @Nullable StateUpdate convertBrightnessChangeToStateUpdate(IncreaseDecreaseType command, FullLight light) {
-        StateUpdate stateUpdate = null;
         Integer currentBrightness = getCurrentBrightness(light.getState());
-        if (currentBrightness != null) {
-            int newBrightness = LightStateConverter.toAdjustedBrightness(command, currentBrightness);
-            stateUpdate = createBrightnessStateUpdate(currentBrightness, newBrightness);
+        if (currentBrightness == null) {
+            return null;
         }
-        return stateUpdate;
+        int newBrightness = LightStateConverter.toAdjustedBrightness(command, currentBrightness);
+        return createBrightnessStateUpdate(currentBrightness, newBrightness);
     }
 
     private @Nullable Integer getCurrentBrightness(@Nullable State lightState) {
-        Integer brightness = lastSentBrightness;
-        if (brightness == null && lightState != null) {
+        if (lastSentBrightness == null && lightState != null) {
             return lightState.isOn() ? lightState.getBrightness() : 0;
         }
-        return brightness;
+        return lastSentBrightness;
     }
 
     private StateUpdate createBrightnessStateUpdate(int currentBrightness, int newBrightness) {
