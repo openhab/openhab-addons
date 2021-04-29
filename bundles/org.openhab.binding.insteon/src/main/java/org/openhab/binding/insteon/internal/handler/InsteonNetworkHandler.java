@@ -78,7 +78,6 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Starting Insteon bridge");
         config = getConfigAs(InsteonNetworkConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             InsteonNetworkConfiguration config = this.config;
