@@ -1,0 +1,46 @@
+{
+	"software_version": "NRZ-2020-133",
+	"age": "112",
+	"sensordatavalues": [
+		{
+			"value_type": "SDS_P1",
+			"value": "10.52"
+		},
+		{
+			"value_type": "SDS_P2",
+			"value": "4.32"
+		},
+		{
+			"value_type": "BME280_temperature",
+			"value": "17.59"
+		},
+		{
+			"value_type": "BME280_pressure",
+			"value": "98680.28"
+		},
+		{
+			"value_type": "BME280_humidity",
+			"value": "57.78"
+		},
+		{
+			"value_type": "samples",
+			"value": "5070500"
+		},
+		{
+			"value_type": "min_micro",
+			"value": "28"
+		},
+		{
+			"value_type": "max_micro",
+			"value": "20091"
+		},
+		{
+			"value_type": "interval",
+			"value": "145000"
+		},
+		{
+			"value_type": "signal",
+			"value": "-81"
+		}
+	]
+}

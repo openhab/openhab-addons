@@ -168,4 +168,27 @@ public class PMHandlerTest {
         UpdateStatus result = pmHandler.updateChannels(null);
         assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
     }
+
+    @Test
+    public void testInternalSensor() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("sensorid", 12345);
+        t.setConfiguration(properties);
+
+        PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.initialize();
+        String pmJson = FileReader.readFileInString("src/test/resources/internal-data.json");
+        if (pmJson != null) {
+            UpdateStatus result = pmHandler.updateChannels(pmJson);
+            assertEquals(UpdateStatus.OK, result, "Valid update");
+            assertEquals(QuantityType.valueOf(2.9, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM25Cache(), "PM25");
+            assertEquals(QuantityType.valueOf(5.2, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM100Cache(), "PM100");
+        } else {
+            assertTrue(false);
+        }
+    }
+
 }

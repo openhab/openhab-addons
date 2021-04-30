@@ -23,4 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class LuftdatenInfoConfiguration {
 
     public int sensorid = -1;
+
+    public String ipAddress = "";
 }

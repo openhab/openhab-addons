@@ -14,9 +14,14 @@
 		</channels>
 
 		<config-description>
-			<parameter name="sensorid" type="integer" required="true">
-				<label>Sensor ID</label>
-				<description>Sensor ID</description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Internal IP Address</label>
+				<description>IP address of the sensor</description>
+			</parameter>
+			<parameter name="sensorid" type="integer">
+				<label>External Sensor ID</label>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
 			</parameter>
 		</config-description>
 	</thing-type>
