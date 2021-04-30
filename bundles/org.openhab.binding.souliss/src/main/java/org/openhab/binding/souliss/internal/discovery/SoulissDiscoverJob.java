@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.souliss.handler.SoulissGatewayHandler;
+import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
