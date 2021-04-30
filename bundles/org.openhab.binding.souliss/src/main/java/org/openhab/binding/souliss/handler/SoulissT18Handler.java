@@ -43,6 +43,7 @@ public class SoulissT18Handler extends SoulissGenericHandler {
     Configuration gwConfigurationMap;
     byte xSleepTime = 0;
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);

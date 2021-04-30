@@ -108,6 +108,7 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);

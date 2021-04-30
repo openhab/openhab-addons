@@ -32,6 +32,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,8 +158,9 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     public String getGatewayIP() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            if (bridge.getHandler() != null) {
-                return ((SoulissGatewayHandler) bridge.getHandler()).ipAddressOnLAN;
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler != null) {
+                return ((SoulissGatewayHandler) bridgeHandler).ipAddressOnLAN;
             }
         }
         return null;
@@ -170,15 +172,23 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     public byte getGatewayUserIndex() {
-        if (getBridge() != null) {
-            return ((SoulissGatewayHandler) getBridge().getHandler()).userIndex;
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
+            if (soulissgwHandler != null) {
+                return soulissgwHandler.userIndex;
+            }
         }
         return 0;
     }
 
     public byte getGatewayNodeIndex() {
-        if (getBridge() != null) {
-            return ((SoulissGatewayHandler) getBridge().getHandler()).nodeIndex;
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
+            if (soulissgwHandler != null) {
+                return soulissgwHandler.nodeIndex;
+            }
         }
         return 0;
     }

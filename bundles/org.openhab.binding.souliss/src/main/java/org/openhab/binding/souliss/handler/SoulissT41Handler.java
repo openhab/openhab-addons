@@ -70,6 +70,7 @@ public class SoulissT41Handler extends SoulissGenericHandler {
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);

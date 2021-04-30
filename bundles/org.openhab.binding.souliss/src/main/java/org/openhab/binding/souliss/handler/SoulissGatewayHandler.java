@@ -33,6 +33,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,9 +298,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void pingSent() {
         if (++countPingKo > 3) {
-            if (bridge.getHandler() != null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Gateway "
-                        + bridge.getHandler().getThing().getUID() + " do not respond to " + countPingKo + " ping");
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler != null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        "Gateway " + bridgeHandler.getThing().getUID() + " do not respond to " + countPingKo + " ping");
             }
         }
     }

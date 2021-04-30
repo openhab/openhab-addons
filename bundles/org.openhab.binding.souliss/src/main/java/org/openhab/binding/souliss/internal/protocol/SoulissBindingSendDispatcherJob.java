@@ -41,7 +41,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
 
     @Nullable
-    private SoulissGatewayHandler gw;
+    private SoulissGatewayHandler gwHandler;
     static boolean bPopSuspend = false;
     protected static ArrayList<SoulissBindingSocketAndPacketStruct> packetsList = new ArrayList<>();
     private long startTime = System.currentTimeMillis();
@@ -50,8 +50,10 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     static int sendMinDelay = 0;
 
     public SoulissBindingSendDispatcherJob(Bridge bridge) {
-        gw = (SoulissGatewayHandler) bridge.getHandler();
-        ipAddressOnLAN = gw.ipAddressOnLAN;
+        this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
+        if (this.gwHandler != null) {
+            SoulissBindingSendDispatcherJob.ipAddressOnLAN = this.gwHandler.ipAddressOnLAN;
+        }
     }
 
     /**
@@ -199,6 +201,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     static byte bActualItemState;
     static String sExpected = "";
 
+    @SuppressWarnings("null")
     public void safeSendCheck() {
         // short sVal = getByteAtSlot(macacoFrame, slot);
         // scansione lista paccetti inviati
@@ -278,8 +281,8 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     // è scaduto allora pongo il flag SENT a false
                     long time = System.currentTimeMillis();
 
-                    if (this.gw.sendTimeoutToRequeue < time - packetsList.get(i).getTime()) {
-                        if (this.gw.sendTimeoutToRemovePacket < time - packetsList.get(i).getTime()) {
+                    if (this.gwHandler.sendTimeoutToRequeue < time - packetsList.get(i).getTime()) {
+                        if (this.gwHandler.sendTimeoutToRemovePacket < time - packetsList.get(i).getTime()) {
                             logger.info("Packet Execution timeout - Removed");
                             packetsList.remove(i);
                         } else {
@@ -354,6 +357,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     /**
      * Pop SocketAndPacket from ArrayList PacketList
      */
+    @SuppressWarnings("null")
     @Nullable
     private synchronized SoulissBindingSocketAndPacketStruct pop() {
         synchronized (this) {
@@ -368,7 +372,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                 if (packetsList.size() <= 1) {
                     iDelay = sendMinDelay;
                 } else {
-                    iDelay = this.gw.sendRefreshInterval;
+                    iDelay = this.gwHandler.sendRefreshInterval;
                 }
 
                 int iPacket = 0;
@@ -382,7 +386,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     }
                 }
 
-                boolean tFlag = (t - tPrec) >= this.gw.sendRefreshInterval;
+                boolean tFlag = (t - tPrec) >= this.gwHandler.sendRefreshInterval;
 
                 // se siamo arrivati alla fine della lista e quindi tutti i
                 // pacchetti sono già  stati inviati allora pongo anche il tFlag
