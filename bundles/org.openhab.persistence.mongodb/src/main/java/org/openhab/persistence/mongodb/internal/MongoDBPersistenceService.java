@@ -262,7 +262,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             logger.debug("Connect MongoDB ... done");
             return true;
         } catch (Exception e) {
-            logger.error("Failed to connect to database {}", this.url);
+            logger.error("Failed to connect to database {}: {}", this.url, e.getMessage(), e);
             disconnectFromDatabase();
             return false;
         }
@@ -292,7 +292,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
             return mongoCollection;
         } catch (Exception e) {
-            logger.error("Failed to connect to collection {}", collectionName);
+            logger.error("Failed to connect to collection {}: {}", collectionName, e.getMessage(), e);
             return null;
         }
     }
