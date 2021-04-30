@@ -264,9 +264,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
             // The mongo always succeeds in creating the connection.
             // We have to actually force it to test the connection to try to connect to the server.
-            if (!isConnected()) {
-                throw new RuntimeException("Failed to connect");
-            }
+            cl.getAddress();
 
             logger.debug("Connect MongoDB ... done");
             return true;
