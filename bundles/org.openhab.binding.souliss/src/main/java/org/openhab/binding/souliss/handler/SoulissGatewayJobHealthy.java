@@ -17,8 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Tonino Fazio - Initial contribution
@@ -28,23 +26,25 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissGatewayJobHealthy extends Thread {
 
-    private final Logger logger = LoggerFactory.getLogger(SoulissGatewayJobHealthy.class);
-    private String ipAddressOnLAN;
-    private byte userIndex;
-    private byte nodeIndex;
-    private int healthRefreshInterval;
+    private String ipAddressOnLAN = "";
+    private byte userIndex = 0;
+    private byte nodeIndex = 0;
+    private int healthRefreshInterval = 0;
 
     private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
 
     @Nullable
-    private SoulissGatewayHandler gw;
+    private SoulissGatewayHandler gwHandler;
 
+    @SuppressWarnings("null")
     public SoulissGatewayJobHealthy(Bridge bridge) {
-        gw = (SoulissGatewayHandler) bridge.getHandler();
-        ipAddressOnLAN = gw.ipAddressOnLAN;
-        userIndex = gw.userIndex;
-        nodeIndex = gw.nodeIndex;
-        sethealthRefreshInterval(gw.healthRefreshInterval);
+        this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
+        if (gwHandler != null) {
+            this.ipAddressOnLAN = gwHandler.ipAddressOnLAN;
+            this.userIndex = gwHandler.userIndex;
+            this.nodeIndex = gwHandler.nodeIndex;
+            this.sethealthRefreshInterval(gwHandler.healthRefreshInterval);
+        }
     }
 
     @Override
@@ -52,11 +52,12 @@ public class SoulissGatewayJobHealthy extends Thread {
         sendHealthyRequest();
     }
 
+    @SuppressWarnings("null")
     private void sendHealthyRequest() {
         // sending healthy packet
-        if (ipAddressOnLAN.length() > 0) {
+        if (ipAddressOnLAN.length() > 0 && this.gwHandler != null) {
             soulissCommands.sendHealthyRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
-                    nodeIndex, userIndex, gw.getNodes());
+                    nodeIndex, userIndex, this.gwHandler.getNodes());
             // healthy packet sent
         }
     }

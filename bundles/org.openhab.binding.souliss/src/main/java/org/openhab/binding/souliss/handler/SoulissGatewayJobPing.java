@@ -18,8 +18,6 @@ import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParame
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Tonino Fazio - Initial contribution
@@ -29,7 +27,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissGatewayJobPing implements Runnable {
 
-    private final Logger logger = LoggerFactory.getLogger(SoulissGatewayJobPing.class);
     private String ipAddressOnLAN = "";
     private byte userIndex;
     private byte nodeIndex;
@@ -40,6 +37,7 @@ public class SoulissGatewayJobPing implements Runnable {
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
+    @SuppressWarnings("null")
     public SoulissGatewayJobPing(Bridge bridge) {
         BridgeHandler bridgeHandler = bridge.getHandler();
         if (bridgeHandler != null) {
@@ -54,7 +52,9 @@ public class SoulissGatewayJobPing implements Runnable {
     @Override
     public void run() {
         sendPing();
-        gwHandler.pingSent();
+        if (gwHandler != null) {
+            gwHandler.pingSent();
+        }
     }
 
     private void sendPing() {
