@@ -48,16 +48,18 @@ public class SoulissT12Handler extends SoulissGenericHandler {
         super(thing);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
 
-        gwConfigurationMap = thingGeneric.getConfiguration();
-        if (gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
-            xSleepTime = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
+        this.gwConfigurationMap = thingGeneric.getConfiguration();
+        if (this.gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
+            xSleepTime = ((BigDecimal) this.gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
         }
-        if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
-            bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
+        if (this.gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
+            bSecureSend = ((Boolean) this.gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND))
+                    .booleanValue();
         }
     }
 

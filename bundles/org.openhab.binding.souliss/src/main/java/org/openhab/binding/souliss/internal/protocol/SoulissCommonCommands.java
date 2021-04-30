@@ -264,6 +264,7 @@ public class SoulissCommonCommands {
     /*
      * Build VNet Frame
      */
+    @SuppressWarnings("null")
     private final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> macacoFrame2, @Nullable String soulissNodeIPAddress,
             byte iUserIndex, byte iNodeIndex) {
         ArrayList<Byte> frame = new ArrayList<>();
@@ -334,6 +335,7 @@ public class SoulissCommonCommands {
     /**
      * Build PING Frame
      */
+    @SuppressWarnings("null")
     public final void sendPing(@Nullable DatagramSocket datagramSocket, @Nullable String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, byte putIn1, byte putIn2) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
@@ -353,6 +355,7 @@ public class SoulissCommonCommands {
     /**
      * Build BROADCAST PING Frame
      */
+    @SuppressWarnings("null")
     public final void sendBroadcastGatewayDiscover(@Nullable DatagramSocket datagramSocket) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ);
@@ -370,6 +373,7 @@ public class SoulissCommonCommands {
     /**
      * Build SUBSCRIPTION Frame
      */
+    @SuppressWarnings("null")
     public final void sendSUBSCRIPTIONframe(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
@@ -389,6 +393,7 @@ public class SoulissCommonCommands {
     /**
      * Build HEALTHY REQUEST Frame
      */
+    @SuppressWarnings("null")
     public final void sendHealthyRequestFrame(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
@@ -407,6 +412,7 @@ public class SoulissCommonCommands {
     /**
      * Build TYPICAL REQUEST Frame
      */
+    @SuppressWarnings("null")
     public final void sendTypicalRequestFrame(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int nodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
