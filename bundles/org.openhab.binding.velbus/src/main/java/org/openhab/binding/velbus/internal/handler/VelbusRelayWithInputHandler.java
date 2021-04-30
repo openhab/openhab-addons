@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.THING_TYPE_VMB1RYS;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 import org.openhab.binding.velbus.internal.packets.VelbusButtonPacket;
+import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -88,8 +91,42 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
         return "CH6".equals(channelUID.toString().substring(channelUID.toString().length() - 3));
     }
 
+    private boolean isTriggerChannel(byte address, byte channel) {
+        VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address, channel);
+
+        if (getModuleAddress().getChannelIndex(velbusChannelIdentifier) == 6) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     @Override
     public void onPacketReceived(byte[] packet) {
         super.onPacketReceived(packet);
+
+        if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
+            byte command = packet[4];
+
+            if (command == COMMAND_PUSH_BUTTON_STATUS && packet.length >= 6) {
+                byte address = packet[2];
+
+                byte channelJustPressed = packet[5];
+                if (isTriggerChannel(address, channelJustPressed)) {
+                    triggerChannel("CH6t", CommonTriggerEvents.PRESSED);
+                }
+
+                byte channelJustReleased = packet[6];
+                if (isTriggerChannel(address, channelJustReleased)) {
+                    triggerChannel("CH6t", CommonTriggerEvents.RELEASED);
+                }
+
+                byte channelLongPressed = packet[7];
+                if (isTriggerChannel(address, channelLongPressed)) {
+                    triggerChannel("CH6t", CommonTriggerEvents.LONG_PRESSED);
+                }
+            }
+        }
     }
 }

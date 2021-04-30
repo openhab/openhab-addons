@@ -144,6 +144,7 @@
             <channel id="CH4" typeId="switch"/>
             <channel id="CH5" typeId="switch"/>
             <channel id="CH6" typeId="button-channel"/>
+            <channel id="CH6t" typeId="trigger-channel"/>
         </channels>
 
 		<config-description-ref uri="thing-type:velbus:6channelDevice"/>
