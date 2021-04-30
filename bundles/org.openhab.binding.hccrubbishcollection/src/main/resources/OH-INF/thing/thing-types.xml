@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hccrubbishcollection"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="collection">
+		<label>HCC NZ Rubbish Collection</label>
+		<description>Rubbish collection days for Hamilton City Council (NZ).</description>
+
+		<channels>
+			<channel id="day" typeId="day"/>
+			<channel id="recycling" typeId="bin">
+				<label>Recycling Bin Collection Date</label>
+				<description>The next collection date of the recycling (yellow bin and green bin).</description>
+			</channel>
+			<channel id="general" typeId="bin">
+				<label>General Bin Collection Date</label>
+				<description>The next collection date of the general rubbish (red bin).</description>
+			</channel>
+			<channel id="collection-event" typeId="collection-event"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The street address to get rubbish collection dates for.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="day">
+		<item-type>Number</item-type>
+		<label>Collection Day</label>
+		<description>The rubbish collection Day of the Week</description>
+		<state readOnly="true">
+			<options>
+				<option value="1">Monday</option>
+				<option value="2">Tuesday</option>
+				<option value="3">Wednesday</option>
+				<option value="4">Thursday</option>
+				<option value="5">Friday</option>
+				<option value="6">Saturday</option>
+				<option value="7">Sunday</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="bin">
+		<item-type>DateTime</item-type>
+		<label>Collection Date</label>
+		<state pattern="%1$tY-%1$tm-%1$td" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="collection-event">
+		<kind>trigger</kind>
+		<label>Collection Event</label>
+		<description>Event for the day when collection occurs.</description>
+		<event>
+			<options>
+				<option value="RECYCLING">RECYCLING</option>
+				<option value="GENERAL">GENERAL</option>
+			</options>
+		</event>
+		<config-description>
+			<parameter name="offset" type="integer" min="-2880" max="2880" unit="min">
+				<label>Offset</label>
+				<description>Moves the event forward or backward (in minutes).</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>
