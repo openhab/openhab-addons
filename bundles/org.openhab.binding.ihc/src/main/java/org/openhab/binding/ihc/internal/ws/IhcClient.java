@@ -16,7 +16,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -25,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSFile;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
@@ -325,10 +326,13 @@ public class IhcClient {
                 }
                 byte[] decodedBytes = Base64.getDecoder().decode(byteStream.toString());
                 logger.debug("File size after base64 encoding: {} bytes", decodedBytes.length);
-                try (GZIPInputStream gzis = new GZIPInputStream(new ByteArrayInputStream(decodedBytes))) {
-                    try (InputStreamReader in = new InputStreamReader(gzis, "ISO-8859-1")) {
-                        return IOUtils.toByteArray(in, "ISO-8859-1");
-                    }
+                try (GZIPInputStream gzis = new GZIPInputStream(new ByteArrayInputStream(decodedBytes));
+                        InputStreamReader reader = new InputStreamReader(gzis, StandardCharsets.ISO_8859_1);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        OutputStreamWriter writer = new OutputStreamWriter(baos)) {
+                    reader.transferTo(writer);
+                    writer.flush();
+                    return baos.toByteArray();
                 }
             }
         } catch (IOException | IllegalArgumentException e) {
