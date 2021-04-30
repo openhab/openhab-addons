@@ -272,7 +272,7 @@ The following channels are holding read only values:
 | flowRateHeatSource2 | Number:VolumetricFlowRate | x |  Flow Rate Heat Source |
 | channel255 | Number | x | Channel 255 |
 | channel256 | Number | x | Channel 256 |
-| powerActualValue2 | Number:Power | x |  Power Actual Value |
+| powerActualValue2 | Number:Power | x |  Power Actual Value 2 |
 | channel258 | Number | x | Channel 258 |
 | channel259 | Number | x | Channel 259 |
 | channel260 | Number | x | Channel 260 |

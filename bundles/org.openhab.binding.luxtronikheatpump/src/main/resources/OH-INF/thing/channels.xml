@@ -2099,7 +2099,7 @@
 
 	<channel-type id="powerActualValue2" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Power Actual Value</label>
+		<label>Power Actual Value 2</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
