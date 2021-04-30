@@ -211,9 +211,6 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         return value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void store(Item item) {
         store(item, null);
