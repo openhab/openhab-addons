@@ -13,6 +13,7 @@
 package org.openhab.io.neeo.internal.servletservices;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,6 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.io.neeo.NeeoService;
@@ -155,7 +155,8 @@ public class ThingDashboardService extends DefaultServletService {
 
                 NeeoUtil.write(resp, gson.toJson(ReturnStatus.SUCCESS));
             } else if (paths[0].equalsIgnoreCase("restoredevice")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 context.getDefinitions().remove(uid);
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
@@ -164,7 +165,8 @@ public class ThingDashboardService extends DefaultServletService {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
             } else if (paths[0].equalsIgnoreCase("refreshdevice")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Device no longer exists in openHAB!")));
@@ -172,12 +174,14 @@ public class ThingDashboardService extends DefaultServletService {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
             } else if (paths[0].equalsIgnoreCase("deletedevice")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final boolean deleted = context.getDefinitions().remove(uid);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(
                         deleted ? null : "Device " + uid + " was not found (possibly already deleted?)")));
             } else if (paths[0].equalsIgnoreCase("exportrules")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Device " + uid + " was not found")));
@@ -228,7 +232,7 @@ public class ThingDashboardService extends DefaultServletService {
 
         resp.setContentType("text/plain");
         resp.setHeader("Content-disposition", "attachment; filename=\"" + device.getName() + ".rules\"");
-        IOUtils.write(sb, resp.getOutputStream());
+        resp.getOutputStream().write(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
