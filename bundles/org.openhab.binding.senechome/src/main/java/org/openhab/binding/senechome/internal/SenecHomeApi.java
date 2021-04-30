@@ -27,11 +27,15 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.MalformedJsonException;
 
 /**
@@ -84,14 +88,17 @@ public class SenecHomeApi {
                 if (response.getContent() == null) {
                     logger.warn("response.getContent is null");
                 } else {
-                    logger.info("response.getContentAsString: {}", response.getContentAsString());
+                    if (!isJSONValid(response.getContentAsString())) {
+                        logger.warn("Response is NO valid JSON: {}", response.getContentAsString());
+                    }
                 }
                 return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
             } else {
                 logger.trace("Got unexpected response code {}", response.getStatus());
                 throw new IOException("Got unexpected response code " + response.getStatus());
             }
-        } catch (MalformedJsonException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (JsonSyntaxException | MalformedJsonException | InterruptedException | TimeoutException
+                | ExecutionException e) {
             logger.warn("Issue with getting SenecHomeResponse");
             logger.warn("location: {}", location);
             logger.warn("request: {}", request.toString());
@@ -105,5 +112,20 @@ public class SenecHomeApi {
             }
             throw e;
         }
+    }
+
+    public boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            // edited, to include @Arthur's comment
+            // e.g. in case JSONArray is valid as well...
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
     }
 }

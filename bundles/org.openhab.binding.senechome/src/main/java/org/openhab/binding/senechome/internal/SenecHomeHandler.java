@@ -51,6 +51,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link SenecHomeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -70,8 +72,6 @@ public class SenecHomeHandler extends BaseThingHandler {
     private final @Nullable SenecHomeApi senecHomeApi;
     private SenecHomeConfigurationDTO config = new SenecHomeConfigurationDTO();
     private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(5), this::refreshState);
-
-    private Integer errorCounter = 0;
 
     public SenecHomeHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -278,21 +278,16 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             updateGridPowerValues(getSenecValue(response.grid.currentGridValue));
 
-            errorCounter = 0;
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (JsonSyntaxException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
             if (response == null) {
                 logger.warn("Faulty response: is null");
             } else {
                 logger.warn("Faulty response: {}", response.toString());
             }
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
-            if (errorCounter < 3)
-                errorCounter++;
-            if (errorCounter > 2) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not connect to Senec web interface:" + e.getMessage());
-            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not connect to Senec web interface:" + e.getMessage());
         }
 
         return Boolean.TRUE;
