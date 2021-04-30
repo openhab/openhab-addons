@@ -71,9 +71,9 @@ As an alternative, it provides a things-file template.
 
 The account has the following parameters:
 
-| Name        | Type      | Description                                                                                                                                                | Notes |
-| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
-| locale      | mandatory | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`. |       |
+| Name        | Type      | Description                                                                                                                                                |
+| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| locale      | optional  | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`. |
 
 
 ### Appliance Configuration

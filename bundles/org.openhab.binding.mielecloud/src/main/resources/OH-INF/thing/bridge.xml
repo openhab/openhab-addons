@@ -18,7 +18,7 @@
 		</properties>
 
 		<config-description>
-			<parameter name="locale" type="text" required="true">
+			<parameter name="locale" type="text">
 				<label>@text/thing-type.config.mielecloud.account.locale.label</label>
 				<description>@text/thing-type.config.mielecloud.account.locale.description</description>
 			</parameter>
