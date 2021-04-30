@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.MalformedJsonException;
 
 /**
  * The {@link SenecHomeApi} class configures http client and
@@ -80,12 +81,17 @@ public class SenecHomeApi {
             response = request.method(HttpMethod.POST)
                     .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
             if (response.getStatus() == HttpStatus.OK_200) {
+                if (response.getContent() == null) {
+                    logger.warn("response.getContent is null");
+                } else {
+                    logger.info("response.getContentAsString: {}", response.getContentAsString());
+                }
                 return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
             } else {
                 logger.trace("Got unexpected response code {}", response.getStatus());
                 throw new IOException("Got unexpected response code " + response.getStatus());
             }
-        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (MalformedJsonException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Issue with getting SenecHomeResponse");
             logger.warn("location: {}", location);
             logger.warn("request: {}", request.toString());
