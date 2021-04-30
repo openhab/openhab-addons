@@ -73,7 +73,7 @@ public class HCCRubbishCollectionHandler extends BaseThingHandler {
      * Only RefreshType is supported as all channels are read only.
      * 
      * @param channelUID The channel UID.
-     * @param command    The command.
+     * @param command The command.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -159,7 +159,7 @@ public class HCCRubbishCollectionHandler extends BaseThingHandler {
      * Calculates some values for the Collection Event before setting up the
      * Collection trigger {@link #scheduleCollectionEvent}.
      * 
-     * @param generalDate   The General Rubbish Collection Date and Time.
+     * @param generalDate The General Rubbish Collection Date and Time.
      * @param recyclingDate The Recycling Collection Date and Time.
      */
     private void setupCollectionEvent(ZonedDateTime generalDate, ZonedDateTime recyclingDate) {
@@ -198,7 +198,7 @@ public class HCCRubbishCollectionHandler extends BaseThingHandler {
      * Sets up the collection event trigger.
      * 
      * @param dateTime The Date and time to trigger the Collection Event.
-     * @param event    The name of the Event to be triggered.
+     * @param event The name of the Event to be triggered.
      */
     private void scheduleCollectionEvent(ZonedDateTime dateTime, String event) {
         stopScheduleCollectionEvent(); // Stop the currently scheduled event

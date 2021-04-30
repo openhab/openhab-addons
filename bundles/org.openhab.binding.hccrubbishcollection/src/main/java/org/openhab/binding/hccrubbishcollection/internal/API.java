@@ -62,15 +62,14 @@ public class API {
      * Create a new API class.
      * 
      * @param httpClient The common http client provided from openHAB.
-     * @param address The address of the premises. 
+     * @param address The address of the premises.
      */
     public API(HttpClient httpClient, String address) {
         this.httpClient = httpClient;
         this.address = address;
     }
 
-    
-    /** 
+    /**
      * Connects to the web service and gets the data.
      * 
      * @return boolean Success.
@@ -85,8 +84,8 @@ public class API {
 
             if (response.getStatus() == HTTP_OK) {
                 String content = response.getContentAsString();
-                //Return response is encapsulated in square brackets, remove to create valid json.
-                String cleanedContent = content.trim().substring(1, content.length() - 1); 
+                // Return response is encapsulated in square brackets, remove to create valid json.
+                String cleanedContent = content.trim().substring(1, content.length() - 1);
                 logger.trace("Got cleaned content: {}", cleanedContent);
 
                 JsonObject jsonResponse = JsonParser.parseString(cleanedContent).getAsJsonObject();
@@ -96,7 +95,8 @@ public class API {
                 JsonElement generalElement = jsonResponse.get("RedBin");
                 JsonElement recyclingElement = jsonResponse.get("YellowBin");
 
-                //The elements are missing if the address is invalid or council does not service (due to address being a business)
+                // The elements are missing if the address is invalid or council does not service (due to address being
+                // a business)
                 if (generalElement == null || recyclingElement == null) {
                     logger.debug("RedBin or YellowBin object is missing. Invalid premises or address");
 
@@ -109,7 +109,7 @@ public class API {
                 LocalDateTime localGeneralDate = LocalDateTime.parse(generalElement.getAsString());
                 LocalDateTime localRecyclingDate = LocalDateTime.parse(recyclingElement.getAsString());
 
-                ZoneId zone = ZonedDateTime.now().getZone(); //Gets the local time zone.
+                ZoneId zone = ZonedDateTime.now().getZone(); // Gets the local time zone.
 
                 // Convert LocalDateTime objects to be compatible with openHAB
                 ZonedDateTime zonedGeneralDate = ZonedDateTime.of(localGeneralDate, zone);
@@ -117,7 +117,7 @@ public class API {
 
                 errorDetail = ThingStatusDetail.NONE; // Sets to no error since we have successfully parsed response.
 
-                //Set the local properties with values from API.
+                // Set the local properties with values from API.
                 recycling = zonedRecyclingDate;
                 general = zonedGeneralDate;
 
@@ -144,8 +144,7 @@ public class API {
         }
     }
 
-    
-    /** 
+    /**
      * Returns the last request status.
      * 
      * @return ThingStatusDetail The openHAB error type.
@@ -154,7 +153,7 @@ public class API {
         return errorDetail;
     }
 
-    /** 
+    /**
      * Gets the error, if occurred.
      * 
      * @return String The error message.
@@ -163,7 +162,7 @@ public class API {
         return errorDetailMessage;
     }
 
-    /** 
+    /**
      * The collection week.
      * 
      * @return Integer The week number.
@@ -172,7 +171,7 @@ public class API {
         return collectionWeek;
     }
 
-    /** 
+    /**
      * Gets the collection day of week.
      * 
      * @return Integer The day of the week. 1 = Monday.
@@ -181,7 +180,7 @@ public class API {
         return day;
     }
 
-    /** 
+    /**
      * The upcoming recycling collection date.
      * 
      * @return ZonedDateTime
@@ -190,7 +189,7 @@ public class API {
         return recycling;
     }
 
-    /** 
+    /**
      * The upcoming general rubbish collection date.
      * 
      * @return ZonedDateTime
