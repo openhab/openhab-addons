@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ahawastecollection"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="collectionSchedule">
+		<label>aha Waste Collection Schedule</label>
+		<description>aha Waste Collection Schedule from http://www.aha-region.de/abholtermine/abfuhrkalender</description>
+
+		<channels>
+			<channel id="generalWaste" typeId="collectionDateGeneralWaste"/>
+			<channel id="leightweightPackaging" typeId="collectionDateLeightweightPackaging"/>
+			<channel id="bioWaste" typeId="collectionDateBioWaste"/>
+			<channel id="paper" typeId="collectionDatePaper"/>
+		</channels>
+
+		<config-description>
+			<parameter name="commune" type="text" required="true">
+				<label>Commune</label>
+				<description>The selected commune, taken from the form field 'gemeinde'. </description>
+			</parameter>
+			<parameter name="street" type="text" required="true">
+				<label>Street</label>
+				<description>The selected street, taken from the form field 'strasse'. This value must look like
+					67269@Rosmarinweg+/+Kirchhorst@Kirchhorst</description>
+			</parameter>
+			<parameter name="houseNumber" type="text" required="true">
+				<label>House Number</label>
+				<description>The selected house number, taken from the form field 'hausnr'.</description>
+			</parameter>
+			<parameter name="houseNumberAddon" type="text" required="false">
+				<label>House Number Addon</label>
+				<description>The selected house number addon, taken from the form field 'hausnraddon'.</description>
+			</parameter>
+			<parameter name="collectionPlace" type="text" required="true">
+				<label>Collection Place</label>
+				<description>Form value for the collection place, taken from the form field `ladeort`. This value must look like
+					67269-0010+</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel type that represents the collection time of an waste type. -->
+	<channel-type id="collectionDateGeneralWaste">
+		<item-type>DateTime</item-type>
+		<label>General Waste</label>
+		<description>Next collection day for general waste</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
+	<channel-type id="collectionDateLeightweightPackaging">
+		<item-type>DateTime</item-type>
+		<label>Leightweight Packaging</label>
+		<description>Next collection day for leightweight packaging</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
+	<channel-type id="collectionDateBioWaste">
+		<item-type>DateTime</item-type>
+		<label>Bio Waste</label>
+		<description>Next collection day for bio waste</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
+	<channel-type id="collectionDatePaper">
+		<item-type>DateTime</item-type>
+		<label>Paper</label>
+		<description>Next collection day for paper</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>
