@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="ngtfType">
+		<item-type>String</item-type>
+		<label>NGTF</label>
+		<description>Provider schedule name</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ltarfType">
+		<item-type>String</item-type>
+		<label>LTARF</label>
+		<description>Current pricing label</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="eastType">
+		<item-type>Number:Energy</item-type>
+		<label>EAST</label>
+		<description>Total active energy withdrawn</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf01Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF01</label>
+		<description>Active energy withdrawn from provider on index 01</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf02Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF02</label>
+		<description>Active energy withdrawn from provider on index 02</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf03Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF03</label>
+		<description>Active energy withdrawn from provider on index 03</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf04Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF04</label>
+		<description>Active energy withdrawn from provider on index 04</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf05Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF05</label>
+		<description>Active energy withdrawn from provider on index 05</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf06Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF06</label>
+		<description>Active energy withdrawn from provider on index 06</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf07Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF07</label>
+		<description>Active energy withdrawn from provider on index 07</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf08Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF08</label>
+		<description>Active energy withdrawn from provider on index 08</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf09Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF09</label>
+		<description>Active energy withdrawn from provider on index 09</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easf10Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASF10</label>
+		<description>Active energy withdrawn from provider on index 10</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easd01Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASD01</label>
+		<description>Active energy withdrawn from distributor on index 01</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easd02Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASD02</label>
+		<description>Active energy withdrawn from distributor on index 02</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easd03Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASD03</label>
+		<description>Active energy withdrawn from distributor on index 03</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="easd04Type">
+		<item-type>Number:Energy</item-type>
+		<label>EASD04</label>
+		<description>Active energy withdrawn from distributor on index 04</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irms1Type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>IRMS1</label>
+		<description>RMS Current on phase 1</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="urms1Type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>URMS1</label>
+		<description>RMS Voltage on phase 1</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="prefType">
+		<item-type>Number:Power</item-type>
+		<label>PREF</label>
+		<description>Reference apparent power</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pcoupType">
+		<item-type>Number:Power</item-type>
+		<label>PCOUP</label>
+		<description>Apparent power rupture capacity</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sinstsType">
+		<item-type>Number:Power</item-type>
+		<label>SINSTS</label>
+		<description>Instantaneous withdrawn apparent power</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsnType">
+		<item-type>Number:Power</item-type>
+		<label>SMAXSN</label>
+		<description>Maximum withdrawn apparent power of the day</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsnMinus1Type">
+		<item-type>Number:Power</item-type>
+		<label>SMAXSN-1</label>
+		<description>Maximum withdrawn apparent power of the previous day</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ccasnType">
+		<item-type>Number:Power</item-type>
+		<label>CCASN</label>
+		<description>Active charge point N</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ccasnMinus1Type">
+		<item-type>Number:Power</item-type>
+		<label>CCASN-1</label>
+		<description>Active charge point N-1</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="umoy1Type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>UMOY1</label>
+		<description>Mean Voltage on phase 1</description>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="stgeType">
+		<item-type>String</item-type>
+		<label>STGE</label>
+		<description>Status registry</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dpm1Type">
+		<item-type>String</item-type>
+		<label>DPM1</label>
+		<description>Start of mobile peak period 1</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fpm1Type">
+		<item-type>String</item-type>
+		<label>FPM1</label>
+		<description>End of mobile peak period 1</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dpm2Type">
+		<item-type>String</item-type>
+		<label>DPM2</label>
+		<description>Start of mobile peak period 2</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fpm2Type">
+		<item-type>String</item-type>
+		<label>FPM2</label>
+		<description>End of mobile peak period 2</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dpm3Type">
+		<item-type>String</item-type>
+		<label>DPM3</label>
+		<description>Start of mobile peak period 3</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fpm3Type">
+		<item-type>String</item-type>
+		<label>FPM3</label>
+		<description>End of mobile peak period 3</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="msg1Type">
+		<item-type>String</item-type>
+		<label>MSG1</label>
+		<description>Short message</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="msg2Type">
+		<item-type>String</item-type>
+		<label>MSG2</label>
+		<description>Very short message</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="prmType">
+		<item-type>String</item-type>
+		<label>PRM</label>
+		<description>PRM</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="relaisType">
+		<item-type>String</item-type>
+		<label>RELAIS</label>
+		<description>Relays</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ntarfType">
+		<item-type>String</item-type>
+		<label>NTARF</label>
+		<description>Index of current pricing</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="njourfType">
+		<item-type>String</item-type>
+		<label>NJOURF</label>
+		<description>Number of current provider schedule</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="njourfPlus1Type">
+		<item-type>String</item-type>
+		<label>NJOURF+1</label>
+		<description>Number of next day provider schedule</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pjourfPlus1Type">
+		<item-type>String</item-type>
+		<label>PJOURF+1</label>
+		<description>Profile of next day provider schedule</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ppointeType">
+		<item-type>String</item-type>
+		<label>PPOINTE</label>
+		<description>Profile of next rush day</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

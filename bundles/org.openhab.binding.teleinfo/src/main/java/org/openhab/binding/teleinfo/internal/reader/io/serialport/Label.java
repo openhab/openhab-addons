@@ -65,16 +65,91 @@ public enum Label {
 
     // Standard TIC mode labels
     ADSC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
-    UMOY1(ValueType.INTEGER, NOT_A_CHANNEL, Units.ONE);
+    VTIC(ValueType.INTEGER, NOT_A_CHANNEL, Units.ONE),
+    DATE(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    NGTF(ValueType.STRING, CHANNEL_LSM_NGTF, Units.ONE),
+    LTARF(ValueType.STRING, CHANNEL_LSM_LTARF, Units.ONE),
+    EAST(ValueType.INTEGER, CHANNEL_LSM_EAST, Units.WATT_HOUR),
+    EASF01(ValueType.INTEGER, CHANNEL_LSM_EASF01, Units.WATT_HOUR),
+    EASF02(ValueType.INTEGER, CHANNEL_LSM_EASF02, Units.WATT_HOUR),
+    EASF03(ValueType.INTEGER, CHANNEL_LSM_EASF03, Units.WATT_HOUR),
+    EASF04(ValueType.INTEGER, CHANNEL_LSM_EASF04, Units.WATT_HOUR),
+    EASF05(ValueType.INTEGER, CHANNEL_LSM_EASF05, Units.WATT_HOUR),
+    EASF06(ValueType.INTEGER, CHANNEL_LSM_EASF06, Units.WATT_HOUR),
+    EASF07(ValueType.INTEGER, CHANNEL_LSM_EASF07, Units.WATT_HOUR),
+    EASF08(ValueType.INTEGER, CHANNEL_LSM_EASF08, Units.WATT_HOUR),
+    EASF09(ValueType.INTEGER, CHANNEL_LSM_EASF09, Units.WATT_HOUR),
+    EASF10(ValueType.INTEGER, CHANNEL_LSM_EASF10, Units.WATT_HOUR),
+    EASD01(ValueType.INTEGER, CHANNEL_LSM_EASD01, Units.WATT_HOUR),
+    EASD02(ValueType.INTEGER, CHANNEL_LSM_EASD02, Units.WATT_HOUR),
+    EASD03(ValueType.INTEGER, CHANNEL_LSM_EASD03, Units.WATT_HOUR),
+    EASD04(ValueType.INTEGER, CHANNEL_LSM_EASD04, Units.WATT_HOUR),
+    EAIT(ValueType.INTEGER, CHANNEL_LSM_EAIT, Units.WATT_HOUR),
+    ERQ1(ValueType.INTEGER, CHANNEL_LSM_ERQ1, Units.VOLT_AMPERE_HOUR),
+    ERQ2(ValueType.INTEGER, CHANNEL_LSM_ERQ2, Units.VOLT_AMPERE_HOUR),
+    ERQ3(ValueType.INTEGER, CHANNEL_LSM_ERQ3, Units.VOLT_AMPERE_HOUR),
+    ERQ4(ValueType.INTEGER, CHANNEL_LSM_ERQ4, Units.VOLT_AMPERE_HOUR),
+    IRMS1(ValueType.INTEGER, CHANNEL_LSM_IRMS1, Units.AMPERE),
+    IRMS2(ValueType.INTEGER, CHANNEL_LSM_IRMS2, Units.AMPERE),
+    IRMS3(ValueType.INTEGER, CHANNEL_LSM_IRMS3, Units.AMPERE),
+    URMS1(ValueType.INTEGER, CHANNEL_LSM_URMS1, Units.VOLT),
+    URMS2(ValueType.INTEGER, CHANNEL_LSM_URMS2, Units.VOLT),
+    URMS3(ValueType.INTEGER, CHANNEL_LSM_URMS3, Units.VOLT),
+    PREF(ValueType.INTEGER, CHANNEL_LSM_PREF, Units.VOLT_AMPERE, 1000),
+    PCOUP(ValueType.INTEGER, CHANNEL_LSM_PCOUP, Units.VOLT_AMPERE, 1000),
+    SINSTS(ValueType.INTEGER, CHANNEL_LSM_SINSTS, Units.VOLT_AMPERE),
+    SINSTS1(ValueType.INTEGER, CHANNEL_LSM_SINSTS1, Units.VOLT_AMPERE),
+    SINSTS2(ValueType.INTEGER, CHANNEL_LSM_SINSTS2, Units.VOLT_AMPERE),
+    SINSTS3(ValueType.INTEGER, CHANNEL_LSM_SINSTS3, Units.VOLT_AMPERE),
+    SMAXSN(ValueType.INTEGER, CHANNEL_LSM_SMAXSN, Units.VOLT_AMPERE),
+    SMAXSN1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN1, Units.VOLT_AMPERE),
+    SMAXSN2(ValueType.INTEGER, CHANNEL_LSM_SMAXSN2, Units.VOLT_AMPERE),
+    SMAXSN3(ValueType.INTEGER, CHANNEL_LSM_SMAXSN3, Units.VOLT_AMPERE),
+    SMAXSN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN_MINUS_1, Units.VOLT_AMPERE),
+    SMAXSN1_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN1_MINUS_1, Units.VOLT_AMPERE),
+    SMAXSN2_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN2_MINUS_1, Units.VOLT_AMPERE),
+    SMAXSN3_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN3_MINUS_1, Units.VOLT_AMPERE),
+    SINSTI(ValueType.INTEGER, CHANNEL_LSM_SINSTI, Units.VOLT_AMPERE),
+    SMAXIN(ValueType.INTEGER, CHANNEL_LSM_SMAXIN, Units.VOLT_AMPERE),
+    SMAXIN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXIN_MINUS_1, Units.VOLT_AMPERE),
+    CCASN(ValueType.INTEGER, CHANNEL_LSM_CCASN, Units.WATT),
+    CCASN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_CCASN_MINUS_1, Units.WATT),
+    CCAIN(ValueType.INTEGER, CHANNEL_LSM_CCAIN, Units.WATT),
+    CCAIN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_CCAIN_MINUS_1, Units.WATT),
+    UMOY1(ValueType.INTEGER, CHANNEL_LSM_UMOY1, Units.VOLT),
+    UMOY2(ValueType.INTEGER, CHANNEL_LSM_UMOY2, Units.VOLT),
+    UMOY3(ValueType.INTEGER, CHANNEL_LSM_UMOY3, Units.VOLT),
+    STGE(ValueType.STRING, CHANNEL_LSM_STGE, Units.ONE),
+    DPM1(ValueType.STRING, CHANNEL_LSM_DPM1, Units.ONE),
+    FPM1(ValueType.STRING, CHANNEL_LSM_FPM1, Units.ONE),
+    DPM2(ValueType.STRING, CHANNEL_LSM_DPM2, Units.ONE),
+    FPM2(ValueType.STRING, CHANNEL_LSM_FPM2, Units.ONE),
+    DPM3(ValueType.STRING, CHANNEL_LSM_DPM3, Units.ONE),
+    FPM3(ValueType.STRING, CHANNEL_LSM_FPM3, Units.ONE),
+    MSG1(ValueType.STRING, CHANNEL_LSM_MSG1, Units.ONE),
+    MSG2(ValueType.STRING, CHANNEL_LSM_MSG2, Units.ONE),
+    PRM(ValueType.STRING, CHANNEL_LSM_PRM, Units.ONE),
+    RELAIS(ValueType.STRING, CHANNEL_LSM_RELAIS, Units.ONE),
+    NTARF(ValueType.STRING, CHANNEL_LSM_NTARF, Units.ONE),
+    NJOURF(ValueType.STRING, CHANNEL_LSM_NJOURF, Units.ONE),
+    NJOURF_PLUS_1(ValueType.STRING, CHANNEL_LSM_NJOURF_PLUS_1, Units.ONE),
+    PJOURF_PLUS_1(ValueType.STRING, CHANNEL_LSM_PJOURF_PLUS_1, Units.ONE),
+    PPOINTE(ValueType.STRING, CHANNEL_LSM_PPOINTE, Units.ONE);
 
-    private ValueType type;
-    private String channelName;
-    private Unit<?> unit;
+    private final ValueType type;
+    private final String channelName;
+    private final Unit<?> unit;
+    private final int factor;
 
     Label(ValueType type, String channelName, Unit<?> unit) {
+        this(type, channelName, unit, 1);
+    }
+
+    Label(ValueType type, String channelName, Unit<?> unit, int factor) {
         this.type = type;
         this.channelName = channelName;
         this.unit = unit;
+        this.factor = factor;
     }
 
     public ValueType getType() {
@@ -87,5 +162,15 @@ public enum Label {
 
     public Unit<?> getUnit() {
         return unit;
+    }
+
+    public int getFactor() {
+        return factor;
+    }
+
+    public static Label getEnum(String label) {
+        String modifiedLabel = label.replace("-", "_MINUS_");
+        modifiedLabel = modifiedLabel.replace("+", "_PLUS_");
+        return valueOf(modifiedLabel);
     }
 }

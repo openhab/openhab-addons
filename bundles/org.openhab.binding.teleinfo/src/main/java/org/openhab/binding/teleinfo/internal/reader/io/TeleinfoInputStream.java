@@ -151,7 +151,7 @@ public class TeleinfoInputStream extends InputStream {
 
                 Label label;
                 try {
-                    label = Label.valueOf(labelStr);
+                    label = Label.getEnum(labelStr);
                 } catch (IllegalArgumentException e) {
                     if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
                         // in this hardware issue, label variable is composed by label name and value. E.g:

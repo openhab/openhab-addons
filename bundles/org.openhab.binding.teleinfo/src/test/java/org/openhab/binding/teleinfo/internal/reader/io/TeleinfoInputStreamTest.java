@@ -23,6 +23,7 @@ import org.openhab.binding.teleinfo.internal.data.FrameType;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 import org.openhab.binding.teleinfo.util.TestUtils;
+import org.openhab.core.library.types.QuantityType;
 
 /**
  *
@@ -168,40 +169,41 @@ public class TeleinfoInputStreamTest {
     }
 
     @Test
-    public void testReadNextFrameLinkyTICModeStandard() throws Exception {
+    public void testReadNextFrameLinkyTICModeStandardThreePhaseProd() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard.raw")), false,
+                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-three-phase-prod.raw")), false,
                 TeleinfoTicMode.STANDARD, true)) {
             Frame frame = in.readNextFrame();
             assertNotNull(frame);
-            assertEquals(FrameType.CBEMM_ICC_BASE, frame.getType());
-            assertEquals("031762120162", frame.get(Label.ADCO));
-            assertEquals(30, frame.getAsInt(Label.ISOUSC));
-            assertEquals(190575, frame.getAsInt(Label.BASE));
-            assertEquals("TH..", frame.get(Label.PTEC));
-            assertEquals(1, frame.getAsInt(Label.IINST));
-            assertEquals(90, frame.getAsInt(Label.IMAX));
-            assertEquals(270, frame.getAsInt(Label.PAPP));
-            assertNull(frame.get(Label.ADPS));
+            assertEquals(FrameType.LSMT_PROD, frame.getType());
+            assertEquals("123456789012", frame.get(Label.ADSC));
+            assertEquals("02", frame.get(Label.VTIC));
+            assertEquals("", frame.get(Label.DATE));
+            assertEquals("     TEMPO      ", frame.get(Label.NGTF));
+            assertEquals("    HP  BLEU    ", frame.get(Label.LTARF));
+            assertEquals(11604109, frame.getAsInt(Label.EAST));
+            assertEquals(2741488, frame.getAsInt(Label.EASF01));
+            assertEquals(18, frame.getAsInt(Label.PCOUP));
+            QuantityType quantity = QuantityType.valueOf(frame.getAsInt(Label.PCOUP), Label.PCOUP.getUnit());
         }
     }
 
     @Test
-    public void testReadNextFrameLinkyTICModeStandardProd() throws Exception {
+    public void testReadNextFrameLinkyTICModeStandardSinglePhaseProd() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-prod.raw")),
+                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-single-phase-prod.raw")),
                 TeleinfoTicMode.STANDARD, true)) {
             Frame frame = in.readNextFrame();
             assertNotNull(frame);
-            assertEquals(FrameType.CBEMM_ICC_BASE, frame.getType());
-            assertEquals("031762120162", frame.get(Label.ADCO));
-            assertEquals(30, frame.getAsInt(Label.ISOUSC));
-            assertEquals(190575, frame.getAsInt(Label.BASE));
-            assertEquals("TH..", frame.get(Label.PTEC));
-            assertEquals(1, frame.getAsInt(Label.IINST));
-            assertEquals(90, frame.getAsInt(Label.IMAX));
-            assertEquals(270, frame.getAsInt(Label.PAPP));
-            assertNull(frame.get(Label.ADPS));
+            assertEquals(FrameType.LSMM_PROD, frame.getType());
+            assertEquals("123456789012", frame.get(Label.ADSC));
+            assertEquals("02", frame.get(Label.VTIC));
+            assertEquals("", frame.get(Label.DATE));
+            assertEquals("PRODUCTEUR", frame.get(Label.NGTF));
+            assertEquals("INDEX NON CONSO ", frame.get(Label.LTARF));
+            assertEquals(0, frame.getAsInt(Label.EAST));
+            assertEquals(0, frame.getAsInt(Label.EASF01));
+            assertEquals(32781, frame.getAsInt(Label.EAIT));
         }
     }
 }

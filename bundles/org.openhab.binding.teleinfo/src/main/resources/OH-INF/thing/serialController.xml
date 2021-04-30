@@ -22,10 +22,10 @@
 			<parameter name="ticMode" type="text" required="true">
 				<label>TIC mode</label>
 				<description>TIC Mode of the telemeter (Standard TIC mode is only available on Linky telemeters)</description>
-				<default>Historical</default>
+				<default>HISTORICAL</default>
 				<options>
-					<option value="HISTORICAL">Historical</option>
-					<option value="STANDARD">Standard</option>
+					<option value="HISTORICAL">HISTORICAL</option>
+					<option value="STANDARD">STANDARD</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>

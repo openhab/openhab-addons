@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lsmm_electricitymeter" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialcontroller"/>
+		</supported-bridge-type-refs>
+
+		<label>Linky Single-phase</label>
+		<description>Single-phase Linky Electricity meter in standard mode</description>
+
+		<channels>
+			<channel id="ngtf" typeId="ngtfType"/>
+			<channel id="ltarf" typeId="ltarfType"/>
+			<channel id="east" typeId="eastType"/>
+			<channel id="easf01" typeId="easf01Type"/>
+			<channel id="easf02" typeId="easf02Type"/>
+			<channel id="easf03" typeId="easf03Type"/>
+			<channel id="easf04" typeId="easf04Type"/>
+			<channel id="easf05" typeId="easf05Type"/>
+			<channel id="easf06" typeId="easf06Type"/>
+			<channel id="easf07" typeId="easf07Type"/>
+			<channel id="easf08" typeId="easf08Type"/>
+			<channel id="easf09" typeId="easf09Type"/>
+			<channel id="easf10" typeId="easf10Type"/>
+			<channel id="easd01" typeId="easd01Type"/>
+			<channel id="easd02" typeId="easd02Type"/>
+			<channel id="easd03" typeId="easd03Type"/>
+			<channel id="easd04" typeId="easd04Type"/>
+			<channel id="irms1" typeId="irms1Type"/>
+			<channel id="urms1" typeId="urms1Type"/>
+			<channel id="pref" typeId="prefType"/>
+			<channel id="pcoup" typeId="pcoupType"/>
+			<channel id="sinsts" typeId="sinstsType"/>
+			<channel id="smaxsn" typeId="smaxsnType"/>
+			<channel id="smaxsnMinus1" typeId="smaxsnMinus1Type"/>
+			<channel id="ccasn" typeId="ccasnType"/>
+			<channel id="ccasnMinus1" typeId="ccasnMinus1Type"/>
+			<channel id="umoy1" typeId="umoy1Type"/>
+			<channel id="stge" typeId="stgeType"/>
+			<channel id="dpm1" typeId="dpm1Type"/>
+			<channel id="fpm1" typeId="fpm1Type"/>
+			<channel id="dpm2" typeId="dpm2Type"/>
+			<channel id="fpm2" typeId="fpm2Type"/>
+			<channel id="dpm3" typeId="dpm3Type"/>
+			<channel id="fpm3" typeId="fpm3Type"/>
+			<channel id="msg1" typeId="msg1Type"/>
+			<channel id="msg2" typeId="msg2Type"/>
+			<channel id="prm" typeId="prmType"/>
+			<channel id="relais" typeId="relaisType"/>
+			<channel id="ntarf" typeId="ntarfType"/>
+			<channel id="njourf" typeId="njourfType"/>
+			<channel id="njourfPlus1" typeId="njourfPlus1Type"/>
+			<channel id="pjourfPlus1" typeId="pjourfPlus1Type"/>
+			<channel id="ppointe" typeId="ppointeType"/>
+		</channels>
+
+		<config-description-ref uri="binding:teleinfo:adco"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>

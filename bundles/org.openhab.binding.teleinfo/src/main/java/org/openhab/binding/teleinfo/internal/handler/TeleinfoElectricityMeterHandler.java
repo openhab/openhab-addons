@@ -24,6 +24,7 @@ import org.openhab.binding.teleinfo.internal.data.Pricing;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ValueType;
+import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -130,7 +131,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     @Override
     public void onFrameReceived(Frame frame) {
         String adco = configuration.getAdco();
-        if (adco.equalsIgnoreCase(frame.get(Label.ADCO))) {
+        if (adco.equalsIgnoreCase(frame.get(Label.ADCO)) || adco.equalsIgnoreCase(frame.get(Label.ADSC))) {
             updateStatesForChannels(frame);
         }
     }
@@ -144,34 +145,42 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                 } else if (label.getType() == ValueType.STRING) {
                     updateState(label.getChannelName(), StringType.valueOf(entry.getValue()));
                 } else if (label.getType() == ValueType.INTEGER) {
-                    updateState(label.getChannelName(),
-                            QuantityType.valueOf(Integer.parseInt(entry.getValue()), label.getUnit()));
+                    updateState(label.getChannelName(), QuantityType
+                            .valueOf(label.getFactor() * Integer.parseInt(entry.getValue()), label.getUnit()));
                 }
             }
         }
         try {
-            if (frame.getPricing() == Pricing.TEMPO) {
-                updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1, StringType.valueOf(frame.getProgrammeCircuit1()));
-                updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_2, StringType.valueOf(frame.getProgrammeCircuit2()));
-            }
-        } catch (InvalidFrameException e) {
-            logger.warn("Can not find pricing option.");
-        }
+            if (frame.getTicMode() == TeleinfoTicMode.HISTORICAL) {
+                try {
+                    if (frame.getPricing() == Pricing.TEMPO) {
+                        updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1,
+                                StringType.valueOf(frame.getProgrammeCircuit1()));
+                        updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_2,
+                                StringType.valueOf(frame.getProgrammeCircuit2()));
+                    }
+                } catch (InvalidFrameException e) {
+                    logger.warn("Can not find pricing option.");
+                }
 
-        try {
-            Phase phase = frame.getPhase();
-            if (phase == Phase.ONE_PHASED) {
-                updateStateForMissingAlert(frame, Label.ADPS);
-            } else if (phase == Phase.THREE_PHASED) {
-                if (!wasLastFrameShort) {
-                    updateStateForMissingAlert(frame, Label.ADIR1);
-                    updateStateForMissingAlert(frame, Label.ADIR2);
-                    updateStateForMissingAlert(frame, Label.ADIR3);
+                try {
+                    Phase phase = frame.getPhase();
+                    if (phase == Phase.ONE_PHASED) {
+                        updateStateForMissingAlert(frame, Label.ADPS);
+                    } else if (phase == Phase.THREE_PHASED) {
+                        if (!wasLastFrameShort) {
+                            updateStateForMissingAlert(frame, Label.ADIR1);
+                            updateStateForMissingAlert(frame, Label.ADIR2);
+                            updateStateForMissingAlert(frame, Label.ADIR3);
+                        }
+                        wasLastFrameShort = frame.isShortFrame();
+                    }
+                } catch (InvalidFrameException e) {
+                    logger.warn("Can not find phase.");
                 }
-                wasLastFrameShort = frame.isShortFrame();
             }
         } catch (InvalidFrameException e) {
-            logger.warn("Can not find phase.");
+            logger.warn("Can not find TIC mode.");
         }
 
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());

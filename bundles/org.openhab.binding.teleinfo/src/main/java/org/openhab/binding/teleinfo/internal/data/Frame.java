@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
+import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 
 /**
  * The {@link Frame} class defines common attributes for any Teleinfo frames.
@@ -54,6 +55,18 @@ public class Frame implements Serializable {
     }
 
     public FrameType getType() throws InvalidFrameException {
+        TeleinfoTicMode ticMode = getTicMode();
+        switch (ticMode) {
+            case HISTORICAL:
+                return getHistoricalType();
+            case STANDARD:
+                return getStandardType();
+            default:
+                throw new InvalidFrameException();
+        }
+    }
+
+    public FrameType getHistoricalType() throws InvalidFrameException {
         Phase phase = getPhase();
         Pricing pricing = getPricing();
         Evolution evolution = getEvolution();
@@ -150,6 +163,30 @@ public class Frame implements Serializable {
                 }
                 throw new InvalidFrameException();
         }
+    }
+
+    public TeleinfoTicMode getTicMode() throws InvalidFrameException {
+        if (labelToValues.containsKey(Label.ADCO)) {
+            return TeleinfoTicMode.HISTORICAL;
+        } else if (labelToValues.containsKey(Label.ADSC)) {
+            return TeleinfoTicMode.STANDARD;
+        }
+        throw new InvalidFrameException();
+    }
+
+    public FrameType getStandardType() throws InvalidFrameException {
+        boolean isProd = labelToValues.containsKey(Label.EAIT);
+        boolean isThreePhase = labelToValues.containsKey(Label.IRMS2);
+        if (isProd && isThreePhase) {
+            return FrameType.LSMT_PROD;
+        }
+        if (isProd) {
+            return FrameType.LSMM_PROD;
+        }
+        if (isThreePhase) {
+            return FrameType.LSMT;
+        }
+        return FrameType.LSMM;
     }
 
     public void clear() {
