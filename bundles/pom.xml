@@ -322,6 +322,7 @@
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.upb</module>
+    <module>org.openhab.binding.updateopenhab</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.vdr</module>

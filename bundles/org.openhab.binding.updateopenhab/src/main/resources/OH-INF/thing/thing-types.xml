@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="updateopenhab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="updater">
+		<label>OpenHab Updater</label>
+		<description>Thing to update OpenHAB</description>
+
+		<channels>
+			<channel id="updateCommand" typeId="updateCommand"/>
+			<channel id="actualVersion" typeId="actualVersion"/>
+			<channel id="latestVersion" typeId="latestVersion"/>
+			<channel id="updateAvailable" typeId="updateAvailable"/>
+		</channels>
+
+		<config-description>
+			<parameter name="targetVersion" type="text" required="false">
+				<default>STABLE</default>
+				<label>Target Update Version</label>
+				<description>Which version OpenHab shall be updated to</description>
+				<options>
+					<option value="STABLE">stable</option>
+					<option value="MILESTONE">milestone</option>
+					<option value="SNAPSHOT">snapshot</option>
+				</options>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="updateCommand">
+		<item-type>Switch</item-type>
+		<label>Update OpenHAB Command</label>
+		<description>Switch ON to update OpenHab</description>
+	</channel-type>
+
+	<channel-type id="updateAvailable">
+		<item-type>Switch</item-type>
+		<label>OpenHAB Update Available</label>
+		<description>State is ON if an OpenHab update is available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="actualVersion">
+		<item-type>String</item-type>
+		<label>Current OpenHAB Version</label>
+		<description>The version of the running OpenHab instance</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="latestVersion">
+		<item-type>String</item-type>
+		<label>Latest Released OpenHAB Version</label>
+		<description>The latest released version of OpenHab</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
