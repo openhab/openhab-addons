@@ -142,12 +142,9 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
             throw new BridgeReconfigurationFailedException("Bridge exists but has no handler.");
         }
 
+        // calling handleConfigurationUpdate on MieleBridgeHandler always re-initializes the thing
         handler.handleConfigurationUpdate(
                 Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale));
-
-        // As the parameters will not necessarily change we need to force the thing to re-initialize.
-        handler.dispose();
-        handler.initialize();
 
         return thing;
     }
