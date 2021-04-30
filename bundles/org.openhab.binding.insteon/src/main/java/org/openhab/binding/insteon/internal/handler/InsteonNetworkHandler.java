@@ -78,7 +78,6 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Starting Insteon bridge");
         config = getConfigAs(InsteonNetworkConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             InsteonNetworkConfiguration config = this.config;
@@ -99,6 +98,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                 return;
             }
             insteonBinding = new InsteonBinding(this, config, serialPortManager, scheduler);
+            updateStatus(ThingStatus.UNKNOWN);
 
             // hold off on starting to poll until devices that already are defined as things are added.
             // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at
