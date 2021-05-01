@@ -67,7 +67,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\",\"6\"\u003d\"timer_error1\",\"7\"\u003d\"timer_error2\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\",\"6\"\u003d\"timer_error1\",\"7\"\u003d\"timer_error2\"]`"
 			},
 			{
 				"property": "mode",
@@ -99,7 +99,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]`"
 			},
 			{
 				"property": "air-quality",
@@ -251,7 +251,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Bright\",\"1\"\u003d\"Light\",\"2\"\u003d\"Off\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Light\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "physical-controls-locked",
@@ -415,7 +415,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"waiting\",\"1\"\u003d\"ready\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"waiting\",\"1\"\u003d\"ready\"]`"
 			},
 			{
 				"property": "rfid-tag",
@@ -512,7 +512,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"hardware\",\"1\"\u003d\"human\",\"2\"\u003d\"upgrade\",\"3\"\u003d\"watchdog\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"hardware\",\"1\"\u003d\"human\",\"2\"\u003d\"upgrade\",\"3\"\u003d\"watchdog\"]`"
 			},
 			{
 				"property": "hw-version",
@@ -636,7 +636,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"America\",\"2\"\u003d\"Canada\",\"3\"\u003d\"Singapore\",\"4\"\u003d\"Europe\",\"5\"\u003d\"Australian\",\"6\"\u003d\"Korea\",\"7\"\u003d\"China\",\"8\"\u003d\"France\",\"9\"\u003d\"Japanese\",\"10\"\u003d\"Taiwan\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"America\",\"2\"\u003d\"Canada\",\"3\"\u003d\"Singapore\",\"4\"\u003d\"Europe\",\"5\"\u003d\"Australian\",\"6\"\u003d\"Korea\",\"7\"\u003d\"China\",\"8\"\u003d\"France\",\"9\"\u003d\"Japanese\",\"10\"\u003d\"Taiwan\"]`"
 			},
 			{
 				"property": "gesture-status",

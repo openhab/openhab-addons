@@ -59,7 +59,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No Error\",\"1\"\u003d\"NTC\tConnect Error\",\"2\"\u003d\"High Temperature Alarm\",\"3\"\u003d\"EEPROM Error\",\"4\"\u003d\"Multi Errors\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"NTC\tConnect Error\",\"2\"\u003d\"High Temperature Alarm\",\"3\"\u003d\"EEPROM Error\",\"4\"\u003d\"Multi Errors\"]`"
 			},
 			{
 				"property": "target-temperature",
@@ -205,7 +205,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Bright\",\"1\"\u003d\"Dark\",\"2\"\u003d\"Extinguished\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dark\",\"2\"\u003d\"Extinguished\"]`"
 			},
 			{
 				"property": "physical-controls-locked",
@@ -299,7 +299,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Unknown\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"44\"\u003d\"EU\",\"81\"\u003d\"JP\",\"7\"\u003d\"RU\",\"86\"\u003d\"CN\",\"852\"\u003d\"HK\",\"886\"\u003d\"TW\",\"33\"\u003d\"FR\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Unknown\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"44\"\u003d\"EU\",\"81\"\u003d\"JP\",\"7\"\u003d\"RU\",\"86\"\u003d\"CN\",\"852\"\u003d\"HK\",\"886\"\u003d\"TW\",\"33\"\u003d\"FR\"]`"
 			}
 		],
 		"experimental": true
