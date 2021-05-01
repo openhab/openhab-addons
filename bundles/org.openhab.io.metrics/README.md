@@ -7,7 +7,7 @@ The metrics service provides
 
 ## Precondition
 
-The openHAB core metrics must be available (OH version >= 3.1.0 M2 is necessary).
+The openHAB core metrics must be available (at least OH version 3.1).
 
 ## Provided metrics
 
