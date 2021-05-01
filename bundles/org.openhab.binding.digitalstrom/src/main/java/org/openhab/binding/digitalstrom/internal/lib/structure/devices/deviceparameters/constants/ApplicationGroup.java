@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants;
 
 import java.util.HashMap;
@@ -7,23 +19,23 @@ import java.util.Map;
  * digitalSTROM Application Groups.
  * 
  * <pre>
-	| Group ID | Name                  | Color   | Application                         |
-	| -------- | --------------------- | ------- | ----------------------------------- |
-	| 1        | Lights                | Yellow  | Room lights                         |
-	| 2        | Blinds                | Gray    | Blinds, curtains, shades, awnings   |
-	| 3        | Heating               | Blue    | Heating                             |
-	| 9        | Cooling               | Blue    | Cooling                             |
-	| 10       | Ventilation           | Blue    | Ventilation                         |
-	| 11       | Window                | Blue    | Windows                             |
-	| 12       | Recirculation         | Blue    | Ceiling fan, Fan coil units         |
-	| 64       | Apartment Ventilation | Blue    | Ventilation system                  |
-	| 48       | Temperature Control   | Blue    | Single room temperature control     |
-	| 4        | Audio                 | Cyan    | Playing music or radio              |
-	| 5        | Video                 | Magenta | TV, Video                           |
-	| 8        | Joker                 | Black   | Configurable                        |
-	| n/a      | Single Device         | White   | Various, individual per device      |
-	| n/a      | Security              | Red     | Security related functions, Alarms  |
-	| n/a      | Access                | Green   | Access related functions, door bell |
+    | Group ID | Name                  | Color   | Application                         |
+    | -------- | --------------------- | ------- | ----------------------------------- |
+    | 1        | Lights                | Yellow  | Room lights                         |
+    | 2        | Blinds                | Gray    | Blinds, curtains, shades, awnings   |
+    | 3        | Heating               | Blue    | Heating                             |
+    | 9        | Cooling               | Blue    | Cooling                             |
+    | 10       | Ventilation           | Blue    | Ventilation                         |
+    | 11       | Window                | Blue    | Windows                             |
+    | 12       | Recirculation         | Blue    | Ceiling fan, Fan coil units         |
+    | 64       | Apartment Ventilation | Blue    | Ventilation system                  |
+    | 48       | Temperature Control   | Blue    | Single room temperature control     |
+    | 4        | Audio                 | Cyan    | Playing music or radio              |
+    | 5        | Video                 | Magenta | TV, Video                           |
+    | 8        | Joker                 | Black   | Configurable                        |
+    | n/a      | Single Device         | White   | Various, individual per device      |
+    | n/a      | Security              | Red     | Security related functions, Alarms  |
+    | n/a      | Access                | Green   | Access related functions, door bell |
  * </pre>
  * 
  * @author Rouven Schürch - Initial contribution

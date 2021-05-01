@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.digitalstrom.internal.lib.structure.devices.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +31,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * Test class for certain code in {@link DeviceImpl}
+ *
+ * @author Rouven Schürch - Initial contribution
+ *
+ */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 class DeviceImplTest {
@@ -41,91 +59,91 @@ class DeviceImplTest {
             new OutputChannel(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE));
 
     @Test
-    void isBlind_Switch_ShadeChannel() {
+    void isBlindSwitchShadeChannel() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.SINGLE_SWITCH, SHADE_ANGLE_CHANNELS);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_Switch_NoShadeChannel() {
+    void isBlindSwitchNoShadeChannel() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.SINGLE_SWITCH, NON_SHADE_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_Switch_MixedShadeChannel() {
+    void isBlindSwitchMixedShadeChannel() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.SINGLE_SWITCH, MIXED_SHADE_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_PositionConUs_NoChannel() {
+    void isBlindPositionConUsNoChannel() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON_US, EMPTY_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_PositionConUs_NonShadeChannel() {
+    void isBlindPositionConUsNonShadeChannel() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON_US, NON_SHADE_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_PositionConUs_ShadePositionChannels() {
+    void isBlindPositionConUsShadePositionChannels() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON_US, SHADE_POSITION_CHANNELS);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_PositionConUs_ShadeAngleChannels() {
+    void isBlindPositionConUsShadeAngleChannels() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON_US, SHADE_ANGLE_CHANNELS);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isTrue();
     }
 
     @Test
-    void isBlind_PositionConUs_MixedChannels() {
+    void isBlindPositionConUsMixedChannels() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON_US, MIXED_SHADE_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isTrue();
     }
 
     @Test
-    void isBlind_PositionCon_NoChannel() {
+    void isBlindPositionConNoChannel() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON, EMPTY_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_PositionCon_NonShadeChannel() {
+    void isBlindPositionConNonShadeChannel() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON, NON_SHADE_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_PositionCon_ShadePositionChannels() {
+    void isBlindPositionConShadePositionChannels() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON, SHADE_POSITION_CHANNELS);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isFalse();
     }
 
     @Test
-    void isBlind_PositionCon_ShadeAngleChannels() {
+    void isBlindPositionConShadeAngleChannels() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON, SHADE_ANGLE_CHANNELS);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isTrue();
     }
 
     @Test
-    void isBlind_PositionCon_MixedChannels() {
+    void isBlindPositionConMixedChannels() {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON, MIXED_SHADE_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind()).isTrue();

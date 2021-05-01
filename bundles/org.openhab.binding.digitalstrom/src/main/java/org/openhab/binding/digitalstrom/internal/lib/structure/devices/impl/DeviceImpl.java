@@ -279,7 +279,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private boolean addGroupToList(Short groupID) {
         ApplicationGroup group = ApplicationGroup.getGroup(groupID);
         if (ApplicationGroup.UNDEFINED.equals(group)) {
-            logger.info("Unknown application group with ID '{}' found! Ignoring group", groupID);
+            logger.warn("Unknown application group with ID '{}' found! Ignoring group", groupID);
         } else {
             if (!this.groupList.contains(group)) {
                 this.groupList.add(group);
