@@ -110,7 +110,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\",\"findme\"\u003d\"Find me\",\"testsound\"\u003d\"Test Sound\"]"
+				"readmeComment": "Value mapping `[\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\",\"findme\"\u003d\"Find me\",\"testsound\"\u003d\"Test Sound\"]`"
 			},
 			{
 				"property": "status",
@@ -158,7 +158,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\",\"7\"\u003d\"Mopping\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\",\"7\"\u003d\"Mopping\"]`"
 			},
 			{
 				"property": "fault",
@@ -289,7 +289,8 @@
 					]
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"Drop\",\"2\"\u003d\"Cliff\",\"3\"\u003d\"Bumper\",\"4\"\u003d\"Gesture\",\"5\"\u003d\"Bumper Repeat\",\"6\"\u003d\"Drop Repeat\",\"7\"\u003d\"Optical Flow\",\"8\"\u003d\"No Box\",\"9\"\u003d\"No Tankbox\",\"10\"\u003d\"Waterbox Empty\",\"11\"\u003d\"Box full\",\"12\"\u003d\"Brush\",\"13\"\u003d\"Side Brush\",\"14\"\u003d\"Fan\",\"15\"\u003d\"Left Wheel motor\",\"16\"\u003d\"Right Wheel motor\",\"17\"\u003d\"Turn suffocate\",\"18\"\u003d\"Forward suffocate\",\"19\"\u003d\"Charger get\",\"20\"\u003d\"Battery low\",\"21\"\u003d\"Charge fault\",\"22\"\u003d\"Battery percentage\",\"23\"\u003d\"Heart\",\"24\"\u003d\"Camera occlusion\",\"25\"\u003d\"Camera fault\",\"26\"\u003d\"Event battery\",\"27\"\u003d\"Forward looking\",\"28\"\u003d\"Gyroscope\"]`"
 			},
 			{
 				"property": "battery-level",
@@ -335,7 +336,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"5\"\u003d\"Go Charging\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"5\"\u003d\"Go Charging\"]`"
 			},
 			{
 				"property": "",
@@ -404,7 +405,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"mainbrush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush\",\"sidebrush-cleaner-reset-brush-life\"\u003d\"Reset Side Brush\",\"filter-reset-filter-life\"\u003d\"Reset Filter\"]"
+				"readmeComment": "Value mapping `[\"mainbrush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush\",\"sidebrush-cleaner-reset-brush-life\"\u003d\"Reset Side Brush\",\"filter-reset-filter-life\"\u003d\"Reset Filter\"]`"
 			},
 			{
 				"property": "brush-left-time",
@@ -601,7 +602,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"mode 0\",\"1\"\u003d\"mode 1\",\"2\"\u003d\"mode 2\",\"3\"\u003d\"mode 3\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"mode 0\",\"1\"\u003d\"mode 1\",\"2\"\u003d\"mode 2\",\"3\"\u003d\"mode 3\"]`"
 			},
 			{
 				"property": "mop-mode",
@@ -633,7 +634,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"low water\",\"2\"\u003d\"medium water\",\"3\"\u003d\"high water\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"low water\",\"2\"\u003d\"medium water\",\"3\"\u003d\"high water\"]`"
 			},
 			{
 				"property": "waterbox-status",
@@ -657,7 +658,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Status 0\",\"1\"\u003d\"Status 1\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Status 0\",\"1\"\u003d\"Status 1\"]`"
 			},
 			{
 				"property": "task-status",
@@ -693,7 +694,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Notask\",\"1\"\u003d\"AutoClean\",\"2\"\u003d\"CustomClean\",\"3\"\u003d\"SelectAreanClean\",\"4\"\u003d\"SpotArea\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Notask\",\"1\"\u003d\"AutoClean\",\"2\"\u003d\"CustomClean\",\"3\"\u003d\"SelectAreanClean\",\"4\"\u003d\"SpotArea\"]`"
 			},
 			{
 				"property": "break-point-restart",
@@ -721,7 +722,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
 			{
 				"property": "carpet-press",
@@ -749,7 +750,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
 			{
 				"property": "serial-number1",

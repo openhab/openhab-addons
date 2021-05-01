@@ -26,7 +26,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\"]`"
 			},
 			{
 				"property": "on",
@@ -69,7 +69,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Common\",\"2\"\u003d\"Smart \"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Common\",\"2\"\u003d\"Smart \"]`"
 			},
 			{
 				"property": "filter-left-time",
@@ -220,7 +220,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"remain-clean-time-reset-clean-time\"\u003d\"Reset Clean Time\",\"filter-cotton-reset-cotton-life\"\u003d\"Reset Cotton Time\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\"]"
+				"readmeComment": "Value mapping `[\"remain-clean-time-reset-clean-time\"\u003d\"Reset Clean Time\",\"filter-cotton-reset-cotton-life\"\u003d\"Reset Cotton Time\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\"]`"
 			},
 			{
 				"property": "no-water-time",

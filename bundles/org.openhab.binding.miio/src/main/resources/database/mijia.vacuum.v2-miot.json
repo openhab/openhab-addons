@@ -119,7 +119,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Idle\",\"2\"\u003d\"Sweeping\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Charging\",\"6\"\u003d\"Go Charging\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Idle\",\"2\"\u003d\"Sweeping\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Charging\",\"6\"\u003d\"Go Charging\"]`"
 			},
 			{
 				"property": "fault",
@@ -191,7 +191,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No Faults\",\"1\"\u003d\"Left-wheel-error\",\"2\"\u003d\"Right-wheel-error\",\"3\"\u003d\"Cliff-error\",\"4\"\u003d\"Low-battery-error\",\"5\"\u003d\"Bump-error\",\"6\"\u003d\"Main-brush-error\",\"7\"\u003d\"Side-brush-error\",\"8\"\u003d\"Fan-motor-error\",\"9\"\u003d\"Dustbin-error\",\"10\"\u003d\"Charging-error\",\"11\"\u003d\"No-wate-error\",\"12\"\u003d\"Pick-up-error\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Left-wheel-error\",\"2\"\u003d\"Right-wheel-error\",\"3\"\u003d\"Cliff-error\",\"4\"\u003d\"Low-battery-error\",\"5\"\u003d\"Bump-error\",\"6\"\u003d\"Main-brush-error\",\"7\"\u003d\"Side-brush-error\",\"8\"\u003d\"Fan-motor-error\",\"9\"\u003d\"Dustbin-error\",\"10\"\u003d\"Charging-error\",\"11\"\u003d\"No-wate-error\",\"12\"\u003d\"Pick-up-error\"]`"
 			},
 			{
 				"property": "mode",
@@ -227,7 +227,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Auto-clean\",\"2\"\u003d\"Spot-clean\",\"3\"\u003d\"Wallflow-clean\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Auto-clean\",\"2\"\u003d\"Spot-clean\",\"3\"\u003d\"Wallflow-clean\"]`"
 			},
 			{
 				"property": "target-water-level",
@@ -264,7 +264,7 @@
 				"tags": [
 					"Setpoint"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},
 			{
 				"property": "fan-level",
@@ -304,7 +304,7 @@
 				"tags": [
 					"Setpoint"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Silence\",\"1\"\u003d\"Stanrd\",\"2\"\u003d\"Middle\",\"3\"\u003d\"Enchance\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silence\",\"1\"\u003d\"Stanrd\",\"2\"\u003d\"Middle\",\"3\"\u003d\"Enchance\"]`"
 			},
 			{
 				"property": "battery-level",
@@ -347,7 +347,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Not-charging\",\"1\"\u003d\"Charging\",\"2\"\u003d\"Charging-competely\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Not-charging\",\"1\"\u003d\"Charging\",\"2\"\u003d\"Charging-competely\"]`"
 			},
 			{
 				"property": "alarm",
@@ -586,7 +586,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"English\",\"1\"\u003d\"简体中文\",\"2\"\u003d\"Español\",\"3\"\u003d\"Русский\",\"4\"\u003d\"Italiano\",\"5\"\u003d\"Français\",\"6\"\u003d\"Deutsch\",\"7\"\u003d\"한국어\",\"8\"\u003d\"Polski\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"English\",\"1\"\u003d\"简体中文\",\"2\"\u003d\"Español\",\"3\"\u003d\"Русский\",\"4\"\u003d\"Italiano\",\"5\"\u003d\"Français\",\"6\"\u003d\"Deutsch\",\"7\"\u003d\"한국어\",\"8\"\u003d\"Polski\"]`"
 			},
 			{
 				"property": "not-disturb-switch",
@@ -627,7 +627,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Mop Uninstall\",\"1\"\u003d\"Mop Install\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Mop Uninstall\",\"1\"\u003d\"Mop Install\"]`"
 			}
 		],
 		"readmeComment": "This device may be overwhelmed if refresh is too frequent, slowing down the responses. Suggest to increase refresh time to 120 seconds"
