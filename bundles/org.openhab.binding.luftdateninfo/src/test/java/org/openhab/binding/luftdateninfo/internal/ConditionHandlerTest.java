@@ -128,4 +128,27 @@ public class ConditionHandlerTest {
         UpdateStatus result = condHandler.updateChannels(null);
         assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
     }
+
+    @Test
+    public void testInternalUpdate() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("ipAddress", "192.168.178.1");
+        t.setConfiguration(properties);
+
+        ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
+        String pmJson = FileReader.readFileInString("src/test/resources/internal-data.json");
+        if (pmJson != null) {
+            UpdateStatus result = condHandler.updateChannels("[" + pmJson + "]");
+            assertEquals(UpdateStatus.OK, result, "Valid update");
+            assertEquals(QuantityType.valueOf(17.6, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
+            assertEquals(QuantityType.valueOf(57.8, Units.PERCENT), condHandler.getHumidity(), "Humidity");
+            assertEquals(QuantityType.valueOf(986.8, HECTO(SIUnits.PASCAL)), condHandler.getPressure(), "Pressure");
+            assertEquals(QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL)), condHandler.getPressureSea(), "Pressure Sea");
+        } else {
+            assertTrue(false);
+        }
+    }
 }

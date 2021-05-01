@@ -13,7 +13,7 @@
 package org.openhab.binding.luftdateninfo.internal.handler;
 
 import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.*;
-import static org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler.*;
+import static org.openhab.binding.luftdateninfo.internal.utils.Constants.*;
 
 import java.util.List;
 
@@ -50,13 +50,13 @@ public class NoiseHandler extends BaseSensorHandler {
             if (valueList != null) {
                 if (HTTPHandler.getHandler().isNoise(valueList)) {
                     valueList.forEach(v -> {
-                        if (v.getValueType().equals(NOISE_EQ)) {
+                        if (v.getValueType().endsWith(NOISE_EQ)) {
                             noiseEQCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.DECIBEL);
                             updateState(NOISE_EQ_CHANNEL, noiseEQCache);
-                        } else if (v.getValueType().equals(NOISE_MIN)) {
+                        } else if (v.getValueType().endsWith(NOISE_MIN)) {
                             noiseMinCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.DECIBEL);
                             updateState(NOISE_MIN_CHANNEL, noiseMinCache);
-                        } else if (v.getValueType().equals(NOISE_MAX)) {
+                        } else if (v.getValueType().endsWith(NOISE_MAX)) {
                             noiseMaxCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.DECIBEL);
                             updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
                         }
