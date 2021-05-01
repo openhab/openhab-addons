@@ -30,7 +30,7 @@ The 'Adam' (from hereon called the gateway) needs to be accessible from the open
 
 After setting up the Plugwise Home Automation bridge you can start a manual scan to find all devices registered on the gateway. 
 You can also manually add things by entering the corresponding device id as a configuration parameter. 
-The device id's can be found be enabling TRACE logging in the Karaf console.
+The device IDs can be found be enabling TRACE logging in the Karaf console.
 
 ## Thing Configuration
 
