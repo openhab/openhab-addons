@@ -51,6 +51,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected UpdateStatus lastUpdateStatus = UpdateStatus.UNKNOWN;
     protected @Nullable ScheduledFuture<?> refreshJob;
     private Optional<String> sensorUrl = Optional.empty();
+    private boolean firstUpdate = true;
 
     public enum ConfigStatus {
         INTERNAL_SENSOR_OK,
@@ -92,6 +93,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        firstUpdate = true;
         lifecycleStatus = LifecycleStatus.INITIALIZING;
         scheduler.execute(this::startUp);
     }
@@ -166,6 +168,10 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     }
 
     public void onResponse(String data) {
+        if (firstUpdate) {
+            logger.debug("{} delivers {}", sensorUrl.get(), data);
+            firstUpdate = false;
+        }
         if (configStatus == ConfigStatus.INTERNAL_SENSOR_OK) {
             lastUpdateStatus = updateChannels("[" + data + "]");
         } else {
