@@ -1,7 +1,5 @@
 # BMW ConnectedDrive Binding
 
-<img align="right" src="./doc/bmw-connected.png" width="150" height="150"/>
-
 The binding provides a connection between [BMW's ConnectedDrive Portal](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) and openHAB.
 All vehicles connected to an account will be detected by the discovery with the correct type 
 
@@ -274,7 +272,7 @@ Charging options with date and time for preferred time windows and charging mode
 
 * Channel Group ID is **charge**
 * Available for electric and hybrid vehicles
-* Read/Write access for UI. Use [Charge Profile Actions](#charge-profile-action) in rules
+* Read/Write access for UI. Use [Charge Profile Editing Action](#charge-profile-editing) in rules
 * There are 3 timers *T1, T2 and T3* available. Replace *X* with number 1,2 or 3 to target the correct timer
 * Additional override Timer *OT* defines a single departure besides the 3 predefined schedule timers  
 

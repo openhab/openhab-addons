@@ -5,6 +5,5 @@
 
 	<name>BMW ConnectedDrive</name>
 	<description>Provides access to your Vehicle Data via BMW Connected Drive Portal</description>
-	<author>Bernd Weymann</author>
 
 </binding:binding>
