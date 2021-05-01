@@ -368,6 +368,7 @@
 		<description>Infrared remote control receiver module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
