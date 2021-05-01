@@ -143,7 +143,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"settings-set-start-time\"\u003d\"Set Start Time\",\"settings-set-end-time\"\u003d\"Set End Time\",\"settings-set-frequency\"\u003d\"Set Frequency\",\"settings-set-screen-off\"\u003d\"Set Screen Off\",\"settings-set-device-off\"\u003d\"Set Device Off\",\"settings-set-temp-unit\"\u003d\"Set Temp Unit\"]"
+				"readmeComment": "Value mapping `[\"settings-set-start-time\"\u003d\"Set Start Time\",\"settings-set-end-time\"\u003d\"Set End Time\",\"settings-set-frequency\"\u003d\"Set Frequency\",\"settings-set-screen-off\"\u003d\"Set Screen Off\",\"settings-set-device-off\"\u003d\"Set Device Off\",\"settings-set-temp-unit\"\u003d\"Set Temp Unit\"]`"
 			},
 			{
 				"property": "relative-humidity",
@@ -278,7 +278,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"2\"\u003d\"Not charging\",\"3\"\u003d\"Not chargeable\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not charging\",\"3\"\u003d\"Not chargeable\"]`"
 			},
 			{
 				"property": "voltage",
@@ -350,7 +350,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"600\"\u003d\"Second\",\"0\"\u003d\"Null\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"600\"\u003d\"Second\",\"0\"\u003d\"Null\"]`"
 			},
 			{
 				"property": "screen-off",
@@ -391,7 +391,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"15\"\u003d\"Second\",\"30\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"0\"\u003d\"Null\"]"
+				"readmeComment": "Value mapping `[\"15\"\u003d\"Second\",\"30\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"0\"\u003d\"Null\"]`"
 			},
 			{
 				"property": "device-off",
@@ -428,7 +428,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"15\"\u003d\"Minute\",\"30\"\u003d\"Minute\",\"60\"\u003d\"Minute\",\"0\"\u003d\"Null\"]"
+				"readmeComment": "Value mapping `[\"15\"\u003d\"Minute\",\"30\"\u003d\"Minute\",\"60\"\u003d\"Minute\",\"0\"\u003d\"Null\"]`"
 			},
 			{
 				"property": "tempature-unit",

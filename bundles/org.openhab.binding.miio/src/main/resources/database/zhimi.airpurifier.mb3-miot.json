@@ -44,7 +44,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\"]`"
 			},
 			{
 				"property": "on",
@@ -95,7 +95,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},
 			{
 				"property": "mode",
@@ -134,7 +134,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\",\"3\"\u003d\"None\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\",\"3\"\u003d\"None\"]`"
 			},
 			{
 				"property": "pm2.5-density",
@@ -276,7 +276,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Brightest\",\"1\"\u003d\"Glimmer\",\"2\"\u003d\"Led Closed\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Brightest\",\"1\"\u003d\"Glimmer\",\"2\"\u003d\"Led Closed\"]`"
 			},
 			{
 				"property": "on1",
@@ -709,7 +709,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"continuous sampling\",\"1\"\u003d\"preparing sampling\",\"2\"\u003d\"stop sampling\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"continuous sampling\",\"1\"\u003d\"preparing sampling\",\"2\"\u003d\"stop sampling\"]`"
 			},
 			{
 				"property": "aqi-state",
@@ -749,7 +749,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"best\",\"1\"\u003d\"good\",\"2\"\u003d\"normal\",\"3\"\u003d\"bad\",\"4\"\u003d\"worse\",\"5\"\u003d\"unhealthy\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"best\",\"1\"\u003d\"good\",\"2\"\u003d\"normal\",\"3\"\u003d\"bad\",\"4\"\u003d\"worse\",\"5\"\u003d\"unhealthy\"]`"
 			},
 			{
 				"property": "aqi-updata-heartbeat",
@@ -958,7 +958,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"hardware reboot\",\"1\"\u003d\"software reboot\",\"2\"\u003d\"update reboot\",\"3\"\u003d\"dog reboot\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"hardware reboot\",\"1\"\u003d\"software reboot\",\"2\"\u003d\"update reboot\",\"3\"\u003d\"dog reboot\"]`"
 			},
 			{
 				"property": "hw-version",
@@ -1020,7 +1020,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},
 			{
 				"property": "country-code",
@@ -1060,7 +1060,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"91\"\u003d\"印度\",\"44\"\u003d\"分销英文\",\"852\"\u003d\"中国香港\",\"886\"\u003d\"中国台湾\",\"82\"\u003d\"韩国\"]"
+				"readmeComment": "Value mapping `[\"91\"\u003d\"印度\",\"44\"\u003d\"分销英文\",\"852\"\u003d\"中国香港\",\"886\"\u003d\"中国台湾\",\"82\"\u003d\"韩国\"]`"
 			}
 		],
 		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":4,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle\",\"siid\":8,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle-mode\",\"siid\":8,\"aiid\":2,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
