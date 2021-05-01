@@ -113,6 +113,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return accessory;
     }
 
+    @Override
     public Collection<Service> getServices() {
         return this.services;
     }
@@ -182,7 +183,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * return configuration attached to the root accessory, e.g. groupItem.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.
-     * 
+     *
      * @param key configuration key
      * @param defaultValue default value
      * @param <T> expected type
@@ -197,7 +198,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * return configuration of the characteristic item, e.g. currentTemperature.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.
-     * 
+     *
      * @param characteristicType characteristic type
      * @param key configuration key
      * @param defaultValue default value
@@ -215,7 +216,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * update mapping with values from item configuration.
      * it checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
      * replace the value.
-     * 
+     *
      * @param characteristicType characteristicType to identify item
      * @param map mapping to update
      * @param customEnumList list to store custom state enumeration
@@ -247,7 +248,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     /**
      * takes item state as value and retrieves the key for that value from mapping.
      * e.g. used to map StringItem value to HomeKit Enum
-     * 
+     *
      * @param characteristicType characteristicType to identify item
      * @param mapping mapping
      * @param defaultValue default value if nothing found in mapping
@@ -283,7 +284,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     @NonNullByDefault
     private <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
-        double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
+        double rawValue = from.equals(to) ? value : from.getConverterTo(to).convert(value);
         return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
@@ -302,7 +303,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     /**
      * create boolean reader with ON state mapped to trueOnOffValue or trueOpenClosedValue depending of item type
-     * 
+     *
      * @param characteristicType characteristic id
      * @param trueOnOffValue ON value for switch
      * @param trueOpenClosedValue ON value for contact
@@ -320,7 +321,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     /**
      * create boolean reader with default ON/OFF mapping considering inverted flag
-     * 
+     *
      * @param characteristicType characteristic id
      * @return boolean reader
      * @throws IncompleteAccessoryException

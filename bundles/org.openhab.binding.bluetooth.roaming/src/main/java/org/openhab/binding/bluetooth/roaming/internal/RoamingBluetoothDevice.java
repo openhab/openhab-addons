@@ -68,6 +68,7 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected @Nullable BluetoothDevice getDelegate() {
         BluetoothDevice newDelegate = null;
         int newRssi = Integer.MIN_VALUE;

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -94,7 +95,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
                     logger.trace("REFRESH received. Delaying by {} ms to avoid throttle excessive REFRESH",
                             delayRemainingMillis);
                 }
-                if (prevFuture == newFuture) {
+                if (Objects.equals(prevFuture, newFuture)) {
                     logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
                             lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
                 }
