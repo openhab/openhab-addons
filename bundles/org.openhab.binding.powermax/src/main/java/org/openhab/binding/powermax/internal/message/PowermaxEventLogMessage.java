@@ -61,8 +61,8 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
             String timestamp = String.format("%02d/%02d/%04d %02d:%02d:%02d", day, month, year, hour, minute, second);
             byte eventZone = message[10];
             byte logEvent = message[11];
-            String logEventStr = PowermaxMessageConstants.getSystemEventString(logEvent & 0x000000FF);
-            String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
+            String logEventStr = PowermaxMessageConstants.getSystemEvent(logEvent & 0x000000FF).toString();
+            String logUserStr = panelSettings.getZoneOrUserName(eventZone & 0x000000FF);
 
             String eventStr;
             if (panelSettings.getPanelType().getPartitions() > 1) {

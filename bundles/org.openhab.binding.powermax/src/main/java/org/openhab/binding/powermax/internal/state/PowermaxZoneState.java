@@ -28,7 +28,13 @@ public class PowermaxZoneState extends PowermaxStateContainer {
     public DateTimeValue lastTripped = new DateTimeValue(this, LAST_TRIP);
     public BooleanValue lowBattery = new BooleanValue(this, LOW_BATTERY);
     public BooleanValue bypassed = new BooleanValue(this, BYPASSED);
+    public BooleanValue alarmed = new BooleanValue(this, ALARMED);
+    public BooleanValue tamperAlarm = new BooleanValue(this, TAMPER_ALARM);
+    public BooleanValue inactive = new BooleanValue(this, INACTIVE);
+    public BooleanValue tampered = new BooleanValue(this, TAMPERED);
     public BooleanValue armed = new BooleanValue(this, ARMED);
+    public StringValue lastMessage = new StringValue(this, ZONE_LAST_MESSAGE);
+    public DateTimeValue lastMessageTime = new DateTimeValue(this, ZONE_LAST_MESSAGE_TIME);
 
     public DynamicValue<Boolean> locked = new DynamicValue<>(this, LOCKED, () -> {
         return armed.getValue();

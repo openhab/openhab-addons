@@ -143,6 +143,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                     try {
                         logger.trace("Powermax job...");
                         updateMotionSensorState();
+                        updateRingingState();
                         if (isConnected()) {
                             checkKeepAlive();
                             commManager.retryDownloadSetup(remainingDownloadAttempts);
@@ -254,6 +255,23 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
     }
 
+    /**
+     * Turn off the Ringing flag when the bell time expires
+     */
+    private void updateRingingState() {
+        if (currentState != null && Boolean.TRUE.equals(currentState.ringing.getValue())) {
+            long now = System.currentTimeMillis();
+            long bellTime = getPanelSettings().getBellTime() * ONE_MINUTE;
+
+            if ((currentState.ringingSince.getValue() + bellTime) < now) {
+                PowermaxState updateState = commManager.createNewState();
+                updateState.ringing.setValue(false);
+                updateChannelsFromAlarmState(RINGING, updateState);
+                currentState.merge(updateState);
+            }
+        }
+    }
+
     /*
      * Check that we're actively communicating with the panel
      */
@@ -277,10 +295,12 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         logger.info("Trying to connect or reconnect...");
         closeConnection();
         currentState = commManager.createNewState();
+        currentState.setInitialState();
         try {
             openConnection();
             logger.debug("openConnection(): connected");
             updateStatus(ThingStatus.ONLINE);
+            updateChannelsFromAlarmState(currentState);
             if (forceStandardMode) {
                 currentState.powerlinkMode.setValue(false);
                 updateChannelsFromAlarmState(MODE, currentState);
@@ -455,12 +475,12 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
         boolean doProcessSettings = (updateState.powerlinkMode.getValue() != null);
 
-        for (int i = 1; i <= getPanelSettings().getNbZones(); i++) {
+        getPanelSettings().getZoneRange().forEach(i -> {
             if (Boolean.TRUE.equals(updateState.getZone(i).armed.getValue())
                     && Boolean.TRUE.equals(currentState.getZone(i).bypassed.getValue())) {
                 updateState.getZone(i).armed.setValue(false);
             }
-        }
+        });
 
         updateState.keepOnlyDifferencesWith(currentState);
         updateChannelsFromAlarmState(updateState);
