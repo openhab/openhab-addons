@@ -128,6 +128,8 @@
 
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
 
+    <module>org.openhab.binding.bmwconnecteddrive</module>
+
     <module>org.openhab.binding.boschindego</module>
 
     <module>org.openhab.binding.boschshc</module>
