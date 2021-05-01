@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nzwateralerts.internal.handler;
 
-import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingConstants.*;
+import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingConstants.CHANNEL_ALERTLEVEL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,8 +54,9 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
         final NZWaterAlertsBinder localBinder = binder;
         if (CHANNEL_ALERTLEVEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-                if (localBinder != null)
+                if (localBinder != null) {
                     localBinder.update();
+                }
             }
         }
     }

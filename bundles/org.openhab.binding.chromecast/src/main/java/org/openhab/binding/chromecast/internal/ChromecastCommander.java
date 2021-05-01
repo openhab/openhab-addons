@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -219,7 +219,7 @@ public class ChromecastCommander {
         }
     }
 
-    void playMedia(@Nullable String title, @Nullable String url, @Nullable String mimeType) {
+    public void playMedia(@Nullable String title, @Nullable String url, @Nullable String mimeType) {
         try {
             if (chromeCast.isAppAvailable(MEDIA_PLAYER)) {
                 if (!chromeCast.isAppRunning(MEDIA_PLAYER)) {

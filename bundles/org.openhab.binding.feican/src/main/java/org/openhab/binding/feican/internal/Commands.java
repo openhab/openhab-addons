@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.feican.internal;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.HSBType;
@@ -82,7 +83,7 @@ public class Commands {
      */
     private byte convertColorPercentToByte(PercentType percent) {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-                .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).byteValue();
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).byteValue();
     }
 
     /**

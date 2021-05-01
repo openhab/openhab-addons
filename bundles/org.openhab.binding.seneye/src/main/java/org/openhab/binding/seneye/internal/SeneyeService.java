@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class SeneyeService {
     public int seneyeType;
     private boolean isInitialized;
     private final Gson gson;
-    private HttpClient httpClient = new HttpClient(new SslContextFactory());
+    private HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
     private ScheduledFuture<?> scheduledJob;
 
     public SeneyeService(SeneyeConfigurationParameters config) throws CommunicationException {

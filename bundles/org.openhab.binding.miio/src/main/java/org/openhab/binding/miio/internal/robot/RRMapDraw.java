@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -180,7 +180,7 @@ public class RRMapDraw {
                 g2d.draw(new Line2D.Float(xPos, yP, xPos, yP));
             }
         }
-        if (logger.isDebugEnabled() && roomIds.size() > 0) {
+        if (logger.isDebugEnabled() && !roomIds.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Integer r : roomIds) {
                 sb.append(" " + r.toString());

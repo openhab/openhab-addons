@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -120,6 +124,10 @@ public class SomfyTahomaBindingConstants {
     // Pergola
     public static final ThingTypeUID THING_TYPE_PERGOLA = new ThingTypeUID(BINDING_ID, "pergola");
 
+    // Bioclimatic Pergola
+    public static final ThingTypeUID THING_TYPE_BIOCLIMATIC_PERGOLA = new ThingTypeUID(BINDING_ID,
+            "bioclimaticpergola");
+
     // Window handle
     public static final ThingTypeUID THING_TYPE_WINDOW_HANDLE = new ThingTypeUID(BINDING_ID, "windowhandle");
 
@@ -156,6 +164,7 @@ public class SomfyTahomaBindingConstants {
 
     // Gateway
     public static final String STATUS = "status";
+    public static final String SCENARIOS = "scenarios";
 
     // Roller shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
@@ -166,8 +175,14 @@ public class SomfyTahomaBindingConstants {
     // Silent roller shutter
     public static final String CONTROL_SILENT = "control_silent";
 
-    // Blind
+    // Bioclimatic Pergola
+    public static final String SLATS = "slats";
+    public static final String PERGOLA_COMMAND = "pergola_command";
+
+    // Blind, Bioclimatic Pergola
     public static final String ORIENTATION = "orientation";
+
+    // Blind
     public static final String CLOSURE_AND_ORIENTATION = "closure_orientation";
 
     // Action group
@@ -301,6 +316,8 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_DOWN = "down";
     public static final String COMMAND_OPEN = "open";
     public static final String COMMAND_CLOSE = "close";
+    public static final String COMMAND_OPEN_SLATS = "openSlats";
+    public static final String COMMAND_CLOSE_SLATS = "closeSlats";
     public static final String COMMAND_STOP = "stop";
     public static final String COMMAND_OFF = "off";
     public static final String COMMAND_CHECK_TRIGGER = "checkEventTrigger";
@@ -380,7 +397,8 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_GATE, THING_TYPE_CURTAIN, THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN,
             THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER, THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO,
             THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
-            THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM));
+            THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM,
+            THING_TYPE_BIOCLIMATIC_PERGOLA));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {

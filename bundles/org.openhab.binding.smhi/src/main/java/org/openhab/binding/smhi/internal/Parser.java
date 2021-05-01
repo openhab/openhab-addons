@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.smhi.internal;
 
 import java.math.BigDecimal;
@@ -37,8 +36,6 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class Parser {
 
-    private static JsonParser parser = new JsonParser();
-
     /**
      * Parse a json string received from Smhi containing forecasts.
      *
@@ -47,7 +44,7 @@ public class Parser {
      */
     public static TimeSeries parseTimeSeries(String json) {
         ZonedDateTime referenceTime;
-        JsonObject object = parser.parse(json).getAsJsonObject();
+        JsonObject object = JsonParser.parseString(json).getAsJsonObject();
 
         referenceTime = parseApprovedTime(json);
         JsonArray timeSeries = object.get("timeSeries").getAsJsonArray();
@@ -66,7 +63,7 @@ public class Parser {
      * @return {@link ZonedDateTime} of the reference time
      */
     public static ZonedDateTime parseApprovedTime(String json) {
-        JsonObject timeObj = parser.parse(json).getAsJsonObject();
+        JsonObject timeObj = JsonParser.parseString(json).getAsJsonObject();
 
         return ZonedDateTime.parse(timeObj.get("referenceTime").getAsString());
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,12 +24,12 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
@@ -158,6 +158,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     private @Nullable ScheduledFuture<?> removeInactiveDevicesTask;
     private @Nullable ScheduledFuture<?> discoveryTask;
+    private @Nullable ScheduledFuture<?> initTask;
 
     private @Nullable Future<?> passiveScanIdleTimer;
 
@@ -168,15 +169,40 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     @Override
     public void initialize() {
-        logger.info("Initializing BlueGiga");
         super.initialize();
-        Optional<BlueGigaConfiguration> cfg = Optional.of(getConfigAs(BlueGigaConfiguration.class));
         updateStatus(ThingStatus.UNKNOWN);
+        if (initTask == null) {
+            initTask = scheduler.scheduleWithFixedDelay(this::checkInit, 0, 10, TimeUnit.SECONDS);
+        }
+    }
+
+    protected void checkInit() {
+        boolean init = false;
+        try {
+            if (!serialHandler.get().isAlive()) {
+                logger.debug("BLE serial handler seems to be dead, reinitilize");
+                stop();
+                init = true;
+            }
+        } catch (InterruptedException e) {
+            return;
+        } catch (ExecutionException e) {
+            init = true;
+        }
+
+        if (init) {
+            logger.debug("Initialize BlueGiga");
+            start();
+        }
+    }
+
+    private void start() {
+        Optional<BlueGigaConfiguration> cfg = Optional.of(getConfigAs(BlueGigaConfiguration.class));
         if (cfg.isPresent()) {
+            initComplete = false;
             configuration = cfg.get();
             serialPortFuture = RetryFuture.callWithRetry(() -> {
                 var localFuture = serialPortFuture;
-                logger.debug("Initialize BlueGiga");
                 logger.debug("Using configuration: {}", configuration);
 
                 String serialPortName = configuration.port;
@@ -234,7 +260,8 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             }, executor);
 
             serialHandler = serialPortFuture
-                    .thenApply(sp -> new BlueGigaSerialHandler(inputStream.get(), outputStream.get()));
+                    .thenApply(sp -> new BlueGigaSerialHandler(getThing().getUID().getAsString(), inputStream.get(),
+                            outputStream.get()));
             transactionManager = serialHandler.thenApply(sh -> {
                 BlueGigaTransactionManager th = new BlueGigaTransactionManager(sh, executor);
                 sh.addHandlerListener(this);
@@ -287,13 +314,16 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     @Override
     public void dispose() {
-        logger.info("Disposing BlueGiga");
+        if (initTask != null) {
+            initTask.cancel(true);
+            initTask = null;
+        }
         stop();
-        stopScheduledTasks();
         super.dispose();
     }
 
     private void stop() {
+        logger.info("Stop BlueGiga");
         transactionManager.thenAccept(tman -> {
             tman.removeEventListener(this);
             tman.close();
@@ -308,6 +338,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
         serialPortFuture.thenAccept(this::closeSerialPort);
         serialPortFuture.cancel(false);
+        stopScheduledTasks();
     }
 
     private void schedulePassiveScan() {
@@ -379,10 +410,16 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             // Ignore all as RXTX seems to send arbitrary exceptions when BlueGiga module is detached
         } finally {
             outputStream.ifPresent(output -> {
-                IOUtils.closeQuietly(output);
+                try {
+                    output.close();
+                } catch (IOException e) {
+                }
             });
             inputStream.ifPresent(input -> {
-                IOUtils.closeQuietly(input);
+                try {
+                    input.close();
+                } catch (IOException e) {
+                }
             });
             sp.close();
             logger.debug("Closed serial port.");
@@ -763,8 +800,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     @Override
     public void bluegigaClosed(Exception reason) {
-        logger.debug("BlueGiga connection closed, request reinitialization");
+        logger.debug("BlueGiga connection closed, request reinitialization, reason: {}", reason.getMessage());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
-        initComplete = false;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,13 +76,13 @@ public abstract class DeviceBase {
 
     public void onNotify(String response) {
         boolean needNotify = true;
-        JsonObject message = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject message = JsonParser.parseString(response).getAsJsonObject();
         try {
             if (message.has("method")) {
                 String method = message.get("method").toString().replace("\"", "");
                 if (method.equals("props")) {// Property notify
                     String params = message.get("params").toString();
-                    JsonObject propsObject = new JsonParser().parse(params).getAsJsonObject();
+                    JsonObject propsObject = JsonParser.parseString(params).getAsJsonObject();
                     for (Entry<String, JsonElement> prop : propsObject.entrySet()) {
                         final YeelightDeviceProperty property = YeelightDeviceProperty.fromString(prop.getKey());
                         if (null == property) {

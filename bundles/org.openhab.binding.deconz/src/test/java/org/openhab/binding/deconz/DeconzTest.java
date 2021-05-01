@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,14 @@ import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
-import org.openhab.binding.deconz.internal.types.*;
+import org.openhab.binding.deconz.internal.types.GroupType;
+import org.openhab.binding.deconz.internal.types.GroupTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.LightType;
+import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ResourceType;
+import org.openhab.binding.deconz.internal.types.ResourceTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
+import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;

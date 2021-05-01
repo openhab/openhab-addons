@@ -62,15 +62,18 @@ Please see the example below.
 |-------------------------------------------------------------------------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | bridge                                                                        | N.A                          | bridge does not expose any channel                                                                                          |
 | gateway                                                                       | status                       | status of your Tahoma gateway                                                                                               |
+| gateway                                                                       | scenarios                    | used to run the scenarios defined in the cloud portal                                                                       |
 | gate                                                                          | gate_command                 | used for controlling your gate (open, close, stop, pedestrian)                                                              |
 | gate                                                                          | gate_state                   | get state of your gate (open, closed, pedestrian)                                                                           |
 | gate                                                                          | gate_position                | get position (0-100%) of your gate (where supported)                                                                        |
 | roller shutter, screen, venetian blind, garage door, awning, pergola, curtain | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                                |
 | window                                                                        | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                                   |
 | silent roller shutter                                                         | silent_control               | similar to control channel but in silent mode                                                                               |
-| venetian blind, adjustable slats roller shutter                               | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
+| venetian blind, adjustable slats roller shutter, bioclimatic pergola           | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
 | venetian blind, adjustable slats roller shutter                               | closure_orientation          | percentual closure and orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS) |
 | adjustable slats roller shutter                                               | rocker                       | used for setting the rocker position of the roller shutter, the only position allowing the slats control                    |
+| bioclimatic pergola                                                           | slats                        | slats state (open/closed)                                                                                                   |
+| bioclimatic pergola                                                           | pergola_command              | used for controlling biclimatic pergola (closeSlats, openSlats, stop)                                                       |
 | action group                                                                  | execute_action               | switch which reacts to ON command and triggers the predefined Tahoma action                                                 |
 | onoff, light                                                                  | switch                       | reacts to standard ON/OFF commands                                                                                          |
 | dimmer light                                                                  | light_intensity              | sets/gets intensity of the dimmer light or ON/OFF                                                                           |
@@ -119,6 +122,9 @@ Please see the example below.
 | myfox camera, myfox alarm                                                     | cloud_status                 | cloud connection status                                                                                                     |
 | myfox camera                                                                  | shutter                      | controlling of the camera shutter                                                                                           |
 | myfox alarm                                                                   | myfox_alarm_command          | used for sending commands to Somfy Myfox alarm device                                                                       |
+
+To run a scenario inside a rule for example, the ID of the scenario will be required.
+You can list all the scenarios IDs with the following console command: `somfytahoma <bridgeUID> scenarios`.
 
 ### Remarks
 

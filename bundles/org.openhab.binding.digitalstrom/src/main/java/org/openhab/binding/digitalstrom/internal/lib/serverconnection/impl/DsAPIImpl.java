@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.GeneralLibConstance;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.BaseSensorValues;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.AssignedSensors;
@@ -134,12 +133,13 @@ public class DsAPIImpl implements DsAPI {
     }
 
     private boolean checkRequiredZone(Integer zoneID, String zoneName) {
-        return zoneID != null && zoneID > -1 || StringUtils.isNotBlank(zoneName);
+        return zoneID != null && zoneID > -1 || (zoneName != null && !zoneName.isBlank());
     }
 
     private boolean checkRequiredDevice(DSID dsid, String dSUID, String name) {
-        return StringUtils.isNotBlank(SimpleRequestBuilder.objectToString(dsid)) || StringUtils.isNotBlank(name)
-                || StringUtils.isNotBlank(dSUID);
+        String objectString = SimpleRequestBuilder.objectToString(dsid);
+        return (objectString != null && !objectString.isBlank()) || (name != null && !name.isBlank())
+                || (dSUID != null && !dSUID.isBlank());
     }
 
     @Override
@@ -411,7 +411,7 @@ public class DsAPIImpl implements DsAPI {
     @Override
     public boolean subscribeEvent(String token, String name, Integer subscriptionID, int connectionTimeout,
             int readTimeout) {
-        if (StringUtils.isNotBlank(name) && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
+        if ((name != null && !name.isBlank()) && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
             String response;
             response = transport.execute(
                     SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.EVENT).addFunction(FunctionKeys.SUBSCRIBE)
@@ -428,7 +428,7 @@ public class DsAPIImpl implements DsAPI {
     @Override
     public boolean unsubscribeEvent(String token, String name, Integer subscriptionID, int connectionTimeout,
             int readTimeout) {
-        if (StringUtils.isNotBlank(name) && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
+        if (name != null && !name.isBlank() && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
             String response;
             response = transport.execute(
                     SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.EVENT).addFunction(FunctionKeys.UNSUBSCRIBE)
@@ -586,7 +586,7 @@ public class DsAPIImpl implements DsAPI {
 
     @Override
     public String loginApplication(String loginToken) {
-        if (StringUtils.isNotBlank(loginToken)) {
+        if (loginToken != null && !loginToken.isBlank()) {
             String response = transport.execute(SimpleRequestBuilder.buildNewRequest(InterfaceKeys.JSON)
                     .addRequestClass(ClassKeys.SYSTEM).addFunction(FunctionKeys.LOGIN_APPLICATION)
                     .addParameter(ParameterKeys.LOGIN_TOKEN, loginToken).buildRequestString());

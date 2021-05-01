@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -950,9 +950,13 @@ public abstract class SonyProjectorConnector {
             if (!runningSession) {
                 close();
             }
-        } catch (SonyProjectorException | InterruptedException e) {
+        } catch (SonyProjectorException e) {
             logger.debug("Send IR {} failed: {}", item.getName(), e.getMessage());
             throw new SonyProjectorException("Send IR " + item.getName() + " failed: " + e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug("Send IR {} interrupted: {}", item.getName(), e.getMessage());
+            Thread.currentThread().interrupt();
+            throw new SonyProjectorException("Send IR " + item.getName() + " interrupted: " + e.getMessage());
         }
 
         logger.debug("Send IR {} succeeded", item.getName());

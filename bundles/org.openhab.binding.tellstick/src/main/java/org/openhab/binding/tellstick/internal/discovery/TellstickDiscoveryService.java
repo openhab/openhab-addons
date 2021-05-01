@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
 import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
+import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalDeviceDTO;
+import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalSensorDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -141,6 +143,14 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
                         thingUID = new ThingUID(TellstickBindingConstants.SWITCH_THING_TYPE, bridge.getUID(),
                                 device.getUUId());
                     }
+                } else if (device instanceof TellstickLocalDeviceDTO) {
+                    if ((((TellstickLocalDeviceDTO) device).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+                        thingUID = new ThingUID(TellstickBindingConstants.DIMMER_THING_TYPE, bridge.getUID(),
+                                device.getUUId());
+                    } else {
+                        thingUID = new ThingUID(TellstickBindingConstants.SWITCH_THING_TYPE, bridge.getUID(),
+                                device.getUUId());
+                    }
                 }
                 break;
             default:
@@ -163,8 +173,20 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
             } else {
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }
-        } else {
+        } else if (device instanceof TellstickNetSensor) {
             TellstickNetSensor sensor = (TellstickNetSensor) device;
+            if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE) || sensor.isSensorOfType(LiveDataType.WINDDIRECTION)
+                    || sensor.isSensorOfType(LiveDataType.WINDGUST)) {
+                sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
+            } else if (sensor.isSensorOfType(LiveDataType.RAINRATE) || sensor.isSensorOfType(LiveDataType.RAINTOTAL)) {
+                sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
+            } else if (sensor.isSensorOfType(LiveDataType.WATT)) {
+                sensorThingId = TellstickBindingConstants.POWERSENSOR_THING_TYPE;
+            } else {
+                sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
+            }
+        } else {
+            TellstickLocalSensorDTO sensor = (TellstickLocalSensorDTO) device;
             if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE) || sensor.isSensorOfType(LiveDataType.WINDDIRECTION)
                     || sensor.isSensorOfType(LiveDataType.WINDGUST)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;

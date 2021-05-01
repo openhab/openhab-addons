@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class DeviceManagerFactory {
 
     private final BlueZPropertiesChangedHandler changeHandler = new BlueZPropertiesChangedHandler();
 
-    private @Nullable CompletableFuture<DeviceManager> deviceManagerFuture;
+    private @Nullable CompletableFuture<@Nullable DeviceManager> deviceManagerFuture;
     private @Nullable CompletableFuture<DeviceManagerWrapper> deviceManagerWrapperFuture;
 
     public BlueZPropertiesChangedHandler getPropertiesChangedHandler() {
@@ -79,7 +79,13 @@ public class DeviceManagerFactory {
                 // Experimental - seems reuse does not work
             } catch (IllegalStateException e) {
                 // Exception caused by first call to the library
-                return DeviceManager.createInstance(false);
+                try {
+                    return DeviceManager.createInstance(false);
+                } catch (DBusException ex) {
+                    // we might be on a system without DBus, such as macOS or Windows
+                    logger.debug("Failed to initialize DeviceManager: {}", ex.getMessage());
+                    return null;
+                }
             }
         }, scheduler);
 
@@ -90,8 +96,10 @@ public class DeviceManagerFactory {
                 int count = tryCount.incrementAndGet();
                 try {
                     logger.debug("Registering property handler attempt: {}", count);
-                    devManager.registerPropertyHandler(changeHandler);
-                    logger.debug("Successfully registered property handler");
+                    if (devManager != null) {
+                        devManager.registerPropertyHandler(changeHandler);
+                        logger.debug("Successfully registered property handler");
+                    }
                     return new DeviceManagerWrapper(devManager);
                 } catch (DBusException e) {
                     if (count < 3) {
@@ -103,7 +111,12 @@ public class DeviceManagerFactory {
             }, scheduler);
         }).whenComplete((devManagerWrapper, th) -> {
             if (th != null) {
-                logger.warn("Failed to initialize DeviceManager: {}", th.getMessage());
+                if (th.getCause() instanceof DBusException) {
+                    // we might be on a system without DBus, such as macOS or Windows
+                    logger.debug("Failed to initialize DeviceManager: {}", th.getMessage());
+                } else {
+                    logger.warn("Failed to initialize DeviceManager: {}", th.getMessage());
+                }
             }
         });
     }
@@ -114,7 +127,11 @@ public class DeviceManagerFactory {
         if (stage1 != null) {
             if (!stage1.cancel(true)) {
                 // a failure to cancel means that the stage completed normally
-                stage1.thenAccept(DeviceManager::closeConnection);
+                stage1.thenAccept(devManager -> {
+                    if (devManager != null) {
+                        devManager.closeConnection();
+                    }
+                });
             }
         }
         this.deviceManagerFuture = null;

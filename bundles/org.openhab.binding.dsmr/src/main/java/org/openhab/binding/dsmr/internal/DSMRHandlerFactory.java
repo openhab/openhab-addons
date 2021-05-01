@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,28 +14,19 @@ package org.openhab.binding.dsmr.internal;
 
 import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.dsmr.internal.discovery.DSMRMeterDiscoveryService;
 import org.openhab.binding.dsmr.internal.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.handler.DSMRMeterHandler;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -53,11 +44,12 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DSMRHandlerFactory.class);
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
-    private @NonNullByDefault({}) LocaleProvider localeProvider;
-    private @NonNullByDefault({}) TranslationProvider i18nProvider;
+    @Activate
+    public DSMRHandlerFactory(@Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     /**
      * Returns if the specified ThingTypeUID is supported by this handler.
@@ -100,70 +92,11 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Searching for thingTypeUID {}", thingTypeUID);
 
         if (THING_TYPE_DSMR_BRIDGE.equals(thingTypeUID) || THING_TYPE_SMARTY_BRIDGE.equals(thingTypeUID)) {
-            DSMRBridgeHandler handler = new DSMRBridgeHandler((Bridge) thing, serialPortManager);
-            registerDiscoveryService(handler);
-            return handler;
+            return new DSMRBridgeHandler((Bridge) thing, serialPortManager);
         } else if (DSMRMeterType.METER_THING_TYPES.contains(thingTypeUID)) {
             return new DSMRMeterHandler(thing);
         }
 
         return null;
-    }
-
-    /**
-     * Registers a meter discovery service for the bridge handler.
-     *
-     * @param bridgeHandler handler to register service for
-     */
-    private synchronized void registerDiscoveryService(DSMRBridgeHandler bridgeHandler) {
-        DSMRMeterDiscoveryService discoveryService = new DSMRMeterDiscoveryService(bridgeHandler);
-
-        discoveryService.setLocaleProvider(localeProvider);
-        discoveryService.setTranslationProvider(i18nProvider);
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof DSMRBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                DSMRMeterDiscoveryService service = (DSMRMeterDiscoveryService) getBundleContext()
-                        .getService(serviceReg.getReference());
-                serviceReg.unregister();
-                if (service != null) {
-                    service.unsetLocaleProvider();
-                    service.unsetTranslationProvider();
-                }
-            }
-        }
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    protected void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    protected void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
     }
 }

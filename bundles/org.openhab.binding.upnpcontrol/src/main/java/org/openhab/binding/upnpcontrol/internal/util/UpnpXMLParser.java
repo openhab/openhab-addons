@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntry;
@@ -79,6 +79,9 @@ public class UpnpXMLParser {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -135,6 +138,9 @@ public class UpnpXMLParser {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -179,6 +185,9 @@ public class UpnpXMLParser {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -366,7 +375,7 @@ public class UpnpXMLParser {
                 entries.add(new UpnpEntry(id, refId, parentId, upnpClass.toString()).withTitle(title.toString())
                         .withAlbum(album.toString()).withAlbumArtUri(albumArtUri.toString())
                         .withCreator(creator.toString())
-                        .withArtist(artistList.size() > 0 ? artistList.get(0) : artist.toString())
+                        .withArtist(!artistList.isEmpty() ? artistList.get(0) : artist.toString())
                         .withPublisher(publisher.toString()).withGenre(genre.toString()).withTrackNumber(trackNumberVal)
                         .withResList(resList));
 

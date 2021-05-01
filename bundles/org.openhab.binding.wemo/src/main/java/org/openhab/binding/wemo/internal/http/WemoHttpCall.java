@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -28,12 +30,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
-
+@NonNullByDefault
 public class WemoHttpCall {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHttpCall.class);
 
-    public String executeCall(String wemoURL, String soapHeader, String content) {
+    public @Nullable String executeCall(String wemoURL, String soapHeader, String content) {
         try {
             Properties wemoHeaders = new Properties();
             wemoHeaders.setProperty("CONTENT-TYPE", WemoBindingConstants.HTTP_CALL_CONTENT_HEADER);

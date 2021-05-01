@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,9 +56,6 @@ public class LogEventMessage {
             int eventType = Integer.parseInt(type);
             logger.trace("eventType received: {}", eventType);
             LogEventType logEventType = LogEventType.valueOfLogEventType(eventType);
-            if (logEventType == null) {
-                return "Unknown log event type received";
-            }
 
             // Date
             sb.append(String.format("%02d", Integer.parseInt(day))).append('-')
@@ -66,23 +63,27 @@ public class LogEventMessage {
                     .append(String.format("%02d", Integer.parseInt(hour))).append(':')
                     .append(String.format("%02d", Integer.parseInt(minute))).append(' ');
 
-            sb.append(logEventType.description);
-            if (logEventType.isPartitionValid) {
-                sb.append(" Partition ").append(Integer.parseInt(partition) + 1);
-            }
+            if (logEventType == null) {
+                sb.append("Unknown log event type");
+            } else {
+                sb.append(logEventType.description);
+                if (logEventType.isPartitionValid) {
+                    sb.append(" Partition ").append(Integer.parseInt(partition) + 1);
+                }
 
-            switch (logEventType.zud) {
-                case None:
-                    break;
-                case Zone:
-                    sb.append(" Zone ").append(Integer.parseInt(zud) + 1);
-                    break;
-                case User:
-                    sb.append(" User ").append(Integer.parseInt(zud) + 1);
-                    break;
-                case Device:
-                    sb.append(" Device ").append(zud);
-                    break;
+                switch (logEventType.zud) {
+                    case NONE:
+                        break;
+                    case ZONE:
+                        sb.append(" Zone ").append(Integer.parseInt(zud) + 1);
+                        break;
+                    case USER:
+                        sb.append(" User ").append(Integer.parseInt(zud) + 1);
+                        break;
+                    case DEVICE:
+                        sb.append(" Device ").append(zud);
+                        break;
+                }
             }
 
             return sb.toString();

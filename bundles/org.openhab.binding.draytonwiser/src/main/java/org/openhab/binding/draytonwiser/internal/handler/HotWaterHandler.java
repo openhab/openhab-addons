@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,17 +82,17 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
 
     private State getHotWaterDemandState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1 && "ON".equalsIgnoreCase(hotWater.get(0).getHotWaterRelayState()));
+        return OnOffType.from(!hotWater.isEmpty() && "ON".equalsIgnoreCase(hotWater.get(0).getHotWaterRelayState()));
     }
 
     private State getManualModeState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1 && "MANUAL".equalsIgnoreCase(hotWater.get(0).getMode()));
+        return OnOffType.from(!hotWater.isEmpty() && "MANUAL".equalsIgnoreCase(hotWater.get(0).getMode()));
     }
 
     private State getSetPointState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1 && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
+        return OnOffType.from(!hotWater.isEmpty() && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
     }
 
     private void setManualMode(final boolean manualMode) throws DraytonWiserApiException {

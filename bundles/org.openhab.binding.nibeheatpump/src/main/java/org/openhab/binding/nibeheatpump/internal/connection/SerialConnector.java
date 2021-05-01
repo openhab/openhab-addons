@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,7 +191,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                 @Override
                 public void sendAck() {
                     try {
-                        byte addr = msg().get(NibeHeatPumpProtocol.OFFSET_ADR);
+                        byte addr = msg().get(NibeHeatPumpProtocol.RES_OFFS_ADR);
                         sendAckToNibe(addr);
                     } catch (IOException e) {
                         sendErrorToListeners(e.getMessage());
@@ -215,7 +215,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                             sendDataToNibe(writeQueue.remove(0));
                         } else {
                             // no messages to send, send ack to pump
-                            byte addr = msg().get(NibeHeatPumpProtocol.OFFSET_ADR);
+                            byte addr = msg().get(NibeHeatPumpProtocol.RES_OFFS_ADR);
                             sendAckToNibe(addr);
                         }
                     } catch (IOException e) {
@@ -230,7 +230,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                             sendDataToNibe(readQueue.remove(0));
                         } else {
                             // no messages to send, send ack to pump
-                            byte addr = msg().get(NibeHeatPumpProtocol.OFFSET_ADR);
+                            byte addr = msg().get(NibeHeatPumpProtocol.RES_OFFS_ADR);
                             sendAckToNibe(addr);
                         }
                     } catch (IOException e) {

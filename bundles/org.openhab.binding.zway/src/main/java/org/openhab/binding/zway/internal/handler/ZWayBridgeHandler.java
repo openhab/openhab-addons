@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.zway.internal.config.ZWayBridgeConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -387,7 +386,8 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
          ****************************************/
 
         // Z-Way IP address
-        if (StringUtils.trimToNull(config.getZWayIpAddress()) == null) {
+        String zWayIpAddress = config.getZWayIpAddress();
+        if (zWayIpAddress == null || zWayIpAddress.isBlank()) {
             config.setZWayIpAddress("localhost"); // default value
         }
 
@@ -397,19 +397,22 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         }
 
         // Z-Way Protocol
-        if (StringUtils.trimToNull(config.getZWayProtocol()) == null) {
+        String zWayProtocol = config.getZWayProtocol();
+        if (zWayProtocol == null || zWayProtocol.isBlank()) {
             config.setZWayProtocol("http");
         }
 
         // Z-Way Password
-        if (StringUtils.trimToNull(config.getZWayPassword()) == null) {
+        String zWayPassword = config.getZWayPassword();
+        if (zWayPassword == null || zWayPassword.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the Z-Way password is missing. Please set a Z-Way password.");
             return null;
         }
 
         // Z-Way Username
-        if (StringUtils.trimToNull(config.getZWayUsername()) == null) {
+        String zWayUsername = config.getZWayUsername();
+        if (zWayUsername == null || zWayUsername.isBlank()) {
             config.setZWayUsername("admin"); // default value
         }
 

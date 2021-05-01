@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ThingUID;
@@ -83,8 +83,7 @@ public class NeeoDeviceKeys {
 
             uidToKey.clear();
 
-            final JsonParser parser = new JsonParser();
-            final JsonObject root = parser.parse(resp.getContent()).getAsJsonObject();
+            final JsonObject root = JsonParser.parseString(resp.getContent()).getAsJsonObject();
             for (Map.Entry<String, JsonElement> room : root.getAsJsonObject("rooms").entrySet()) {
                 final JsonObject roomObj = (JsonObject) room.getValue();
                 for (Map.Entry<String, JsonElement> dev : roomObj.getAsJsonObject("devices").entrySet()) {
@@ -178,7 +177,7 @@ public class NeeoDeviceKeys {
             sb.append("[");
             sb.append(entry.getKey());
             sb.append("=");
-            sb.append(StringUtils.join(entries.toArray()));
+            sb.append(entries.stream().map(Object::toString).collect(Collectors.joining()));
             sb.append("]");
         }
 

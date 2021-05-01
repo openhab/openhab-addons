@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -67,17 +66,17 @@ public class Ethm1Module extends SatelModule {
 
     @Override
     protected CommunicationChannel connect() throws ConnectionFailureException {
-        logger.info("Connecting to ETHM-1 module at {}:{}", this.host, this.port);
+        logger.info("Connecting to ETHM-1 module at {}:{}", host, port);
 
         try {
             Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(this.host, this.port), this.getTimeout());
+            socket.connect(new InetSocketAddress(host, port), this.getTimeout());
             logger.info("ETHM-1 module connected successfully");
 
-            if (StringUtils.isBlank(this.encryptionKey)) {
+            if (encryptionKey.isBlank()) {
                 return new TCPCommunicationChannel(socket);
             } else {
-                return new EncryptedCommunicationChannel(socket, this.encryptionKey);
+                return new EncryptedCommunicationChannel(socket, encryptionKey);
             }
         } catch (SocketTimeoutException e) {
             throw new ConnectionFailureException("Connection timeout", e);

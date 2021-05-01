@@ -8,7 +8,8 @@ HomeKit organizes your home into "accessories" that are made up of a number of "
 Some accessory types require a specific set of characteristics.
 
 HomeKit integration supports following accessory types:
-- Switchable 
+
+- Switchable
 - Outlet
 - Lighting (simple, dimmable, color)
 - Fan
@@ -33,20 +34,52 @@ HomeKit integration supports following accessory types:
 - Carbon Dioxide Sensor
 - Carbon Monoxide Sensor
 
+## Quick start
+
+- install homekit binding via UI
+  
+- add metadata to an existing item (see [UI based configuration](#UI-based-Configuration))
+  
+- scan QR code from UI->Settings->HomeKit Integration
+  
+  ![settings_qrcode.png](doc/settings_qrcode.png)
+  
+- open home app on your iPhone or iPad
+- create new home
+  
+  ![ios_add_new_home.png](doc/ios_add_new_home.png)
+  
+- add accessory
+  
+  ![ios_add_accessory.png](doc/ios_add_accessory.png)
+  
+- scan QR code from UI->Setting-HomeKit Integration
+  
+  ![ios_scan_qrcode.png](doc/ios_scan_qrcode.png)  
+
+- click "Add Anyway"
+  
+  ![ios_add_anyway.png](doc/ios_add_anyway.png)
+  
+- follow the instruction of the home app wizard
+  
+  ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
+  
+Add metadata to more item or fine-tune your configuration using further settings
+
+
 ## Global Configuration
 
-Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
-At the very least, you will need to define a pin number for the bridge.
-This will be used in iOS when pairing. The pin code is in the form "###-##-###".
+You can define HomeKit settings either via mainUI or via `$OPENHAB_CONF/services/homekit.cfg`.
+HomeKit works with default settings, but we recommend changing the pin for the bridge.
+This will be used in iOS when pairing without QR Code. The pin code is in the form "###-##-###".
 Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS.
 At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
-If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
-Check for typos in the pin-code if you encounter "Bad Client Credential" errors during pairing.
 
-Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge (which can be edited in Paper UI standard mode) are also illustrated in the following sample:
+Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge are also illustrated in the following sample:
 
 ```
-org.openhab.homekit:port=9124
+org.openhab.homekit:port=9123
 org.openhab.homekit:pin=031-45-154
 org.openhab.homekit:useFahrenheitTemperature=true
 org.openhab.homekit:thermostatTargetModeCool=CoolOn
@@ -54,31 +87,24 @@ org.openhab.homekit:thermostatTargetModeHeat=HeatOn
 org.openhab.homekit:thermostatTargetModeAuto=Auto
 org.openhab.homekit:thermostatTargetModeOff=Off
 org.openhab.homekit:networkInterface=192.168.0.6
-```
-
-The following additional settings can be added or edited in Paper UI after switching to expert mode:
-
-```
+org.openhab.homekit:useOHmDNS=false
 org.openhab.homekit:name=openHAB
-org.openhab.homekit:minimumTemperature=-100
-org.openhab.homekit:maximumTemperature=100
 ```
 
 ### Overview of all settings
 
 | Setting                  | Description                                                                                                                                                                                                                             | Default value |
 |:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address.                                                                                  | (none)        |
+| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address configured for openHAB.                                                                                  | (none)        |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
+| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.   | false  |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                 | false         |
-| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable).                                                                                                                                                                | CoolOn        |
-| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable).                                                                                                                                                                | HeatOn        |
-| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable).                                                                                                                                                              | Auto          |
-| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).                                                                                                                                                              | Off           |
-| minimumTemperature       | Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                  | -100          |
-| maximumTemperature       | Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                  | 100           |
+| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | CoolOn        |
+| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                | HeatOn        |
+| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | Auto          |
+| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                             | Off           |
 | name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                               | openHAB       |
 
 ## Item Configuration
@@ -92,7 +118,35 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
-e.g.
+
+If the first word of the item name match the room name in home app, home app will hide it. 
+E.g. item with the name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items and rooms.
+
+### UI based Configuration
+
+In order to add metadata to an item:
+
+- select desired item in mainUI
+- click on "Add Metadata"
+  
+  ![item_add_metadata_button.png](doc/item_add_metadata_button.png)
+  
+- select "Apple HomeKit" namespace
+  
+  ![select_homekit_namespace.png](doc/select_homekit_namespace.png)
+  
+- click on "HomeKit Accessory/Characteristic"
+  
+  ![add_homekit_tag.png](doc/add_homekit_tag.png)
+
+- select required HomeKit accessory type or characteristic
+  
+  ![select_homekit_accessory_type.png](doc/select_homekit_accessory_type.png)
+  
+- click on "Save"
+
+
+### Textual configuration
 
 ```xtend
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
@@ -110,7 +164,7 @@ The tag can be:
 - shorthand version: with only either accessory type or characteristic, e.g. "LeakSensor", "LeakDetectedState".
 
 if shorthand version has only accessory type, then HomeKit will automatically link *all* mandatory characteristics of this accessory type to the openHAB item.
-e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState. 
+e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState.
 Following are equal configuration:
 
 ```xtend
@@ -119,8 +173,8 @@ Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCoverin
 ```
 
 If the shorthand version has only a characteristic then it must be a part of a group which has a HomeKit accessory type.
-You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type, 
-e.g. LeakSensor definition 
+You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type,
+e.g. LeakSensor definition
 
 ```xtend
 Group  gLeakSensor                      "Leak Sensor Group"                                              {homekit="LeakSensor"}
@@ -128,10 +182,9 @@ Switch leaksensor                       "Leak Sensor"                           
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
 
-
 You can use openHAB group to manage state of multiple items. (see [Group items](https://www.openhab.org/docs/configuration/items.html#derive-group-state-from-member-items))
 In this case, you can assign HomeKit accessory type to the group and to the group items
-Following example defines 3 HomeKit accessories of type Lighting: 
+Following example defines 3 HomeKit accessories of type Lighting:
 
 - "Light 1" and "Light 2" as independent lights
 - "Light Group" that controls "Light 1" and "Light 2" as group
@@ -141,6 +194,267 @@ Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="Lighting"}
 Switch light1 "Light 1" (gLight) {homekit="Lighting.OnState"}
 Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 ```
+
+
+## Accessory Configuration Details
+
+This section provides examples widely used accessory types. 
+For complete list of supported accessory types and characteristics please see section [Supported accessory type](#Supported accessory type)
+
+### Dimmers
+
+The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
+HomeKit home app sends following commands/update:
+
+- On brightness change home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON".
+- On "ON" event home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
+- On "OFF" event home app sends "OFF" without brightness information.
+
+However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change.
+In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration.
+
+```xtend
+Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
+```
+
+Following modes are supported:
+
+- "normal" - no filtering. The commands will be sent to device as received from HomeKit. This is default mode.
+- "filterOn" - ON events are filtered out. only OFF events and brightness information are sent
+- "filterBrightness100" - only Brightness=100% is filtered out. everything else sent unchanged. This allows custom logic for soft launch in devices.
+- "filterOnExceptBrightness100"  - ON events are filtered out in all cases except of brightness = 100%.
+
+Examples:
+
+ ```xtend
+ Dimmer dimmer_light_1	"Dimmer Light 1" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
+ Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
+ Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
+ ```
+
+### Windows Covering (Blinds) / Window / Door
+
+HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics:
+
+- CurrentPosition (0-100% of current window covering position)
+- TargetPosition (0-100% of target position)
+- PositionState (DECREASING,INCREASING or STOPPED as state). If no state provided, HomeKit will send STOPPED
+
+These characteristics can be mapped to a single openHAB rollershutter item. In such case currentPosition will always equal target position, means if you request to close a blind/window/door, HomeKit will immediately report that the blind/window/door is closed.
+As discussed above, one can use full or shorthand definition. Following two definitions are equal:
+
+```xtend
+Rollershutter 	window 		            "Window"  	                {homekit = "Window"}
+Rollershutter 	door		            "Door"  	                {homekit = "Door"}
+Rollershutter   window_covering         "Window Rollershutter"      {homekit = "WindowCovering"}
+Rollershutter 	window_covering_long 	"Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
+ ```
+
+openHAB Rollershutter is defined by default as:
+
+- OPEN if position is 0%,
+- CLOSED if position is 100%.
+
+In contrast, HomeKit window covering/door/window have inverted mapping
+
+- OPEN if position 100%
+- CLOSED if position is 0%
+
+Therefore, HomeKit integration inverts by default the values between openHAB and HomeKit, e.g. if openHAB current position is 30% then it will send 70% to HomeKit app.
+In case you need to disable this logic you can do it with configuration parameter inverted="false", e.g.
+
+```xtend
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted="false"]}
+Rollershutter window		   "Window"  	         {homekit = "Window" [inverted="false"]}
+Rollershutter door		       "Door"  	         {homekit = "Door" [inverted="false"]}
+
+ ```
+
+Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
+If your blind supports tilt, and you want to control tilt via HomeKit you need to define blind as a group.
+e.g.
+
+```xtend
+Group           gBlind    			    "Blind with tilt"       						{homekit = "WindowCovering"}
+Rollershutter   window_covering         "Blind"                         (gBlind)        {homekit = "WindowCovering"}
+Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "WindowCovering.CurrentHorizontalTiltAngle, WindowCovering.TargetHorizontalTiltAngle"}
+Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "WindowCovering.CurrentVerticalTiltAngle, WindowCovering.TargetVerticalTiltAngle"}
+ ```
+
+Current and Target Position characteristics can be linked to Rollershutter but also to Number or Dimmer item types.
+e.g.
+
+```xtend
+Group           gBlind   "Blinds"       		         {homekit = "WindowCovering"}
+Dimmer          blind_current_position    (gBlind)       {homekit = "CurrentPosition"}
+Number          blind_target_position     (gBlind)       {homekit = "TargetPosition"}
+String          blind_position            (gBlind)       {homekit = "PositionState"}
+```
+
+### Thermostat
+
+A HomeKit thermostat has following mandatory characteristics:
+
+- CurrentTemperature
+- TargetTemperature
+- CurrentHeatingCoolingMode
+- TargetHeatingCoolingMode
+
+In order to define a thermostat you need to create a group with at least these 4 items.
+Example:
+
+```xtend
+Group  			gThermostat    				"Thermostat"       										 	{homekit = "Thermostat"}
+Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature"}
+Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature"}  
+String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
+String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
+```
+
+In addition, thermostat can have thresholds for cooling and heating modes.
+Example with thresholds:
+
+```xtend
+Group  			gThermostat    				"Thermostat"       										 	{homekit = "Thermostat"}
+Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature"}
+Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature"}  
+String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
+String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
+Number 			thermostat_cool_thrs 	    "Thermostat Cool Threshold Temp [%.1f C]"  	(gThermostat)  	{homekit = "CoolingThresholdTemperature"}
+Number 			thermostat_heat_thrs 	    "Thermostat Heat Threshold Temp [%.1f C]"  	(gThermostat)  	{homekit = "HeatingThresholdTemperature"}
+```
+
+#### Min / max temperatures
+
+Current  and target temperatures have default min and max values. Any values below or above max limits will be replaced with min or max limits.
+Default limits are:
+
+- current temperature: min value = 0 C, max value = 100 C
+- target temperature: min value = 10 C, max value = 38 C
+
+You can overwrite default values using minValue and maxValue configuration at item level, e.g.
+
+```xtend
+Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
+Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature" [minValue=10.5, maxValue=27]} 
+```
+
+If "useFahrenheitTemperature" is set to true, the min and max temperature must be provided in Fahrenheit.
+
+#### Thermostat modes
+
+HomeKit thermostat supports following modes
+
+- CurrentHeatingCoolingMode: OFF, HEAT, COOL
+- TargetHeatingCoolingMode: OFF, HEAT, COOL, AUTO
+
+These modes are mapped to string values of openHAB items using either global configuration (see [Global Configuration](#Global Configuration)) or configuration at item level.
+e.g. if your current mode item can have following values: "OFF", "HEATING", "COOLING" then you need following mapping at item level
+
+```xtend
+String 			thermostat_current_mode  	"Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]} 
+```
+
+You can provide mapping for target mode in similar way.
+
+The custom mapping at item level can be also used to reduce number of modes shown in home app. The modes can be only reduced, but not added, i.e. it is not possible to add new custom mode to HomeKit thermostat.
+
+Example: if your thermostat does not support cooling, then you need to limit mapping  to OFF and HEAT values only:
+
+```xtend
+String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}          
+String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
+```
+
+The mapping using main UI looks like following:
+
+![mode_mapping.png](doc/mode_mapping.png)
+
+### Valve
+
+The HomeKit valve accessory supports following 2 optional characteristics:
+
+- duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect.
+
+- remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
+
+Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0.
+It is up to valve to have an own timer and stop valve once the timer is over.
+Some valves have such timer, e.g. pretty common for sprinklers.
+In case the valve has no timer capability, openHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over.
+
+configuration for these two cases looks as follow:
+
+- valve with timer:
+
+```xtend
+Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation"]}
+Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration"}
+Number 			valve_remaining_duration "Valve remaining duration" (gValve) 		{homekit = "Valve.RemainingDuration"}
+```
+
+- valve without timer (no item for remaining duration required)
+
+```xtend
+Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true]}
+Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
+```
+
+### Sensors
+
+Sensors have typically one mandatory characteristic, e.g. temperature or lead trigger, and several optional characteristics which are typically used for battery powered sensors and/or wireless sensors.
+Following table summarizes the optional characteristics supported by sensors.
+
+|  Characteristics             | Supported openHAB items  | Description                                                                                                                                                                                                              |
+|:-----------------------------|:-------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name                         | String                   | Name of the sensor. This characteristic is interesting only for very specific cases in which the name of accessory is dynamic. if you not sure then you don't need it.                                                   |
+| ActiveStatus                 | Switch, Contact          | Accessory current working status. "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                              |
+| FaultStatus                  | Switch, Contact          | Accessory fault status. "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.      |
+| TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                  |
+| BatteryLowStatus             | Switch, Contact          | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.                 |
+
+Switch and Contact items support inversion of the state mapping, e.g. by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed". 
+The configuration "inverted='true'" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".  
+
+Examples of sensor definitions.
+Sensors without optional characteristics:
+
+```xtend
+Switch  leaksensor_single    "Leak Sensor"                   {homekit="LeakSensor"}
+Number  light_sensor 	     "Light Sensor"                  {homekit="LightSensor"}
+Number  temperature_sensor 	 "Temperature Sensor [%.1f C]"   {homekit="TemperatureSensor"}
+Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor"}
+Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor" [inverted="true"]}
+
+Switch  occupancy_sensor     "Occupancy Sensor"              {homekit="OccupancyDetectedState"}
+Switch  motion_sensor        "Motion Sensor"                 {homekit="MotionSensor"}
+Number  humidity_sensor 	 "Humidity Sensor"			     {homekit="HumiditySensor"}
+```
+
+Sensors with optional characteristics:
+
+```xtend
+Group           gLeakSensor                "Leak Sensor"                                             {homekit="LeakSensor"}
+Switch          leaksensor                 "Leak Sensor State"                  (gLeakSensor)        {homekit="LeakDetectedState"}
+Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus" }
+Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus" [inverted="true"]}
+Switch          leaksensor_fault           "Leak Sensor Fault"                  (gLeakSensor)        {homekit="FaultStatus"}
+Switch          leaksensor_tampered        "Leak Sensor Tampered"               (gLeakSensor)        {homekit="TamperedStatus"}
+
+Group           gMotionSensor              "Motion Sensor"                                           {homekit="MotionSensor"}
+Switch          motionsensor               "Motion Sensor State"                (gMotionSensor)      {homekit="MotionDetectedState"}
+Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus" [inverted="true"]}
+Switch          motionsensor_active        "Motion Sensor Active"               (gMotionSensor)      {homekit="ActiveStatus"}
+Switch          motionsensor_fault         "Motion Sensor Fault"                (gMotionSensor)      {homekit="FaultStatus"}
+Switch          motionsensor_tampered      "Motion Sensor Tampered"             (gMotionSensor)      {homekit="TamperedStatus"}
+```
+
+or using UI
+
+![sensor_ui_config.png](doc/sensor_ui_config.png)
+
 
 ## Supported accessory type
 
@@ -180,7 +494,7 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| ContactSensor        |                             |                              |                          | Contact Sensor,An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                                                                 |
+| ContactSensor        |                             |                              |                          | Contact Sensor, An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                                                                 |
 |                      | ContactSensorState          |                              | Switch, Contact          | Contact sensor state (ON=open, OFF=closed)                                                                                                                                                                                                                                                                |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
@@ -234,36 +548,36 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
 | Door                 |                             |                              |                          | Motorized door. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter            | Current position of motorized door                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter            | Target position of motorized door                                                                                                                                                                                                                                                                       |
-|                      | PositionState               |                              | Rollershutter            | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number   | Current position of motorized door                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number   | Target position of motorized door                                                                                                                                                                                                                                                                       |
+|                      | PositionState               |                              | Rollershutter, String           | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
 |                      |                             | Name                         | String                   | Name of the motorized door                                                                                                                                                                                                                                                                             |
 |                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
 |                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
 | Window               |                             |                              |                          | Motorized window. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter            | Current position of motorized window                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter            | Target position of motorized window                                                                                                                                                                                                                                                                       |
-|                      | PositionState               |                              | Rollershutter            | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of motorized window                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of motorized window                                                                                                                                                                                                                                                                       |
+|                      | PositionState               |                              | Rollershutter, String         | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
 |                      |                             | Name                         | String                   | Name of the motorized window                                                                                                                                                                                                                                                                             |
 |                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
 |                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
 | WindowCovering       |                             |                              |                          | Window covering / blinds. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter            | Current position of window covering                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter            | Target position of window covering                                                                                                                                                                                                                                                                        |
-|                      | PositionState               |                              | Rollershutter            | current only "STOPPED" is supported.                                                                                                                                                                                                                                                                      |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number            | Current position of window covering                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number            | Target position of window covering                                                                                                                                                                                                                                                                        |
+|                      | PositionState               |                              | Rollershutter, String             | current only "STOPPED" is supported.                                                                                                                                                                                                                                                                      |
 |                      |                             | Name                         | String                   | Name of the windows covering                                                                                                                                                                                                                                                                              |
 |                      |                             | HoldPosition                 | Switch                   | Window covering should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
 |                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
-|                      |                             | CurrentHorizontalTiltAngle   | Number                   | current angle of horizontal slats for accessories windows. values -90 to 90. A value of 0 indicates that the slats are rotated to a fully open position. A value of -90 indicates that the slats are rotated all the way in a direction where the user-facing edge is higher than the window-facing edge. |
-|                      |                             | TargetHorizontalTiltAngle    | Number                   | target angle of horizontal slats                                                                                                                                                                                                                                                                          |
-|                      |                             | CurrentVerticalTiltAngle     | Number                   | current angle of vertical slats                                                                                                                                                                                                                                                                           |
-|                      |                             | TargetVerticalTiltAngle      | Number                   | target angle of vertical slats                                                                                                                                                                                                                                                                            |
+|                      |                             | CurrentHorizontalTiltAngle   | Number, Dimmer           | Number Item = current angle of horizontal slats. values -90 to 90. A value of 0 indicates that the slats are rotated to a fully open position. A value of -90 indicates that the slats are rotated all the way in a direction where the user-facing edge is higher than the window-facing edge. Dimmer Item =  the percentage of openness (0%-100%) |
+|                      |                             | TargetHorizontalTiltAngle    | Number, Dimmer           | Number Item = target angle of horizontal slats (-90 to +90). Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                                     |
+|                      |                             | CurrentVerticalTiltAngle     | Number, Dimmer           | Number Item = current angle of vertical slats (-90 to +90) . Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                                     |
+|                      |                             | TargetVerticalTiltAngle      | Number, Dimmer           | Number Item = target angle of vertical slats. Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                                           |
 | Switchable           |                             |                              |                          | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                             |
 |                      | OnState                     |                              | Switch                   | State of the switch - ON/OFF                                                                                                                                                                                                                                                                              |
 |                      |                             | Name                         | String                   | Name of the switch                                                                                                                                                                                                                                                                                        |
 | Outlet               |                             |                              |                          | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                             |
 |                      | OnState                     |                              | Switch                   | State of the outlet - ON/OFF                                                                                                                                                                                                                                                                              |
-|                      | InUseStatus                 |                              | Switch                   | indicates whether current flowing through the outlet                                                                                                                                                                                                                                                      |
+|                      | InUseStatus                 |                              | Switch                   | Indicates whether the outlet has an appliance e.g., a floor lamp, physically plugged in. This characteristic is set to True even if the plugged-in appliance is off.                                                                                                                                                                                                                                                     |
 |                      |                             | Name                         | String                   | Name of the switch                                                                                                                                                                                                                                                                                        |
 | Lighting             |                             |                              |                          | A lightbulb, can have further optional parameters for brightness, hue, etc                                                                                                                                                                                                                                |
 |                      | OnState                     |                              | Switch                   | State of the light - ON/OFF                                                                                                                                                                                                                                                                               |
@@ -271,7 +585,7 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
 |                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
 |                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
-|                      |                             | ColorTemperature             | Number                   | Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
+|                      |                             | ColorTemperature             | Number                   | NOT WORKING on iOS 14.x. Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
 | Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      |                             | CurrentFanState              | Number                   | current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                             |
@@ -299,7 +613,7 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | LockControl                  | Number, Switch           | status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED                                                                                                                                                                                                          |
 |                      |                             | CoolingThresholdTemperature  | Number                   | maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                    |
 |                      |                             | HeatingThresholdTemperature  | Number                   | minimum temperature that must be reached before heating is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]            |
-| Lock                 |                             |                              |                          | A Lock Mechanism                                                                                                                                                                                                                                                                                          |
+| Lock                 |                             |                              |                          | A Lock Mechanism. with flag [inverted="true"] the default mapping to switch ON/OFF can be inverted.                                                                                                                                                                                                                                                                                         |
 |                      | LockCurrentState            |                              | Switch, Number           | current state of lock mechanism (1/ON=SECURED, 0/OFF=UNSECURED, 2=JAMMED, 3=UNKNOWN)                                                                                                                                                                                                                                              |
 |                      | LockTargetState             |                              | Switch                   | target state of lock mechanism (ON=SECURED, OFF=UNSECURED)                                                                                                                                                                                                                                               |
 |                      |                             | Name                         | String                   | Name of the lock                                                                                                                                                                                                                                                                                          |
@@ -323,7 +637,6 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | Name                         | String                   | Name of the garage door                                                                                                                                                                                                                                                                                   |
 |                      |                             | LockCurrentState             | Switch                   | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                              |
 |                      |                             | LockTargetState              | Switch                   | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                               |
-
 
 ### Examples
 
@@ -351,9 +664,9 @@ Number          valve_remaining_duration   "Valve remaining duration"           
 
 Group           gThermostat                "Thermostat"                                              {homekit="Thermostat"}
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f C]"   (gThermostat)        {homekit="Thermostat.CurrentTemperature" [minValue=0, maxValue=40]}
-Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}  
-String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}          
-String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}           
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}
+String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}
 
 Group           gLeakSensor                "Leak Sensor Group"                                       {homekit="LeakSensor"}
 Switch          leaksensor                 "Leak Sensor"                        (gLeakSensor)        {homekit="LeakDetectedState"}
@@ -400,174 +713,11 @@ String          security_target_state      "Security Target State"              
 Group  			gCooler    			        "Cooler Group"       				 	                {homekit="HeaterCooler"}
 Switch          cooler_active 				"Cooler Active" 				    (gCooler) 		    {homekit="ActiveStatus"}
 Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooler)  	        {homekit="CurrentTemperature"}
-String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}          
-String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           {homekit="TargetHeaterCoolerState"}  
+String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}
+String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           {homekit="TargetHeaterCoolerState"}
 Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
-
-## Accessory Configuration Details
-
-### Dimmers
-
-The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
-HomeKit home app sends following commands/update:
-
-- On brightness change home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON". 
-- On "ON" event home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
-- On "OFF" event home app sends "OFF" without brightness information. 
-
-However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change. 
-In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration. 
-
-```xtend
-Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
-```
-
-Following modes are supported:
-
-- "normal" - no filtering. The commands will be sent to device as received from HomeKit. This is default mode.
-- "filterOn" - ON events are filtered out. only OFF events and brightness information are sent
-- "filterBrightness100" - only Brightness=100% is filtered out. everything else sent unchanged. This allows custom logic for soft launch in devices.
-- "filterOnExceptBrightness100"  - ON events are filtered out in all cases except of brightness = 100%.
- 
- Examples:
- 
- ```xtend
- Dimmer dimmer_light_1	"Dimmer Light 1" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
- Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
- Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
- ```
-### Windows Covering (Blinds) / Window / Door
-
-HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics: 
-
-- CurrentPosition (0-100% of current window covering position)
-- TargetPosition (0-100% of target position)
-- PositionState (DECREASING,INCREASING or STOPPED as state). If no state provided, HomeKit will send STOPPED
-
-These characteristics can be mapped to a single openHAB rollershutter item. In such case currentPosition will always equal target position, means if you request to close a blind/window/door, HomeKit will immediately report that the blind/window/door is closed.
-As discussed above, one can use full or shorthand definition. Following two definitions are equal:
-
-```xtend
-Rollershutter 	window 		            "Window"  	                {homekit = "Window"}
-Rollershutter 	door		            "Door"  	                {homekit = "Door"}
-Rollershutter   window_covering         "Window Rollershutter"      {homekit = "WindowCovering"}
-Rollershutter 	window_covering_long 	"Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
- ```
-
-openHAB Rollershutter is defined by default as:
-
-- OPEN if position is 0%,
-- CLOSED if position is 100%.
-
-In contrast, HomeKit window covering/door/window have inverted mapping
-- OPEN if position 100%
-- CLOSED if position is 0%
-
-Therefore, HomeKit integration inverts by default the values between openHAB and HomeKit, e.g. if openHAB current position is 30% then it will send 70% to HomeKit app.
-In case you need to disable this logic you can do it with configuration parameter inverted="false", e.g. 
-
-```xtend
-Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted="false"]}
-Rollershutter window		   "Window"  	         {homekit = "Window" [inverted="false"]}
-Rollershutter door		       "Door"  	         {homekit = "Door" [inverted="false"]}
-
- ```
-
-Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger. 
-If your blind supports tilt, and you want to control tilt via HomeKit you need to define blind as a group. 
-e.g. 
-
-```xtend
-Group           gBlind    			    "Blind with tilt"       						{homekit = "WindowCovering"}
-Rollershutter   window_covering         "Blind"                         (gBlind)        {homekit = "WindowCovering"}
-Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "WindowCovering.CurrentHorizontalTiltAngle, WindowCovering.TargetHorizontalTiltAngle"}
-Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "WindowCovering.CurrentVerticalTiltAngle, WindowCovering.TargetVerticalTiltAngle"}
- ```
-
-### Valve
-
-The HomeKit valve accessory supports following 2 optional characteristics:
-
-- duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect. 
-
-- remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
-
-Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0. 
-It is up to valve to have an own timer and stop valve once the timer is over. 
-Some valves have such timer, e.g. pretty common for sprinklers. 
-In case the valve has no timer capability, openHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over. 
-
-configuration for these two cases looks as follow:
-
-- valve with timer:
-
-```xtend
-Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation"]}
-Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
-Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration"}
-Number 			valve_remaining_duration "Valve remaining duration" (gValve) 		{homekit = "Valve.RemainingDuration"}
-```
-
-- valve without timer (no item for remaining duration required)
-
-```xtend
-Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true]}
-Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
-Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
-```
-
-### Sensors
-Sensors have typically one mandatory characteristic, e.g. temperature or lead trigger, and several optional characteristics which are typically used for battery powered sensors and/or wireless sensors.
-Following table summarizes the optional characteristics supported by sensors.
-
-|  Characteristics             | Supported openHAB items  | Description                                                                                                                                                                                                              |
-|:-----------------------------|:-------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Name                         | String                   | Name of the sensor. This characteristic is interesting only for very specific cases in which the name of accessory is dynamic. if you not sure then you don't need it.                                                   |
-| ActiveStatus                 | Switch, Contact          | Accessory current working status. "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                              |
-| FaultStatus                  | Switch, Contact          | Accessory fault status. "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.      |
-| TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                  |
-| BatteryLowStatus             | Switch, Contact          | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.                 |
-
-Examples of sensor definitions.
-Sensors without optional characteristics:
-
-```xtend
-Switch  leaksensor_single    "Leak Sensor"                   {homekit="LeakSensor"}
-Number  light_sensor 	     "Light Sensor"                  {homekit="LightSensor"}
-Number  temperature_sensor 	 "Temperature Sensor [%.1f C]"   {homekit="TemperatureSensor"}
-Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor"}
-Switch  occupancy_sensor     "Occupancy Sensor"              {homekit="OccupancyDetectedState"}
-Switch  motion_sensor        "Motion Sensor"                 {homekit="MotionSensor"}
-Number  humidity_sensor 	 "Humidity Sensor"			     {homekit="HumiditySensor"}
-```
-
-Sensors with optional characteristics:
-
-```xtend
-Group           gLeakSensor                "Leak Sensor"                                             {homekit="LeakSensor"}
-Switch          leaksensor                 "Leak Sensor State"                  (gLeakSensor)        {homekit="LeakDetectedState"}
-Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus"}
-Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus"}
-Switch          leaksensor_fault           "Leak Sensor Fault"                  (gLeakSensor)        {homekit="FaultStatus"}
-Switch          leaksensor_tampered        "Leak Sensor Tampered"               (gLeakSensor)        {homekit="TamperedStatus"}
-
-Group           gMotionSensor              "Motion Sensor"                                           {homekit="MotionSensor"}
-Switch          motionsensor               "Motion Sensor State"                (gMotionSensor)      {homekit="MotionDetectedState"}
-Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus"}
-Switch          motionsensor_active        "Motion Sensor Active"               (gMotionSensor)      {homekit="ActiveStatus"}
-Switch          motionsensor_fault         "Motion Sensor Fault"                (gMotionSensor)      {homekit="FaultStatus"}
-Switch          motionsensor_tampered      "Motion Sensor Tampered"             (gMotionSensor)      {homekit="TamperedStatus"}
-```
-
-## Common Problems
-
-**openHAB HomeKit hub shows up when I manually scan for devices, but Home app reports "can't connect to device"**
-
-If you see this error in the Home app, and don't see any log messages, it could be because your IP address in the `networkInterface` setting is misconfigured.
-The openHAB HomeKit hub is advertised via mDNS.
-If you register an IP address that isn't reachable from your phone (such as `localhost`, `0.0.0.0`, `127.0.0.1`, etc.), then Home will be unable to reach openHAB.
 
 ## Additional Notes
 
@@ -597,7 +747,33 @@ openhab> log:tail io.github.hapjava
 
 ## Console commands
 
-`openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.  
+`openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.
 
 `openhab:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
- 
+
+## Troubleshooting 
+
+### openHAB is not listed in home app
+
+if you don't see openHAB in the home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to home app device or openHAB is already in paired state. 
+You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow: 
+
+- install discovery dns app from app store 
+- start discovery app
+- find `_hap._tcp`  in the list of service types
+- if you don't find _hap._tcp on the list, probably the traffic is blocked. 
+  - to confirm this, check whether you can find _openhab-server._tcp. if you don't see it as well, traffic is blocked. check your network router/firewall settings.
+- if you found _hap._tcp, open it. you should see the name of your openHAB HomeKit bridge (default name is openHAB)
+
+![discovery_hap_list.png](doc/discovery_hap_list.png)  
+
+- if you don't see openHAB bridge name, the traffic is blocked
+- if you see openHAB HomeKit bridge, open it
+
+![discovery_openhab_details.png](doc/discovery_openhab_details.png)
+
+- verify the IP address. it must be the IP address of your openHAB server, if not, set the correct IP address using `networkInterface` settings
+- verify the flag "sf". 
+  - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
+  - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
+- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.

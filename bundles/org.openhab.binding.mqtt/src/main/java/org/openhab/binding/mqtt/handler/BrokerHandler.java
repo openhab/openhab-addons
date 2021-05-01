@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.TrustManager;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.internal.ssl.Pin;
@@ -60,10 +59,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         super.connectionStateChanged(state, error);
         // Store generated client ID if none was set by the user
         final MqttBrokerConnection connection = this.connection;
-        if (connection != null && state == MqttConnectionState.CONNECTED && StringUtils.isBlank(config.clientID)) {
-            config.clientID = connection.getClientId();
+        String clientID = config.clientID;
+        if (connection != null && state == MqttConnectionState.CONNECTED && (clientID == null || clientID.isBlank())) {
+            clientID = connection.getClientId();
+            config.clientID = clientID;
             Configuration editConfig = editConfiguration();
-            editConfig.put("clientid", config.clientID);
+            editConfig.put("clientid", clientID);
             updateConfiguration(editConfig);
         }
     }
@@ -147,7 +148,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         if (config.certificatepin) {
             try {
                 Pin pin;
-                if (StringUtils.isBlank(config.certificate)) {
+                if (config.certificate.isBlank()) {
                     pin = Pin.LearningPin(PinType.CERTIFICATE_TYPE);
                 } else {
                     String[] split = config.certificate.split(":");
@@ -165,7 +166,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         if (config.publickeypin) {
             try {
                 Pin pin;
-                if (StringUtils.isBlank(config.publickey)) {
+                if (config.publickey.isBlank()) {
                     pin = Pin.LearningPin(PinType.PUBLIC_KEY_TYPE);
                 } else {
                     String[] split = config.publickey.split(":");
@@ -190,7 +191,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
      */
     protected MqttBrokerConnection createBrokerConnection() throws IllegalArgumentException {
         String host = config.host;
-        if (StringUtils.isBlank(host) || host == null) {
+        if (host == null || host.isBlank()) {
             throw new IllegalArgumentException("Host is empty!");
         }
 
@@ -199,7 +200,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
 
         final String username = config.username;
         final String password = config.password;
-        if (StringUtils.isNotBlank(username) && password != null) {
+        if (username != null && !username.isBlank() && password != null) {
             connection.setCredentials(username, password); // Empty passwords are allowed
         }
 

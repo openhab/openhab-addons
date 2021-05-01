@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dwdunwetter.internal.config.DwdUnwetterConfiguration;
-import org.openhab.binding.dwdunwetter.internal.data.DwdWarningsData;
+import org.openhab.binding.dwdunwetter.internal.dto.DwdWarningsData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
@@ -106,25 +106,26 @@ public class DwdUnwetterHandler extends BaseThingHandler {
 
         for (int i = 0; i < warningCount; i++) {
             State warning = warningsData.getWarning(i);
+            int warningNumber = i + 1;
             if (warning == OnOffType.OFF) {
-                updateState(getChannelUuid(CHANNEL_WARNING, i), warning);
+                updateState(getChannelUuid(CHANNEL_WARNING, warningNumber), warning);
             }
-            updateState(getChannelUuid(CHANNEL_SEVERITY, i), warningsData.getSeverity(i));
-            updateState(getChannelUuid(CHANNEL_DESCRIPTION, i), warningsData.getDescription(i));
-            updateState(getChannelUuid(CHANNEL_EFFECTIVE, i), warningsData.getEffective(i));
-            updateState(getChannelUuid(CHANNEL_EXPIRES, i), warningsData.getExpires(i));
-            updateState(getChannelUuid(CHANNEL_ONSET, i), warningsData.getOnset(i));
-            updateState(getChannelUuid(CHANNEL_EVENT, i), warningsData.getEvent(i));
-            updateState(getChannelUuid(CHANNEL_HEADLINE, i), warningsData.getHeadline(i));
-            updateState(getChannelUuid(CHANNEL_ALTITUDE, i), warningsData.getAltitude(i));
-            updateState(getChannelUuid(CHANNEL_CEILING, i), warningsData.getCeiling(i));
-            updateState(getChannelUuid(CHANNEL_INSTRUCTION, i), warningsData.getInstruction(i));
-            updateState(getChannelUuid(CHANNEL_URGENCY, i), warningsData.getUrgency(i));
+            updateState(getChannelUuid(CHANNEL_SEVERITY, warningNumber), warningsData.getSeverity(i));
+            updateState(getChannelUuid(CHANNEL_DESCRIPTION, warningNumber), warningsData.getDescription(i));
+            updateState(getChannelUuid(CHANNEL_EFFECTIVE, warningNumber), warningsData.getEffective(i));
+            updateState(getChannelUuid(CHANNEL_EXPIRES, warningNumber), warningsData.getExpires(i));
+            updateState(getChannelUuid(CHANNEL_ONSET, warningNumber), warningsData.getOnset(i));
+            updateState(getChannelUuid(CHANNEL_EVENT, warningNumber), warningsData.getEvent(i));
+            updateState(getChannelUuid(CHANNEL_HEADLINE, warningNumber), warningsData.getHeadline(i));
+            updateState(getChannelUuid(CHANNEL_ALTITUDE, warningNumber), warningsData.getAltitude(i));
+            updateState(getChannelUuid(CHANNEL_CEILING, warningNumber), warningsData.getCeiling(i));
+            updateState(getChannelUuid(CHANNEL_INSTRUCTION, warningNumber), warningsData.getInstruction(i));
+            updateState(getChannelUuid(CHANNEL_URGENCY, warningNumber), warningsData.getUrgency(i));
             if (warning == OnOffType.ON) {
-                updateState(getChannelUuid(CHANNEL_WARNING, i), warning);
+                updateState(getChannelUuid(CHANNEL_WARNING, warningNumber), warning);
             }
             if (warningsData.isNew(i)) {
-                triggerChannel(getChannelUuid(CHANNEL_UPDATED, i), "NEW");
+                triggerChannel(getChannelUuid(CHANNEL_UPDATED, warningNumber), "NEW");
             }
         }
 

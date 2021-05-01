@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.buienradar.internal.buienradarapi.BuienradarPredictionAPI;
 import org.openhab.binding.buienradar.internal.buienradarapi.Prediction;
@@ -76,13 +75,12 @@ public class BuienradarHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         this.config = getConfigAs(BuienradarConfiguration.class);
 
         boolean configValid = true;
-        if (StringUtils.trimToNull(config.location) == null) {
+        if (config.location == null || config.location.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
             configValid = false;
@@ -127,12 +125,19 @@ public class BuienradarHandler extends BaseThingHandler {
             return;
         }
         try {
-            @SuppressWarnings("null")
             final Optional<List<Prediction>> predictionsOpt = client.getPredictions(location);
             if (!predictionsOpt.isPresent()) {
                 // Did not get a result, retry the retrieval.
-                logger.warn("Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
-                        tries, retryInSeconds);
+                // Buienradar is not a very stable source and returns nothing quite regular
+                if (tries <= 2) {
+                    logger.warn(
+                            "Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
+                            tries, retryInSeconds);
+                } else {
+                    logger.debug(
+                            "Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
+                            tries, retryInSeconds);
+                }
                 scheduler.schedule(() -> refresh(tries - 1, nextRefresh, retryInSeconds * 2), retryInSeconds,
                         TimeUnit.SECONDS);
                 return;
@@ -164,7 +169,6 @@ public class BuienradarHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void dispose() {
         try {

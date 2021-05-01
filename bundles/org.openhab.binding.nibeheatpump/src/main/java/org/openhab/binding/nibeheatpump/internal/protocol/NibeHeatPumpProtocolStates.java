@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                 if (LOGGER.isTraceEnabled()) {
                     LOGGER.trace("Received byte: {}", String.format("%02X", b));
                 }
-                if (b == NibeHeatPumpProtocol.FRAME_START_CHAR_FROM_NIBE) {
+                if (b == NibeHeatPumpProtocol.FRAME_START_CHAR_RES) {
                     LOGGER.trace("Frame start found");
                     context.msg().clear();
                     context.msg().put(b);
@@ -144,7 +144,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
         int len = byteBuffer.remaining();
 
         if (len >= 1) {
-            if (byteBuffer.get(0) != NibeHeatPumpProtocol.FRAME_START_CHAR_FROM_NIBE) {
+            if (byteBuffer.get(0) != NibeHeatPumpProtocol.FRAME_START_CHAR_RES) {
                 return msgStatus.INVALID;
             }
 
@@ -155,7 +155,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             }
 
             if (len >= 6) {
-                int datalen = byteBuffer.get(NibeHeatPumpProtocol.OFFSET_LEN);
+                int datalen = byteBuffer.get(NibeHeatPumpProtocol.RES_OFFS_LEN);
 
                 // check if all bytes received
                 if (len < datalen + 6) {

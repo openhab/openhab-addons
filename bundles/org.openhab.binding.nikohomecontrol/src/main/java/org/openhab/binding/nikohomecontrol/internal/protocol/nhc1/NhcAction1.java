@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class NhcAction1 extends NhcAction {
         if (getType() == ActionType.ROLLERSHUTTER) {
             if (filterEvent) {
                 filterEvent = false;
-                logger.debug("Niko Home Control: filtered event {} for {}", newState, id);
+                logger.debug("filtered event {} for {}", newState, id);
                 return;
             }
 
@@ -88,7 +88,7 @@ public class NhcAction1 extends NhcAction {
             }
         }
         if (waitForEvent) {
-            logger.debug("Niko Home Control: received requested rollershutter {} position event {}", id, newState);
+            logger.debug("received requested rollershutter {} position event {}", id, newState);
             executeRollershutterTask();
         } else {
             state = newState;
@@ -103,7 +103,7 @@ public class NhcAction1 extends NhcAction {
      */
     @Override
     public void execute(String command) {
-        logger.debug("Niko Home Control: execute action {} of type {} for {}", command, type, id);
+        logger.debug("execute action {} of type {} for {}", command, type, id);
 
         String value = "";
         switch (getType()) {
@@ -162,7 +162,7 @@ public class NhcAction1 extends NhcAction {
             } else if (command.equals(NHCSTOP)) {
                 executeRollershutterStop();
             } else {
-                int newValue = 100 - Integer.parseInt(command);
+                int newValue = Integer.parseInt(command);
                 if (logger.isTraceEnabled()) {
                     logger.trace("handleRollerShutterCommand: rollershutter {} percent command, current {}, new {}", id,
                             currentValue, newValue);
@@ -174,9 +174,9 @@ public class NhcAction1 extends NhcAction {
                     scheduleRollershutterStop(currentValue, newValue);
                 }
                 if (newValue < currentValue) {
-                    executeRollershutterDown();
-                } else if (newValue > currentValue) {
                     executeRollershutterUp();
+                } else if (newValue > currentValue) {
+                    executeRollershutterDown();
                 }
             }
         };

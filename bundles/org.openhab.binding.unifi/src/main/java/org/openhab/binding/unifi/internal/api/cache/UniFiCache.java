@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +76,7 @@ public abstract class UniFiCache<T> {
     public final void put(T value) {
         for (String prefix : prefixes) {
             String suffix = getSuffix(value, prefix);
-            if (StringUtils.isNotBlank(suffix)) {
+            if (suffix != null && !suffix.isBlank()) {
                 String key = prefix + SEPARATOR + suffix;
                 map.put(key, value);
             }

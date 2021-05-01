@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Sebastian Prehn - Initial contribution (NeoHub command codes)
  * @author Andrew Fiddian-Green - Initial contribution (OpenHAB v2.x binding
  *         code)
- * 
+ *
  */
 @NonNullByDefault
 public class NeoHubBindingConstants {
@@ -182,10 +182,17 @@ public class NeoHubBindingConstants {
      * logger message strings
      */
     public static final String PLEASE_REPORT_BUG = "Unexpected situation - please report a bug: ";
-    public static final String MSG_HUB_CONFIG = PLEASE_REPORT_BUG + "hub needs to be initialized!";
-    public static final String MSG_HUB_COMM = PLEASE_REPORT_BUG + "error communicating with the hub!";
-    public static final String MSG_FMT_DEVICE_POLL_ERR = "Device data polling error: {}";
-    public static final String MSG_FMT_SYSTEM_POLL_ERR = "System data polling error: {}";
-    public static final String MSG_FMT_ENGINEERS_POLL_ERR = "Engineers data polling error: {}";
-    public static final String MSG_FMT_SET_VALUE_ERR = "{} set value error: {}";
+    public static final String MSG_HUB_CONFIG = PLEASE_REPORT_BUG + "hub '{}' needs to be initialized!";
+    public static final String MSG_HUB_COMM = PLEASE_REPORT_BUG + "error communicating with hub '{}'!";
+    public static final String MSG_FMT_DEVICE_POLL_ERR = "hub '{}' device data polling error: {}";
+    public static final String MSG_FMT_SYSTEM_POLL_ERR = "hub '{}' system data polling error: {}";
+    public static final String MSG_FMT_ENGINEERS_POLL_ERR = "hub '{}' engineers data polling error: {}";
+    public static final String MSG_FMT_SET_VALUE_ERR = "hub '{}' {} set value error: {}";
+
+    /*
+     * hub property names
+     */
+    public static final String PROPERTY_FIRMWARE_VERSION = "Firmware version";
+    public static final String PROPERTY_API_VERSION = "API version";
+    public static final String PROPERTY_API_DEVICEINFO = "Devices [online/total]";
 }

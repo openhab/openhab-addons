@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,20 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -53,7 +66,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult.Authentication;
@@ -483,15 +495,13 @@ public class Connection {
             try {
                 String bootstrapResultJson = convertStream(connection);
                 JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
-                if (result != null) {
-                    Authentication authentication = result.authentication;
-                    if (authentication != null && authentication.authenticated) {
-                        this.customerName = authentication.customerName;
-                        if (this.accountCustomerId == null) {
-                            this.accountCustomerId = authentication.customerId;
-                        }
-                        return authentication;
+                Authentication authentication = result.authentication;
+                if (authentication != null && authentication.authenticated) {
+                    this.customerName = authentication.customerName;
+                    if (this.accountCustomerId == null) {
+                        this.accountCustomerId = authentication.customerId;
                     }
+                    return authentication;
                 }
             } catch (JsonSyntaxException | IllegalStateException e) {
                 logger.info("No valid json received", e);
@@ -726,11 +736,8 @@ public class Connection {
             webSiteCookies.add(new JsonWebSiteCookie(cookie.getName(), cookie.getValue()));
         }
 
-        JsonWebSiteCookie[] webSiteCookiesArray = new JsonWebSiteCookie[webSiteCookies.size()];
-        webSiteCookiesArray = webSiteCookies.toArray(webSiteCookiesArray);
-
         JsonRegisterAppRequest registerAppRequest = new JsonRegisterAppRequest(serial, accessToken, frc,
-                webSiteCookiesArray);
+                webSiteCookies);
         String registerAppRequestJson = gson.toJson(registerAppRequest);
 
         HashMap<String, String> registerHeaders = new HashMap<>();
@@ -740,9 +747,6 @@ public class Connection {
                 registerAppRequestJson, true, registerHeaders);
         JsonRegisterAppResponse registerAppResponse = parseJson(registerAppResultJson, JsonRegisterAppResponse.class);
 
-        if (registerAppResponse == null) {
-            throw new ConnectionException("Error: No response received from register application");
-        }
         Response response = registerAppResponse.response;
         if (response == null) {
             throw new ConnectionException("Error: No response received from register application");
@@ -770,9 +774,6 @@ public class Connection {
             String usersMeResponseJson = makeRequestAndReturnString("GET",
                     "https://alexa.amazon.com/api/users/me?platform=ios&version=2.2.223830.0", null, false, null);
             JsonUsersMeResponse usersMeResponse = parseJson(usersMeResponseJson, JsonUsersMeResponse.class);
-            if (usersMeResponse == null) {
-                throw new IllegalArgumentException("Received no response on me-request");
-            }
             URI uri = new URI(usersMeResponse.marketPlaceDomainName);
             String host = uri.getHost();
 
@@ -928,6 +929,7 @@ public class Connection {
         }
     }
 
+    @SuppressWarnings("null") // current value in compute can be null
     private void replaceTimer(TimerType type, @Nullable ScheduledFuture<?> newTimer) {
         timers.compute(type, (timerType, oldTimer) -> {
             if (oldTimer != null) {
@@ -967,9 +969,10 @@ public class Connection {
     }
 
     // parser
-    private <T> @Nullable T parseJson(String json, Class<T> type) throws JsonSyntaxException, IllegalStateException {
+    private <T> T parseJson(String json, Class<T> type) throws JsonSyntaxException, IllegalStateException {
         try {
-            return gson.fromJson(json, type);
+            // gson.fromJson is always non-null if json is non-null
+            return Objects.requireNonNull(gson.fromJson(json, type));
         } catch (JsonParseException | IllegalStateException e) {
             logger.warn("Parsing json failed: {}", json, e);
             throw e;
@@ -977,21 +980,16 @@ public class Connection {
     }
 
     // commands and states
-    public WakeWord[] getWakeWords() {
+    public List<WakeWord> getWakeWords() {
         String json;
         try {
             json = makeRequestAndReturnString(alexaServer + "/api/wake-word?cached=true");
             JsonWakeWords wakeWords = parseJson(json, JsonWakeWords.class);
-            if (wakeWords != null) {
-                WakeWord[] result = wakeWords.wakeWords;
-                if (result != null) {
-                    return result;
-                }
-            }
+            return Objects.requireNonNullElse(wakeWords.wakeWords, List.of());
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("getting wakewords failed", e);
         }
-        return new WakeWord[0];
+        return List.of();
     }
 
     public List<SmartHomeBaseDevice> getSmarthomeDeviceList()
@@ -1001,9 +999,6 @@ public class Connection {
             logger.debug("getSmartHomeDevices result: {}", json);
 
             JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
-            if (networkDetails == null) {
-                throw new IllegalArgumentException("received no response on network detail request");
-            }
             Object jsonObject = gson.fromJson(networkDetails.networkDetail, Object.class);
             List<SmartHomeBaseDevice> result = new ArrayList<>();
             searchSmartHomeDevicesRecursive(jsonObject, result);
@@ -1023,15 +1018,11 @@ public class Connection {
                 // device node found, create type element and add it to the results
                 JsonElement element = gson.toJsonTree(jsonNode);
                 SmartHomeDevice shd = parseJson(element.toString(), SmartHomeDevice.class);
-                if (shd != null) {
-                    devices.add(shd);
-                }
+                devices.add(shd);
             } else if (map.containsKey("applianceGroupName")) {
                 JsonElement element = gson.toJsonTree(jsonNode);
                 SmartHomeGroup shg = parseJson(element.toString(), SmartHomeGroup.class);
-                if (shg != null) {
-                    devices.add(shg);
-                }
+                devices.add(shg);
             } else {
                 map.values().forEach(value -> searchSmartHomeDevicesRecursive(value, devices));
             }
@@ -1053,15 +1044,32 @@ public class Connection {
         return json;
     }
 
-    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
+    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<SmartHomeBaseDevice> devices)
             throws IOException, URISyntaxException, InterruptedException {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
-        for (String applianceId : applianceIds) {
-            JsonObject stateRequest = new JsonObject();
-            stateRequest.addProperty("entityId", applianceId);
-            stateRequest.addProperty("entityType", "APPLIANCE");
-            stateRequests.add(stateRequest);
+        Map<String, String> mergedApplianceMap = new HashMap<>();
+        for (SmartHomeBaseDevice device : devices) {
+            String applianceId = device.findId();
+            if (applianceId != null) {
+                JsonObject stateRequest;
+                if (device instanceof SmartHomeDevice && ((SmartHomeDevice) device).mergedApplianceIds != null) {
+                    List<String> mergedApplianceIds = Objects
+                            .requireNonNullElse(((SmartHomeDevice) device).mergedApplianceIds, List.of());
+                    for (String idToMerge : mergedApplianceIds) {
+                        mergedApplianceMap.put(idToMerge, applianceId);
+                        stateRequest = new JsonObject();
+                        stateRequest.addProperty("entityId", idToMerge);
+                        stateRequest.addProperty("entityType", "APPLIANCE");
+                        stateRequests.add(stateRequest);
+                    }
+                } else {
+                    stateRequest = new JsonObject();
+                    stateRequest.addProperty("entityId", applianceId);
+                    stateRequest.addProperty("entityType", "APPLIANCE");
+                    stateRequests.add(stateRequest);
+                }
+            }
         }
         requestObject.add("stateRequests", stateRequests);
         String requestBody = requestObject.toString();
@@ -1074,10 +1082,21 @@ public class Connection {
         for (JsonElement deviceState : deviceStates) {
             JsonObject deviceStateObject = deviceState.getAsJsonObject();
             JsonObject entity = deviceStateObject.get("entity").getAsJsonObject();
-            String applicanceId = entity.get("entityId").getAsString();
+            String applianceId = entity.get("entityId").getAsString();
             JsonElement capabilityState = deviceStateObject.get("capabilityStates");
             if (capabilityState != null && capabilityState.isJsonArray()) {
-                result.put(applicanceId, capabilityState.getAsJsonArray());
+                String realApplianceId = mergedApplianceMap.get(applianceId);
+                if (realApplianceId != null) {
+                    var capabilityArray = result.get(realApplianceId);
+                    if (capabilityArray != null) {
+                        capabilityArray.addAll(capabilityState.getAsJsonArray());
+                        result.put(realApplianceId, capabilityArray);
+                    } else {
+                        result.put(realApplianceId, capabilityState.getAsJsonArray());
+                    }
+                } else {
+                    result.put(applianceId, capabilityState.getAsJsonArray());
+                }
             }
         }
         return result;
@@ -1099,22 +1118,16 @@ public class Connection {
         return mediaState;
     }
 
-    public Activity[] getActivities(int number, @Nullable Long startTime) {
-        String json;
+    public List<Activity> getActivities(int number, @Nullable Long startTime) {
         try {
-            json = makeRequestAndReturnString(alexaServer + "/api/activities?startTime="
+            String json = makeRequestAndReturnString(alexaServer + "/api/activities?startTime="
                     + (startTime != null ? startTime : "") + "&size=" + number + "&offset=1");
             JsonActivities activities = parseJson(json, JsonActivities.class);
-            if (activities != null) {
-                Activity[] activiesArray = activities.activities;
-                if (activiesArray != null) {
-                    return activiesArray;
-                }
-            }
+            return Objects.requireNonNullElse(activities.activities, List.of());
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("getting activities failed", e);
         }
-        return new Activity[0];
+        return List.of();
     }
 
     public @Nullable JsonBluetoothStates getBluetoothConnectionStates() {
@@ -1185,15 +1198,13 @@ public class Connection {
             String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
             logger.trace("Request '{}' resulted in '{}", requestBody, resultBody);
             JsonObject result = parseJson(resultBody, JsonObject.class);
-            if (result != null) {
-                JsonElement errors = result.get("errors");
-                if (errors != null && errors.isJsonArray()) {
-                    JsonArray errorList = errors.getAsJsonArray();
-                    if (errorList.size() > 0) {
-                        logger.warn("Smart home device command failed. The request '{}' resulted in error(s): {}",
-                                requestBody, StreamSupport.stream(errorList.spliterator(), false)
-                                        .map(JsonElement::toString).collect(Collectors.joining(" / ")));
-                    }
+            JsonElement errors = result.get("errors");
+            if (errors != null && errors.isJsonArray()) {
+                JsonArray errorList = errors.getAsJsonArray();
+                if (errorList.size() > 0) {
+                    logger.warn("Smart home device command failed. The request '{}' resulted in error(s): {}",
+                            requestBody, StreamSupport.stream(errorList.spliterator(), false).map(JsonElement::toString)
+                                    .collect(Collectors.joining(" / ")));
                 }
             }
         } catch (URISyntaxException e) {
@@ -1219,38 +1230,27 @@ public class Connection {
         makeRequest("PUT", url, command, true, true, null, 0);
     }
 
-    public DeviceNotificationState[] getDeviceNotificationStates() {
-        String json;
+    public List<DeviceNotificationState> getDeviceNotificationStates() {
         try {
-            json = makeRequestAndReturnString(alexaServer + "/api/device-notification-state");
+            String json = makeRequestAndReturnString(alexaServer + "/api/device-notification-state");
             JsonDeviceNotificationState result = parseJson(json, JsonDeviceNotificationState.class);
-            if (result != null) {
-                DeviceNotificationState[] deviceNotificationStates = result.deviceNotificationStates;
-                if (deviceNotificationStates != null) {
-                    return deviceNotificationStates;
-                }
-            }
+            return Objects.requireNonNullElse(result.deviceNotificationStates, List.of());
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("Error getting device notification states", e);
         }
-        return new DeviceNotificationState[0];
+        return List.of();
     }
 
-    public AscendingAlarmModel[] getAscendingAlarm() {
+    public List<AscendingAlarmModel> getAscendingAlarm() {
         String json;
         try {
             json = makeRequestAndReturnString(alexaServer + "/api/ascending-alarm");
             JsonAscendingAlarm result = parseJson(json, JsonAscendingAlarm.class);
-            if (result != null) {
-                AscendingAlarmModel[] ascendingAlarmModelList = result.ascendingAlarmModelList;
-                if (ascendingAlarmModelList != null) {
-                    return ascendingAlarmModelList;
-                }
-            }
+            return Objects.requireNonNullElse(result.ascendingAlarmModelList, List.of());
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("Error getting device notification states", e);
         }
-        return new AscendingAlarmModel[0];
+        return List.of();
     }
 
     public void bluetooth(Device device, @Nullable String address)
@@ -1604,6 +1604,7 @@ public class Connection {
         logger.debug("added {} device {}", queueObject.hashCode(), serialNumbers);
     }
 
+    @SuppressWarnings("null") // peek can return null
     private void handleExecuteSequenceNode() {
         Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock()));
         if (lock.tryLock()) {
@@ -1827,12 +1828,9 @@ public class Connection {
         }
         for (JsonAutomation routine : routines) {
             if (routine != null) {
-                Trigger[] triggers = routine.triggers;
-                if (triggers != null && routine.sequence != null) {
+                if (routine.sequence != null) {
+                    List<JsonAutomation.Trigger> triggers = Objects.requireNonNullElse(routine.triggers, List.of());
                     for (JsonAutomation.Trigger trigger : triggers) {
-                        if (trigger == null) {
-                            continue;
-                        }
                         Payload payload = trigger.payload;
                         if (payload == null) {
                             continue;
@@ -1890,25 +1888,18 @@ public class Connection {
 
     public @Nullable JsonAutomation @Nullable [] getRoutines()
             throws IOException, URISyntaxException, InterruptedException {
-        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations?limit=2000");
+        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/v2/automations?limit=2000");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }
 
-    public JsonFeed[] getEnabledFlashBriefings() throws IOException, URISyntaxException, InterruptedException {
+    public List<JsonFeed> getEnabledFlashBriefings() throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(alexaServer + "/api/content-skills/enabled-feeds");
         JsonEnabledFeeds result = parseJson(json, JsonEnabledFeeds.class);
-        if (result == null) {
-            return new JsonFeed[0];
-        }
-        JsonFeed[] enabledFeeds = result.enabledFeeds;
-        if (enabledFeeds != null) {
-            return enabledFeeds;
-        }
-        return new JsonFeed[0];
+        return Objects.requireNonNullElse(result.enabledFeeds, List.of());
     }
 
-    public void setEnabledFlashBriefings(JsonFeed[] enabledFlashBriefing)
+    public void setEnabledFlashBriefings(List<JsonFeed> enabledFlashBriefing)
             throws IOException, URISyntaxException, InterruptedException {
         JsonEnabledFeeds enabled = new JsonEnabledFeeds();
         enabled.enabledFeeds = enabledFlashBriefing;
@@ -1916,33 +1907,19 @@ public class Connection {
         makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null, 0);
     }
 
-    public JsonNotificationSound[] getNotificationSounds(Device device)
+    public List<JsonNotificationSound> getNotificationSounds(Device device)
             throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(
                 alexaServer + "/api/notification/sounds?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                         + device.deviceType + "&softwareVersion=" + device.softwareVersion);
         JsonNotificationSounds result = parseJson(json, JsonNotificationSounds.class);
-        if (result == null) {
-            return new JsonNotificationSound[0];
-        }
-        JsonNotificationSound[] notificationSounds = result.notificationSounds;
-        if (notificationSounds != null) {
-            return notificationSounds;
-        }
-        return new JsonNotificationSound[0];
+        return Objects.requireNonNullElse(result.notificationSounds, List.of());
     }
 
-    public JsonNotificationResponse[] notifications() throws IOException, URISyntaxException, InterruptedException {
+    public List<JsonNotificationResponse> notifications() throws IOException, URISyntaxException, InterruptedException {
         String response = makeRequestAndReturnString(alexaServer + "/api/notifications");
         JsonNotificationsResponse result = parseJson(response, JsonNotificationsResponse.class);
-        if (result == null) {
-            return new JsonNotificationResponse[0];
-        }
-        JsonNotificationResponse[] notifications = result.notifications;
-        if (notifications == null) {
-            return new JsonNotificationResponse[0];
-        }
-        return notifications;
+        return Objects.requireNonNullElse(result.notifications, List.of());
     }
 
     public @Nullable JsonNotificationResponse notification(Device device, String type, @Nullable String label,
@@ -1993,8 +1970,8 @@ public class Connection {
             String response = makeRequestAndReturnString("GET",
                     alexaServer + "/api/behaviors/entities?skillId=amzn1.ask.1p.music", null, true, headers);
             if (!response.isEmpty()) {
-                JsonMusicProvider[] result = parseJson(response, JsonMusicProvider[].class);
-                return Arrays.asList(result);
+                JsonMusicProvider[] musicProviders = parseJson(response, JsonMusicProvider[].class);
+                return Arrays.asList(musicProviders);
             }
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.warn("getMusicProviders fails: {}", e.getMessage());
@@ -2024,12 +2001,10 @@ public class Connection {
 
         if (!validateResultJson.isEmpty()) {
             JsonPlayValidationResult validationResult = parseJson(validateResultJson, JsonPlayValidationResult.class);
-            if (validationResult != null) {
-                JsonPlaySearchPhraseOperationPayload validatedOperationPayload = validationResult.operationPayload;
-                if (validatedOperationPayload != null) {
-                    payload.sanitizedSearchPhrase = validatedOperationPayload.sanitizedSearchPhrase;
-                    payload.searchPhrase = validatedOperationPayload.searchPhrase;
-                }
+            JsonPlaySearchPhraseOperationPayload validatedOperationPayload = validationResult.operationPayload;
+            if (validatedOperationPayload != null) {
+                payload.sanitizedSearchPhrase = validatedOperationPayload.sanitizedSearchPhrase;
+                payload.searchPhrase = validatedOperationPayload.searchPhrase;
             }
         }
 

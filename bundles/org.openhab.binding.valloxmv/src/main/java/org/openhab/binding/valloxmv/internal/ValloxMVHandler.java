@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -159,12 +159,14 @@ public class ValloxMVHandler extends BaseThingHandler {
     }
 
     private void scheduleReadDataJob(int initialDelay) {
-        if (initialDelay < 0)
+        if (initialDelay < 0) {
             initialDelay = 0;
+        }
 
         readDataInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
-        if (readDataInterval < 15)
+        if (readDataInterval < 15) {
             readDataInterval = 60;
+        }
 
         logger.debug("Data table request interval {} seconds, Request in {} seconds", readDataInterval, initialDelay);
 

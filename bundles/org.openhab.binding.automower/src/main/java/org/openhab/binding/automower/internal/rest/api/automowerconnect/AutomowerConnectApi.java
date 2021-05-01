@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AutomowerConnectApi extends HusqvarnaApi {
-
     public AutomowerConnectApi(HttpClient httpClient) {
         super(httpClient);
     }
@@ -81,7 +80,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
 
     private ContentResponse executeRequest(String appKey, String token, final Request request)
             throws AutomowerCommunicationException {
-
         request.timeout(10, TimeUnit.SECONDS);
 
         request.header("Authorization-Provider", "husqvarna");
@@ -92,7 +90,10 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         ContentResponse response;
         try {
             response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
+            throw new AutomowerCommunicationException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new AutomowerCommunicationException(e);
         }
         return response;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,64 +14,59 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.time.ZonedDateTime;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema;
 
 /**
  * DynamoDBItem for items that can be serialized as DynamoDB string
  *
  * @author Sami Salonen - Initial contribution
  */
-@DynamoDBDocument
+@NonNullByDefault
 public class DynamoDBStringItem extends AbstractDynamoDBItem<String> {
 
+    private static Class<@Nullable String> NULLABLE_STRING = (Class<@Nullable String>) String.class;
+
+    public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_LEGACY = getBaseSchemaBuilder(
+            DynamoDBStringItem.class, true)
+                    .newItemSupplier(
+                            DynamoDBStringItem::new)
+                    .addAttribute(NULLABLE_STRING, a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
+                            .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
+                    .build();
+
+    public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_NEW = getBaseSchemaBuilder(
+            DynamoDBStringItem.class, false)
+                    .newItemSupplier(DynamoDBStringItem::new)
+                    .addAttribute(NULLABLE_STRING,
+                            a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING)
+                                    .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
+                    .addAttribute(NULLABLE_LONG, a -> a.name(ATTRIBUTE_NAME_EXPIRY)
+                            .getter(AbstractDynamoDBItem::getExpiryDate).setter(AbstractDynamoDBItem::setExpiry))
+                    .build();
+
     public DynamoDBStringItem() {
-        this(null, null, null);
+        this("", null, ZonedDateTime.now(), null);
     }
 
-    public DynamoDBStringItem(String name, String state, ZonedDateTime time) {
-        super(name, state, time);
+    public DynamoDBStringItem(String name, @Nullable String state, ZonedDateTime time, @Nullable Integer expireDays) {
+        super(name, state, time, expireDays);
     }
 
-    @DynamoDBAttribute(attributeName = DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE)
     @Override
-    public String getState() {
+    public @Nullable String getState() {
         return state;
     }
 
-    @DynamoDBHashKey(attributeName = DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME)
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    @DynamoDBRangeKey(attributeName = ATTRIBUTE_NAME_TIMEUTC)
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
-    public ZonedDateTime getTime() {
-        return time;
-    }
-
-    @Override
-    public void accept(org.openhab.persistence.dynamodb.internal.DynamoDBItemVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void setState(String state) {
+    public void setState(@Nullable String state) {
         this.state = state;
     }
 
     @Override
-    public void setTime(ZonedDateTime time) {
-        this.time = time;
+    public <T> T accept(DynamoDBItemVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Objects;
 
@@ -46,6 +46,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testInitializeAndSlaveEndpoint() throws EndpointNotInitializedException {
+        // Using mocked modbus manager
         Configuration thingConfig = new Configuration();
         thingConfig.put("host", "thisishost");
         thingConfig.put("port", 44);
@@ -70,7 +71,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
         assertNotNull(thingHandler);
         ModbusSlaveEndpoint slaveEndpoint = thingHandler.getEndpoint();
-        assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44))));
+        assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44, false))));
         assertThat(thingHandler.getSlaveId(), is(9));
 
         InOrder orderedVerify = Mockito.inOrder(mockedModbusManager);
@@ -81,6 +82,8 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testTwoDifferentEndpointWithDifferentParameters() {
+        // Real implementation needed to validate this behaviour
+        swapModbusManagerToReal();
         // thing1
         {
             Configuration thingConfig = new Configuration();
@@ -95,6 +98,18 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
 
             ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
             assertNotNull(thingHandler);
+
+            EndpointPoolConfiguration expectedPoolConfiguration = new EndpointPoolConfiguration();
+            expectedPoolConfiguration.setConnectMaxTries(1);
+            expectedPoolConfiguration.setInterTransactionDelayMillis(1);
+
+            // defaults
+            expectedPoolConfiguration.setConnectTimeoutMillis(10_000);
+            expectedPoolConfiguration.setInterConnectDelayMillis(0);
+            expectedPoolConfiguration.setReconnectAfterMillis(0);
+
+            assertEquals(expectedPoolConfiguration, realModbusManager
+                    .getEndpointPoolConfiguration(new ModbusTCPSlaveEndpoint("thisishost", 44, false)));
         }
         {
             Configuration thingConfig = new Configuration();
@@ -144,6 +159,22 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
             addThing(thing);
             assertThat(thing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(thing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        }
+        {
+            //
+            // Ensure the right EndpointPoolConfiguration is still in place
+            //
+            EndpointPoolConfiguration expectedPoolConfiguration = new EndpointPoolConfiguration();
+            expectedPoolConfiguration.setConnectMaxTries(1);
+            expectedPoolConfiguration.setInterTransactionDelayMillis(1); // Note: not 100
+
+            // defaults
+            expectedPoolConfiguration.setConnectTimeoutMillis(10_000);
+            expectedPoolConfiguration.setInterConnectDelayMillis(0);
+            expectedPoolConfiguration.setReconnectAfterMillis(0);
+
+            assertEquals(expectedPoolConfiguration, realModbusManager
+                    .getEndpointPoolConfiguration(new ModbusTCPSlaveEndpoint("thisishost", 44, false)));
         }
     }
 

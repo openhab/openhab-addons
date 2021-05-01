@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,21 +13,34 @@
 package org.openhab.binding.magentatv.internal.network;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
-import static org.openhab.binding.magentatv.internal.MagentaTVUtil.substringAfterLast;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpField;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAuthenticateResponse;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAuthenticateResponseInstanceCreator;
@@ -37,7 +50,6 @@ import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentialsInstanceCreator;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthKeyValue;
 import org.openhab.binding.magentatv.internal.handler.MagentaTVControl;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +62,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Markus Michels - Initial contribution
  *
- *         Deutsche Telekom uses a OAuth-based authentication to access the EPG portal. The
+ *         Deutsche Telekom uses an OAuth-based authentication to access the EPG portal. The
  *         communication between the MR and the remote app requires a pairing before the receiver could be
  *         controlled by sending keys etc. The so called userID is not directly derived from any local parameters
  *         (like terminalID as a has from the mac address), but will be returned as a result from the OAuth
@@ -63,9 +75,12 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class MagentaTVOAuth {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVOAuth.class);
-    final Gson gson;
+    private HttpClient httpClient;
+    private final Gson gson;
+    private List<HttpCookie> cookies = new ArrayList<>();
 
-    public MagentaTVOAuth() {
+    public MagentaTVOAuth(HttpClient httpClient) {
+        this.httpClient = httpClient;
         gson = new GsonBuilder().registerTypeAdapter(OauthCredentials.class, new OauthCredentialsInstanceCreator())
                 .registerTypeAdapter(OAuthTokenResponse.class, new OAuthTokenResponseInstanceCreator())
                 .registerTypeAdapter(OAuthAuthenticateResponse.class, new OAuthAuthenticateResponseInstanceCreator())
@@ -78,124 +93,209 @@ public class MagentaTVOAuth {
             throw new MagentaTVException("Credentials for OAuth missing, check thing config!");
         }
 
-        String step = "initialize";
         String url = "";
-        Properties httpHeader;
+        Properties httpHeader = initHttpHeader();
         String postData = "";
         String httpResponse = "";
-        InputStream dataStream = null;
 
         // OAuth autentication results
         String oAuthScope = "";
         String oAuthService = "";
         String epghttpsurl = "";
-        String retcode = "";
-        String retmsg = "";
 
+        // Get credentials
+        url = OAUTH_GET_CRED_URL + ":" + OAUTH_GET_CRED_PORT + OAUTH_GET_CRED_URI;
+        httpHeader.setProperty(HttpHeader.HOST.toString(), substringAfterLast(OAUTH_GET_CRED_URL, "/"));
+        httpResponse = httpRequest(HttpMethod.GET, url, httpHeader, "");
+        OauthCredentials cred = gson.fromJson(httpResponse, OauthCredentials.class);
+        epghttpsurl = getString(cred.epghttpsurl);
+        if (epghttpsurl.isEmpty()) {
+            throw new MagentaTVException("Unable to determine EPG url");
+        }
+        if (!epghttpsurl.contains("/EPG")) {
+            epghttpsurl = epghttpsurl + "/EPG";
+        }
+        logger.debug("OAuth: epghttpsurl = {}", epghttpsurl);
+
+        // get OAuth data from response
+        if (cred.sam3Para != null) {
+            for (OauthKeyValue si : cred.sam3Para) {
+                logger.trace("sam3Para.{} = {}", si.key, si.value);
+                if (si.key.equalsIgnoreCase("oAuthScope")) {
+                    oAuthScope = si.value;
+                } else if (si.key.equalsIgnoreCase("SAM3ServiceURL")) {
+                    oAuthService = si.value;
+                }
+            }
+        }
+        if (oAuthScope.isEmpty() || oAuthService.isEmpty()) {
+            throw new MagentaTVException("OAuth failed: Can't get Scope and Service: " + httpResponse);
+        }
+
+        // Get OAuth token (New flow based on WebTV)
+        String userId = "";
+        String terminalId = UUID.randomUUID().toString();
+        String cnonce = MagentaTVControl.computeMD5(terminalId);
+
+        url = oAuthService + "/oauth2/tokens";
+        postData = MessageFormat.format(
+                "password={0}&scope={1}+offline_access&grant_type=password&username={2}&x_telekom.access_token.format=CompactToken&x_telekom.access_token.encoding=text%2Fbase64&client_id=10LIVESAM30000004901NGTVWEB0000000000000",
+                urlEncode(accountPassword), oAuthScope, urlEncode(accountName));
+        url = oAuthService + "/oauth2/tokens";
+        httpResponse = httpRequest(HttpMethod.POST, url, httpHeader, postData);
+        OAuthTokenResponse resp = gson.fromJson(httpResponse, OAuthTokenResponse.class);
+        if (resp.accessToken.isEmpty()) {
+            String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} ({2})",
+                    accountName, getString(resp.errorDescription), getString(resp.error));
+            logger.warn("{}", errorMessage);
+            throw new MagentaTVException(errorMessage);
+        }
+        logger.debug("OAuth: Access Token retrieved");
+
+        // General authentication
+        logger.debug("OAuth: Generating CSRF token");
+        url = "https://api.prod.sngtv.magentatv.de/EPG/JSON/Authenticate";
+        httpHeader = initHttpHeader();
+        httpHeader.setProperty(HttpHeader.HOST.toString(), "api.prod.sngtv.magentatv.de");
+        httpHeader.setProperty("Origin", "https://web.magentatv.de");
+        httpHeader.setProperty(HttpHeader.REFERER.toString(), "https://web.magentatv.de/");
+        postData = "{\"areaid\":\"1\",\"cnonce\":\"" + cnonce + "\",\"mac\":\"" + terminalId
+                + "\",\"preSharedKeyID\":\"NGTV000001\",\"subnetId\":\"4901\",\"templatename\":\"NGTV\",\"terminalid\":\""
+                + terminalId
+                + "\",\"terminaltype\":\"WEB-MTV\",\"terminalvendor\":\"WebTV\",\"timezone\":\"Europe/Berlin\",\"usergroup\":\"-1\",\"userType\":3,\"utcEnable\":1}";
+        httpResponse = httpRequest(HttpMethod.POST, url, httpHeader, postData);
+        String csrf = "";
+        for (HttpCookie c : cookies) { // get CRSF Token
+            String value = c.getValue();
+            if (value.contains("CSRFSESSION")) {
+                csrf = substringBetween(value, "CSRFSESSION" + "=", ";");
+            }
+        }
+        if (csrf.isEmpty()) {
+            throw new MagentaTVException("OAuth: Unable to get CSRF token!");
+        }
+
+        // Final step: Retrieve userId
+        url = "https://api.prod.sngtv.magentatv.de/EPG/JSON/DTAuthenticate";
+        httpHeader = initHttpHeader();
+        httpHeader.setProperty(HttpHeader.HOST.toString(), "api.prod.sngtv.magentatv.de");
+        httpHeader.setProperty("Origin", "https://web.magentatv.de");
+        httpHeader.setProperty(HttpHeader.REFERER.toString(), "https://web.magentatv.de/");
+        httpHeader.setProperty("X_CSRFToken", csrf);
+        postData = "{\"areaid\":\"1\",\"cnonce\":\"" + cnonce + "\",\"mac\":\"" + terminalId + "\","
+                + "\"preSharedKeyID\":\"NGTV000001\",\"subnetId\":\"4901\",\"templatename\":\"NGTV\","
+                + "\"terminalid\":\"" + terminalId + "\",\"terminaltype\":\"WEB-MTV\",\"terminalvendor\":\"WebTV\","
+                + "\"timezone\":\"Europe/Berlin\",\"usergroup\":\"\",\"userType\":\"1\",\"utcEnable\":1,"
+                + "\"accessToken\":\"" + resp.accessToken
+                + "\",\"caDeviceInfo\":[{\"caDeviceId\":\"4ef4d933-9a43-41d3-9e3a-84979f22c9eb\","
+                + "\"caDeviceType\":8}],\"connectType\":1,\"osversion\":\"Mac OS 10.15.7\",\"softwareVersion\":\"1.33.4.3\","
+                + "\"terminalDetail\":[{\"key\":\"GUID\",\"value\":\"" + terminalId + "\"},"
+                + "{\"key\":\"HardwareSupplier\",\"value\":\"WEB-MTV\"},{\"key\":\"DeviceClass\",\"value\":\"TV\"},"
+                + "{\"key\":\"DeviceStorage\",\"value\":0},{\"key\":\"DeviceStorageSize\",\"value\":0}]}";
+        httpResponse = httpRequest(HttpMethod.POST, url, httpHeader, postData);
+        OAuthAuthenticateResponse authResp = gson.fromJson(httpResponse, OAuthAuthenticateResponse.class);
+        if (authResp.userID.isEmpty()) {
+            String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} {2}",
+                    accountName, getString(authResp.retcode), getString(authResp.desc));
+            logger.warn("{}", errorMessage);
+            throw new MagentaTVException(errorMessage);
+        }
+        userId = getString(authResp.userID);
+        if (userId.isEmpty()) {
+            throw new MagentaTVException("No userID received!");
+        }
+        String hashedUserID = MagentaTVControl.computeMD5(userId).toUpperCase();
+        logger.trace("done, userID = {}", hashedUserID);
+        return hashedUserID;
+    }
+
+    private String httpRequest(String method, String url, Properties headers, String data) throws MagentaTVException {
+        String result = "";
         try {
-            step = "get credentials";
-            httpHeader = initHttpHeader();
-            url = OAUTH_GET_CRED_URL + ":" + OAUTH_GET_CRED_PORT + OAUTH_GET_CRED_URI;
-            httpHeader.setProperty(HEADER_HOST, substringAfterLast(OAUTH_GET_CRED_URL, "/"));
-            logger.trace("{} from {}", step, url);
-            httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, httpHeader, null, null, NETWORK_TIMEOUT_MS);
-            logger.trace("http response = {}", httpResponse);
-            OauthCredentials cred = gson.fromJson(httpResponse, OauthCredentials.class);
-            epghttpsurl = getString(cred.epghttpsurl);
-            if (epghttpsurl.isEmpty()) {
-                throw new MagentaTVException("Unable to determine EPG url");
+            Request request = httpClient.newRequest(url).method(method).timeout(NETWORK_TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS);
+            for (Enumeration<?> e = headers.keys(); e.hasMoreElements();) {
+                String key = (String) e.nextElement();
+                String val = (String) headers.get(key);
+                request.header(key, val);
             }
-            if (!epghttpsurl.contains("/EPG")) {
-                epghttpsurl = epghttpsurl + "/EPG";
+            if (method.equals(HttpMethod.POST)) {
+                fillPostData(request, data);
             }
-            logger.debug("epghttpsurl = {}", epghttpsurl);
+            if (!cookies.isEmpty()) {
+                // Add cookies
+                String cookieValue = "";
+                for (HttpCookie c : cookies) {
+                    cookieValue = cookieValue + substringBefore(c.getValue(), ";") + "; ";
+                }
+                request.header("Cookie", substringBeforeLast(cookieValue, ";"));
+            }
+            logger.debug("OAuth: HTTP Request\n\tHTTP {} {}\n\tData={}", method, url, data.isEmpty() ? "<none>" : data);
+            logger.trace("\n\tHeaders={}\tCookies={}", request.getHeaders(), request.getCookies());
 
-            // get OAuth data from response
-            if (cred.sam3Para != null) {
-                for (OauthKeyValue si : cred.sam3Para) {
-                    logger.trace("sam3Para.{} = {}", si.key, si.value);
-                    if (si.key.equalsIgnoreCase("oAuthScope")) {
-                        oAuthScope = si.value;
-                    } else if (si.key.equalsIgnoreCase("SAM3ServiceURL")) {
-                        oAuthService = si.value;
-                    }
+            ContentResponse contentResponse = request.send();
+            result = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
+            int status = contentResponse.getStatus();
+            logger.debug("OAuth: HTTP Response\n\tStatus={} {}\n\tData={}", status, contentResponse.getReason(),
+                    result.isEmpty() ? "<none>" : result);
+            logger.trace("\n\tHeaders={}", contentResponse.getHeaders());
+
+            // validate response, API errors are reported as Json
+            HttpFields responseHeaders = contentResponse.getHeaders();
+            for (HttpField f : responseHeaders) {
+                if (f.getName().equals("Set-Cookie")) {
+                    HttpCookie c = new HttpCookie(f.getName(), f.getValue());
+                    cookies.add(c);
                 }
             }
 
-            if (oAuthScope.isEmpty() || oAuthService.isEmpty()) {
-                throw new MagentaTVException("OAuth failed: Can't get Scope and Service: " + httpResponse);
+            if (status != HttpStatus.OK_200) {
+                String error = "HTTP reqaest failed for URL " + url + ", Code=" + contentResponse.getReason() + "("
+                        + status + ")";
+                throw new MagentaTVException(error);
             }
-
-            // Get OAuth token
-            step = "get token";
-            url = oAuthService + "/oauth2/tokens";
-            logger.debug("{} from {}", step, url);
-
-            String userId = "";
-            String uuid = UUID.randomUUID().toString();
-            String cnonce = MagentaTVControl.computeMD5(uuid);
-            // New flow based on WebTV
-            postData = MessageFormat.format(
-                    "password={0}&scope={1}+offline_access&grant_type=password&username={2}&x_telekom.access_token.format=CompactToken&x_telekom.access_token.encoding=text%2Fbase64&client_id=10LIVESAM30000004901NGTVWEB0000000000000",
-                    URLEncoder.encode(accountPassword, UTF_8), oAuthScope, URLEncoder.encode(accountName, UTF_8));
-            url = oAuthService + "/oauth2/tokens";
-            dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
-            httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
-            logger.trace("http response={}", httpResponse);
-            OAuthTokenResponse resp = gson.fromJson(httpResponse, OAuthTokenResponse.class);
-            if (resp.accessToken.isEmpty()) {
-                String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} ({2})",
-                        accountName, getString(resp.errorDescription), getString(resp.error));
-                logger.warn("{}", errorMessage);
-                throw new MagentaTVException(errorMessage);
-            }
-
-            uuid = "t_" + MagentaTVControl.computeMD5(accountName);
-            url = "https://web.magentatv.de/EPG/JSON/DTAuthenticate?SID=user&T=Mac_chrome_81";
-            postData = "{\"userType\":1,\"terminalid\":\"" + uuid + "\",\"mac\":\"" + uuid + "\""
-                    + ",\"terminaltype\":\"MACWEBTV\",\"utcEnable\":1,\"timezone\":\"Europe/Berlin\","
-                    + "\"terminalDetail\":[{\"key\":\"GUID\",\"value\":\"" + uuid + "\"},"
-                    + "{\"key\":\"HardwareSupplier\",\"value\":\"\"},{\"key\":\"DeviceClass\",\"value\":\"PC\"},"
-                    + "{\"key\":\"DeviceStorage\",\"value\":\"1\"},{\"key\":\"DeviceStorageSize\",\"value\":\"\"}],"
-                    + "\"softwareVersion\":\"\",\"osversion\":\"\",\"terminalvendor\":\"Unknown\","
-                    + "\"caDeviceInfo\":[{\"caDeviceType\":6,\"caDeviceId\":\"" + uuid + "\"}]," + "\"accessToken\":\""
-                    + resp.accessToken + "\",\"preSharedKeyID\":\"PC01P00002\",\"cnonce\":\"" + cnonce + "\"}";
-            dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
-            logger.debug("HTTP POST {}, postData={}", url, postData);
-            httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
-
-            logger.trace("http response={}", httpResponse);
-            OAuthAuthenticateResponse authResp = gson.fromJson(httpResponse, OAuthAuthenticateResponse.class);
-            if (authResp.userID.isEmpty()) {
-                String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} {2}",
-                        accountName, getString(authResp.retcode), getString(authResp.desc));
-                logger.warn("{}", errorMessage);
-                throw new MagentaTVException(errorMessage);
-            }
-            userId = getString(authResp.userID);
-            if (userId.isEmpty()) {
-                throw new MagentaTVException("No userID received!");
-            }
-            String hashedUserID = MagentaTVControl.computeMD5(userId).toUpperCase();
-            logger.trace("done, userID = {}", hashedUserID);
-            return hashedUserID;
-        } catch (IOException e) {
-            throw new MagentaTVException(e,
-                    "Unable to authenticate {0}: {1} failed; serviceURL={2}, rc={3}/{4}, response={5}", accountName,
-                    step, oAuthService, retcode, retmsg, httpResponse);
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            String error = "HTTP reqaest failed for URL " + url;
+            logger.info("{}", error, e);
+            throw new MagentaTVException(e, error);
         }
+        return result;
     }
 
     private Properties initHttpHeader() {
         Properties httpHeader = new Properties();
-        httpHeader.setProperty(HEADER_USER_AGENT, OAUTH_USER_AGENT);
-        httpHeader.setProperty(HEADER_ACCEPT, "*/*");
-        httpHeader.setProperty(HEADER_LANGUAGE, "de-de");
-        httpHeader.setProperty(HEADER_CACHE_CONTROL, "no-cache");
+        httpHeader.setProperty(HttpHeader.ACCEPT.toString(), "*/*");
+        httpHeader.setProperty(HttpHeader.ACCEPT_LANGUAGE.toString(), "en-US,en;q=0.9,de;q=0.8");
+        httpHeader.setProperty(HttpHeader.CACHE_CONTROL.toString(), "no-cache");
         return httpHeader;
+    }
+
+    private void fillPostData(Request request, String data) {
+        if (!data.isEmpty()) {
+            StringContentProvider postData;
+            if (request.getHeaders().contains(HttpHeader.CONTENT_TYPE)) {
+                String contentType = request.getHeaders().get(HttpHeader.CONTENT_TYPE);
+                postData = new StringContentProvider(contentType, data, StandardCharsets.UTF_8);
+            } else {
+                boolean json = data.startsWith("{");
+                postData = new StringContentProvider(json ? "application/json" : "application/x-www-form-urlencoded",
+                        data, StandardCharsets.UTF_8);
+            }
+            request.content(postData);
+            request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
+        }
     }
 
     private String getString(@Nullable String value) {
         return value != null ? value : "";
+    }
+
+    private String urlEncode(String url) {
+        try {
+            return URLEncoder.encode(url, UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("OAuth: Unable to URL encode string {}", url, e);
+            return "";
+        }
     }
 }

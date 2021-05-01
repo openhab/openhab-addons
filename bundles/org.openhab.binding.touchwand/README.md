@@ -2,15 +2,15 @@
 
 Touchwand Wanderfull™ Hub basic is a plug & play Z-Wave based controller that uses Wi-Fi and Bluetooth to easily connect all smart home components.
 TouchWand products are compatible with most major Z-Wave products, IP controlled devices and KNX devices, providing the ideal solution for building all-inclusive full-featured smart homes.
-[TouchWand.com](http://www.touchwand.com)
+[TouchWand.com](https://www.touchwand.com)
 
-![Touchwand Wanderfull™ Hub](http://www.touchwand.com/wp-content/uploads/2017/12/hub-toch-1.png)
+![Touchwand Wanderfull™ Hub](https://www.touchwand.com/wp-content/uploads/2017/12/hub-toch-1.png)
 
 ## Supported Things
 
 This binding supports switches, shutters dimmers alarm sensors and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
 
-## Control and Status 
+## Control and Status
 
 1. **switch**  - control - ON/OFF
 2. **shutter** - control - UP/DOWN/STOP
@@ -24,7 +24,7 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers alar
 
 ## Bridge Configuration
 
-**Touchwand Wanderfull™** Hub Controller need to be added manually by IP address. The controller requires **username** and **password**  
+**Touchwand Wanderfull™** Hub Controller need to be added manually by IP address. The controller requires **username** and **password**
 
 | Parameter         | Description                                                           | Units   | required |
 |-------------------|-----------------------------------------------------------------------|---------|----------|
@@ -41,13 +41,13 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers alar
 
 No thing configuration is needed
 
-## Channels 
+## Channels
 
 note **Touchwand Wanderfull™** supports various types of alarm sensors such as water leak, door/window sensor and motion sensor.
 Alarm Sensor thing represents a generic sensor, relevant sensor channels will be displayed once a sensor is added as a Thing.
 
 
-| Channel Type ID   | Item Type          | Description                                                                                                                             
+| Channel Type ID   | Item Type          | Description
 |-------------------|--------------------|-----------------------------------------------------------------------|
 | switch            | Switch             | This channel supports switching the device on and off.                |
 | shutter           | Rollershutter      | This channel controls the shutter position                            |
@@ -68,9 +68,9 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 
 ### touchwand.things
 
-Things can be defined manually 
-The syntax for touchwand this is 
-  
+Things can be defined manually
+The syntax for touchwand this is
+
 ```xtend
 Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location"
 ```

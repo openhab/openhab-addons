@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,6 +96,11 @@ public class ValloxMVBindingConstants {
      * Current humidity of the air flow exhausting the building.
      */
     public static final String CHANNEL_HUMIDITY = "humidity";
+
+    /**
+     * Current CO2 of the air flow exhausting the building.
+     */
+    public static final String CHANNEL_CO2 = "co2";
 
     /**
      * Current cell state (0=heat recovery, 1=cool recovery, 2=bypass, 3=defrosting).

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,6 @@ public class UnifiedRemoteConnection {
 
     private Logger logger = LoggerFactory.getLogger(UnifiedRemoteConnection.class);
     private final String url;
-    private final JsonParser jsonParser = new JsonParser();
     private HttpClient httpClient;
     private @Nullable String connectionID;
     private @Nullable String connectionGUID;
@@ -67,7 +66,7 @@ public class UnifiedRemoteConnection {
         connectionGUID = "web-" + UUID.randomUUID().toString();
         response = httpClient.newRequest(getPath("connect")).method(HttpMethod.GET)
                 .timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
-        JsonObject responseBody = jsonParser.parse(response.getContentAsString()).getAsJsonObject();
+        JsonObject responseBody = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
         connectionID = responseBody.get("id").getAsString();
 
         String password = UUID.randomUUID().toString();
@@ -97,7 +96,7 @@ public class UnifiedRemoteConnection {
 
     public ContentResponse mouseMove(String jsonIntArray)
             throws InterruptedException, ExecutionException, TimeoutException {
-        JsonArray cordinates = jsonParser.parse(jsonIntArray).getAsJsonArray();
+        JsonArray cordinates = JsonParser.parseString(jsonIntArray).getAsJsonArray();
         int x = cordinates.get(0).getAsInt();
         int y = cordinates.get(1).getAsInt();
         return this.execRemoteAction("Relmtech.Basic Input", "delta",
@@ -242,8 +241,9 @@ public class UnifiedRemoteConnection {
         Request request = httpClient.newRequest(getPath("request")).method(HttpMethod.POST).timeout(TIMEOUT_SEC,
                 TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
-        if (connectionID != null)
+        if (connectionID != null) {
             request.header(CONNECTION_ID_HEADER, connectionID);
+        }
         String stringContent = content.toString();
         logger.debug("[Request Payload {} ]", stringContent);
         request.content(new StringContentProvider(stringContent, "utf-8"));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.io.imperihome.internal.model.device;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -49,7 +48,7 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
     public void stateUpdated(Item item, State newState) {
         super.stateUpdated(item, newState);
 
-        DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
+        DecimalType value = item.getStateAs(DecimalType.class);
 
         if (getLinks().containsKey(LINK_WATTS) || getUnit().equalsIgnoreCase(LINK_KWH)) {
             addParam(new NumericValueParam(ParamType.KWH, getUnit(), value));
@@ -93,7 +92,8 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
         }
 
         NumericValueParam wattsParam = new NumericValueParam(ParamType.WATTS, valueParam.getUnit(), null);
-        if (StringUtils.isEmpty(wattsParam.getUnit())) {
+        String unit = wattsParam.getUnit();
+        if (unit == null || unit.isEmpty()) {
             wattsParam.setUnit("W");
         }
         wattsParam.setValue(valueParam.getValue());
@@ -108,7 +108,8 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
         }
 
         NumericValueParam kwhParam = new NumericValueParam(ParamType.KWH, valueParam.getUnit(), null);
-        if (StringUtils.isEmpty(kwhParam.getUnit())) {
+        String unit = kwhParam.getUnit();
+        if (unit == null || unit.isEmpty()) {
             kwhParam.setUnit("KWh");
         }
         kwhParam.setValue(valueParam.getValue());

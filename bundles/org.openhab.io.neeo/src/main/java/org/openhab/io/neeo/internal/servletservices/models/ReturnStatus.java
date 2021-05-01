@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.servletservices.models;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
@@ -36,16 +35,13 @@ public class ReturnStatus {
     private final boolean success;
 
     /** The optional message if not successful */
-    @Nullable
-    private final String message;
+    private final @Nullable String message;
 
     /** The optional device if successful */
-    @Nullable
-    private final NeeoDevice device;
+    private final @Nullable NeeoDevice device;
 
     /** The optional channel if successful */
-    @Nullable
-    private final List<NeeoDeviceChannel> channels;
+    private final @Nullable List<NeeoDeviceChannel> channels;
 
     /**
      * Creates a return status of true or not (with no message or device)
@@ -81,7 +77,7 @@ public class ReturnStatus {
      * @param message the possibly null, possibly empty message
      */
     public ReturnStatus(@Nullable String message) {
-        this(StringUtils.isEmpty(message), message, null, null);
+        this(message == null || message.isEmpty(), message, null, null);
     }
 
     /**
@@ -124,8 +120,7 @@ public class ReturnStatus {
      *
      * @return the possibly empty, possibly null message
      */
-    @Nullable
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return message;
     }
 
@@ -134,8 +129,7 @@ public class ReturnStatus {
      *
      * @return the possibly null device
      */
-    @Nullable
-    public NeeoDevice getDevice() {
+    public @Nullable NeeoDevice getDevice() {
         return device;
     }
 
@@ -144,8 +138,7 @@ public class ReturnStatus {
      *
      * @return the possibly null channel
      */
-    @Nullable
-    public List<NeeoDeviceChannel> getChannels() {
+    public @Nullable List<NeeoDeviceChannel> getChannels() {
         return channels;
     }
 

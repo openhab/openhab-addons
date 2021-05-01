@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,12 +50,12 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link RadioThermostatDiscoveryService} is responsible for discovery of
  * RadioThermostats on the local network
- * 
+ *
  * @author William Welliver - Initial contribution
  * @author Dan Cunningham - Refactoring and Improvements
  * @author Bill Forsyth - Modified for the RadioThermostat's peculiar discovery mode
  * @author Michael Lobstein - Cleanup for RadioThermostat
- * 
+ *
  */
 
 @NonNullByDefault
@@ -81,11 +81,12 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                 TimeUnit.SECONDS);
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scheduledFuture != null && !scheduledFuture.isCancelled()) {
+        ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
+        if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
+            this.scheduledFuture = null;
         }
     }
 
@@ -245,7 +246,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         try {
             // Run the HTTP request and get the JSON response from the thermostat
             sysinfo = HttpUtil.executeUrl("GET", url, 20000);
-            content = new JsonParser().parse(sysinfo).getAsJsonObject();
+            content = JsonParser.parseString(sysinfo).getAsJsonObject();
             uuid = content.get("uuid").getAsString();
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Cannot get system info from thermostat {} {}", ip, e.getMessage());
@@ -254,7 +255,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
         try {
             String nameinfo = HttpUtil.executeUrl("GET", url + "name", 20000);
-            content = new JsonParser().parse(nameinfo).getAsJsonObject();
+            content = JsonParser.parseString(nameinfo).getAsJsonObject();
             name = content.get("name").getAsString();
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Cannot get name from thermostat {} {}", ip, e.getMessage());

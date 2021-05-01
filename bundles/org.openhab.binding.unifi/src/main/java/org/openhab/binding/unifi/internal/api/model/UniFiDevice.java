@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.unifi.internal.api.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -53,7 +52,7 @@ public class UniFiDevice {
     }
 
     public String getName() {
-        return StringUtils.defaultIfBlank(name, mac);
+        return name == null || name.isBlank() ? mac : name;
     }
 
     public String getMac() {

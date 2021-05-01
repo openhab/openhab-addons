@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.unifiedremote.internal;
 
-import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.MOUSE_CHANNEL;
-import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.SEND_KEY_CHANNEL;
+import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.*;
 
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -54,8 +53,9 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
-        if (!isLinked(channelId))
+        if (!isLinked(channelId)) {
             return;
+        }
         String stringCommand = command.toFullString();
         UnifiedRemoteConnection urConnection = connection;
         try {
@@ -107,8 +107,9 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
         connectionCheckerSchedule = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 UnifiedRemoteConnection urConnection = connection;
-                if (urConnection == null)
+                if (urConnection == null) {
                     return;
+                }
                 ThingStatus status = thing.getStatus();
                 if ((status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) && connection != null) {
                     urConnection.authenticate();

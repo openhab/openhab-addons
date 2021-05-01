@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openhab.binding.russound.internal.net.SocketChannelSession;
 import org.openhab.binding.russound.internal.net.SocketSession;
@@ -152,7 +151,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * @param ipAddress a possibly null, possibly empty ip address (null/empty addresses will be ignored)
      */
     private void scanAddress(String ipAddress) {
-        if (StringUtils.isEmpty(ipAddress)) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
             return;
         }
 
@@ -175,7 +174,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
                     continue;
                 }
                 final String type = resp.substring(13, resp.length() - 1);
-                if (!StringUtils.isBlank(type)) {
+                if (!type.isBlank()) {
                     logger.debug("Found a RIO type #{}", type);
                     addResult(ipAddress, type);
                     break;
@@ -202,10 +201,10 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * @throws IllegalArgumentException if ipaddress or type is null or empty
      */
     private void addResult(String ipAddress, String type) {
-        if (StringUtils.isEmpty(ipAddress)) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
             throw new IllegalArgumentException("ipAddress cannot be null or empty");
         }
-        if (StringUtils.isEmpty(type)) {
+        if (type == null || type.isEmpty()) {
             throw new IllegalArgumentException("type cannot be null or empty");
         }
 

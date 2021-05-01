@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -79,6 +83,12 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      * The event listeners will be notified of device updates
      */
     private final Set<BluetoothDeviceListener> eventListeners = new CopyOnWriteArraySet<>();
+
+    private final Lock deviceLock = new ReentrantLock();
+    private final Condition connectionCondition = deviceLock.newCondition();
+    private final Condition serviceDiscoveryCondition = deviceLock.newCondition();
+
+    private volatile boolean servicesDiscovered = false;
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address
@@ -259,6 +269,45 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
+    public boolean isServicesDiscovered() {
+        return servicesDiscovered;
+    }
+
+    @Override
+    public boolean awaitConnection(long timeout, TimeUnit unit) throws InterruptedException {
+        deviceLock.lock();
+        try {
+            long nanosTimeout = unit.toNanos(timeout);
+            while (getConnectionState() != ConnectionState.CONNECTED) {
+                if (nanosTimeout <= 0L) {
+                    return false;
+                }
+                nanosTimeout = connectionCondition.awaitNanos(nanosTimeout);
+            }
+        } finally {
+            deviceLock.unlock();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean awaitServiceDiscovery(long timeout, TimeUnit unit) throws InterruptedException {
+        deviceLock.lock();
+        try {
+            long nanosTimeout = unit.toNanos(timeout);
+            while (!servicesDiscovered) {
+                if (nanosTimeout <= 0L) {
+                    return false;
+                }
+                nanosTimeout = serviceDiscoveryCondition.awaitNanos(nanosTimeout);
+            }
+        } finally {
+            deviceLock.unlock();
+        }
+        return true;
+    }
+
+    @Override
     protected void notifyListeners(BluetoothEventType event, Object... args) {
         switch (event) {
             case SCAN_RECORD:
@@ -266,6 +315,27 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
             case DESCRIPTOR_UPDATED:
             case SERVICES_DISCOVERED:
                 updateLastSeenTime();
+                break;
+            default:
+                break;
+        }
+        switch (event) {
+            case SERVICES_DISCOVERED:
+                deviceLock.lock();
+                try {
+                    servicesDiscovered = true;
+                    serviceDiscoveryCondition.signal();
+                } finally {
+                    deviceLock.unlock();
+                }
+                break;
+            case CONNECTION_STATE:
+                deviceLock.lock();
+                try {
+                    connectionCondition.signal();
+                } finally {
+                    deviceLock.unlock();
+                }
                 break;
             default:
                 break;

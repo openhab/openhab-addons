@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -281,4 +281,13 @@ public abstract class VeluxBridge {
      */
     protected abstract boolean bridgeDirectCommunicate(BridgeCommunicationProtocol communication,
             boolean useAuthentication);
+
+    /**
+     * Check is the last communication was a good one
+     *
+     * @return true if the last communication was a good one
+     */
+    public boolean lastCommunicationOk() {
+        return lastCommunication() != 0 && lastSuccessfulCommunication() == lastCommunication();
+    }
 }

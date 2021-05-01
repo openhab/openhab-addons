@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class ColorItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
+
     private static HSBType color(double hue, int saturation, int brightness) {
         return new HSBType(new DecimalType(hue), new PercentType(saturation), new PercentType(brightness));
     }
@@ -48,6 +50,7 @@ public class ColorItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final HSBType STATE2 = color(75, 100, 90);
     private static final HSBType STATE_BETWEEN = color(60, 50, 50);
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         ColorItem item = (ColorItem) ITEMS.get(NAME);

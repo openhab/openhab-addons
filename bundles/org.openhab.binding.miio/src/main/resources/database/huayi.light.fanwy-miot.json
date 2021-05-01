@@ -156,7 +156,10 @@
 					}
 				],
 				"category": "fan",
-				"readmeComment": "Value mapping [\"1\"\u003d\"Normal Wind\",\"2\"\u003d\"Natural Wind\"]"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Normal Wind\",\"2\"\u003d\"Natural Wind\"]`"
 			}
 		],
 		"experimental": true

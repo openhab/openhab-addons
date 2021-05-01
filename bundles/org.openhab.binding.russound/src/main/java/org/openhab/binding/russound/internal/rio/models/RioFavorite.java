@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.russound.internal.rio.models;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Simple model of a RIO Favorite (both system and zone) and it's attributes. Please note this class is used to
@@ -59,18 +59,14 @@ public class RioFavorite {
      * @param name a possibly null, possibly empty favorite name
      * @throws IllegalArgumentException if id < 1 or > 32
      */
-    public RioFavorite(int id, boolean isValid, String name) {
+    public RioFavorite(int id, boolean isValid, @Nullable String name) {
         if (id < 1 || id > 32) {
             throw new IllegalArgumentException("Favorite ID must be between 1 and 32");
         }
 
-        if (StringUtils.isEmpty(name)) {
-            name = "Favorite " + id;
-        }
-
         this.id = id;
         this.valid.set(isValid);
-        this.name.set(name);
+        this.name.set(name == null || name.isEmpty() ? "Favorite " + id : name);
     }
 
     /**
@@ -105,8 +101,8 @@ public class RioFavorite {
      *
      * @param favName a possibly null, possibly empty favorite name
      */
-    public void setName(String favName) {
-        name.set(StringUtils.isEmpty(favName) ? "Favorite " + getId() : favName);
+    public void setName(@Nullable String favName) {
+        name.set(favName == null || favName.isEmpty() ? "Favorite " + getId() : favName);
     }
 
     /**

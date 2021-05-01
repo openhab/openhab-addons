@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.development.Threads;
+import org.openhab.binding.velux.internal.factory.VeluxHandlerFactory;
 import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseBridgeHandler;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
@@ -96,6 +97,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements VeluxBridgeInstance, VeluxBridgeProvider {
 
+    /*
+     * timeout to ensure that the binding shutdown will not block and stall the shutdown of OH itself
+     */
+    private static final int COMMUNICATION_TASK_MAX_WAIT_SECS = 10;
+
+    /*
+     * a modifier string to avoid the (small) risk of other tasks (outside this binding) locking on the same ip address
+     * Strings.intern() object
+     *
+     */
+    private static final String LOCK_MODIFIER = "velux.ipaddr.";
+
     private final Logger logger = LoggerFactory.getLogger(VeluxBridgeHandler.class);
 
     // Class internal
@@ -103,10 +116,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     /**
      * Scheduler for continuous refresh by scheduleWithFixedDelay.
      */
-    private @Nullable ScheduledFuture<?> refreshJob = null;
+    private @Nullable ScheduledFuture<?> refreshSchedulerJob = null;
 
     /**
-     * Counter of refresh invocations by {@link refreshJob}.
+     * Counter of refresh invocations by {@link refreshSchedulerJob}.
      */
     private int refreshCounter = 0;
 
@@ -117,7 +130,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * anyway forced to go through the same serial pipeline, because they all call the same class level "synchronized"
      * method to actually communicate with the KLF bridge via its one single TCP socket connection
      */
-    private @Nullable ExecutorService taskExecutor = null;
+    private @Nullable ExecutorService communicationsJobExecutor = null;
     private @Nullable NamedThreadFactory threadFactory = null;
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
@@ -200,7 +213,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @param channelUID for type {@link ChannelUID}.
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
-    ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
+    public ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
         String[] segments = channelUID.getAsString().split(AbstractUID.SEPARATOR);
         if (segments.length > 1) {
             return new ThingTypeUID(segments[0], segments[1]);
@@ -253,71 +266,119 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     @Override
     public void initialize() {
-        logger.info("Initializing Velux Bridge '{}'.", getThing().getUID());
-        // The framework requires you to return from this method quickly.
-        // Setting the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        logger.trace("initialize() called.");
+        // set the thing status to UNKNOWN temporarily and let the background task decide the real status
         updateStatus(ThingStatus.UNKNOWN);
-        // Take care of unusual situations...
+
+        // take care of unusual situations...
         if (scheduler.isShutdown()) {
-            logger.warn("initialize(): scheduler is shutdown, aborting the initialization of this bridge.");
+            logger.warn("initialize(): scheduler is shutdown, aborting initialization.");
             return;
         }
-        getTaskExecutor();
-        logger.trace("initialize(): preparing background initialization task.");
-        // Background initialization...
-        scheduler.execute(() -> {
-            logger.trace("initialize.scheduled(): Further work within scheduler.execute().");
-            logger.trace("initialize.scheduled(): Initializing bridge configuration parameters.");
-            this.veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
-            logger.trace("initialize.scheduled(): work on updated bridge configuration parameters.");
-            bridgeParamsUpdated();
 
-            logger.debug("initialize.scheduled(): activated scheduler with {} milliseconds.",
-                    this.veluxBridgeConfiguration.refreshMSecs);
-            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                try {
-                    refreshOpenHAB();
-                } catch (RuntimeException e) {
-                    logger.warn("Exception occurred during activated refresh scheduler: {}.", e.getMessage());
-                }
-            }, this.veluxBridgeConfiguration.refreshMSecs, this.veluxBridgeConfiguration.refreshMSecs,
-                    TimeUnit.MILLISECONDS);
-            logger.trace("initialize.scheduled(): done.");
+        logger.trace("initialize(): initialize bridge configuration parameters.");
+        veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
+
+        scheduler.execute(() -> {
+            initializeSchedulerJob();
         });
-        logger.trace("initialize() done.");
     }
 
     /**
-     * NOTE: It takes care about shutting down the connections before removal of this binding.
+     * Various initialisation actions to be executed on a background thread
      */
+    private void initializeSchedulerJob() {
+        /*
+         * synchronize disposeSchedulerJob() and initializeSchedulerJob() based an IP address Strings.intern() object to
+         * prevent overlap of initialization and disposal communications towards the same physical bridge
+         */
+        synchronized (LOCK_MODIFIER.concat(veluxBridgeConfiguration.ipAddress).intern()) {
+            logger.trace("initializeSchedulerJob(): adopt new bridge configuration parameters.");
+            bridgeParamsUpdated();
+
+            long mSecs = veluxBridgeConfiguration.refreshMSecs;
+            logger.trace("initializeSchedulerJob(): scheduling refresh at {} milliseconds.", mSecs);
+            refreshSchedulerJob = scheduler.scheduleWithFixedDelay(() -> {
+                refreshSchedulerJob();
+            }, mSecs, mSecs, TimeUnit.MILLISECONDS);
+
+            VeluxHandlerFactory.refreshBindingInfo();
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Velux Bridge '{}' is initialized (with {} scenes and {} actuators).", getThing().getUID(),
+                        bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
+                        bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
+            }
+        }
+    }
+
     @Override
-    public synchronized void dispose() {
-        logger.info("Shutting down Velux Bridge '{}'.", getThing().getUID());
-        logger.trace("dispose(): shutting down continous refresh.");
-        // Just for avoidance of Potential null pointer access
-        ScheduledFuture<?> currentRefreshJob = refreshJob;
-        if (currentRefreshJob != null) {
-            logger.trace("dispose(): stopping the refresh.");
-            currentRefreshJob.cancel(true);
-        }
-        // shut down the task executor
-        ExecutorService taskExecutor = this.taskExecutor;
-        if (taskExecutor != null) {
-            taskExecutor.shutdownNow();
-        }
-        // Background execution of dispose
-        scheduler.execute(() -> {
-            logger.trace("dispose.scheduled(): (synchronous) logout initiated.");
-            thisBridge.bridgeLogout();
-            logger.trace("dispose.scheduled(): shutting down JSON bridge.");
-            myJsonBridge.shutdown();
-            logger.trace("dispose.scheduled(): shutting down SLIP bridge.");
-            mySlipBridge.shutdown();
+    public void dispose() {
+        scheduler.submit(() -> {
+            disposeSchedulerJob();
         });
-        logger.trace("dispose(): calling super class.");
-        super.dispose();
-        logger.trace("dispose() done.");
+    }
+
+    /**
+     * Various disposal actions to be executed on a background thread
+     */
+    private void disposeSchedulerJob() {
+        /*
+         * synchronize disposeSchedulerJob() and initializeSchedulerJob() based an IP address Strings.intern() object to
+         * prevent overlap of initialization and disposal communications towards the same physical bridge
+         */
+        synchronized (LOCK_MODIFIER.concat(veluxBridgeConfiguration.ipAddress).intern()) {
+            /*
+             * cancel the regular refresh polling job
+             */
+            ScheduledFuture<?> refreshSchedulerJob = this.refreshSchedulerJob;
+            if (refreshSchedulerJob != null) {
+                logger.trace("disposeSchedulerJob(): cancel the refresh polling job.");
+                refreshSchedulerJob.cancel(false);
+            }
+
+            ExecutorService commsJobExecutor = this.communicationsJobExecutor;
+            if (commsJobExecutor != null) {
+                this.communicationsJobExecutor = null;
+                logger.trace("disposeSchedulerJob(): cancel any other scheduled jobs.");
+                /*
+                 * remove un-started communication tasks from the execution queue; and stop accepting more tasks
+                 */
+                commsJobExecutor.shutdownNow();
+                /*
+                 * if the last bridge communication was OK, wait for already started task(s) to complete (so the bridge
+                 * won't lock up); but to prevent stalling the OH shutdown process, time out after
+                 * MAX_COMMUNICATION_TASK_WAIT_TIME_SECS
+                 */
+                if (thisBridge.lastCommunicationOk()) {
+                    try {
+                        if (!commsJobExecutor.awaitTermination(COMMUNICATION_TASK_MAX_WAIT_SECS, TimeUnit.SECONDS)) {
+                            logger.warn("disposeSchedulerJob(): unexpected awaitTermination() timeout.");
+                        }
+                    } catch (InterruptedException e) {
+                        logger.warn("disposeSchedulerJob(): unexpected exception awaitTermination() '{}'.",
+                                e.getMessage());
+                    }
+                }
+            }
+
+            /*
+             * if the last bridge communication was OK, deactivate HSM to prevent queueing more HSM events
+             */
+            if (thisBridge.lastCommunicationOk()
+                    && (new VeluxBridgeSetHouseStatusMonitor().modifyHSM(thisBridge, false))) {
+                logger.trace("disposeSchedulerJob(): HSM deactivated.");
+            }
+
+            /*
+             * finally clean up everything else
+             */
+            logger.trace("disposeSchedulerJob(): shut down JSON connection interface.");
+            myJsonBridge.shutdown();
+            logger.trace("disposeSchedulerJob(): shut down SLIP connection interface.");
+            mySlipBridge.shutdown();
+            VeluxHandlerFactory.refreshBindingInfo();
+            logger.debug("Velux Bridge '{}' is shut down.", getThing().getUID());
+        }
     }
 
     /**
@@ -382,11 +443,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         logger.trace("bridgeParamsUpdated(): Fetching existing scenes.");
         bridgeParameters.scenes.getScenes(thisBridge);
-        logger.info("Found {} scenes:\n\t{}", VeluxBindingConstants.BINDING_ID,
+        logger.debug("Found Velux scenes:\n\t{}",
                 bridgeParameters.scenes.getChannel().existingScenes.toString(false, "\n\t"));
         logger.trace("bridgeParamsUpdated(): Fetching existing actuators/products.");
         bridgeParameters.actuators.getProducts(thisBridge);
-        logger.info("Found {} actuators:\n\t{}", VeluxBindingConstants.BINDING_ID,
+        logger.debug("Found Velux actuators:\n\t{}",
                 bridgeParameters.actuators.getChannel().existingProducts.toString(false, "\n\t"));
 
         if (thisBridge.bridgeAPI().setHouseStatusMonitor() != null) {
@@ -399,9 +460,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         }
 
         veluxBridgeConfiguration.hasChanged = false;
-        logger.info("{} Bridge is online with {} scenes and {} actuators, now.", VeluxBindingConstants.BINDING_ID,
-                bridgeParameters.scenes.getChannel().existingScenes.getNoMembers(),
-                bridgeParameters.actuators.getChannel().existingProducts.getNoMembers());
         logger.debug("Velux veluxBridge is online, now.");
         updateStatus(ThingStatus.ONLINE);
         logger.trace("bridgeParamsUpdated() successfully finished.");
@@ -409,41 +467,47 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     // Continuous synchronization methods
 
-    private synchronized void refreshOpenHAB() {
-        logger.debug("refreshOpenHAB() initiated by {} starting cycle {}.", Thread.currentThread(), refreshCounter);
-        logger.trace("refreshOpenHAB(): processing of possible HSM messages.");
+    private synchronized void refreshSchedulerJob() {
+        logger.debug("refreshSchedulerJob() initiated by {} starting cycle {}.", Thread.currentThread(),
+                refreshCounter);
+        logger.trace("refreshSchedulerJob(): processing of possible HSM messages.");
 
         // Background execution of bridge related I/O
-        getTaskExecutor().execute(() -> {
-            logger.trace("refreshOpenHAB.scheduled() initiated by {} will process HouseStatus.",
-                    Thread.currentThread());
-            if (new VeluxBridgeGetHouseStatus().evaluateState(thisBridge)) {
-                logger.trace("refreshOpenHAB.scheduled(): => GetHouseStatus() => updates received => synchronizing");
-                syncChannelsWithProducts();
-            } else {
-                logger.trace("refreshOpenHAB.scheduled(): => GetHouseStatus() => no updates");
-            }
-            logger.trace("refreshOpenHAB.scheduled() initiated by {} has finished.", Thread.currentThread());
+        submitCommunicationsJob(() -> {
+            getHouseStatusCommsJob();
         });
 
-        logger.trace("refreshOpenHAB(): loop through all (child things and bridge) linked channels needing a refresh");
+        logger.trace(
+                "refreshSchedulerJob(): loop through all (child things and bridge) linked channels needing a refresh");
         for (ChannelUID channelUID : BridgeChannels.getAllLinkedChannelUIDs(this)) {
             if (VeluxItemType.isToBeRefreshedNow(refreshCounter, thingTypeUIDOf(channelUID), channelUID.getId())) {
-                logger.trace("refreshOpenHAB(): refreshing channel {}.", channelUID);
+                logger.trace("refreshSchedulerJob(): refreshing channel {}.", channelUID);
                 handleCommand(channelUID, RefreshType.REFRESH);
             }
         }
 
-        logger.trace("refreshOpenHAB(): loop through properties needing a refresh");
+        logger.trace("refreshSchedulerJob(): loop through properties needing a refresh");
         for (VeluxItemType veluxItem : VeluxItemType.getPropertyEntriesByThing(getThing().getThingTypeUID())) {
             if (VeluxItemType.isToBeRefreshedNow(refreshCounter, getThing().getThingTypeUID(),
                     veluxItem.getIdentifier())) {
-                logger.trace("refreshOpenHAB(): refreshing property {}.", veluxItem.getIdentifier());
+                logger.trace("refreshSchedulerJob(): refreshing property {}.", veluxItem.getIdentifier());
                 handleCommand(new ChannelUID(getThing().getUID(), veluxItem.getIdentifier()), RefreshType.REFRESH);
             }
         }
-        logger.debug("refreshOpenHAB() initiated by {} finished cycle {}.", Thread.currentThread(), refreshCounter);
+        logger.debug("refreshSchedulerJob() initiated by {} finished cycle {}.", Thread.currentThread(),
+                refreshCounter);
         refreshCounter++;
+    }
+
+    private void getHouseStatusCommsJob() {
+        logger.trace("getHouseStatusCommsJob() initiated by {} will process HouseStatus.", Thread.currentThread());
+        if (new VeluxBridgeGetHouseStatus().evaluateState(thisBridge)) {
+            logger.trace("getHouseStatusCommsJob(): => GetHouseStatus() => updates received => synchronizing");
+            syncChannelsWithProducts();
+        } else {
+            logger.trace("getHouseStatusCommsJob(): => GetHouseStatus() => no updates");
+        }
+        logger.trace("getHouseStatusCommsJob() initiated by {} has finished.", Thread.currentThread());
     }
 
     /**
@@ -504,11 +568,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.debug("handleCommand({},{}) called.", channelUID.getAsString(), command);
 
         // Background execution of bridge related I/O
-        getTaskExecutor().execute(() -> {
-            logger.trace("handleCommand.scheduled({}) Start work with calling handleCommandScheduled().",
-                    Thread.currentThread());
-            handleCommandScheduled(channelUID, command);
-            logger.trace("handleCommand.scheduled({}) done.", Thread.currentThread());
+        submitCommunicationsJob(() -> {
+            handleCommandCommsJob(channelUID, command);
         });
         logger.trace("handleCommand({}) done.", Thread.currentThread());
     }
@@ -523,10 +584,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @param channelUID the {@link ChannelUID} of the channel to which the command was sent,
      * @param command the {@link Command}.
      */
-    private synchronized void handleCommandScheduled(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommandScheduled({}): command {} on channel {}.", Thread.currentThread(), command,
+    private synchronized void handleCommandCommsJob(ChannelUID channelUID, Command command) {
+        logger.trace("handleCommandCommsJob({}): command {} on channel {}.", Thread.currentThread(), command,
                 channelUID.getAsString());
-        logger.debug("handleCommandScheduled({},{}) called.", channelUID.getAsString(), command);
+        logger.debug("handleCommandCommsJob({},{}) called.", channelUID.getAsString(), command);
 
         /*
          * ===========================================================
@@ -545,7 +606,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         if (itemType == VeluxItemType.UNKNOWN) {
             logger.warn("{} Cannot determine type of Channel {}, ignoring command {}.",
                     VeluxBindingConstants.LOGGING_CONTACT, channelUID, command);
-            logger.trace("handleCommandScheduled() aborting.");
+            logger.trace("handleCommandCommsJob() aborting.");
             return;
         }
 
@@ -555,7 +616,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         }
 
         if (veluxBridgeConfiguration.hasChanged) {
-            logger.trace("handleCommandScheduled(): work on updated bridge configuration parameters.");
+            logger.trace("handleCommandCommsJob(): work on updated bridge configuration parameters.");
             bridgeParamsUpdated();
         }
 
@@ -566,11 +627,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
              * ===========================================================
              * Refresh part
              */
-            logger.trace("handleCommandScheduled(): work on refresh.");
+            logger.trace("handleCommandCommsJob(): work on refresh.");
             if (!itemType.isReadable()) {
-                logger.debug("handleCommandScheduled(): received a Refresh command for a non-readable item.");
+                logger.debug("handleCommandCommsJob(): received a Refresh command for a non-readable item.");
             } else {
-                logger.trace("handleCommandScheduled(): refreshing item {} (type {}).", itemName, itemType);
+                logger.trace("handleCommandCommsJob(): refreshing item {} (type {}).", itemName, itemType);
                 try { // expecting an IllegalArgumentException for unknown Velux device
                     switch (itemType) {
                         // Bridge channels
@@ -631,7 +692,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
                         default:
                             logger.trace(
-                                    "handleCommandScheduled(): cannot handle REFRESH on channel {} as it is of type {}.",
+                                    "handleCommandCommsJob(): cannot handle REFRESH on channel {} as it is of type {}.",
                                     itemName, channelId);
                     }
                 } catch (IllegalArgumentException e) {
@@ -639,7 +700,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 }
                 if (newState != null) {
                     if (itemType.isChannel()) {
-                        logger.debug("handleCommandScheduled(): updating channel {} to {}.", channelUID, newState);
+                        logger.debug("handleCommandCommsJob(): updating channel {} to {}.", channelUID, newState);
                         updateState(channelUID, newState);
                     } else if (itemType.isProperty()) {
                         // if property value is 'unknown', null it completely
@@ -647,11 +708,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         if (VeluxBindingConstants.UNKNOWN.equals(val)) {
                             val = null;
                         }
-                        logger.debug("handleCommandScheduled(): updating property {} to {}.", channelUID, val);
+                        logger.debug("handleCommandCommsJob(): updating property {} to {}.", channelUID, val);
                         ThingProperty.setValue(this, itemType.getIdentifier(), val);
                     }
                 } else {
-                    logger.info("handleCommandScheduled({},{}): updating of item {} (type {}) failed.",
+                    logger.warn("handleCommandCommsJob({},{}): updating of item {} (type {}) failed.",
                             channelUID.getAsString(), command, itemName, itemType);
                 }
             }
@@ -660,7 +721,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
              * ===========================================================
              * Modification part
              */
-            logger.trace("handleCommandScheduled(): working on item {} (type {}) with COMMAND {}.", itemName, itemType,
+            logger.trace("handleCommandCommsJob(): working on item {} (type {}) with COMMAND {}.", itemName, itemType,
                     command);
             Command newValue = null;
             try { // expecting an IllegalArgumentException for unknown Velux device
@@ -668,10 +729,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     // Bridge channels
                     case BRIDGE_RELOAD:
                         if (command == OnOffType.ON) {
-                            logger.trace("handleCommandScheduled(): about to reload informations from veluxBridge.");
+                            logger.trace("handleCommandCommsJob(): about to reload informations from veluxBridge.");
                             bridgeParamsUpdated();
                         } else {
-                            logger.trace("handleCommandScheduled(): ignoring OFF command.");
+                            logger.trace("handleCommandCommsJob(): ignoring OFF command.");
                         }
                         break;
                     case BRIDGE_DO_DETECTION:
@@ -738,7 +799,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 new java.util.Date(thisBridge.lastCommunication()).toString());
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_SUCCESS,
                 new java.util.Date(thisBridge.lastSuccessfulCommunication()).toString());
-        logger.trace("handleCommandScheduled({}) done.", Thread.currentThread());
+        logger.trace("handleCommandCommsJob({}) done.", Thread.currentThread());
     }
 
     /**
@@ -759,7 +820,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         RunReboot bcp = thisBridge.bridgeAPI().runReboot();
         if (bcp != null) {
             // background execution of reboot process
-            getTaskExecutor().execute(() -> {
+            submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {
                     logger.info("Reboot command {}sucessfully sent to {}", bcp.isCommunicationSuccessful() ? "" : "un",
                             getThing().getUID());
@@ -784,7 +845,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             bcp.setNodeAndMainParameter(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
                     .getAsRelativePosition((relativePercent >= 0)));
             // background execution of moveRelative
-            getTaskExecutor().execute(() -> {
+            submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {
                     logger.trace("moveRelative() command {}sucessfully sent to {}",
                             bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
@@ -796,16 +857,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     }
 
     /**
-     * If necessary initialise the task executor and return it
-     *
-     * @return the task executor
+     * If necessary initialise the communications job executor. Then check if the executor is shut down. And if it is
+     * not shut down, then submit the given communications job for execution.
      */
-    private ExecutorService getTaskExecutor() {
-        ExecutorService taskExecutor = this.taskExecutor;
-        if (taskExecutor == null || taskExecutor.isShutdown()) {
-            taskExecutor = this.taskExecutor = Executors.newSingleThreadExecutor(getThreadFactory());
+    private void submitCommunicationsJob(Runnable communicationsJob) {
+        ExecutorService commsJobExecutor = this.communicationsJobExecutor;
+        if (commsJobExecutor == null) {
+            commsJobExecutor = this.communicationsJobExecutor = Executors.newSingleThreadExecutor(getThreadFactory());
         }
-        return taskExecutor;
+        if (!commsJobExecutor.isShutdown()) {
+            commsJobExecutor.execute(communicationsJob);
+        }
     }
 
     /**

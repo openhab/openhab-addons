@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.profiles.*;
+import org.openhab.core.thing.profiles.Profile;
+import org.openhab.core.thing.profiles.ProfileAdvisor;
+import org.openhab.core.thing.profiles.ProfileCallback;
+import org.openhab.core.thing.profiles.ProfileContext;
+import org.openhab.core.thing.profiles.ProfileFactory;
+import org.openhab.core.thing.profiles.ProfileType;
+import org.openhab.core.thing.profiles.ProfileTypeBuilder;
+import org.openhab.core.thing.profiles.ProfileTypeProvider;
+import org.openhab.core.thing.profiles.ProfileTypeUID;
+import org.openhab.core.thing.profiles.TriggerProfileType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Component;

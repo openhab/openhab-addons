@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -428,7 +428,10 @@ public class ValloxMVWebSocket {
                 BigDecimal bdTempOutside = getTemperature(bytes, 134);
                 BigDecimal bdTempIncomingBeforeHeating = getTemperature(bytes, 136);
                 BigDecimal bdTempIncoming = getTemperature(bytes, 138);
-                int iHumidity = getNumberBE(bytes, 166);
+
+                int iHumidity = getNumberBE(bytes, 148);
+                @SuppressWarnings("unused")
+                int iCo2 = getNumberBE(bytes, 150);
 
                 int iStateOrig = getNumberBE(bytes, 214);
                 int iBoostTimer = getNumberBE(bytes, 220);
@@ -503,6 +506,7 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INCOMING,
                         new QuantityType<>(bdTempIncoming, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HUMIDITY, new QuantityType<>(iHumidity, Units.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_CO2, new QuantityType<>(iCo2, Units.PARTS_PER_MILLION));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_CELLSTATE, new DecimalType(iCellstate));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_YEARS, new DecimalType(iUptimeYears));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(iUptimeHours));

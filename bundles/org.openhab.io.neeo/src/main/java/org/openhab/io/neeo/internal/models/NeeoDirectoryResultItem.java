@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.io.neeo.internal.models;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.NeeoUtil;
@@ -29,16 +28,13 @@ public class NeeoDirectoryResultItem {
     private final String title;
 
     /** The URI to the thumbnail representing the item */
-    @Nullable
-    private final String thumbnailUri;
+    private final @Nullable String thumbnailUri;
 
     /** The browse identifier (reflected back in a request if this item is a container) */
-    @Nullable
-    private final String browseIdentifier;
+    private final @Nullable String browseIdentifier;
 
     /** The action identifier (reflected back in a request if this is a leaf) */
-    @Nullable
-    private final String actionIdentifier;
+    private final @Nullable String actionIdentifier;
 
     /** Whether the item is queueable (no explanation posted by NEEO) */
     private final boolean isQueueable;
@@ -57,7 +53,8 @@ public class NeeoDirectoryResultItem {
             @Nullable String actionIdentifier, boolean isQueueable) {
         NeeoUtil.requireNotEmpty(title, "title cannot be empty");
 
-        if (StringUtils.isEmpty(browseIdentifier) && StringUtils.isEmpty(actionIdentifier)) {
+        if ((browseIdentifier == null || browseIdentifier.isEmpty())
+                && (actionIdentifier == null || actionIdentifier.isEmpty())) {
             throw new IllegalArgumentException("Either browserIdentifier or actionIdentifier must be specified");
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class {@link NhcMessageBase1} used as base class for output from gson for cmd or event feedback from Niko Home
  * Control. This class only contains the common base fields required for the deserializer
@@ -21,10 +23,11 @@ package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 abstract class NhcMessageBase1 {
 
-    private String cmd;
-    private String event;
+    private String cmd = "";
+    private String event = "";
 
     String getCmd() {
         return cmd;

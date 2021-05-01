@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,6 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class KM200DataHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200DataHandler.class);
-    private final JsonParser jsonParser = new JsonParser();
 
     private final KM200Device remoteDevice;
 
@@ -539,7 +538,7 @@ public class KM200DataHandler {
                         /* The JSONArray of switch items can be send directly */
                         try {
                             /* Check whether this input string is a valid JSONArray */
-                            JsonArray userArray = (JsonArray) jsonParser.parse(val);
+                            JsonArray userArray = (JsonArray) JsonParser.parseString(val);
                             newObject = userArray.getAsJsonObject();
                         } catch (JsonParseException e) {
                             logger.warn("The input for the switchProgram is not a valid JSONArray : {}",

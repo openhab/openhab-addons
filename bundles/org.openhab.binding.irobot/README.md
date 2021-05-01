@@ -1,6 +1,6 @@
 # iRobot Binding
 
-This binding provides integration of products by iRobot company (http://www.irobot.com/). It is currently developed to support Roomba 900
+This binding provides integration of products by iRobot company (https://www.irobot.com/). It is currently developed to support Roomba 900
 series robotic vacuum cleaner with built-in Wi-Fi module. The binding interfaces to the robot directly without any need for a dedicated MQTT server.
 
 ## Supported Things
@@ -30,28 +30,30 @@ known, however, whether the password is eternal or can change during factory res
 
 ## Channels
 
-| channel       | type   | description                                        | Read-only |
-|---------------|--------|----------------------------------------------------|-----------|
-| command       | String | Command to execute: clean, spot, dock, pause, stop | N |
-| cycle         | String | Current mission: none, clean, spot                 | Y |
-| phase         | String | Current phase of the mission; see below.           | Y |
-| battery       | Number | Battery charge in percents                         | Y |
-| bin           | String | Bin status: ok, removed, full                      | Y |
-| error         | String | Error code; see below                              | Y |
-| rssi          | Number | Wi-Fi Received Signal Strength indicator in db     | Y |
-| snr           | Number | Wi-Fi Signal to noise ratio                        | Y |
-| sched_mon     | Switch | Scheduled clean enabled for Monday                 | N |
-| sched_tue     | Switch | Scheduled clean enabled for Tuesday                | N |
-| sched_wed     | Switch | Scheduled clean enabled for Wednesday              | N |
-| sched_thu     | Switch | Scheduled clean enabled for Thursday               | N |
-| sched_fri     | Switch | Scheduled clean enabled for Friday                 | N |
-| sched_sat     | Switch | Scheduled clean enabled for Saturday               | N |
-| sched_sun     | Switch | Scheduled clean enabled for Sunday                 | N |
+| channel       | type   | description                                                               | Read-only |
+|---------------|--------|---------------------------------------------------------------------------|-----------|
+| command       | String | Command to execute: clean, spot, dock, pause, stop                        | N |
+| cycle         | String | Current mission: none, clean, spot                                        | Y |
+| phase         | String | Current phase of the mission; see below.                                  | Y |
+| battery       | Number | Battery charge in percents                                                | Y |
+| bin           | String | Bin status: ok, removed, full                                             | Y |
+| error         | String | Error code; see below                                                     | Y |
+| rssi          | Number | Wi-Fi Received Signal Strength indicator in db                            | Y |
+| snr           | Number | Wi-Fi Signal to noise ratio                                               | Y |
+| sched_mon     | Switch | Scheduled clean enabled for Monday                                        | N |
+| sched_tue     | Switch | Scheduled clean enabled for Tuesday                                       | N |
+| sched_wed     | Switch | Scheduled clean enabled for Wednesday                                     | N |
+| sched_thu     | Switch | Scheduled clean enabled for Thursday                                      | N |
+| sched_fri     | Switch | Scheduled clean enabled for Friday                                        | N |
+| sched_sat     | Switch | Scheduled clean enabled for Saturday                                      | N |
+| sched_sun     | Switch | Scheduled clean enabled for Sunday                                        | N |
 | schedule      | Number | Schedule bitmask for use in scripts. 7 bits, bit #0 corresponds to Sunday | N |
-| edge_clean    | Switch | Seek out and clean along walls and furniture legs  | N |
-| always_finish | Switch | Whether to keep cleaning if the bin becomes full   | N |
-| power_boost   | String | Power boost mode: "auto", "performance", "eco"     | N |
-| clean_passes  | String | Number of cleaning passes: "auto", "1", "2"        | N |
+| edge_clean    | Switch | Seek out and clean along walls and furniture legs                         | N |
+| always_finish | Switch | Whether to keep cleaning if the bin becomes full                          | N |
+| power_boost   | String | Power boost mode: "auto", "performance", "eco"                            | N |
+| clean_passes  | String | Number of cleaning passes: "auto", "1", "2"                               | N |
+| map_upload    | Switch | Enable or disable uploading Clean Map(tm) to cloud for notifications      | N |
+| last_command  | String | Json string containing the parameters of the last executed command        | N |
 
 Known phase strings and their meanings:
 
@@ -102,7 +104,7 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 | 19    | Undocking issue           |
 | 20    | Docking issue             |
 | 21    | Navigation problem        |
-| 22    | Navigation problem        | 
+| 22    | Navigation problem        |
 | 23    | Battery issue             |
 | 24    | Navigation problem        |
 | 25    | Reboot required           |
@@ -136,6 +138,14 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 | 74    | Max area reached          |
 | 75    | Navigation problem        |
 | 76    | Hardware problem detected |
+
+## Cleaning specific regions
+You can clean one or many specific regions of a given map by sending the following String to the command channel:
+
+```
+ cleanRegions:<pmapId>;<region_id1>,<region_id2>,..
+```
+The easiest way to determine the pmapId and region_ids is to monitor the last_command channel while starting a new mission for the specific region with the iRobot-App.
 
 ## Known Problems / Caveats
 
@@ -177,8 +187,8 @@ Text item=Roomba_Error label="Error"
 
 ## Credits
 
-This code is a result of development of an abandoned draft by hkunh42 (http://github.com/hkuhn42/openhab2.roomba)
+This code is a result of development of an abandoned draft by hkunh42 (https://github.com/hkuhn42/openhab2.roomba)
 and heavily uses the following projects as a reference:
 
-- Roomba980-Python by Nick Waterton (http://github.com/NickWaterton/Roomba980-Python)
+- Roomba980-Python by Nick Waterton (https://github.com/NickWaterton/Roomba980-Python)
 - Dorita980 by Facu ZAK (https://github.com/koalazak/dorita980)

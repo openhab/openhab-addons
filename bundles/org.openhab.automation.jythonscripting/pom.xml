@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -10,7 +12,7 @@
 
   <artifactId>org.openhab.automation.jythonscripting</artifactId>
 
-  <name>openHAB Add-ons :: Automation :: Jython Scripting</name>
+  <name>openHAB Add-ons :: Bundles :: Automation :: Jython Scripting</name>
 
   <properties>
     <bnd.fixupmessages><![CDATA["Classes found in the wrong directory","The default package '.' is not permitted by the Import-Package syntax"; restrict:=error; is:=warning]]></bnd.fixupmessages>

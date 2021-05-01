@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,9 +156,12 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             State state = queryDataFromDevice(epsonCommand);
 
             if (state != null) {
-                updateStatus(ThingStatus.ONLINE);
                 if (isLinked(channel.getUID())) {
                     updateState(channel.getUID(), state);
+                }
+                // the first valid response will cause the thing to go ONLINE
+                if (state != UnDefType.UNDEF) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -351,7 +354,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setHorizontalReverse((command == OnOffType.ON ? Switch.ON : Switch.OFF));
                     break;
                 case KEY_CODE:
-                    remoteController.sendKeyCode(((DecimalType) command).intValue());
+                    remoteController.sendKeyCode(command.toString());
                     break;
                 case LAMP_TIME:
                     logger.warn("'{}' is read only parameter", commandType);

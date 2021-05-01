@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,9 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import java.util.Arrays;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,35 +22,45 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.profile.ProfilesConfigFile;
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.awscore.retry.AwsRetryPolicy;
+import software.amazon.awssdk.core.retry.RetryMode;
+import software.amazon.awssdk.core.retry.RetryPolicy;
+import software.amazon.awssdk.profiles.ProfileFile;
+import software.amazon.awssdk.profiles.ProfileFile.Type;
+import software.amazon.awssdk.profiles.ProfileProperty;
+import software.amazon.awssdk.regions.Region;
 
 /**
  * Configuration for DynamoDB connections
+ *
+ * If table parameter is specified and is not blank, we use new table schema (ExpectedTableRevision.NEW).
+ * If tablePrefix parameter is specified and is not blank, we use legacy table schema (ExpectedTableRevision.LEGACY).
+ * Other cases conservatively set ExpectedTableRevision.MAYBE_LEGACY, detecting the right schema during runtime.
+ *
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
 public class DynamoDBConfig {
     public static final String DEFAULT_TABLE_PREFIX = "openhab-";
-    public static final boolean DEFAULT_CREATE_TABLE_ON_DEMAND = true;
+    public static final String DEFAULT_TABLE_NAME = "openhab";
     public static final long DEFAULT_READ_CAPACITY_UNITS = 1;
     public static final long DEFAULT_WRITE_CAPACITY_UNITS = 1;
-    public static final long DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS = 1000;
-    public static final int DEFAULT_BUFFER_SIZE = 1000;
-
+    public static final RetryMode DEFAULT_RETRY_MODE = RetryMode.STANDARD;
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBConfig.class);
 
-    private String tablePrefix = DEFAULT_TABLE_PREFIX;
-    private Regions region;
-    private AWSCredentials credentials;
-    private boolean createTable = DEFAULT_CREATE_TABLE_ON_DEMAND;
-    private long readCapacityUnits = DEFAULT_READ_CAPACITY_UNITS;
-    private long writeCapacityUnits = DEFAULT_WRITE_CAPACITY_UNITS;
-    private long bufferCommitIntervalMillis = DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS;
-    private int bufferSize = DEFAULT_BUFFER_SIZE;
+    private long readCapacityUnits;
+    private long writeCapacityUnits;
+    private Region region;
+    private AwsCredentials credentials;
+    private RetryPolicy retryPolicy;
+    private ExpectedTableSchema tableRevision;
+    private String table;
+    private String tablePrefixLegacy;
+    private @Nullable Integer expireDays;
 
     /**
      *
@@ -57,26 +68,26 @@ public class DynamoDBConfig {
      * @return DynamoDB configuration. Returns null in case of configuration errors
      */
     public static @Nullable DynamoDBConfig fromConfig(Map<String, Object> config) {
+        ExpectedTableSchema tableRevision;
         try {
             String regionName = (String) config.get("region");
             if (regionName == null) {
                 return null;
             }
-            final Regions region;
-            try {
-                region = Regions.fromName(regionName);
-            } catch (IllegalArgumentException e) {
-                LOGGER.error("Specify valid AWS region to use, got {}. Valid values include: {}", regionName, Arrays
-                        .asList(Regions.values()).stream().map(r -> r.getName()).collect(Collectors.joining(",")));
-                return null;
+            final Region region;
+            if (Region.regions().stream().noneMatch(r -> r.toString().equals(regionName))) {
+                LOGGER.warn("Region {} is not matching known regions: {}. The region might not be supported.",
+                        regionName, Region.regions().stream().map(r -> r.toString()).collect(Collectors.joining(", ")));
             }
+            region = Region.of(regionName);
 
-            AWSCredentials credentials;
+            RetryMode retryMode = RetryMode.STANDARD;
+            AwsCredentials credentials;
             String accessKey = (String) config.get("accessKey");
             String secretKey = (String) config.get("secretKey");
             if (accessKey != null && !accessKey.isBlank() && secretKey != null && !secretKey.isBlank()) {
                 LOGGER.debug("accessKey and secretKey specified. Using those.");
-                credentials = new BasicAWSCredentials(accessKey, secretKey);
+                credentials = AwsBasicCredentials.create(accessKey, secretKey);
             } else {
                 LOGGER.debug("accessKey and/or secretKey blank. Checking profilesConfigFile and profile.");
                 String profilesConfigFile = (String) config.get("profilesConfigFile");
@@ -87,28 +98,49 @@ public class DynamoDBConfig {
                             + "profile for providing AWS credentials");
                     return null;
                 }
-                credentials = new ProfilesConfigFile(profilesConfigFile).getCredentials(profile);
+                ProfileFile profileFile = ProfileFile.builder().content(Path.of(profilesConfigFile))
+                        .type(Type.CREDENTIALS).build();
+                credentials = ProfileCredentialsProvider.builder().profileFile(profileFile).profileName(profile).build()
+                        .resolveCredentials();
+
+                retryMode = profileFile.profile(profile).flatMap(p -> p.property(ProfileProperty.RETRY_MODE))
+                        .flatMap(retry_mode -> {
+                            for (RetryMode value : RetryMode.values()) {
+                                if (retry_mode.equalsIgnoreCase(value.name())) {
+                                    return Optional.of(value);
+                                }
+                            }
+                            LOGGER.warn("Unknown retry_mode '{}' in profile. Ignoring and using default {} retry mode.",
+                                    retry_mode, DEFAULT_RETRY_MODE);
+                            return Optional.empty();
+
+                        }).orElse(DEFAULT_RETRY_MODE);
+                LOGGER.debug("Retry mode {}", retryMode);
             }
 
-            String table = (String) config.get("tablePrefix");
+            String table = (String) config.get("table");
+            String tablePrefixLegacy;
             if (table == null || table.isBlank()) {
-                LOGGER.debug("Using default table name {}", DEFAULT_TABLE_PREFIX);
-                table = DEFAULT_TABLE_PREFIX;
-            }
-
-            final boolean createTable;
-            String createTableParam = (String) config.get("createTable");
-            if (createTableParam == null || createTableParam.isBlank()) {
-                LOGGER.debug("Creating table on demand: {}", DEFAULT_CREATE_TABLE_ON_DEMAND);
-                createTable = DEFAULT_CREATE_TABLE_ON_DEMAND;
+                // the new parameter 'table' has not been set. Check whether the legacy parameter 'tablePrefix' is set
+                table = DEFAULT_TABLE_NAME;
+                tablePrefixLegacy = (String) config.get("tablePrefix");
+                if (tablePrefixLegacy == null || tablePrefixLegacy.isBlank()) {
+                    LOGGER.debug("Using default table prefix {}", DEFAULT_TABLE_PREFIX);
+                    // No explicit value has been specified for tablePrefix, user could be still using the legacy setup
+                    tableRevision = ExpectedTableSchema.MAYBE_LEGACY;
+                    tablePrefixLegacy = DEFAULT_TABLE_PREFIX;
+                } else {
+                    // Explicit value for tablePrefix, user certainly prefers LEGACY
+                    tableRevision = ExpectedTableSchema.LEGACY;
+                }
             } else {
-                createTable = Boolean.parseBoolean(createTableParam);
+                tableRevision = ExpectedTableSchema.NEW;
+                tablePrefixLegacy = DEFAULT_TABLE_PREFIX;
             }
 
             final long readCapacityUnits;
             String readCapacityUnitsParam = (String) config.get("readCapacityUnits");
             if (readCapacityUnitsParam == null || readCapacityUnitsParam.isBlank()) {
-                LOGGER.debug("Read capacity units: {}", DEFAULT_READ_CAPACITY_UNITS);
                 readCapacityUnits = DEFAULT_READ_CAPACITY_UNITS;
             } else {
                 readCapacityUnits = Long.parseLong(readCapacityUnitsParam);
@@ -117,64 +149,98 @@ public class DynamoDBConfig {
             final long writeCapacityUnits;
             String writeCapacityUnitsParam = (String) config.get("writeCapacityUnits");
             if (writeCapacityUnitsParam == null || writeCapacityUnitsParam.isBlank()) {
-                LOGGER.debug("Write capacity units: {}", DEFAULT_WRITE_CAPACITY_UNITS);
                 writeCapacityUnits = DEFAULT_WRITE_CAPACITY_UNITS;
             } else {
                 writeCapacityUnits = Long.parseLong(writeCapacityUnitsParam);
             }
 
-            final long bufferCommitIntervalMillis;
-            String bufferCommitIntervalMillisParam = (String) config.get("bufferCommitIntervalMillis");
-            if (bufferCommitIntervalMillisParam == null || bufferCommitIntervalMillisParam.isBlank()) {
-                LOGGER.debug("Buffer commit interval millis: {}", DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS);
-                bufferCommitIntervalMillis = DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS;
+            final @Nullable Integer expireDays;
+            String expireDaysString = (String) config.get("expireDays");
+            if (expireDaysString == null || expireDaysString.isBlank()) {
+                expireDays = null;
             } else {
-                bufferCommitIntervalMillis = Long.parseLong(bufferCommitIntervalMillisParam);
+                expireDays = Integer.parseInt(expireDaysString);
+                if (expireDays <= 0) {
+                    LOGGER.error("expireDays should be positive integer or null");
+                    return null;
+                }
             }
 
-            final int bufferSize;
-            String bufferSizeParam = (String) config.get("bufferSize");
-            if (bufferSizeParam == null || bufferSizeParam.isBlank()) {
-                LOGGER.debug("Buffer size: {}", DEFAULT_BUFFER_SIZE);
-                bufferSize = DEFAULT_BUFFER_SIZE;
-            } else {
-                bufferSize = Integer.parseInt(bufferSizeParam);
+            switch (tableRevision) {
+                case NEW:
+                    LOGGER.debug("Using new DynamoDB table schema");
+                    return DynamoDBConfig.newSchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode), table,
+                            readCapacityUnits, writeCapacityUnits, expireDays);
+                case LEGACY:
+                    LOGGER.warn(
+                            "Using legacy DynamoDB table schema. It is recommended to transition to new schema by defining 'table' parameter and not configuring 'tablePrefix'");
+                    return DynamoDBConfig.legacySchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode),
+                            tablePrefixLegacy, readCapacityUnits, writeCapacityUnits);
+                case MAYBE_LEGACY:
+                    LOGGER.debug(
+                            "Unclear whether we should use new legacy DynamoDB table schema. It is recommended to explicitly define new 'table' parameter. The correct table schema will be detected at runtime.");
+                    return DynamoDBConfig.maybeLegacySchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode),
+                            table, tablePrefixLegacy, readCapacityUnits, writeCapacityUnits, expireDays);
+                default:
+                    throw new IllegalStateException("Unhandled enum. Bug");
             }
-
-            return new DynamoDBConfig(region, credentials, table, createTable, readCapacityUnits, writeCapacityUnits,
-                    bufferCommitIntervalMillis, bufferSize);
         } catch (Exception e) {
-            LOGGER.error("Error with configuration", e);
+            LOGGER.error("Error with configuration: {} {}", e.getClass().getSimpleName(), e.getMessage());
             return null;
         }
     }
 
-    public DynamoDBConfig(Regions region, AWSCredentials credentials, String table, boolean createTable,
-            long readCapacityUnits, long writeCapacityUnits, long bufferCommitIntervalMillis, int bufferSize) {
-        this.region = region;
-        this.credentials = credentials;
-        this.tablePrefix = table;
-        this.createTable = createTable;
-        this.readCapacityUnits = readCapacityUnits;
-        this.writeCapacityUnits = writeCapacityUnits;
-        this.bufferCommitIntervalMillis = bufferCommitIntervalMillis;
-        this.bufferSize = bufferSize;
+    private static DynamoDBConfig newSchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
+            String table, long readCapacityUnits, long writeCapacityUnits, @Nullable Integer expireDays) {
+        return new DynamoDBConfig(region, credentials, retryPolicy, table, "", ExpectedTableSchema.NEW,
+                readCapacityUnits, writeCapacityUnits, expireDays);
     }
 
-    public AWSCredentials getCredentials() {
+    private static DynamoDBConfig legacySchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
+            String tablePrefixLegacy, long readCapacityUnits, long writeCapacityUnits) {
+        return new DynamoDBConfig(region, credentials, retryPolicy, "", tablePrefixLegacy, ExpectedTableSchema.LEGACY,
+                readCapacityUnits, writeCapacityUnits, null);
+    }
+
+    private static DynamoDBConfig maybeLegacySchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
+            String table, String tablePrefixLegacy, long readCapacityUnits, long writeCapacityUnits,
+            @Nullable Integer expireDays) {
+        return new DynamoDBConfig(region, credentials, retryPolicy, table, tablePrefixLegacy,
+                ExpectedTableSchema.MAYBE_LEGACY, readCapacityUnits, writeCapacityUnits, expireDays);
+    }
+
+    private DynamoDBConfig(Region region, AwsCredentials credentials, RetryPolicy retryPolicy, String table,
+            String tablePrefixLegacy, ExpectedTableSchema tableRevision, long readCapacityUnits,
+            long writeCapacityUnits, @Nullable Integer expireDays) {
+        this.region = region;
+        this.credentials = credentials;
+        this.retryPolicy = retryPolicy;
+        this.table = table;
+        this.tablePrefixLegacy = tablePrefixLegacy;
+        this.tableRevision = tableRevision;
+        this.readCapacityUnits = readCapacityUnits;
+        this.writeCapacityUnits = writeCapacityUnits;
+        this.expireDays = expireDays;
+    }
+
+    public AwsCredentials getCredentials() {
         return credentials;
     }
 
-    public String getTablePrefix() {
-        return tablePrefix;
+    public String getTablePrefixLegacy() {
+        return tablePrefixLegacy;
     }
 
-    public Regions getRegion() {
+    public String getTable() {
+        return table;
+    }
+
+    public ExpectedTableSchema getTableRevision() {
+        return tableRevision;
+    }
+
+    public Region getRegion() {
         return region;
-    }
-
-    public boolean isCreateTable() {
-        return createTable;
     }
 
     public long getReadCapacityUnits() {
@@ -185,11 +251,11 @@ public class DynamoDBConfig {
         return writeCapacityUnits;
     }
 
-    public long getBufferCommitIntervalMillis() {
-        return bufferCommitIntervalMillis;
+    public RetryPolicy getRetryPolicy() {
+        return retryPolicy;
     }
 
-    public int getBufferSize() {
-        return bufferSize;
+    public @Nullable Integer getExpireDays() {
+        return expireDays;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -37,7 +35,7 @@ public class HomekitSpeakerImpl extends AbstractHomekitAccessoryImpl implements 
     public HomekitSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        muteReader = createBooleanReader(HomekitCharacteristicType.MUTE, OnOffType.ON, OpenClosedType.OPEN);
+        muteReader = createBooleanReader(HomekitCharacteristicType.MUTE);
         getServices().add(new SpeakerService(this));
     }
 

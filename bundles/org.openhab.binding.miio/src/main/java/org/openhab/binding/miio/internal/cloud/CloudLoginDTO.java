@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.miio.internal.cloud;
-
-import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -64,23 +62,23 @@ public class CloudLoginDTO {
     @Expose
     private Object captchaUrl;
 
-    public @NotNull String getSsecurity() {
+    public String getSsecurity() {
         return ssecurity != null ? ssecurity : "";
     }
 
-    public @NotNull String getUserId() {
+    public String getUserId() {
         return userId != null ? userId : "";
     }
 
-    public @NotNull String getcUserId() {
+    public String getcUserId() {
         return cUserId != null ? cUserId : "";
     }
 
-    public @NotNull String getPassToken() {
+    public String getPassToken() {
         return passToken != null ? passToken : "";
     }
 
-    public @NotNull String getLocation() {
+    public String getLocation() {
         return location != null ? location : "";
     }
 

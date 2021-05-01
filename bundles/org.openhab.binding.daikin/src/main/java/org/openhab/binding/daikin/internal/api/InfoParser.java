@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,6 @@ public class InfoParser {
         }
         try {
             return Optional.of(Stream.of(value.split("/")).map(val -> Integer.parseInt(val)).toArray(Integer[]::new));
-
         } catch (NumberFormatException e) {
             return Optional.empty();
         }

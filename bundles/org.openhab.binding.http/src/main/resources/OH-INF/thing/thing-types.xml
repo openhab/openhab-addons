@@ -25,6 +25,12 @@
 				<description>The timeout in ms for each request</description>
 				<default>3000</default>
 			</parameter>
+			<parameter name="delay" type="integer" unit="ms" min="0">
+				<label>Delay</label>
+				<description>Delay between to requests</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="bufferSize" type="integer" min="0">
 				<label>Buffer Size</label>
 				<description>Size of the response buffer (default 2048 kB)</description>
@@ -46,10 +52,23 @@
 				<label>Authentication Mode</label>
 				<options>
 					<option value="BASIC">Basic Authentication</option>
+					<option value="BASIC_PREEMPTIVE">Preemptive Basic Authentication</option>
 					<option value="DIGEST">Digest Authentication</option>
 				</options>
 				<default>BASIC</default>
 				<limitToOptions>true</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="stateMethod" type="text">
+				<label>State Method</label>
+				<description>HTTP method (GET,POST, PUT) for retrieving a status.</description>
+				<options>
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>GET</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="commandMethod" type="text">
@@ -135,7 +154,7 @@
 	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Number Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config"/>
+		<config-description-ref uri="channel-type:http:channel-config-number"/>
 	</channel-type>
 
 	<channel-type id="player">

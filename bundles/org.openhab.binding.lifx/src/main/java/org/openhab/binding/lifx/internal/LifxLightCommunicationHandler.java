@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,12 +32,12 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.dto.GetServiceRequest;
+import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.StateServiceResponse;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.listener.LifxResponsePacketListener;
-import org.openhab.binding.lifx.internal.protocol.GetServiceRequest;
-import org.openhab.binding.lifx.internal.protocol.Packet;
-import org.openhab.binding.lifx.internal.protocol.StateServiceResponse;
 import org.openhab.binding.lifx.internal.util.LifxNetworkUtil;
 import org.openhab.binding.lifx.internal.util.LifxSelectorUtil;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link LifxLightCommunicationHandler} is responsible for the communications with a light.
  *
- * @author Wouter Born - Extracted class from LifxLightHandler
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxLightCommunicationHandler {

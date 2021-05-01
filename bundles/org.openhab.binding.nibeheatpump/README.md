@@ -1,7 +1,7 @@
 # Nibe Heatpump Binding
 
 The Nibe Heatpump binding is used to get live data from Nibe heat pumps without using an expensive MODBUS40 adapter.
-This binding is compatible with the F750, F1145, F1245, F1155, F1255 and F470 heat pump models.
+This binding is compatible with the F750, F1145, F1245, F1155, F1255, F470 and SMO40 heat pump models.
 
 The binding supports data telegrams (containing a maximum of 20 registers) from the heat pump.
 The binding can also read other registers from the pump.
@@ -30,6 +30,9 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 | f470-serial     | Serial port connected F470 Heat Pumps            |
 | f470-udp        | UDP connected Nibe F470 Heat Pumps               |
 | f470-simulator  | Simulator for Nibe F470 Heat Pumps               |
+| smo40-serial    | Serial port connected SMO40 controller           |
+| smo40-udp       | UDP connected Nibe SMO40 controller              |
+| smo40-simulator | Simulator for Nibe SMO40 controller              |
 
 ## Discovery
 
@@ -59,7 +62,7 @@ An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet 
 The [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are also supported.
 A ProDiNo has an Ethernet and RS-485 port on the board.
 
-Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
+Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
 Arduino code can be build via Arduino IDE.
 For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
@@ -67,7 +70,7 @@ NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by 
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
-C code is available [here](https://github.com/openhab/openhab-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
+C code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
 
 To build the C code use: 
 
@@ -1896,3 +1899,12 @@ This binding currently supports following channels for F1x55 pump models:
 | 49380           | Switch    | 0           | 1          | Setting | External ERS 3 accessory bypass at heat                  |                                                                                                                                                                    |
 | 49381           | Switch    | 0           | 1          | Setting | External ERS 2 accessory bypass at heat                  |                                                                                                                                                                    |
 | 49430           | Number    | 0           | 255        | Setting | AUX ERS Fire Place Guard                                 |                                                                                                                                                                    |
+
+
+### SMO40
+
+To keep this documentation light, all parameters are documented in the NIBE ModbusManager except of:
+| Channel Type ID | Item Type | Min         | Max        | Type    | Description                                              | Values                                                                                                                                                             |
+|-----------------|-----------|-------------|------------|---------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 45780           | Number    | 0           | 120        | Setting | Silent Mode Frequency 1 (defined in the service-menu)    |                                                                                                                                                                    |
+| 49806           | Number    | 0           | 120        | Setting | Silent Mode Frequency 2 (defined in the service-menu)    |                                                                                                                                                                    |

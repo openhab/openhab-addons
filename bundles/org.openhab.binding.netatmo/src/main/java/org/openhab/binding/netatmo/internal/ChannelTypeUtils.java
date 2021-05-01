@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -83,7 +84,7 @@ public class ChannelTypeUtils {
     }
 
     public static State toDecimalType(@Nullable BigDecimal decimal) {
-        return decimal == null ? UnDefType.NULL : new DecimalType(decimal.setScale(2, BigDecimal.ROUND_HALF_UP));
+        return decimal == null ? UnDefType.NULL : new DecimalType(decimal.setScale(2, RoundingMode.HALF_UP));
     }
 
     public static State toDecimalType(@Nullable String textualDecimal) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,17 +15,25 @@ package org.openhab.transform.scale.internal;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigOptionProvider;
+import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.transform.AbstractFileTransformationService;
 import org.openhab.core.transform.TransformationException;
@@ -41,10 +49,16 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital
  * @author Markus Rathgeb - drop usage of Guava
  */
-@Component(service = TransformationService.class, property = { "openhab.transform=SCALE" })
-public class ScaleTransformationService extends AbstractFileTransformationService<Map<Range, String>> {
+@Component(service = { TransformationService.class, ConfigOptionProvider.class }, property = {
+        "openhab.transform=SCALE" })
+public class ScaleTransformationService extends AbstractFileTransformationService<Map<Range, String>>
+        implements ConfigOptionProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ScaleTransformationService.class);
+
+    private static final String PROFILE_CONFIG_URI = "profile:transform:SCALE";
+    private static final String CONFIG_PARAM_FUNCTION = "function";
+    private static final String[] FILE_NAME_EXTENSIONS = { "scale" };
 
     /** RegEx to extract a scale definition */
     private static final Pattern LIMITS_PATTERN = Pattern.compile("(\\[|\\])(.*)\\.\\.(.*)(\\[|\\])");
@@ -95,13 +109,13 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
      *
      * @param properties the list of properties defining all the available ranges
      * @param source the input to transform
-     *
+     * @return the transformed result or null if the transformation couldn't be completed for any reason.
      */
     @Override
-    protected String internalTransform(Map<Range, String> data, String source) throws TransformationException {
+    protected @Nullable String internalTransform(Map<Range, String> data, String source)
+            throws TransformationException {
         try {
             final BigDecimal value = new BigDecimal(source);
-
             return formatResult(data, source, value);
         } catch (NumberFormatException e) {
             // Scale can only be used with numeric inputs, so lets try to see if ever its a valid quantity type
@@ -178,5 +192,18 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
         } catch (final IOException ex) {
             throw new TransformationException("An error occurred while opening file.", ex);
         }
+    }
+
+    @Override
+    public @Nullable Collection<@NonNull ParameterOption> getParameterOptions(URI uri, String param,
+            @Nullable String context, @Nullable Locale locale) {
+        if (PROFILE_CONFIG_URI.equals(uri.toString())) {
+            switch (param) {
+                case CONFIG_PARAM_FUNCTION:
+                    return getFilenames(FILE_NAME_EXTENSIONS).stream().map(f -> new ParameterOption(f, f))
+                            .collect(Collectors.toList());
+            }
+        }
+        return null;
     }
 }

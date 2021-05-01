@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.lutron.internal.radiora.protocol;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Feedback for when a device was changed locally (not through Master Control)
@@ -37,13 +41,22 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
  * LZC,04,ON
  * </pre>
  *
+ * In a bridged system, a system parameter S1 or S2 will be appended.
+ *
+ * <pre>
+ * LZC,04,ON,S2
+ * </pre>
+ *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class LocalZoneChangeFeedback extends RadioRAFeedback {
+    private final Logger logger = LoggerFactory.getLogger(LocalZoneChangeFeedback.class);
 
     private int zoneNumber; // 1 to 32
     private State state; // ON, OFF, CHG
+    private int system; // 1 or 2, or 0 for none
 
     public enum State {
         ON,
@@ -56,6 +69,18 @@ public class LocalZoneChangeFeedback extends RadioRAFeedback {
 
         zoneNumber = Integer.parseInt(params[1].trim());
         state = State.valueOf(params[2].trim().toUpperCase());
+
+        system = 0;
+        if (params.length > 3) {
+            String sysParam = params[3].trim().toUpperCase();
+            if ("S1".equals(sysParam)) {
+                system = 1;
+            } else if ("S2".equals(sysParam)) {
+                system = 2;
+            } else {
+                logger.debug("Invalid 3rd parameter {} in LZC message. Should be S1 or S2.", sysParam);
+            }
+        }
     }
 
     public State getState() {
@@ -64,5 +89,9 @@ public class LocalZoneChangeFeedback extends RadioRAFeedback {
 
     public int getZoneNumber() {
         return zoneNumber;
+    }
+
+    public int getSystem() {
+        return system;
     }
 }

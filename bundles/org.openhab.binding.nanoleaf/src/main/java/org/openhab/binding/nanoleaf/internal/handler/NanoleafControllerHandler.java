@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,7 +28,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -38,9 +38,27 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.nanoleaf.internal.*;
+import org.openhab.binding.nanoleaf.internal.NanoleafControllerListener;
+import org.openhab.binding.nanoleaf.internal.NanoleafException;
+import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
+import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
+import org.openhab.binding.nanoleaf.internal.commanddescription.NanoleafCommandDescriptionProvider;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
-import org.openhab.binding.nanoleaf.internal.model.*;
+import org.openhab.binding.nanoleaf.internal.discovery.NanoleafPanelsDiscoveryService;
+import org.openhab.binding.nanoleaf.internal.model.AuthToken;
+import org.openhab.binding.nanoleaf.internal.model.BooleanState;
+import org.openhab.binding.nanoleaf.internal.model.Brightness;
+import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
+import org.openhab.binding.nanoleaf.internal.model.Ct;
+import org.openhab.binding.nanoleaf.internal.model.Effects;
+import org.openhab.binding.nanoleaf.internal.model.Hue;
+import org.openhab.binding.nanoleaf.internal.model.IntegerState;
+import org.openhab.binding.nanoleaf.internal.model.Layout;
+import org.openhab.binding.nanoleaf.internal.model.On;
+import org.openhab.binding.nanoleaf.internal.model.Rhythm;
+import org.openhab.binding.nanoleaf.internal.model.Sat;
+import org.openhab.binding.nanoleaf.internal.model.State;
+import org.openhab.binding.nanoleaf.internal.model.TouchEvents;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -54,6 +72,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -68,15 +87,13 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Martin Raepple - Initial contribution
  * @author Stefan Höhn - Canvas Touch Support
+ * @author Kai Kreuzer - refactoring, bug fixing and code clean up
  */
 @NonNullByDefault
 public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     // Pairing interval in seconds
-    private static final int PAIRING_INTERVAL = 25;
-
-    // Panel discovery interval in seconds
-    private static final int PANEL_DISCOVERY_INTERVAL = 30;
+    private static final int PAIRING_INTERVAL = 10;
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
     private HttpClient httpClient;
@@ -85,7 +102,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     // Pairing, update and panel discovery jobs and touch event job
     private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
     private @NonNullByDefault({}) ScheduledFuture<?> updateJob;
-    private @NonNullByDefault({}) ScheduledFuture<?> panelDiscoveryJob;
     private @NonNullByDefault({}) ScheduledFuture<?> touchJob;
 
     // JSON parser for API responses
@@ -107,50 +123,46 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing the controller (bridge)");
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        updateStatus(ThingStatus.UNKNOWN);
         NanoleafControllerConfig config = getConfigAs(NanoleafControllerConfig.class);
         setAddress(config.address);
         setPort(config.port);
         setRefreshIntervall(config.refreshInterval);
         setAuthToken(config.authToken);
 
-        @Nullable
-        String property = getThing().getProperties().get(Thing.PROPERTY_MODEL_ID);
-        if (MODEL_ID_CANVAS.equals(property)) {
-            config.deviceType = DEVICE_TYPE_CANVAS;
+        Map<String, String> properties = getThing().getProperties();
+        String propertyModelId = properties.get(Thing.PROPERTY_MODEL_ID);
+        if (hasTouchSupport(propertyModelId)) {
+            config.deviceType = DEVICE_TYPE_TOUCHSUPPORT;
         } else {
             config.deviceType = DEVICE_TYPE_LIGHTPANELS;
         }
         setDeviceType(config.deviceType);
 
+        String propertyFirmwareVersion = properties.get(Thing.PROPERTY_FIRMWARE_VERSION);
+
         try {
-            Map<String, String> properties = getThing().getProperties();
-            if (StringUtils.isEmpty(getAddress()) || StringUtils.isEmpty(String.valueOf(getPort()))) {
+            if (config.address.isEmpty() || String.valueOf(config.port).isEmpty()) {
                 logger.warn("No IP address and port configured for the Nanoleaf controller");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noIp");
                 stopAllJobs();
-            } else if (!StringUtils.isEmpty(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))
-                    && !OpenAPIUtils.checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID),
-                            properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+            } else if (propertyFirmwareVersion != null && !propertyFirmwareVersion.isEmpty() && !OpenAPIUtils
+                    .checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID), propertyFirmwareVersion)) {
                 logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
-                        properties.get(Thing.PROPERTY_FIRMWARE_VERSION), API_MIN_FW_VER_LIGHTPANELS);
+                        propertyFirmwareVersion, API_MIN_FW_VER_LIGHTPANELS);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.nanoleaf.controller.incompatibleFirmware");
                 stopAllJobs();
-            } else if (StringUtils.isEmpty(getAuthToken())) {
+            } else if (config.authToken == null || config.authToken.isEmpty()) {
                 logger.debug("No token found. Start pairing background job");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noToken");
                 startPairingJob();
                 stopUpdateJob();
-                stopPanelDiscoveryJob();
             } else {
-                logger.debug("Controller is online. Stop pairing job, start update & panel discovery jobs");
-                updateStatus(ThingStatus.ONLINE);
                 stopPairingJob();
                 startUpdateJob();
-                startPanelDiscoveryJob();
                 startTouchJob();
             }
         } catch (IllegalArgumentException iae) {
@@ -173,11 +185,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 updateFromControllerInfo();
             } else {
                 switch (channelUID.getId()) {
-                    case CHANNEL_POWER:
                     case CHANNEL_COLOR:
                     case CHANNEL_COLOR_TEMPERATURE:
                     case CHANNEL_COLOR_TEMPERATURE_ABS:
-                    case CHANNEL_PANEL_LAYOUT:
                         sendStateCommand(channelUID.getId(), command);
                         break;
                     case CHANNEL_EFFECT:
@@ -205,25 +215,28 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        // delete token for openHAB
-        ContentResponse deleteTokenResponse;
-        try {
-            Request deleteTokenRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_DELETE_USER,
-                    HttpMethod.DELETE);
-            deleteTokenResponse = OpenAPIUtils.sendOpenAPIRequest(deleteTokenRequest);
-            if (deleteTokenResponse.getStatus() != HttpStatus.NO_CONTENT_204) {
-                logger.warn("Failed to delete token for openHAB. Response code is {}", deleteTokenResponse.getStatus());
-                return;
+        scheduler.execute(() -> {
+            // delete token for openHAB
+            ContentResponse deleteTokenResponse;
+            try {
+                Request deleteTokenRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(),
+                        API_DELETE_USER, HttpMethod.DELETE);
+                deleteTokenResponse = OpenAPIUtils.sendOpenAPIRequest(deleteTokenRequest);
+                if (deleteTokenResponse.getStatus() != HttpStatus.NO_CONTENT_204) {
+                    logger.warn("Failed to delete token for openHAB. Response code is {}",
+                            deleteTokenResponse.getStatus());
+                    return;
+                }
+                logger.debug("Successfully deleted token for openHAB from controller");
+            } catch (NanoleafUnauthorizedException e) {
+                logger.warn("Attempt to delete token for openHAB failed. Token unauthorized.");
+            } catch (NanoleafException ne) {
+                logger.warn("Attempt to delete token for openHAB failed : {}", ne.getMessage());
             }
-            logger.debug("Successfully deleted token for openHAB from controller");
-        } catch (NanoleafUnauthorizedException e) {
-            logger.warn("Attempt to delete token for openHAB failed. Token unauthorized.");
-        } catch (NanoleafException ne) {
-            logger.warn("Attempt to delete token for openHAB failed : {}", ne.getMessage());
-        }
-        stopAllJobs();
-        super.handleRemoval();
-        logger.debug("Nanoleaf controller removed");
+            stopAllJobs();
+            super.handleRemoval();
+            logger.debug("Nanoleaf controller removed");
+        });
     }
 
     @Override
@@ -233,32 +246,35 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         logger.debug("Disposing handler for Nanoleaf controller {}", getThing().getUID());
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(NanoleafPanelsDiscoveryService.class, NanoleafCommandDescriptionProvider.class);
+    }
+
     public boolean registerControllerListener(NanoleafControllerListener controllerListener) {
         logger.debug("Register new listener for controller {}", getThing().getUID());
-        boolean result = controllerListeners.add(controllerListener);
-        if (result) {
-            startPanelDiscoveryJob();
-        }
-        return result;
+        return controllerListeners.add(controllerListener);
     }
 
     public boolean unregisterControllerListener(NanoleafControllerListener controllerListener) {
         logger.debug("Unregister listener for controller {}", getThing().getUID());
-        boolean result = controllerListeners.remove(controllerListener);
-        if (result) {
-            stopPanelDiscoveryJob();
-        }
-        return result;
+        return controllerListeners.remove(controllerListener);
     }
 
     public NanoleafControllerConfig getControllerConfig() {
         NanoleafControllerConfig config = new NanoleafControllerConfig();
-        config.address = this.getAddress();
-        config.port = this.getPort();
-        config.refreshInterval = this.getRefreshIntervall();
-        config.authToken = this.getAuthToken();
-        config.deviceType = this.getDeviceType();
+        config.address = Objects.requireNonNullElse(getAddress(), "");
+        config.port = getPort();
+        config.refreshInterval = getRefreshInterval();
+        config.authToken = getAuthToken();
+        config.deviceType = Objects.requireNonNullElse(getDeviceType(), "");
         return config;
+    }
+
+    public String getLayout() {
+        Layout layout = controllerInfo.getPanelLayout().getLayout();
+        String layoutView = (layout != null) ? layout.getLayoutView() : "";
+        return layoutView;
     }
 
     public synchronized void startPairingJob() {
@@ -277,10 +293,11 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startUpdateJob() {
-        if (StringUtils.isNotEmpty(getAuthToken())) {
+        String localAuthToken = getAuthToken();
+        if (localAuthToken != null && !localAuthToken.isEmpty()) {
             if (updateJob == null || updateJob.isCancelled()) {
-                logger.debug("Start controller status job, repeat every {} sec", getRefreshIntervall());
-                updateJob = scheduler.scheduleWithFixedDelay(this::runUpdate, 0, getRefreshIntervall(),
+                logger.debug("Start controller status job, repeat every {} sec", getRefreshInterval());
+                updateJob = scheduler.scheduleWithFixedDelay(this::runUpdate, 0, getRefreshInterval(),
                         TimeUnit.SECONDS);
             }
         } else {
@@ -297,34 +314,18 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
     }
 
-    public synchronized void startPanelDiscoveryJob() {
-        logger.debug("Starting panel discovery job. Has Controller-Listeners: {} panelDiscoveryJob: {}",
-                !controllerListeners.isEmpty(), panelDiscoveryJob);
-        if (!controllerListeners.isEmpty() && (panelDiscoveryJob == null || panelDiscoveryJob.isCancelled())) {
-            logger.debug("Start panel discovery job, interval={} sec", PANEL_DISCOVERY_INTERVAL);
-            panelDiscoveryJob = scheduler.scheduleWithFixedDelay(this::runPanelDiscovery, 0, PANEL_DISCOVERY_INTERVAL,
-                    TimeUnit.SECONDS);
-        }
-    }
-
-    private synchronized void stopPanelDiscoveryJob() {
-        if (controllerListeners.isEmpty() && panelDiscoveryJob != null && !panelDiscoveryJob.isCancelled()) {
-            logger.debug("Stop panel discovery job");
-            panelDiscoveryJob.cancel(true);
-            this.panelDiscoveryJob = null;
-        }
-    }
-
     private synchronized void startTouchJob() {
         NanoleafControllerConfig config = getConfigAs(NanoleafControllerConfig.class);
-        if (!config.deviceType.equals(DEVICE_TYPE_CANVAS)) {
+        if (!config.deviceType.equals(DEVICE_TYPE_TOUCHSUPPORT)) {
             logger.debug("NOT starting TouchJob for Panel {} because it has wrong device type '{}' vs required '{}'",
-                    this.getThing().getUID(), config.deviceType, DEVICE_TYPE_CANVAS);
+                    this.getThing().getUID(), config.deviceType, DEVICE_TYPE_TOUCHSUPPORT);
             return;
-        } else
+        } else {
             logger.debug("Starting TouchJob for Panel {}", this.getThing().getUID());
+        }
 
-        if (StringUtils.isNotEmpty(getAuthToken())) {
+        String localAuthToken = getAuthToken();
+        if (localAuthToken != null && !localAuthToken.isEmpty()) {
             if (touchJob == null || touchJob.isCancelled()) {
                 logger.debug("Starting Touchjob now");
                 touchJob = scheduler.schedule(this::runTouchDetection, 0, TimeUnit.SECONDS);
@@ -332,6 +333,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         } else {
             logger.error("starting TouchJob for Controller {} failed - missing token", this.getThing().getUID());
         }
+    }
+
+    private boolean hasTouchSupport(@Nullable String deviceType) {
+        return (MODELS_WITH_TOUCHSUPPORT.contains(deviceType));
     }
 
     private synchronized void stopTouchJob() {
@@ -347,16 +352,13 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         try {
             updateFromControllerInfo();
             startTouchJob(); // if device type has changed, start touch detection.
-            // controller might have been offline, e.g. for firmware update. In this case, return to online state
-            if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
-                logger.debug("Controller {} is back online", thing.getUID());
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
         } catch (NanoleafUnauthorizedException nae) {
             logger.warn("Status update unauthorized: {}", nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.invalidToken");
-            if (StringUtils.isEmpty(getAuthToken())) {
+            String localAuthToken = getAuthToken();
+            if (localAuthToken == null || localAuthToken.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noToken");
             }
@@ -373,7 +375,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void runPairing() {
         logger.debug("Run pairing job");
         try {
-            if (StringUtils.isNotEmpty(getAuthToken())) {
+            String localAuthToken = getAuthToken();
+            if (localAuthToken != null && !localAuthToken.isEmpty()) {
                 if (pairingJob != null) {
                     pairingJob.cancel(false);
                 }
@@ -381,7 +384,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 return;
             }
             ContentResponse authTokenResponse = OpenAPIUtils
-                    .requestBuilder(httpClient, getControllerConfig(), API_ADD_USER, HttpMethod.POST).send();
+                    .requestBuilder(httpClient, getControllerConfig(), API_ADD_USER, HttpMethod.POST)
+                    .timeout(20, TimeUnit.SECONDS).send();
             if (logger.isTraceEnabled()) {
                 logger.trace("Auth token response: {}", authTokenResponse.getContentAsString());
             }
@@ -391,24 +395,22 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         authTokenResponse.getStatus());
             } else {
                 // get auth token from response
-                @Nullable
-                AuthToken authToken = gson.fromJson(authTokenResponse.getContentAsString(), AuthToken.class);
-
-                if (StringUtils.isNotEmpty(authToken.getAuthToken())) {
+                AuthToken authTokenObject = gson.fromJson(authTokenResponse.getContentAsString(), AuthToken.class);
+                localAuthToken = authTokenObject.getAuthToken();
+                if (localAuthToken != null && !localAuthToken.isEmpty()) {
                     logger.debug("Pairing succeeded.");
 
                     // Update and save the auth token in the thing configuration
                     Configuration config = editConfiguration();
-                    config.put(NanoleafControllerConfig.AUTH_TOKEN, authToken.getAuthToken());
+                    config.put(NanoleafControllerConfig.AUTH_TOKEN, localAuthToken);
                     updateConfiguration(config);
 
                     updateStatus(ThingStatus.ONLINE);
                     // Update local field
-                    setAuthToken(authToken.getAuthToken());
+                    setAuthToken(localAuthToken);
 
                     stopPairingJob();
                     startUpdateJob();
-                    startPanelDiscoveryJob();
                     startTouchJob();
                 } else {
                     logger.debug("No auth token found in response: {}", authTokenResponse.getContentAsString());
@@ -425,7 +427,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.nanoleaf.controller.noTokenReceived");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.warn("Cannot send authorization request to controller: ", e);
+            logger.debug("Cannot send authorization request to controller: ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.authRequest");
         } catch (RuntimeException e) {
@@ -435,33 +437,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             logger.warn("Cannot start http client", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.noClient");
-        }
-    }
-
-    private void runPanelDiscovery() {
-        logger.debug("Run panel discovery job");
-        // Trigger a new discovery of connected panels
-        for (NanoleafControllerListener controllerListener : controllerListeners) {
-            try {
-                controllerListener.onControllerInfoFetched(getThing().getUID(), receiveControllerInfo());
-            } catch (NanoleafUnauthorizedException nue) {
-                logger.warn("Panel discovery unauthorized: {}", nue.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.nanoleaf.controller.invalidToken");
-                if (StringUtils.isEmpty(getAuthToken())) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/error.nanoleaf.controller.noToken");
-                }
-            } catch (NanoleafInterruptedException nie) {
-                logger.info("Panel discovery has been stopped.");
-            } catch (NanoleafException ne) {
-                logger.warn("Failed to discover panels: ", ne);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.nanoleaf.controller.communication");
-            } catch (RuntimeException e) {
-                logger.warn("Panel discovery job failed", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
-            }
         }
     }
 
@@ -557,14 +532,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void updateFromControllerInfo() throws NanoleafException {
         logger.debug("Update channels for controller {}", thing.getUID());
         this.controllerInfo = receiveControllerInfo();
-        if (controllerInfo == null) {
-            logger.debug("No Controller Info has been provided");
-            return;
-        }
         final State state = controllerInfo.getState();
 
         OnOffType powerState = state.getOnOff();
-        updateState(CHANNEL_POWER, powerState);
 
         @Nullable
         Ct colorTemperature = state.getColorTemperature();
@@ -615,9 +585,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
         Configuration config = editConfiguration();
 
-        if (MODEL_ID_CANVAS.equals(controllerInfo.getModel())) {
-            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_CANVAS);
-            logger.debug("Set to device type {}", DEVICE_TYPE_CANVAS);
+        if (hasTouchSupport(controllerInfo.getModel())) {
+            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_TOUCHSUPPORT);
+            logger.debug("Set to device type {}", DEVICE_TYPE_TOUCHSUPPORT);
         } else {
             config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_LIGHTPANELS);
             logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);
@@ -640,6 +610,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 panelHandler.updatePanelColorChannel();
             }
         });
+
+        for (NanoleafControllerListener controllerListener : controllerListeners) {
+            controllerListener.onControllerInfoFetched(getThing().getUID(), controllerInfo);
+        }
     }
 
     private ControllerInfo receiveControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
@@ -652,17 +626,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void sendStateCommand(String channel, Command command) throws NanoleafException {
         State stateObject = new State();
         switch (channel) {
-            case CHANNEL_POWER:
-                if (command instanceof OnOffType) {
-                    // On/Off command - turns controller on/off
-                    BooleanState state = new On();
-                    state.setValue(OnOffType.ON.equals(command));
-                    stateObject.setState(state);
-                } else {
-                    logger.warn("Unhandled command type: {}", command.getClass().getName());
-                    return;
-                }
-                break;
             case CHANNEL_COLOR:
                 if (command instanceof OnOffType) {
                     // On/Off command - turns controller on/off
@@ -739,7 +702,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         colorMax = (max == null) ? 0 : max;
                     }
 
-                    state.setValue(Math.round((colorMax - colorMin) * ((PercentType) command).intValue()
+                    state.setValue(Math.round((colorMax - colorMin) * (100 - ((PercentType) command).intValue())
                             / PercentType.HUNDRED.floatValue() + colorMin));
                     stateObject.setState(state);
                 } else {
@@ -757,13 +720,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     logger.warn("Unhandled command type: {}", command.getClass().getName());
                     return;
                 }
-                break;
-            case CHANNEL_PANEL_LAYOUT:
-                @Nullable
-                Layout layout = controllerInfo.getPanelLayout().getLayout();
-                String layoutView = (layout != null) ? layout.getLayoutView() : "";
-                logger.info("Panel layout and ids for controller {} \n{}", thing.getUID(), layoutView);
-                updateState(CHANNEL_PANEL_LAYOUT, OnOffType.OFF);
                 break;
             default:
                 logger.warn("Unhandled command type: {}", command.getClass().getName());
@@ -806,8 +762,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         OpenAPIUtils.sendOpenAPIRequest(setNewRhythmRequest);
     }
 
-    private String getAddress() {
-        return StringUtils.defaultString(this.address);
+    private @Nullable String getAddress() {
+        return address;
     }
 
     private void setAddress(String address) {
@@ -822,7 +778,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         this.port = port;
     }
 
-    private int getRefreshIntervall() {
+    private int getRefreshInterval() {
         return refreshIntervall;
     }
 
@@ -830,16 +786,16 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         this.refreshIntervall = refreshIntervall;
     }
 
-    private String getAuthToken() {
-        return StringUtils.defaultString(authToken);
+    private @Nullable String getAuthToken() {
+        return authToken;
     }
 
     private void setAuthToken(@Nullable String authToken) {
         this.authToken = authToken;
     }
 
-    private String getDeviceType() {
-        return StringUtils.defaultString(deviceType);
+    private @Nullable String getDeviceType() {
+        return deviceType;
     }
 
     private void setDeviceType(String deviceType) {
@@ -849,7 +805,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void stopAllJobs() {
         stopPairingJob();
         stopUpdateJob();
-        stopPanelDiscoveryJob();
         stopTouchJob();
     }
 }

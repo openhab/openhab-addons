@@ -6,8 +6,7 @@
 MQTT is a server/client architecture.
 
 A server, also called broker is not provided within this binding.
-You can use any of the freely available MQTT Brokers like [Mosquitto](https://mosquitto.org/)
-or [Moquette](https://moquette-io.github.io/moquette/) or install the [included Moquette broker](https://www.openhab.org/addons/integrations/mqttembeddedbroker/) as add-on.
+You can use any of the freely available MQTT Brokers like [Mosquitto](https://mosquitto.org/).
 
 This particular binding allows to configure connections to brokers via openHAB Things.
 This binding does NOT allow you to link Channels to MQTT topics or perform auto-discovery of available
@@ -70,7 +69,4 @@ Configuration parameters are:
 * __stateTopic__: This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".
 * __payload__: An optional condition on the value of the MQTT topic that must match before this channel is triggered.
 
-## Legacy MQTT1-Binding
-
-This binding is not supposed to run in parallel to the old mqtt1-binding.
-Please uninstall the old binding before installing this binding.
+Note for new users - direct broker Bridge channels are rarely needed. You almost certainly will want to be using one of the binding extensions, or the generic Things and Channels features for most devices or services.

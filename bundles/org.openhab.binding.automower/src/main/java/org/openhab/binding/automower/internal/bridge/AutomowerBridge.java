@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,6 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
  */
 @NonNullByDefault
 public class AutomowerBridge {
-
     private final OAuthClientService authService;
     private final String appKey;
     private final String userName;
@@ -96,7 +95,6 @@ public class AutomowerBridge {
      */
     public void sendAutomowerCommand(String id, AutomowerCommand command, long commandDuration)
             throws AutomowerCommunicationException {
-
         MowerCommandAttributes attributes = new MowerCommandAttributes();
         attributes.setDuration(commandDuration);
 

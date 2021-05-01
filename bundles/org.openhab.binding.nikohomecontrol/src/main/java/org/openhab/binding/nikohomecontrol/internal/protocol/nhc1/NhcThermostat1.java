@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class NhcThermostat1 extends NhcThermostat {
      */
     @Override
     public void executeMode(int mode) {
-        logger.debug("Niko Home Control: execute thermostat mode {} for {}", mode, id);
+        logger.debug("execute thermostat mode {} for {}", mode, id);
 
         nhcComm.executeThermostat(id, Integer.toString(mode));
     }
@@ -55,8 +55,7 @@ public class NhcThermostat1 extends NhcThermostat {
      */
     @Override
     public void executeOverrule(int overrule, int overruletime) {
-        logger.debug("Niko Home Control: execute thermostat overrule {} during {} min for {}", overrule, overruletime,
-                id);
+        logger.debug("execute thermostat overrule {} during {} min for {}", overrule, overruletime, id);
 
         nhcComm.executeThermostat(id, overrule, overruletime);
     }

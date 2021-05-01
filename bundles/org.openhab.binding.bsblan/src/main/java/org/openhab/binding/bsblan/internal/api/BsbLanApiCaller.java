@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.bsblan.internal.api;
 
-import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.API_TIMEOUT;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
@@ -50,17 +49,14 @@ public class BsbLanApiCaller {
     }
 
     public @Nullable BsbLanApiParameterQueryResponseDTO queryParameter(Integer parameterId) {
-        Set<Integer> parameters = new HashSet<>();
-
-        parameters.add(parameterId);
-        return queryParameters(parameters);
+        return queryParameters(Set.of(parameterId));
     }
 
     public @Nullable BsbLanApiParameterQueryResponseDTO queryParameters(Set<Integer> parameterIds) {
         // note: make the request even if parameterIds is empty as
         // thing OFFLINE/ONLINE detection relies on a response
-
-        String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
+        String apiPath = String.format("/JQ=%s",
+                parameterIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
         return makeRestCall(BsbLanApiParameterQueryResponseDTO.class, "GET", apiPath, null);
     }
 
@@ -96,21 +92,21 @@ public class BsbLanApiCaller {
     }
 
     private String createApiBaseUrl() {
-        final String host = StringUtils.trimToEmpty(bridgeConfig.host);
-        final String username = StringUtils.trimToEmpty(bridgeConfig.username);
-        final String password = StringUtils.trimToEmpty(bridgeConfig.password);
-        final String passkey = StringUtils.trimToEmpty(bridgeConfig.passkey);
+        final String host = bridgeConfig.host == null ? "" : bridgeConfig.host.trim();
+        final String username = bridgeConfig.username == null ? "" : bridgeConfig.username.trim();
+        final String password = bridgeConfig.password == null ? "" : bridgeConfig.password.trim();
+        final String passkey = bridgeConfig.passkey == null ? "" : bridgeConfig.passkey.trim();
 
         StringBuilder url = new StringBuilder();
         url.append("http://");
-        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+        if (!username.isBlank() && !password.isBlank()) {
             url.append(username).append(":").append(password).append("@");
         }
         url.append(host);
         if (bridgeConfig.port != 80) {
             url.append(":").append(bridgeConfig.port);
         }
-        if (StringUtils.isNotBlank(passkey)) {
+        if (!passkey.isBlank()) {
             url.append("/").append(passkey);
         }
         return url.toString();
@@ -134,7 +130,7 @@ public class BsbLanApiCaller {
             if (request != null) {
                 String content = BsbLanApiContentConverter.toJson(request);
                 logger.trace("api request content: '{}'", content);
-                if (StringUtils.isNotBlank(content)) {
+                if (!content.isBlank()) {
                     contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
                     contentType = "application/json";
                 }

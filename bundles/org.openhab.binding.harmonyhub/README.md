@@ -62,6 +62,8 @@ Bridge harmonyhub:hub:great [ name="Great Room"] {
 
 ## Channels
 
+Note! Hubs cannot receive buttons pressed on the remote. The buttonPress channel described below is sent **to** the device only.
+
 Hubs can report and change the current activity:
 
 items:

@@ -9,15 +9,15 @@ Through this mapping, in your rules (local server), you can take actions based u
 
 One use of this binding is to distribute your home automation system on multiple openHAB servers.
 
-Another use is for users to interact with older versions of openHAB that may support old openHAB v1 bindings that were not migrated to openHAB v2 or openHAB v3.
-They can keep an openHAB v2 server to run their old openHAB v1 bindings and setup a new openHAB v3 server for everything else.
-The Remote openHAB binding installed on the openHAB v3 server will then allow to use the openHAB v1 bindings through communication with the openHAB v2 server.
+Another use is for users to interact with older versions of openHAB that may support old openHAB v1 bindings that were not migrated to openHAB v2 or openHAB v3.
+They can keep an openHAB v2 server to run their old openHAB v1 bindings and setup a new openHAB v3 server for everything else.
+The Remote openHAB binding installed on the openHAB v3 server will then allow to use the openHAB v1 bindings through communication with the openHAB v2 server.
 
-A third usage is for users that would like to keep unchanged an existing openHAB v2 server but would like to use the new UI from openHAB v3; they can simply setup a new openHAB v3 server with the Remote openHAB binding linked to their openHAB v2 server.
+A third usage is for users that would like to keep unchanged an existing openHAB v2 server but would like to use the new UI from openHAB v3; they can simply setup a new openHAB v3 server with the Remote openHAB binding linked to their openHAB v2 server.
 
 ## Supported Things
 
-There is two supported things : the `server` bridge thing representing a remote openHAB server and the `thing` thing representing a thing from the remote openHAB server.
+There is two supported things: the `server` bridge thing representing a remote openHAB server and the `thing` thing representing a thing from the remote openHAB server.
 
 ## Discovery
 
@@ -30,7 +30,7 @@ Once a bridge thing representing a remote openHAB server is created, all things 
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding has no configuration options, all configuration is done at thing level.
 
 ## Thing Configuration
 
@@ -42,10 +42,17 @@ The `server` thing has the following configuration parameters:
 | useHttps              | no       | Set to true if you want to use HTTPS to communicate with the remote openHAB server. Default is false.     |
 | port                  | yes      | The HTTP port to use to communicate with the remote openHAB server. Default is 8080.                      |
 | trustedCertificate    | no       | Set to true if you want to use HTTPS even without a valid SSL certificate provided by your remote server. |
-| restPath              | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                                |
+| restPath              | yes      | The subpath of the REST API on the remote openHAB server. Default is "/rest/"                             |
 | token                 | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API.    |
+| username              | no       | The username to use when the remote openHAB server is setup to require basic authorization to run its REST API. |
+| password              | no       | The password to use when the remote openHAB server is setup to require basic authorization to run its REST API. |
+| authenticateAnyway    | no       | Set it to true in case you want to pass authentication information even when the communicate with the remote openHAB server is not secured (only HTTP). This is of course not recommended especially if your connection is over the Internet. Default is false. |
 | accessibilityInterval | no       | Minutes between checking the remote server accessibility. 0 to disable the check. Default is 3.           |
-| aliveInterval         | no       | Number of last minutes to take into account to determine whether the remote server is alive. 0 to disable this feature. Default is 5. |
+| aliveInterval         | no       | Number of last minutes to consider when monitoring the receipt of events from the remote server. If an event is received during this interval, the remote server is considered alive and its accessibility will not be verified. Use 0 to disable this feature. Default is 5. |
+| restartIfNoActivity   | no       | Set it to true if you want to restart the connection (SSE) to the remote server when no events are received in the monitored interval. It is not necessary if the goal is to properly handle a short network outage (few seconds). This can be useful if you want to deal with a long network outage. Do not enable it if you remote server does not send events during the monitored interval under normal conditions, it will cause frequent restart of the connection and potential loss of events. Default is false. |
+
+Please note that even though the default configuration is based on insecure communication over HTTP, it is recommended to adjust the configuration to be based on secure communication over HTTPS.
+This is of course essential if your connection to the remote openHAB server is over the Internet.
 
 The `thing` thing has the following configuration parameters:
 
@@ -54,9 +61,10 @@ The `thing` thing has the following configuration parameters:
 | thingUID             | yes      | The thing UID in the remote openHAB server. |
 | buildTriggerChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
 
-Please note that if your remote server is an openHAB v3 server, you will need to define a valid token on your bridge thing to have your things correctly initialized.
+Please note that if your remote server is an openHAB v3 server, in order for all of your things to be properly initialized, you will need to define on your bridge thing a valid API token in the parameter `token` and also define the parameter `authenticateAnyway` to true in case you are using an unsecured connection (HTTP).
+This API token can be created on your remote server using Main UI.
 
-Setting the `buildTriggerChannels` parameter to false is for the main following advanced usages :
+Setting the `buildTriggerChannels` parameter to false is for the main following advanced usages:
 
 * you don't care about the trigger channels of this remote thing and you don't want the binding to create them locally,
 * you want to define the trigger channels in your configuration file, and only the channels that you will finally need,
@@ -85,7 +93,7 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 
 ## Limitations
 
-* The binding will not try to communicate with an openHAB v1 server.
+* The binding will not try to communicate with an openHAB v1 server.
 
 ## Example
 

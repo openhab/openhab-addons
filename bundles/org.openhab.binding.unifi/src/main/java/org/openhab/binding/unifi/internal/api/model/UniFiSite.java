@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.unifi.internal.api.model;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -49,8 +47,7 @@ public class UniFiSite {
     }
 
     public boolean matchesName(String siteName) {
-        return StringUtils.equalsIgnoreCase(desc, siteName) || StringUtils.equalsIgnoreCase(name, siteName)
-                || StringUtils.equalsIgnoreCase(id, siteName);
+        return siteName.equalsIgnoreCase(desc) || siteName.equalsIgnoreCase(name) || siteName.equalsIgnoreCase(id);
     }
 
     @Override

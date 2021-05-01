@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -208,6 +208,16 @@ public class HomekitTaggedItem {
 
         }
         return defaultValue;
+    }
+
+    /**
+     * returns true if inverted flag is set, i.e. item has the configuration "inverted=true"
+     * 
+     * @return true if inverted flag is set to true
+     */
+    public boolean isInverted() {
+        final String invertedConfig = getConfiguration(HomekitTaggedItem.INVERTED, "false");
+        return invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
     }
 
     /**

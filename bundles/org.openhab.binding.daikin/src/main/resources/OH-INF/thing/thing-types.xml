@@ -21,6 +21,9 @@
 			<channel id="cmpfrequency" typeId="acunit-cmpfrequency"></channel>
 			<channel id="specialmode" typeId="acunit-specialmode"></channel>
 			<channel id="specialmode-powerful" typeId="acunit-specialmode-powerful"></channel>
+			<channel id="energyheatingtoday" typeId="acunit-energyheatingtoday"/>
+			<channel id="energyheatingthisweek" typeId="acunit-energyheatingthisweek"/>
+			<channel id="energyheatinglastweek" typeId="acunit-energyheatinglastweek"/>
 			<channel id="energyheatingcurrentyear-1" typeId="acunit-energyheatingcurrentyear-1"></channel>
 			<channel id="energyheatingcurrentyear-2" typeId="acunit-energyheatingcurrentyear-2"></channel>
 			<channel id="energyheatingcurrentyear-3" typeId="acunit-energyheatingcurrentyear-3"></channel>
@@ -33,6 +36,9 @@
 			<channel id="energyheatingcurrentyear-10" typeId="acunit-energyheatingcurrentyear-10"></channel>
 			<channel id="energyheatingcurrentyear-11" typeId="acunit-energyheatingcurrentyear-11"></channel>
 			<channel id="energyheatingcurrentyear-12" typeId="acunit-energyheatingcurrentyear-12"></channel>
+			<channel id="energycoolingtoday" typeId="acunit-energycoolingtoday"/>
+			<channel id="energycoolingthisweek" typeId="acunit-energycoolingthisweek"/>
+			<channel id="energycoolinglastweek" typeId="acunit-energycoolinglastweek"/>
 			<channel id="energycoolingcurrentyear-1" typeId="acunit-energycoolingcurrentyear-1"></channel>
 			<channel id="energycoolingcurrentyear-2" typeId="acunit-energycoolingcurrentyear-2"></channel>
 			<channel id="energycoolingcurrentyear-3" typeId="acunit-energycoolingcurrentyear-3"></channel>
@@ -172,6 +178,54 @@
 				<option value="VERTICAL_AND_HORIZONTAL">vertical and horizontal</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingtoday" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Today</label>
+		<description>The energy usage for heating today</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingthisweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating This Week</label>
+		<description>The energy usage for heating this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatinglastweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Last Week</label>
+		<description>The energy usage for heating last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingtoday" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today</label>
+		<description>The energy usage for cooling today</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingthisweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling This Week</label>
+		<description>The energy usage for cooling this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolinglastweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Last Week</label>
+		<description>The energy usage for cooling last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="acunit-cmpfrequency" advanced="true">

@@ -125,6 +125,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- pgm_state -->
+	<channel-type id="pgm_state">
+		<item-type>Switch</item-type>
+		<label>Programmable Gate State</label>
+		<description>A channel used for controlling the PGM state</description>
+	</channel-type>
+
 	<!-- alarm_state -->
 	<channel-type id="alarm_state">
 		<item-type>String</item-type>

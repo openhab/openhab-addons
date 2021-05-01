@@ -1,0 +1,299 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.heater.mc2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Heater - Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Heater - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Error"
+						},
+						{
+							"value": "1",
+							"label": "NTC Connect Error"
+						},
+						{
+							"value": "2",
+							"label": "High Temperature Alarm"
+						},
+						{
+							"value": "3",
+							"label": "EEPROM Error"
+						},
+						{
+							"value": "4",
+							"label": "Multi Errors"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"NTC Connect Error\",\"2\"\u003d\"High Temperature Alarm\",\"3\"\u003d\"EEPROM Error\",\"4\"\u003d\"Multi Errors\"]`"
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Heater - Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 18,
+					"maximum": 28,
+					"step": 1,
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "countdown-time",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Countdown - Countdown Time",
+				"channel": "countdown_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 12,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 4,
+				"piid": 7,
+				"friendlyName": "Environment - Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Alarm - Alarm",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "alarm"
+			},
+			{
+				"property": "brightness",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Indicator Light - Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dark"
+						},
+						{
+							"value": "2",
+							"label": "Extinguished"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dark\",\"2\"\u003d\"Extinguished\"]`"
+			},
+			{
+				"property": "hw-enable",
+				"siid": 8,
+				"piid": 8,
+				"friendlyName": "Private Service - Hw Enable",
+				"channel": "hw_enable",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "use-time",
+				"siid": 8,
+				"piid": 9,
+				"friendlyName": "Private Service - Use Time",
+				"channel": "use_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "country-code",
+				"siid": 8,
+				"piid": 10,
+				"friendlyName": "Private Service - Country Code",
+				"channel": "country_code",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Unknown"
+						},
+						{
+							"value": "1",
+							"label": "US"
+						},
+						{
+							"value": "82",
+							"label": "KR"
+						},
+						{
+							"value": "44",
+							"label": "EU"
+						},
+						{
+							"value": "81",
+							"label": "JP"
+						},
+						{
+							"value": "7",
+							"label": "RU"
+						},
+						{
+							"value": "86",
+							"label": "CN"
+						},
+						{
+							"value": "852",
+							"label": "HK"
+						},
+						{
+							"value": "886",
+							"label": "TW"
+						},
+						{
+							"value": "33",
+							"label": "FR"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Unknown\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"44\"\u003d\"EU\",\"81\"\u003d\"JP\",\"7\"\u003d\"RU\",\"86\"\u003d\"CN\",\"852\"\u003d\"HK\",\"886\"\u003d\"TW\",\"33\"\u003d\"FR\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

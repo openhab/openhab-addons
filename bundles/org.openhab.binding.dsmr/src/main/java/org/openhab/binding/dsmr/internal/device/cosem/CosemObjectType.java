@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -240,7 +240,7 @@ public enum CosemObjectType {
      * @return true if this CosemObjectType support the requested number of values, false otherwise.
      */
     public boolean supportsNrOfValues(int nrOfValues) {
-        if (repeatingDescriptors.size() == 0) {
+        if (repeatingDescriptors.isEmpty()) {
             return nrOfValues == descriptors.size();
         } else {
             /* There are repeating descriptors */

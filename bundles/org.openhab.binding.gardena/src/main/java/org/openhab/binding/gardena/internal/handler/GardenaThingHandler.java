@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,6 @@
 package org.openhab.binding.gardena.internal.handler;
 
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
-import static org.openhab.binding.gardena.internal.model.dto.command.MowerCommand.MowerControl;
-import static org.openhab.binding.gardena.internal.model.dto.command.PowerSocketCommand.PowerSocketControl;
-import static org.openhab.binding.gardena.internal.model.dto.command.ValveCommand.ValveControl;
-import static org.openhab.binding.gardena.internal.model.dto.command.ValveSetCommand.ValveSetControl;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -32,13 +28,30 @@ import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundExcep
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
-import org.openhab.binding.gardena.internal.model.dto.command.*;
+import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
+import org.openhab.binding.gardena.internal.model.dto.command.MowerCommand;
+import org.openhab.binding.gardena.internal.model.dto.command.MowerCommand.MowerControl;
+import org.openhab.binding.gardena.internal.model.dto.command.PowerSocketCommand;
+import org.openhab.binding.gardena.internal.model.dto.command.PowerSocketCommand.PowerSocketControl;
+import org.openhab.binding.gardena.internal.model.dto.command.ValveCommand;
+import org.openhab.binding.gardena.internal.model.dto.command.ValveCommand.ValveControl;
+import org.openhab.binding.gardena.internal.model.dto.command.ValveSetCommand;
+import org.openhab.binding.gardena.internal.model.dto.command.ValveSetCommand.ValveSetControl;
 import org.openhab.binding.gardena.internal.util.PropertyUtils;
 import org.openhab.binding.gardena.internal.util.StringUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.*;
-import org.openhab.core.thing.*;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;

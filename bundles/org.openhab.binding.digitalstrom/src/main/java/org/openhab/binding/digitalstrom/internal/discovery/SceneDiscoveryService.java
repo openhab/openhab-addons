@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.digitalstrom.internal.discovery;
 
-import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.*;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.BINDING_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.GROUP_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.SCENE_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.ZONE_ID;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -21,7 +24,8 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.handler.SceneHandler;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalScene;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneEnum;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -119,9 +123,10 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
     }
 
     private boolean ignoreGroup(Short groupID) {
-        if (FuncNameAndColorGroupEnum.getMode(groupID) != null) {
-            switch (FuncNameAndColorGroupEnum.getMode(groupID)) {
-                case TEMPERATION_CONTROL:
+        ApplicationGroup group = ApplicationGroup.getGroup(groupID);
+        if (group != null) {
+            switch (group) {
+                case TEMPERATURE_CONTROL:
                     return true;
                 default:
                     return false;

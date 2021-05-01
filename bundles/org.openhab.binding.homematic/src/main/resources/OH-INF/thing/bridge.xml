@@ -37,11 +37,6 @@
 				<label>Callback Network Address</label>
 				<description>Callback network address of the runtime, default is auto-discovery</description>
 			</parameter>
-			<parameter name="bindAddress" type="text">
-				<context>network-address</context>
-				<label>Bind Address</label>
-				<description>The address the XML-/BINRPC server binds to, default is callbackHost</description>
-			</parameter>
 			<parameter name="xmlCallbackPort" type="integer">
 				<label>XML-RPC Callback Port</label>
 				<description>Callback port of the binding's XML-RPC server. If no value is specified, xmlCallbackPort starts with
@@ -120,7 +115,12 @@
 				<advanced>true</advanced>
 				<default>false</default>
 			</parameter>
-
+			<parameter name="bufferSize" type="integer" min="0">
+				<label>Buffer Size</label>
+				<description>Size of the response buffer retrieved from the gateway (default 2048 kB)</description>
+				<default>2048</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

@@ -140,7 +140,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]`"
 			},
 			{
 				"property": "time-off",
@@ -192,8 +195,7 @@
 				"piid": 3,
 				"friendlyName": "Presets - Pre Brightness",
 				"channel": "pre-brightness",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
+				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 1.0,
 					"maximum": 100.0,
@@ -256,7 +258,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Postitive\",\"1\"\u003d\"Reverse\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Postitive\",\"1\"\u003d\"Reverse\"]`"
 			},
 			{
 				"property": "pre-custom",
@@ -284,7 +286,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Switch Off\",\"1\"\u003d\"Open\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Switch Off\",\"1\"\u003d\"Open\"]`"
 			},
 			{
 				"property": "flabellum",

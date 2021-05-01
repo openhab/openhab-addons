@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public class LifxLightConfig {
 
     public @Nullable MACAddress getMACAddress() {
         String localDeviceId = deviceId;
-        return localDeviceId == null ? null : new MACAddress(localDeviceId, true);
+        return localDeviceId == null ? null : new MACAddress(localDeviceId);
     }
 
     public @Nullable InetSocketAddress getHost() {

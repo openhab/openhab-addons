@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,7 +116,6 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
     /*
      * destroy the discovery service
      */
-    @SuppressWarnings("null")
     private synchronized void destroyDiscoveryService(NeoHubHandler handler) {
         // fetch the respective thing's service registration from our list
         ServiceRegistration<?> serviceReg = discoServices.remove(handler.getThing().getUID());

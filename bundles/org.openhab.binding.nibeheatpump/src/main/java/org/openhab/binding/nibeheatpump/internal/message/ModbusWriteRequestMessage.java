@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,8 +55,9 @@ public class ModbusWriteRequestMessage extends NibeHeatPumpBaseMessage {
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
         if (NibeHeatPumpProtocol.isModbus40WriteRequestPdu(data)) {
             super.encodeMessage(data);
-            coilAddress = (data[4] & 0xFF) << 8 | (data[3] & 0xFF);
-            value = (data[8] & 0xFF) << 24 | (data[7] & 0xFF) << 16 | (data[6] & 0xFF) << 8 | (data[5] & 0xFF);
+            coilAddress = (rawMessage[4] & 0xFF) << 8 | (rawMessage[3] & 0xFF);
+            value = (rawMessage[8] & 0xFF) << 24 | (rawMessage[7] & 0xFF) << 16 | (rawMessage[6] & 0xFF) << 8
+                    | (rawMessage[5] & 0xFF);
         } else {
             throw new NibeHeatPumpException("Not Write Request message");
         }
@@ -64,17 +65,13 @@ public class ModbusWriteRequestMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-        return createModbus40WritePdu(coilAddress, value);
-    }
-
-    private byte[] createModbus40WritePdu(int coildAddress, int value) {
         byte[] data = new byte[10];
 
-        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_TO_NIBE;
+        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_REQ;
         data[1] = NibeHeatPumpProtocol.CMD_MODBUS_WRITE_REQ;
         data[2] = (byte) 0x06; // data len
-        data[3] = (byte) (coildAddress & 0xFF);
-        data[4] = (byte) ((coildAddress >> 8) & 0xFF);
+        data[3] = (byte) (coilAddress & 0xFF);
+        data[4] = (byte) ((coilAddress >> 8) & 0xFF);
         data[5] = (byte) (value & 0xFF);
         data[6] = (byte) ((value >> 8) & 0xFF);
         data[7] = (byte) ((value >> 16) & 0xFF);
@@ -86,9 +83,7 @@ public class ModbusWriteRequestMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public String toString() {
-        String str = "";
-
-        str += super.toString();
+        String str = super.toString();
         str += ", Coil address = " + coilAddress;
         str += ", Value = " + value;
 

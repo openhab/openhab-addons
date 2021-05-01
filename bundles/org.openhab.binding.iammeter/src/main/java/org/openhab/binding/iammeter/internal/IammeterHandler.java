@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class IammeterHandler extends IammeterBaseHandler {
 
     @Override
     protected void resolveData(String response) {
-        JsonElement iammeterDataElement = new JsonParser().parse(response);
+        JsonElement iammeterDataElement = JsonParser.parseString(response);
         JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
         String keyWord = "Data";
         if (iammeterData.has("data") || (iammeterData.has("Data") && iammeterData.has("SN"))) {

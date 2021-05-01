@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,44 @@ import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstan
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.somfytahoma.internal.handler.*;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaActionGroupHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAdjustableSlatsRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAwningHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBioclimaticPergolaHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaContactSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaCurtainHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaDimmerLightHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaDockHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaDoorLockHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaElectricitySensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaExteriorHeatingSystemHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaExternalAlarmHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGateHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGatewayHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHumiditySensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaInternalAlarmHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaLightSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaMyfoxAlarmHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaMyfoxCameraHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOccupancySensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHeatingSystemHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPergolaHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPodHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSilentRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSirenHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSmokeSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaTemperatureSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaThermostatHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaUnoRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaValveHeatingSystemHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaVenetianBlindHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWaterSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWindowHandleHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWindowHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaZwaveHeatingSystemHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -43,10 +80,13 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHandlerFactory.class);
 
     private final HttpClientFactory httpClientFactory;
+    private final SomfyTahomaStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
-    public SomfyTahomaHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public SomfyTahomaHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            final @Reference SomfyTahomaStateDescriptionOptionProvider stateDescriptionProvider) {
         this.httpClientFactory = httpClientFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -64,7 +104,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             return new SomfyTahomaBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
-            return new SomfyTahomaGatewayHandler(thing);
+            return new SomfyTahomaGatewayHandler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER)) {
             return new SomfyTahomaRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_SILENT)) {
@@ -120,6 +160,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaDoorLockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_PERGOLA)) {
             return new SomfyTahomaPergolaHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_BIOCLIMATIC_PERGOLA)) {
+            return new SomfyTahomaBioclimaticPergolaHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WINDOW_HANDLE)) {
             return new SomfyTahomaWindowHandleHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TEMPERATURESENSOR)) {

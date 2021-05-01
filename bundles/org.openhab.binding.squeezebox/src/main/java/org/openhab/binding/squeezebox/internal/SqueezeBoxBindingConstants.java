@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,4 +68,5 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_MODEL = "model";
     public static final String CHANNEL_FAVORITES_PLAY = "playFavorite";
     public static final String CHANNEL_RATE = "rate";
+    public static final String CHANNEL_SLEEP = "sleep";
 }

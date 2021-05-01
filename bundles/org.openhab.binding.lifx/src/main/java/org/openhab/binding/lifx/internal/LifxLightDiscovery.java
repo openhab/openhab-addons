@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,18 +26,16 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.dto.GetLabelRequest;
+import org.openhab.binding.lifx.internal.dto.GetServiceRequest;
+import org.openhab.binding.lifx.internal.dto.GetVersionRequest;
+import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.StateLabelResponse;
+import org.openhab.binding.lifx.internal.dto.StateServiceResponse;
+import org.openhab.binding.lifx.internal.dto.StateVersionResponse;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
-import org.openhab.binding.lifx.internal.protocol.GetLabelRequest;
-import org.openhab.binding.lifx.internal.protocol.GetServiceRequest;
-import org.openhab.binding.lifx.internal.protocol.GetVersionRequest;
-import org.openhab.binding.lifx.internal.protocol.Packet;
-import org.openhab.binding.lifx.internal.protocol.Product;
-import org.openhab.binding.lifx.internal.protocol.StateLabelResponse;
-import org.openhab.binding.lifx.internal.protocol.StateServiceResponse;
-import org.openhab.binding.lifx.internal.protocol.StateVersionResponse;
 import org.openhab.binding.lifx.internal.util.LifxSelectorUtil;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -87,7 +85,7 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
         private InetSocketAddress socketAddress;
         private String logId;
         private @Nullable String label;
-        private @Nullable Product product;
+        private @Nullable LifxProduct product;
         private long productVersion;
         private boolean supportedProduct = true;
         private LifxSelectorContext selectorContext;
@@ -300,8 +298,11 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
                     light.label = ((StateLabelResponse) packet).getLabel().trim();
                 } else if (packet instanceof StateVersionResponse) {
                     try {
-                        light.product = Product.getProductFromProductID(((StateVersionResponse) packet).getProduct());
+                        LifxProduct product = LifxProduct
+                                .getProductFromProductID(((StateVersionResponse) packet).getProduct());
+                        light.product = product;
                         light.productVersion = ((StateVersionResponse) packet).getVersion();
+                        light.supportedProduct = product.isLight();
                     } catch (IllegalArgumentException e) {
                         logger.debug("Discovered an unsupported light ({}): {}", light.macAddress.getAsLabel(),
                                 e.getMessage());
@@ -310,7 +311,7 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
                 }
             }
 
-            if (light != null && light.isDataComplete()) {
+            if (light != null && light.supportedProduct && light.isDataComplete()) {
                 try {
                     thingDiscovered(createDiscoveryResult(light));
                 } catch (IllegalArgumentException e) {
@@ -322,7 +323,7 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
     }
 
     private DiscoveryResult createDiscoveryResult(DiscoveredLight light) throws IllegalArgumentException {
-        Product product = light.product;
+        LifxProduct product = light.product;
         if (product == null) {
             throw new IllegalArgumentException("Product of discovered light is null");
         }
@@ -331,7 +332,7 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
         ThingUID thingUID = new ThingUID(product.getThingTypeUID(), macAsLabel);
 
         String label = light.label;
-        if (StringUtils.isBlank(label)) {
+        if (label == null || label.isBlank()) {
             label = product.getName();
         }
 

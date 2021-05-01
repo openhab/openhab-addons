@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth.airthings.internal;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
@@ -34,6 +35,7 @@ import tec.uom.se.unit.TransformedUnit;
  * used across the whole binding.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Kai Kreuzer - Added Airthings Wave Mini support
  */
 @NonNullByDefault
 public class AirthingsBindingConstants {
@@ -41,6 +43,11 @@ public class AirthingsBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AIRTHINGS_WAVE_PLUS = new ThingTypeUID(
             BluetoothBindingConstants.BINDING_ID, "airthings_wave_plus");
+    public static final ThingTypeUID THING_TYPE_AIRTHINGS_WAVE_MINI = new ThingTypeUID(
+            BluetoothBindingConstants.BINDING_ID, "airthings_wave_mini");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIRTHINGS_WAVE_PLUS,
+            THING_TYPE_AIRTHINGS_WAVE_MINI);
 
     // Channel IDs
     public static final String CHANNEL_ID_HUMIDITY = "humidity";

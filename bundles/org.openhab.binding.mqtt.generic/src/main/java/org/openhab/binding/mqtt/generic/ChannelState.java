@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
@@ -78,7 +77,7 @@ public class ChannelState implements MqttMessageSubscriber {
         this.channelStateUpdateListener = channelStateUpdateListener;
         this.channelUID = channelUID;
         this.cachedValue = cachedValue;
-        this.readOnly = StringUtils.isBlank(config.commandTopic);
+        this.readOnly = config.commandTopic.isBlank();
     }
 
     public boolean isReadOnly() {
@@ -242,7 +241,7 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public CompletableFuture<@Nullable Void> stop() {
         final MqttBrokerConnection connection = this.connection;
-        if (connection != null && StringUtils.isNotBlank(config.stateTopic)) {
+        if (connection != null && !config.stateTopic.isBlank()) {
             return connection.unsubscribe(config.stateTopic, this).thenRun(this::internalStop);
         } else {
             internalStop();
@@ -297,7 +296,7 @@ public class ChannelState implements MqttMessageSubscriber {
 
             this.connection = connection;
 
-            if (StringUtils.isBlank(config.stateTopic)) {
+            if (config.stateTopic.isBlank()) {
                 return CompletableFuture.completedFuture(null);
             }
 

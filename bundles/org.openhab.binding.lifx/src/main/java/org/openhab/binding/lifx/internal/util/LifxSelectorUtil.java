@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,17 +32,17 @@ import java.util.function.BiConsumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lifx.internal.LifxSelectorContext;
+import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.PacketFactory;
+import org.openhab.binding.lifx.internal.dto.PacketHandler;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
-import org.openhab.binding.lifx.internal.protocol.Packet;
-import org.openhab.binding.lifx.internal.protocol.PacketFactory;
-import org.openhab.binding.lifx.internal.protocol.PacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for sharing {@link Selector} logic between objects.
  *
- * @author Wouter Born - Make selector logic reusable between discovery and handlers
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxSelectorUtil {

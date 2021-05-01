@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.http.internal;
 
-import static org.openhab.binding.http.internal.HttpBindingConstants.*;
+import static org.openhab.binding.http.internal.HttpBindingConstants.THING_TYPE_URL;
 
 import java.util.Set;
 
@@ -59,8 +59,8 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory
     @Activate
     public HttpHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider) {
-        this.secureClient = new HttpClient(new SslContextFactory());
-        this.insecureClient = new HttpClient(new SslContextFactory(true));
+        this.secureClient = new HttpClient(new SslContextFactory.Client());
+        this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
         try {
             this.secureClient.start();
             this.insecureClient.start();
@@ -101,7 +101,7 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory
 
     @Override
     public ValueTransformation getValueTransformation(@Nullable String pattern) {
-        if (pattern == null) {
+        if (pattern == null || pattern.isEmpty()) {
             return NoOpValueTransformation.getInstance();
         }
         return new CascadedValueTransformationImpl(pattern,

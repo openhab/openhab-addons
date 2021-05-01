@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.unifi.internal;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 
 /**
@@ -42,13 +41,13 @@ public class UniFiClientThingConfig {
     }
 
     public UniFiClientThingConfig tidy() {
-        cid = StringUtils.lowerCase(StringUtils.strip(cid));
-        site = StringUtils.lowerCase(StringUtils.strip(site));
+        cid = cid.trim().toLowerCase();
+        site = site.trim().toLowerCase();
         return this;
     }
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(cid);
+        return !cid.isBlank();
     }
 
     @Override

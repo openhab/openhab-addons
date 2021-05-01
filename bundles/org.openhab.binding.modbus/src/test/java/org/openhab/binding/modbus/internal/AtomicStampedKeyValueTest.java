@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,6 @@ public class AtomicStampedKeyValueTest {
      */
     @Test
     public void testCopyIfStampAfterEqual() {
-        Object key = new Object();
         Object val = new Object();
         AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
         AtomicStampedValue<Object> copy = keyValue.copyIfStampAfter(42L);
@@ -98,7 +97,6 @@ public class AtomicStampedKeyValueTest {
         assertThat(keyValue.getValue(), is(equalTo(copy.getValue())));
 
         // after update they live life of their own
-        Object key2 = new Object();
         Object val2 = new Object();
         copy.update(-99L, val2);
 
@@ -144,7 +142,6 @@ public class AtomicStampedKeyValueTest {
         assertThat(keyValue.getValue(), is(equalTo(copy.getValue())));
 
         // after update they live life of their own
-        Object key2 = new Object();
         Object val2 = new Object();
         copy.update(-99L, val2);
 

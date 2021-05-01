@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal.onvif;
 
 import java.io.BufferedReader;
@@ -125,9 +124,9 @@ public class OnvifDiscovery {
 
     void processCameraReplys() {
         for (DatagramPacket packet : listOfReplys) {
-            logger.trace("Device replied to discovery with:{}", packet.toString());
             String xml = packet.content().toString(CharsetUtil.UTF_8);
-            String xAddr = Helper.fetchXML(xml, "", "<d:XAddrs>");
+            logger.trace("Device replied to discovery with:{}", xml);
+            String xAddr = Helper.fetchXML(xml, "", "d:XAddrs>");// Foscam <wsdd:XAddrs> and all other brands <d:XAddrs>
             if (!xAddr.equals("")) {
                 searchReply(xAddr, xml);
             } else if (xml.contains("onvif")) {

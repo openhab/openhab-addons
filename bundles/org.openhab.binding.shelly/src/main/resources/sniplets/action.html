@@ -1,0 +1,30 @@
+    <div class="page">
+        <p class="caption">Device Action: <td>${action}</p>
+        <hr/>
+        <p/>
+        <table>
+            <tr><td>Device</td><td>${thingLabel} (${serviceName})</td></tr>
+            <tr><td>Device IP</td><td>${deviceIp} (WiFi ${wifiNetwork})</td></tr>
+            <tr><td><p/></td></tr>
+        </table>
+    
+        <p class="top-distance20">
+            <span class="message">${message}</span>
+            <span id="actionMessage" class="message">Please wait ${refreshTimer}s while status is updated.</span>
+        </p>
+        
+        <p style="padding-left: 6px;">
+           <button id="actionButton" class="button"       onclick="location = '${actionUrl}'">${actionButtonLabel}</button> &nbsp;&nbsp;
+        </p>
+        
+        <script type="text/JavaScript">
+            var refreshTimer = ${refreshTimer};
+            if (refreshTimer > 0) { 
+                setTimeout("location.href = '${uri}/overview';",(refreshTimer+1)*1000);
+                document.getElementById("actionButton").style.visibility="hidden";
+            } else {
+                document.getElementById("actionMessage").style.visibility="hidden";
+            }
+        </script>
+    </div>
+    <p/>

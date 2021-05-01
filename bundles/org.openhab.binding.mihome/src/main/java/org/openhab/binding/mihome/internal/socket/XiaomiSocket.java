@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,6 @@ public abstract class XiaomiSocket {
     static final String MCAST_ADDR = "224.0.0.50";
 
     private static final int BUFFER_LENGTH = 1024;
-    private static final JsonParser PARSER = new JsonParser();
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiSocket.class);
 
@@ -197,7 +196,7 @@ public abstract class XiaomiSocket {
                 logger.debug("Received Datagram from {}:{} on port {}", address.getHostAddress(),
                         datagramPacket.getPort(), localPort);
                 String sentence = new String(datagramPacket.getData(), 0, datagramPacket.getLength());
-                JsonObject message = PARSER.parse(sentence).getAsJsonObject();
+                JsonObject message = JsonParser.parseString(sentence).getAsJsonObject();
                 notifyListeners(message, address);
                 logger.trace("Data received and notified {} listeners", listeners.size());
             }

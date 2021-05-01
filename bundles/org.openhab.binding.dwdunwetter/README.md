@@ -63,32 +63,50 @@ For rules that need to fire if a new warning occurs, there is the trigger channe
 That trigger channel fires an event whenever a warning is sent for the first time.
 It also triggers if a warning is replaced by another.
 
-More explanations about the specific values of the channels can be found in the documentation of the DWD at: [CAP DWD Profile 1.2](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_dwd_profile_de_pdf.pdf?__blob=publicationFile&v=7)
+More explanations about the specific values of the channels can be found in the documentation of the DWD at: 
+
+[CAP DWD Profile 1.2](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_dwd_profile_de_pdf_1_10.html)
+
+[CAP DWD Profil zum Common Alerting Protocol v1.2 (PDF)](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_dwd_profile_de_pdf_1_10.pdf?__blob=publicationFile&v=4)
 
 
 ## Full Example
 
-demo.things:
+dwdunwetter.things:
 
 ```
 dwdunwetter:dwdwarnings:cologne "Warnings Cologne" [ cellId="105315000", refresh=15, warningCount=1 ]
 ```
 
-demo.items:
+e.g.
+
+to get two warnings like in the item example, set warningCount=2 in things file
 
 ```
-Switch WarningCologne "Weather warning" { channel="dwdunwetter:dwdwarnings:cologne:warning1" }
-String WarningCologneServerity "Severity[%s]" { channel="dwdunwetter:dwdwarnings:cologne:severity1" }
-String WarningCologneBeschreibung "[%s]" { channel="dwdunwetter:dwdwarnings:cologne:description1" }
-String WarningCologneAusgabedatum "Issued at [%s]" { channel="dwdunwetter:dwdwarnings:cologne:effective1" }
-String WarningCologneGueltigAb "Valid from [%s]" { channel="dwdunwetter:dwdwarnings:cologne:onset1" }
-String WarningCologneGueltigBis "Valid to [%s]" { channel="dwdunwetter:dwdwarnings:cologne:expires1" }
-String WarningCologneTyp "Type [%s]" { channel="dwdunwetter:dwdwarnings:cologne:event1" }
-String WarningCologneTitel "[%s]" { channel="dwdunwetter:dwdwarnings:cologne:headline1" }
-String WarningCologneHoeheAb "Height from [%d m]" { channel="dwdunwetter:dwdwarnings:cologne:altitude1" }
-String WarningCologneHoeheBis "Height to [%d m]" { channel="dwdunwetter:dwdwarnings:cologne:ceiling1" }
-String WarningCologneUrgency "[%s]" { channel="dwdunwetter:dwdwarnings:cologne:urgency1" }
-String WarningCologneInstruction "Additional information: [%s]" { channel="dwdunwetter:dwdwarnings:cologne:instruction1" }
+dwdunwetter:dwdwarnings:cologne "Warnings Cologne" [ cellId="105315000", refresh=15, warningCount=2
+```
+
+dwdunwetter.items:
+
+```
+Switch        WarningCologne_1             "Weather warning [MAP(dwdunwetter_de.map):%s]"   { channel="dwdunwetter:dwdwarnings:cologne:warning1" }
+String        WarningCologneServerity_1    "Severity [MAP(dwdunwetter_severity_de.map):%s]" { channel="dwdunwetter:dwdwarnings:cologne:severity1" }
+String        WarningCologneBeschreibung_1 "[%s]"                                           { channel="dwdunwetter:dwdwarnings:cologne:description1" }
+DateTime      WarningCologneAusgabedatum_1 "Issued at [%s]"                                 { channel="dwdunwetter:dwdwarnings:cologne:effective1" }
+DateTime      WarningCologneGueltigAb_1    "Valid from [%s]"                                { channel="dwdunwetter:dwdwarnings:cologne:onset1" }
+DateTime      WarningCologneGueltigBis_1   "Valid to [%s]"                                  { channel="dwdunwetter:dwdwarnings:cologne:expires1" }
+String        WarningCologneTyp_1          "Event [%s]"                                     { channel="dwdunwetter:dwdwarnings:cologne:event1" }
+String        WarningCologneTitel_1        "[%s]"                                           { channel="dwdunwetter:dwdwarnings:cologne:headline1" }
+Number:Length WarningCologneHoeheAb_1      "Height from [%d m]"                             { channel="dwdunwetter:dwdwarnings:cologne:altitude1" }
+Number:Length WarningCologneHoeheBis_1     "Height to [%d m]"                               { channel="dwdunwetter:dwdwarnings:cologne:ceiling1" }
+String        WarningCologneUrgency_1      "[MAP(dwdunwetter_urgency_de.map):%s]"           { channel="dwdunwetter:dwdwarnings:cologne:urgency1" }
+String        WarningCologneInstruction_1  "Additional information: [%s]"                   { channel="dwdunwetter:dwdwarnings:cologne:instruction1" }
+
+Switch        WarningCologne_2             "Weather warning [MAP(dwdunwetter_de.map):%s]"   { channel="dwdunwetter:dwdwarnings:cologne:warning2" }
+String        WarningCologneServerity_2    "Severity [MAP(dwdunwetter_severity_de.map):%s]" { channel="dwdunwetter:dwdwarnings:cologne:severity2" }
+String        WarningCologneBeschreibung_2 "[%s]"                                           { channel="dwdunwetter:dwdwarnings:cologne:description2" }
+DateTime      WarningCologneAusgabedatum_2 "Issued at [%s]"                                 { channel="dwdunwetter:dwdwarnings:cologne:effective2" }
+...
 ```
 
 demo.sitemap:
@@ -103,7 +121,7 @@ sitemap demo label="Main Menu"
 }
 ```
 
-demo.rules
+dwdunwetter.rules
 
 ```
 rule "New Warnung"
@@ -114,3 +132,38 @@ then
 end 
 
 ```
+
+dwdunwetter_de.map
+
+```
+ON=aktiv
+OFF=inaktiv
+NULL=undefiniert
+UNDEF=undefiniert
+```
+
+dwdunwetter_severity_de.map
+
+```
+Minor=Wetterwarnung
+Moderate=Markante Wetterwarnung
+Severe=Unwetterwarnung
+Extreme=Extreme Unwetterwarnung
+NULL=undefiniert
+UNDEF=undefiniert
+```
+
+dwdunwetter_urgency_de.map
+
+```
+Immediate=Warnung
+Future=Vorabinformation
+NULL=undefiniert
+UNDEF=undefiniert
+```
+
+If you're unsure if the binding is working correctly, you can access the json directly with curl or any browser [json](https://www.dwd.de/DWD/warnungen/warnapp/json/warnings.json) and have a look for an active ID to test your setup.
+
+```
+curl https://www.dwd.de/DWD/warnungen/warnapp/json/warnings.json | less
+``` 

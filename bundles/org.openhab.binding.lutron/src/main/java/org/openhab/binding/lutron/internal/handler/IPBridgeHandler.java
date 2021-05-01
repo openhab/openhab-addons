@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openhab.binding.lutron.internal.StringUtils;
 import org.openhab.binding.lutron.internal.config.IPBridgeConfig;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.net.TelnetSession;
@@ -156,7 +155,8 @@ public class IPBridgeHandler extends LutronBridgeHandler {
             return false;
         }
 
-        if (StringUtils.isEmpty(config.ipAddress)) {
+        String ipAddress = config.ipAddress;
+        if (ipAddress == null || ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
 
             return false;

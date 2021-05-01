@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,14 +15,14 @@ package org.openhab.binding.russound.internal.rio.source;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
@@ -367,7 +367,7 @@ class RioSourceProtocol extends AbstractRioProtocol {
      */
     Runnable setBanks(String bankJson) {
         // If null or empty - simply return a do nothing runnable
-        if (StringUtils.isEmpty(bankJson)) {
+        if (bankJson == null || bankJson.isEmpty()) {
             return () -> {
             };
         }
@@ -387,7 +387,7 @@ class RioSourceProtocol extends AbstractRioProtocol {
                 } else {
                     final RioBank myBank = banks[bankId - 1];
 
-                    if (!StringUtils.equals(myBank.getName(), bank.getName())) {
+                    if (!Objects.equals(myBank.getName(), bank.getName())) {
                         myBank.setName(bank.getName());
                         sendCommand(
                                 "SET S[" + source + "].B[" + bankId + "]." + BANK_NAME + "=\"" + bank.getName() + "\"");
@@ -431,8 +431,8 @@ class RioSourceProtocol extends AbstractRioProtocol {
      * @throws IllegalArgumentException if channelID is null or empty
      */
     private void handleMMChange(String channelId, String value) {
-        if (StringUtils.isEmpty(channelId)) {
-            throw new NullArgumentException("channelId cannot be null or empty");
+        if (channelId == null || channelId.isEmpty()) {
+            throw new IllegalArgumentException("channelId cannot be null or empty");
         }
 
         final AtomicInteger ai = mmSeqNbrs.get(channelId);
@@ -688,8 +688,8 @@ class RioSourceProtocol extends AbstractRioProtocol {
      * @param a possibly null, possibly empty response
      */
     @Override
-    public void responseReceived(String response) {
-        if (StringUtils.isEmpty(response)) {
+    public void responseReceived(@Nullable String response) {
+        if (response == null || response.isEmpty()) {
             return;
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,7 +156,6 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("initialize() called.");
-        logger.info("Initializing VeluxBindingHandler for '{}'.", getThing().getUID());
         // The framework requires you to return from this method quickly.
         // Setting the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
@@ -171,7 +170,7 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
             logger.trace("initialize.scheduled(): Setting ThingStatus to ONLINE.");
             updateStatus(ThingStatus.ONLINE);
             updateVisibleInformation();
-            logger.trace("initialize.scheduled(): done.");
+            logger.debug("Velux Binding Info Element '{}' is initialized.", getThing().getUID());
         });
         logger.trace("initialize() done.");
     }

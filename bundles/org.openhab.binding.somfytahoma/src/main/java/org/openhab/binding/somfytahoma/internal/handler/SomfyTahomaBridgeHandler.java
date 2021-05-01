@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,13 +17,18 @@ import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstan
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,9 +39,25 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
-import org.openhab.binding.somfytahoma.internal.model.*;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaAction;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRegisterEventsResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatusResponse;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -78,6 +99,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ScheduledFuture<?> reconciliationFuture;
 
+    // List of futures used for command retries
+    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
+
     /**
      * List of executions
      */
@@ -101,6 +125,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * Id of registered events
      */
     private String eventsId = "";
+
+    private Map<String, SomfyTahomaDevice> devicePlaces = new HashMap<>();
+
+    private ExpiringCache<List<SomfyTahomaDevice>> cachedDevices = new ExpiringCache<>(Duration.ofSeconds(30),
+            this::getDevices);
 
     // Gson & parser
     private final Gson gson = new Gson();
@@ -137,9 +166,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private void initPolling() {
         stopPolling();
-        pollFuture = scheduler.scheduleWithFixedDelay(() -> {
-            getTahomaUpdates();
-        }, 10, thingConfig.getRefresh(), TimeUnit.SECONDS);
+        scheduleGetUpdates(10);
 
         statusFuture = scheduler.scheduleWithFixedDelay(() -> {
             refreshTahomaStates();
@@ -150,10 +177,25 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }, RECONCILIATION_TIME, RECONCILIATION_TIME, TimeUnit.SECONDS);
     }
 
+    private void scheduleGetUpdates(long delay) {
+        pollFuture = scheduler.schedule(() -> {
+            getTahomaUpdates();
+            scheduleNextGetUpdates();
+        }, delay, TimeUnit.SECONDS);
+    }
+
+    private void scheduleNextGetUpdates() {
+        ScheduledFuture<?> localPollFuture = pollFuture;
+        if (localPollFuture != null) {
+            localPollFuture.cancel(false);
+        }
+        scheduleGetUpdates(executions.isEmpty() ? thingConfig.getRefresh() : 2);
+    }
+
     public synchronized void login() {
         String url;
 
-        if (StringUtils.isEmpty(thingConfig.getEmail()) || StringUtils.isEmpty(thingConfig.getPassword())) {
+        if (thingConfig.getEmail().isEmpty() || thingConfig.getPassword().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Can not access device as username and/or password are null");
             return;
@@ -187,7 +229,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
                     SomfyTahomaLoginResponse.class);
-            if (data.isSuccess()) {
+            if (data == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Received invalid data (login)");
+            } else if (data.isSuccess()) {
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 String id = registerEvents();
                 if (id != null && !id.equals(UNAUTHORIZED)) {
@@ -205,22 +250,22 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Received invalid data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            if (e instanceof ExecutionException) {
-                if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Authentication challenge");
-                    setTooManyRequests();
-                    return;
-                }
+            logger.debug("Received invalid data (login)", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
+        } catch (ExecutionException e) {
+            if (isAuthenticationChallenge(e)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authentication challenge");
+                setTooManyRequests();
+            } else {
+                logger.debug("Cannot get login cookie", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot get login cookie");
             }
-            logger.debug("Cannot get login cookie!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot get login cookie");
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Getting login cookie timeout");
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Getting login cookie interrupted");
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -275,6 +320,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Doing cleanup");
         stopPolling();
         executions.clear();
+        // cancel all scheduled retries
+        retryFutures.forEach(x -> x.cancel(false));
+
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -315,13 +363,43 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable SomfyTahomaSetup getSetup() {
-        return invokeCallToURL(TAHOMA_API_URL + "setup", "", HttpMethod.GET, SomfyTahomaSetup.class);
+        SomfyTahomaSetup setup = invokeCallToURL(TAHOMA_API_URL + "setup", "", HttpMethod.GET, SomfyTahomaSetup.class);
+        if (setup != null) {
+            saveDevicePlaces(setup.getDevices());
+        }
+        return setup;
     }
 
     public List<SomfyTahomaDevice> getDevices() {
         SomfyTahomaDevice[] response = invokeCallToURL(SETUP_URL + "devices", "", HttpMethod.GET,
                 SomfyTahomaDevice[].class);
-        return response != null ? List.of(response) : List.of();
+        List<SomfyTahomaDevice> devices = response != null ? List.of(response) : List.of();
+        saveDevicePlaces(devices);
+        return devices;
+    }
+
+    public synchronized @Nullable SomfyTahomaDevice getCachedDevice(String url) {
+        List<SomfyTahomaDevice> devices = cachedDevices.getValue();
+        if (devices != null) {
+            for (SomfyTahomaDevice device : devices) {
+                if (url.equals(device.getDeviceURL())) {
+                    return device;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void saveDevicePlaces(List<SomfyTahomaDevice> devices) {
+        devicePlaces.clear();
+        for (SomfyTahomaDevice device : devices) {
+            if (!device.getPlaceOID().isEmpty()) {
+                SomfyTahomaDevice newDevice = new SomfyTahomaDevice();
+                newDevice.setPlaceOID(device.getPlaceOID());
+                newDevice.setWidget(device.getWidget());
+                devicePlaces.put(device.getDeviceURL(), newDevice);
+            }
+        }
     }
 
     private void getTahomaUpdates() {
@@ -378,15 +456,32 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private void processExecutionRegisteredEvent(SomfyTahomaEvent event) {
-        JsonElement el = event.getAction();
-        if (el.isJsonArray()) {
-            SomfyTahomaAction[] actions = gson.fromJson(el, SomfyTahomaAction[].class);
-            for (SomfyTahomaAction action : actions) {
-                registerExecution(action.getDeviceURL(), event.getExecId());
+        boolean invalidData = false;
+        try {
+            JsonElement el = event.getAction();
+            if (el.isJsonArray()) {
+                SomfyTahomaAction[] actions = gson.fromJson(el, SomfyTahomaAction[].class);
+                if (actions == null) {
+                    invalidData = true;
+                } else {
+                    for (SomfyTahomaAction action : actions) {
+                        registerExecution(action.getDeviceURL(), event.getExecId());
+                    }
+                }
+            } else {
+                SomfyTahomaAction action = gson.fromJson(el, SomfyTahomaAction.class);
+                if (action == null) {
+                    invalidData = true;
+                } else {
+                    registerExecution(action.getDeviceURL(), event.getExecId());
+                }
             }
-        } else {
-            SomfyTahomaAction action = gson.fromJson(el, SomfyTahomaAction.class);
-            registerExecution(action.getDeviceURL(), event.getExecId());
+        } catch (JsonSyntaxException e) {
+            invalidData = true;
+        }
+        if (invalidData) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Received invalid data (execution registered)");
         }
     }
 
@@ -497,11 +592,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         try {
             eventsId = "";
             sendGetToTahomaWithCookie(TAHOMA_API_URL + "logout");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.debug("Cannot send logout command!", e);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -534,7 +628,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             throws InterruptedException, ExecutionException, TimeoutException {
         logger.trace("Sending {} to url: {} with data: {}", method.asString(), url, urlParameters);
         Request request = sendRequestBuilder(url, method);
-        if (StringUtils.isNotEmpty(urlParameters)) {
+        if (!urlParameters.isEmpty()) {
             request = request.content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8");
         }
 
@@ -561,16 +655,26 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        Boolean result = sendCommandInternal(io, command, params, url);
+        removeFinishedRetries();
+
+        boolean result = sendCommandInternal(io, command, params, url);
         if (!result) {
-            sendCommandInternal(io, command, params, url);
+            scheduleRetry(io, command, params, url, thingConfig.getRetries());
         }
     }
 
-    private Boolean sendCommandInternal(String io, String command, String params, String url) {
-        String value = params.equals("[]") ? command : params.replace("\"", "");
+    private void repeatSendCommandInternal(String io, String command, String params, String url, int retries) {
+        logger.debug("Retrying command, retries left: {}", retries);
+        boolean result = sendCommandInternal(io, command, params, url);
+        if (!result && (retries > 0)) {
+            scheduleRetry(io, command, params, url, retries - 1);
+        }
+    }
+
+    private boolean sendCommandInternal(String io, String command, String params, String url) {
+        String value = params.equals("[]") ? command : command + " " + params.replace("\"", "");
         String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value
-                + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
+                + " - openHAB\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
                 + "\",\"parameters\":" + params + "}]}]}";
         SomfyTahomaApplyResponse response = invokeCallToURL(url, urlParameters, HttpMethod.POST,
                 SomfyTahomaApplyResponse.class);
@@ -578,6 +682,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             if (!response.getExecId().isEmpty()) {
                 logger.debug("Exec id: {}", response.getExecId());
                 registerExecution(io, response.getExecId());
+                scheduleNextGetUpdates();
             } else {
                 logger.debug("ExecId is empty!");
                 return false;
@@ -587,6 +692,31 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         return false;
     }
 
+    private void removeFinishedRetries() {
+        retryFutures.removeIf(x -> x.isDone());
+        logger.debug("Currently {} retries are scheduled.", retryFutures.size());
+    }
+
+    private void scheduleRetry(String io, String command, String params, String url, int retries) {
+        retryFutures.add(scheduler.schedule(() -> {
+            repeatSendCommandInternal(io, command, params, url, retries);
+        }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS));
+    }
+
+    public void sendCommandToSameDevicesInPlace(String io, String command, String params, String url) {
+        SomfyTahomaDevice device = devicePlaces.get(io);
+        if (device != null && !device.getPlaceOID().isEmpty()) {
+            devicePlaces.forEach((deviceUrl, devicePlace) -> {
+                if (device.getPlaceOID().equals(devicePlace.getPlaceOID())
+                        && device.getWidget().equals(devicePlace.getWidget())) {
+                    sendCommand(deviceUrl, command, params, url);
+                }
+            });
+        } else {
+            sendCommand(io, command, params, url);
+        }
+    }
+
     private String getThingLabelByURL(String io) {
         Thing th = getThingByDeviceUrl(io);
         if (th != null) {
@@ -594,7 +724,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 // Return label from Tahoma
                 return th.getProperties().get(NAME_STATE).replace("\"", "");
             }
-            // Return label from OH2
+            // Return label from the thing
             String label = th.getLabel();
             return label != null ? label.replace("\"", "") : "";
         }
@@ -622,6 +752,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
         if (execId != null) {
             registerExecution(id, execId);
+            scheduleNextGetUpdates();
         }
     }
 
@@ -661,7 +792,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean isAuthenticationChallenge(Exception ex) {
-        return ex.getMessage().contains(AUTHENTICATION_CHALLENGE);
+        String msg = ex.getMessage();
+        return msg != null && msg.contains(AUTHENTICATION_CHALLENGE);
     }
 
     @Override
@@ -712,12 +844,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Cannot call url: {} with params: {}!", url, urlParameters, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Cannot call url: {} with params: {}!", url, urlParameters, e);
+        } catch (TimeoutException e) {
+            logger.debug("Timeout when calling url: {} with params: {}!", url, urlParameters, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            Thread.currentThread().interrupt();
         }
         return null;
     }

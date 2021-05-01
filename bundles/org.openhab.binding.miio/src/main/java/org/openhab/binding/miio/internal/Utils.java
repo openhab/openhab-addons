@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,10 +98,9 @@ public final class Utils {
     public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException,
             JsonParseException, IOException, URISyntaxException, NoSuchFileException {
         JsonObject jsonObject = new JsonObject();
-        JsonParser parser = new JsonParser();
         try (InputStream inputStream = fileName.openStream();
                 InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-            JsonElement jsonElement = parser.parse(reader);
+            JsonElement jsonElement = JsonParser.parseReader(reader);
             jsonObject = jsonElement.getAsJsonObject();
             return jsonObject;
         }

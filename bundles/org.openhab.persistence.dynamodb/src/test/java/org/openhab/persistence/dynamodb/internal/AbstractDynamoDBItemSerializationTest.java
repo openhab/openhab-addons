@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,9 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Test;
-import org.openhab.core.items.Item;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
@@ -47,7 +48,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Test for AbstractDynamoDBItem.fromState and AbstractDynamoDBItem.asHistoricItem for all kind of states
@@ -60,18 +60,24 @@ public class AbstractDynamoDBItemSerializationTest {
     private final ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochSecond(400), ZoneId.systemDefault());
 
     /**
-     * Generic function testing serialization of item state to internal format in DB. In other words, conversion of
-     * Item with state to DynamoDBItem
+     * Generic function testing serialization of GenericItem state to internal format in DB. In other words, conversion
+     * of
+     * GenericItem with state to DynamoDBItem
      *
-     * @param state item state
-     * @param expectedState internal format in DB representing the item state
+     * @param legacy whether we have legacy
+     * @param GenericItem item
+     * @param stateOverride state
+     * @param expectedState internal format in DB representing the GenericItem state
      * @return dynamo db item
      * @throws IOException
      */
-    public DynamoDBItem<?> testStateGeneric(State state, Object expectedState) throws IOException {
-        DynamoDBItem<?> dbItem = AbstractDynamoDBItem.fromState("item1", state, date);
+    public DynamoDBItem<?> testSerializationToDTO(boolean legacy, GenericItem item, State stateOverride,
+            Object expectedState) throws IOException {
+        item.setState(stateOverride);
+        DynamoDBItem<?> dbItem = legacy ? AbstractDynamoDBItem.fromStateLegacy(item, date)
+                : AbstractDynamoDBItem.fromStateNew(item, date, null);
 
-        assertEquals("item1", dbItem.getName());
+        assertEquals("foo", dbItem.getName());
         assertEquals(date, dbItem.getTime());
         Object actualState = dbItem.getState();
         assertNotNull(actualState);
@@ -91,19 +97,20 @@ public class AbstractDynamoDBItemSerializationTest {
      * Test state deserialization, that is DynamoDBItem conversion to HistoricItem
      *
      * @param dbItem dynamo db item
-     * @param item parameter for DynamoDBItem.asHistoricItem
+     * @param GenericItem parameter for DynamoDBItem.asHistoricItem
      * @param expectedState Expected state of the historic item. DecimalTypes are compared with reduced accuracy
      * @return
      * @throws IOException
      */
-    public HistoricItem testAsHistoricGeneric(DynamoDBItem<?> dbItem, Item item, Object expectedState)
+    public HistoricItem testAsHistoricGeneric(DynamoDBItem<?> dbItem, GenericItem item, Object expectedState)
             throws IOException {
         HistoricItem historicItem = dbItem.asHistoricItem(item);
-
-        assertEquals("item1", historicItem.getName());
+        assertNotNull(historicItem);
+        assert historicItem != null; // getting rid off null pointer access warning
+        assertEquals("foo", historicItem.getName());
         assertEquals(date, historicItem.getTimestamp());
         assertEquals(expectedState.getClass(), historicItem.getState().getClass());
-        if (expectedState instanceof DecimalType) {
+        if (expectedState.getClass() == DecimalType.class) {
             // serialization loses accuracy, take this into consideration
             BigDecimal expectedRounded = DynamoDBBigDecimalItem
                     .loseDigits(((DecimalType) expectedState).toBigDecimal());
@@ -117,148 +124,189 @@ public class AbstractDynamoDBItemSerializationTest {
         return historicItem;
     }
 
-    @Test
-    public void testUndefWithNumberItem() throws IOException {
-        final DynamoDBItem<?> dbitem = testStateGeneric(UnDefType.UNDEF, "<org.openhab.core.types.UnDefType.UNDEF>");
-        assertTrue(dbitem instanceof DynamoDBStringItem);
-        testAsHistoricGeneric(dbitem, new NumberItem("foo"), UnDefType.UNDEF);
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testCallTypeWithCallItemLegacy(boolean legacy) throws IOException {
+        GenericItem item = new CallItem("foo");
+        final DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new StringListType("origNum", "destNum"),
+                "origNum,destNum");
+        testAsHistoricGeneric(dbitem, item, new StringListType("origNum", "destNum"));
     }
 
-    @Test
-    public void testCallTypeWithCallItem() throws IOException {
-        final DynamoDBItem<?> dbitem = testStateGeneric(new StringListType("origNum", "destNum"), "origNum,destNum");
-        testAsHistoricGeneric(dbitem, new CallItem("foo"), new StringListType("origNum", "destNum"));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testOpenClosedTypeWithContactItem(boolean legacy) throws IOException {
+        GenericItem item = new ContactItem("foo");
+        final DynamoDBItem<?> dbitemOpen = testSerializationToDTO(legacy, item, OpenClosedType.CLOSED, BigDecimal.ZERO);
+        testAsHistoricGeneric(dbitemOpen, item, OpenClosedType.CLOSED);
+
+        final DynamoDBItem<?> dbitemClosed = testSerializationToDTO(legacy, item, OpenClosedType.OPEN, BigDecimal.ONE);
+        testAsHistoricGeneric(dbitemClosed, item, OpenClosedType.OPEN);
     }
 
-    @Test
-    public void testOpenClosedTypeWithContactItem() throws IOException {
-        final DynamoDBItem<?> dbitemOpen = testStateGeneric(OpenClosedType.CLOSED, BigDecimal.ZERO);
-        testAsHistoricGeneric(dbitemOpen, new ContactItem("foo"), OpenClosedType.CLOSED);
-
-        final DynamoDBItem<?> dbitemClosed = testStateGeneric(OpenClosedType.OPEN, BigDecimal.ONE);
-        testAsHistoricGeneric(dbitemClosed, new ContactItem("foo"), OpenClosedType.OPEN);
-    }
-
-    @Test
-    public void testDateTimeTypeWithDateTimeItem() throws IOException {
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testDateTimeTypeWithDateTimeItem(boolean legacy) throws IOException {
+        GenericItem item = new DateTimeItem("foo");
         ZonedDateTime zdt = ZonedDateTime.parse("2016-05-01T13:46:00.050Z");
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(zdt.toString()), "2016-05-01T13:46:00.050Z");
-        testAsHistoricGeneric(dbitem, new DateTimeItem("foo"),
-                new DateTimeType(zdt.withZoneSameInstant(ZoneId.systemDefault())));
-    }
-
-    @Test
-    public void testDateTimeTypeWithStringItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(ZonedDateTime.parse("2016-05-01T13:46:00.050Z")),
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType(zdt.toString()),
                 "2016-05-01T13:46:00.050Z");
-        testAsHistoricGeneric(dbitem, new StringItem("foo"), new StringType("2016-05-01T13:46:00.050Z"));
+        testAsHistoricGeneric(dbitem, item, new DateTimeType(zdt.withZoneSameInstant(ZoneId.systemDefault())));
     }
 
-    @Test
-    public void testDateTimeTypeLocalWithDateTimeItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType("2016-07-17T19:38:07.050+0300"),
-                "2016-07-17T16:38:07.050Z");
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testDateTimeTypeWithStringItem(boolean legacy) throws IOException {
+        GenericItem item = new StringItem("foo");
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item,
+                new DateTimeType(ZonedDateTime.parse("2016-05-01T13:46:00.050Z")), "2016-05-01T13:46:00.050Z");
+        testAsHistoricGeneric(dbitem, item, new StringType("2016-05-01T13:46:00.050Z"));
+    }
 
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testDateTimeTypeLocalWithDateTimeItem(boolean legacy) throws IOException {
+        GenericItem item = new DateTimeItem("foo");
         ZonedDateTime expectedZdt = Instant.ofEpochMilli(1468773487050L).atZone(ZoneId.systemDefault());
-        testAsHistoricGeneric(dbitem, new DateTimeItem("foo"), new DateTimeType(expectedZdt));
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType("2016-07-17T19:38:07.050+0300"),
+                "2016-07-17T16:38:07.050Z");
+        testAsHistoricGeneric(dbitem, item, new DateTimeType(expectedZdt));
     }
 
-    @Test
-    public void testDateTimeTypeLocalWithStringItem() throws IOException {
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testDateTimeTypeLocalWithStringItem(boolean legacy) throws IOException {
+        GenericItem item = new StringItem("foo");
         Instant instant = Instant.ofEpochMilli(1468773487050L); // GMT: Sun, 17 Jul 2016 16:38:07.050 GMT
         ZonedDateTime zdt = instant.atZone(TimeZone.getTimeZone("GMT+03:00").toZoneId());
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(zdt), "2016-07-17T16:38:07.050Z");
-        testAsHistoricGeneric(dbitem, new StringItem("foo"), new StringType("2016-07-17T16:38:07.050Z"));
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType(zdt),
+                "2016-07-17T16:38:07.050Z");
+        testAsHistoricGeneric(dbitem, item, new StringType("2016-07-17T16:38:07.050Z"));
     }
 
-    @Test
-    public void testPointTypeWithLocationItem() throws IOException {
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testPointTypeWithLocationItem(boolean legacy) throws IOException {
+        GenericItem item = new LocationItem("foo");
         final PointType point = new PointType(new DecimalType(60.3), new DecimalType(30.2), new DecimalType(510.90));
         String expected = point.getLatitude().toBigDecimal().toString() + ","
                 + point.getLongitude().toBigDecimal().toString() + "," + point.getAltitude().toBigDecimal().toString();
-        DynamoDBItem<?> dbitem = testStateGeneric(point, expected);
-        testAsHistoricGeneric(dbitem, new LocationItem("foo"), point);
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, point, expected);
+        testAsHistoricGeneric(dbitem, item, point);
     }
 
-    @Test
-    public void testDecimalTypeWithNumberItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new DecimalType("3.2"), new BigDecimal("3.2"));
-        testAsHistoricGeneric(dbitem, new NumberItem("foo"), new DecimalType("3.2"));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testDecimalTypeWithNumberItem(boolean legacy) throws IOException {
+        GenericItem item = new NumberItem("foo");
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DecimalType("3.2"), new BigDecimal("3.2"));
+        testAsHistoricGeneric(dbitem, item, new DecimalType("3.2"));
     }
 
-    @Test
-    public void testPercentTypeWithColorItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new PercentType(new BigDecimal("3.2")), new BigDecimal("3.2"));
-        testAsHistoricGeneric(dbitem, new ColorItem("foo"), new PercentType(new BigDecimal("3.2")));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testPercentTypeWithColorItem(boolean legacy) throws IOException {
+        GenericItem item = new ColorItem("foo");
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new PercentType(new BigDecimal("3.2")),
+                "0,0,3.2");
+        testAsHistoricGeneric(dbitem, item, new HSBType(DecimalType.ZERO, PercentType.ZERO, new PercentType("3.2")));
     }
 
-    @Test
-    public void testPercentTypeWithDimmerItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new PercentType(new BigDecimal("3.2")), new BigDecimal("3.2"));
-        testAsHistoricGeneric(dbitem, new DimmerItem("foo"), new PercentType(new BigDecimal("3.2")));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testPercentTypeWithDimmerItem(boolean legacy) throws IOException {
+        GenericItem item = new DimmerItem("foo");
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new PercentType(new BigDecimal("3.2")),
+                new BigDecimal("3.2"));
+        testAsHistoricGeneric(dbitem, item, new PercentType(new BigDecimal("3.2")));
     }
 
-    @Test
-    public void testPercentTypeWithRollerShutterItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new PercentType(new BigDecimal("3.2")), new BigDecimal("3.2"));
-        testAsHistoricGeneric(dbitem, new RollershutterItem("foo"), new PercentType(new BigDecimal("3.2")));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testPercentTypeWithRollerShutterItem(boolean legacy) throws IOException {
+        GenericItem item = new RollershutterItem("foo");
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new PercentType(81), new BigDecimal("81"));
+        testAsHistoricGeneric(dbitem, item, new PercentType(81));
     }
 
-    @Test
-    public void testPercentTypeWithNumberItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new PercentType(new BigDecimal("3.2")), new BigDecimal("3.2"));
-        // note: comes back as DecimalType instead of the original PercentType
-        testAsHistoricGeneric(dbitem, new NumberItem("foo"), new DecimalType(new BigDecimal("3.2")));
-    }
-
-    @Test
-    public void testUpDownTypeWithRollershutterItem() throws IOException {
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testUpDownTypeWithRollershutterItem(boolean legacy) throws IOException {
+        GenericItem item = new RollershutterItem("foo");
         // note: comes back as PercentType instead of the original UpDownType
-        DynamoDBItem<?> dbItemDown = testStateGeneric(UpDownType.DOWN, BigDecimal.ZERO);
-        testAsHistoricGeneric(dbItemDown, new RollershutterItem("foo"), new PercentType(BigDecimal.ZERO));
+        {
+            // down == 1.0 = 100%
+            State expectedDeserializedState = PercentType.HUNDRED;
+            DynamoDBItem<?> dbItemDown = testSerializationToDTO(legacy, item, UpDownType.DOWN, new BigDecimal(100));
+            testAsHistoricGeneric(dbItemDown, item, expectedDeserializedState);
+            assertEquals(UpDownType.DOWN, expectedDeserializedState.as(UpDownType.class));
+        }
 
-        DynamoDBItem<?> dbItemUp = testStateGeneric(UpDownType.UP, BigDecimal.ONE);
-        testAsHistoricGeneric(dbItemUp, new RollershutterItem("foo"), new PercentType(BigDecimal.ONE));
+        {
+            // up == 0
+            State expectedDeserializedState = PercentType.ZERO;
+            DynamoDBItem<?> dbItemUp = testSerializationToDTO(legacy, item, UpDownType.UP, BigDecimal.ZERO);
+            testAsHistoricGeneric(dbItemUp, item, expectedDeserializedState);
+            assertEquals(UpDownType.UP, expectedDeserializedState.as(UpDownType.class));
+        }
     }
 
-    @Test
-    public void testStringTypeWithStringItem() throws IOException {
-        DynamoDBItem<?> dbitem = testStateGeneric(new StringType("foo bar"), "foo bar");
-        testAsHistoricGeneric(dbitem, new StringItem("foo"), new StringType("foo bar"));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testStringTypeWithStringItem(boolean legacy) throws IOException {
+        GenericItem item = new StringItem("foo");
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new StringType("foo bar"), "foo bar");
+        testAsHistoricGeneric(dbitem, item, new StringType("foo bar"));
     }
 
-    @Test
-    public void testOnOffTypeWithColorItem() throws IOException {
-        DynamoDBItem<?> dbitemOff = testStateGeneric(OnOffType.OFF, BigDecimal.ZERO);
-        testAsHistoricGeneric(dbitemOff, new ColorItem("foo"), new PercentType(BigDecimal.ZERO));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testOnOffTypeWithColorItem(boolean legacy) throws IOException {
+        GenericItem item = new ColorItem("foo");
+        DynamoDBItem<?> dbitemOff = testSerializationToDTO(legacy, item, OnOffType.OFF, "0,0,0");
+        testAsHistoricGeneric(dbitemOff, item, HSBType.BLACK);
 
-        DynamoDBItem<?> dbitemOn = testStateGeneric(OnOffType.ON, BigDecimal.ONE);
-        testAsHistoricGeneric(dbitemOn, new ColorItem("foo"), new PercentType(BigDecimal.ONE));
+        DynamoDBItem<?> dbitemOn = testSerializationToDTO(legacy, item, OnOffType.ON, "0,0,100");
+        testAsHistoricGeneric(dbitemOn, item, HSBType.WHITE);
     }
 
-    @Test
-    public void testOnOffTypeWithDimmerItem() throws IOException {
-        DynamoDBItem<?> dbitemOff = testStateGeneric(OnOffType.OFF, BigDecimal.ZERO);
-        testAsHistoricGeneric(dbitemOff, new DimmerItem("foo"), new PercentType(BigDecimal.ZERO));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testOnOffTypeWithDimmerItem(boolean legacy) throws IOException {
+        GenericItem item = new DimmerItem("foo");
+        {
+            State expectedDeserializedState = PercentType.ZERO;
+            DynamoDBItem<?> dbitemOff = testSerializationToDTO(legacy, item, OnOffType.OFF, BigDecimal.ZERO);
+            testAsHistoricGeneric(dbitemOff, item, expectedDeserializedState);
+            assertEquals(OnOffType.OFF, expectedDeserializedState.as(OnOffType.class));
+        }
 
-        DynamoDBItem<?> dbitemOn = testStateGeneric(OnOffType.ON, BigDecimal.ONE);
-        testAsHistoricGeneric(dbitemOn, new DimmerItem("foo"), new PercentType(BigDecimal.ONE));
+        {
+            State expectedDeserializedState = PercentType.HUNDRED;
+            DynamoDBItem<?> dbitemOn = testSerializationToDTO(legacy, item, OnOffType.ON, new BigDecimal(100));
+            testAsHistoricGeneric(dbitemOn, item, expectedDeserializedState);
+            assertEquals(OnOffType.ON, expectedDeserializedState.as(OnOffType.class));
+        }
     }
 
-    @Test
-    public void testOnOffTypeWithSwitchItem() throws IOException {
-        DynamoDBItem<?> dbitemOff = testStateGeneric(OnOffType.OFF, BigDecimal.ZERO);
-        testAsHistoricGeneric(dbitemOff, new SwitchItem("foo"), OnOffType.OFF);
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testOnOffTypeWithSwitchItem(boolean legacy) throws IOException {
+        GenericItem item = new SwitchItem("foo");
+        DynamoDBItem<?> dbitemOff = testSerializationToDTO(legacy, item, OnOffType.OFF, BigDecimal.ZERO);
+        testAsHistoricGeneric(dbitemOff, item, OnOffType.OFF);
 
-        DynamoDBItem<?> dbitemOn = testStateGeneric(OnOffType.ON, BigDecimal.ONE);
-        testAsHistoricGeneric(dbitemOn, new SwitchItem("foo"), OnOffType.ON);
+        DynamoDBItem<?> dbitemOn = testSerializationToDTO(legacy, item, OnOffType.ON, BigDecimal.ONE);
+        testAsHistoricGeneric(dbitemOn, item, OnOffType.ON);
     }
 
-    @Test
-    public void testHSBTypeWithColorItem() throws IOException {
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testHSBTypeWithColorItem(boolean legacy) throws IOException {
+        GenericItem item = new ColorItem("foo");
         HSBType hsb = new HSBType(new DecimalType(1.5), new PercentType(new BigDecimal(2.5)),
                 new PercentType(new BigDecimal(3.5)));
-        DynamoDBItem<?> dbitem = testStateGeneric(hsb, "1.5,2.5,3.5");
-        testAsHistoricGeneric(dbitem, new ColorItem("foo"), hsb);
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, hsb, "1.5,2.5,3.5");
+        testAsHistoricGeneric(dbitem, item, hsb);
     }
 }

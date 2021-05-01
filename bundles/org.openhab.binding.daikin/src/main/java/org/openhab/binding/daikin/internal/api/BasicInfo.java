@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BasicInfo {
-    private static final Logger logger = LoggerFactory.getLogger(BasicInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasicInfo.class);
 
     public String mac = "";
     public String ret = "";
@@ -38,7 +38,7 @@ public class BasicInfo {
     }
 
     public static BasicInfo parse(String response) {
-        logger.debug("Parsing string: \"{}\"", response);
+        LOGGER.debug("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

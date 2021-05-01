@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,21 +58,25 @@ public class ModbusReadResponseMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
-        super.encodeMessage(data);
+        if (NibeHeatPumpProtocol.isModbus40ReadResponse(data)) {
+            super.encodeMessage(data);
+            coilAddress = ((rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 1] & 0xFF) << 8
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 0] & 0xFF));
+            value = (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 5] & 0xFF) << 24
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 4] & 0xFF) << 16
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 3] & 0xFF) << 8
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 2] & 0xFF);
 
-        coilAddress = (data[3] & 0xFF) << 8 | (data[4] & 0xFF);
-        parseMessage(data);
+        } else {
+            throw new NibeHeatPumpException("Not Read Response message");
+        }
     }
 
     @Override
     public byte[] decodeMessage() {
-        return createModbusReadResponsePdu(coilAddress, value);
-    }
-
-    private byte[] createModbusReadResponsePdu(int coilAddress, int value) {
         byte[] data = new byte[12];
 
-        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_FROM_NIBE;
+        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_RES;
         data[1] = 0x00;
         data[2] = NibeHeatPumpProtocol.ADR_MODBUS40;
         data[3] = NibeHeatPumpProtocol.CMD_MODBUS_READ_RESP;
@@ -93,28 +97,11 @@ public class ModbusReadResponseMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public String toString() {
-        String str = "";
-
-        str += super.toString();
+        String str = super.toString();
         str += ", Coil address = " + coilAddress;
         str += ", Value = " + value;
 
         return str;
-    }
-
-    private void parseMessage(byte[] data) throws NibeHeatPumpException {
-        if (NibeHeatPumpProtocol.isModbus40ReadResponse(data)) {
-            super.encodeMessage(data);
-            coilAddress = ((data[NibeHeatPumpProtocol.OFFSET_DATA + 1] & 0xFF) << 8
-                    | (data[NibeHeatPumpProtocol.OFFSET_DATA + 0] & 0xFF));
-            value = (data[NibeHeatPumpProtocol.OFFSET_DATA + 5] & 0xFF) << 24
-                    | (data[NibeHeatPumpProtocol.OFFSET_DATA + 4] & 0xFF) << 16
-                    | (data[NibeHeatPumpProtocol.OFFSET_DATA + 3] & 0xFF) << 8
-                    | (data[NibeHeatPumpProtocol.OFFSET_DATA + 2] & 0xFF);
-
-        } else {
-            throw new NibeHeatPumpException("Not Read Response message");
-        }
     }
 
     public static class MessageBuilder {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,14 +45,11 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Initial contribution
  */
 
-class KeContactTransceiver {
+public class KeContactTransceiver {
 
     public static final int LISTENER_PORT_NUMBER = 7090;
-    public static final int REMOTE_PORT_NUMBER = 7090;
     public static final int LISTENING_INTERVAL = 100;
     public static final int BUFFER_SIZE = 1024;
-    public static final String IP_ADDRESS = "ipAddress";
-    public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
 
     private DatagramChannel broadcastChannel;
     private SelectionKey broadcastKey;
@@ -74,7 +71,7 @@ class KeContactTransceiver {
                 selector = Selector.open();
 
                 if (transceiverThread == null) {
-                    transceiverThread = new Thread(transceiverRunnable, "openHAB-Keba-Transceiver");
+                    transceiverThread = new Thread(transceiverRunnable, "OH-binding-Keba-Transceiver");
                     transceiverThread.start();
                 }
 
@@ -257,7 +254,7 @@ class KeContactTransceiver {
                                                     new Object[] { new String(theBuffer.array()),
                                                             theChannel.getLocalAddress(),
                                                             theChannel.getRemoteAddress() });
-                                            int byteswritten = theChannel.write(theBuffer);
+                                            theChannel.write(theBuffer);
                                         } catch (NotYetConnectedException e) {
                                             theHandler.updateStatus(ThingStatus.OFFLINE,
                                                     ThingStatusDetail.COMMUNICATION_ERROR,
@@ -406,8 +403,9 @@ class KeContactTransceiver {
     };
 
     private void establishConnection(KeContactHandler handler) {
+        String ipAddress = handler.getIPAddress();
         if (handler.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR
-                && handler.getConfig().get(IP_ADDRESS) != null && !handler.getConfig().get(IP_ADDRESS).equals("")) {
+                && !ipAddress.equals("")) {
             logger.debug("Establishing the connection to the KEBA KeContact '{}'", handler.getThing().getUID());
 
             DatagramChannel datagramChannel = null;
@@ -438,8 +436,7 @@ class KeContactTransceiver {
                                 "An exception occurred while registering a selector");
                     }
 
-                    InetSocketAddress remoteAddress = new InetSocketAddress(
-                            (String) handler.getConfig().get(IP_ADDRESS), REMOTE_PORT_NUMBER);
+                    InetSocketAddress remoteAddress = new InetSocketAddress(ipAddress, LISTENER_PORT_NUMBER);
 
                     try {
                         if (logger.isTraceEnabled()) {
@@ -449,8 +446,8 @@ class KeContactTransceiver {
 
                         handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
                     } catch (Exception e) {
-                        logger.debug("An exception occurred while connecting connecting to '{}:{}' : {}", new Object[] {
-                                (String) handler.getConfig().get(IP_ADDRESS), REMOTE_PORT_NUMBER, e.getMessage() });
+                        logger.debug("An exception occurred while connecting connecting to '{}:{}' : {}",
+                                new Object[] { ipAddress, LISTENER_PORT_NUMBER, e.getMessage() });
                         handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "An exception occurred while connecting");
                     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.orvibo.internal.OrviboBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -102,7 +101,7 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
     private DiscoveryResult createDiscoveryResult(Socket socket) {
         ThingUID thingUID = getUID(socket);
         String label = socket.getLabel();
-        if (StringUtils.isBlank(label)) {
+        if (label == null || label.isBlank()) {
             label = "S20";
         }
         return DiscoveryResultBuilder.create(thingUID).withLabel(label)

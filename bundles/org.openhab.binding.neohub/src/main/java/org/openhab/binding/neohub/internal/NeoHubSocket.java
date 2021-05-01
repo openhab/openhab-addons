@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class NeoHubSocket {
      * @param requestJson the message to be sent to the NeoHub
      * @return responseJson received from NeoHub
      * @throws NeoHubException, IOException
-     * 
+     *
      */
     public String sendMessage(final String requestJson) throws IOException, NeoHubException {
         IOException caughtException = null;
@@ -84,15 +84,20 @@ public class NeoHubSocket {
                 writer.write(requestJson);
                 writer.write(0); // NULL terminate the command string
                 writer.flush();
+                socket.shutdownOutput();
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("sent {} characters..", requestJson.length());
                 }
 
                 int inChar;
-                // NULL termination, end of stream (-1), or newline
-                while (((inChar = reader.read()) > 0) && (inChar != '\n')) {
-                    builder.append((char) inChar);
+                boolean done = false;
+                // read until end of stream
+                while ((inChar = reader.read()) != -1) {
+                    // a JSON block is terminated by a newline or NULL
+                    if (!(done |= (inChar == '\n') || (inChar == 0))) {
+                        builder.append((char) inChar);
+                    }
                 }
             }
         } catch (IOException e) {

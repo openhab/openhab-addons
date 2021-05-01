@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -203,7 +202,7 @@ public class NetworkUtils {
      */
     public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(100), arpToolPath, "--help");
-        if (StringUtils.isBlank(result)) {
+        if (result == null || result.isBlank()) {
             return ArpPingUtilEnum.UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
             if (result.matches("(?s)(.*)w sec Specify a timeout(.*)")) {

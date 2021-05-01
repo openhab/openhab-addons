@@ -14,12 +14,11 @@
 		<description>Sensor for different meters like energy measurement (EEP: A5-12)</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by panel</description>
 				<options>
@@ -29,7 +28,6 @@
 					<option value="A5_12_03">A5-12-03 Water</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

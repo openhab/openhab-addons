@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SomfyTahomaSetup} holds information about devices bound
  * to TahomaLink account.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - Add rooms data
  */
 @NonNullByDefault
 public class SomfyTahomaSetup {
@@ -30,11 +32,17 @@ public class SomfyTahomaSetup {
 
     private List<SomfyTahomaGateway> gateways = new ArrayList<>();
 
+    private @Nullable SomfyTahomaRootPlace rootPlace;
+
     public List<SomfyTahomaDevice> getDevices() {
         return devices;
     }
 
     public List<SomfyTahomaGateway> getGateways() {
         return gateways;
+    }
+
+    public @Nullable SomfyTahomaRootPlace getRootPlace() {
+        return rootPlace;
     }
 }

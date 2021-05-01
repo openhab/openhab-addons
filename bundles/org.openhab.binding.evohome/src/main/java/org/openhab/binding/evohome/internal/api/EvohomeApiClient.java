@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,6 @@ public class EvohomeApiClient {
     private static final String CLIENT_SECRET = "1a15cdb8-42de-407b-add0-059f92c530cb";
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeApiClient.class);
-    private final HttpClient httpClient;
     private final EvohomeAccountConfiguration configuration;
     private final ApiAccess apiAccess;
 
@@ -60,19 +59,9 @@ public class EvohomeApiClient {
      * Creates a new API client based on the V2 API interface
      *
      * @param configuration The configuration of the account to use
-     * @throws Exception
      */
-    public EvohomeApiClient(EvohomeAccountConfiguration configuration, HttpClient httpClient) throws Exception {
+    public EvohomeApiClient(EvohomeAccountConfiguration configuration, HttpClient httpClient) {
         this.configuration = configuration;
-        this.httpClient = httpClient;
-
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.error("Could not start http client", e);
-            throw new EvohomeApiClientException("Could not start http client", e);
-        }
-
         apiAccess = new ApiAccess(httpClient);
         apiAccess.setApplicationId(APPLICATION_ID);
     }
@@ -85,14 +74,6 @@ public class EvohomeApiClient {
         useraccount = null;
         locations = null;
         locationsStatus = null;
-
-        if (httpClient.isStarted()) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.debug("Could not stop http client.", e);
-            }
-        }
     }
 
     public boolean login() {

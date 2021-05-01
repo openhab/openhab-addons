@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,13 +22,13 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Notification;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Sender;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherGatewayException;
@@ -61,7 +61,7 @@ public class SmartherAccountService {
 
     private final Logger logger = LoggerFactory.getLogger(SmartherAccountService.class);
 
-    private final Set<SmartherAccountHandler> handlers = new ConcurrentHashSet<>();
+    private final Set<SmartherAccountHandler> handlers = ConcurrentHashMap.newKeySet();
 
     private @Nullable HttpService httpService;
     private @Nullable BundleContext bundleContext;

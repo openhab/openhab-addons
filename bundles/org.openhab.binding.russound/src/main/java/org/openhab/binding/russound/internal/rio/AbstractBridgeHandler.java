@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.russound.internal.rio;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.core.library.types.StringType;
@@ -165,7 +164,7 @@ public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> exten
         if (clazz == null) {
             throw new IllegalArgumentException("clazz cannot be null");
         }
-        if (StringUtils.isEmpty(channelId)) {
+        if (channelId == null || channelId.isEmpty()) {
             throw new IllegalArgumentException("channelId cannot be null or empty");
         }
 

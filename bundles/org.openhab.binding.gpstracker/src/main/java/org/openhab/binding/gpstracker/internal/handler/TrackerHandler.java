@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -262,7 +262,7 @@ public class TrackerHandler extends BaseThingHandler {
      */
     private void updateTriggerChannelsWithTransition(TransitionMessage message) {
         String regionName = message.getRegionName();
-        triggerRegionChannel(regionName, message.getEvent());
+        triggerRegionChannel(regionName, message.getEvent(), true);
     }
 
     /**
@@ -270,11 +270,12 @@ public class TrackerHandler extends BaseThingHandler {
      *
      * @param regionName Region name
      * @param event Occurred event
+     * @param forced Force channel triggering in case the transition event is received from the mobile application.
      */
-    private void triggerRegionChannel(@NonNull String regionName, @NonNull String event) {
+    private void triggerRegionChannel(@NonNull String regionName, @NonNull String event, boolean forced) {
         Boolean lastState = lastTriggeredStates.get(regionName);
         Boolean newState = EVENT_ENTER.equals(event);
-        if (!newState.equals(lastState) && lastState != null) {
+        if (!newState.equals(lastState) || forced) {
             String payload = regionName + "/" + event;
             triggerChannel(CHANNEL_REGION_TRIGGER, payload);
             lastTriggeredStates.put(regionName, newState);
@@ -327,9 +328,9 @@ public class TrackerHandler extends BaseThingHandler {
                     // convert into meters which is the unit of the calculated distance
                     double radiusMeter = convertToMeters(ConfigHelper.getRegionRadius(c.getConfiguration()));
                     if (radiusMeter > newDistance) {
-                        triggerRegionChannel(regionName, EVENT_ENTER);
+                        triggerRegionChannel(regionName, EVENT_ENTER, false);
                     } else {
-                        triggerRegionChannel(regionName, EVENT_LEAVE);
+                        triggerRegionChannel(regionName, EVENT_LEAVE, false);
                     }
                 }
             }

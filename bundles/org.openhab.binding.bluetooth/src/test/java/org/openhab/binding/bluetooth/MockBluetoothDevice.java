@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -73,14 +74,16 @@ public class MockBluetoothDevice extends BaseBluetoothDevice {
     }
 
     @Override
-    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
         if (characteristic.getGattCharacteristic() == GattCharacteristic.DEVICE_NAME) {
-            characteristic.setValue(deviceName);
-            notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
-                    BluetoothCompletionStatus.SUCCESS);
-            return true;
+            String name = deviceName;
+            if (name != null) {
+                return CompletableFuture.completedFuture(name.getBytes(StandardCharsets.UTF_8));
+            } else {
+                return CompletableFuture.completedFuture(new byte[0]);
+            }
         }
-        return false;
+        return CompletableFuture.failedFuture(new UnsupportedOperationException());
     }
 
     public void setDeviceName(String deviceName) {
@@ -93,18 +96,23 @@ public class MockBluetoothDevice extends BaseBluetoothDevice {
     }
 
     @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException());
+    }
+
+    @Override
+    public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException());
+    }
+
+    @Override
+    public boolean isNotifying(BluetoothCharacteristic characteristic) {
         return false;
     }
 
     @Override
-    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        return false;
-    }
-
-    @Override
-    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
-        return false;
+    public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException());
     }
 
     @Override

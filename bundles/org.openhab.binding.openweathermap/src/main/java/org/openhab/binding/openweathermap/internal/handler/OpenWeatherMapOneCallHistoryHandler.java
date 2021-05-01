@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,13 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.openweathermap.internal.handler;
 
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
-import static org.openhab.core.library.unit.MetricPrefix.HECTO;
-import static org.openhab.core.library.unit.MetricPrefix.KILO;
-import static org.openhab.core.library.unit.MetricPrefix.MILLI;
+import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 
@@ -29,8 +26,10 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOneCallH
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.binding.openweathermap.internal.dto.onecallhist.*;
+import org.openhab.binding.openweathermap.internal.dto.onecallhist.Hourly;
 import org.openhab.binding.openweathermap.internal.dto.onecallhist.OpenWeatherMapOneCallHistAPIData;
+import org.openhab.binding.openweathermap.internal.dto.onecallhist.Rain;
+import org.openhab.binding.openweathermap.internal.dto.onecallhist.Snow;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;

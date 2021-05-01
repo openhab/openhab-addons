@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link PushoverHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link PushoverHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

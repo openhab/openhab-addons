@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.handler.OpenWebNetAutomationHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
+import org.openhab.binding.openwebnet.handler.OpenWebNetEnergyHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetGenericHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetLightingHandler;
 import org.openhab.core.thing.Bridge;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OpenWebNetHandlerFactory} is responsible for creating thing handlers.
  *
  * @author Massimo Valla - Initial contribution
+ * @author Andrea Conte - Energy management
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.openwebnet", service = ThingHandlerFactory.class)
@@ -60,6 +62,9 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetAutomationHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("creating NEW AUTOMATION Handler");
             return new OpenWebNetAutomationHandler(thing);
+        } else if (OpenWebNetEnergyHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("creating NEW ENERGY Handler");
+            return new OpenWebNetEnergyHandler(thing);
         }
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
         return null;

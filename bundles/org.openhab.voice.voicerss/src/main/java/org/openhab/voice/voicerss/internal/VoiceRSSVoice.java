@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.voice.voicerss.internal;
 import java.util.Locale;
 
 import org.openhab.core.voice.Voice;
+import org.openhab.voice.voicerss.internal.cloudapi.VoiceRSSCloudImpl;
 
 /**
  * Implementation of the Voice interface for VoiceRSS. Label is only "default"
@@ -54,7 +55,11 @@ public class VoiceRSSVoice implements Voice {
      */
     @Override
     public String getUID() {
-        return "voicerss:" + locale.toLanguageTag().replaceAll("[^a-zA-Z0-9_]", "");
+        String uid = "voicerss:" + locale.toLanguageTag().replaceAll("[^a-zA-Z0-9_]", "");
+        if (!label.equals(VoiceRSSCloudImpl.DEFAULT_VOICE)) {
+            uid += "_" + label.replaceAll("[^a-zA-Z0-9_]", "");
+        }
+        return uid;
     }
 
     /**

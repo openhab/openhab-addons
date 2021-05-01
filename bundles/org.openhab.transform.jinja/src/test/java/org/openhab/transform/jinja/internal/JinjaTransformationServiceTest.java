@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,5 +58,61 @@ public class JinjaTransformationServiceTest {
 
         // Asserts
         assertEquals("Hello world!", transformedResponse);
+    }
+
+    @Test
+    public void testJsonParsingError() throws TransformationException {
+        // when JSON binding parsing failed
+        String transformedResponse = processor.transform("Hello {{ value }}!", "{\"string\"{: \"world\"}");
+
+        // then template should be rendered
+        assertEquals("Hello {\"string\"{: \"world\"}!", transformedResponse);
+    }
+
+    @Test
+    public void testTemplateError() {
+        assertThrows(TransformationException.class,
+                () -> processor.transform("Hello {{{ value_json.string }}!", "{\"string\": \"world\"}"));
+    }
+
+    @Test
+    public void testMissingVariableError() {
+        assertThrows(TransformationException.class,
+                () -> processor.transform("Hello {{ missing }}!", "{\"string\": \"world\"}"));
+    }
+
+    @Test
+    public void testMissingMapKeyError() {
+        assertThrows(TransformationException.class,
+                () -> processor.transform("Hello {{ value_json.missing }}!", "{\"string\": \"world\"}"));
+    }
+
+    @Test
+    public void testMissingVariableIsDefined() throws TransformationException {
+        // when checking missing variable
+        String transformedResponse = processor.transform("{{ missing is defined }}", "{\"string\": \"world\"}");
+
+        // then missing variable is not defined
+        assertEquals("false", transformedResponse);
+    }
+
+    @Test
+    public void testMissingMapKeyIsDefined() throws TransformationException {
+        // when checking missing map key
+        String transformedResponse = processor.transform("{{ value_json.missing is defined }}",
+                "{\"string\": \"world\"}");
+
+        // then missing map key is not defined
+        assertEquals("false", transformedResponse);
+    }
+
+    @Test
+    public void testIsDefined() throws TransformationException {
+        // when checking map key
+        String transformedResponse = processor.transform("{{ value_json.string is defined }}",
+                "{\"string\": \"world\"}");
+
+        // then map key is defined
+        assertEquals("true", transformedResponse);
     }
 }

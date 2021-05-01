@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,37 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
  * @author Markus Pfleger - Initial contribution
+ * @author Marcin Czeczko - Added support for planner & calendar data
  */
 public class Planner {
+    private long nextStartTimestamp;
+    private RestrictedReason restrictedReason;
+    private PlannerOverride override;
 
+    public long getNextStartTimestamp() {
+        return nextStartTimestamp;
+    }
+
+    public Planner setNextStartTimestamp(long nextStartTimestamp) {
+        this.nextStartTimestamp = nextStartTimestamp;
+        return this;
+    }
+
+    public RestrictedReason getRestrictedReason() {
+        return restrictedReason;
+    }
+
+    public Planner setRestrictedReason(RestrictedReason restrictedReason) {
+        this.restrictedReason = restrictedReason;
+        return this;
+    }
+
+    public PlannerOverride getOverride() {
+        return override;
+    }
+
+    public Planner setOverride(PlannerOverride override) {
+        this.override = override;
+        return this;
+    }
 }

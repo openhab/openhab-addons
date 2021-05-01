@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,11 @@ import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.Future;
@@ -152,7 +156,7 @@ public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
                     waitForNewDevices(watcher);
                     return null;
                 });
-                Thread t = Utils.backgroundThread(job, getClass(), null);
+                Thread t = Utils.backgroundThread(job, "discovery", null);
                 t.start();
                 discoveryJob = job;
             } else {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,23 +14,23 @@ package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyProtectedHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
-import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -56,12 +56,14 @@ import io.reactivex.annotations.NonNull;
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+
     private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
     private final HttpClient httpClient;
     private final ShellyTranslationProvider messages;
     private final ShellyCoapServer coapServer;
-    private final Set<ShellyBaseHandler> deviceListeners = new ConcurrentHashSet<>();
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+
+    private final Map<String, ShellyBaseHandler> deviceListeners = new ConcurrentHashMap<>();
     private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     private String localIP = "";
     private int httpPort = -1;
@@ -75,14 +77,18 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      */
     @Activate
     public ShellyHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            @Reference LocaleProvider localeProvider, @Reference TranslationProvider i18nProvider,
-            @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
-            Map<String, Object> configProperties) {
+            @Reference ShellyTranslationProvider translationProvider, @Reference HttpClientFactory httpClientFactory,
+            ComponentContext componentContext, Map<String, Object> configProperties) {
         logger.debug("Activate Shelly HandlerFactory");
         super.activate(componentContext);
+        messages = translationProvider;
+        // Save bindingConfig & pass it to all registered listeners
+        bindingConfig.updateFromProperties(configProperties);
 
-        messages = new ShellyTranslationProvider(bundleContext.getBundle(), i18nProvider, localeProvider);
-        localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress());
+        localIP = bindingConfig.localIP;
+        if (localIP.isEmpty()) {
+            localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress());
+        }
         if (localIP.isEmpty()) {
             logger.warn("{}", messages.get("message.init.noipaddress"));
         }
@@ -95,9 +101,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Using OH HTTP port {}", httpPort);
 
         this.coapServer = new ShellyCoapServer();
-
-        // Save bindingConfig & pass it to all registered listeners
-        bindingConfig.updateFromProperties(configProperties);
     }
 
     @Override
@@ -116,9 +119,10 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, coapServer, localIP, httpPort,
                     httpClient);
-        } else if (thingType.equals(THING_TYPE_SHELLYBULB.getId()) || thingType.equals(THING_TYPE_SHELLYDUO.getId())
-                || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
-                || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
+        } else if (thingType.equals(THING_TYPE_SHELLYBULB_STR) || thingType.equals(THING_TYPE_SHELLYDUO_STR)
+                || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR_STR)
+                || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
+                || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, coapServer, localIP, httpPort, httpClient);
@@ -129,12 +133,18 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (handler != null) {
-            deviceListeners.add(handler);
+            String uid = thing.getUID().getAsString();
+            deviceListeners.put(uid, handler);
+            logger.debug("Thing handler for uid {} added, total things = {}", uid, deviceListeners.size());
             return handler;
         }
 
         logger.debug("Unable to create Thing Handler instance!");
         return null;
+    }
+
+    public Map<String, ShellyManagerInterface> getThingHandlers() {
+        return new HashMap<>(deviceListeners);
     }
 
     /**
@@ -143,7 +153,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
         if (thingHandler instanceof ShellyBaseHandler) {
-            deviceListeners.remove(thingHandler);
+            String uid = thingHandler.getThing().getUID().getAsString();
+            deviceListeners.remove(uid);
         }
     }
 
@@ -158,8 +169,9 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     public void onEvent(String ipAddress, String deviceName, String componentIndex, String eventType,
             Map<String, String> parameters) {
         logger.trace("{}: Dispatch event to thing handler", deviceName);
-        for (ShellyBaseHandler listener : deviceListeners) {
-            if (listener.onEvent(ipAddress, deviceName, componentIndex, eventType, parameters)) {
+        for (Map.Entry<String, ShellyBaseHandler> listener : deviceListeners.entrySet()) {
+            ShellyBaseHandler thingHandler = listener.getValue();
+            if (thingHandler.onEvent(ipAddress, deviceName, componentIndex, eventType, parameters)) {
                 // event processed
                 return;
             }

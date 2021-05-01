@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -671,7 +671,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         public boolean isValid() { // a valid configuration must be initialized
             // and contain at least one function
-            return (isInitialized && (archives.size() > 0));
+            return isInitialized && !archives.isEmpty();
         }
 
         @Override

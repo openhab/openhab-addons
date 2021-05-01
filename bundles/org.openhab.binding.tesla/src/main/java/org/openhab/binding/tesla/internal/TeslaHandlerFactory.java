@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
 import org.openhab.binding.tesla.internal.handler.TeslaVehicleHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -52,12 +53,14 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_MODEL3, THING_TYPE_MODELX, THING_TYPE_MODELY);
 
     private final ClientBuilder clientBuilder;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public TeslaHandlerFactory(@Reference ClientBuilder clientBuilder) {
+    public TeslaHandlerFactory(@Reference ClientBuilder clientBuilder, @Reference HttpClientFactory httpClientFactory) {
         this.clientBuilder = clientBuilder //
                 .connectTimeout(EVENT_STREAM_CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(EVENT_STREAM_READ_TIMEOUT, TimeUnit.SECONDS);
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -70,7 +73,7 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            return new TeslaAccountHandler((Bridge) thing, clientBuilder.build());
+            return new TeslaAccountHandler((Bridge) thing, clientBuilder.build(), httpClientFactory);
         } else {
             return new TeslaVehicleHandler(thing, clientBuilder);
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * sent to LIFX lights. The LIFX LAN Protocol Specification states that lights can process up to 20 messages per second,
  * not more.
  *
- * @author Karel Goderis - Initial Contribution
+ * @author Karel Goderis - Initial contribution
  * @author Wouter Born - Deadlock fix
  */
 @NonNullByDefault

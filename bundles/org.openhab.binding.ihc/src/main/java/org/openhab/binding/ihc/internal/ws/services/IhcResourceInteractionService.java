@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.Set;
 
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.XPathUtils;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
@@ -92,12 +91,12 @@ public class IhcResourceInteractionService extends IhcBaseService {
         // parse resource id
         String resourceId = XPathUtils.getSpeficValueFromNode(n, "ns1:resourceID");
 
-        if (StringUtils.isNotBlank(resourceId)) {
+        if (resourceId != null && !resourceId.isBlank()) {
             int id = Integer.parseInt(resourceId);
 
             // Parse floating point value
             String floatingPointValue = getValue(n, "floatingPointValue");
-            if (StringUtils.isNotBlank(floatingPointValue)) {
+            if (floatingPointValue != null && !floatingPointValue.isBlank()) {
                 String min = getValue(n, "minimumValue");
                 String max = getValue(n, "maximumValue");
                 return new WSFloatingPointValue(id, Double.valueOf(floatingPointValue), Double.valueOf(min),
@@ -106,13 +105,13 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
             // Parse boolean value
             String value = getValue(n, "value");
-            if (StringUtils.isNotBlank(value)) {
+            if (value != null && !value.isBlank()) {
                 return new WSBooleanValue(id, Boolean.valueOf(value));
             }
 
             // Parse integer value
             String integer = getValue(n, "integer");
-            if (StringUtils.isNotBlank(integer)) {
+            if (integer != null && !integer.isBlank()) {
                 String min = getValue(n, "minimumValue");
                 String max = getValue(n, "maximumValue");
                 return new WSIntegerValue(id, Integer.valueOf(integer), Integer.valueOf(min), Integer.valueOf(max));
@@ -120,13 +119,13 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
             // Parse timer value
             String milliseconds = getValue(n, "milliseconds");
-            if (StringUtils.isNotBlank(milliseconds)) {
+            if (milliseconds != null && !milliseconds.isBlank()) {
                 return new WSTimerValue(id, Integer.valueOf(milliseconds));
             }
 
             // Parse time value
             String hours = getValue(n, "hours");
-            if (StringUtils.isNotBlank(hours)) {
+            if (hours != null && !hours.isBlank()) {
                 String minutes = getValue(n, "minutes");
                 String seconds = getValue(n, "seconds");
                 return new WSTimeValue(id, Integer.valueOf(hours), Integer.valueOf(minutes), Integer.valueOf(seconds));
@@ -134,7 +133,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
             // Parse date value
             String year = getValue(n, "year");
-            if (StringUtils.isNotBlank(year)) {
+            if (year != null && !year.isBlank()) {
                 String month = getValue(n, "month");
                 String day = getValue(n, "day");
                 return new WSDateValue(id, Short.valueOf(year), Byte.valueOf(month), Byte.valueOf(day));
@@ -142,7 +141,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
             // Parse enum value
             String definitionTypeID = getValue(n, "definitionTypeID");
-            if (StringUtils.isNotBlank(definitionTypeID)) {
+            if (definitionTypeID != null && !definitionTypeID.isBlank()) {
                 String enumValueID = getValue(n, "enumValueID");
                 String enumName = getValue(n, "enumName");
                 return new WSEnumValue(id, Integer.valueOf(definitionTypeID), Integer.valueOf(enumValueID), enumName);
@@ -150,7 +149,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
             // Parse week day value
             value = getValue(n, "weekdayNumber");
-            if (StringUtils.isNotBlank(value)) {
+            if (value != null && !value.isBlank()) {
                 return new WSWeekdayValue(id, Integer.valueOf(value));
             }
 

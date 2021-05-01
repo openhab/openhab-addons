@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand(): Command Received - {} {}.", channelUID, command);
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         String cmd = null;
         String data = null;
@@ -167,10 +167,12 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
         // get the channel id from the map
         HashMap<String, String> logMap = panelLogMessagesMap;
-        String id = logMap.get(eventNumberString);
-        if (logMap != null && id != null) {
-            ChannelUID channelUID = new ChannelUID(getThing().getUID(), id);
-            updateChannel(channelUID, logEventMessage.toString());
+        if (logMap != null) {
+            String id = logMap.get(eventNumberString);
+            if (id != null) {
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), id);
+                updateChannel(channelUID, logEventMessage.toString());
+            }
         }
 
         if (communicatorStackPointer != null && eventNumberString.equals(communicatorStackPointer)) {

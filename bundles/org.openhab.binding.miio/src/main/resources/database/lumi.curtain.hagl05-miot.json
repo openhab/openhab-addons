@@ -25,7 +25,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\"]`"
 			},
 			{
 				"property": "current-position",
@@ -65,7 +65,11 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Stopped\",\"1\"\u003d\"Opening\",\"2\"\u003d\"Closing\"]"
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Stopped\",\"1\"\u003d\"Opening\",\"2\"\u003d\"Closing\"]`"
 			},
 			{
 				"property": "target-position",
@@ -110,7 +114,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]`"
 			},
 			{
 				"property": "polarity",
@@ -139,7 +143,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Positive\",\"1\"\u003d\"Reverse\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Positive\",\"1\"\u003d\"Reverse\"]`"
 			},
 			{
 				"property": "pos-limit",
@@ -168,7 +172,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Unlimit\",\"1\"\u003d\"Limit\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Unlimit\",\"1\"\u003d\"Limit\"]`"
 			},
 			{
 				"property": "en-night-tip-light",
@@ -197,7 +201,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]`"
 			},
 			{
 				"property": "run-time",

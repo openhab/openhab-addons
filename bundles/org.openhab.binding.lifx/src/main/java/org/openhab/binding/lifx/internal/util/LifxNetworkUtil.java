@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * The {@link LifxNetworkUtil} provides network interface information to the LIFX binding objects. The information is
  * updated when it is older than {@link #UPDATE_INTERVAL_MILLIS}.
  *
- * @author Wouter Born - Periodically update available interface information
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public final class LifxNetworkUtil {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,7 +131,7 @@ public class ThermostatHandler extends BaseThingHandler {
      */
     public @Nullable Thermostat tryHandleAndGetUpdatedThermostat() {
         final LinkedList<SimpleImmutableEntry<String, Command>> updatedValues = this.updatedValues;
-        if (updatedValues.size() == 0) {
+        if (updatedValues.isEmpty()) {
             return null;
         }
         this.updatedValues = new LinkedList<>();

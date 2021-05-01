@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,6 @@ public class AccountHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final int TOKEN_MIN_DIFF_MS = (int) TimeUnit.DAYS.toMillis(2);
-    private final JsonParser jsonParser = new JsonParser();
 
     private @NonNullByDefault({}) String authToken;
     private int refreshInterval;
@@ -114,7 +113,7 @@ public class AccountHandler extends BaseBridgeHandler {
 
             InputStream content = new ByteArrayInputStream(httpBody.toString().getBytes(StandardCharsets.UTF_8));
             String urlResponse = HttpUtil.executeUrl("POST", url, urlHeader, content, "application/json", 2000);
-            JsonObject responseJson = (JsonObject) jsonParser.parse(urlResponse);
+            JsonObject responseJson = (JsonObject) JsonParser.parseString(urlResponse);
 
             if (responseJson.has(AUTH_TOKEN)) {
                 // Store the expire date for automatic token refresh

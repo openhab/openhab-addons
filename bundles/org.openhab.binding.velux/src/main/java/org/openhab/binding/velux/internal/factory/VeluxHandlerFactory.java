@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -63,6 +64,8 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) LocaleProvider localeProvider;
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
     private Localization localization = Localization.UNKNOWN;
+
+    private @Nullable static VeluxHandlerFactory activeInstance = null;
 
     // Private
 
@@ -208,5 +211,24 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         }
         updateBindingState();
         super.removeHandler(thingHandler);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        activeInstance = this;
+        super.activate(componentContext);
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        activeInstance = null;
+        super.deactivate(componentContext);
+    }
+
+    public static void refreshBindingInfo() {
+        VeluxHandlerFactory instance = VeluxHandlerFactory.activeInstance;
+        if (instance != null) {
+            instance.updateBindingState();
+        }
     }
 }

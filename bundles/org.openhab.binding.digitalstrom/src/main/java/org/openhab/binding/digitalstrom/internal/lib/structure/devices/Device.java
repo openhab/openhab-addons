@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
+import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames;
 import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
+import org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.DeviceConsumptionSensorJob;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceSceneSpec;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceStateUpdate;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
@@ -133,14 +136,14 @@ public interface Device extends GeneralDeviceInformation {
      *
      * @return current functional color group
      */
-    FunctionalColorGroupEnum getFunctionalColorGroup();
+    ApplicationGroup getFunctionalColorGroup();
 
     /**
      * Sets the functional color group of this device.
      *
      * @param fuctionalColorGroup to set
      */
-    void setFunctionalColorGroup(FunctionalColorGroupEnum fuctionalColorGroup);
+    void setFunctionalColorGroup(ApplicationGroup fuctionalColorGroup);
 
     /**
      * Returns the current output mode of this device.
@@ -151,6 +154,8 @@ public interface Device extends GeneralDeviceInformation {
      * @return the current output mode of this device
      */
     OutputModeEnum getOutputMode();
+
+    List<OutputChannelEnum> getOutputChannels();
 
     /**
      * Adds an increase command as {@link DeviceStateUpdate} to the list of outstanding commands.
@@ -215,9 +220,9 @@ public interface Device extends GeneralDeviceInformation {
     short getMaxOutputValue();
 
     /**
-     * Returns a list with group id's in which the device is part of.
+     * Returns a list with group ids which the device is part of.
      *
-     * @return List of group id's
+     * @return List of group ids
      */
     List<Short> getGroups();
 

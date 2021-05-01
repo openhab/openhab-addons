@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * bridge/gateway
  *
  * @author Massimo Valla - Initial contribution
+ * @author Andrea Conte - Energy management
  */
 @NonNullByDefault
 public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
@@ -60,7 +61,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return OpenWebNetDeviceDiscoveryService.SUPPORTED_THING_TYPES;
+        return SUPPORTED_THING_TYPES;
     }
 
     @Override
@@ -129,6 +130,14 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.AUTOMATION;
                 break;
             }
+
+            case SCS_ENERGY_METER: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ENERGY_METER;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ENERGY_METER;
+                deviceWho = Who.ENERGY_MANAGEMENT;
+                break;
+            }
+
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
                 if (where instanceof WhereZigBee) {

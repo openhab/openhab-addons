@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -212,9 +212,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         HomematicConfig homematicConfig = getThing().getConfiguration().as(HomematicConfig.class);
         if (homematicConfig.getCallbackHost() == null) {
             homematicConfig.setCallbackHost(this.ipv4Address);
-        }
-        if (homematicConfig.getBindAddress() == null) {
-            homematicConfig.setBindAddress(homematicConfig.getCallbackHost());
         }
         if (homematicConfig.getXmlCallbackPort() == 0) {
             homematicConfig.setXmlCallbackPort(portPool.getNextPort());

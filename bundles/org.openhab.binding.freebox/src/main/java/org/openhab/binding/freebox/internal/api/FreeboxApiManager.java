@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,8 @@ public class FreeboxApiManager {
         }
     }
 
-    public boolean authorize(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion, String appToken) {
+    public boolean authorize(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion, String appToken)
+            throws InterruptedException {
         String[] versionSplit = apiVersion.split("\\.");
         String majorVersion = "5";
         if (versionSplit.length > 0) {
@@ -155,7 +156,7 @@ public class FreeboxApiManager {
             this.appToken = token;
             openSession();
             return true;
-        } catch (FreeboxException | InterruptedException e) {
+        } catch (FreeboxException e) {
             logger.debug("Error while opening a session", e);
             return false;
         }

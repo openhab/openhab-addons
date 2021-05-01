@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,10 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.binding.deconz.internal.Util.*;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,7 +31,16 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.types.ResourceType;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -36,7 +48,13 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.types.*;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandDescriptionBuilder;
+import org.openhab.core.types.CommandOption;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +96,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
+    private int onTime = 0; // in 0.1s
     private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values
@@ -116,11 +135,27 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 needsPropertyUpdate = true;
             }
         }
+        ThingConfig thingConfig = getConfigAs(ThingConfig.class);
+        colorMode = thingConfig.colormode;
+
         super.initialize();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (channelUID.getId().equals(CHANNEL_ONTIME)) {
+            if (command instanceof QuantityType<?>) {
+                QuantityType<?> onTimeSeconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                if (onTimeSeconds != null) {
+                    onTime = 10 * onTimeSeconds.intValue();
+                } else {
+                    logger.warn("Channel '{}' received command '{}', could not be converted to seconds.", channelUID,
+                            command);
+                }
+            }
+            return;
+        }
+
         if (command instanceof RefreshType) {
             valueUpdated(channelUID.getId(), lightStateCache);
             return;
@@ -252,6 +287,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
             // if light shall be off, no other commands are allowed, so reset the new light state
             newLightState.clear();
             newLightState.on = false;
+        } else if (newOn != null && newOn) {
+            newLightState.ontime = onTime;
         }
 
         sendCommand(newLightState, command, channelUID, () -> {
@@ -307,7 +344,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         } else if (lightMessage.manufacturername.equals("MLI")) {
             model = EffectLightModel.TINT_MUELLER;
         } else {
-            logger.info("Could not determine effect light type for thing {}, please request adding support on GitHub.",
+            logger.debug(
+                    "Could not determine effect light type for thing {}, if you feel this is wrong request adding support on GitHub.",
                     thing.getUID());
         }
 

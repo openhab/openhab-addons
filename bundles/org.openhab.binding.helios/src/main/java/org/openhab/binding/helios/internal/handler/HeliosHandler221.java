@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,6 @@ public class HeliosHandler221 extends BaseThingHandler {
     private String ipAddress;
 
     // JSON variables
-    private JsonParser parser = new JsonParser();
     private Gson gson = new Gson();
 
     private ScheduledFuture<?> logJob;
@@ -203,7 +202,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 return;
             }
 
-            JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
             if (logger.isTraceEnabled()) {
                 logger.trace("initialize() Request : {}", systemTarget.resolveTemplate("ip", ipAddress)
@@ -303,7 +302,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             }
 
             if (response != null) {
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("subscribe() Request : {}",
@@ -365,7 +364,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             }
 
             if (response != null) {
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("unsubscribe() Request : {}",
@@ -426,7 +425,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             }
 
             if (response != null) {
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("pullLog() Request : {}",
@@ -488,7 +487,7 @@ public class HeliosHandler221 extends BaseThingHandler {
         }
 
         if (response != null) {
-            JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
             if (logger.isTraceEnabled()) {
                 logger.trace("getSwitches() Request : {}", switchTarget.resolveTemplate("ip", ipAddress)
@@ -506,7 +505,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                         getThing().getUID().toString());
                 String result = jsonObject.get("result").toString();
                 result = result.replace("switch", "id");
-                JsonObject js = parser.parse(result).getAsJsonObject();
+                JsonObject js = JsonParser.parseString(result).getAsJsonObject();
                 RESTSwitch[] switchArray = gson.fromJson(js.getAsJsonArray("ides"), RESTSwitch[].class);
                 if (switchArray != null) {
                     return Arrays.asList(switchArray);
@@ -554,7 +553,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             }
 
             if (response != null) {
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("triggerSwitch() Request : {}",
@@ -609,7 +608,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             }
 
             if (response != null) {
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("enableSwitch() Request : {}",
@@ -664,7 +663,7 @@ public class HeliosHandler221 extends BaseThingHandler {
         }
 
         if (response != null) {
-            JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
             if (logger.isTraceEnabled()) {
                 logger.trace("getPorts() Request : {}", portTarget.resolveTemplate("ip", ipAddress)
@@ -732,7 +731,7 @@ public class HeliosHandler221 extends BaseThingHandler {
         }
 
         if (response != null) {
-            JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
 
             if (logger.isTraceEnabled()) {
                 logger.trace("configureRunnable Request : {}", systemTarget.resolveTemplate("ip", ipAddress)

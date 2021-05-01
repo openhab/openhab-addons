@@ -1,6 +1,6 @@
 # MagentaTV Binding
 
-This binding allows controlling the Deutsche Telekom Magenta TV Media Receiver series MR4xx and MR2xx (Telekom NGTV / Huawei Envision platform). 
+This binding allows controlling the Deutsche Telekom Magenta TV Media Receiver series MR4xx and MR2xx (Telekom NGTV / Huawei Envision platform).
 The binding does NOT support MR3xx/1xx (old Entertain system based on Microsoft technology)!
 
 Media Receivers are automatically discovered.
@@ -36,7 +36,7 @@ The binding uses the network settings in openHAB's system configuration to deter
 The device can't be discovered if the openHAB system and receiver are not on the same network (IP/Netmask).
 In this case you need to add the Thing manually or use textual configuration (.things).
 
-If you are running openHAB in a Docker container you need to make sure that UPnP discovery is available and network interfaces 
+If you are running openHAB in a Docker container you need to make sure that UPnP discovery is available and network interfaces
 
 ## Receiver Standby Mode
 
@@ -49,10 +49,10 @@ The Media receiver has 3 different standby modes, which can be selected in the r
 |Shutdown      |Powering off shuts down the receiver, so that it can be awakened only with the power button.|
 
 `Standby` provides the best results, because the binding can wake up the receiver (Power On/Off).
-`Suspend/Resume` requires a Wake-on-LAN packet, which can take longer. 
+`Suspend/Resume` requires a Wake-on-LAN packet, which can take longer.
 `Shutdown` turns the receiver off, which requires a manual power-on.
 
-There is no way to detect the "display status" of the receiver. 
+There is no way to detect the "display status" of the receiver.
 The binding detects Power-Off with the MR401B/MR201 by listening to UPnP events, but can't verify the status when started.
 You need to take care on the current status if you power on/off the receiver from scenes.
 Check the current status before sending the POWER button, because POWER is a toggle, not ON or OFF (see sample rules).
@@ -63,7 +63,7 @@ Check the current status before sending the POWER button, because POWER is a tog
 |----------------|----------------------------------------------------------------------------------------------------------------|
 |accountName     |Login Name (email), should be the registered e-mail address for the Telekom Kundencenter                        |
 |accountPassword |Account password (same as for the Kundencenter)                                                                 |
-|userId          |The technical userId required for the pairing process, see section "Retrieving userId"                      | 
+|userId          |The technical userId required for the pairing process, see section "Retrieving userId"                      |
 |ipAddress       |IP address of the receiver, usually discovered by UPnP                                                          |
 |port            |Port to reach the remote service, usually 8081 for the MR401/MR201 or 49152 for MR400/200                       |
 |udn             |UPnP Unique Device Name - a hex ID, which includes the 12 digit MAC address at the end (parsed by the binding)  |
@@ -95,13 +95,13 @@ Edit thing configuration and copy this value to the field userId
 ```
 
 On successful login the console will show the User ID value. Copy&amp;Paste this value to the Thing configuration (parameter `userId`) of the receiver.
-If you have multiple receivers under the same MagentaTV subscription you can use this value for all of them. 
+If you have multiple receivers under the same MagentaTV subscription you can use this value for all of them.
 
 2. Provide your credentials in the UI
 
-If you do not want to use the openHAB console, you can also setup the credentials in the Thing configuration 
+If you do not want to use the openHAB console, you can also setup the credentials in the Thing configuration
 
-- Account Name (`accountName`) is your Login Name for the Telekom Kundencenter (registered email address) 
+- Account Name (`accountName`) is your Login Name for the Telekom Kundencenter (registered email address)
 - Account Password (`accountPassword`) is the corresponding password.
 
 The binding uses these credentials to login to your account, retrieves the `userId` parameter and sets it in the Thing configuration.
@@ -117,12 +117,12 @@ For security reasons the credentials are automatically deleted from the thing co
 |        |key            |String   |Send key code to the receiver (see code table below)                      |
 |        |mute           |Switch   |Mute volume (mute the speaker)                                            |
 |status  |playMode       |String   |Current play mode - this info is not reliable                             |
-|        |channelCode    |Number   |The channel code from the EPG.                                            |
+|        |channelCode    |Number   |The channel code from the EPG.                                            |
 |program |title          |String   |Title of the running program or video being played                        |
 |        |text           |String   |Some description (as reported by the receiver, could be empty)            |
 |        |start          |DateTime |Time when the program started                                             |
 |        |position       |Number   |Position in minutes within a movie.                                       |
-|        |duration       |Number   |Remaining time in minutes, usually not updated for TV program             | 
+|        |duration       |Number   |Remaining time in minutes, usually not updated for TV program             |
 
 Please note:
 
@@ -130,6 +130,7 @@ Please note:
 The binding tries to detect and maintain the correct state, but due to device limitations this is not always possible.
 Make sure the receiver's and binding's state are in sync when OH is restarted (binding assumes state is OFF).
 - Channels receiving event information get updated when changing the channel or playing a video.
+
 There is no way to read the current status, therefore they don't get initialized on startup nor being updated in real-time.
 
 The player channel supports the following actions:
@@ -179,8 +180,8 @@ The player channel supports the following actions:
 | MUTE     | Mute speakers                                  |
 | CHUP     | Channel up                                     |
 | CHDOWN   | Channel down                                   |
-| PLAY     | Play                                           | 
-| PAUSE    | Play                                           | 
+| PLAY     | Play                                           |
+| PAUSE    | Play                                           |
 | STOP     | Stop playing                                   |
 | RECORD   | Start recording                                |
 | REWIND   | Rewind                                         |
@@ -192,7 +193,7 @@ The player channel supports the following actions:
 | PAIR     | Re-pair with the receiver                      |
 
 In addition you could send any key code in the 0xHHHH format., refer to
-[Key Codes for Magenta/Huawei Media Receiver](http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html)
+[Key Codes for Magenta/Huawei Media Receiver](https://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html)
 
 ## Full Configuraton Example
 
@@ -201,7 +202,7 @@ In addition you could send any key code in the 0xHHHH format., refer to
 ```
 Thing magentatv:receiver:XXXXXXXXXXX "MagentaTV" [
 udn="XXXXXXXXXXX",
-ipAddress="xxx.xxx.xxx.xxx", 
+ipAddress="xxx.xxx.xxx.xxx",
 accountName="xxxxxx.xxxx@t-online.de",
 accountPassword="xxxxxxxxxx"
 ]
@@ -317,7 +318,7 @@ Beginning with models 401/201 and new the binding is able to detect the Power-OF
         }
 ```
 
-to switch it ON and 
+to switch it ON and
 
 ```
         if (MagentaTV_Power.state != OFF) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,27 +16,33 @@ import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Time;
+
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -63,21 +69,22 @@ public class KeContactHandler extends BaseThingHandler {
 
     public static final String IP_ADDRESS = "ipAddress";
     public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
+    public static final int POLLING_REFRESH_INTERVAL_DEFAULT = 15;
     public static final int REPORT_INTERVAL = 3000;
-    public static final int PING_TIME_OUT = 3000;
     public static final int BUFFER_SIZE = 1024;
     public static final int REMOTE_PORT_NUMBER = 7090;
     private static final String CACHE_REPORT_1 = "REPORT_1";
     private static final String CACHE_REPORT_2 = "REPORT_2";
     private static final String CACHE_REPORT_3 = "REPORT_3";
     private static final String CACHE_REPORT_100 = "REPORT_100";
+    public static final int SOCKET_TIME_OUT_MS = 3000;
+    public static final int SOCKET_CHECK_PORT_NUMBER = 80;
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
 
-    protected JsonParser parser = new JsonParser();
+    private final KeContactTransceiver transceiver;
 
     private ScheduledFuture<?> pollingJob;
-    private static KeContactTransceiver transceiver = new KeContactTransceiver();
     private ExpiringCacheMap<String, ByteBuffer> cache;
 
     private int maxPresetCurrent = 0;
@@ -87,36 +94,51 @@ public class KeContactHandler extends BaseThingHandler {
     private int lastState = -1; // trigger a report100 at startup
     private boolean isReport100needed = true;
 
-    public KeContactHandler(Thing thing) {
+    public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
         super(thing);
+        this.transceiver = transceiver;
     }
 
     @Override
     public void initialize() {
-        if (getConfig().get(IP_ADDRESS) != null && !getConfig().get(IP_ADDRESS).equals("")) {
-            transceiver.registerHandler(this);
+        try {
+            if (isKebaReachable()) {
+                transceiver.registerHandler(this);
 
-            cache = new ExpiringCacheMap<>(
-                    Math.max((((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()) - 5, 0) * 1000);
+                int refreshInterval = getRefreshInterval();
+                cache = new ExpiringCacheMap<>(Math.max(refreshInterval - 5, 0) * 1000);
 
-            cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
-            cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
-            cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
-            cache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
+                cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
+                cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
+                cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
+                cache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
 
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                try {
-                    pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0,
-                            ((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue(), TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "An exception occurred while scheduling the polling job");
+                if (pollingJob == null || pollingJob.isCancelled()) {
+                    pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval,
+                            TimeUnit.SECONDS);
                 }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "IP address or port number not set");
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "IP address or port number not set");
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Exception during initialization of binding: " + e.toString());
         }
+    }
+
+    private boolean isKebaReachable() throws IOException {
+        boolean isReachable = false;
+        SocketAddress sockAddr = new InetSocketAddress(getIPAddress(), SOCKET_CHECK_PORT_NUMBER);
+        Socket socket = new Socket();
+        try {
+            socket.connect(sockAddr, SOCKET_TIME_OUT_MS);
+            isReachable = true;
+        } finally {
+            socket.close();
+        }
+        logger.debug("isKebaReachable() returns {}", isReachable);
+        return isReachable;
     }
 
     @Override
@@ -133,6 +155,12 @@ public class KeContactHandler extends BaseThingHandler {
         return getConfig().get(IP_ADDRESS) != null ? (String) getConfig().get(IP_ADDRESS) : "";
     }
 
+    public int getRefreshInterval() {
+        return getConfig().get(POLLING_REFRESH_INTERVAL) != null
+                ? ((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()
+                : POLLING_REFRESH_INTERVAL_DEFAULT;
+    }
+
     private KeContactHandler getHandler() {
         return this;
     }
@@ -147,56 +175,67 @@ public class KeContactHandler extends BaseThingHandler {
         return super.getConfig();
     }
 
-    private Runnable pollingRunnable = () -> {
+    private void pollingRunnable() {
         try {
+            logger.debug("Running pollingRunnable to connect Keba wallbox");
             long stamp = System.currentTimeMillis();
-            if (!InetAddress.getByName(((String) getConfig().get(IP_ADDRESS))).isReachable(PING_TIME_OUT)) {
-                logger.debug("Ping timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
-                transceiver.unRegisterHandler(getHandler());
+            if (!isKebaReachable()) {
+                logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "An timeout occurred while polling the charging station");
             } else {
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    ByteBuffer response = cache.get(CACHE_REPORT_1);
-                    if (response != null) {
-                        onData(response);
-                    }
+                ByteBuffer response = cache.get(CACHE_REPORT_1);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 1'");
+                } else {
+                    onData(response);
+                }
 
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = cache.get(CACHE_REPORT_2);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 2'");
+                } else {
+                    onData(response);
+                }
+
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = cache.get(CACHE_REPORT_3);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 3'");
+                } else {
+                    onData(response);
+                }
+
+                if (isReport100needed) {
                     Thread.sleep(REPORT_INTERVAL);
 
-                    response = cache.get(CACHE_REPORT_2);
-                    if (response != null) {
+                    response = cache.get(CACHE_REPORT_100);
+                    if (response == null) {
+                        logger.debug("Missing response from Keba station for 'report 100'");
+                    } else {
                         onData(response);
                     }
-
-                    Thread.sleep(REPORT_INTERVAL);
-
-                    response = cache.get(CACHE_REPORT_3);
-                    if (response != null) {
-                        onData(response);
-                    }
-
-                    if (isReport100needed) {
-                        Thread.sleep(REPORT_INTERVAL);
-
-                        response = cache.get(CACHE_REPORT_100);
-                        if (response != null) {
-                            onData(response);
-                        }
-                        isReport100needed = false;
-                    }
+                    isReport100needed = false;
                 }
             }
-        } catch (NumberFormatException | IOException e) {
-            logger.debug("An exception occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
+        } catch (IOException e) {
+            logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                     e.getMessage(), e);
-            Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "An exception occurred while while polling the charging station");
+                    "An error occurred while polling the charging station");
         } catch (InterruptedException e) {
             logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         }
-    };
+    }
 
     protected void onData(ByteBuffer byteBuffer) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
         response = StringUtils.chomp(response);
 
@@ -206,7 +245,7 @@ public class KeContactHandler extends BaseThingHandler {
         }
 
         try {
-            JsonObject readObject = parser.parse(response).getAsJsonObject();
+            JsonObject readObject = JsonParser.parseString(response).getAsJsonObject();
 
             for (Entry<String, JsonElement> entry : readObject.entrySet()) {
                 switch (entry.getKey()) {
@@ -299,14 +338,15 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr HW": {
                         int state = entry.getValue().getAsInt();
                         maxSystemCurrent = state;
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
                             if (maxSystemCurrent < maxPresetCurrent) {
                                 transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
-                                updateState(CHANNEL_MAX_PRESET_CURRENT, new DecimalType(maxSystemCurrent));
-                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
-                                        new PercentType((maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000)));
+                                updateState(CHANNEL_MAX_PRESET_CURRENT,
+                                        new QuantityType<ElectricCurrent>(maxSystemCurrent / 1000.0, Units.AMPERE));
+                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
+                                        (maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000), Units.PERCENT));
                             }
                         } else {
                             logger.debug("maxSystemCurrent is 0. Ignoring.");
@@ -316,24 +356,31 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr user": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        updateState(CHANNEL_MAX_PRESET_CURRENT, new DecimalType(state));
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_MAX_PRESET_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
-                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
-                                    new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
+                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
+                                    Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000)), Units.PERCENT));
                         }
                         break;
                     }
                     case "Curr FS": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_FAILSAFE_CURRENT, newState);
                         break;
                     }
                     case "Max curr": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        updateState(CHANNEL_PILOT_CURRENT, new DecimalType(state));
-                        updateState(CHANNEL_PILOT_PWM, new DecimalType(state));
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_PILOT_CURRENT, newState);
+                        break;
+                    }
+                    case "Max curr %": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<Dimensionless>(state / 10.0, Units.PERCENT);
+                        updateState(CHANNEL_PILOT_PWM, newState);
                         break;
                     }
                     case "Output": {
@@ -366,73 +413,67 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     case "Sec": {
                         long state = entry.getValue().getAsLong();
-
-                        Calendar uptime = Calendar.getInstance();
-                        uptime.setTimeZone(TimeZone.getTimeZone("GMT"));
-                        uptime.setTimeInMillis(state * 1000);
-                        SimpleDateFormat pFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                        pFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-                        updateState(CHANNEL_UPTIME, new DateTimeType(pFormatter.format(uptime.getTime())));
+                        State newState = new QuantityType<Time>(state, Units.SECOND);
+                        updateState(CHANNEL_UPTIME, newState);
                         break;
                     }
                     case "U1": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
                         updateState(CHANNEL_U1, newState);
                         break;
                     }
                     case "U2": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
                         updateState(CHANNEL_U2, newState);
                         break;
                     }
                     case "U3": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
                         updateState(CHANNEL_U3, newState);
                         break;
                     }
                     case "I1": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I1, newState);
                         break;
                     }
                     case "I2": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I2, newState);
                         break;
                     }
                     case "I3": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I3, newState);
                         break;
                     }
                     case "P": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new DecimalType(state / 1000);
+                        State newState = new QuantityType<Power>(state / 1000.0, Units.WATT);
                         updateState(CHANNEL_POWER, newState);
                         break;
                     }
                     case "PF": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new PercentType(state / 10);
+                        State newState = new QuantityType<Dimensionless>(state / 10.0, Units.PERCENT);
                         updateState(CHANNEL_POWER_FACTOR, newState);
                         break;
                     }
                     case "E pres": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new DecimalType(state / 10);
+                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_SESSION_CONSUMPTION, newState);
                         break;
                     }
                     case "E total": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new DecimalType(state / 10);
+                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_TOTAL_CONSUMPTION, newState);
                         break;
                     }
@@ -467,8 +508,8 @@ public class KeContactHandler extends BaseThingHandler {
                         break;
                     }
                     case "Setenergy": {
-                        int state = entry.getValue().getAsInt() / 10;
-                        State newState = new DecimalType(state);
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_SETENERGY, newState);
                         break;
                     }
@@ -487,18 +528,19 @@ public class KeContactHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
+                        QuantityType<?> value = ((QuantityType<?>) command).toUnit("mA");
+
                         transceiver.send(
-                                "curr " + String.valueOf(
-                                        Math.min(Math.max(6000, ((DecimalType) command).intValue()), maxSystemCurrent)),
+                                "curr " + String.valueOf(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent)),
                                 this);
                     }
                     break;
                 }
                 case CHANNEL_MAX_PRESET_CURRENT_RANGE: {
                     if (command instanceof OnOffType || command instanceof IncreaseDecreaseType
-                            || command instanceof PercentType) {
-                        int newValue = 6000;
+                            || command instanceof QuantityType<?>) {
+                        long newValue = 6000;
                         if (command == IncreaseDecreaseType.INCREASE) {
                             newValue = Math.min(Math.max(6000, maxPresetCurrent + 1), maxSystemCurrent);
                         } else if (command == IncreaseDecreaseType.DECREASE) {
@@ -507,12 +549,12 @@ public class KeContactHandler extends BaseThingHandler {
                             newValue = maxSystemCurrent;
                         } else if (command == OnOffType.OFF) {
                             newValue = 6000;
-                        } else if (command instanceof PercentType) {
-                            newValue = 6000 + (maxSystemCurrent - 6000) * ((PercentType) command).intValue() / 100;
+                        } else if (command instanceof QuantityType<?>) {
+                            QuantityType<?> value = ((QuantityType<?>) command).toUnit("%");
+                            newValue = Math.round(6000 + (maxSystemCurrent - 6000) * value.doubleValue() / 100.0);
                         } else {
                             return;
                         }
-
                         transceiver.send("curr " + String.valueOf(newValue), this);
                     }
                     break;
@@ -554,10 +596,11 @@ public class KeContactHandler extends BaseThingHandler {
                     break;
                 }
                 case CHANNEL_SETENERGY: {
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
+                        QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.WATT_HOUR);
                         transceiver.send(
                                 "setenergy " + String.valueOf(
-                                        Math.min(Math.max(0, ((DecimalType) command).intValue() * 10), 999999999)),
+                                        Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999)),
                                 this);
                     }
                     break;

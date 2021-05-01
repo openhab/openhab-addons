@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,8 +45,12 @@ public class HttpChannelConfig {
     public @Nullable String commandExtension;
     public @Nullable String stateTransformation;
     public @Nullable String commandTransformation;
+    public String stateContent = "";
 
     public HttpChannelMode mode = HttpChannelMode.READWRITE;
+
+    // number
+    public @Nullable String unit;
 
     // switch, dimmer, color
     public @Nullable String onValue;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ class NutConnector {
      * @param username username
      * @param password password
      */
-    public NutConnector(final String host, final int port, final String username, final String password) {
+    NutConnector(final String host, final int port, final String username, final String password) {
         this.login = username.isEmpty() ? "" : String.format(USERNAME, username);
         this.password = password.isEmpty() ? "" : String.format(PASSWORD, password);
         inetSocketAddress = new InetSocketAddress(host, port);
@@ -73,8 +73,8 @@ class NutConnector {
      * @return the data read from the NUT server
      * @throws NutException Exception thrown related to the NUT server connection and/or data.
      */
-    public synchronized <R> R read(final String command, final NutFunction<NutSupplier<String>, R> readFunction)
-            throws NutException {
+    public synchronized <R> R read(final String command,
+            final NutFunction<NutSupplier<String>, @Nullable R> readFunction) throws NutException {
         int retry = 0;
 
         while (true) {

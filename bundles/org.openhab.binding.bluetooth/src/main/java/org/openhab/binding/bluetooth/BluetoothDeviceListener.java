@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,36 +47,22 @@ public interface BluetoothDeviceListener {
     void onServicesDiscovered();
 
     /**
-     * Called when a read request completes
-     *
-     * @param characteristic the {@link BluetoothCharacteristic} that has completed the read request
-     * @param status the {@link BluetoothCompletionStatus} of the read request
-     */
-    void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status);
-
-    /**
-     * Called when a write request completes
-     *
-     * @param characteristic the {@link BluetoothCharacteristic} that has completed the write request
-     * @param status the {@link BluetoothCompletionStatus} of the write request
-     */
-    void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status);
-
-    /**
      * Called when a characteristic value is received. Implementations should call this whenever a value
      * is received from the BLE device even if there is no change to the value.
      *
      * @param characteristic the updated {@link BluetoothCharacteristic}
+     * @param value the update value
      */
-    void onCharacteristicUpdate(BluetoothCharacteristic characteristic);
+    void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value);
 
     /**
      * Called when a descriptor value is received. Implementations should call this whenever a value
      * is received from the BLE device even if there is no change to the value.
      *
-     * @param characteristic the updated {@link BluetoothCharacteristic}
+     * @param bluetoothDescriptor the updated {@link BluetoothDescriptor}
+     * @param value the update value
      */
-    void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor);
+    void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] value);
 
     /**
      * Called when the BluetoothAdapter for this BluetoothDevice changes.

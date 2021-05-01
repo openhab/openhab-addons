@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -243,7 +243,7 @@ public class VigiCruesHandler extends BaseThingHandler {
     }
 
     private void updateRelativeMeasure(String channelId, List<QuantityType<?>> reference, double value) {
-        if (reference.size() > 0) {
+        if (!reference.isEmpty()) {
             double percent = value / reference.get(0).doubleValue() * 100;
             updateQuantity(channelId, percent, Units.PERCENT);
         }

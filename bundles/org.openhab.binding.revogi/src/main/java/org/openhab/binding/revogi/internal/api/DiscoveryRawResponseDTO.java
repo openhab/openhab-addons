@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,10 +46,12 @@ public class DiscoveryRawResponseDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         DiscoveryRawResponseDTO that = (DiscoveryRawResponseDTO) o;
         return response == that.response && data.equals(that.data) && Objects.equals(ipAddress, that.ipAddress);
     }

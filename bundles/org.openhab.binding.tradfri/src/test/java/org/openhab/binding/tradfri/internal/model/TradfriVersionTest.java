@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,7 @@ public class TradfriVersionTest {
         assertTrue(VERSION.equals(new TradfriVersion(VERSION_STRING)));
 
         assertFalse(VERSION.equals((TradfriVersion) null));
-        assertFalse(VERSION.equals(new Integer("1")));
+        assertFalse(VERSION.equals(Integer.valueOf("1")));
         assertFalse(VERSION.equals(new TradfriVersion("1.2.5")));
     }
 

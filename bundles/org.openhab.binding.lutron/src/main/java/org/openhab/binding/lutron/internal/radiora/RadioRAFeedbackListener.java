@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lutron.internal.radiora;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public interface RadioRAFeedbackListener {
 
     void handleRadioRAFeedback(RadioRAFeedback feedback);

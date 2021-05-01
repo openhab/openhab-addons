@@ -14,7 +14,7 @@
 
 		<parameter-group name="tags">
 			<label>Additional Tags</label>
-			<description>This group defines additional tags which can be added.</description>
+			<description>This group defines additional tags which can be added to your measurements.</description>
 			<advanced>false</advanced>
 		</parameter-group>
 

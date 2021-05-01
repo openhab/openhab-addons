@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.russound.internal.rio.controller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.binding.russound.internal.rio.AbstractRioProtocol;
@@ -155,8 +155,8 @@ class RioControllerProtocol extends AbstractRioProtocol {
      * @param a possibly null, possibly empty response
      */
     @Override
-    public void responseReceived(String response) {
-        if (StringUtils.isEmpty(response)) {
+    public void responseReceived(@Nullable String response) {
+        if (response == null || response.isEmpty()) {
             return;
         }
 
