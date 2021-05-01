@@ -19,7 +19,7 @@ The 'Adam' (from hereon called the gateway) needs to be accessible from the open
 | -                                                        | A Plugwise heating zone configured with at least 1 of the devices below                                            | zone                 |
 | [Adam](https://www.plugwise.com/en_US/products/adam-ha)  | The Plugwise Home Automation Bridge is needed to connect to the Adam boiler gateway                                | gateway              |
 | [Tom](https://www.plugwise.com/en_US/products/tom)       | A Plugwise Home Automation radiator valve                                                                          | appliance_valve      |
-| [Floor](https://www.plugwise.com/en_US/products/floor)   | A Plugwise Home Automation radiator valve specificaly used for floor heating                                       | appliance_valve      |
+| [Floor](https://www.plugwise.com/en_US/products/floor)   | A Plugwise Home Automation radiator valve specifically used for floor heating                                       | appliance_valve      |
 | [Circle](https://www.plugwise.com/en_US/products/circle) | A power outlet plug that provides energy measurement and switching control of appliances (e.g. floor heating pump) | appliance_pump       |
 | [Lisa](https://www.plugwise.com/en_US/products/lisa)     | A room thermostat (also supports the 'Anna' room thermostat)                                                       | appliance_thermostat |
 | [Boiler]                                                 | A central boiler used for heating and/or domestic hot water                                                        | appliance_boiler     |
