@@ -103,6 +103,9 @@ public enum JSONApiResponseKeysEnum {
     TAGS("tags"),
     REVISION_ID("revisionID"),
 
+    // channel
+    OUTPUT_CHANNELS("outputChannels"),
+
     // config
     CLASS("class"),
     INDEX("index"),

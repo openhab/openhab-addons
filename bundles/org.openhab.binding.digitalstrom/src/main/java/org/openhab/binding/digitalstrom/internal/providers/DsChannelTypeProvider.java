@@ -25,10 +25,11 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.MeteringTypeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.MeteringUnitsEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.core.i18n.TranslationProvider;
@@ -47,8 +48,8 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link DsChannelTypeProvider} implements the {@link ChannelTypeProvider} generates all supported
- * {@link Channel}'s for digitalSTROM.
+ * The {@link DsChannelTypeProvider} implements the {@link ChannelTypeProvider}
+ * generates all supported {@link Channel}'s for digitalSTROM.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -57,7 +58,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ChannelTypeProvider.class)
 public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProvider {
 
-    // channelID building (effect group type + (nothing || SEPERATOR + item type || SEPERATOR + extended item type) e.g.
+    // channelID building (effect group type + (nothing || SEPERATOR + item type ||
+    // SEPERATOR + extended item type) e.g.
     // light_switch, shade or shade_angle
     // channel effect group type
     public static final String LIGHT = "light"; // and tag
@@ -112,34 +114,40 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     public static final String CATEGORY_MOTION = "Motion";
 
     /**
-     * Returns the output channel type id as {@link String} for the given {@link FunctionalColorGroupEnum} and
-     * {@link OutputModeEnum} or null, if no channel type exists for the given {@link FunctionalColorGroupEnum} and
+     * Returns the output channel type id as {@link String} for the given
+     * {@link ApplicationGroup.Color} and {@link OutputModeEnum} or null, if no
+     * channel type exists for the given {@link ApplicationGroup.Color} and
      * {@link OutputModeEnum}.
      *
      * @param functionalGroup of the {@link Device}
      * @param outputMode of the {@link Device}
      * @return the output channel type id or null
      */
-    public static String getOutputChannelTypeID(FunctionalColorGroupEnum functionalGroup, OutputModeEnum outputMode) {
+    public static String getOutputChannelTypeID(ApplicationGroup.Color functionalGroup, OutputModeEnum outputMode,
+            List<OutputChannelEnum> outputChannels) {
         if (functionalGroup != null && outputMode != null) {
             String channelPreID = GENERAL;
-            if (functionalGroup.equals(FunctionalColorGroupEnum.YELLOW)) {
-                channelPreID = LIGHT;
+
+            switch (functionalGroup) {
+                case YELLOW:
+                    channelPreID = LIGHT;
+                    break;
+                case GREY:
+                    if (outputChannels != null && (outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_INDOOR)
+                            || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE))) {
+                        return buildIdentifier(SHADE, ANGLE);
+                    } else {
+                        return buildIdentifier(SHADE);
+                    }
+                case BLUE:
+                    channelPreID = HEATING;
+                    if (OutputModeEnum.outputModeIsTemperationControlled(outputMode)) {
+                        return buildIdentifier(channelPreID, TEMPERATURE_CONTROLLED);
+                    }
+                default:
+                    break;
             }
-            if (functionalGroup.equals(FunctionalColorGroupEnum.GREY)) {
-                if (outputMode.equals(OutputModeEnum.POSITION_CON)) {
-                    return buildIdentifier(SHADE);
-                }
-                if (outputMode.equals(OutputModeEnum.POSITION_CON_US)) {
-                    return buildIdentifier(SHADE, ANGLE);
-                }
-            }
-            if (functionalGroup.equals(FunctionalColorGroupEnum.BLUE)) {
-                channelPreID = HEATING;
-                if (OutputModeEnum.outputModeIsTemperationControlled(outputMode)) {
-                    return buildIdentifier(channelPreID, TEMPERATURE_CONTROLLED);
-                }
-            }
+
             if (OutputModeEnum.outputModeIsSwitch(outputMode)) {
                 return buildIdentifier(channelPreID, SWITCH);
             }
@@ -324,7 +332,8 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     private StateDescriptionFragment getSensorStateDescription(SensorEnum sensorType) {
-        // the digitalSTROM resolution for temperature in kelvin is not correct but sensor-events and cached values are
+        // the digitalSTROM resolution for temperature in kelvin is not correct but
+        // sensor-events and cached values are
         // shown in °C so we will use this unit for temperature sensors
         String unitShortCut = sensorType.getUnitShortcut();
         if (unitShortCut.equals("%")) {
@@ -424,7 +433,8 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     /**
-     * Returns the supported item type for the given channel type id or null, if the channel type does not exist.
+     * Returns the supported item type for the given channel type id or null, if the
+     * channel type does not exist.
      *
      * @param channelTypeID of the channel
      * @return item type or null
@@ -542,7 +552,8 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     /**
-     * Returns the {@link ChannelGroupTypeUID} for the given {@link DeviceBinarayInputEnum}.
+     * Returns the {@link ChannelGroupTypeUID} for the given
+     * {@link DeviceBinarayInputEnum}.
      *
      * @param binaryInputType (must not be null)
      * @return the channel type uid
