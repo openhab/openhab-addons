@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +42,7 @@ class DSJsonParserTest {
         JsonObject jsonObject = createJsonObject(Arrays.asList(new OutputChannel(OutputChannelEnum.BRIGHTNESS)));
 
         List<OutputChannelEnum> channels = DSJsonParser.getOutputChannels(jsonObject);
-        assertThat(channels).containsOnly(OutputChannelEnum.BRIGHTNESS);
+        assertThat(channels, contains(OutputChannelEnum.BRIGHTNESS));
     }
 
     @Test
@@ -48,14 +51,14 @@ class DSJsonParserTest {
                 new OutputChannel(OutputChannelEnum.AIR_FLAP_POSITION)));
 
         List<OutputChannelEnum> channels = DSJsonParser.getOutputChannels(jsonObject);
-        assertThat(channels).containsOnly(OutputChannelEnum.BRIGHTNESS, OutputChannelEnum.AIR_FLAP_POSITION);
+        assertThat(channels, contains(OutputChannelEnum.BRIGHTNESS, OutputChannelEnum.AIR_FLAP_POSITION));
     }
 
     @Test
     void testParseNoOutputchannels() {
         JsonObject jsonObject = createJsonObject(Arrays.asList());
         List<OutputChannelEnum> channels = DSJsonParser.getOutputChannels(jsonObject);
-        assertThat(channels).isEmpty();
+        assertThat(channels, hasSize(0));
     }
 
     private static JsonObject createJsonObject(List<OutputChannel> channels) {
