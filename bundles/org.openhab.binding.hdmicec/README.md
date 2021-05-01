@@ -36,7 +36,7 @@ Things need to be configured with the deviceIndex (a hex number) and address of 
 - remoteButton will send a button down and up command to a thing. For example from the console you can use
 
 ```
-smarthome:send hdmicec_equipment_local_Unknown_FireTVCube_remoteButton down
+openhab:send hdmicec_equipment_local_Unknown_FireTVCube_remoteButton Down
 ```
 
 to send a down button to the device (in this case a Fire TV Cube). The remote support is dumb, you can try sending any command to any device.
@@ -64,4 +64,4 @@ _Provide a full usage example based on textual configuration files (*.things, *.
 
 ## Any custom content here!
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Cec-client is not promiscuous, so will only listen to CEC traffic that is broadcast or directed at its device. This means you don't get to sniff all traffic on the bus, but will see when the Active Source changes.

@@ -40,9 +40,12 @@ public class HdmiCecBindingConstants {
     public static final String CHANNEL_REMOTE_BUTTON = "remoteButton";
 
     // List of Configurations constants
+    public static final String DEVICE_INDEX = "deviceIndex";
+    public static final String ADDRESS = "address";
+
+    // List of Device Properties
     public static final String UNIQUE_ID = "uniqueId";
     public static final String VENDOR = "vendor";
     public static final String OSD = "osd";
-    public static final String DEVICE_INDEX = "deviceIndex";
-    public static final String ADDRESS = "address";
+    public static final String DEVICE_TYPE = "deviceType";
 }

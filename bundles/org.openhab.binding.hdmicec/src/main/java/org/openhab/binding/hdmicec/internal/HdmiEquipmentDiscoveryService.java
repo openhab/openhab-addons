@@ -52,13 +52,12 @@ public class HdmiEquipmentDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-        logger.debug("startScan() called");
+        logger.trace("startScan() called");
         bridgeHandler.startDeviceDiscovery(this);
     }
 
     public void processDevices(ArrayList<DiscoveryResult> discoveryResults) {
-        logger.debug("processDevices() with {} results", discoveryResults.size());
-        // TODO Auto-generated method stub
+        logger.trace("processDevices() with {} results", discoveryResults.size());
         for (DiscoveryResult discoveryResult : discoveryResults) {
             thingDiscovered(discoveryResult);
         }

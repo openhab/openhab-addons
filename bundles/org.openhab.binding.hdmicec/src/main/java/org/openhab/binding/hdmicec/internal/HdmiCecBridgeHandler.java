@@ -46,8 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HdmiCecBridgeHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link HdmiCecBridgeHandler} is responsible for handling commands, which
+ * are sent to one of the channels.
  *
  * @author David Masshardt - Initial contribution
  * @author Sam Spencer - Discovery, Conversion to OH3 and submission
@@ -55,6 +55,28 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class HdmiCecBridgeHandler extends BaseBridgeHandler {
+    /*
+     * The bridge does all the communication with the CEC bus, using the cmdline
+     * tool cec-client.
+     * 
+     * I looked at trying to add libcec calls directly but with the combo of
+     * Java-interop and openhab it seemed like an infeasible amount of work. libcec
+     * is also GPL which creates issues.
+     * 
+     * The bridge will start the cec-client utility and redirect its input/output
+     * streams, routing commands and output as necessary.
+     * 
+     * cec-client is by default very verbose it its output so we set the logging
+     * level to 15 to reduce the traffic. We need to be able to send commands so we
+     * can't just use monitor mode.
+     * 
+     * cec-client is not promiscuous so it will only see CEC traffic targetting it
+     * or broadcast such as an active source change.
+     * 
+     * Device discovery is done using the scan command and processing the results.
+     * 
+     * To debug CEC commands, cec-o-matic.com is invaluable
+     */
 
     private final Logger logger = LoggerFactory.getLogger(HdmiCecBridgeHandler.class);
 
@@ -72,14 +94,15 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable HdmiEquipmentDiscoveryService discoveryService = null;
 
-    // we're betting on the fact that the first value in () is the device ID. Seems valid from what I've seen!
+    // we're betting on the fact that the first value in () is the device ID. Seems
+    // valid from what I've seen!
     private Pattern deviceStatement = Pattern.compile("DEBUG.* \\((.)\\).*");
     private Pattern powerOn = Pattern.compile(".*: power status changed from '(.*)' to 'on'");
     private Pattern powerOff = Pattern.compile(".*: power status changed from '(.*)' to 'standby'");
     private Pattern activeSourceOn = Pattern.compile(".*making .* \\((.)\\) the active source");
     private Pattern activeSourceOff = Pattern.compile(".*marking .* \\((.)\\) as inactive source");
     private Pattern eventPattern = Pattern.compile("^(?!.*(<<|>>)).*: (.*)$"); // the 2nd group is the event
-    private Pattern deviceDiscoveryPattern = Pattern.compile("device #([0-9]|[A-F]):\\s.*");
+    private Pattern deviceDiscoveryPattern = Pattern.compile("device #([0-9]|[A-F]):\\s(.*)");
     private Pattern addressDiscoveryPattern = Pattern.compile("Addresses controlled by libCEC:\\s*([0-9]|[a-f]|[A-F])");
     private Pattern trafficReceivePattern = Pattern
             .compile("TRAFFIC:\\s+\\[\\s*\\d+\\]\\s+>>\\s+([0-9a-f]+):([0-9a-f]+)((:([0-9a-f]+))*)");
@@ -126,26 +149,25 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing bridge handler.");
+        logger.trace("Disposing bridge handler.");
         try {
             sendCommand("q");
         } catch (Exception e) {
             logger.debug("Bridge handler exception.", e);
         }
         super.dispose();
-        logger.debug("Bridge handler disposed.");
+        logger.trace("Bridge handler disposed.");
     }
 
     private void startCecClient() throws IOException {
         try {
             updateStatus(ThingStatus.UNKNOWN);
-            logger.debug("startCecClient()");
+            logger.trace("startCecClient()");
             ProcessBuilder builder = new ProcessBuilder();
             builder.redirectErrorStream(true); // This is the important part
-            builder.command(cecClientPath, "--log-level", "1", comPort);
-            // builder.command("/usr/bin/cec-client-4.0.4", "--log-level", "1"); // comPort);
+            builder.command(cecClientPath, "--log-level", "9", comPort);
 
-            logger.debug("startCecClient:builder.start()");
+            logger.trace("startCecClient:builder.start()");
             process = builder.start();
 
             @Nullable
@@ -160,7 +182,7 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
             }
             handleCecProcess();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("start cec-client failed: {}", e.getMessage());
         }
     }
 
@@ -192,12 +214,12 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
     private void logStream(@Nullable BufferedReader reader) throws IOException {
         String line = null;
         while (reader != null && ((line = reader.readLine()) != null)) {
-            logger.debug("inputStream: {}", line);
+            logger.trace("inputStream: {}", line);
         }
     }
 
     private void handleCecProcess() {
-        logger.debug("handleCecProcess()");
+        logger.trace("handleCecProcess()");
         isRunning = true;
 
         if (thread == null) {
@@ -210,6 +232,7 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
                             if (process == null || !process.isAlive()) {
                                 isRunning = false;
                                 logStream(bufferedReader);
+                                deviceIndex = null;
                                 callbackCecClientStatus(false, "cec-client process ended");
                                 return;
                             }
@@ -258,16 +281,7 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
                         } else if (line.startsWith("TRAFFIC:")) {
                             handleTraffic(line);
                         } else {
-                            // Matcher matcher = deviceStatement.matcher(line);
-                            // if (matcher.matches()) {
-                            // for (Thing thing : getThing().getThings()) {
-                            // HdmiCecEquipmentHandler equipment = (HdmiCecEquipmentHandler) thing.getHandler();
-                            // if (equipment != null && equipment.getDevice().equalsIgnoreCase(matcher.group(1)))
-                            // {
-                            // equipment.cecMatchLine(line);
-                            // }
-                            // }
-                            // }
+                            // ignore
                         }
                     }
                 }
@@ -295,7 +309,7 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
 
     protected void handleDiscoveryOutput(@Nullable BufferedReader reader) {
         ArrayList<String> lines = new ArrayList<String>();
-        long timeout = new Date().getTime() + (20 * 1000);
+        long timeout = new Date().getTime() + (25 * 1000);
         @Nullable
         String line = null;
         boolean finished = false;
@@ -312,9 +326,9 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
 
             if (line != null) {
                 lines.add(line);
-                logger.debug("read:{}", line);
+                logger.trace("read:{}", line);
                 if (line.contains("currently active source")) {
-                    logger.debug("handleDiscoveryOutput():finished with {} lines", lines.size());
+                    logger.trace("handleDiscoveryOutput():finished with {} lines", lines.size());
                     finished = true;
                 }
 
@@ -330,7 +344,7 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
                 finished = true;
             }
         } while (!finished);
-        if (lines.size() > 0 && discoveryService != null) {
+        if (!lines.isEmpty() && discoveryService != null) {
             ArrayList<DiscoveryResult> deviceResults = processDiscoveryOutput(lines);
             discoveryService.processDevices(deviceResults);
             discoveryService = null;
@@ -338,17 +352,38 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
     }
 
     private ArrayList<DiscoveryResult> processDiscoveryOutput(ArrayList<String> lines) {
-        logger.debug("processDiscoveryOutput({} lines)", lines.size());
+        logger.trace("processDiscoveryOutput({} lines)", lines.size());
         String line;
         ArrayList<DiscoveryResult> results = new ArrayList<DiscoveryResult>();
+        Map<String, String> vendorMap = new HashMap<String, String>();
         do {
             line = lines.get(0);
             if (line.startsWith("device")) {
-                DiscoveryResult result = processSingleDevice(lines);
+                DiscoveryResult result = processSingleDevice(lines, vendorMap);
                 if (result != null) {
                     results.add(result);
                 }
             } else {
+                if (line.startsWith("TRAFFIC:")) {
+                    Matcher m = trafficReceivePattern.matcher(line);
+                    if (m.matches()) {
+                        String addr = m.group(1);
+                        String src = "" + addr.charAt(0);
+                        String dst = "" + addr.charAt(1);
+                        int cmd = Integer.parseInt(m.group(2), 16);
+                        String params = "";
+                        if (m.group(3) != null && m.group(3).length() > 1) {
+                            params = m.group(3).replace(":", "");
+                        }
+                        logger.trace("Traffic received: from: {}, to: {}, cmd: {}, params: {}", src, dst,
+                                Integer.toHexString(cmd), params);
+
+                        switch (cmd) {
+                            case 0x87:
+                                vendorMap.put(src, params);
+                        }
+                    }
+                }
                 lines.remove(0);
             }
         } while (lines.size() > 1);
@@ -357,7 +392,7 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
 
     @Nullable
     private String Pop(ArrayList<String> lines) {
-        if (lines.size() > 0) {
+        if (!lines.isEmpty()) {
             String line = lines.get(0);
             lines.remove(0);
             return line;
@@ -366,10 +401,9 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    @SuppressWarnings("unused")
     @Nullable
-    private DiscoveryResult processSingleDevice(ArrayList<String> lines) {
-        logger.debug("processSingleDevice(): {}", lines.size());
+    private DiscoveryResult processSingleDevice(ArrayList<String> lines, Map<String, String> vendorMap) {
+        logger.trace("processSingleDevice(): {}", lines.size());
         String logicalAddr = null;
         String address = null;
         String vendor = null;
@@ -378,18 +412,26 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
         boolean isActive = false;
         boolean isOn = false;
         String key = null;
+        String type = null;
         Map<String, Object> properties = new HashMap<>();
 
         String line = Pop(lines);
         Matcher matcher = deviceDiscoveryPattern.matcher(line);
         if (matcher.matches()) {
             logicalAddr = matcher.group(1);
+            type = matcher.group(2);
             properties.put(DEVICE_INDEX, logicalAddr);
+            properties.put(DEVICE_TYPE, type);
+        }
+
+        if (logicalAddr.equalsIgnoreCase(deviceIndex)) {
+            // The descovery item is ourself
+            return null;
         }
 
         do {
             line = Pop(lines);
-            logger.debug("processSingleDevice(): {}", line);
+            logger.trace("processSingleDevice(): {}", line);
             if (line == null) {
                 return null;
             }
@@ -409,7 +451,7 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
                         break;
 
                     case "vendor":
-                        vendor = value;
+                        vendor = (value != "Unknown") ? value : vendorMap.get(logicalAddr);
                         properties.put(VENDOR, value);
                         break;
 
@@ -425,8 +467,9 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
             }
         } while (key != null && !key.contentEquals("language"));
 
-        logger.debug("processSingleDevice(): Found #{} - {} at {}", logicalAddr, osd, address);
-        hashcode = (vendor + osd).hashCode();
+        logger.debug("processSingleDevice(): Found #{} - {} at {}, power: {}, active: {}", logicalAddr, osd, address,
+                isOn, isActive);
+        hashcode = Math.abs((vendor + osd).hashCode());
         properties.put(UNIQUE_ID, String.valueOf(hashcode));
         ThingUID thingUID = new ThingUID(THING_TYPE_EQUIPMENT, this.thing.getUID(), makeID(vendor, osd));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_EQUIPMENT)
@@ -441,7 +484,6 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
         return v + "_" + n;
     }
 
-    @SuppressWarnings("unused")
     private void handleTraffic(String line) {
         Matcher m = trafficReceivePattern.matcher(line);
         if (m.matches()) {
@@ -449,19 +491,48 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
             String src = "" + addr.charAt(0);
             String dst = "" + addr.charAt(1);
             int cmd = Integer.parseInt(m.group(2), 16);
-            String[] params = m.group(3).substring(1).split(":");
+            String params = "";
+            if (m.group(3) != null && m.group(3).length() > 1) {
+                params = m.group(3).replace(":", "");
+            }
+
+            logger.debug("Traffic received: from: {}, to: {}, cmd: {}, params: {}", src, dst, Integer.toHexString(cmd),
+                    params);
 
             switch (cmd) {
+                case 0x00: { // Abort
+                    String DestinationName = "unknown";
+                    String SourceName = "unknown";
+                    if ("F".equalsIgnoreCase(dst)) {
+                        DestinationName = "Broadcast";
+                    } else if (dst.equalsIgnoreCase(deviceIndex)) {
+                        DestinationName = "HDMI-CEC Bridge";
+                    }
+                    for (Thing thing : getThing().getThings()) {
+                        HdmiCecEquipmentHandler equipment = (HdmiCecEquipmentHandler) thing.getHandler();
+                        if (equipment != null && equipment.getDeviceIndex().equalsIgnoreCase(src)) {
+                            SourceName = thing.getLabel();
+                        }
+                        if (equipment != null && equipment.getDeviceIndex().equalsIgnoreCase(dst)) {
+                            DestinationName = thing.getLabel();
+                        }
+                    }
+                    logger.info("Message Unsupported: From: {}, To: {}, Params: {}", SourceName, DestinationName,
+                            params);
+                }
+                    break;
                 case 0x82: { // Active source
                     for (Thing thing : getThing().getThings()) {
                         HdmiCecEquipmentHandler equipment = (HdmiCecEquipmentHandler) thing.getHandler();
                         if (equipment != null) {
-                            boolean status = equipment.getDeviceIndex().equalsIgnoreCase(deviceIndex);
+                            boolean status = equipment.getDeviceIndex().equalsIgnoreCase(src);
                             equipment.setActiveStatus(status);
+                            logger.info("Setting active source: {} to {}", equipment.getThing().getLabel(),
+                                    (status) ? "On" : "Off");
                         }
                     }
                 }
-                break;
+                    break;
             }
         }
     }
@@ -505,7 +576,9 @@ public class HdmiCecBridgeHandler extends BaseBridgeHandler {
         logger.debug("sendCommand({})", command);
         try {
             if (isRunning == false) {
+                logger.debug("Client isn't running, so restarting");
                 startCecClient();
+                return;
             }
             if (writer != null) {
                 writer.write(command + "\n");

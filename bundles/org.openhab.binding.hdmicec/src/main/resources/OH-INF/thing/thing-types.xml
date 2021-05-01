@@ -11,6 +11,12 @@
 		<label>HDMI-CEC Equipment</label>
 		<description>Represents your TV, Home Theater, Blu-Ray, etc. that speaks HDMI CEC</description>
 
+		<!-- <properties>
+			<property name="osd">unknown</property>
+			<property name="vendor">unknown</property>
+			<property name="uniqueId">unknown</property>
+			</properties> -->
+
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="activeSource" typeId="activeSource"/>
@@ -21,11 +27,11 @@
 
 		<config-description>
 			<parameter name="deviceIndex" type="text" required="true">
-				<label>device</label>
+				<label>Device Index</label>
 				<description>CEC Device, a single HEX value such as 0, 1, 2, E (0 is TV)</description>
 			</parameter>
 			<parameter name="address" type="text" required="true">
-				<label>address</label>
+				<label>Device Address</label>
 				<description>CEC Address, of the form 0.0.0.0</description>
 			</parameter>
 		</config-description>
@@ -43,7 +49,7 @@
 			</parameter>
 			<parameter name="comPort" type="text" required="true">
 				<label>Device com port</label>
-				<description>e.g. /dev/ttyACM0</description>
+				<description>e.g. RPI</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

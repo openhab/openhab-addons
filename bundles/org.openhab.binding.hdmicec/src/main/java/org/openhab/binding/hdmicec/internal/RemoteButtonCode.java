@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.hdmicec.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Mapping of CEC button names to their opcodes
  *
  * @author Sam Spencer - Initial contribution
  */
 
+@NonNullByDefault
 public enum RemoteButtonCode {
     Select(0x00),
     Up(0x01),
@@ -124,7 +127,7 @@ public enum RemoteButtonCode {
 
     public static RemoteButtonCode fromString(String s) {
         for (RemoteButtonCode c : RemoteButtonCode.values()) {
-            if (s.toUpperCase().contentEquals(c.name().toUpperCase())) {
+            if (s.equalsIgnoreCase(c.name())) {
                 return c;
             }
         }

@@ -53,24 +53,23 @@ public class HdmiCecEquipmentHandler extends BaseThingHandler {
     private @Nullable TimerWrapper myTimer = null;
 
     private ThingUID uid;
-    private Bridge bridge;
+    private @Nullable Bridge bridge = null;
 
     public HdmiCecEquipmentHandler(Thing thing) {
         super(thing);
         uid = thing.getUID();
-        bridge = getBridge();
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         try {
-
+            bridge = getBridge();
             config = getConfigAs(HdmiCecBindingConfiguration.class);
 
             if (config != null) {
-                if (config.device != null) {
-                    z deviceIndex = "" + config.device;
+                if (config.deviceIndex != null) {
+                    deviceIndex = "" + config.deviceIndex;
                 }
                 if (config.address != null) {
                     address = "" + config.address;
@@ -99,7 +98,8 @@ public class HdmiCecEquipmentHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String id = channelUID.getId();
-        if (bridgeHandler == null) {
+        if (bridgeHandler == null || bridgeDeviceIndex() == null) {
+            logger.debug("Can't send command, bridge is not available");
             return;
         }
         if (id.equals(HdmiCecBindingConstants.CHANNEL_POWER)) {

@@ -29,7 +29,7 @@ public class HdmiCecBindingConfiguration {
      * Sample configuration parameters. Replace with your own.
      */
     @Nullable
-    public String device;
+    public String deviceIndex;
     @Nullable
     public String address;
 }
