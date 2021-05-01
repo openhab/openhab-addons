@@ -3,7 +3,3 @@ files:
     ignore:
       - /bundles/**/i18n/**/*_*.properties
     translation: /%original_path%/%file_name%_%two_letters_code%.properties
-  - source: /bundles/**/src/main/resources/*.properties
-    ignore:
-      - /bundles/**/src/main/resources/*_*.properties
-    translation: /%original_path%/%file_name%_%two_letters_code%.properties
