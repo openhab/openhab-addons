@@ -508,7 +508,45 @@ Import-Package: \\
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
-        </plugin>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.0.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <transformationSets>
+            <transformationSet>
+              <dir>${project.basedir}/src/main/resources/OH-INF/</dir>
+              <!-- *.xml -->
+              <includes>
+                <include>**/*.xml</include>
+              </includes>
+              <outputDir>${project.basedir}/src/main/resources/OH-INF/i18n</outputDir>
+	      <stylesheet>${project.basedir}/../../tools/i18n/i18n.xsl</stylesheet>
+              <outputProperties>
+                <outputProperty>
+                  <name>omit-xml-declaration</name>
+                  <value>yes</value>
+                </outputProperty>
+              </outputProperties>
+              <fileMappers>
+                <fileMapper
+                  implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                  <targetExtension>properties</targetExtension>
+                </fileMapper>
+              </fileMappers>
+            </transformationSet>
+          </transformationSets>
+        </configuration>
+      </plugin>
 
         <plugin>
           <groupId>org.openhab.tools.sat</groupId>
