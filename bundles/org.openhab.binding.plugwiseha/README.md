@@ -6,7 +6,7 @@ This system is built around a gateway from Plugwise called the 'Adam' which inco
 Users can manage and control this system either via a web app or a mobile phone app developed by Plugwise. 
 The (web) app allows users to define heating zone's (e.g. rooms) and add radiator valves to those rooms to manage and control their heating irrespective of other rooms.
 
-Using the Plugwise Home Automation binding you can incorporate the management of these devices and heating zones into openHAB. 
+Using the Plugwise Home Automation binding you can incorporate the management of these devices and heating zones into openHAB.
 The binding uses the same RESTfull API that both the mobile phone app and the web app use.
 
 The binding requires users to have a working Plugwise Home Automation setup consisting of at least 1 gateway device (the 'Adam') and preferably 1 radiator valve as a bare minimum. 
@@ -116,11 +116,11 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 
 ```
 Bridge plugwiseha:gateway:home "Plugwise Home Automation Gateway" [ smileId="abcdefgh" ] {
-    Thing zone living_room_zone "Living room" [ id="$device_id" ]
-    Thing appliance_valve living_room_radiator "Living room radiator valve" [ id="$device_id" ]
-    Thing appliance_thermostat living_room_thermostat "Living room thermostat" [ id="$device_id" ]
-    Thing appliance_pump living_room_pump "Floor heating pump" [ id="$device_id" ]
-    Thing appliance_boiler main_boiler "Main boiler" [ id="$device_id" ]
+	Thing zone living_room_zone "Living room" [ id="$device_id" ]
+	Thing appliance_valve living_room_radiator "Living room radiator valve" [ id="$device_id" ]
+	Thing appliance_thermostat living_room_thermostat "Living room thermostat" [ id="$device_id" ]
+	Thing appliance_pump living_room_pump "Floor heating pump" [ id="$device_id" ]
+	Thing appliance_boiler main_boiler "Main boiler" [ id="$device_id" ]
 }
 ```
 
@@ -177,17 +177,17 @@ OFF=Unlocked
 sitemap plugwiseha label="PlugwiseHA Binding"
 {
 	Frame {
-        Text item=living_room_zone_temperature
-        Setpoint item=living_room_zone_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
+		Text item=living_room_zone_temperature
+		Setpoint item=living_room_zone_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
 		Text item=living_room_zone_presetScene
 		Switch item=living_room_zone_preheat
 
 		Text item=living_room_radiator_temperature
-        Setpoint item=living_room_radiator_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
+		Setpoint item=living_room_radiator_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
 		Text item=living_room_radiator_valve_position
 
 		Text item=living_room_thermostat_temperature
-        Setpoint item=living_room_thermostat_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
+		Setpoint item=living_room_thermostat_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
 		Setpoint item=living_room_thermostat_temperature_offset label="Living room offset [%.1f °C]" minValue=-5.0 maxValue=5 step=0.5
 
 		Number item=living_room_pump_power_usage

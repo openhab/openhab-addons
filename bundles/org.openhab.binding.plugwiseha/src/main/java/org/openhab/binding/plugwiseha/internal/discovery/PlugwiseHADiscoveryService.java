@@ -75,7 +75,9 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Plugwise Home Automation background discovery");
-        if (discoveryFuture == null || discoveryFuture.isCancelled()) {
+
+        ScheduledFuture<?> localDiscoveryFuture = discoveryFuture;
+        if (localDiscoveryFuture == null || localDiscoveryFuture.isCancelled()) {
             discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH_SECONDS, TimeUnit.SECONDS);
         }
     }
@@ -83,9 +85,13 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Plugwise Home Automation background discovery");
-        if (discoveryFuture != null && !discoveryFuture.isCancelled()) {
-            discoveryFuture.cancel(true);
-            discoveryFuture = null;
+
+        ScheduledFuture<?> localDiscoveryFuture = discoveryFuture;
+        if (localDiscoveryFuture != null) {
+            if (!localDiscoveryFuture.isCancelled()) {
+                localDiscoveryFuture.cancel(true);
+                localDiscoveryFuture = null;
+            }
         }
     }
 

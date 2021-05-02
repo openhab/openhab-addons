@@ -30,8 +30,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PlugwiseHAHandlerFactory} is responsible for creating things and
@@ -45,7 +43,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.plugwiseha")
 public class PlugwiseHAHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(PlugwiseHAHandlerFactory.class);
     private final HttpClient httpClient;
 
     // Constructor
@@ -108,13 +105,10 @@ public class PlugwiseHAHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (PlugwiseHABridgeHandler.supportsThingType(thingTypeUID)) {
-            this.logger.debug("Creating new Plugwise Home Automation Bridge: {}", thing.getLabel());
             return new PlugwiseHABridgeHandler((Bridge) thing, this.httpClient);
         } else if (PlugwiseHAZoneHandler.supportsThingType(thingTypeUID)) {
-            logger.debug("Creating new Plugwise Home Automation Zone: {}", thing.getLabel());
             return new PlugwiseHAZoneHandler(thing);
         } else if (PlugwiseHAApplianceHandler.supportsThingType(thingTypeUID)) {
-            logger.debug("Creating new Plugwise Home Automation Appliance: {}", thing.getLabel());
             return new PlugwiseHAApplianceHandler(thing);
         }
         return null;

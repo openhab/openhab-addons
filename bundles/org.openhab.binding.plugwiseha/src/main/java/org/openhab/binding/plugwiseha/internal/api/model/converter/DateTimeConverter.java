@@ -30,8 +30,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME; // default Date format that
 
     @Override
-    @SuppressWarnings("rawType")
-    public boolean canConvert(Class type) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         return ZonedDateTime.class.isAssignableFrom(type);
     }
 

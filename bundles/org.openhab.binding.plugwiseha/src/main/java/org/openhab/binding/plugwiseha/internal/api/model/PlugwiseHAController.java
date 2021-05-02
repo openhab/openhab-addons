@@ -314,24 +314,20 @@ public class PlugwiseHAController {
 
     public void switchRelayOn(Appliance appliance) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
-        // Boolean relayLockState = appliance.getRelayLockState().orElse(null);
 
         request.setPath("/core/appliances");
         request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
         request.setBodyParameter(new ActuatorFunctionalityRelay("on"));
-        // request.setBodyParameter(new ActuatorFunctionalityRelay("on", relayLockState));
 
         executeRequest(request);
     }
 
     public void switchRelayOff(Appliance appliance) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
-        // Boolean relayLockState = appliance.getRelayLockState().orElse(null);
 
         request.setPath("/core/appliances");
         request.addPathParameter("id", String.format("%s/relay", appliance.getId()));
         request.setBodyParameter(new ActuatorFunctionalityRelay("off"));
-        // request.setBodyParameter(new ActuatorFunctionalityRelay("off", relayLockState));
 
         executeRequest(request);
     }

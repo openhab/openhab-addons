@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.plugwiseha.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -57,8 +54,7 @@ public class PlugwiseHABindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_BATTERYLEVELLOW = new ChannelTypeUID("system:low-battery");
 
     // Empty set
-    public static final Set<ThingTypeUID> SUPPORTED_INTERFACE_TYPES_UIDS_EMPTY = Collections
-            .unmodifiableSet(Stream.<ThingTypeUID> empty().collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_INTERFACE_TYPES_UIDS_EMPTY = Set.of();
 
     // List of all Gateway configuration properties
     public static final String GATEWAY_CONFIG_HOST = "host";
@@ -132,25 +128,21 @@ public class PlugwiseHABindingConstants {
     public static final String UNIT_CELSIUS = "C";
 
     // Supported things
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_ZONE, THING_TYPE_APPLIANCE_VALVE, THING_TYPE_APPLIANCE_PUMP, THING_TYPE_APPLIANCE_BOILER)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ZONE,
+            THING_TYPE_APPLIANCE_VALVE, THING_TYPE_APPLIANCE_PUMP, THING_TYPE_APPLIANCE_BOILER);
 
     // Appliance types known to binding
-    public static final Set<String> KNOWN_APPLIANCE_TYPES = Stream.of(APPLIANCE_TYPE_THERMOSTAT, APPLIANCE_TYPE_GATEWAY,
+    public static final Set<String> KNOWN_APPLIANCE_TYPES = Set.of(APPLIANCE_TYPE_THERMOSTAT, APPLIANCE_TYPE_GATEWAY,
             APPLIANCE_TYPE_CENTRALHEATINGPUMP, APPLIANCE_TYPE_OPENTHERMGATEWAY, APPLIANCE_TYPE_ZONETHERMOSTAT,
-            APPLIANCE_TYPE_HEATERCENTRAL, APPLIANCE_TYPE_THERMOSTATICRADIATORVALUE).collect(Collectors.toSet());
+            APPLIANCE_TYPE_HEATERCENTRAL, APPLIANCE_TYPE_THERMOSTATICRADIATORVALUE);
 
-    public static final Set<String> SUPPORTED_APPLIANCE_TYPES = Stream.of(APPLIANCE_TYPE_CENTRALHEATINGPUMP,
-            APPLIANCE_TYPE_THERMOSTATICRADIATORVALUE, APPLIANCE_TYPE_ZONETHERMOSTAT, APPLIANCE_TYPE_HEATERCENTRAL)
-            .collect(Collectors.toSet());
+    public static final Set<String> SUPPORTED_APPLIANCE_TYPES = Set.of(APPLIANCE_TYPE_CENTRALHEATINGPUMP,
+            APPLIANCE_TYPE_THERMOSTATICRADIATORVALUE, APPLIANCE_TYPE_ZONETHERMOSTAT, APPLIANCE_TYPE_HEATERCENTRAL);
 
     // Supported bridges
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Stream.of(Stream.of(THING_TYPE_GATEWAY))
-            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY);
 
     // Getters & Setters
-
     public static String getApiUrl(String host) {
         return String.format(PLUGWISEHA_API_URL, host);
     }
