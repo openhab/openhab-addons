@@ -13,11 +13,10 @@
 package org.openhab.binding.mqtt.internal;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,7 +63,7 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
      * This Map provides a lookup between a Topic string (key) and a Set of MQTTTopicDiscoveryParticipants (value),
      * where the Set itself is a list of participants which are subscribed to the respective Topic.
      */
-    protected final Map<String, Set<MQTTTopicDiscoveryParticipant>> discoveryTopics = new HashMap<>();
+    protected final Map<String, Set<MQTTTopicDiscoveryParticipant>> discoveryTopics = new ConcurrentHashMap<>();
 
     /**
      * This Set contains a list of all the Broker handlers that have been created by this factory
@@ -129,7 +128,8 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     @SuppressWarnings("null")
     public void subscribe(MQTTTopicDiscoveryParticipant listener, String topic) {
-        Set<MQTTTopicDiscoveryParticipant> listeners = discoveryTopics.computeIfAbsent(topic, t -> new HashSet<>());
+        Set<MQTTTopicDiscoveryParticipant> listeners = discoveryTopics.computeIfAbsent(topic,
+                t -> ConcurrentHashMap.newKeySet());
         if (listeners.add(listener)) {
             handlers.forEach(broker -> broker.registerDiscoveryListener(listener, topic));
         }

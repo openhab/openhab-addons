@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,23 +49,22 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
 
     private @Nullable ScheduledFuture<?> scheduledStop;
 
-    private boolean isSubscribed;
+    private AtomicBoolean isSubscribed;
 
     public AbstractMQTTDiscovery(@Nullable Set<ThingTypeUID> supportedThingTypes, int timeout,
             boolean backgroundDiscoveryEnabledByDefault, String baseTopic) {
         super(supportedThingTypes, 0, backgroundDiscoveryEnabledByDefault);
         this.subscribeTopic = baseTopic;
         this.timeout = timeout;
-        isSubscribed = false;
+        isSubscribed = new AtomicBoolean(false);
     }
 
     /**
      * Only subscribe if we were not already subscribed
      */
     private void subscribe() {
-        if (!isSubscribed) {
+        if (!isSubscribed.getAndSet(true)) {
             getDiscoveryService().subscribe(this, subscribeTopic);
-            isSubscribed = true;
         }
     }
 
@@ -72,9 +72,8 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
      * Only unsubscribe if we were already subscribed
      */
     private void unSubscribe() {
-        if (isSubscribed) {
+        if (isSubscribed.getAndSet(false)) {
             getDiscoveryService().unsubscribe(this);
-            isSubscribed = false;
         }
     }
 
