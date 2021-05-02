@@ -224,7 +224,6 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
                 try {
                     entity = getEntity(controller, false);
                 } catch (PlugwiseHAException e) {
-                    logger.debug("Unexpected error handling refresh {}", e.getMessage());
                     updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     setLinkedChannelsUndef();
                 }

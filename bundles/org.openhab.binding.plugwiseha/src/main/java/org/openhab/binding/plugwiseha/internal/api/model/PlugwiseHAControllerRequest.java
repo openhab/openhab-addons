@@ -99,7 +99,7 @@ public class PlugwiseHAControllerRequest<T> {
         // Create Basic Auth header if username and password are supplied
         if (!username.isBlank() && !password.isBlank()) {
             setHeader(HttpHeader.AUTHORIZATION.toString(), "Basic "
-                    + Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes()));
+                    + Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes(StandardCharsets.UTF_8)));
         }
     }
 

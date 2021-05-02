@@ -110,9 +110,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     updateStatus(OFFLINE, BRIDGE_OFFLINE);
                 }
             } catch (PlugwiseHAException e) {
-                logger.debug("Failed initializing appliance handler with config = {} message = {}", config,
-                        e.getMessage());
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
