@@ -27,7 +27,9 @@ import org.openhab.binding.boschshc.internal.services.temperaturelevel.Temperatu
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
 import org.openhab.binding.boschshc.internal.services.valvetappet.dto.ValveTappetServiceState;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
 
 /**
  * Handler for a thermostat device.
@@ -37,15 +39,29 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public final class ThermostatHandler extends BoschSHCHandler {
 
+    private ChildLockService childLockService;
+
     public ThermostatHandler(Thing thing) {
         super(thing);
+        this.childLockService = new ChildLockService();
     }
 
     @Override
     protected void initializeServices() throws BoschSHCException {
         this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
         this.createService(ValveTappetService::new, this::updateChannels, List.of(CHANNEL_VALVE_TAPPET_POSITION));
-        this.createService(ChildLockService::new, this::updateChannels, List.of(CHANNEL_CHILD_LOCK));
+        this.registerService(this.childLockService, this::updateChannels, List.of(CHANNEL_CHILD_LOCK));
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+
+        switch (channelUID.getId()) {
+            case CHANNEL_CHILD_LOCK:
+                this.handleServiceCommand(this.childLockService, command);
+                break;
+        }
     }
 
     /**

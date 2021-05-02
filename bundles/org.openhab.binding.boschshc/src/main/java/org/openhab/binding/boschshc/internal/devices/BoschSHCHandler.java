@@ -160,18 +160,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             // Refresh state of services that affect the channel
             for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
                 if (deviceService.affectedChannels.contains(channelUID.getIdWithoutGroup())) {
-                    try {
-                        deviceService.service.refreshState();
-                    } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-                        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                String.format("Error when trying to refresh state from service %s: %s",
-                                        deviceService.service.getServiceName(), e.getMessage()));
-                    } catch (InterruptedException e) {
-                        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                String.format("Interrupted refresh state from service %s: %s",
-                                        deviceService.service.getServiceName(), e.getMessage()));
-                        Thread.currentThread().interrupt();
-                    }
+                    this.refreshServiceState(deviceService.service);
                 }
             }
         }
@@ -313,6 +302,54 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
                     .format("Interrupted update state for service %s: %s", service.getServiceName(), e.getMessage()));
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Lets a service handle a received command.
+     * Sets the status of the device to offline if handling the command fails.
+     *
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service which should handle command.
+     * @param command Command to handle.
+     */
+    protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void handleServiceCommand(
+            TService service, Command command) {
+        try {
+            if (command instanceof RefreshType) {
+                this.refreshServiceState(service);
+            } else {
+                TState state = service.handleCommand(command);
+                this.updateServiceState(service, state);
+            }
+        } catch (BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error when service %s should handle command %s: %s", service.getServiceName(),
+                            command.getClass().getName(), e.getMessage()));
+        }
+    }
+
+    /**
+     * Requests a service to refresh its state.
+     * Sets the device offline if request fails.
+     * 
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service to refresh state for.
+     */
+    private <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void refreshServiceState(
+            TService service) {
+        try {
+            service.refreshState();
+        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error when trying to refresh state from service %s: %s", service.getServiceName(),
+                            e.getMessage()));
+        } catch (InterruptedException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+                    .format("Interrupted refresh state from service %s: %s", service.getServiceName(), e.getMessage()));
             Thread.currentThread().interrupt();
         }
     }
