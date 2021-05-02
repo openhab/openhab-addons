@@ -396,9 +396,7 @@ The following changes have occurred:
 
 ## Configuration
 
-After installing this add-on, you will find configuration options in the Paper UI under _Configuration->Services->IO->NEEO Integration_:
-
-![Configuration](doc/cfg.png)
+After installing this add-on, you can configure the integration using the "NEEO Integration" settings in the UI.
 
 Alternatively, you can configure the settings in the file `conf/services/neeo.cfg`:
 

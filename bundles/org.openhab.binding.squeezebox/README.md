@@ -123,7 +123,7 @@ All devices support some of the following channels:
 
 ## Example .Items File
 
-Add the items you want to the .items file. A few examples are shown below, the power, volume and album art channels are connected here to the items by copying across the channel discriptions from the Paper UI. Make suure each channel is linked for your needs See [openHAB New User Configuration documentation](https://www.openhab.org/docs/tutorial/configuration.html) for further details on linking and channels.
+Add the items you want to use to an .items file, for example:
 
 ```
 Switch YourPlayer_Power    "Squeezebox Power"  {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:power"}
