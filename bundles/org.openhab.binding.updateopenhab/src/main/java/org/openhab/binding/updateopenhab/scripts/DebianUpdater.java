@@ -20,22 +20,34 @@ import org.openhab.binding.updateopenhab.internal.TargetVersion;
 /**
  * The {@link DebianUpdater} is the shell script for updating OpenHab on this OS
  *
- * @author AndrewFG
+ * @author AndrewFG - Initial contribution
  */
 @NonNullByDefault
 public class DebianUpdater extends BaseUpdater {
 
-    private static final String COMMAND_ID = "sh";
-    private static final String COMMAND_SWITCH = "-c";
-    private static final String FILE_EXTENSION = ".sh";
-    private static final String APT_FILENAME = "/etc/apt/sources.list.d/openhab.list";
-    private static final String DOWNLOAD_SOURCE_FMT = "deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg %s main";
-    private static final String SCRIPT_COMMAND = "apt-get update\n";
+    private static final String EXT = ".sh";
+    private static final String DIRECTORY = "/srv/openhab-sys/runtime/bin/";
+    private static final String FILENAME = DIRECTORY + FILE_ID + EXT;
 
-    public DebianUpdater(TargetVersion targetVersion) {
-        super(targetVersion);
-        runDirectory = getUserHomeFolder();
-        fileExtension = FILE_EXTENSION;
+    private final String[] commands = new String[] { "echo", password, "|", "sudo", "-S", "sh", FILENAME };
+
+    private final String aptFile = "/etc/apt/sources.list.d/openhab.list";
+    private final String aptUrl = String.format("deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg %s main",
+            targetVersion.label);
+
+    private final String contents =
+    // @formatter:off
+            "#!/bin/sh\n" +
+            "echo " + aptUrl + " > " + aptFile + "\n" +
+            "cd " + DIRECTORY + "\n" +
+            "./stop\n" +
+            "sleep 30\n" +
+//            "apt-get update\n" +
+            "./karaf\n";
+    // @formatter:on
+
+    public DebianUpdater(TargetVersion targetVersion, String password) {
+        super(targetVersion, password);
     }
 
     @Override
@@ -43,12 +55,8 @@ public class DebianUpdater extends BaseUpdater {
         if (!super.prerequisitesOk()) {
             return false;
         }
-        if (!writeFile(APT_FILENAME, String.format(DOWNLOAD_SOURCE_FMT, targetVersion.label))) {
-            logger.warn("Cannot run OpenHAB update script: error writing {}", APT_FILENAME);
-            return false;
-        }
-        if (!writeFile(getScriptFileName(), SCRIPT_COMMAND)) {
-            logger.warn("Cannot run OpenHAB update script: error writing {}", getScriptFileName());
+        if (!writeFile(FILENAME, contents)) {
+            logger.warn("Cannot run OpenHAB update script: error writing {}", FILENAME);
             return false;
         }
         return true;
@@ -59,12 +67,13 @@ public class DebianUpdater extends BaseUpdater {
      */
     @Override
     public void run() {
+
         if (prerequisitesOk()) {
             ProcessBuilder builder = new ProcessBuilder();
-            builder.command().add(COMMAND_ID);
-            builder.command().add(COMMAND_SWITCH);
-            builder.directory(new File(runDirectory));
-            builder.command().add(getScriptFileName());
+            for (String arg : commands) {
+                builder.command().add(arg);
+            }
+            builder.directory(new File(DIRECTORY));
             executeProcess(builder);
         }
     }

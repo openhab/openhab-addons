@@ -16,34 +16,35 @@ import java.io.File;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.updateopenhab.internal.TargetVersion;
+import org.openhab.core.OpenHAB;
 
 /**
  * The {@link WindowsUpdater} is the shell script for updating OpenHab on this OS
  *
- * @author AndrewFG
+ * @author AndrewFG - Initial contribution
  */
 @NonNullByDefault
 public class WindowsUpdater extends BaseUpdater {
 
-    private static final String COMMAND_ID = "cmd.exe";
-    private static final String COMMAND_SWITCH = "/c";
-    private static final String FILE_EXTENSION = ".cmd";
-    private static final String RUN_DIRECTORY = "runtime\\bin\\";
+    private static final String EXT = ".cmd";
+    private static final String DIRECTORY = OpenHAB.getConfigFolder().replace("conf", "runtime\\bin\\");
+    private static final String FILENAME = DIRECTORY + FILE_ID + EXT;
 
-    private String getScriptCommands() {
-        // @formatter:off
-        String commands =
-                runDirectory + "backup.bat\n" +
-                runDirectory + "update.bat " + getLatestVersion() +"\n"+
-                "EXIT /B %ERRORLEVEL%\n";
-        // @formatter:on
-        return commands;
-    }
+    private final String[] commands = new String[] { "cmd.exe", "/C", FILENAME };
 
-    public WindowsUpdater(TargetVersion targetVersion) {
-        super(targetVersion);
-        runDirectory = getOpenHabRootFolder() + RUN_DIRECTORY;
-        fileExtension = FILE_EXTENSION;
+    private final String contents =
+    // @formatter:off
+            "@echo off\n" +
+            "cd " + DIRECTORY + "\n" +
+            "call stop.bat\n" +
+            "timeout /t 30\n" +
+//            "call backup.bat\n" +
+//            "call update.bat " + getLatestVersion() +"\n" +
+            "call karaf.bat\n";
+    // @formatter:on
+
+    public WindowsUpdater(TargetVersion targetVersion, String password) {
+        super(targetVersion, password);
     }
 
     @Override
@@ -51,8 +52,8 @@ public class WindowsUpdater extends BaseUpdater {
         if (!super.prerequisitesOk()) {
             return false;
         }
-        if (!writeFile(getScriptFileName(), getScriptCommands())) {
-            logger.warn("Cannot run OpenHAB update script: error writing {}", getScriptFileName());
+        if (!writeFile(FILENAME, contents)) {
+            logger.warn("Cannot run OpenHAB update script: error writing {}", FILENAME);
             return false;
         }
         return true;
@@ -62,10 +63,10 @@ public class WindowsUpdater extends BaseUpdater {
     public void run() {
         if (prerequisitesOk()) {
             ProcessBuilder builder = new ProcessBuilder();
-            builder.command().add(COMMAND_ID);
-            builder.command().add(COMMAND_SWITCH);
-            builder.directory(new File(runDirectory));
-            builder.command().add(getScriptFileName());
+            for (String arg : commands) {
+                builder.command().add(arg);
+            }
+            builder.directory(new File(DIRECTORY));
             executeProcess(builder);
         }
     }
