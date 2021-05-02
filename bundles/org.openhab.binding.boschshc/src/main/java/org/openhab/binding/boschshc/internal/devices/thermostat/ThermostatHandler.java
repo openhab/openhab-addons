@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.thermostat;
 
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CHILD_LOCK;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VALVE_TAPPET_POSITION;
 
@@ -20,6 +21,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.childlock.ChildLockService;
+import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
@@ -42,10 +45,12 @@ public final class ThermostatHandler extends BoschSHCHandler {
     protected void initializeServices() throws BoschSHCException {
         this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
         this.createService(ValveTappetService::new, this::updateChannels, List.of(CHANNEL_VALVE_TAPPET_POSITION));
+        this.createService(ChildLockService::new, this::updateChannels, List.of(CHANNEL_CHILD_LOCK));
     }
 
     /**
-     * Updates the channels which are linked to the {@link TemperatureLevelService} of the device.
+     * Updates the channels which are linked to the {@link TemperatureLevelService}
+     * of the device.
      * 
      * @param state Current state of {@link TemperatureLevelService}.
      */
@@ -54,11 +59,22 @@ public final class ThermostatHandler extends BoschSHCHandler {
     }
 
     /**
-     * Updates the channels which are linked to the {@link ValveTappetService} of the device.
+     * Updates the channels which are linked to the {@link ValveTappetService} of
+     * the device.
      * 
      * @param state Current state of {@link ValveTappetService}.
      */
     private void updateChannels(ValveTappetServiceState state) {
         super.updateState(CHANNEL_VALVE_TAPPET_POSITION, state.getPositionState());
+    }
+
+    /**
+     * Updates the channels which are linked to the {@link ChildLockService} of the
+     * device.
+     * 
+     * @param state Current state of {@link ChildLockService}.
+     */
+    private void updateChannels(ChildLockServiceState state) {
+        super.updateState(CHANNEL_CHILD_LOCK, state.getActiveState());
     }
 }

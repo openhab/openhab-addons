@@ -4,13 +4,14 @@ Binding for the Bosch Smart Home.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
-    - [Bosch In-Wall switches & Bosch Smart Plugs](#bosch-in-wall-switches--bosch-smart-plugs)
-    - [Bosch TwinGuard smoke detector](#bosch-twinguard-smoke-detector)
-    - [Bosch Window/Door contacts](#bosch-windowdoor-contacts)
-    - [Bosch Motion Detector](#bosch-motion-detector)
-    - [Bosch Shutter Control in-wall](#bosch-shutter-control-in-wall)
-    - [Bosch Thermostat](#bosch-thermostat)
-    - [Bosch Climate Control](#bosch-climate-control)
+    - [In-Wall switches & Smart Plugs](#in-wall-switches--smart-plugs)
+    - [TwinGuard smoke detector](#twinguard-smoke-detector)
+    - [Door/Window contact](#doorwindow-contact)
+    - [Motion Detector](#motion-detector)
+    - [Shutter Control](#shutter-control)
+    - [Thermostat](#thermostat)
+    - [Climate Control](#climate-control)
+    - [Wall Thermostat](#wall-thermostat)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -27,10 +28,10 @@ A simple light control.
 **Thing Type ID**: `in-wall-switch`
 
 | Channel Type ID    | Item Type     | Writable | Description                                  |
-|--------------------|---------------| :------: |----------------------------------------------|
-| power-switch       | Switch        | &#9745; | Current state of the switch.                 |
-| power-consumption  | Number:Power  | &#9744; | Current power consumption (W) of the device. |
-| energy-consumption | Number:Energy | &#9744; | Energy consumption of the device.            |
+| ------------------ | ------------- | :------: | -------------------------------------------- |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                 |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device. |
+| energy-consumption | Number:Energy | &#9744;  | Energy consumption of the device.            |
 
 ### TwinGuard smoke detector
 
@@ -39,15 +40,15 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 **Thing Type ID**: `twinguard`
 
 | Channel Type ID    | Item Type            | Writable | Description                                                                                       |
-|--------------------|----------------------| :------: |---------------------------------------------------------------------------------------------------|
-| temperature        | Number:Temperature   | &#9744; | Current measured temperature. |
-| temperature-rating | String               | &#9744; | Rating of the currently measured temperature. |
-| humidity           | Number:Dimensionless | &#9744; | Current measured humidity (0 to 100). |
-| humidity-rating    | String               | &#9744; | Rating of current measured humidity. |
-| purity             | Number:Dimensionless | &#9744; | Purity of the air (ppm). Range from 500 to 5500 ppm. A higher value indicates a higher pollution. |
-| purity-rating      | String               | &#9744; | Rating of current measured purity. |
-| air-description    | String               | &#9744; | Overall description of the air quality. |
-| combined-rating    | String               | &#9744; | Combined rating of the air quality. |
+| ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
+| temperature        | Number:Temperature   | &#9744;  | Current measured temperature.                                                                     |
+| temperature-rating | String               | &#9744;  | Rating of the currently measured temperature.                                                     |
+| humidity           | Number:Dimensionless | &#9744;  | Current measured humidity (0 to 100).                                                             |
+| humidity-rating    | String               | &#9744;  | Rating of current measured humidity.                                                              |
+| purity             | Number:Dimensionless | &#9744;  | Purity of the air (ppm). Range from 500 to 5500 ppm. A higher value indicates a higher pollution. |
+| purity-rating      | String               | &#9744;  | Rating of current measured purity.                                                                |
+| air-description    | String               | &#9744;  | Overall description of the air quality.                                                           |
+| combined-rating    | String               | &#9744;  | Combined rating of the air quality.                                                               |
 
 ### Door/Window contact
 
@@ -56,8 +57,8 @@ Detects open windows and doors.
 **Thing Type ID**: `window-contact`
 
 | Channel Type ID | Item Type | Writable | Description                  |
-|-----------------|-----------| :------: |------------------------------|
-| contact         | Contact   | &#9744; | Contact state of the device. |
+| --------------- | --------- | :------: | ---------------------------- |
+| contact         | Contact   | &#9744;  | Contact state of the device. |
 
 ### Motion Detector
 
@@ -66,8 +67,8 @@ Detects every movement through an intelligent combination of passive infra-red t
 **Thing Type ID**: `motion-detector`
 
 | Channel Type ID | Item Type | Writable | Description                    |
-|-----------------|-----------| :------: |--------------------------------|
-| latest-motion   | DateTime  | &#9744; | The date of the latest motion. |
+| --------------- | --------- | :------: | ------------------------------ |
+| latest-motion   | DateTime  | &#9744;  | The date of the latest motion. |
 
 ### Shutter Control
 
@@ -76,8 +77,8 @@ Control of your shutter to take any position you desire.
 **Thing Type ID**: `shutter-control`
 
 | Channel Type ID | Item Type     | Writable | Description                              |
-|-----------------|---------------| :------: |------------------------------------------|
-| level           | Rollershutter | &#9745; | Current open ratio (0 to 100, Step 0.5). |
+| --------------- | ------------- | :------: | ---------------------------------------- |
+| level           | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5). |
 
 ### Thermostat
 
@@ -86,9 +87,10 @@ Radiator thermostat
 **Thing Type ID**: `thermostat`
 
 | Channel Type ID       | Item Type            | Writable | Description                                    |
-|-----------------------|----------------------| :------: |------------------------------------------------|
-| temperature           | Number:Temperature   | &#9744; | Current measured temperature.                  |
-| valve-tappet-position | Number:Dimensionless | &#9744; | Current open ratio of valve tappet (0 to 100). |
+| --------------------- | -------------------- | :------: | ---------------------------------------------- |
+| temperature           | Number:Temperature   | &#9744;  | Current measured temperature.                  |
+| valve-tappet-position | Number:Dimensionless | &#9744;  | Current open ratio of valve tappet (0 to 100). |
+| child-lock            | Switch               | &#9745;  | Indicates if child lock is active.             |
 
 ### Climate Control
 
@@ -97,9 +99,9 @@ A virtual device which controls up to six Bosch Smart Home radiator thermostats 
 **Thing Type ID**: `climate-control`
 
 | Channel Type ID      | Item Type          | Writable | Description                   |
-|----------------------|--------------------| :------: |-------------------------------|
-| temperature          | Number:Temperature | &#9744; | Current measured temperature. |
-| setpoint-temperature | Number:Temperature | &#9745; | Desired temperature.          |
+| -------------------- | ------------------ | :------: | ----------------------------- |
+| temperature          | Number:Temperature | &#9744;  | Current measured temperature. |
+| setpoint-temperature | Number:Temperature | &#9745;  | Desired temperature.          |
 
 ### Wall Thermostat
 
@@ -107,10 +109,10 @@ Display of the current room temperature as well as the relative humidity in the 
 
 **Thing Type ID**: `wall-thermostat`
 
-| Channel Type ID       | Item Type            | Writable | Description                                    |
-|-----------------------|----------------------| :------: |------------------------------------------------|
-| temperature           | Number:Temperature   | &#9744; | Current measured temperature. |
-| humidity              | Number:Dimensionless | &#9744; | Current measured humidity (0 to 100). |
+| Channel Type ID | Item Type            | Writable | Description                           |
+| --------------- | -------------------- | :------: | ------------------------------------- |
+| temperature     | Number:Temperature   | &#9744;  | Current measured temperature.         |
+| humidity        | Number:Dimensionless | &#9744;  | Current measured humidity (0 to 100). |
 
 ## Limitations
 

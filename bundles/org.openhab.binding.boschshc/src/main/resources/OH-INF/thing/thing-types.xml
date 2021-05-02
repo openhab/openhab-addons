@@ -113,6 +113,7 @@
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="system.power"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
