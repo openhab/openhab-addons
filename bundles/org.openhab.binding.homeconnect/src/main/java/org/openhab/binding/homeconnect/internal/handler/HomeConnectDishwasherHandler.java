@@ -13,11 +13,11 @@
 package org.openhab.binding.homeconnect.internal.handler;
 
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
@@ -84,75 +84,56 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isThingReadyToHandleCommand()) {
-            super.handleCommand(channelUID, command);
+    protected void handleCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        super.handleCommand(channelUID, command, apiClient);
 
-            getApiClient().ifPresent(client -> {
-                try {
-                    if (command instanceof OnOffType) {
-                        if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-                            client.setPowerState(getThingHaId(),
-                                    OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
-                        } else if (CHANNEL_AMBIENT_LIGHT_STATE.equals(channelUID.getId())) {
-                            client.setAmbientLightState(getThingHaId(), OnOffType.ON.equals(command));
-                        }
-                    } else if (command instanceof QuantityType
-                            && CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE.equals(channelUID.getId())) {
-                        Data ambientLightState = client.getAmbientLightState(getThingHaId());
-                        if (!ambientLightState.getValueAsBoolean()) {
-                            // turn on
-                            client.setAmbientLightState(getThingHaId(), true);
-                        }
-                        int value = ((QuantityType<?>) command).intValue();
-                        if (value < 10) {
-                            value = 10;
-                        } else if (value > 100) {
-                            value = 100;
-                        }
-                        client.setAmbientLightBrightnessState(getThingHaId(), value);
-                    } else if (command instanceof StringType
-                            && CHANNEL_AMBIENT_LIGHT_COLOR_STATE.equals(channelUID.getId())) {
-                        Data ambientLightState = client.getAmbientLightState(getThingHaId());
-                        if (!ambientLightState.getValueAsBoolean()) {
-                            // turn on
-                            client.setAmbientLightState(getThingHaId(), true);
-                        }
-                        client.setAmbientLightColorState(getThingHaId(), command.toFullString());
-                    } else if (CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE.equals(channelUID.getId())) {
-                        Data ambientLightState = client.getAmbientLightState(getThingHaId());
-                        if (!ambientLightState.getValueAsBoolean()) {
-                            // turn on
-                            client.setAmbientLightState(getThingHaId(), true);
-                        }
-                        Data ambientLightColorState = client.getAmbientLightColorState(getThingHaId());
-                        if (!STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR.equals(ambientLightColorState.getValue())) {
-                            // set color to custom color
-                            client.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
-                        }
+        if (command instanceof OnOffType) {
+            if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
+                apiClient.setPowerState(getThingHaId(),
+                        OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
+            } else if (CHANNEL_AMBIENT_LIGHT_STATE.equals(channelUID.getId())) {
+                apiClient.setAmbientLightState(getThingHaId(), OnOffType.ON.equals(command));
+            }
+        } else if (command instanceof QuantityType
+                && CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE.equals(channelUID.getId())) {
+            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
+            if (!ambientLightState.getValueAsBoolean()) {
+                // turn on
+                apiClient.setAmbientLightState(getThingHaId(), true);
+            }
+            int value = ((QuantityType<?>) command).intValue();
+            if (value < 10) {
+                value = 10;
+            } else if (value > 100) {
+                value = 100;
+            }
+            apiClient.setAmbientLightBrightnessState(getThingHaId(), value);
+        } else if (command instanceof StringType && CHANNEL_AMBIENT_LIGHT_COLOR_STATE.equals(channelUID.getId())) {
+            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
+            if (!ambientLightState.getValueAsBoolean()) {
+                // turn on
+                apiClient.setAmbientLightState(getThingHaId(), true);
+            }
+            apiClient.setAmbientLightColorState(getThingHaId(), command.toFullString());
+        } else if (CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE.equals(channelUID.getId())) {
+            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
+            if (!ambientLightState.getValueAsBoolean()) {
+                // turn on
+                apiClient.setAmbientLightState(getThingHaId(), true);
+            }
+            Data ambientLightColorState = apiClient.getAmbientLightColorState(getThingHaId());
+            if (!STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR.equals(ambientLightColorState.getValue())) {
+                // set color to custom color
+                apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
+            }
 
-                        if (command instanceof HSBType) {
-                            client.setAmbientLightCustomColorState(getThingHaId(), mapColor((HSBType) command));
-                        } else if (command instanceof StringType) {
-                            client.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
-                        }
-                    }
-                } catch (ApplianceOfflineException e) {
-                    logger.debug("Could not handle command {}. Appliance offline. thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                    updateStatus(OFFLINE);
-                    resetChannelsOnOfflineEvent();
-                    resetProgramStateChannels();
-                } catch (CommunicationException e) {
-                    logger.debug("Could not handle command {}. API communication problem! haId={}, error={}",
-                            command.toFullString(), getThingHaId(), e.getMessage());
-                } catch (AuthorizationException e) {
-                    logger.debug("Could not handle command {}. Authorization problem! haId={}, error={}",
-                            command.toFullString(), getThingHaId(), e.getMessage());
-
-                    handleAuthenticationError(e);
-                }
-            });
+            if (command instanceof HSBType) {
+                apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor((HSBType) command));
+            } else if (command instanceof StringType) {
+                apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
+            }
         }
     }
 

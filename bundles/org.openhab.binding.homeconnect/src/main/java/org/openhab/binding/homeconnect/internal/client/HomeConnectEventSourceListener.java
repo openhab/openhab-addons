@@ -138,9 +138,9 @@ public class HomeConnectEventSourceListener {
                 // seconds. So we wait few seconds before trying again.
                 if (error instanceof NotAuthorizedException) {
                     logger.debug(
-                            "Event source listener connection failure due to unauthorized exception : wait 5 seconds... haId={}",
+                            "Event source listener connection failure due to unauthorized exception : wait 10 seconds... haId={}",
                             haId);
-                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 5, TimeUnit.SECONDS);
+                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 10, TimeUnit.SECONDS);
                 } else {
                     eventListener.onClosed();
                 }

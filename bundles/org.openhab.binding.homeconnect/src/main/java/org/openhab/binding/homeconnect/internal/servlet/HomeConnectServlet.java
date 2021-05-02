@@ -14,6 +14,7 @@ package org.openhab.binding.homeconnect.internal.servlet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZonedDateTime.now;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
 import java.io.IOException;
@@ -108,7 +109,8 @@ public class HomeConnectServlet extends HttpServlet {
     private static final String ACTION_REMOTE_CONTROL_ACTIVE = "remote-control-active";
     private static final String ACTION_PUT_RAW = "put-raw";
     private static final String ACTION_GET_RAW = "get-raw";
-    private static final DateTimeFormatter FILE_EXPORT_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm");
+    private static final DateTimeFormatter FILE_EXPORT_DTF = ISO_OFFSET_DATE_TIME;
+    private static final String EMPTY_RESPONSE = "{}";
     private static final long serialVersionUID = -2449763690208703307L;
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectServlet.class);
@@ -129,16 +131,7 @@ public class HomeConnectServlet extends HttpServlet {
             logger.debug("Initialize Home Connect configuration servlet ({})", SERVLET_PATH);
             httpService.registerServlet(SERVLET_PATH, this, null, httpService.createDefaultHttpContext());
             httpService.registerResources(ASSETS_PATH, "assets", null);
-        } catch (NamespaceException e) {
-            try {
-                httpService.unregister(SERVLET_PATH);
-                httpService.unregister(ASSETS_PATH);
-                httpService.registerServlet(SERVLET_PATH, this, null, httpService.createDefaultHttpContext());
-                httpService.registerResources(ASSETS_PATH, "assets", null);
-            } catch (ServletException | NamespaceException ex) {
-                logger.warn("Could not register Home Connect servlet! ({})", SERVLET_PATH, ex);
-            }
-        } catch (ServletException e) {
+        } catch (ServletException | NamespaceException e) {
             logger.warn("Could not register Home Connect servlet! ({})", SERVLET_PATH, e);
         }
 
@@ -286,73 +279,63 @@ public class HomeConnectServlet extends HttpServlet {
 
                 switch (action) {
                     case ACTION_SHOW_DETAILS: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId);
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_ALL_PROGRAMS: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/programs");
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_AVAILABLE_PROGRAMS: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/programs/available");
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_SELECTED_PROGRAM: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/programs/selected");
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_ACTIVE_PROGRAM: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/programs/active");
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_OPERATION_STATE: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/status/" + EVENT_OPERATION_STATE);
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_POWER_STATE: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/settings/" + EVENT_POWER_STATE);
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_DOOR_STATE: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/status/" + EVENT_DOOR_STATE);
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_REMOTE_START_ALLOWED: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/status/" + EVENT_REMOTE_CONTROL_START_ALLOWED);
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     case ACTION_REMOTE_CONTROL_ACTIVE: {
-                        @Nullable
                         String actionResponse = bridgeHandler.get().getApiClient().getRaw(haId,
                                 "/api/homeappliances/" + haId + "/status/" + EVENT_REMOTE_CONTROL_ACTIVE);
-                        response.getWriter().write(actionResponse != null ? actionResponse : "{}");
+                        response.getWriter().write(actionResponse != null ? actionResponse : EMPTY_RESPONSE);
                         break;
                     }
                     default:

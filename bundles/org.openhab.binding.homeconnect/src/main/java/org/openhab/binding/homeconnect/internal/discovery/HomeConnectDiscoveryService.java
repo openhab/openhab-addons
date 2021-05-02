@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class HomeConnectDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
-    private static final int SEARCH_TIME = 20;
+    private static final int SEARCH_TIME_SEC = 20;
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectDiscoveryService.class);
 
@@ -55,7 +55,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
      *
      */
     public HomeConnectDiscoveryService() {
-        super(DISCOVERABLE_DEVICE_THING_TYPES_UIDS, SEARCH_TIME, true);
+        super(DISCOVERABLE_DEVICE_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
     }
 
     @Override

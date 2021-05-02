@@ -14,7 +14,9 @@ package org.openhab.binding.homeconnect.internal.handler;
 
 import static java.util.Collections.emptyList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.*;
+import static org.openhab.binding.homeconnect.internal.client.model.EventType.CONNECTED;
+import static org.openhab.binding.homeconnect.internal.client.model.EventType.DISCONNECTED;
+import static org.openhab.binding.homeconnect.internal.client.model.EventType.KEEP_ALIVE;
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
@@ -113,9 +115,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void initialize() {
-        logger.debug("Initialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
-
-        if (!getBridgeHandler().isPresent()) {
+        if (getBridgeHandler().isEmpty()) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
         } else if (isBridgeOffline()) {
@@ -157,51 +157,55 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         initialize();
     }
 
+    protected void handleCommand(ChannelUID channelUID, Command command, HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        Optional<HomeConnectApiClient> homeConnectApiClient = getApiClient();
+
+        if (command instanceof RefreshType) {
+            updateChannel(channelUID);
+        } else if (command instanceof StringType && CHANNEL_BASIC_ACTIONS_STATE.equals(channelUID.getId())
+                && getBridgeHandler().isPresent()) {
+            updateState(channelUID, new StringType(""));
+
+            if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
+                HomeConnectBridgeHandler homeConnectBridgeHandler = getBridgeHandler().get();
+                // workaround for api bug
+                // if simulator, program options have to be passed along with the desired program
+                // if non simulator, some options throw a "SDK.Error.UnsupportedOption" error
+                if (homeConnectBridgeHandler.getConfiguration().isSimulator()) {
+                    apiClient.startSelectedProgram(getThingHaId());
+                } else {
+                    Program selectedProgram = apiClient.getSelectedProgram(getThingHaId());
+                    if (selectedProgram != null) {
+                        apiClient.startProgram(getThingHaId(), selectedProgram.getKey());
+                    }
+                }
+            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
+                apiClient.stopProgram(getThingHaId());
+            } else if (COMMAND_SELECTED.equalsIgnoreCase(command.toFullString())) {
+                apiClient.getSelectedProgram(getThingHaId());
+            } else {
+                logger.debug("Start custom program. command={} haId={}", command.toFullString(), getThingHaId());
+                apiClient.startCustomProgram(getThingHaId(), command.toFullString());
+            }
+        } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())
+                && homeConnectApiClient.isPresent()) {
+            homeConnectApiClient.get().setSelectedProgram(getThingHaId(), command.toFullString());
+        }
+    }
+
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isThingReadyToHandleCommand()) {
+    public final void handleCommand(ChannelUID channelUID, Command command) {
+        var apiClient = getApiClient();
+        if ((isThingReadyToHandleCommand() || (this instanceof HomeConnectHoodHandler && isBridgeOnline()
+                && isThingAccessibleViaServerSentEvents())) && apiClient.isPresent()) {
             logger.debug("Handle \"{}\" command ({}). haId={}", command, channelUID.getId(), getThingHaId());
             try {
-                Optional<HomeConnectApiClient> homeConnectApiClient = getApiClient();
-
-                if (command instanceof RefreshType) {
-                    updateChannel(channelUID);
-                } else if (command instanceof StringType && CHANNEL_BASIC_ACTIONS_STATE.equals(channelUID.getId())
-                        && homeConnectApiClient.isPresent() && getBridgeHandler().isPresent()) {
-                    HomeConnectApiClient apiClient = homeConnectApiClient.get();
-                    updateState(channelUID, new StringType(""));
-
-                    if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
-                        HomeConnectBridgeHandler homeConnectBridgeHandler = getBridgeHandler().get();
-                        // workaround for api bug
-                        // if simulator, program options have to be passed along with the desired program
-                        // if non simulator, some options throw a "SDK.Error.UnsupportedOption" error
-                        if (homeConnectBridgeHandler.getConfiguration().isSimulator()) {
-                            apiClient.startSelectedProgram(getThingHaId());
-                        } else {
-                            @Nullable
-                            Program selectedProgram = apiClient.getSelectedProgram(getThingHaId());
-                            if (selectedProgram != null) {
-                                apiClient.startProgram(getThingHaId(), selectedProgram.getKey());
-                            }
-                        }
-                    } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
-                        apiClient.stopProgram(getThingHaId());
-                    } else if (COMMAND_SELECTED.equalsIgnoreCase(command.toFullString())) {
-                        apiClient.getSelectedProgram(getThingHaId());
-                    } else {
-                        logger.debug("Start custom program. command={} haId={}", command.toFullString(),
-                                getThingHaId());
-                        apiClient.startCustomProgram(getThingHaId(), command.toFullString());
-                    }
-                } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())
-                        && homeConnectApiClient.isPresent()) {
-                    homeConnectApiClient.get().setSelectedProgram(getThingHaId(), command.toFullString());
-                }
+                handleCommand(channelUID, command, apiClient.get());
             } catch (ApplianceOfflineException e) {
                 logger.debug("Could not handle command {}. Appliance offline. thing={}, haId={}, error={}",
                         command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                updateStatus(OFFLINE);
+                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 resetChannelsOnOfflineEvent();
                 resetProgramStateChannels();
             } catch (CommunicationException e) {
@@ -671,10 +675,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             try {
                 HomeAppliance homeAppliance = client.getHomeAppliance(getThingHaId());
                 if (!homeAppliance.isConnected()) {
-                    logger.debug("Update status to OFFLINE. thing={}, haId={}", getThingLabel(), getThingHaId());
                     updateStatus(OFFLINE);
                 } else {
-                    logger.debug("Update status to ONLINE. thing={}, haId={}", getThingLabel(), getThingHaId());
                     updateStatus(ONLINE);
                 }
                 accessible.set(true);
@@ -695,7 +697,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 handleAuthenticationError(e);
             }
         });
-        if (!apiClient.isPresent()) {
+        if (apiClient.isEmpty()) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
         }

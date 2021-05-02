@@ -13,7 +13,6 @@
 package org.openhab.binding.homeconnect.internal.handler;
 
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
@@ -108,48 +108,31 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isThingReadyToHandleCommand()) {
-            super.handleCommand(channelUID, command);
-            String operationState = getOperationState();
-            getApiClient().ifPresent(apiClient -> {
-                try {
-                    // only handle these commands if operation state allows it
-                    if (operationState != null && INACTIVE_STATE.contains(operationState)
-                            && command instanceof StringType) {
-                        switch (channelUID.getId()) {
-                            case CHANNEL_WASHER_TEMPERATURE:
-                                apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_TEMPERATURE,
-                                        command.toFullString(), null, false, false);
-                                break;
-                            case CHANNEL_WASHER_SPIN_SPEED:
-                                apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_SPIN_SPEED,
-                                        command.toFullString(), null, false, false);
-                                break;
-                            case CHANNEL_DRYER_DRYING_TARGET:
-                                apiClient.setProgramOptions(getThingHaId(), OPTION_DRYER_DRYING_TARGET,
-                                        command.toFullString(), null, false, false);
-                                break;
-                        }
-                    } else {
-                        logger.debug("Device can not handle command {} in current operation state ({}). haId={}",
-                                command, operationState, getThingHaId());
-                    }
-                } catch (ApplianceOfflineException e) {
-                    logger.debug("Could not handle command {}. Appliance offline. thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                    updateStatus(OFFLINE);
-                    resetChannelsOnOfflineEvent();
-                    resetProgramStateChannels();
-                } catch (CommunicationException e) {
-                    logger.debug("Could not handle command {}. API communication problem! thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                } catch (AuthorizationException e) {
-                    logger.debug("Could not handle command {}. Authorization problem! thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                    handleAuthenticationError(e);
-                }
-            });
+    protected void handleCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        super.handleCommand(channelUID, command, apiClient);
+        String operationState = getOperationState();
+
+        // only handle these commands if operation state allows it
+        if (operationState != null && INACTIVE_STATE.contains(operationState) && command instanceof StringType) {
+            switch (channelUID.getId()) {
+                case CHANNEL_WASHER_TEMPERATURE:
+                    apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_TEMPERATURE, command.toFullString(), null,
+                            false, false);
+                    break;
+                case CHANNEL_WASHER_SPIN_SPEED:
+                    apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_SPIN_SPEED, command.toFullString(), null,
+                            false, false);
+                    break;
+                case CHANNEL_DRYER_DRYING_TARGET:
+                    apiClient.setProgramOptions(getThingHaId(), OPTION_DRYER_DRYING_TARGET, command.toFullString(),
+                            null, false, false);
+                    break;
+            }
+        } else {
+            logger.debug("Device can not handle command {} in current operation state ({}). haId={}", command,
+                    operationState, getThingHaId());
         }
     }
 

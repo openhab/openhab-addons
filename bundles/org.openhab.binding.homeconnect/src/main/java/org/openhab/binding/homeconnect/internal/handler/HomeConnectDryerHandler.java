@@ -13,12 +13,12 @@
 package org.openhab.binding.homeconnect.internal.handler;
 
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
@@ -83,40 +83,23 @@ public class HomeConnectDryerHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isThingReadyToHandleCommand()) {
-            super.handleCommand(channelUID, command);
-            String operationState = getOperationState();
+    protected void handleCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        super.handleCommand(channelUID, command, apiClient);
 
-            // only handle these commands if operation state allows it
-            if (operationState != null && INACTIVE_STATE.contains(operationState)) {
-                // set drying target option
-                if (command instanceof StringType && CHANNEL_DRYER_DRYING_TARGET.equals(channelUID.getId())) {
-                    getApiClient().ifPresent(apiClient -> {
-                        try {
-                            apiClient.setProgramOptions(getThingHaId(), OPTION_DRYER_DRYING_TARGET,
-                                    command.toFullString(), null, false, false);
-                        } catch (ApplianceOfflineException e) {
-                            logger.debug("Could not handle command {}. Appliance offline. thing={}, haId={}, error={}",
-                                    command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                            updateStatus(OFFLINE);
-                            resetChannelsOnOfflineEvent();
-                            resetProgramStateChannels();
-                        } catch (CommunicationException e) {
-                            logger.debug("Could not handle command {}. API communication problem! haId={}, error={}",
-                                    command.toFullString(), getThingHaId(), e.getMessage());
-                        } catch (AuthorizationException e) {
-                            logger.debug("Could not handle command {}. Authorization problem! haId={}, error={}",
-                                    command.toFullString(), getThingHaId(), e.getMessage());
+        String operationState = getOperationState();
 
-                            handleAuthenticationError(e);
-                        }
-                    });
-                }
-            } else {
-                logger.debug("Device can not handle command {} in current operation state ({}). thing={}, haId={}",
-                        command, operationState, getThingLabel(), getThingHaId());
+        // only handle these commands if operation state allows it
+        if (operationState != null && INACTIVE_STATE.contains(operationState)) {
+            // set drying target option
+            if (command instanceof StringType && CHANNEL_DRYER_DRYING_TARGET.equals(channelUID.getId())) {
+                apiClient.setProgramOptions(getThingHaId(), OPTION_DRYER_DRYING_TARGET, command.toFullString(), null,
+                        false, false);
             }
+        } else {
+            logger.debug("Device can not handle command {} in current operation state ({}). thing={}, haId={}", command,
+                    operationState, getThingLabel(), getThingHaId());
         }
     }
 

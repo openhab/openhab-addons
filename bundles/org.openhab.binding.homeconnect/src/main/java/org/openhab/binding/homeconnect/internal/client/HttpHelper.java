@@ -69,7 +69,8 @@ public class HttpHelper {
             try {
                 getBucket(clientId).asScheduler().consume(1);
             } catch (InterruptedException e) {
-                LoggerFactory.getLogger(HttpHelper.class).error("Rate limiting error! error={}", e.getMessage());
+                LoggerFactory.getLogger(HttpHelper.class).debug("Could not consume from bucket! clientId={}, error={}",
+                        clientId, e.getMessage());
             }
         }
         return request.send();

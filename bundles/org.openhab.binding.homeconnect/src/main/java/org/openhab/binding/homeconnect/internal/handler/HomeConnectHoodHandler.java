@@ -16,7 +16,6 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.core.library.unit.Units.PERCENT;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -141,145 +140,124 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isBridgeOnline() && isThingAccessibleViaServerSentEvents()) {
-            super.handleCommand(channelUID, command);
+    protected void handleCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        super.handleCommand(channelUID, command, apiClient);
 
-            getApiClient().ifPresent(apiClient -> {
-                try {
-                    if (command instanceof OnOffType) {
-                        if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-                            apiClient.setPowerState(getThingHaId(),
-                                    OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
-                        } else if (CHANNEL_FUNCTIONAL_LIGHT_STATE.equals(channelUID.getId())) {
-                            apiClient.setFunctionalLightState(getThingHaId(), OnOffType.ON.equals(command));
-                        } else if (CHANNEL_AMBIENT_LIGHT_STATE.equals(channelUID.getId())) {
-                            apiClient.setAmbientLightState(getThingHaId(), OnOffType.ON.equals(command));
-                        }
-                    }
+        if (command instanceof OnOffType) {
+            if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
+                apiClient.setPowerState(getThingHaId(),
+                        OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
+            } else if (CHANNEL_FUNCTIONAL_LIGHT_STATE.equals(channelUID.getId())) {
+                apiClient.setFunctionalLightState(getThingHaId(), OnOffType.ON.equals(command));
+            } else if (CHANNEL_AMBIENT_LIGHT_STATE.equals(channelUID.getId())) {
+                apiClient.setAmbientLightState(getThingHaId(), OnOffType.ON.equals(command));
+            }
+        }
 
-                    if (command instanceof QuantityType) {
-                        if (CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE.equals(channelUID.getId())) {
-                            Data functionalLightState = apiClient.getFunctionalLightState(getThingHaId());
-                            if (!functionalLightState.getValueAsBoolean()) {
-                                // turn on
-                                apiClient.setFunctionalLightState(getThingHaId(), true);
-                            }
-                            int value = ((QuantityType<?>) command).intValue();
-                            if (value < 10) {
-                                value = 10;
-                            } else if (value > 100) {
-                                value = 100;
-                            }
-                            apiClient.setFunctionalLightBrightnessState(getThingHaId(), value);
-                        } else if (CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE.equals(channelUID.getId())) {
-                            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
-                            if (!ambientLightState.getValueAsBoolean()) {
-                                // turn on
-                                apiClient.setAmbientLightState(getThingHaId(), true);
-                            }
-                            int value = ((QuantityType<?>) command).intValue();
-                            if (value < 10) {
-                                value = 10;
-                            } else if (value > 100) {
-                                value = 100;
-                            }
-                            apiClient.setAmbientLightBrightnessState(getThingHaId(), value);
-                        }
-                    }
-
-                    // ambient light color state
-                    if (command instanceof StringType && CHANNEL_AMBIENT_LIGHT_COLOR_STATE.equals(channelUID.getId())) {
-                        Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
-                        if (!ambientLightState.getValueAsBoolean()) {
-                            // turn on
-                            apiClient.setAmbientLightState(getThingHaId(), true);
-                        }
-                        apiClient.setAmbientLightColorState(getThingHaId(), command.toFullString());
-                    }
-
-                    // ambient light custom color state
-                    if (CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE.equals(channelUID.getId())) {
-                        Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
-                        if (!ambientLightState.getValueAsBoolean()) {
-                            // turn on
-                            apiClient.setAmbientLightState(getThingHaId(), true);
-                        }
-                        Data ambientLightColorState = apiClient.getAmbientLightColorState(getThingHaId());
-                        if (!STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR.equals(ambientLightColorState.getValue())) {
-                            // set color to custom color
-                            apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
-                        }
-
-                        if (command instanceof HSBType) {
-                            apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor((HSBType) command));
-                        } else if (command instanceof StringType) {
-                            apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
-                        }
-                    }
-
-                    // program options
-                    if (command instanceof StringType && CHANNEL_HOOD_ACTIONS_STATE.equals(channelUID.getId())) {
-                        String operationState = getOperationState();
-                        if (OPERATION_STATE_INACTIVE.equals(operationState)
-                                || OPERATION_STATE_RUN.equals(operationState)) {
-                            if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
-                                apiClient.stopProgram(getThingHaId());
-                            }
-                        } else {
-                            logger.debug(
-                                    "Device can not handle command {} in current operation state ({}). thing={}, haId={}",
-                                    command, operationState, getThingLabel(), getThingHaId());
-                        }
-
-                        // These command always start the hood - even if appliance is turned off
-                        if (COMMAND_AUTOMATIC.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startProgram(getThingHaId(), PROGRAM_HOOD_AUTOMATIC);
-                        } else if (COMMAND_DELAYED_SHUT_OFF.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startProgram(getThingHaId(), PROGRAM_HOOD_DELAYED_SHUT_OFF);
-                        } else if (COMMAND_VENTING_1.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startCustomProgram(getThingHaId(),
-                                    format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_01));
-                        } else if (COMMAND_VENTING_2.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startCustomProgram(getThingHaId(),
-                                    format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_02));
-                        } else if (COMMAND_VENTING_3.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startCustomProgram(getThingHaId(),
-                                    format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_03));
-                        } else if (COMMAND_VENTING_4.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startCustomProgram(getThingHaId(),
-                                    format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_04));
-                        } else if (COMMAND_VENTING_5.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startCustomProgram(getThingHaId(),
-                                    format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_05));
-                        } else if (COMMAND_VENTING_INTENSIVE_1.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startCustomProgram(getThingHaId(),
-                                    format(START_VENTING_INTENSIVE_STAGE_PAYLOAD_TEMPLATE, STAGE_INTENSIVE_STAGE_1));
-                        } else if (COMMAND_VENTING_INTENSIVE_2.equalsIgnoreCase(command.toFullString())) {
-                            apiClient.startCustomProgram(getThingHaId(),
-                                    format(START_VENTING_INTENSIVE_STAGE_PAYLOAD_TEMPLATE, STAGE_INTENSIVE_STAGE_2));
-                        } else {
-                            logger.info("Start custom program. command={} haId={}", command.toFullString(),
-                                    getThingHaId());
-                            apiClient.startCustomProgram(getThingHaId(), command.toFullString());
-                        }
-                    }
-                } catch (ApplianceOfflineException e) {
-                    logger.debug("Could not handle command {}. Appliance offline. thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                    updateStatus(OFFLINE);
-                    resetChannelsOnOfflineEvent();
-                    resetProgramStateChannels();
-                } catch (CommunicationException e) {
-                    logger.debug("Could not handle command {}. API communication problem! thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                } catch (AuthorizationException e) {
-                    logger.debug("Could not handle command {}. Authorization problem! thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-
-                    handleAuthenticationError(e);
+        if (command instanceof QuantityType) {
+            if (CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE.equals(channelUID.getId())) {
+                Data functionalLightState = apiClient.getFunctionalLightState(getThingHaId());
+                if (!functionalLightState.getValueAsBoolean()) {
+                    // turn on
+                    apiClient.setFunctionalLightState(getThingHaId(), true);
                 }
-            });
+                int value = ((QuantityType<?>) command).intValue();
+                if (value < 10) {
+                    value = 10;
+                } else if (value > 100) {
+                    value = 100;
+                }
+                apiClient.setFunctionalLightBrightnessState(getThingHaId(), value);
+            } else if (CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE.equals(channelUID.getId())) {
+                Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
+                if (!ambientLightState.getValueAsBoolean()) {
+                    // turn on
+                    apiClient.setAmbientLightState(getThingHaId(), true);
+                }
+                int value = ((QuantityType<?>) command).intValue();
+                if (value < 10) {
+                    value = 10;
+                } else if (value > 100) {
+                    value = 100;
+                }
+                apiClient.setAmbientLightBrightnessState(getThingHaId(), value);
+            }
+        }
+
+        // ambient light color state
+        if (command instanceof StringType && CHANNEL_AMBIENT_LIGHT_COLOR_STATE.equals(channelUID.getId())) {
+            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
+            if (!ambientLightState.getValueAsBoolean()) {
+                // turn on
+                apiClient.setAmbientLightState(getThingHaId(), true);
+            }
+            apiClient.setAmbientLightColorState(getThingHaId(), command.toFullString());
+        }
+
+        // ambient light custom color state
+        if (CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE.equals(channelUID.getId())) {
+            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
+            if (!ambientLightState.getValueAsBoolean()) {
+                // turn on
+                apiClient.setAmbientLightState(getThingHaId(), true);
+            }
+            Data ambientLightColorState = apiClient.getAmbientLightColorState(getThingHaId());
+            if (!STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR.equals(ambientLightColorState.getValue())) {
+                // set color to custom color
+                apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
+            }
+
+            if (command instanceof HSBType) {
+                apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor((HSBType) command));
+            } else if (command instanceof StringType) {
+                apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
+            }
+        }
+
+        // program options
+        if (command instanceof StringType && CHANNEL_HOOD_ACTIONS_STATE.equals(channelUID.getId())) {
+            String operationState = getOperationState();
+            if (OPERATION_STATE_INACTIVE.equals(operationState) || OPERATION_STATE_RUN.equals(operationState)) {
+                if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
+                    apiClient.stopProgram(getThingHaId());
+                }
+            } else {
+                logger.debug("Device can not handle command {} in current operation state ({}). thing={}, haId={}",
+                        command, operationState, getThingLabel(), getThingHaId());
+            }
+
+            // These command always start the hood - even if appliance is turned off
+            if (COMMAND_AUTOMATIC.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startProgram(getThingHaId(), PROGRAM_HOOD_AUTOMATIC);
+            } else if (COMMAND_DELAYED_SHUT_OFF.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startProgram(getThingHaId(), PROGRAM_HOOD_DELAYED_SHUT_OFF);
+            } else if (COMMAND_VENTING_1.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startCustomProgram(getThingHaId(),
+                        format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_01));
+            } else if (COMMAND_VENTING_2.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startCustomProgram(getThingHaId(),
+                        format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_02));
+            } else if (COMMAND_VENTING_3.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startCustomProgram(getThingHaId(),
+                        format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_03));
+            } else if (COMMAND_VENTING_4.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startCustomProgram(getThingHaId(),
+                        format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_04));
+            } else if (COMMAND_VENTING_5.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startCustomProgram(getThingHaId(),
+                        format(START_VENTING_STAGE_PAYLOAD_TEMPLATE, STAGE_FAN_STAGE_05));
+            } else if (COMMAND_VENTING_INTENSIVE_1.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startCustomProgram(getThingHaId(),
+                        format(START_VENTING_INTENSIVE_STAGE_PAYLOAD_TEMPLATE, STAGE_INTENSIVE_STAGE_1));
+            } else if (COMMAND_VENTING_INTENSIVE_2.equalsIgnoreCase(command.toFullString())) {
+                apiClient.startCustomProgram(getThingHaId(),
+                        format(START_VENTING_INTENSIVE_STAGE_PAYLOAD_TEMPLATE, STAGE_INTENSIVE_STAGE_2));
+            } else {
+                logger.info("Start custom program. command={} haId={}", command.toFullString(), getThingHaId());
+                apiClient.startCustomProgram(getThingHaId(), command.toFullString());
+            }
         }
     }
 

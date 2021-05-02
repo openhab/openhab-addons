@@ -27,12 +27,12 @@ public class Token {
 
     private final String accessToken;
     private final String refreshToken;
-    private final long accessTokenExpiration;
+    private final long accessTokenExpirationInSeconds;
 
-    public Token(String accessToken, String refreshToken, long accessTokenExpiration) {
+    public Token(String accessToken, String refreshToken, long accessTokenExpirationInSeconds) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.accessTokenExpiration = accessTokenExpiration;
+        this.accessTokenExpirationInSeconds = accessTokenExpirationInSeconds;
     }
 
     public String getAccessToken() {
@@ -44,12 +44,12 @@ public class Token {
     }
 
     public long getAccessTokenExpiration() {
-        return accessTokenExpiration;
+        return accessTokenExpirationInSeconds;
     }
 
     @Override
     public String toString() {
         return "Token [accessToken=" + accessToken + ", refreshToken=" + refreshToken + ", accessTokenExpiration="
-                + new Date(accessTokenExpiration) + "]";
+                + new Date(accessTokenExpirationInSeconds) + "]";
     }
 }

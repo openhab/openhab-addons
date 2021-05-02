@@ -13,11 +13,11 @@
 package org.openhab.binding.homeconnect.internal.handler;
 
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
@@ -86,33 +86,14 @@ public class HomeConnectCoffeeMakerHandler extends AbstractHomeConnectThingHandl
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isThingReadyToHandleCommand()) {
-            super.handleCommand(channelUID, command);
+    protected void handleCommand(ChannelUID channelUID, Command command, HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        super.handleCommand(channelUID, command, apiClient);
 
-            getApiClient().ifPresent(apiClient -> {
-                try {
-                    // turn coffee maker on and standby
-                    if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-                        apiClient.setPowerState(getThingHaId(),
-                                OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_STANDBY);
-                    }
-                } catch (ApplianceOfflineException e) {
-                    logger.debug("Could not handle command {}. Appliance offline. thing={}, haId={}, error={}",
-                            command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                    updateStatus(OFFLINE);
-                    resetChannelsOnOfflineEvent();
-                    resetProgramStateChannels();
-                } catch (CommunicationException e) {
-                    logger.debug("Could not handle command {}. API communication problem! haId={}, error={}",
-                            command.toFullString(), getThingHaId(), e.getMessage());
-                } catch (AuthorizationException e) {
-                    logger.debug("Could not handle command {}. Authorization problem! haId={}, error={}",
-                            command.toFullString(), getThingHaId(), e.getMessage());
-
-                    handleAuthenticationError(e);
-                }
-            });
+        // turn coffee maker on and standby
+        if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())) {
+            apiClient.setPowerState(getThingHaId(),
+                    OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_STANDBY);
         }
     }
 

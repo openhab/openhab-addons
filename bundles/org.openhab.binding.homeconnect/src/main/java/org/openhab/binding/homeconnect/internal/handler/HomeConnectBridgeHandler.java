@@ -139,9 +139,6 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 if (accessTokenResponse == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect).");
-                    logger.info(
-                            "Configuration is pending. Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect). bridge={}",
-                            getThing().getLabel());
                 } else {
                     apiClient.getHomeAppliances();
                     updateStatus(ThingStatus.ONLINE);
@@ -150,12 +147,11 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                     | AuthorizationException e) {
                 ZonedDateTime nextReinitializeDateTime = ZonedDateTime.now().plusSeconds(REINITIALIZATION_DELAY_SEC);
 
-                String infoMessage = String.format(
+                String offlineMessage = String.format(
                         "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",
                         nextReinitializeDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME), e.getMessage(),
                         getThing().getLabel());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, infoMessage);
-                logger.info("{}", infoMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
 
                 scheduleReinitialize();
             }
@@ -196,7 +192,10 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
             // invalidate oAuth credentials
             try {
                 logger.debug("Clear oAuth credential store. bridge={}", getThing().getLabel());
-                oAuthClientService.remove();
+                var oAuthClientService = this.oAuthClientService;
+                if (oAuthClientService != null) {
+                    oAuthClientService.remove();
+                }
             } catch (OAuthException e) {
                 logger.error("Could not clear oAuth credentials. bridge={}", getThing().getLabel(), e);
             }

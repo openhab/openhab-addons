@@ -22,7 +22,6 @@ import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstan
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FREEZER_SUPER_MODE;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FRIDGE_SETPOINT_TEMPERATURE;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FRIDGE_SUPER_MODE;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
 import java.util.Map;
 import java.util.Optional;
@@ -143,71 +142,53 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isThingReadyToHandleCommand()) {
-            super.handleCommand(channelUID, command);
-            Optional<HomeConnectApiClient> apiClient = getApiClient();
+    protected void handleCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        super.handleCommand(channelUID, command, apiClient);
 
-            try {
-                if (apiClient.isPresent() && command instanceof QuantityType
-                        && (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())
-                                || CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId()))) {
-                    QuantityType<?> quantity = (QuantityType<?>) command;
+        try {
+            if (command instanceof QuantityType && (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())
+                    || CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId()))) {
+                QuantityType<?> quantity = (QuantityType<?>) command;
 
-                    String value;
-                    String unit;
+                String value;
+                String unit;
 
-                    if (quantity.getUnit().equals(SIUnits.CELSIUS)
-                            || quantity.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
-                        unit = quantity.getUnit().toString();
-                        value = String.valueOf(quantity.intValue());
+                if (quantity.getUnit().equals(SIUnits.CELSIUS) || quantity.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
+                    unit = quantity.getUnit().toString();
+                    value = String.valueOf(quantity.intValue());
+                } else {
+                    logger.debug("Converting target setpoint temperature from {}{} to °C value. thing={}, haId={}",
+                            quantity.intValue(), quantity.getUnit().toString(), getThingLabel(), getThingHaId());
+                    unit = "°C";
+                    var celsius = quantity.toUnit(SIUnits.CELSIUS);
+                    if (celsius == null) {
+                        logger.warn("Converting setpoint temperature to celsius failed! quantity={}", quantity);
+                        value = "-6";
                     } else {
-                        logger.debug("Converting target setpoint temperature from {}{} to °C value. thing={}, haId={}",
-                                quantity.intValue(), quantity.getUnit().toString(), getThingLabel(), getThingHaId());
-                        unit = "°C";
-                        var celsius = quantity.toUnit(SIUnits.CELSIUS);
-                        if (celsius == null) {
-                            logger.warn("Converting setpoint temperature to celsius failed! quantity={}", quantity);
-                            value = "-6";
-                        } else {
-                            value = String.valueOf(celsius.intValue());
-                        }
-                        logger.debug("{}{}", value, unit);
+                        value = String.valueOf(celsius.intValue());
                     }
-
-                    logger.debug("Set setpoint temperature to {} {}. thing={}, haId={}", value, unit, getThingLabel(),
-                            getThingHaId());
-
-                    if (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
-                        apiClient.get().setFridgeSetpointTemperature(getThingHaId(), value, unit);
-                    } else if (CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
-                        apiClient.get().setFreezerSetpointTemperature(getThingHaId(), value, unit);
-                    }
-                } else if (command instanceof OnOffType && apiClient.isPresent()) {
-                    if (CHANNEL_FREEZER_SUPER_MODE.equals(channelUID.getId())) {
-                        apiClient.get().setFreezerSuperMode(getThingHaId(), OnOffType.ON.equals(command));
-                    } else if (CHANNEL_REFRIGERATOR_SUPER_MODE.equals(channelUID.getId())) {
-                        apiClient.get().setFridgeSuperMode(getThingHaId(), OnOffType.ON.equals(command));
-                    }
+                    logger.debug("{}{}", value, unit);
                 }
-            } catch (ApplianceOfflineException e) {
-                logger.debug(
-                        "API communication problem while trying to update! Appliance offline. thing={}, haId={}, error={}",
-                        getThingLabel(), getThingHaId(), e.getMessage());
-                updateStatus(OFFLINE);
-                resetChannelsOnOfflineEvent();
-                resetProgramStateChannels();
-            } catch (CommunicationException e) {
-                logger.warn("Could not handle command {}. API communication problem! haId={}, error={}",
-                        command.toFullString(), getThingHaId(), e.getMessage());
-            } catch (AuthorizationException e) {
-                logger.debug("Could not handle command {}. Authorization problem! haId={}, error={}",
-                        command.toFullString(), getThingHaId(), e.getMessage());
 
-                handleAuthenticationError(e);
-            } catch (UnconvertibleException e) {
-                logger.debug("Could not set setpoint! haId={}, error={}", getThingHaId(), e.getMessage());
+                logger.debug("Set setpoint temperature to {} {}. thing={}, haId={}", value, unit, getThingLabel(),
+                        getThingHaId());
+
+                if (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
+                    apiClient.setFridgeSetpointTemperature(getThingHaId(), value, unit);
+                } else if (CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
+                    apiClient.setFreezerSetpointTemperature(getThingHaId(), value, unit);
+                }
+            } else if (command instanceof OnOffType) {
+                if (CHANNEL_FREEZER_SUPER_MODE.equals(channelUID.getId())) {
+                    apiClient.setFreezerSuperMode(getThingHaId(), OnOffType.ON.equals(command));
+                } else if (CHANNEL_REFRIGERATOR_SUPER_MODE.equals(channelUID.getId())) {
+                    apiClient.setFridgeSuperMode(getThingHaId(), OnOffType.ON.equals(command));
+                }
             }
+        } catch (UnconvertibleException e) {
+            logger.debug("Could not set setpoint! haId={}, error={}", getThingHaId(), e.getMessage());
         }
     }
 
