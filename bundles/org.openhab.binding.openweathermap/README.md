@@ -372,7 +372,7 @@ Number:Speed localCurrentWindSpeed "Current wind Speed [%.1f km/h]" <wind> { cha
 Number:Angle localCurrentWindDirection "Current wind Direction [%d %unit%]" <wind> { channel="openweathermap:onecall:api:local:current#wind-direction" }
 Number:Speed localCurrentGustSpeed  "Current Gust Speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:current#gust-speed" }
 Number:Dimensionless localCurrentCloudiness "Current cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall:api:local:current#cloudiness" }
-Number:Dimensionless localCurrentUvindex "Current UV Index [%d]"  { channel="openweathermap:onecall:api:local:current#uvindex" }
+Number:Dimensionless localCurrentUvindex "Current UV Index [%.1f]"  { channel="openweathermap:onecall:api:local:current#uvindex" }
 Number:Length localCurrentRainVolume "Current rain volume [%.1f %unit%]" <rain> { channel="openweathermap:onecall:api:local:current#rain" }
 Number:Length localCurrentSnowVolume "Current snow volume [%.1f %unit%]" <snow> { channel="openweathermap:onecall:api:local:current#snow" }
 Number:Length localCurrentVisibility "Current visibility [%.1f km]" <visibility> { channel="openweathermap:onecall:api:local:current#visibility" }
@@ -435,7 +435,7 @@ Number:Angle localTodayWindDirection "Wind direction [%d %unit%]" <wind> { chann
 Number:Speed localTodayGustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastToday#gust-speed" }
 Number:Dimensionless localTodayPrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastToday#precip-probability" }
 Number:Dimensionless localTodayCloudiness  "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall:api:local:forecastToday#cloudiness" }
-Number:Dimensionless localTodayUvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall:api:local:forecastToday#uvindex" }
+Number:Dimensionless localTodayUvindex  "Current UV Index [%.1f]"    { channel="openweathermap:onecall:api:local:forecastToday#uvindex" }
 Number:Length localTodayRainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall:api:local:forecastToday#rain" }
 Number:Length localTodaySnowVolume "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall:api:local:forecastToday#snow" }
 
@@ -462,7 +462,7 @@ Number:Angle localTomorrowWindDirection "Wind direction [%d %unit%]" <wind> { ch
 Number:Speed localTomorrowGustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastTomorrow#gust-speed" }
 Number:Dimensionless localTomorrowPrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastTomorrow#precip-probability" }
 Number:Dimensionless localTomorrowCloudiness  "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall:api:local:forecastTomorrow#cloudiness" }
-Number:Dimensionless localTomorrowUvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall:api:local:forecastTomorrow#uvindex" }
+Number:Dimensionless localTomorrowUvindex  "Current UV Index [%.1f]"    { channel="openweathermap:onecall:api:local:forecastTomorrow#uvindex" }
 Number:Length localTomorrowRainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall:api:local:forecastTomorrow#rain" }
 Number:Length localTomorrowSnowVolume "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall:api:local:forecastTomorrow#snow" }
 
@@ -489,7 +489,7 @@ Number:Angle localDay6WindDirection "Wind direction [%d %unit%]" <wind> { channe
 Number:Speed localDay6GustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastDay6#gust-speed" }
 Number:Dimensionless localDay6PrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastDay6#precip-probability" }
 Number:Dimensionless localDay6Cloudiness  "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall:api:local:forecastDay6#cloudiness" }
-Number:Dimensionless localDay6Uvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall:api:local:forecastDay6#uvindex" }
+Number:Dimensionless localDay6Uvindex  "Current UV Index [%.1f]"    { channel="openweathermap:onecall:api:local:forecastDay6#uvindex" }
 Number:Length localDay6RainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall:api:local:forecastDay6#rain" }
 Number:Length localDay6SnowVolume "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall:api:local:forecastDay6#snow" }
 
@@ -507,7 +507,7 @@ Number:Speed localHistory1WindSpeed "Wind speed [%.1f km/h]"  <wind> { channel="
 Number:Angle localHistory1WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#wind-direction" }
 Number:Speed localHistory1GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#gust-speed" }
 Number:Dimensionless localHistory1Cloudiness "Cloudiness [%d %unit%]"  <clouds> { channel="openweathermap:onecall-history:api:local-history:history#cloudiness" }
-Number:Dimensionless localHistory1Uvindex  "UV Index [%d]"    { channel="openweathermap:onecall-history:api:local-history:history#uvindex" }
+Number:Dimensionless localHistory1Uvindex  "UV Index [%.1f]"    { channel="openweathermap:onecall-history:api:local-history:history#uvindex" }
 Number:Length localHistory1RainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall-history:api:local-history:history#rain" }
 Number:Length localHistory1SnowVolume  "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall-history:api:local-history:history#snow" }
 Number:Length localHistory1Visibility "Visibility [%.1f km]"  <visibility> { channel="openweathermap:onecall-history:api:local-history:history#visibility" }
@@ -526,7 +526,7 @@ Number:Speed localHistory1Hours01WindSpeed "Wind speed [%.1f km/h]"  <wind> { ch
 Number:Angle localHistory1Hours01WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#wind-direction" }
 Number:Speed localHistory1Hours01GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#gust-speed" }
 Number:Dimensionless localHistory1Hours01Cloudiness "Cloudiness [%d %unit%]"  <clouds> { channel="openweathermap:onecall-history:api:local-history:historyHours01#cloudiness" }
-Number:Dimensionless localHistory1Hours01Uvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall-history:api:local-history:historyHours01#uvindex" }
+Number:Dimensionless localHistory1Hours01Uvindex  "Current UV Index [%.1f]"    { channel="openweathermap:onecall-history:api:local-history:historyHours01#uvindex" }
 Number:Length localHistory1Hours01RainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall-history:api:local-history:historyHours01#rain" }
 Number:Length localHistory1Hours01SnowVolume  "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall-history:api:local-history:historyHours01#snow" }
 Number:Length localHistory1Hours01Visibility "Visibility [%.1f km]"  <visibility> { channel="openweathermap:onecall-history:api:local-history:historyHours01#visibility" }
@@ -545,7 +545,7 @@ Number:Speed localHistory1Hours24WindSpeed "Wind speed [%.1f km/h]"  <wind> { ch
 Number:Angle localHistory1Hours24WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours24#wind-direction" }
 Number:Speed localHistory1Hours24GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours24#gust-speed" }
 Number:Dimensionless localHistory1Hours24Cloudiness "Cloudiness [%d %unit%]"  <clouds> { channel="openweathermap:onecall-history:api:local-history:historyHours24#cloudiness" }
-Number:Dimensionless localHistory1Hours24Uvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall-history:api:local-history:historyHours24#uvindex" }
+Number:Dimensionless localHistory1Hours24Uvindex  "Current UV Index [%.1f]"    { channel="openweathermap:onecall-history:api:local-history:historyHours24#uvindex" }
 Number:Length localHistory1Hours24RainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall-history:api:local-history:historyHours24#rain" }
 Number:Length localHistory1Hours24SnowVolume  "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall-history:api:local-history:historyHours24#snow" }
 Number:Length localHistory1Hours24visibility "Visibility [%.1f km]"  <visibility> { channel="openweathermap:onecall-history:api:local-history:historyHours24#visibility" }
