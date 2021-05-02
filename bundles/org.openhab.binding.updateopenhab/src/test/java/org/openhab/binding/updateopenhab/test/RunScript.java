@@ -18,10 +18,26 @@ import org.junit.jupiter.api.Test;
 /**
  * The {@link RunScript} is a JUnit test for running the scripts
  *
- * @author AndrewFG
+ * @author AndrewFG - initial contribution
  */
 @NonNullByDefault
 class RunScript {
+
+    @Test
+    void testVersions() {
+        // State x;
+        // x = BaseUpdater.getUpdateAvailableState0("1.1.1", "1.1.1");
+        // x = BaseUpdater.getUpdateAvailableState0("2.0.0", "3.0.0");
+        // x = BaseUpdater.getUpdateAvailableState0("3.0.0", "3.0.0");
+        // x = BaseUpdater.getUpdateAvailableState0("3.0.0", "3.1.0");
+        // x = BaseUpdater.getUpdateAvailableState0("3.1.0", "3.1.1");
+        // x = BaseUpdater.getUpdateAvailableState0("3.1.0.M1", "3.1.0.M1");
+        // x = BaseUpdater.getUpdateAvailableState0("3.1.0.M1", "3.1.0.M2");
+        // x = BaseUpdater.getUpdateAvailableState0("3.2.0.M1", "3.1.0.M2");
+        // x = BaseUpdater.getUpdateAvailableState0("3.0.0-SNAPSHOT", "3.0.0");
+        // x = BaseUpdater.getUpdateAvailableState0("3.0.0-SNAPSHOT", "3.0.0-SNAPSHOT");
+        // x = BaseUpdater.getUpdateAvailableState0("3.0.0-M24", "3.0.0-AARD");
+    }
 
     @Test
     void runScripts() {
