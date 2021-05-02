@@ -124,8 +124,8 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
             }
         });
         handlers.put(EVENT_POWER_STATE, event -> {
-            getThingChannel(CHANNEL_POWER_STATE).ifPresent(channel -> updateState(channel.getUID(),
-                    STATE_POWER_ON.equals(event.getValue()) ? OnOffType.ON : OnOffType.OFF));
+            getThingChannel(CHANNEL_POWER_STATE).ifPresent(
+                    channel -> updateState(channel.getUID(), OnOffType.from(STATE_POWER_ON.equals(event.getValue()))));
 
             if (STATE_POWER_ON.equals(event.getValue())) {
                 updateChannels();

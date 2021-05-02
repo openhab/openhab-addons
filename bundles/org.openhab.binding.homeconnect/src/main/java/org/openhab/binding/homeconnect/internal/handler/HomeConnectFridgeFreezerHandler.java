@@ -98,7 +98,7 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
                     if (apiClient.isPresent()) {
                         Data data = apiClient.get().getFridgeSuperMode(getThingHaId());
                         if (data.getValue() != null) {
-                            return data.getValueAsBoolean() ? OnOffType.ON : OnOffType.OFF;
+                            return OnOffType.from(data.getValueAsBoolean());
                         } else {
                             return UnDefType.UNDEF;
                         }
@@ -112,7 +112,7 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
                     if (apiClient.isPresent()) {
                         Data data = apiClient.get().getFreezerSuperMode(getThingHaId());
                         if (data.getValue() != null) {
-                            return data.getValueAsBoolean() ? OnOffType.ON : OnOffType.OFF;
+                            return OnOffType.from(data.getValueAsBoolean());
                         } else {
                             return UnDefType.UNDEF;
                         }

@@ -87,7 +87,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                                         .ifPresent(channel -> updateState(channel.getUID(),
                                                 new PercentType(brightnessData.getValueAsInt())));
                             }
-                            return enabled ? OnOffType.ON : OnOffType.OFF;
+                            return OnOffType.from(enabled);
                         } else {
                             return UnDefType.UNDEF;
                         }

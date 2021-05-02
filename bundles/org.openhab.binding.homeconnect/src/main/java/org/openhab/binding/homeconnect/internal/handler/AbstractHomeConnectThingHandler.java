@@ -769,8 +769,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     protected EventHandler defaultPowerStateEventHandler() {
         return event -> {
-            getThingChannel(CHANNEL_POWER_STATE).ifPresent(channel -> updateState(channel.getUID(),
-                    STATE_POWER_ON.equals(event.getValue()) ? OnOffType.ON : OnOffType.OFF));
+            getThingChannel(CHANNEL_POWER_STATE).ifPresent(
+                    channel -> updateState(channel.getUID(), OnOffType.from(STATE_POWER_ON.equals(event.getValue()))));
 
             if (STATE_POWER_ON.equals(event.getValue())) {
                 getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
@@ -821,12 +821,12 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     protected EventHandler defaultEventPresentStateEventHandler(String channelId) {
         return event -> getThingChannel(channelId).ifPresent(channel -> updateState(channel.getUID(),
-                STATE_EVENT_PRESENT_STATE_OFF.equals(event.getValue()) ? OnOffType.OFF : OnOffType.ON));
+                OnOffType.from(!STATE_EVENT_PRESENT_STATE_OFF.equals(event.getValue()))));
     }
 
     protected EventHandler defaultBooleanEventHandler(String channelId) {
-        return event -> getThingChannel(channelId).ifPresent(
-                channel -> updateState(channel.getUID(), event.getValueAsBoolean() ? OnOffType.ON : OnOffType.OFF));
+        return event -> getThingChannel(channelId)
+                .ifPresent(channel -> updateState(channel.getUID(), OnOffType.from(event.getValueAsBoolean())));
     }
 
     protected EventHandler defaultRemainingProgramTimeEventHandler() {
@@ -905,7 +905,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             if (apiClient.isPresent()) {
                 Data data = apiClient.get().getPowerState(getThingHaId());
                 if (data.getValue() != null) {
-                    return STATE_POWER_ON.equals(data.getValue()) ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(STATE_POWER_ON.equals(data.getValue()));
                 } else {
                     return UnDefType.UNDEF;
                 }
@@ -946,7 +946,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         });
 
                     }
-                    return enabled ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(enabled);
                 } else {
                     return UnDefType.UNDEF;
                 }
@@ -984,7 +984,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-                return apiClient.get().isRemoteControlActive(getThingHaId()) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(apiClient.get().isRemoteControlActive(getThingHaId()));
             }
             return OnOffType.OFF;
         }));
@@ -994,7 +994,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-                return apiClient.get().isLocalControlActive(getThingHaId()) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(apiClient.get().isLocalControlActive(getThingHaId()));
             }
             return OnOffType.OFF;
         }));
@@ -1004,7 +1004,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-                return apiClient.get().isRemoteControlStartAllowed(getThingHaId()) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(apiClient.get().isRemoteControlStartAllowed(getThingHaId()));
             }
             return OnOffType.OFF;
         }));
