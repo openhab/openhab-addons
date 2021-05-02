@@ -100,7 +100,7 @@ public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
             return;
         }
         DiscoveryResultBuilder result = DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEVICE, file.getName()))
-                .withProperty("path", file.getAbsolutePath()).withRepresentationProperty(file.getName());
+                .withProperty("path", file.getAbsolutePath()).withRepresentationProperty("path");
         if (ttl != null) {
             result = result.withTTL(ttl.getSeconds());
         }
