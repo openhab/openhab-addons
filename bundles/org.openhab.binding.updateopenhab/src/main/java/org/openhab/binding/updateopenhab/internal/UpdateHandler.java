@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.updateopenhab.internal;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.updateopenhab.scripts.BaseUpdater;
 import org.openhab.binding.updateopenhab.scripts.DebianUpdater;
 import org.openhab.binding.updateopenhab.scripts.MacUpdater;
 import org.openhab.binding.updateopenhab.scripts.WindowsUpdater;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -45,6 +46,7 @@ public class UpdateHandler extends BaseThingHandler {
 
     private TargetVersion targetVersion;
     private @Nullable BaseUpdater updater;
+    private @Nullable ScheduledFuture<?> refreshTask;
 
     /**
      * Constructor
@@ -56,41 +58,17 @@ public class UpdateHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        BaseUpdater updater = this.updater;
-        switch (channelUID.getId()) {
-
-            case BindingConstants.CHANNEL_UPDATE_COMMAND:
+        if (command instanceof RefreshType) {
+            updateChanels();
+            return;
+        }
+        if (BindingConstants.CHANNEL_UPDATE_COMMAND.equals(channelUID.getId()) && (OnOffType.ON.equals(command))) {
+            scheduler.schedule(() -> {
                 updateState(channelUID, OnOffType.OFF);
-                if (OnOffType.ON.equals(command) && (updater != null)) {
-                    scheduler.submit(updater);
-                }
-                break;
-
-            case BindingConstants.CHANNEL_ACTUAL_OH_VERSION:
-                if (command instanceof RefreshType) {
-                    updateState(channelUID, StringType.valueOf(OpenHAB.getVersion()));
-                }
-                break;
-
-            case BindingConstants.CHANNEL_LATEST_OH_VERSION:
-                if (command instanceof RefreshType) {
-                    if (updater == null) {
-                        updateState(channelUID, UnDefType.UNDEF);
-                    } else {
-                        updateState(channelUID, StringType.valueOf(updater.getLatestVersion()));
-                    }
-                }
-                break;
-
-            case BindingConstants.CHANNEL_UPDATE_AVAILABLE:
-                if (command instanceof RefreshType) {
-                    if (TargetVersion.SNAPSHOT.equals(targetVersion) || (updater == null)) {
-                        updateState(channelUID, UnDefType.UNDEF);
-                    } else {
-                        updateState(channelUID,
-                                OnOffType.from(OpenHAB.getVersion().equals(updater.getLatestVersion())));
-                    }
-                }
+            }, 1, TimeUnit.SECONDS);
+            if (updater != null) {
+                scheduler.submit(updater);
+            }
         }
     }
 
@@ -99,7 +77,7 @@ public class UpdateHandler extends BaseThingHandler {
         Configuration config = getConfigAs(Configuration.class);
         try {
             targetVersion = TargetVersion.valueOf(config.targetVersion);
-        } catch (IllegalArgumentException | NullPointerException e) {
+        } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
@@ -108,13 +86,13 @@ public class UpdateHandler extends BaseThingHandler {
         updateProperty(BindingConstants.PROPERTY_OPERATING_SYSTEM, os.toString());
         switch (os) {
             case MAC:
-                updater = new MacUpdater(targetVersion);
+                updater = new MacUpdater(targetVersion, config.password);
                 break;
             case UNIX:
-                updater = new DebianUpdater(targetVersion);
+                updater = new DebianUpdater(targetVersion, config.password);
                 break;
             case WINDOWS:
-                updater = new WindowsUpdater(targetVersion);
+                updater = new WindowsUpdater(targetVersion, config.password);
                 break;
             default:
                 updater = null;
@@ -123,5 +101,34 @@ public class UpdateHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
+
+        ScheduledFuture<?> refreshTask = this.refreshTask;
+        if (refreshTask == null || refreshTask.isCancelled()) {
+            this.refreshTask = scheduler.scheduleWithFixedDelay(() -> {
+                updateChanels();
+            }, 0, 60, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> refreshTask = this.refreshTask;
+        if (refreshTask != null) {
+            refreshTask.cancel(false);
+        }
+    }
+
+    private void updateChanels() {
+        updateState(BindingConstants.CHANNEL_UPDATE_COMMAND, OnOffType.OFF);
+        updateState(BindingConstants.CHANNEL_ACTUAL_OH_VERSION, BaseUpdater.getRunningVersionState());
+
+        BaseUpdater updater = this.updater;
+        if (updater != null) {
+            updateState(BindingConstants.CHANNEL_LATEST_OH_VERSION, updater.getLatestVersionState());
+            updateState(BindingConstants.CHANNEL_UPDATE_AVAILABLE, updater.getUpdateAvailableState());
+        } else {
+            updateState(BindingConstants.CHANNEL_LATEST_OH_VERSION, UnDefType.UNDEF);
+            updateState(BindingConstants.CHANNEL_UPDATE_AVAILABLE, UnDefType.UNDEF);
+        }
     }
 }
