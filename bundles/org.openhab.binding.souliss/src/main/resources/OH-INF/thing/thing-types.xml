@@ -255,8 +255,15 @@
 				<required>false</required>
 				<default>5</default>
 			</parameter>
+			<parameter name="secureSend" type="boolean">
+                <label>Secure Send</label>
+                <description></description>
+                <required>false</required>
+                <default>true</default>
+            </parameter>
 		</config-description>
 	</thing-type>
+	
 	<thing-type id="t1a">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
@@ -890,7 +897,7 @@
 
 	<channel-type id="dimmerBrightness">
 		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
+		<label>Dimmer Brightness</label>
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
 		<category>DimmableLight</category>
 		<state min="0" max="100" step="1" pattern="%d"></state>
@@ -905,7 +912,7 @@
 
 	<channel-type id="rollerBrightness">
 		<item-type>RollerShutter</item-type>
-		<label>Brightness</label>
+		<label>Roller Brightness</label>
 		<description>Brightness Up/Down</description>
 		<category>DimmableLight</category>
 		<state readOnly="false"/>
