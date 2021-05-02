@@ -50,7 +50,8 @@ public class BoschSHCServiceState {
     }
 
     protected boolean isValid() {
-        return stateType.equals(this.type);
+        String expectedType = stateType;
+        return expectedType != null && expectedType.equals(this.type);
     }
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(JsonElement json,
