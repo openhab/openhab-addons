@@ -16,6 +16,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * @author B. van Wetten - Initial contribution
+ * @author Leo Siepel - finish initial contribution
  */
 @XStreamAlias("thermostat_functionality")
 public class ActuatorFunctionalityThermostat extends ActuatorFunctionality {

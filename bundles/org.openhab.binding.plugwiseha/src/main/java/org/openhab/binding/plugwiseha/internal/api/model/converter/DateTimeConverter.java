@@ -16,6 +16,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
 /**
@@ -25,17 +28,21 @@ import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
  * @author B. van Wetten - Initial contribution
  */
 
+@NonNullByDefault
 public class DateTimeConverter extends AbstractSingleValueConverter {
 
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME; // default Date format that
 
     @Override
-    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+    public boolean canConvert(@Nullable @SuppressWarnings("rawtypes") Class type) {
+        if (type == null) {
+            return false;
+        }
         return ZonedDateTime.class.isAssignableFrom(type);
     }
 
     @Override
-    public ZonedDateTime fromString(String str) {
+    public @Nullable ZonedDateTime fromString(@Nullable String str) {
         if (str.isBlank()) {
             return null;
         }
@@ -48,7 +55,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
         }
     }
 
-    public String toString(ZonedDateTime dateTime) {
+    public String toString(@Nullable ZonedDateTime dateTime) {
         return dateTime.format(DateTimeConverter.FORMAT);
     }
 }

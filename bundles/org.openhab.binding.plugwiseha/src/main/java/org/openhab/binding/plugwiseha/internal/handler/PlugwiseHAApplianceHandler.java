@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
-import org.openhab.binding.plugwiseha.internal.api.model.dto.*;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.Appliance;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
