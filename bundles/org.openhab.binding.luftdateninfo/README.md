@@ -21,9 +21,20 @@ There's no auto discovery. See Thing configuration how to setup a Sensor.
 
 ## Thing Configuration
 
+Choose either a local IP address of your personal owned sonsor _or_ a sensor id of an external one.
+
 | Parameter       | Description                                                          |
 |-----------------|----------------------------------------------------------------------|
+| ipAddress       | Local IP address of your personal owned sensor                       |
 | sensorid        | Sensor ID obtained from https://deutschland.maps.sensor.community/   |
+
+### Local Sensor
+
+Please check in your browser if you can access your sensor with your local IP address.
+
+![Luftdaten.info Logo](doc/local-sensor.png)
+
+### External Sensor
 
 Perform the following steps to get the appropriate Sensor ID
 
