@@ -168,8 +168,10 @@ public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
 
     private WatchService makeWatcher() throws IOException {
         WatchService watchService = FileSystems.getDefault().newWatchService();
+        // FIXME also trigger on inotify "ATTRIB" events when WatchService supports this.
+        // Triggering on ENTRY_MODIFY will trigger multiple times on each keypress for *any* input device.
         DEVICE_DIRECTORY.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+                StandardWatchEventKinds.ENTRY_DELETE);
         return watchService;
     }
 
