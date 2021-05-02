@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.updateopenhab.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link OperatingSystem} determines what type of update to apply
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public enum OperatingSystem {
     UNKNOWN,
     UNIX,
