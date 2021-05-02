@@ -119,7 +119,6 @@ public class Event {
     }
 
     public int getValueAsInt() {
-        @Nullable
         String stringValue = value;
         return stringValue != null ? Float.valueOf(stringValue).intValue() : 0;
     }

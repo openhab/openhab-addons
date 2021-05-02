@@ -223,4 +223,9 @@ public class HomeConnectBindingConstants {
     public static final String COMMAND_VENTING_INTENSIVE_2 = "ventingIntensive2";
     public static final String COMMAND_AUTOMATIC = "automatic";
     public static final String COMMAND_DELAYED_SHUT_OFF = "delayed";
+
+    // light
+    public static final int BRIGHTNESS_MIN = 10;
+    public static final int BRIGHTNESS_MAX = 100;
+    public static final int BRIGHTNESS_DIM_STEP = 10;
 }

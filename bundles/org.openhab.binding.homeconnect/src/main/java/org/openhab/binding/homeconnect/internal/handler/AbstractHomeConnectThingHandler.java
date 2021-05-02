@@ -53,9 +53,12 @@ import org.openhab.binding.homeconnect.internal.client.model.Program;
 import org.openhab.binding.homeconnect.internal.handler.cache.ExpiringStateMap;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -157,6 +160,19 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         initialize();
     }
 
+    /**
+     * Handles a command for a given channel.
+     * <p>
+     * This method is only called, if the thing has been initialized (status ONLINE/OFFLINE/UNKNOWN).
+     * <p>
+     *
+     * @param channelUID the {@link ChannelUID} of the channel to which the command was sent
+     * @param command the {@link Command}
+     * @param apiClient the {@link HomeConnectApiClient}
+     * @throws CommunicationException communication problem
+     * @throws AuthorizationException authorization problem
+     * @throws ApplianceOfflineException appliance offline
+     */
     protected void handleCommand(ChannelUID channelUID, Command command, HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Optional<HomeConnectApiClient> homeConnectApiClient = getApiClient();
@@ -237,14 +253,12 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             updateChannels();
         }
 
-        @Nullable
         String key = event.getKey();
         if (EVENT_OPERATION_STATE.equals(key)) {
             operationState = event.getValue() == null ? null : event.getValue();
         }
 
         if (key != null && eventHandlers.containsKey(key)) {
-            @Nullable
             EventHandler eventHandler = eventHandlers.get(key);
             if (eventHandler != null) {
                 eventHandler.handle(event);
@@ -381,7 +395,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @return true if online
      */
     protected boolean isBridgeOnline() {
-        @Nullable
         Bridge bridge = getBridge();
         return bridge != null && ONLINE.equals(bridge.getStatus());
     }
@@ -428,10 +441,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @return bridge handler
      */
     protected Optional<HomeConnectBridgeHandler> getBridgeHandler() {
-        @Nullable
         Bridge bridge = getBridge();
         if (bridge != null) {
-            @Nullable
             BridgeHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler instanceof HomeConnectBridgeHandler) {
                 return Optional.of((HomeConnectBridgeHandler) bridgeHandler);
@@ -447,7 +458,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @return channel
      */
     protected Optional<Channel> getThingChannel(String channelId) {
-        @Nullable
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             return Optional.empty();
@@ -510,7 +520,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 // state channel
                 && channelUpdateHandlers.containsKey(channelUID.getId())) {
             try {
-                @Nullable
                 ChannelUpdateHandler channelUpdateHandler = channelUpdateHandlers.get(channelUID.getId());
                 if (channelUpdateHandler != null) {
                     channelUpdateHandler.handle(channelUID, expiringStateMap);
@@ -777,7 +786,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     protected EventHandler defaultOperationStateEventHandler() {
         return event -> {
-            @Nullable
             String value = event.getValue();
             getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
@@ -799,7 +807,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     protected EventHandler defaultActiveProgramEventHandler() {
         return event -> {
-            @Nullable
             String value = event.getValue();
             getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
@@ -838,7 +845,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     protected EventHandler defaultAmbientLightCustomColorStateEventHandler() {
         return event -> getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
-            @Nullable
             String value = event.getValue();
             if (value != null) {
                 updateState(channel.getUID(), mapColor(value));
@@ -854,7 +860,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
             // update available program options
             try {
-                @Nullable
                 String programKey = event.getValue();
                 if (programKey != null) {
                     updateProgramOptionsStateDescriptions(programKey);
@@ -865,9 +870,14 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         };
     }
 
-    protected EventHandler defaultPercentEventHandler(String channelId) {
+    protected EventHandler defaultPercentQuantityTypeEventHandler(String channelId) {
         return event -> getThingChannel(channelId).ifPresent(
                 channel -> updateState(channel.getUID(), new QuantityType<>(event.getValueAsInt(), PERCENT)));
+    }
+
+    protected EventHandler defaultPercentHandler(String channelId) {
+        return event -> getThingChannel(channelId)
+                .ifPresent(channel -> updateState(channel.getUID(), new PercentType(event.getValueAsInt())));
     }
 
     protected ChannelUpdateHandler defaultDoorStateChannelUpdateHandler() {
@@ -914,7 +924,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         Data brightnessData = apiClient.get().getAmbientLightBrightnessState(getThingHaId());
                         getThingChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE)
                                 .ifPresent(channel -> updateState(channel.getUID(),
-                                        new QuantityType<>(brightnessData.getValueAsInt(), PERCENT)));
+                                        new PercentType(brightnessData.getValueAsInt())));
 
                         // color
                         Data colorData = apiClient.get().getAmbientLightColorState(getThingHaId());
@@ -924,7 +934,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         // custom color
                         Data customColorData = apiClient.get().getAmbientLightCustomColorState(getThingHaId());
                         getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
-                            @Nullable
                             String value = customColorData.getValue();
                             if (value != null) {
                                 updateState(channel.getUID(), mapColor(value));
@@ -954,7 +963,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             if (apiClient.isPresent()) {
                 Data data = apiClient.get().getOperationState(getThingHaId());
 
-                @Nullable
                 String value = data.getValue();
                 if (value != null) {
                     operationState = data.getValue();
@@ -1003,7 +1011,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-                @Nullable
                 Program program = apiClient.get().getSelectedProgram(getThingHaId());
                 if (program != null) {
                     processProgramOptions(program.getOptions());
@@ -1020,7 +1027,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-                @Nullable
                 Program program = apiClient.get().getSelectedProgram(getThingHaId());
 
                 if (program != null) {
@@ -1040,7 +1046,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-                @Nullable
                 Program program = apiClient.get().getActiveProgram(getThingHaId());
 
                 if (program != null) {
@@ -1055,9 +1060,114 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         }));
     }
 
+    protected void handleLightCommands(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        switch (channelUID.getId()) {
+            case CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE:
+            case CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE:
+                // turn light on if turned off
+                turnLightOn(channelUID, apiClient);
+
+                int newBrightness = BRIGHTNESS_MIN;
+                if (command instanceof OnOffType) {
+                    newBrightness = command == OnOffType.ON ? BRIGHTNESS_MAX : BRIGHTNESS_MIN;
+                } else if (command instanceof IncreaseDecreaseType) {
+                    int currentBrightness = getCurrentBrightness(channelUID, apiClient);
+                    if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                        newBrightness = currentBrightness + BRIGHTNESS_DIM_STEP;
+                    } else {
+                        newBrightness = currentBrightness - BRIGHTNESS_DIM_STEP;
+                    }
+                } else if (command instanceof PercentType) {
+                    newBrightness = (int) Math.floor(((PercentType) command).doubleValue());
+                } else if (command instanceof DecimalType) {
+                    newBrightness = ((DecimalType) command).intValue();
+                }
+
+                // check in in range
+                newBrightness = Math.min(Math.max(newBrightness, BRIGHTNESS_MIN), BRIGHTNESS_MAX);
+
+                setLightBrightness(channelUID, apiClient, newBrightness);
+                break;
+            case CHANNEL_FUNCTIONAL_LIGHT_STATE:
+                if (command instanceof OnOffType) {
+                    apiClient.setFunctionalLightState(getThingHaId(), OnOffType.ON.equals(command));
+                }
+                break;
+            case CHANNEL_AMBIENT_LIGHT_STATE:
+                if (command instanceof OnOffType) {
+                    apiClient.setAmbientLightState(getThingHaId(), OnOffType.ON.equals(command));
+                }
+                break;
+            case CHANNEL_AMBIENT_LIGHT_COLOR_STATE:
+                if (command instanceof StringType) {
+                    turnLightOn(channelUID, apiClient);
+                    apiClient.setAmbientLightColorState(getThingHaId(), command.toFullString());
+                }
+                break;
+            case CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE:
+                turnLightOn(channelUID, apiClient);
+
+                // make sure 'custom color' is set as color
+                Data ambientLightColorState = apiClient.getAmbientLightColorState(getThingHaId());
+                if (!STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR.equals(ambientLightColorState.getValue())) {
+                    apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
+                }
+
+                if (command instanceof HSBType) {
+                    apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor((HSBType) command));
+                } else if (command instanceof StringType) {
+                    apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
+                }
+                break;
+        }
+    }
+
+    private int getCurrentBrightness(final ChannelUID channelUID, final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        String id = channelUID.getId();
+        if (CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE.equals(id)) {
+            return apiClient.getFunctionalLightBrightnessState(getThingHaId()).getValueAsInt();
+        } else {
+            return apiClient.getAmbientLightBrightnessState(getThingHaId()).getValueAsInt();
+        }
+    }
+
+    private void setLightBrightness(final ChannelUID channelUID, final HomeConnectApiClient apiClient, int value)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        switch (channelUID.getId()) {
+            case CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE:
+                apiClient.setFunctionalLightBrightnessState(getThingHaId(), value);
+                break;
+            case CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE:
+                apiClient.setAmbientLightBrightnessState(getThingHaId(), value);
+                break;
+        }
+    }
+
+    private void turnLightOn(final ChannelUID channelUID, final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        switch (channelUID.getId()) {
+            case CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE:
+                Data functionalLightState = apiClient.getFunctionalLightState(getThingHaId());
+                if (!functionalLightState.getValueAsBoolean()) {
+                    apiClient.setFunctionalLightState(getThingHaId(), true);
+                }
+                break;
+            case CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE:
+            case CHANNEL_AMBIENT_LIGHT_COLOR_STATE:
+            case CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE:
+                Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
+                if (!ambientLightState.getValueAsBoolean()) {
+                    apiClient.setAmbientLightState(getThingHaId(), true);
+                }
+                break;
+        }
+    }
+
     protected void processProgramOptions(List<Option> options) {
         options.forEach(option -> {
-            @Nullable
             String key = option.getKey();
             if (key != null) {
                 switch (key) {
@@ -1082,7 +1192,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                                 .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
                         break;
                     case OPTION_HOOD_INTENSIVE_LEVEL:
-                        @Nullable
                         String hoodIntensiveLevelValue = option.getValue();
                         if (hoodIntensiveLevelValue != null) {
                             getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL)
@@ -1091,7 +1200,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         }
                         break;
                     case OPTION_HOOD_VENTING_LEVEL:
-                        @Nullable
                         String hoodVentingLevel = option.getValue();
                         if (hoodVentingLevel != null) {
                             getThingChannel(CHANNEL_HOOD_VENTING_LEVEL)
@@ -1224,7 +1332,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     private synchronized void stopOfflineMonitor1() {
-        @Nullable
         ScheduledFuture<?> reinitializationFuture = this.reinitializationFuture1;
         if (reinitializationFuture != null) {
             reinitializationFuture.cancel(false);
@@ -1252,7 +1359,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     private synchronized void stopOfflineMonitor2() {
-        @Nullable
         ScheduledFuture<?> reinitializationFuture = this.reinitializationFuture2;
         if (reinitializationFuture != null) {
             reinitializationFuture.cancel(false);
@@ -1269,7 +1375,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     private synchronized void stopRetryRegistering() {
-        @Nullable
         ScheduledFuture<?> reinitializationFuture = this.reinitializationFuture3;
         if (reinitializationFuture != null) {
             reinitializationFuture.cancel(true);

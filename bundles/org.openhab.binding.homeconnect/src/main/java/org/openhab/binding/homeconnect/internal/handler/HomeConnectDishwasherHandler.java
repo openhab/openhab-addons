@@ -21,12 +21,8 @@ import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
-import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -71,14 +67,14 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));
         handlers.put(EVENT_REMAINING_PROGRAM_TIME, defaultRemainingProgramTimeEventHandler());
-        handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
+        handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_SELECTED_PROGRAM, defaultSelectedProgramStateEventHandler());
         handlers.put(EVENT_ACTIVE_PROGRAM, defaultActiveProgramEventHandler());
         handlers.put(EVENT_POWER_STATE, defaultPowerStateEventHandler());
         handlers.put(EVENT_OPERATION_STATE, defaultOperationStateEventHandler());
         handlers.put(EVENT_AMBIENT_LIGHT_STATE, defaultBooleanEventHandler(CHANNEL_AMBIENT_LIGHT_STATE));
         handlers.put(EVENT_AMBIENT_LIGHT_BRIGHTNESS_STATE,
-                defaultPercentEventHandler(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE));
+                defaultPercentHandler(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE));
         handlers.put(EVENT_AMBIENT_LIGHT_COLOR_STATE, defaultAmbientLightColorStateEventHandler());
         handlers.put(EVENT_AMBIENT_LIGHT_CUSTOM_COLOR_STATE, defaultAmbientLightCustomColorStateEventHandler());
     }
@@ -93,48 +89,10 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
             if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
                 apiClient.setPowerState(getThingHaId(),
                         OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
-            } else if (CHANNEL_AMBIENT_LIGHT_STATE.equals(channelUID.getId())) {
-                apiClient.setAmbientLightState(getThingHaId(), OnOffType.ON.equals(command));
-            }
-        } else if (command instanceof QuantityType
-                && CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE.equals(channelUID.getId())) {
-            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
-            if (!ambientLightState.getValueAsBoolean()) {
-                // turn on
-                apiClient.setAmbientLightState(getThingHaId(), true);
-            }
-            int value = ((QuantityType<?>) command).intValue();
-            if (value < 10) {
-                value = 10;
-            } else if (value > 100) {
-                value = 100;
-            }
-            apiClient.setAmbientLightBrightnessState(getThingHaId(), value);
-        } else if (command instanceof StringType && CHANNEL_AMBIENT_LIGHT_COLOR_STATE.equals(channelUID.getId())) {
-            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
-            if (!ambientLightState.getValueAsBoolean()) {
-                // turn on
-                apiClient.setAmbientLightState(getThingHaId(), true);
-            }
-            apiClient.setAmbientLightColorState(getThingHaId(), command.toFullString());
-        } else if (CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE.equals(channelUID.getId())) {
-            Data ambientLightState = apiClient.getAmbientLightState(getThingHaId());
-            if (!ambientLightState.getValueAsBoolean()) {
-                // turn on
-                apiClient.setAmbientLightState(getThingHaId(), true);
-            }
-            Data ambientLightColorState = apiClient.getAmbientLightColorState(getThingHaId());
-            if (!STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR.equals(ambientLightColorState.getValue())) {
-                // set color to custom color
-                apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
-            }
-
-            if (command instanceof HSBType) {
-                apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor((HSBType) command));
-            } else if (command instanceof StringType) {
-                apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
             }
         }
+
+        handleLightCommands(channelUID, command, apiClient);
     }
 
     @Override

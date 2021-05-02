@@ -588,7 +588,6 @@ public class HomeConnectApiClient {
 
     public void startSelectedProgram(String haId)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        @Nullable
         String selectedProgram = getRaw(haId, BASE_PATH + haId + "/programs/selected");
         if (selectedProgram != null) {
             putRaw(haId, BASE_PATH + haId + "/programs/active", selectedProgram);

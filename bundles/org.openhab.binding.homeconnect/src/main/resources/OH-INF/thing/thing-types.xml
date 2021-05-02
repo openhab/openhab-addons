@@ -46,7 +46,7 @@
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
 			<channel id="ambient_light_state" typeId="ambient_light_state"/>
-			<channel id="ambient_light_brightness_state" typeId="ambient_light_brightness_state"/>
+			<channel id="ambient_light_brightness_state" typeId="system.brightness"/>
 			<channel id="ambient_light_color_state" typeId="ambient_light_color_state"/>
 			<channel id="ambient_light_custom_color_state" typeId="ambient_light_custom_color_state"/>
 		</channels>
@@ -253,11 +253,11 @@
 			<channel id="hood_intensive_level" typeId="hood_intensive_level"/>
 			<channel id="hood_program_state" typeId="hood_program_state"/>
 			<channel id="ambient_light_state" typeId="ambient_light_state"/>
-			<channel id="ambient_light_brightness_state" typeId="ambient_light_brightness_state"/>
+			<channel id="ambient_light_brightness_state" typeId="system.brightness"/>
 			<channel id="ambient_light_color_state" typeId="ambient_light_color_state"/>
 			<channel id="ambient_light_custom_color_state" typeId="ambient_light_custom_color_state"/>
 			<channel id="functional_light_state" typeId="functional_light_state"/>
-			<channel id="functional_light_brightness_state" typeId="functional_light_brightness_state"/>
+			<channel id="functional_light_brightness_state" typeId="system.brightness"/>
 		</channels>
 		<representation-property>haId</representation-property>
 		<config-description>
@@ -536,22 +536,10 @@
 		<label>Functional Light State</label>
 		<description>This setting describes the current functional light state of the home appliance.</description>
 	</channel-type>
-	<channel-type id="functional_light_brightness_state">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Functional Light Brightness</label>
-		<description>This setting describes the brightness state of the functional light.</description>
-		<state readOnly="false" min="10" max="100" step="1" pattern="%d %unit%"/>
-	</channel-type>
 	<channel-type id="ambient_light_state">
 		<item-type>Switch</item-type>
 		<label>Ambient Light State</label>
 		<description>This setting describes the current ambient light state of the home appliance.</description>
-	</channel-type>
-	<channel-type id="ambient_light_brightness_state">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Ambient Light Brightness</label>
-		<description>This setting describes the brightness state of the ambient light.</description>
-		<state readOnly="false" min="10" max="100" step="1" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ambient_light_color_state">
 		<item-type>String</item-type>

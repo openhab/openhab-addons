@@ -116,7 +116,6 @@ public class HomeConnectEventSourceListener {
     }
 
     public void onError(Throwable error) {
-        @Nullable
         String throwableMessage = error.getMessage();
         String throwableClass = error.getClass().getName();
 
@@ -189,29 +188,20 @@ public class HomeConnectEventSourceListener {
 
                 items.forEach(item -> {
                     JsonObject obj = (JsonObject) item;
-                    @Nullable
                     String key = obj.get("key") != null ? obj.get("key").getAsString() : null;
-                    @Nullable
                     String value = obj.get("value") != null && !obj.get("value").isJsonNull()
                             ? obj.get("value").getAsString()
                             : null;
-                    @Nullable
                     String unit = obj.get("unit") != null ? obj.get("unit").getAsString() : null;
-                    @Nullable
                     String name = obj.get("name") != null ? obj.get("name").getAsString() : null;
-                    @Nullable
                     String uri = obj.get("uri") != null ? obj.get("uri").getAsString() : null;
-                    @Nullable
                     EventLevel level = obj.get("level") != null
                             ? EventLevel.valueOfLevel(obj.get("level").getAsString())
                             : null;
-                    @Nullable
                     EventHandling handling = obj.get("handling") != null
                             ? EventHandling.valueOfHandling(obj.get("handling").getAsString())
                             : null;
-                    @Nullable
                     Long timestamp = obj.get("timestamp") != null ? obj.get("timestamp").getAsLong() : null;
-                    @Nullable
                     ZonedDateTime creation = timestamp != null
                             ? ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
                                     TimeZone.getDefault().toZoneId())

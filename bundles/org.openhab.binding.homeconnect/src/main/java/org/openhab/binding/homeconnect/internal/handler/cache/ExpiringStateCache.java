@@ -59,7 +59,6 @@ public class ExpiringStateCache {
      */
     public synchronized State getState()
             throws AuthorizationException, ApplianceOfflineException, CommunicationException {
-        @Nullable
         State cachedValue = state.get();
         if (cachedValue == null || isExpired()) {
             return refreshState();
