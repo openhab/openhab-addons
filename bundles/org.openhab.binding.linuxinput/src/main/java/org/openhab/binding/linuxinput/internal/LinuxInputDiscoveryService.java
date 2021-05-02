@@ -122,7 +122,7 @@ public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
                 String labelFromDevice = device.getName();
                 boolean isKeyboard = device.has(EvdevLibrary.Type.KEY);
                 if (labelFromDevice != null) {
-                    label = labelFromDevice;
+                    label = String.format("%s (%s)", labelFromDevice, inputDevice.getName());
                 }
                 return isKeyboard;
             } finally {
