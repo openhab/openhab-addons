@@ -23,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Configuration {
 
     public String targetVersion = "STABLE";
+    public String password = "";
 }

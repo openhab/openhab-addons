@@ -21,10 +21,16 @@
 				<label>Target Update Version</label>
 				<description>Which version OpenHab shall be updated to</description>
 				<options>
-					<option value="STABLE">stable</option>
-					<option value="MILESTONE">milestone</option>
-					<option value="SNAPSHOT">snapshot</option>
+					<option value="STABLE">Latest stable release of OpenHAB</option>
+					<option value="MILESTONE">Latest Milestone build of OpenHAB</option>
+					<option value="SNAPSHOT">Latest daily Snapshot of OpenHAB (not recommended)</option>
 				</options>
+			</parameter>
+
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>The system password (only required on Linux etc.)</description>
 			</parameter>
 		</config-description>
 
