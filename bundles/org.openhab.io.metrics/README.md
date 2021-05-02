@@ -94,6 +94,6 @@ This has been tested with Prometheus - for other monitoring systems adaptions to
 
 Here are some screenshots: 
 
-![Grafana (1)](docs/grafana-1.png)
-![Grafana (2)](docs/grafana-2.png)
-![Grafana (3)](docs/grafana-3.png)
+![Grafana (1)](doc/grafana-1.png)
+![Grafana (2)](doc/grafana-2.png)
+![Grafana (3)](doc/grafana-3.png)
