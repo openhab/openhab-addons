@@ -37,8 +37,6 @@ import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -148,38 +146,9 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
         super.handleCommand(channelUID, command, apiClient);
 
         try {
-            if (command instanceof QuantityType && (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())
-                    || CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId()))) {
-                QuantityType<?> quantity = (QuantityType<?>) command;
-
-                String value;
-                String unit;
-
-                if (quantity.getUnit().equals(SIUnits.CELSIUS) || quantity.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
-                    unit = quantity.getUnit().toString();
-                    value = String.valueOf(quantity.intValue());
-                } else {
-                    logger.debug("Converting target setpoint temperature from {}{} to °C value. thing={}, haId={}",
-                            quantity.intValue(), quantity.getUnit().toString(), getThingLabel(), getThingHaId());
-                    unit = "°C";
-                    var celsius = quantity.toUnit(SIUnits.CELSIUS);
-                    if (celsius == null) {
-                        logger.warn("Converting setpoint temperature to celsius failed! quantity={}", quantity);
-                        value = "-6";
-                    } else {
-                        value = String.valueOf(celsius.intValue());
-                    }
-                    logger.debug("{}{}", value, unit);
-                }
-
-                logger.debug("Set setpoint temperature to {} {}. thing={}, haId={}", value, unit, getThingLabel(),
-                        getThingHaId());
-
-                if (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
-                    apiClient.setFridgeSetpointTemperature(getThingHaId(), value, unit);
-                } else if (CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
-                    apiClient.setFreezerSetpointTemperature(getThingHaId(), value, unit);
-                }
+            if (CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE.equals(channelUID.getId())
+                    || CHANNEL_FREEZER_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
+                handleTemperatureCommand(channelUID, command, apiClient);
             } else if (command instanceof OnOffType) {
                 if (CHANNEL_FREEZER_SUPER_MODE.equals(channelUID.getId())) {
                     apiClient.setFreezerSuperMode(getThingHaId(), OnOffType.ON.equals(command));

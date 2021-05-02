@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
@@ -61,6 +62,8 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -1058,6 +1061,56 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             }
             return UnDefType.UNDEF;
         }));
+    }
+
+    protected void handleTemperatureCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        if (command instanceof QuantityType) {
+            QuantityType<?> quantity = (QuantityType<?>) command;
+
+            String value;
+            String unit;
+
+            try {
+                if (quantity.getUnit().equals(SIUnits.CELSIUS) || quantity.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
+                    unit = quantity.getUnit().toString();
+                    value = String.valueOf(quantity.intValue());
+                } else {
+                    logger.debug("Converting target temperature from {}{} to °C value. thing={}, haId={}",
+                            quantity.intValue(), quantity.getUnit().toString(), getThingLabel(), getThingHaId());
+                    unit = "°C";
+                    var celsius = quantity.toUnit(SIUnits.CELSIUS);
+                    if (celsius == null) {
+                        logger.warn("Converting temperature to celsius failed! quantity={}", quantity);
+                        value = null;
+                    } else {
+                        value = String.valueOf(celsius.intValue());
+                    }
+                    logger.debug("Converted value {}{}", value, unit);
+                }
+
+                if (value != null) {
+                    logger.debug("Set temperature to {} {}. thing={}, haId={}", value, unit, getThingLabel(),
+                            getThingHaId());
+                    switch (channelUID.getId()) {
+                        case CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE:
+                            apiClient.setFridgeSetpointTemperature(getThingHaId(), value, unit);
+                        case CHANNEL_FREEZER_SETPOINT_TEMPERATURE:
+                            apiClient.setFreezerSetpointTemperature(getThingHaId(), value, unit);
+                            break;
+                        case CHANNEL_SETPOINT_TEMPERATURE:
+                            apiClient.setProgramOptions(getThingHaId(), OPTION_SETPOINT_TEMPERATURE, value, unit, true,
+                                    false);
+                            break;
+                        default:
+                            logger.debug("Unknown channel! Cannot set temperature. channelUID={}", channelUID);
+                    }
+                }
+            } catch (UnconvertibleException e) {
+                logger.warn("Could not set temperature! haId={}, error={}", getThingHaId(), e.getMessage());
+            }
+        }
     }
 
     protected void handleLightCommands(final ChannelUID channelUID, final Command command,

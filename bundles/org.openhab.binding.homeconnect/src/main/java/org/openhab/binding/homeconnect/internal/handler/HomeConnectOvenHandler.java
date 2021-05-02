@@ -36,8 +36,6 @@ import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -171,35 +169,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
         if (operationState != null && INACTIVE_STATE.contains(operationState) && command instanceof QuantityType) {
             // set setpoint temperature
             if (CHANNEL_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
-                QuantityType<?> quantity = (QuantityType<?>) command;
-
-                try {
-                    String value;
-                    String unit;
-
-                    if (quantity.getUnit().equals(SIUnits.CELSIUS)
-                            || quantity.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
-                        unit = quantity.getUnit().toString();
-                        value = String.valueOf(quantity.intValue());
-                    } else {
-                        logger.debug("Converting target setpoint temperature from {}{} to °C value. haId={}",
-                                quantity.intValue(), quantity.getUnit().toString(), getThingHaId());
-                        unit = "°C";
-                        var celsius = quantity.toUnit(SIUnits.CELSIUS);
-                        if (celsius == null) {
-                            logger.warn("Converting setpoint temperature to celsius failed! quantity={}", quantity);
-                            value = "-6";
-                        } else {
-                            value = String.valueOf(celsius.intValue());
-                        }
-                        logger.debug("{}{}", value, unit);
-                    }
-
-                    logger.debug("Set setpoint temperature to {} {}. haId={}", value, unit, getThingHaId());
-                    apiClient.setProgramOptions(getThingHaId(), OPTION_SETPOINT_TEMPERATURE, value, unit, true, false);
-                } catch (UnconvertibleException e) {
-                    logger.warn("Could not set setpoint! haId={}, error={}", getThingHaId(), e.getMessage());
-                }
+                handleTemperatureCommand(channelUID, command, apiClient);
             } else if (CHANNEL_DURATION.equals(channelUID.getId())) {
                 @SuppressWarnings("unchecked")
                 QuantityType<Time> quantity = ((QuantityType<Time>) command);

@@ -35,7 +35,7 @@
 		<label>Dishwasher</label>
 		<description>Home Connect connected dishwasher (e.g. Bosch or Siemens).</description>
 		<channels>
-			<channel id="power_state" typeId="power_state"/>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
@@ -67,7 +67,7 @@
 		<label>Oven</label>
 		<description>Home Connect connected oven (e.g. Bosch or Siemens).</description>
 		<channels>
-			<channel id="power_state" typeId="power_state"/>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
@@ -214,7 +214,7 @@
 		<label>Coffee Machine</label>
 		<description>Home Connect connected coffee machine (e.g. Bosch or Siemens).</description>
 		<channels>
-			<channel id="power_state" typeId="power_state"/>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
 			<channel id="local_control_active_state" typeId="local_control_active_state"/>
@@ -243,7 +243,7 @@
 		<label>Hood</label>
 		<description>Home Connect connected kitchen hood.</description>
 		<channels>
-			<channel id="power_state" typeId="power_state"/>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
 			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
@@ -276,7 +276,7 @@
 		<label>Cooktop</label>
 		<description>Home Connect connected kitchen cooktop (hob).</description>
 		<channels>
-			<channel id="power_state" typeId="power_state"/>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
 			<channel id="local_control_active_state" typeId="local_control_active_state"/>
@@ -302,11 +302,6 @@
 				<option value="stop">Stop program</option>
 			</options>
 		</state>
-	</channel-type>
-	<channel-type id="power_state">
-		<item-type>Switch</item-type>
-		<label>Power State</label>
-		<description>This setting describes the current power state of the home appliance.</description>
 	</channel-type>
 	<channel-type id="local_control_active_state">
 		<item-type>Switch</item-type>
