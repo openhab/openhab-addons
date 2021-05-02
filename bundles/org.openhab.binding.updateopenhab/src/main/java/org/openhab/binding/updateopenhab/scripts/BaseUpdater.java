@@ -14,7 +14,6 @@ package org.openhab.binding.updateopenhab.scripts;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,13 +29,17 @@ import javax.xml.stream.XMLStreamReader;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.updateopenhab.internal.TargetVersion;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BaseUpdater} is the shell script for updating OpenHab on this OS
  *
- * @author AndrewFG
+ * @author AndrewFG - Initial contribution
  */
 @NonNullByDefault
 public class BaseUpdater implements Runnable {
@@ -46,12 +49,14 @@ public class BaseUpdater implements Runnable {
     private static final String RELEASE_ARTIFACT_URL = "https://openhab.jfrog.io/artifactory/libs-release-local/org/openhab/distro/openhab/maven-metadata.xml";
     private static final String MILESTONE_ARTIFACT_URL = "https://openhab.jfrog.io/artifactory/libs-milestone-local/org/openhab/distro/openhab/maven-metadata.xml";
 
-    private static final String UPDATE_SCRIPT_FILENAME = "openhab-auto-update";
     private static final String UNKNOWN_VERSION = "VERSION NOT DETERMINED";
 
+    private static final String SNAPSHOT = "SNAPSHOT";
+
+    protected static final String FILE_ID = "auto-update-created";
+
     protected TargetVersion targetVersion;
-    protected String runDirectory;
-    protected String fileExtension;
+    protected String password;
 
     /**
      * Private class to read and process the standard output of the shell command
@@ -76,14 +81,9 @@ public class BaseUpdater implements Runnable {
         }
     }
 
-    public BaseUpdater(TargetVersion targetVersion) {
+    public BaseUpdater(TargetVersion targetVersion, String password) {
         this.targetVersion = targetVersion;
-        runDirectory = File.separator;
-        fileExtension = "";
-    }
-
-    protected String getScriptFileName() {
-        return runDirectory + UPDATE_SCRIPT_FILENAME + fileExtension;
+        this.password = password;
     }
 
     protected boolean writeFile(String filename, String contents) {
@@ -124,39 +124,15 @@ public class BaseUpdater implements Runnable {
         return true;
     }
 
-    protected String getUserHomeFolder() {
-        String folder = System.getProperty("user.home");
-        if (folder == null) {
-            folder = "";
-        }
-        if (folder.endsWith(File.separator)) {
-            return folder;
-        } else {
-            return folder + File.separator;
-        }
-    }
-
-    protected String getOpenHabRootFolder() {
-        String folder = OpenHAB.getConfigFolder().replace("conf", "");
-        if (folder.isEmpty()) {
-            return getUserHomeFolder();
-        }
-        if (folder.endsWith(File.separator)) {
-            return folder;
-        } else {
-            return folder + File.separator;
-        }
-    }
-
     protected String getArtifactoryLatestVersion(String url) {
-        String version = "";
+        String latestVersion = UNKNOWN_VERSION;
         XMLStreamReader reader;
         try {
             reader = XMLInputFactory.newInstance().createXMLStreamReader(new URL(url).openStream());
             while (reader.hasNext()) {
                 if (reader.next() == XMLStreamConstants.START_ELEMENT) {
                     if ("latest".equals(reader.getLocalName())) {
-                        version = reader.getElementText();
+                        latestVersion = reader.getElementText();
                         break;
                     }
                 }
@@ -164,19 +140,19 @@ public class BaseUpdater implements Runnable {
             reader.close();
         } catch (IOException | XMLStreamException e) {
         }
-        return version;
+        return latestVersion;
     }
 
-    public String getLatestVersion() {
+    protected String getLatestVersion() {
         switch (targetVersion) {
             case STABLE:
                 return getArtifactoryLatestVersion(RELEASE_ARTIFACT_URL);
             case MILESTONE:
                 return getArtifactoryLatestVersion(MILESTONE_ARTIFACT_URL);
             case SNAPSHOT:
-                try {
-                    return OpenHAB.getVersion() + "-SNAPSHOT";
-                } catch (Exception e) {
+                String oldVersion = OpenHAB.getVersion();
+                if (!oldVersion.isEmpty()) {
+                    return oldVersion + "-" + SNAPSHOT;
                 }
         }
         return UNKNOWN_VERSION;
@@ -184,5 +160,55 @@ public class BaseUpdater implements Runnable {
 
     @Override
     public void run() {
+    }
+
+    private static String getRunningVersion() {
+        String oldVersion = OpenHAB.getVersion();
+        return oldVersion.isEmpty() ? UNKNOWN_VERSION : oldVersion;
+    }
+
+    public static State getRunningVersionState() {
+        return StringType.valueOf(getRunningVersion());
+    }
+
+    public State getLatestVersionState() {
+        String newVersion = getLatestVersion();
+        return UNKNOWN_VERSION.equals(newVersion) ? UnDefType.UNDEF : StringType.valueOf(newVersion);
+    }
+
+    private Integer safeConvertInteger(String[] strings, int index) {
+        try {
+            return index < strings.length ? Integer.valueOf(strings[index]) : 0;
+        } catch (NumberFormatException e) {
+        }
+        return 0;
+    }
+
+    public State getUpdateAvailableState() {
+        String oldVersion = OpenHAB.getVersion();
+        String newVersion = getLatestVersion();
+        String[] oldParts = oldVersion.replace("-", ".").split("\\.");
+        String[] newParts = newVersion.replace("-", ".").split("\\.");
+
+        int compareOverall = 0;
+        for (int i = 0; i < 3; i++) {
+            int compareResult = safeConvertInteger(oldParts, i).compareTo(safeConvertInteger(newParts, i));
+            if (compareResult != 0) {
+                compareOverall = compareResult;
+                break;
+            }
+        }
+        if (compareOverall == 0) {
+            switch (targetVersion) {
+                case SNAPSHOT:
+                    return UnDefType.UNDEF;
+                case MILESTONE:
+                    if (newParts.length > 3) {
+                        compareOverall = oldParts.length > 3 ? oldParts[3].compareTo(newParts[3]) : 1;
+                    }
+                default:
+            }
+        }
+        return OnOffType.from(compareOverall < 0);
     }
 }
