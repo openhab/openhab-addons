@@ -171,11 +171,15 @@ public class PlugwiseHAControllerRequest<T> {
     private String transformXML(String xml) throws PlugwiseHAException {
         StringReader input = new StringReader(xml);
         StringWriter output = new StringWriter();
-
-        try {
-            this.transformer.transform(new StreamSource(input), new StreamResult(output));
-        } catch (TransformerException e) {
-            throw new PlugwiseHAException("Could not apply XML stylesheet", e);
+        Transformer localTransformer = this.transformer;
+        if (localTransformer != null) {
+            try {
+                localTransformer.transform(new StreamSource(input), new StreamResult(output));
+            } catch (TransformerException e) {
+                throw new PlugwiseHAException("Could not apply XML stylesheet", e);
+            }
+        } else {
+            throw new PlugwiseHAException("Could not transform XML stylehseet, the transformer is null");
         }
 
         return output.toString();

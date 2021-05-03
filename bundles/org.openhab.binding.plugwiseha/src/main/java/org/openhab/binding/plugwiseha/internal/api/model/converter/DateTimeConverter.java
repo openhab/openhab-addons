@@ -43,7 +43,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
 
     @Override
     public @Nullable ZonedDateTime fromString(@Nullable String str) {
-        if (str.isBlank()) {
+        if (str == null || str.isBlank()) {
             return null;
         }
 
@@ -55,7 +55,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
         }
     }
 
-    public String toString(@Nullable ZonedDateTime dateTime) {
+    public String toString(ZonedDateTime dateTime) {
         return dateTime.format(DateTimeConverter.FORMAT);
     }
 }

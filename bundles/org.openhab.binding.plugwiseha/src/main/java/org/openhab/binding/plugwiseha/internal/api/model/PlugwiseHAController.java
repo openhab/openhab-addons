@@ -106,7 +106,12 @@ public class PlugwiseHAController {
     }
 
     public GatewayInfo getGatewayInfo(Boolean forceRefresh) throws PlugwiseHAException {
-        GatewayInfo gatewayInfo = this.domainObjects.getGatewayInfo();
+
+        GatewayInfo gatewayInfo = null;
+        DomainObjects localDomainObjects = this.domainObjects;
+        if (localDomainObjects != null) {
+            gatewayInfo = localDomainObjects.getGatewayInfo();
+        }
 
         if (!forceRefresh && gatewayInfo != null) {
             this.logger.debug("Found Plugwise Home Automation gateway");
@@ -131,7 +136,11 @@ public class PlugwiseHAController {
     }
 
     public Appliances getAppliances(Boolean forceRefresh) throws PlugwiseHAException {
-        Appliances appliances = this.domainObjects.getAppliances();
+        Appliances appliances = null;
+        DomainObjects localDomainObjects = this.domainObjects;
+        if (localDomainObjects != null) {
+            appliances = localDomainObjects.getAppliances();
+        }
 
         if (!forceRefresh && appliances != null) {
             return appliances;
@@ -170,7 +179,11 @@ public class PlugwiseHAController {
     }
 
     public Locations getLocations(Boolean forceRefresh) throws PlugwiseHAException {
-        Locations locations = this.domainObjects.getLocations();
+        Locations locations = null;
+        DomainObjects localDomainObjects = this.domainObjects;
+        if (localDomainObjects != null) {
+            locations = localDomainObjects.getLocations();
+        }
 
         if (!forceRefresh && locations != null) {
             return locations;
@@ -220,17 +233,21 @@ public class PlugwiseHAController {
     }
 
     public @Nullable DomainObjects getUpdatedDomainObjects() throws PlugwiseHAException {
-        if (this.gatewayUpdateDateTime == null || this.gatewayFullUpdateDateTime == null
-                || this.gatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_REFRESH))
-                || this.gatewayFullUpdateDateTime
-                        .isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_FULL_REFRESH))) {
+
+        ZonedDateTime localGatewayUpdateDateTime = this.gatewayUpdateDateTime;
+        ZonedDateTime localGatewayFullUpdateDateTime = this.gatewayFullUpdateDateTime;
+        if (localGatewayUpdateDateTime == null
+                || localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_REFRESH))) {
+            return getDomainObjects();
+        } else if (localGatewayFullUpdateDateTime == null || localGatewayFullUpdateDateTime
+                .isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_FULL_REFRESH))) {
             return getDomainObjects();
         } else {
-            return getUpdatedDomainObjects(this.gatewayUpdateDateTime);
+            return getUpdatedDomainObjects(localGatewayUpdateDateTime);
         }
     }
 
-    public @Nullable DomainObjects getUpdatedDomainObjects(@Nullable ZonedDateTime since) throws PlugwiseHAException {
+    public @Nullable DomainObjects getUpdatedDomainObjects(ZonedDateTime since) throws PlugwiseHAException {
         return getUpdatedDomainObjects(since.toEpochSecond());
     }
 
@@ -411,22 +428,26 @@ public class PlugwiseHAController {
         return result;
     }
 
-    private @Nullable DomainObjects mergeDomainObjects(@Nullable DomainObjects updatedDomainObjects) {
-        if (this.domainObjects != null) {
+    private DomainObjects mergeDomainObjects(@Nullable DomainObjects updatedDomainObjects) {
+        DomainObjects localDomainObjects = this.domainObjects;
+        if (localDomainObjects == null && updatedDomainObjects != null) {
+            return updatedDomainObjects;
+        } else if (localDomainObjects != null && updatedDomainObjects == null) {
+            return localDomainObjects;
+        } else if (localDomainObjects != null && updatedDomainObjects != null) {
             Appliances appliances = updatedDomainObjects.getAppliances();
             Locations locations = updatedDomainObjects.getLocations();
 
             if (appliances != null) {
-                this.domainObjects.mergeAppliances(appliances);
+                localDomainObjects.mergeAppliances(appliances);
             }
 
             if (locations != null) {
-                this.domainObjects.mergeLocations(locations);
+                localDomainObjects.mergeLocations(locations);
             }
+            return localDomainObjects;
         } else {
-            this.domainObjects = updatedDomainObjects;
+            return new DomainObjects();
         }
-
-        return this.domainObjects;
     }
 }

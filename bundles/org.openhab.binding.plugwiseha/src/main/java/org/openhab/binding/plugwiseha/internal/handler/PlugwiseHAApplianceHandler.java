@@ -97,8 +97,9 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 PlugwiseHAController controller = bridgeHandler.getController();
                 if (controller != null) {
                     this.appliance = getEntity(controller, true);
-                    if (this.appliance != null) {
-                        if (this.appliance.isBatteryOperated()) {
+                    Appliance localAppliance = this.appliance;
+                    if (localAppliance != null) {
+                        if (localAppliance.isBatteryOperated()) {
                             addBatteryChannels();
                         }
                         setApplianceProperties();
@@ -156,14 +157,18 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_OFFSET_CHANNEL:
                 if (command instanceof QuantityType) {
-                    QuantityType<Temperature> state = (QuantityType<Temperature>) command;
-                    try {
-                        Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS)
-                                .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                        controller.setOffsetTemperature(entity, state.toUnit(unit).doubleValue());
-                    } catch (PlugwiseHAException e) {
-                        logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
-                                entity.getSetpointTemperature().orElse(null), state.doubleValue());
+                    Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
+                            ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    QuantityType<Temperature> state = ((QuantityType<Temperature>) command).toUnit(unit);
+
+                    if (state != null) {
+                        try {
+                            controller.setOffsetTemperature(entity, state.doubleValue());
+                        } catch (PlugwiseHAException e) {
+                            logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
+                                    entity.getSetpointTemperature().orElse(null), state.doubleValue());
+                        }
                     }
                 }
                 break;
@@ -182,14 +187,17 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_SETPOINT_CHANNEL:
                 if (command instanceof QuantityType) {
-                    QuantityType<Temperature> state = (QuantityType<Temperature>) command;
-                    try {
-                        Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
-                                .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                        controller.setThermostat(entity, state.toUnit(unit).doubleValue());
-                    } catch (PlugwiseHAException e) {
-                        logger.warn("Unable to update setpoint for appliance '{}': {} -> {}", entity.getName(),
-                                entity.getSetpointTemperature().orElse(null), state.doubleValue());
+                    Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
+                            .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+                    QuantityType<Temperature> state = ((QuantityType<Temperature>) command).toUnit(unit);
+
+                    if (state != null) {
+                        try {
+                            controller.setThermostat(entity, state.doubleValue());
+                        } catch (PlugwiseHAException e) {
+                            logger.warn("Unable to update setpoint for appliance '{}': {} -> {}", entity.getName(),
+                                    entity.getSetpointTemperature().orElse(null), state.doubleValue());
+                        }
                     }
                 }
                 break;

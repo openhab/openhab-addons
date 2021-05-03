@@ -122,14 +122,16 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                 switch (channelID) {
                     case ZONE_SETPOINT_CHANNEL:
                         if (command instanceof QuantityType) {
-                            QuantityType<Temperature> state = (QuantityType<Temperature>) command;
-                            try {
-                                Unit<Temperature> unit = location.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
-                                        .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                                controller.setLocationThermostat(entity, state.toUnit(unit).doubleValue());
-                            } catch (PlugwiseHAException e) {
-                                logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
-                                        entity.getSetpointTemperature().orElse(null), state.doubleValue());
+                            Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
+                                    .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+                            QuantityType<Temperature> state = ((QuantityType<Temperature>) command).toUnit(unit);
+                            if (state != null) {
+                                try {
+                                    controller.setLocationThermostat(entity, state.doubleValue());
+                                } catch (PlugwiseHAException e) {
+                                    logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
+                                            entity.getSetpointTemperature().orElse(null), state.doubleValue());
+                                }
                             }
                         }
                         break;

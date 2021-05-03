@@ -189,7 +189,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
      * the Thing
      */
     private boolean checkConfig(C config) {
-        if (config == null || !config.isValid()) {
+        if (!config.isValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration is missing or corrupted");
             return false;
@@ -217,21 +217,23 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     protected final void refresh() {
         PlugwiseHABridgeHandler bridgeHandler = getPlugwiseHABridge();
-        if (bridgeHandler.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
-            PlugwiseHAController controller = getController();
-            if (controller != null) {
-                E entity = null;
-                try {
-                    entity = getEntity(controller, false);
-                } catch (PlugwiseHAException e) {
-                    updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    setLinkedChannelsUndef();
-                }
-                if (entity != null) {
-                    for (Channel channel : getThing().getChannels()) {
-                        ChannelUID channelUID = channel.getUID();
-                        if (this.isLinked(channelUID)) {
-                            refreshChannel(entity, channelUID);
+        if (bridgeHandler != null) {
+            if (bridgeHandler.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+                PlugwiseHAController controller = getController();
+                if (controller != null) {
+                    E entity = null;
+                    try {
+                        entity = getEntity(controller, false);
+                    } catch (PlugwiseHAException e) {
+                        updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        setLinkedChannelsUndef();
+                    }
+                    if (entity != null) {
+                        for (Channel channel : getThing().getChannels()) {
+                            ChannelUID channelUID = channel.getUID();
+                            if (this.isLinked(channelUID)) {
+                                refreshChannel(entity, channelUID);
+                            }
                         }
                     }
                 }

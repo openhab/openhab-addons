@@ -113,7 +113,11 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
     }
 
     private void discoverDomainObjects() throws PlugwiseHAException {
-        PlugwiseHAController controller = this.bridgeHandler.getController();
+        PlugwiseHAController controller = null;
+        PlugwiseHABridgeHandler localBridgeHandler = this.bridgeHandler;
+        if (localBridgeHandler != null) {
+            controller = localBridgeHandler.getController();
+        }
 
         if (controller != null) {
             DomainObjects domainObjects = controller.getDomainObjects();
@@ -141,57 +145,68 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
         String applianceId = appliance.getId();
         String applianceName = appliance.getName();
         String applianceType = appliance.getType();
-        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-        ThingUID uid;
 
-        Map<String, Object> configProperties = new HashMap<>();
+        PlugwiseHABridgeHandler localBridgeHandler = this.bridgeHandler;
+        if (localBridgeHandler != null) {
+            ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
 
-        configProperties.put(APPLIANCE_CONFIG_ID, applianceId);
+            ThingUID uid;
 
-        switch (applianceType) {
-            case "thermostatic_radiator_valve":
-                uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_VALVE, bridgeUID, applianceId);
-                configProperties.put(APPLIANCE_CONFIG_LOWBATTERY, 15);
-                break;
-            case "central_heating_pump":
-                uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_PUMP, bridgeUID, applianceId);
-                break;
-            case "heater_central":
-                uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_BOILER, bridgeUID, applianceId);
-                break;
-            case "zone_thermostat":
-                uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_THERMOSTAT, bridgeUID, applianceId);
-                configProperties.put(APPLIANCE_CONFIG_LOWBATTERY, 15);
-                break;
-            default:
-                return;
+            Map<String, Object> configProperties = new HashMap<>();
+
+            configProperties.put(APPLIANCE_CONFIG_ID, applianceId);
+
+            switch (applianceType) {
+                case "thermostatic_radiator_valve":
+                    uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_VALVE, bridgeUID, applianceId);
+                    configProperties.put(APPLIANCE_CONFIG_LOWBATTERY, 15);
+                    break;
+                case "central_heating_pump":
+                    uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_PUMP, bridgeUID, applianceId);
+                    break;
+                case "heater_central":
+                    uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_BOILER, bridgeUID, applianceId);
+                    break;
+                case "zone_thermostat":
+                    uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_APPLIANCE_THERMOSTAT, bridgeUID,
+                            applianceId);
+                    configProperties.put(APPLIANCE_CONFIG_LOWBATTERY, 15);
+                    break;
+                default:
+                    return;
+            }
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                    .withLabel(applianceName).withProperties(configProperties).build();
+
+            thingDiscovered(discoveryResult);
+
+            logger.debug("Discovered plugwise appliance type '{}' with name '{}' with id {} ({})", applianceType,
+                    applianceName, applianceId, uid);
         }
-
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(applianceName).withProperties(configProperties).build();
-
-        thingDiscovered(discoveryResult);
-
-        logger.debug("Discovered plugwise appliance type '{}' with name '{}' with id {} ({})", applianceType,
-                applianceName, applianceId, uid);
     }
 
     private void locationDiscovery(Location location) {
         String locationId = location.getId();
         String locationName = location.getName();
-        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-        ThingUID uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_ZONE, bridgeUID, locationId);
 
-        Map<String, Object> configProperties = new HashMap<>();
+        PlugwiseHABridgeHandler localBridgeHandler = this.bridgeHandler;
+        if (localBridgeHandler != null) {
 
-        configProperties.put(ZONE_CONFIG_ID, locationId);
+            ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
+            ThingUID uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_ZONE, bridgeUID, locationId);
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(locationName).withRepresentationProperty(ZONE_CONFIG_ID).withProperties(configProperties)
-                .build();
+            Map<String, Object> configProperties = new HashMap<>();
 
-        thingDiscovered(discoveryResult);
+            configProperties.put(ZONE_CONFIG_ID, locationId);
 
-        logger.debug("Discovered plugwise zone '{}' with id {} ({})", locationName, locationId, uid);
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                    .withLabel(locationName).withRepresentationProperty(ZONE_CONFIG_ID).withProperties(configProperties)
+                    .build();
+
+            thingDiscovered(discoveryResult);
+
+            logger.debug("Discovered plugwise zone '{}' with id {} ({})", locationName, locationId, uid);
+        }
     }
 }
