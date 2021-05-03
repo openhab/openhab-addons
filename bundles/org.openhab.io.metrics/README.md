@@ -7,7 +7,7 @@ The metrics service provides
 
 ## Precondition
 
-The openHAB core metrics must be available (OH version >= 3.1.0 M2 is necessary).
+The openHAB core metrics must be available (at least OH version 3.1).
 
 ## Provided metrics
 
@@ -89,11 +89,11 @@ It should be possible to add any of these, especially the ones using a pull mech
 ## Grafana
 
 You can now visualize the results in Grafana. Micrometer provides a public [Grafana dashboard here](https://grafana.com/grafana/dashboards/4701). 
-I adapted it a little bit to include the openHAB metrics. You can download it here [Dashboard](docs/dashboard.json). 
+I adapted it a little bit to include the openHAB metrics. You can download it here [Dashboard](doc/dashboard.json). 
 This has been tested with Prometheus - for other monitoring systems adaptions to the dashboard might be necessary.  
 
 Here are some screenshots: 
 
-![Grafana (1)](docs/grafana-1.png)
-![Grafana (2)](docs/grafana-2.png)
-![Grafana (3)](docs/grafana-3.png)
+![Grafana (1)](doc/grafana-1.png)
+![Grafana (2)](doc/grafana-2.png)
+![Grafana (3)](doc/grafana-3.png)

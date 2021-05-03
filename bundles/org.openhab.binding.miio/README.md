@@ -173,7 +173,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 280 different models.
+Currently the miio binding supports more than 290 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -300,6 +300,10 @@ Currently the miio binding supports more than 280 different models.
 | Roborock T7 Pro              | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-a09) | Yes       |            |
 | Roborock S6 MaxV             | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-a10) | Yes       |            |
 | Roborock T7                  | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-a11) | Yes       |            |
+| Roborock T7S                 | miio:vacuum      | [roborock.vacuum.a14](#roborock-vacuum-a14) | Yes       |            |
+| Roborock S7                  | miio:vacuum      | [roborock.vacuum.a15](#roborock-vacuum-a15) | Yes       |            |
+| Roborock S4 Max              | miio:vacuum      | [roborock.vacuum.a19](#roborock-vacuum-a19) | Yes       |            |
+| Roborock T7S Plus            | miio:vacuum      | [roborock.vacuum.a23](#roborock-vacuum-a23) | Yes       |            |
 | Xiaowa C1                    | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes       |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No        |            |
 | Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |            |
@@ -404,6 +408,7 @@ Currently the miio binding supports more than 280 different models.
 | Yeelight LED Bulb (Color)    | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |            |
 | Mi LED Smart Bulb (White and Color) | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
 | Yeelight LED Bulb 1S（Color）  | miio:basic       | [yeelink.light.color4](#yeelink-light-color4) | Yes       |            |
+| Mi Smart LED Bulb Essential (White and Color) | miio:basic       | [yeelink.light.color5](#yeelink-light-color5) | Yes       |            |
 | Yeelight Smart LED Bulb 1SE (color) | miio:basic       | [yeelink.light.colora](#yeelink-light-colora) | Yes       |            |
 | Yeelight LED Bulb (Tunable)  | miio:basic       | [yeelink.light.ct2](#yeelink-light-ct2) | Yes       |            |
 | Mi LED Desk Lamp             | miio:basic       | [yeelink.light.lamp1](#yeelink-light-lamp1) | Yes       |            |
@@ -414,6 +419,7 @@ Currently the miio binding supports more than 280 different models.
 | Yeelight                     | miio:basic       | [yeelink.light.lamp6](#yeelink-light-lamp6) | Yes       |            |
 | Yeelight LED Light Sensor Desk Lamp V1 | miio:basic       | [yeelink.light.lamp7](#yeelink-light-lamp7) | Yes       |            |
 | Yeelight                     | miio:basic       | [yeelink.light.lamp8](#yeelink-light-lamp8) | Yes       |            |
+| Yeelight Screen Light Bar    | miio:basic       | [yeelink.light.lamp15](#yeelink-light-lamp15) | Yes       |            |
 | Yeelight Bulb                | miio:basic       | [yeelink.light.mono1](#yeelink-light-mono1) | Yes       |            |
 | Yeelight White Bulb v2       | miio:basic       | [yeelink.light.mono2](#yeelink-light-mono2) | Yes       |            |
 | Yeelight LED Filament Bulb   | miio:basic       | [yeelink.light.mono5](#yeelink-light-mono5) | Yes       |            |
@@ -513,19 +519,19 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  | Value mapping ["settings-set-start-time"="Set Start Time","settings-set-end-time"="Set End Time","settings-set-frequency"="Set Frequency","settings-set-screen-off"="Set Screen Off","settings-set-device-off"="Set Device Off","settings-set-temp-unit"="Set Temp Unit"] |
+| actions              | String               | Actions                                  | Value mapping `["settings-set-start-time"="Set Start Time","settings-set-end-time"="Set End Time","settings-set-frequency"="Set Frequency","settings-set-screen-off"="Set Screen Off","settings-set-device-off"="Set Device Off","settings-set-temp-unit"="Set Temp Unit"]` |
 | relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | pm2_5_density        | Number:Density       | Environment - PM2 5 Density              |            |
 | pm10_density         | Number:Density       | Environment - PM10 Density               |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | co2_density          | Number:Density       | Environment - CO2 Density                |            |
 | battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging_state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not charging","3"="Not chargeable"] |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not charging","3"="Not chargeable"]` |
 | voltage              | Number:ElectricPotential | Battery - Voltage                        |            |
 | mac                  | String               | Mac - Mac                                |            |
-| monitoring_frequency | Number:Time          | Settings - Monitoring Frequency          | Value mapping ["1"="Second","60"="Second","300"="Second","600"="Second","0"="Null"] |
-| screen_off           | Number:Time          | Settings - Screen Off                    | Value mapping ["15"="Second","30"="Second","60"="Second","300"="Second","0"="Null"] |
-| device_off           | Number:Time          | Settings - Device Off                    | Value mapping ["15"="Minute","30"="Minute","60"="Minute","0"="Null"] |
+| monitoring_frequency | Number:Time          | Settings - Monitoring Frequency          | Value mapping `["1"="Second","60"="Second","300"="Second","600"="Second","0"="Null"]` |
+| screen_off           | Number:Time          | Settings - Screen Off                    | Value mapping `["15"="Second","30"="Second","60"="Second","300"="Second","0"="Null"]` |
+| device_off           | Number:Time          | Settings - Device Off                    | Value mapping `["15"="Minute","30"="Minute","60"="Minute","0"="Null"]` |
 | tempature_unit       | String               | Settings - Tempature Unit                |            |
 
 ### Mi Multifunction Air Monitor (<a name="cgllc-airmonitor-b1">cgllc.airmonitor.b1</a>) Channels
@@ -649,7 +655,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | Number               | Mode                                     |            |
+| mode                 | Number               | Mode                                     | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Humidity "]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
 | led                  | Switch               | LED indicator Light                      |            |
@@ -661,7 +667,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | Number               | Mode                                     |            |
+| mode                 | Number               | Mode                                     | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Humidity "]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
 | led                  | Switch               | LED indicator Light                      |            |
@@ -674,7 +680,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | Number               | Mode                                     |            |
+| mode                 | Number               | Mode                                     | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Humidity "]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | humidity_set         | Number:Dimensionless | Humidity Setting                         |            |
 | led                  | Switch               | LED indicator Light                      |            |
@@ -817,11 +823,11 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["vacuum"="Vacuum","stop"="Stop","sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"] |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping `["vacuum"="Vacuum","stop"="Stop","sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"]` |
 | BatteryLevel         | Number               | Battery-Battery Level                    |            |
-| ChargingState        | Number               | Battery-Charging State                   | Value mapping ["1"="Charging","2"="Not Charging","4"="Charging","5"="Go Charging"] |
-| Fault                | Number               | Robot Cleaner-Device Fault               | Value mapping ["0"="No faults"] |
-| Status               | Number               | Robot Cleaner-Status                     | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging"] |
+| ChargingState        | Number               | Battery-Charging State                   | Value mapping `["1"="Charging","2"="Not Charging","4"="Charging","5"="Go Charging"]` |
+| Fault                | Number               | Robot Cleaner-Device Fault               | Value mapping `["0"="No faults"]` |
+| Status               | Number               | Robot Cleaner-Status                     | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging"]` |
 | BrushLeftTime        | Number:Time          | Main Cleaning Brush-Brush Left Time      |            |
 | BrushLifeLevel       | Number               | Main Cleaning Brush-Brush Life Level     |            |
 | FilterLifeLevel      | Number               | Filter - Filter Life Level               |            |
@@ -831,13 +837,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | WorkMode             | Number               | clean-workmode                           |            |
 | Area                 | String               | clean-area                               |            |
 | Timer                | String               | clean-timer                              |            |
-| Mode                 | Number               | clean-mode                               | Value mapping ["0"="quiet","1"="standard","2"="medium","3"="strong"] |
+| Mode                 | Number               | clean-mode                               | Value mapping `["0"="quiet","1"="standard","2"="medium","3"="strong"]` |
 | TotalCleanTime       | Number:Time          | Clean - Total Clean Time                 |            |
 | TotalCleanTimes      | Number               | Clean - Total Clean Times                |            |
 | TotalCleanArea       | Number:Area          | Clean - Total Clean Area                 |            |
 | CleanLogStartTime    | Number               | Clean - Clean Log Start Time             |            |
 | ButtonLed            | Number               | Clean - Button Led                       |            |
-| TaskDone             | Number               | Clean - Task Done                        | Value mapping ["0"="in progress","1"="done"] |
+| TaskDone             | Number               | Clean - Task Done                        | Value mapping `["0"="in progress","1"="done"]` |
 | LifeSieve            | String               | Consumable - Life Sieve                  |            |
 | LifeBrushSide        | String               | Consumable - Life Brush Side             |            |
 | LifeBrushMain        | String               | Consumable - Life Brush Main             |            |
@@ -853,10 +859,10 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging"] |
-| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping ["0"="No Faults"] |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Faults"]` |
 | battery-level        | Number               | Battery - Battery Level                  |            |
-| charging-state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not Charging","5"="Go Charging"] |
+| charging-state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
 | brush-left-time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
 | brush-life-level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
 | brush-left-time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
@@ -866,12 +872,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | work-mode            | Number               | Vacuum Extend - Work Mode                |            |
 | cleaning-time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning-area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
-| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping ["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"] |
-| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping ["1"="low water","2"="medium water","3"="high water"] |
-| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping ["0"="Status 0","1"="Status 1"] |
-| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping ["0"="Status 0","1"="Status 1"] |
-| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping ["0"="Off","1"="On"] |
-| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping ["0"="Off","1"="On"] |
+| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"]` |
+| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="low water","2"="medium water","3"="high water"]` |
+| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Status 0","1"="Status 1"]` |
+| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Status 0","1"="Status 1"]` |
+| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Off","1"="On"]` |
 | enable               | Switch               | Do Not Disturb - Enable                  |            |
 | start-time           | String               | Do Not Disturb - Start Time              |            |
 | end-time             | String               | Do Not Disturb - End Time                |            |
@@ -884,18 +890,18 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | total-clean-time     | Number:Time          | Clean Logs - Total Clean Time            |            |
 | total-clean-times    | Number               | Clean Logs - Total Clean Times           |            |
 | total-clean-area     | Number               | Clean Logs - Total Clean Area            |            |
-| save-map-status      | Number               | Vslam Extend - Save Map Status           | Value mapping ["0"="Off","1"="On","-1"="Not Enabled"] |
+| save-map-status      | Number               | Vslam Extend - Save Map Status           | Value mapping `["0"="Off","1"="On","-1"="Not Enabled"]` |
 
 ### Dreame Robot Vacuum D9  (<a name="dreame-vacuum-p2009">dreame.vacuum.p2009</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"] |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
-| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping `["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock","findme"="Find me","testsound"="Test Sound"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Error","1"="Drop","2"="Cliff","3"="Bumper","4"="Gesture","5"="Bumper Repeat","6"="Drop Repeat","7"="Optical Flow","8"="No Box","9"="No Tankbox","10"="Waterbox Empty","11"="Box full","12"="Brush","13"="Side Brush","14"="Fan","15"="Left Wheel motor","16"="Right Wheel motor","17"="Turn suffocate","18"="Forward suffocate","19"="Charger get","20"="Battery low","21"="Charge fault","22"="Battery percentage","23"="Heart","24"="Camera occlusion","25"="Camera fault","26"="Event battery","27"="Forward looking","28"="Gyroscope"]` |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging-state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not Charging","5"="Go Charging"] |
-| resetConsumable      | String               | Consumables Reset                        | Value mapping ["mainbrush-cleaner-reset-brush-life"="Reset Main Brush","sidebrush-cleaner-reset-brush-life"="Reset Side Brush","filter-reset-filter-life"="Reset Filter"] |
+| charging-state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| resetConsumable      | String               | Consumables Reset                        | Value mapping `["mainbrush-cleaner-reset-brush-life"="Reset Main Brush","sidebrush-cleaner-reset-brush-life"="Reset Side Brush","filter-reset-filter-life"="Reset Filter"]` |
 | brush-left-time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
 | brush-life-level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
 | brush-left-time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
@@ -905,12 +911,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | work-mode            | Number               | Vacuum Extend - Work Mode                |            |
 | cleaning-time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning-area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
-| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping ["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"] |
-| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping ["1"="low water","2"="medium water","3"="high water"] |
-| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping ["0"="Status 0","1"="Status 1"] |
-| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping ["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"] |
-| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping ["0"="Off","1"="On"] |
-| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping ["0"="Off","1"="On"] |
+| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"]` |
+| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="low water","2"="medium water","3"="high water"]` |
+| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Status 0","1"="Status 1"]` |
+| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"]` |
+| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Off","1"="On"]` |
 | serial-number1       | String               | Vacuum Extend - Serial Number            |            |
 | clean-rags-tip       | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
 | keep-sweeper-time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
@@ -932,12 +938,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"] |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
-| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping `["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock","findme"="Find me","testsound"="Test Sound"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Error","1"="Drop","2"="Cliff","3"="Bumper","4"="Gesture","5"="Bumper Repeat","6"="Drop Repeat","7"="Optical Flow","8"="No Box","9"="No Tankbox","10"="Waterbox Empty","11"="Box full","12"="Brush","13"="Side Brush","14"="Fan","15"="Left Wheel motor","16"="Right Wheel motor","17"="Turn suffocate","18"="Forward suffocate","19"="Charger get","20"="Battery low","21"="Charge fault","22"="Battery percentage","23"="Heart","24"="Camera occlusion","25"="Camera fault","26"="Event battery","27"="Forward looking","28"="Gyroscope"]` |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging-state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not Charging","5"="Go Charging"] |
-| resetConsumable      | String               | Consumables Reset                        | Value mapping ["mainbrush-cleaner-reset-brush-life"="Reset Main Brush","sidebrush-cleaner-reset-brush-life"="Reset Side Brush","filter-reset-filter-life"="Reset Filter"] |
+| charging-state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| resetConsumable      | String               | Consumables Reset                        | Value mapping `["mainbrush-cleaner-reset-brush-life"="Reset Main Brush","sidebrush-cleaner-reset-brush-life"="Reset Side Brush","filter-reset-filter-life"="Reset Filter"]` |
 | brush-left-time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
 | brush-life-level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
 | brush-left-time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
@@ -947,12 +953,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | work-mode            | Number               | Vacuum Extend - Work Mode                |            |
 | cleaning-time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning-area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
-| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping ["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"] |
-| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping ["1"="low water","2"="medium water","3"="high water"] |
-| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping ["0"="Status 0","1"="Status 1"] |
-| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping ["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"] |
-| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping ["0"="Off","1"="On"] |
-| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping ["0"="Off","1"="On"] |
+| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"]` |
+| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="low water","2"="medium water","3"="high water"]` |
+| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Status 0","1"="Status 1"]` |
+| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"]` |
+| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Off","1"="On"]` |
 | serial-number1       | String               | Vacuum Extend - Serial Number            |            |
 | clean-rags-tip       | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
 | keep-sweeper-time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
@@ -974,12 +980,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  | Value mapping ["vacuum-start-sweep"="Start Sweep","vacuum-stop-sweeping"="Stop Sweeping","battery-start-charge"="Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"] |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
+| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Sweep","vacuum-stop-sweeping"="Stop Sweeping","battery-start-charge"="Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
-| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping ["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"] |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
 | battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging_state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not Charging","5"="Go Charging"] |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
 | brush_left_time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
 | brush_life_level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
 | brush_left_time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
@@ -989,12 +995,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | work_mode            | Number               | Vacuum Extend - Work Mode                |            |
 | cleaning_time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning-area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
-| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping ["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"] |
-| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping ["1"="low water","2"="medium water","3"="high water"] |
-| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping ["0"="Status 0","1"="Status 1"] |
-| task_status          | Number               | Vacuum Extend - Task Status              | Value mapping ["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"] |
-| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping ["0"="Off","1"="On"] |
-| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping ["0"="Off","1"="On"] |
+| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"]` |
+| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="low water","2"="medium water","3"="high water"]` |
+| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Status 0","1"="Status 1"]` |
+| task_status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"]` |
+| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Off","1"="On"]` |
 | serial_number        | String               | Vacuum Extend - Serial Number            |            |
 | keep_sweeper_time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
 | faults               | String               | Vacuum Extend - Faults                   |            |
@@ -1010,18 +1016,18 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | total_clean_time     | Number:Time          | Clean Logs - Total Clean Time            |            |
 | total_clean_times    | Number               | Clean Logs - Total Clean Times           |            |
 | total_clean_area     | Number               | Clean Logs - Total Clean Area            |            |
-| save_map_status      | Number               | Vslam Extend - Save Map Status           | Value mapping ["0"="Off","1"="On"] |
+| save_map_status      | Number               | Vslam Extend - Save Map Status           | Value mapping `["0"="Off","1"="On"]` |
 
 ### MOVA Z500 Robot Vacuum and Mop Cleaner (<a name="dreame-vacuum-p2156o">dreame.vacuum.p2156o</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  | Value mapping ["vacuum-start-sweep"="Start Sweep","vacuum-stop-sweeping"="Stop Sweeping","battery-start-charge"="Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"] |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
+| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Sweep","vacuum-stop-sweeping"="Stop Sweeping","battery-start-charge"="Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
-| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping ["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"] |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
 | battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging_state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not Charging","5"="Go Charging"] |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
 | brush_left_time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
 | brush_life_level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
 | brush_left_time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
@@ -1031,12 +1037,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | work_mode            | Number               | Vacuum Extend - Work Mode                |            |
 | cleaning_time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning-area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
-| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping ["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"] |
-| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping ["1"="low water","2"="medium water","3"="high water"] |
-| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping ["0"="Status 0","1"="Status 1"] |
-| task_status          | Number               | Vacuum Extend - Task Status              | Value mapping ["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"] |
-| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping ["0"="Off","1"="On"] |
-| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping ["0"="Off","1"="On"] |
+| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"]` |
+| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="low water","2"="medium water","3"="high water"]` |
+| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Status 0","1"="Status 1"]` |
+| task_status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"]` |
+| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Off","1"="On"]` |
 | serial_number        | String               | Vacuum Extend - Serial Number            |            |
 | keep_sweeper_time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
 | faults               | String               | Vacuum Extend - Faults                   |            |
@@ -1052,18 +1058,18 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | total_clean_time     | Number:Time          | Clean Logs - Total Clean Time            |            |
 | total_clean_times    | Number               | Clean Logs - Total Clean Times           |            |
 | total_clean_area     | Number               | Clean Logs - Total Clean Area            |            |
-| save_map_status      | Number               | Vslam Extend - Save Map Status           | Value mapping ["0"="Off","1"="On"] |
+| save_map_status      | Number               | Vslam Extend - Save Map Status           | Value mapping `["0"="Off","1"="On"]` |
 
 ### MOVA L600 Robot Vacuum and Mop Cleaner (<a name="dreame-vacuum-p2157">dreame.vacuum.p2157</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"] |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"] |
-| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping `["sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock","findme"="Find me","testsound"="Test Sound"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Error","1"="Drop","2"="Cliff","3"="Bumper","4"="Gesture","5"="Bumper Repeat","6"="Drop Repeat","7"="Optical Flow","8"="No Box","9"="No Tankbox","10"="Waterbox Empty","11"="Box full","12"="Brush","13"="Side Brush","14"="Fan","15"="Left Wheel motor","16"="Right Wheel motor","17"="Turn suffocate","18"="Forward suffocate","19"="Charger get","20"="Battery low","21"="Charge fault","22"="Battery percentage","23"="Heart","24"="Camera occlusion","25"="Camera fault","26"="Event battery","27"="Forward looking","28"="Gyroscope"]` |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging-state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not Charging","5"="Go Charging"] |
-| resetConsumable      | String               | Consumables Reset                        | Value mapping ["mainbrush-cleaner-reset-brush-life"="Reset Main Brush","sidebrush-cleaner-reset-brush-life"="Reset Side Brush","filter-reset-filter-life"="Reset Filter"] |
+| charging-state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| resetConsumable      | String               | Consumables Reset                        | Value mapping `["mainbrush-cleaner-reset-brush-life"="Reset Main Brush","sidebrush-cleaner-reset-brush-life"="Reset Side Brush","filter-reset-filter-life"="Reset Filter"]` |
 | brush-left-time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
 | brush-life-level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
 | brush-left-time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
@@ -1073,12 +1079,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | work-mode            | Number               | Vacuum Extend - Work Mode                |            |
 | cleaning-time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning-area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
-| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping ["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"] |
-| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping ["1"="low water","2"="medium water","3"="high water"] |
-| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping ["0"="Status 0","1"="Status 1"] |
-| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping ["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"] |
-| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping ["0"="Off","1"="On"] |
-| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping ["0"="Off","1"="On"] |
+| cleaning-mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"]` |
+| mop-mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="low water","2"="medium water","3"="high water"]` |
+| waterbox-status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Status 0","1"="Status 1"]` |
+| task-status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"]` |
+| break-point-restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet-press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Off","1"="On"]` |
 | serial-number1       | String               | Vacuum Extend - Serial Number            |            |
 | clean-rags-tip       | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
 | keep-sweeper-time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
@@ -1122,7 +1128,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | on1                  | Switch               | Fan - Power                              |            |
 | fan-level            | Number:Dimensionless | Fan - Fan Level                          |            |
 | motor-reverse        | Switch               | Fan - Motor Reverse                      |            |
-| mode                 | Number               | Fan - Mode                               | Value mapping ["1"="Normal Wind","2"="Natural Wind"] |
+| mode                 | Number               | Fan - Mode                               | Value mapping `["1"="Normal Wind","2"="Natural Wind"]` |
 
 ### HUIZUO Fan Light(2020) (<a name="huayi-light-fanwy2">huayi.light.fanwy2</a>) Channels
 
@@ -1133,13 +1139,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | color-temperature    | Number:Temperature   | Light - Color Temperature                |            |
 | on1                  | Switch               | Fan - Power                              |            |
 | fan-level            | Number:Dimensionless | Fan - Fan Level                          |            |
-| mode                 | Number               | Fan - Mode                               | Value mapping ["0"="Basic","1"="Natural Wind"] |
+| mode                 | Number               | Fan - Mode                               | Value mapping `["0"="Basic","1"="Natural Wind"]` |
 | time-off             | Number:Time          | Presets - Time Off                       |            |
 | pre-colortemp        | Number:Temperature   | Presets - Pre Colortemp                  |            |
 | pre-brightness       | Dimmer               | Presets - Pre Brightness                 |            |
 | pre-speed            | Number:Dimensionless | Presets - Pre Speed                      |            |
-| reversal             | Number               | Presets - Reversal                       | Value mapping ["0"="Postitive","1"="Reverse"] |
-| pre-custom           | Number               | Presets - Pre Custom                     | Value mapping ["0"="Switch Off","1"="Open"] |
+| reversal             | Number               | Presets - Reversal                       | Value mapping `["0"="Postitive","1"="Reverse"]` |
+| pre-custom           | Number               | Presets - Pre Custom                     | Value mapping `["0"="Switch Off","1"="Open"]` |
 | flabellum            | Switch               | Presets - Flabellum                      |            |
 
 ### HUIZUO PEGASUS For Living Room (<a name="huayi-light-peg091">huayi.light.peg091</a>) Channels
@@ -1262,7 +1268,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Light - Brightness                       |            |
 | color-temperature    | Number:Temperature   | Light - Color Temperature                |            |
 | on1                  | Switch               | Heater - Power                           |            |
-| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Faults"] |
+| fault                | Number               | Heater - Device Fault                    | Value mapping `["0"="No Faults"]` |
 | heat-level           | Number               | Heater - Heat Level                      |            |
 | screenshow           | Switch               | Other - Screenshow                       |            |
 
@@ -1278,14 +1284,14 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Curtain - Device Fault                   | Value mapping ["0"="No faults"] |
+| fault                | Number               | Curtain - Device Fault                   | Value mapping `["0"="No faults"]` |
 | current-position     | Number               | Curtain - Current Position               |            |
-| status               | Number               | Curtain - Status                         | Value mapping ["0"="Stopped","1"="Opening","2"="Closing"] |
+| status               | Number               | Curtain - Status                         | Value mapping `["0"="Stopped","1"="Opening","2"="Closing"]` |
 | target-position      | Number               | Curtain - Target Position                |            |
-| manual-enabled       | Number               | curtain_cfg - Manual Enabled             | Value mapping ["0"="Disable","1"="Enable"] |
-| polarity             | Number               | curtain_cfg - Polarity                   | Value mapping ["0"="Positive","1"="Reverse"] |
-| pos-limit            | Number               | curtain_cfg - Position Limit             | Value mapping ["0"="Unlimit","1"="Limit"] |
-| en-night-tip-light   | Switch               | Set Night Tip Light                      | Value mapping ["0"="Disable","1"="Enable"] |
+| manual-enabled       | Number               | curtain_cfg - Manual Enabled             | Value mapping `["0"="Disable","1"="Enable"]` |
+| polarity             | Number               | curtain_cfg - Polarity                   | Value mapping `["0"="Positive","1"="Reverse"]` |
+| pos-limit            | Number               | curtain_cfg - Position Limit             | Value mapping `["0"="Unlimit","1"="Limit"]` |
+| en-night-tip-light   | Switch               | Set Night Tip Light                      | Value mapping `["0"="Disable","1"="Enable"]` |
 | run-time             | Number               | curtain_cfg - Run-time                   |            |
 
 ### Mi Air Purifier virtual (<a name="lumi-gateway-mgl03">lumi.gateway.mgl03</a>) Channels
@@ -1333,13 +1339,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | vacuumaction         | String               | Vacuum Action                            | This channel accepts `start`, `stop`, `findme` and `dock`. |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["1"="Idle","2"="Sweeping","3"="Paused","4"="Error","5"="Charging","6"="Go Charging"] |
-| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping ["0"="No Faults","1"="Left-wheel-error","2"="Right-wheel-error","3"="Cliff-error","4"="Low-battery-error","5"="Bump-error","6"="Main-brush-error","7"="Side-brush-error","8"="Fan-motor-error","9"="Dustbin-error","10"="Charging-error","11"="No-wate-error","12"="Pick-up-error"] |
-| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping ["1"="Auto-clean","2"="Spot-clean","3"="Wallflow-clean"] |
-| target-water-level   | Number               | Robot Cleaner - Target Water Level       | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
-| fan-level            | Number               | Robot Cleaner - Fan Level                | Value mapping ["0"="Silence","1"="Stanrd","2"="Middle","3"="Enchance"] |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Idle","2"="Sweeping","3"="Paused","4"="Error","5"="Charging","6"="Go Charging"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Faults","1"="Left-wheel-error","2"="Right-wheel-error","3"="Cliff-error","4"="Low-battery-error","5"="Bump-error","6"="Main-brush-error","7"="Side-brush-error","8"="Fan-motor-error","9"="Dustbin-error","10"="Charging-error","11"="No-wate-error","12"="Pick-up-error"]` |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Auto-clean","2"="Spot-clean","3"="Wallflow-clean"]` |
+| target-water-level   | Number               | Robot Cleaner - Target Water Level       | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| fan-level            | Number               | Robot Cleaner - Fan Level                | Value mapping `["0"="Silence","1"="Stanrd","2"="Middle","3"="Enchance"]` |
 | battery-level        | Number               | Battery - Battery Level                  |            |
-| charging-state       | Number               | Battery - Charging State                 | Value mapping ["0"="Not-charging","1"="Charging","2"="Charging-competely"] |
+| charging-state       | Number               | Battery - Charging State                 | Value mapping `["0"="Not-charging","1"="Charging","2"="Charging-competely"]` |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | volume               | Number               | Alarm - Volume                           |            |
 | filter-life-level    | Number               | Filter - Filter Life Level               |            |
@@ -1353,38 +1359,38 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | total-clean-area     | Number               | Clean Record - Total Clean Area          |            |
 | total-clean-time     | Number               | Clean Record - Total Clean Time          |            |
 | total-clean-count    | Number               | Clean Record - Total Clean Count         |            |
-| language             | Number               | Language - Language                      | Value mapping ["0"="English","1"="简体中文","2"="Español","3"="Русский","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"] |
+| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="简体中文","2"="Español","3"="Русский","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"]` |
 | not-disturb-switch   | Switch               | Language - Not Disturb Switch            |            |
-| mop-status           | Number               | Other Status - Mop Status                | Value mapping ["0"="Mop Uninstall","1"="Mop Install"] |
+| mop-status           | Number               | Other Status - Mop Status                | Value mapping `["0"="Mop Uninstall","1"="Mop Install"]` |
 
 ### Mijia Smart Pet Water Dispenser (<a name="mmgg-pet_waterer-s1">mmgg.pet_waterer.s1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping ["0"="No faults"] |
+| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping `["0"="No faults"]` |
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Mode                                     | Value mapping ["1"="Common","2"="Smart "] |
+| mode                 | Number               | Mode                                     | Value mapping `["1"="Common","2"="Smart "]` |
 | filter-left-time     | Number:Time          | Filter - Filter Left Time                |            |
 | on1                  | Switch               | Indicator Light - Switch                 |            |
 | cotton-left-time     | Number:Time          | Filter Cotton - Cotton Left Time         |            |
 | remain-clean-time    | Number:Time          | Remain Clean Time - Remain Clean Time    |            |
 | no-water-flag        | Switch               | No Water Flag - No Water Flag            |            |
-| resetConsumable      | String               | Consumables Reset                        | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| resetConsumable      | String               | Consumables Reset                        | Value mapping `["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"]` |
 | no-water-time        | Number:Time          | No Water Flag - No Water Time            |            |
 
 ### Mijia Smart Pet Water Dispenser (<a name="mmgg-pet_waterer-s2">mmgg.pet_waterer.s2</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping ["0"="No faults"] |
+| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping `["0"="No faults"]` |
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Mode                                     | Value mapping ["1"="Common","2"="Smart "] |
+| mode                 | Number               | Mode                                     | Value mapping `["1"="Common","2"="Smart "]` |
 | filter-left-time     | Number:Time          | Filter - Filter Left Time                |            |
 | on1                  | Switch               | Indicator Light - Switch                 |            |
 | cotton-left-time     | Number:Time          | Filter Cotton - Cotton Left Time         |            |
 | remain-clean-time    | Number:Time          | Remain Clean Time - Remain Clean Time    |            |
 | no-water-flag        | Switch               | No Water Flag - No Water Flag            |            |
-| resetConsumable      | String               | Consumables Reset                        | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| resetConsumable      | String               | Consumables Reset                        | Value mapping `["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"]` |
 | no-water-time        | Number:Time          | No Water Flag - No Water Time            |            |
 | pump-block-flag      | Switch               | No Water Flag - Pump Block Flag          |            |
 
@@ -1392,15 +1398,15 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping ["0"="No faults"] |
+| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping `["0"="No faults"]` |
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Mode                                     | Value mapping ["1"="Common","2"="Smart "] |
+| mode                 | Number               | Mode                                     | Value mapping `["1"="Common","2"="Smart "]` |
 | filter-left-time     | Number:Time          | Filter - Filter Left Time                |            |
 | on1                  | Switch               | Indicator Light - Switch                 |            |
 | cotton-left-time     | Number:Time          | Filter Cotton - Cotton Left Time         |            |
 | remain-clean-time    | Number:Time          | Remain Clean Time - Remain Clean Time    |            |
 | no-water-flag        | Switch               | No Water Flag - No Water Flag            |            |
-| resetConsumable      | String               | Consumables Reset                        | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| resetConsumable      | String               | Consumables Reset                        | Value mapping `["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"]` |
 | no-water-time        | Number:Time          | No Water Flag - No Water Time            |            |
 | pump-block-flag      | Switch               | No Water Flag - Pump Block Flag          |            |
 
@@ -1408,15 +1414,15 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping ["0"="No faults"] |
+| fault                | Number               | Pet Drinking Fountain - Device Fault     | Value mapping `["0"="No faults"]` |
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Mode                                     | Value mapping ["1"="Common","2"="Smart "] |
+| mode                 | Number               | Mode                                     | Value mapping `["1"="Common","2"="Smart "]` |
 | filter-left-time     | Number:Time          | Filter - Filter Left Time                |            |
 | on1                  | Switch               | Indicator Light - Switch                 |            |
 | cotton-left-time     | Number:Time          | Filter Cotton - Cotton Left Time         |            |
 | remain-clean-time    | Number:Time          | Remain Clean Time - Remain Clean Time    |            |
 | no-water-flag        | Switch               | No Water Flag - No Water Flag            |            |
-| resetConsumable      | String               | Consumables Reset                        | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| resetConsumable      | String               | Consumables Reset                        | Value mapping `["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"]` |
 | no-water-time        | Number:Time          | No Water Flag - No Water Time            |            |
 | pump-block-flag      | Switch               | No Water Flag - Pump Block Flag          |            |
 
@@ -2101,21 +2107,21 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | String               | Vacuum Action                            | Value mapping ["start-sweep"="Sweep","stop-sweeping"="Stop Sweep","pause"="Pause","start-charge"="Goto Dock","stop-massage"="Stop Sweep","start-mop"="Start Mop","start-only-sweep"="Start Sweep Only","start-sweep-mop"="Start Sweep Mop"] |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping ["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping"] |
-| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping ["0"="No Error","1"="Low Battery Find Charge","2"="Low Bat Need Poweroff","3"="Wheel Trap","4"="Collision Error","5"="Tile Do Task","6"="Lidar Point Err","7"="Front Wall Err","8"="Along Wall Err","9"="Mid Brush Err","10"="Side Brush Err","11"="Fan Err","12"="Lidar Cover","13"="Garbage Full","14"="Garbage Out","15"="Garbage Full Out","16"="Trapped","17"="Pick Up","20"="Cannot Arrive","21"="Start From Forbid","22"="Drop","23"="Kit Water Pump","24"="Find Charge Failed","18"="Garbage Out","25"="No Mop Clean","26"="Low Battery Cant Clean"] |
-| wdr-mode             | Number               | Robot Cleaner - Wide Dynamic Range Mode  | Value mapping ["0"="Mode 0","1"="Mode 1","2"="Mode 2"] |
-| door-state           | Number               | Robot Cleaner - Door State               | Value mapping ["0"="Door 0","1"="Door 1","2"="Door 2","3"="Door 3"] |
-| contact-state        | Number               | Robot Cleaner - Contact State            | Value mapping ["0"="Off","1"="On"] |
+| vacuumaction         | String               | Vacuum Action                            | Value mapping `["start-sweep"="Sweep","stop-sweeping"="Stop Sweep","pause"="Pause","start-charge"="Goto Dock","stop-massage"="Stop Sweep","start-mop"="Start Mop","start-only-sweep"="Start Sweep Only","start-sweep-mop"="Start Sweep Mop"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Error","1"="Low Battery Find Charge","2"="Low Bat Need Poweroff","3"="Wheel Trap","4"="Collision Error","5"="Tile Do Task","6"="Lidar Point Err","7"="Front Wall Err","8"="Along Wall Err","9"="Mid Brush Err","10"="Side Brush Err","11"="Fan Err","12"="Lidar Cover","13"="Garbage Full","14"="Garbage Out","15"="Garbage Full Out","16"="Trapped","17"="Pick Up","20"="Cannot Arrive","21"="Start From Forbid","22"="Drop","23"="Kit Water Pump","24"="Find Charge Failed","18"="Garbage Out","25"="No Mop Clean","26"="Low Battery Cant Clean"]` |
+| wdr-mode             | Number               | Robot Cleaner - Wide Dynamic Range Mode  | Value mapping `["0"="Mode 0","1"="Mode 1","2"="Mode 2"]` |
+| door-state           | Number               | Robot Cleaner - Door State               | Value mapping `["0"="Door 0","1"="Door 1","2"="Door 2","3"="Door 3"]` |
+| contact-state        | Number               | Robot Cleaner - Contact State            | Value mapping `["0"="Off","1"="On"]` |
 | contact-state1       | Number:Time          | Robot Cleaner - Contact State            |            |
 | contact-state2       | Number               | Robot Cleaner - Contact State            |            |
 | mute                 | Number               | Robot Cleaner - Mute                     |            |
-| sweep-type           | Number               | Robot Cleaner - Sweep Type               | Value mapping ["0"="Total","2"="Wall","3"="Zone","4"="Point","5"="Control"] |
-| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping ["0"="Silent","1"="Basic","2"="Medium","3"="Strong"] |
+| sweep-type           | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Total","2"="Wall","3"="Zone","4"="Point","5"="Control"]` |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
 | repeat-state         | Switch               | Viomi Vacuum - Repeat State              |            |
 | remember-state       | Switch               | Viomi Vacuum - Remember State            | Value mapping ["0"="关","1"="开"] |
-| mop-route            | Number               | Viomi Vacuum - Mop Route                 | Value mapping ["0"="C-Curved","1"="Y-Route"] |
+| mop-route            | Number               | Viomi Vacuum - Mop Route                 | Value mapping `["0"="C-Curved","1"="Y-Route"]` |
 | side-brush-life      | Number:Dimensionless | Viomi Vacuum - Side Brush Life           |            |
 | side-brush-hours     | Number:Time          | Viomi Vacuum - Side Brush Hours          |            |
 | main-brush-life      | Number:Dimensionless | Viomi Vacuum - Main Brush Life           |            |
@@ -2124,24 +2130,24 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | hypa-hours           | Number:Time          | Viomi Vacuum - Hypa Hours                |            |
 | mop-life             | Number:Dimensionless | Viomi Vacuum - Mop Life                  |            |
 | mop-hours            | Number:Time          | Viomi Vacuum - Mop Hours                 |            |
-| suction-grade        | Number               | Viomi Vacuum - Suction Grade             | Value mapping ["0"="Silent","1"="Standard","2"="Medium","3"="Strong"] |
-| water-grade          | Number               | Viomi Vacuum - Water Grade               | Value mapping ["0"="1 Block","1"="2 Blocks","2"="3 Blocks"] |
+| suction-grade        | Number               | Viomi Vacuum - Suction Grade             | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade          | Number               | Viomi Vacuum - Water Grade               | Value mapping `["0"="1 Block","1"="2 Blocks","2"="3 Blocks"]` |
 | map-num              | Number               | Viomi Vacuum - Map Num                   |            |
 | time-zone            | Number               | Viomi Vacuum - Time Zone                 |            |
 | clean-start-time     | Number:Time          | Viomi Vacuum - Clean Start Time          |            |
 | clean-use-time       | Number:Time          | Viomi Vacuum - Clean Use Time            |            |
 | clean-area           | Number               | Viomi Vacuum - Clean Area                |            |
 | clean-map-url        | String               | Viomi Vacuum - Clean Map Url             |            |
-| clean-mode           | Number               | Viomi Vacuum - Clean Mode                | Value mapping ["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"] |
-| clean-way            | Number               | Viomi Vacuum - Clean Way                 | Value mapping ["0"="Sweep Floor","1"="Sweep","2"="Mop"] |
+| clean-mode           | Number               | Viomi Vacuum - Clean Mode                | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
+| clean-way            | Number               | Viomi Vacuum - Clean Way                 | Value mapping `["0"="Sweep Floor","1"="Sweep","2"="Mop"]` |
 | cur-lang             | String               | Viomi Vacuum - Cur Lang                  |            |
 | cur-map-id           | Number               | Viomi Vacuum - Cur Map Id                |            |
 | cur-map-url          | String               | Viomi Vacuum - Cur Map Url               |            |
 | last-update-time     | Number:Time          | Viomi Vacuum - Last Update Time          |            |
-| has-map              | Number               | Viomi Vacuum - Has Map                   | Value mapping ["0"="No map in memory","1"="Map in memory"] |
-| has-newmap           | Number               | Viomi Vacuum - Has Newmap                | Value mapping ["0"="None","1"="New","2"="Cover"] |
-| dust-collection      | Number               | Viomi Vacuum - Dust Collection           | Value mapping ["0"="Close","1"="Open"] |
-| dnd-enable           | Number               | Order - Dnd Enable                       | Value mapping ["0"="Disabled","1"="Enabled"] |
+| has-map              | Number               | Viomi Vacuum - Has Map                   | Value mapping `["0"="No map in memory","1"="Map in memory"]` |
+| has-newmap           | Number               | Viomi Vacuum - Has Newmap                | Value mapping `["0"="None","1"="New","2"="Cover"]` |
+| dust-collection      | Number               | Viomi Vacuum - Dust Collection           | Value mapping `["0"="Close","1"="Open"]` |
+| dnd-enable           | Number               | Order - Dnd Enable                       | Value mapping `["0"="Disabled","1"="Enabled"]` |
 | dnd-start-hour       | Number:Time          | Order - Dnd Start Hour                   |            |
 | dnd-start-minute     | Number:Time          | Order - Dnd Start Minute                 |            |
 | dnd-end-hour         | Number:Time          | Order - Dnd End Hour                     |            |
@@ -2150,7 +2156,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | timestamp            | Number               | Order - Timestamp                        |            |
 | orderdata            | String               | Order - Orderdata                        |            |
 | target-point         | String               | Point Zone - Target Point                |            |
-| map-type             | Number               | Map - Map Type                           | Value mapping ["0"="Upload to url0","1"="Upload to url1","2"="Upload to url2"] |
+| map-type             | Number               | Map - Map Type                           | Value mapping `["0"="Upload to url0","1"="Upload to url1","2"="Upload to url2"]` |
 | map-id               | Number               | Map - Map Id                             |            |
 | map-name             | String               | Map - Map Name                           |            |
 | cur-cleaning-path    | String               | Map - Cur Cleaning Path                  |            |
@@ -2159,7 +2165,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | auto-area-id         | Number               | Map - Auto Area Id                       |            |
 | target-voice         | String               | Voice - Target Voice                     |            |
 | cur-voice            | String               | Voice - Cur Voice                        |            |
-| download-status      | Number               | Voice - Download Status                  | Value mapping ["0"="Free","1"="Downloading"] |
+| download-status      | Number               | Voice - Download Status                  | Value mapping `["0"="Free","1"="Downloading"]` |
 | download-progress    | Number:Dimensionless | Voice - Download Progress                |            |
 
 ### VIOMI Internet electric water heater 1A (60L) (<a name="viomi-waterheater-e1">viomi.waterheater.e1</a>) Channels
@@ -2182,13 +2188,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["1"="Cool","2"="Dry","3"="Heat","4"="Fan"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2199,13 +2205,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["1"="Cool","2"="Dry","3"="Heat","4"="Fan"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2216,13 +2222,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["1"="Cool","2"="Dry","3"="Heat","4"="Fan"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2233,13 +2239,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["1"="Cool","2"="Dry","3"="Heat","4"="Fan"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2250,13 +2256,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["1"="Cool","2"="Dry","3"="Heat","4"="Fan"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2267,13 +2273,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["1"="Cool","2"="Dry","3"="Heat","4"="Fan"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2284,13 +2290,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2308,13 +2314,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2332,13 +2338,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2356,13 +2362,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2380,13 +2386,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2404,13 +2410,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2428,13 +2434,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2452,13 +2458,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2476,13 +2482,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2500,13 +2506,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2524,13 +2530,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2548,13 +2554,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2572,13 +2578,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2596,13 +2602,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2620,13 +2626,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2644,13 +2650,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2668,13 +2674,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2692,13 +2698,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2716,13 +2722,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2740,13 +2746,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
-| mode                 | Number               | Air Conditioner - Mode                   | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
+| mode                 | Number               | Air Conditioner - Mode                   | Value mapping `["2"="Cool","3"="Dry","4"="Fan","5"="Heat"]` |
 | target-temperature   | Number:Temperature   | Air Conditioner - Target Temperature     |            |
 | eco                  | Switch               | Air Conditioner - Eco                    |            |
 | heater               | Switch               | Air Conditioner - Heater                 |            |
 | dryer                | Switch               | Air Conditioner - Dryer                  |            |
 | sleep-mode           | Switch               | Air Conditioner - Sleep Mode             |            |
-| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
+| fan-level            | Number               | Fan Control - Fan Level                  | Value mapping `["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"]` |
 | vertical-swing       | Switch               | Fan Control - Vertical Swing             |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
@@ -2829,7 +2835,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -2841,7 +2847,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -2853,7 +2859,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -2865,7 +2871,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2878,7 +2884,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2891,7 +2897,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2905,7 +2911,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
 | ambientColor         | Color                | Ambient Color                            |            |
@@ -2922,7 +2928,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2935,7 +2941,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2948,7 +2954,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2961,7 +2967,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2974,7 +2980,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2987,7 +2993,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3001,7 +3007,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
 | ambientColor         | Color                | Ambient Color                            |            |
@@ -3018,7 +3024,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3031,7 +3037,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3044,7 +3050,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3057,7 +3063,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3070,7 +3076,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3083,7 +3089,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3096,7 +3102,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3109,7 +3115,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3122,7 +3128,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3135,7 +3141,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3148,7 +3154,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3161,7 +3167,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3174,7 +3180,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3187,7 +3193,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3200,7 +3206,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3213,7 +3219,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3226,7 +3232,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -3238,7 +3244,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -3250,7 +3256,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -3262,7 +3268,19 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| rgbColor             | Color                | RGB Color                                |            |
+| name                 | String               | Name                                     |            |
+
+### Mi Smart LED Bulb Essential (White and Color) (<a name="yeelink-light-color5">yeelink.light.color5</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number               | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -3274,7 +3292,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -3286,7 +3304,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Mi LED Desk Lamp (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
@@ -3297,7 +3315,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Mi Smart LED Desk Lamp Pro (<a name="yeelink-light-lamp2">yeelink.light.lamp2</a>) Channels
@@ -3308,7 +3326,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Lamp (<a name="yeelink-light-lamp3">yeelink.light.lamp3</a>) Channels
@@ -3319,7 +3337,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Mi LED Desk Lamp 1S (<a name="yeelink-light-lamp4">yeelink.light.lamp4</a>) Channels
@@ -3330,7 +3348,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Smart Desk Lamp Prime (<a name="yeelink-light-lamp5">yeelink.light.lamp5</a>) Channels
@@ -3341,7 +3359,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight (<a name="yeelink-light-lamp6">yeelink.light.lamp6</a>) Channels
@@ -3352,7 +3370,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Light Sensor Desk Lamp V1 (<a name="yeelink-light-lamp7">yeelink.light.lamp7</a>) Channels
@@ -3363,7 +3381,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight (<a name="yeelink-light-lamp8">yeelink.light.lamp8</a>) Channels
@@ -3374,8 +3392,24 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
+
+### Yeelight Screen Light Bar (<a name="yeelink-light-lamp15">yeelink.light.lamp15</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number:Temperature   | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| rgbColor             | Color                | RGB Color                                |            |
+| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientPower         | Switch               | Ambient Power                            |            |
+| ambientColor         | Color                | Ambient Color                            |            |
+| ambientColorTemperature | Number               | Ambient Color Temperature                |            |
+| ambientColorMode     | Number               | Ambient Color Mode                       |            |
 
 ### Yeelight Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
 
@@ -3385,7 +3419,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight White Bulb v2 (<a name="yeelink-light-mono2">yeelink.light.mono2</a>) Channels
@@ -3396,7 +3430,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Filament Bulb (<a name="yeelink-light-mono5">yeelink.light.mono5</a>) Channels
@@ -3407,7 +3441,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Whiteglow Panel Light (<a name="yeelink-light-panel1">yeelink.light.panel1</a>) Channels
@@ -3418,7 +3452,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3431,7 +3465,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -3443,7 +3477,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | name                 | String               | Name                                     |            |
 
@@ -3455,7 +3489,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Light Group (Mi & Yeelight) (<a name="yeelink-light-virtual">yeelink.light.virtual</a>) Channels
@@ -3466,7 +3500,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Smart Dual Control Module (<a name="yeelink-switch-sw1">yeelink.switch.sw1</a>) Channels
@@ -3474,10 +3508,10 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | First Switch - Switch Status             |            |
-| mode                 | Number               | First Switch Default - Mode              | Value mapping ["0"="Off","1"="On"] |
+| mode                 | Number               | First Switch Default - Mode              | Value mapping `["0"="Off","1"="On"]` |
 | mode1                | Number               | First Switch - Delay                     |            |
 | on1                  | Switch               | Second Switch - Switch Status            |            |
-| mode2                | Number               | Second Switch Default - Mode             | Value mapping ["0"="Off","1"="On"] |
+| mode2                | Number               | Second Switch Default - Mode             | Value mapping `["0"="Off","1"="On"]` |
 | mode3                | Number               | Second Switch Service - Delay            |            |
 | interlock            | Switch               | Extension - Interlock                    |            |
 | flash                | Number               | Extension - Flash                        |            |
@@ -3491,7 +3525,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3504,7 +3538,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3517,7 +3551,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               |            |
+| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3551,7 +3585,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier (Under Counter) (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
 
@@ -3582,7 +3616,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier lx4 (<a name="yunmi-waterpuri-lx4">yunmi.waterpuri.lx4</a>) Channels
 
@@ -3613,7 +3647,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier 1A/400G Pro (<a name="yunmi-waterpuri-lx5">yunmi.waterpuri.lx5</a>) Channels
 
@@ -3644,7 +3678,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier (Under Counter) (<a name="yunmi-waterpuri-lx6">yunmi.waterpuri.lx6</a>) Channels
 
@@ -3675,7 +3709,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier 500G/500G Pro (<a name="yunmi-waterpuri-lx7">yunmi.waterpuri.lx7</a>) Channels
 
@@ -3706,7 +3740,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier 600G (<a name="yunmi-waterpuri-lx8">yunmi.waterpuri.lx8</a>) Channels
 
@@ -3735,7 +3769,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_state    | Number               | Maintenance State                        |            |
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier D1 (<a name="yunmi-waterpuri-lx9">yunmi.waterpuri.lx9</a>) Channels
 
@@ -3766,7 +3800,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier lx10 (<a name="yunmi-waterpuri-lx10">yunmi.waterpuri.lx10</a>) Channels
 
@@ -3797,7 +3831,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier C1 (Triple Setting) (<a name="yunmi-waterpuri-lx11">yunmi.waterpuri.lx11</a>) Channels
 
@@ -3828,7 +3862,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier S1 (<a name="yunmi-waterpuri-lx12">yunmi.waterpuri.lx12</a>) Channels
 
@@ -3859,7 +3893,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier v1 (<a name="yunmi-waterpurifier-v1">yunmi.waterpurifier.v1</a>) Channels
 
@@ -3890,7 +3924,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier v2 (<a name="yunmi-waterpurifier-v2">yunmi.waterpurifier.v2</a>) Channels
 
@@ -3921,7 +3955,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier (Under sink) v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
 
@@ -3952,7 +3986,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi Water Purifier v4 (<a name="yunmi-waterpurifier-v4">yunmi.waterpurifier.v4</a>) Channels
 
@@ -3983,7 +4017,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | maintenance_interval | Number               | Maintenance Interval                     |            |
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
-| lightMode            | Number               | Light Mode                               |            |
+| lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
 
 ### Mi PM2.5 Air Quality Monitor (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
 
@@ -4003,7 +4037,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4014,7 +4048,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4024,7 +4058,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4035,7 +4069,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4045,7 +4079,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4056,7 +4090,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4086,17 +4120,17 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Air Purifier - Device Fault              | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"] |
+| fault                | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"]` |
 | on                   | Switch               | Air Purifier - Switch Status             |            |
-| fan-level            | Number               | Air Purifier - Fan Level                 | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
-| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite","3"="None"] |
+| fan-level            | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| mode                 | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite","3"="None"]` |
 | pm2_5-density        | Number               | Environment - Pm2.5 Density              |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | filter-life-level    | Number:Dimensionless | Filter - Filter Life Level               |            |
 | filter-used-time     | Number:Time          | Filter - Filter Used Time                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="brightest","1"="glimmer","2"="led_closed"] |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="brightest","1"="glimmer","2"="led_closed"]` |
 | on1                  | Switch               | Indicator Light - Switch Status          |            |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | button-pressed       | String               | Button - Button_pressed                  |            |
@@ -4119,8 +4153,8 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | aqi-zone             | String               | Aqi - Aqi Zone                           |            |
 | sensor-state         | String               | Aqi - Sensor State                       |            |
 | aqi-goodh            | Number               | Aqi - Aqi Goodh                          |            |
-| aqi-runstate         | Number               | Aqi - Aqi Runstate                       | Value mapping ["0"="continue","1"="hold","2"="sleep"] |
-| aqi-state            | Number               | Aqi - Aqi State                          | Value mapping ["0"="AQI_GOOD_L","1"="AQI_GOOD_H","2"="AQI_MID_L","3"="AQI_MID_H","4"="AQI_BAD_L","5"="AQI_BAD_H"] |
+| aqi-runstate         | Number               | Aqi - Aqi Runstate                       | Value mapping `["0"="continue","1"="hold","2"="sleep"]` |
+| aqi-state            | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI_GOOD_L","1"="AQI_GOOD_H","2"="AQI_MID_L","3"="AQI_MID_H","4"="AQI_BAD_L","5"="AQI_BAD_H"]` |
 | aqi-updata-heartbeat | Number               | Aqi - Aqi Updata Heartbeat               |            |
 | rfid-tag             | String               | Rfid - Rfid Tag                          |            |
 | rfid-factory-id      | String               | Rfid - Rfid Factory Id                   |            |
@@ -4132,17 +4166,17 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | slave-channel        | Number               | Others - Slave Channel                   |            |
 | cola                 | String               | Others - Cola                            |            |
 | buttom-door          | Switch               | Others - Buttom Door                     |            |
-| reboot-cause         | Number               | Others - Reboot_cause                    | Value mapping ["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"] |
+| reboot-cause         | Number               | Others - Reboot_cause                    | Value mapping `["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"]` |
 | hw-version           | Number               | Others - Hw Version                      |            |
 | i2c-error-count      | Number               | Others - I2c Error Count                 |            |
-| manual-level         | Number               | Others - Manual Level                    | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
+| manual-level         | Number               | Others - Manual Level                    | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4153,7 +4187,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4162,17 +4196,17 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Air Purifier - Fault                     | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"] |
+| fault                | Number               | Air Purifier - Fault                     | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"]` |
 | on                   | Switch               | Air Purifier - Switch Status             |            |
-| fan-level            | Number               | Air Purifier - Fan Level                 | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
-| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite","3"="None"] |
+| fan-level            | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| mode                 | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite","3"="None"]` |
 | pm2_5-density        | Number               | Environment - Pm2.5 density              |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | filter-life-level    | Number:Dimensionless | Filter - Filter Life Level               |            |
 | filter-used-time     | Number:Time          | Filter - Filter Used Time                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="Brightest","1"="Glimmer","2"="Led Closed"] |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="Brightest","1"="Glimmer","2"="Led Closed"]` |
 | on1                  | Switch               | Indicator Light - Switch Status          |            |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | button-pressed       | String               | Button - Button Pressed                  |            |
@@ -4195,8 +4229,8 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | aqi-zone             | String               | Aqi - Aqi Zone                           |            |
 | sensor-state         | String               | Aqi - Sensor State                       |            |
 | aqi-goodh            | Number               | Aqi - Aqi Goodh                          |            |
-| aqi-runstate         | Number               | Aqi - Aqi Runstate                       | Value mapping ["0"="continuous sampling","1"="preparing sampling","2"="stop sampling"] |
-| aqi-state            | Number               | Aqi - Aqi State                          | Value mapping ["0"="best","1"="good","2"="normal","3"="bad","4"="worse","5"="unhealthy"] |
+| aqi-runstate         | Number               | Aqi - Aqi Runstate                       | Value mapping `["0"="continuous sampling","1"="preparing sampling","2"="stop sampling"]` |
+| aqi-state            | Number               | Aqi - Aqi State                          | Value mapping `["0"="best","1"="good","2"="normal","3"="bad","4"="worse","5"="unhealthy"]` |
 | aqi-updata-heartbeat | Number               | Aqi - Aqi Updata Heartbeat               |            |
 | rfid-tag             | String               | Rfid - Rfid Tag                          |            |
 | rfid-factory-id      | String               | Rfid - Rfid Factory Id                   |            |
@@ -4208,11 +4242,11 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | slave-channel        | Number               | Others - Slave Channel                   |            |
 | cola                 | String               | Others - Cola                            |            |
 | buttom-door          | Switch               | Others - Buttom Door                     |            |
-| reboot-cause         | Number               | Others - Reboot Cause                    | Value mapping ["0"="hardware reboot","1"="software reboot","2"="update reboot","3"="dog reboot"] |
+| reboot-cause         | Number               | Others - Reboot Cause                    | Value mapping `["0"="hardware reboot","1"="software reboot","2"="update reboot","3"="dog reboot"]` |
 | hw-version           | Number               | Others - Hw Version                      |            |
 | iic-error-count      | Number               | Others - Iic Error Count                 |            |
-| manual-level         | Number               | Others - Manual Level                    | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
-| country-code         | Number               | Others - National Code                   | Value mapping ["91"="印度","44"="分销英文","852"="中国香港","886"="中国台湾","82"="韩国"] |
+| manual-level         | Number               | Others - Manual Level                    | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| country-code         | Number               | Others - National Code                   | Value mapping `["91"="印度","44"="分销英文","852"="中国香港","886"="中国台湾","82"="韩国"]` |
 
 ### Mi Air Purifier 3C (<a name="zhimi-airpurifier-mb4">zhimi.airpurifier.mb4</a>) Channels
 
@@ -4220,7 +4254,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Power                                    |            |
 | fault                | String               | Air Purifier - Device Fault              |            |
-| mode                 | Number               | Mode                                     | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite"] |
+| mode                 | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite"]` |
 | pm2_5_density        | Number               | Environment - Pm2 5 Density              |            |
 | filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
 | filter_used_time     | Number:Time          | Filter - Filter Used Time                |            |
@@ -4237,7 +4271,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4248,7 +4282,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4258,7 +4292,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4269,7 +4303,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4279,7 +4313,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4290,7 +4324,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4300,7 +4334,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4311,7 +4345,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4321,7 +4355,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4332,7 +4366,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4342,7 +4376,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4353,7 +4387,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4363,7 +4397,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4374,7 +4408,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4384,7 +4418,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
 | averageaqi           | Number               | Average Air Quality Index                |            |
@@ -4395,7 +4429,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours            | Number:Time          | Run Time                                 |            |
 | motorspeed           | Number               | Motor Speed                              |            |
 | filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | purifyvolume         | Number:Volume        | Purified Volume                          |            |
 | childlock            | Switch               | Child Lock                               |            |
@@ -4446,11 +4480,11 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  | Value mapping ["button-toggle"="Toggle","button-toggle-mode"="Toggle Mode"] |
-| fault                | Number               | Air Purifier - Device Fault              | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"] |
+| actions              | String               | Actions                                  | Value mapping `["button-toggle"="Toggle","button-toggle-mode"="Toggle Mode"]` |
+| fault                | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"]` |
 | on                   | Switch               | Air Purifier - Power                     |            |
-| fan_level            | Number               | Air Purifier - Fan Level                 | Value mapping ["1"="Level1","2"="Level2","3"="Level3","0"="Sleep"] |
-| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Night","2"="Favourite","3"="Manual"] |
+| fan_level            | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3","0"="Sleep"]` |
+| mode                 | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Night","2"="Favourite","3"="Manual"]` |
 | pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
 | relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
@@ -4458,7 +4492,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | filter_used_time     | Number:Time          | Filter - Filter Used Time                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | volume               | Number:Dimensionless | Alarm - Volume                           |            |
-| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="brightest","1"="glimmer","2"="not bright"] |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping `["0"="brightest","1"="glimmer","2"="not bright"]` |
 | on1                  | Switch               | Indicator Light - Switch Status          |            |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | button_pressed       | String               | Button - Button_pressed                  |            |
@@ -4479,10 +4513,10 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | average_aqi          | Number               | Aqi - Average Aqi                        |            |
 | average_aqi_cnt      | Number               | Aqi - Average_aqi Read Times             |            |
 | aqi_zone             | String               | Aqi - Aqi Zone                           |            |
-| sensor_state         | Number               | Aqi - Sensor State                       | Value mapping ["0"="waiting","1"="ready"] |
+| sensor_state         | Number               | Aqi - Sensor State                       | Value mapping `["0"="waiting","1"="ready"]` |
 | aqi_goodh            | Number               | Aqi - Aqi Goodh                          |            |
-| aqi_runstate         | Number               | Aqi - Runstate                           | Value mapping ["0"="continue","1"="hold","2"="sleep"] |
-| aqi_state            | Number               | Aqi - Aqi State                          | Value mapping ["0"="AQI_GOOD_L","1"="AQI_GOOD_H","2"="AQI_MID_L","3"="AQI_MID_H","4"="AQI_BAD_L","5"="AQI_BAD_H"] |
+| aqi_runstate         | Number               | Aqi - Runstate                           | Value mapping `["0"="continue","1"="hold","2"="sleep"]` |
+| aqi_state            | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI_GOOD_L","1"="AQI_GOOD_H","2"="AQI_MID_L","3"="AQI_MID_H","4"="AQI_BAD_L","5"="AQI_BAD_H"]` |
 | rfid_tag             | String               | Rfid - Rfid Tag                          |            |
 | rfid_factory_id      | String               | Rfid - Rfid Factory Id                   |            |
 | rfid_product_id      | String               | Rfid - Rfid Product Id                   |            |
@@ -4493,18 +4527,18 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | slave_channel        | Number               | Others - Slave Channel                   |            |
 | cola                 | String               | Others - Cola                            |            |
 | buttom_door          | String               | Others - Buttom Door                     |            |
-| reboot_cause         | Number               | Others - Reboot_cause                    | Value mapping ["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"] |
-| manual_level         | Number               | Others - Manual Level                    | Value mapping ["1"="level1","2"="level2","3"="level3"] |
+| reboot_cause         | Number               | Others - Reboot_cause                    | Value mapping `["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"]` |
+| manual_level         | Number               | Others - Manual Level                    | Value mapping `["1"="level1","2"="level2","3"="level3"]` |
 | powertime            | Number:duration      | Others - Powertime                       |            |
-| country_code         | Number               | Others - Country Code                    | Value mapping ["91"="India","44"="UK","852"="Hong Kong","886"="Taiwan","82"="Korea"] |
+| country_code         | Number               | Others - Country Code                    | Value mapping `["91"="India","44"="UK","852"="Hong Kong","886"="Taiwan","82"="Korea"]` |
 
 ### Smartmi Air Purifier (<a name="zhimi-airpurifier-za1">zhimi.airpurifier.za1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Air Purifier - Switch Status             |            |
-| fault                | Number               | Air Purifier - Fault                     | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"] |
-| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite"] |
+| fault                | Number               | Air Purifier - Fault                     | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"]` |
+| mode                 | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite"]` |
 | air_quality          | Number               | Environment - Air Quality                |            |
 | pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
 | relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
@@ -4512,7 +4546,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
 | filter_used_time     | Number:Time          | Filter - Filter Used Time                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Light","2"="Off"] |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Light","2"="Off"]` |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | filter_max_time      | Number:Time          | Filter Time - Filter Max Time            |            |
 | favorite_fan_level   | Number               | Motor Speed - Favorite Fan Level         |            |
@@ -4521,18 +4555,18 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | purify_volume        | Number               | Aqi - Purify Volume                      |            |
 | average_aqi          | Number               | Aqi - Average Aqi                        |            |
 | aqi_zone             | String               | Aqi - Aqi Zone                           |            |
-| sensor_state         | Number               | Aqi - Sensor State                       | Value mapping ["0"="waiting","1"="ready"] |
+| sensor_state         | Number               | Aqi - Sensor State                       | Value mapping `["0"="waiting","1"="ready"]` |
 | rfid_tag             | String               | Rfid - Rfid Tag                          |            |
 | rfid_factory_id      | String               | Rfid - Rfid Factory Id                   |            |
 | rfid_product_id      | String               | Rfid - Rfid Product Id                   |            |
 | rfid_time            | String               | Rfid - Rfid Time                         |            |
 | rfid_serial_num      | String               | Rfid - Rfid Serial Num                   |            |
-| reboot_cause         | Number               | Others - Reboot Cause                    | Value mapping ["0"="hardware","1"="human","2"="upgrade","3"="watchdog"] |
+| reboot_cause         | Number               | Others - Reboot Cause                    | Value mapping `["0"="hardware","1"="human","2"="upgrade","3"="watchdog"]` |
 | hw_version           | Number               | Others - Hw Version                      |            |
 | sgp_ethanol          | Number               | Others - Sgp Ethanol                     |            |
 | sgp_serial           | Number               | Others - Sgp Serial                      |            |
 | sgp_version          | String               | Others - Sgp Version                     |            |
-| country_code         | Number               | Others - Country Code                    | Value mapping ["1"="America","2"="Canada","3"="Singapore","4"="Europe","5"="Australian","6"="Korea","7"="China","8"="France","9"="Japanese","10"="Taiwan"] |
+| country_code         | Number               | Others - Country Code                    | Value mapping `["1"="America","2"="Canada","3"="Singapore","4"="Europe","5"="Australian","6"="Korea","7"="China","8"="France","9"="Japanese","10"="Taiwan"]` |
 | gesture_status       | Switch               | Others - Gesture Status                  |            |
 
 ### Mi Standing Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
@@ -4676,10 +4710,10 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Fan - Power                              |            |
-| fan_level            | Number               | Fan - Fan Level                          | Value mapping ["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"] |
+| fan_level            | Number               | Fan - Fan Level                          | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
 | horizontal_swing     | Switch               | Fan - Horizontal Swing                   |            |
 | horizontal_angle     | Number               | Fan - Horizontal Angle                   |            |
-| mode                 | Number               | Fan - Mode                               | Value mapping ["0"="Natural Wind","1"="Straight Wind"] |
+| mode                 | Number               | Fan - Mode                               | Value mapping `["0"="Natural Wind","1"="Straight Wind"]` |
 | off_delay            | Number               | Fan - Power Off Delay                    |            |
 | anion                | Switch               | Fan - Anion                              |            |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
@@ -4687,7 +4721,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
-| button_press         | Number               | Custom Service - Button Press            | Value mapping ["1"="power","2"="swing","0"="No Button Pressed"] |
+| button_press         | Number               | Custom Service - Button Press            | Value mapping `["1"="power","2"="swing","0"="No Button Pressed"]` |
 | battery_state        | Switch               | Custom Service - Battery State           |            |
 | speed_now            | Number               | Custom Service - Speed Now               |            |
 | ac_state             | Switch               | Custom Service - Ac State                |            |
@@ -4698,13 +4732,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Heater - Switch Status                   |            |
-| fault                | Number               | Heater - Fault                           | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| fault                | Number               | Heater - Fault                           | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
 | hw_enable            | Switch               | Private Service - Hw Enable              |            |
 | use_time             | Number:Time          | Private Service - Use Time               |            |
 
@@ -4712,16 +4746,16 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  |            |
+| actions              | String               | Actions                                  | Value mapping `["private-service-toggle-switch"="Toggle Private Service"]` |
 | on                   | Switch               | Heater - Switch Status                   |            |
-| fault                | Number               | Heater - Fault                           | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| fault                | Number               | Heater - Fault                           | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
-| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Auto","1"="LL Mode","2"="HH Mode"] |
+| mode                 | Number               | Heater - Mode                            | Value mapping `["0"="Auto","1"="LL Mode","2"="HH Mode"]` |
 | countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| brightness           | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
 | use_time             | Number:Time          | Private Service - Use Time               |            |
 
 ### Mi Smart Space Heater S (<a name="zhimi-heater-mc2">zhimi.heater.mc2</a>) Channels
@@ -4729,28 +4763,28 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Heater - Power                           |            |
-| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| fault                | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
 | hw_enable            | Switch               | Private Service - Hw Enable              |            |
 | use_time             | Number:Time          | Private Service - Use Time               |            |
-| country_code         | Number               | Private Service - Country Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
+| country_code         | Number               | Private Service - Country Code           | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
 
 ### Smartmi Smart Fan (<a name="zhimi-heater-na1">zhimi.heater.na1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Heater - Power                           |            |
-| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
-| heat_level           | Number               | Heater - Heat Level                      | Value mapping ["1"="High","2"="Low"] |
-| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Fan not swing","1"="Fan swing"] |
+| fault                | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| heat_level           | Number               | Heater - Heat Level                      | Value mapping `["1"="High","2"="Low"]` |
+| mode                 | Number               | Heater - Mode                            | Value mapping `["0"="Fan not swing","1"="Fan swing"]` |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
-| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | return_to_middle     | Switch               | Private Service - Return To Middle       |            |
 
@@ -4759,17 +4793,17 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Heater - Power                           |            |
-| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
-| heat_level           | Number               | Heater - Heat Level                      | Value mapping ["1"="High","2"="Low"] |
-| mode                 | Number               | Heater - Mode                            | Value mapping ["0"="Fan not swing","1"="Fan swing"] |
+| fault                | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| heat_level           | Number               | Heater - Heat Level                      | Value mapping `["1"="High","2"="Low"]` |
+| mode                 | Number               | Heater - Mode                            | Value mapping `["0"="Fan not swing","1"="Fan swing"]` |
 | target_temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | countdown_time       | Number:Time          | Countdown - Countdown Time               |            |
-| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
 | physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
 | return_to_middle     | Switch               | Private Service - Return To Middle       |            |
-| country_code         | Number               | Private Service - Country Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
+| country_code         | Number               | Private Service - Country Code           | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
 | hw_en                | Switch               | Private Service - Hw En                  |            |
 
 ### Smartmi Radiant Heater Smart Version (<a name="zhimi-heater-za1">zhimi.heater.za1</a>) Channels
@@ -4790,14 +4824,14 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| fault                | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | on                   | Switch               | Heater - Power                           |            |
 | target-temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | countdown-time       | Number:Time          | Countdown - Countdown Time               |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
-| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Controls Locked |            |
 | use-time             | Number:Time          | Private-Service - Use Time               |            |
 
@@ -4806,16 +4840,16 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | on                   | Switch               | Heater - Power                           |            |
-| fault                | Number               | Heater - Device Fault                    | Value mapping ["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"] |
+| fault                | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | target-temperature   | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | countdown-time       | Number:Time          | Countdown - Countdown Time               |            |
 | relative-humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
-| brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="Bright","1"="Dark","2"="Extinguished"] |
+| brightness           | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
 | physical-controls-locked | Switch               | Physical Control Locked - Physical Controls Locked |            |
 | use-time             | Number:Time          | Private-Service - Use Time               |            |
-| country-code         | Number               | Private-Service - Country-Code           | Value mapping ["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"] |
+| country-code         | Number               | Private-Service - Country-Code           | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
 
 ### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
 
@@ -4841,12 +4875,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | Number               | Mode - Fan Level                         | Value mapping ["0"="Auto","1"="Silent","2"="Normal","3"="Maximum"] |
+| mode                 | Number               | Mode - Fan Level                         | Value mapping `["0"="Auto","1"="Silent","2"="Normal","3"="Maximum"]` |
 | Fault                | Number               | Humidifier Device Fault                  |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | targetHumidity       | Number:Dimensionless | Target Humidity                          |            |
 | waterlevel           | Number               | Water Level                              |            |
-| bright               | Number               | LED Brightness                           | Value mapping ["0"="Dark","1"="Dimmed","2"="Brightest"] |
+| bright               | Number               | LED Brightness                           | Value mapping `["0"="Dark","1"="Dimmed","2"="Brightest"]` |
 | buzzer               | Switch               | Buzzer Status                            |            |
 | dry                  | Switch               | Dry                                      |            |
 | usedhours            | Number:Time          | Run Time                                 |            |
@@ -4855,7 +4889,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | actualmotorspeed     | Number               | Actual Motor Speed                       |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
 | childlock            | Switch               | Child Lock                               |            |
-| ButtonPressed        | Number               | Button Pressed                           | Value mapping ["0"="none","1"="led","2"="power"] |
+| ButtonPressed        | Number               | Button Pressed                           | Value mapping `["0"="none","1"="led","2"="power"]` |
 | clean                | Switch               | Clean Mode                               |            |
 
 ### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-cb1">zhimi.humidifier.cb1</a>) Channels
@@ -8294,6 +8328,21 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
+### Mi Smart LED Bulb Essential (White and Color) (yeelink.light.color5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Mi Smart LED Bulb Essential (White and Color)" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
 ### Yeelight Smart LED Bulb 1SE (color) (yeelink.light.colora) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -8433,6 +8482,25 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Screen Light Bar (yeelink.light.lamp15) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Yeelight Screen Light Bar" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 ```
 
 ### Yeelight Bulb (yeelink.light.mono1) item file lines

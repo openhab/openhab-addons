@@ -13,6 +13,7 @@
 package org.openhab.io.neeo.internal;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +23,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -136,7 +136,8 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
 
         if (logger.isDebugEnabled()) {
             req.getReader().mark(150000);
-            logger.debug("doPost: {} with {}", getFullURL(req), IOUtils.toString(req.getReader()));
+            logger.debug("doPost: {} with {}", getFullURL(req),
+                    new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
             req.getReader().reset();
         }
 
