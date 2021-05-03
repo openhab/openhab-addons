@@ -256,14 +256,14 @@
 				<default>5</default>
 			</parameter>
 			<parameter name="secureSend" type="boolean">
-                <label>Secure Send</label>
-                <description></description>
-                <required>false</required>
-                <default>true</default>
-            </parameter>
+				<label>Secure Send</label>
+				<description></description>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<thing-type id="t1a">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
