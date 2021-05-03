@@ -192,7 +192,6 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
 
         PlugwiseHABridgeHandler localBridgeHandler = this.bridgeHandler;
         if (localBridgeHandler != null) {
-
             ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
             ThingUID uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_ZONE, bridgeUID, locationId);
 

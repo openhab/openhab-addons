@@ -89,7 +89,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-
         PlugwiseHABridgeThingConfig bridgeConfig = getConfigAs(PlugwiseHABridgeThingConfig.class);
 
         if (this.checkConfig(bridgeConfig)) {

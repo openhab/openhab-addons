@@ -106,7 +106,6 @@ public class PlugwiseHAController {
     }
 
     public GatewayInfo getGatewayInfo(Boolean forceRefresh) throws PlugwiseHAException {
-
         GatewayInfo gatewayInfo = null;
         DomainObjects localDomainObjects = this.domainObjects;
         if (localDomainObjects != null) {
@@ -233,7 +232,6 @@ public class PlugwiseHAController {
     }
 
     public @Nullable DomainObjects getUpdatedDomainObjects() throws PlugwiseHAException {
-
         ZonedDateTime localGatewayUpdateDateTime = this.gatewayUpdateDateTime;
         ZonedDateTime localGatewayFullUpdateDateTime = this.gatewayFullUpdateDateTime;
         if (localGatewayUpdateDateTime == null
