@@ -146,8 +146,8 @@ public class PlugwiseHAControllerRequest<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public T execute() throws PlugwiseHAException {
-        T result = null;
+    public @Nullable T execute() throws PlugwiseHAException {
+        T result;
         String xml = getContent();
 
         if (String.class.equals(resultType)) {
@@ -162,7 +162,10 @@ public class PlugwiseHAControllerRequest<T> {
             } else {
                 result = (T) this.xStream.fromXML(xml);
             }
+        } else {
+            return null;
         }
+
         return result;
     }
 

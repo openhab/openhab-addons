@@ -72,8 +72,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
     private static final String STATUS_DESCRIPTION_INVALID_HOSTNAME = "Invalid hostname - please double-check your configuration";
 
     // Private member variables/constants
-
-    private @Nullable PlugwiseHABridgeThingConfig config;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable volatile PlugwiseHAController controller;
 
@@ -91,14 +89,15 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        this.config = getConfig().as(PlugwiseHABridgeThingConfig.class);
 
-        if (this.checkConfig()) {
-            logger.debug("Initializing the Plugwise Home Automation bridge handler with config = {}", this.config);
+        PlugwiseHABridgeThingConfig bridgeConfig = getConfigAs(PlugwiseHABridgeThingConfig.class);
+
+        if (this.checkConfig(bridgeConfig)) {
+            logger.debug("Initializing the Plugwise Home Automation bridge handler with config = {}", bridgeConfig);
             try {
-                this.controller = new PlugwiseHAController(httpClient, config.getHost(), config.getPort(),
-                        config.getUsername(), config.getsmileId());
-                scheduleRefreshJob();
+                this.controller = new PlugwiseHAController(httpClient, bridgeConfig.getHost(), bridgeConfig.getPort(),
+                        bridgeConfig.getUsername(), bridgeConfig.getsmileId());
+                scheduleRefreshJob(bridgeConfig);
             } catch (PlugwiseHAException e) {
                 logger.debug("Unknown error while configuring the Plugwise Home Automation Controller", e);
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
@@ -108,7 +107,8 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             }
 
         } else {
-            logger.warn("Invalid config for the Plugwise Home Automation bridge handler with config = {}", this.config);
+            logger.warn("Invalid config for the Plugwise Home Automation bridge handler with config = {}",
+                    bridgeConfig);
         }
     }
 
@@ -148,8 +148,8 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
      * Checks the configuration for validity, result is reflected in the status of
      * the Thing
      */
-    private boolean checkConfig() {
-        if (this.config == null || !this.config.isValid()) {
+    private boolean checkConfig(PlugwiseHABridgeThingConfig bridgeConfig) {
+        if (!bridgeConfig.isValid()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_CONFIGURATION_ERROR);
             return false;
         } else {
@@ -157,11 +157,12 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void scheduleRefreshJob() {
+    private void scheduleRefreshJob(PlugwiseHABridgeThingConfig bridgeConfig) {
         synchronized (this) {
             if (this.refreshJob == null) {
-                logger.debug("Scheduling refresh job every {}s", config.getRefresh());
-                this.refreshJob = scheduler.scheduleWithFixedDelay(this::run, 0, config.getRefresh(), TimeUnit.SECONDS);
+                logger.debug("Scheduling refresh job every {}s", bridgeConfig.getRefresh());
+                this.refreshJob = scheduler.scheduleWithFixedDelay(this::run, 0, bridgeConfig.getRefresh(),
+                        TimeUnit.SECONDS);
             }
         }
     }
@@ -198,7 +199,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
     private void refresh() throws PlugwiseHAException {
         if (this.getController() != null) {
             logger.debug("Refreshing the Plugwise Home Automation Controller {}", getThing().getUID());
-            this.config = getConfig().as(PlugwiseHABridgeThingConfig.class);
 
             PlugwiseHAController controller = this.getController();
             if (controller != null) {

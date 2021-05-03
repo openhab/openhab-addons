@@ -138,6 +138,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
             PlugwiseHAController controller = getController();
             if (controller != null) {
                 try {
+                    @Nullable
                     E entity = getEntity(controller, false);
                     if (entity != null) {
                         if (this.isLinked(channelUID)) {
@@ -221,6 +222,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
             if (bridgeHandler.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
                 PlugwiseHAController controller = getController();
                 if (controller != null) {
+                    @Nullable
                     E entity = null;
                     try {
                         entity = getEntity(controller, false);
