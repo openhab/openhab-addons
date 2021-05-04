@@ -27,8 +27,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HomeConnectDishwasherHandler} is responsible for handling commands, which are
@@ -38,8 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(HomeConnectDishwasherHandler.class);
 
     public HomeConnectDishwasherHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
