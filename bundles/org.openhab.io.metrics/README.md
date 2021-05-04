@@ -46,7 +46,7 @@ For a start, the following formats are supported:
 ### Prometheus
 
 Once the IO addon is installed, the Prometheus endpoint will be available under:
-_<openhab_host>:8080/metrics/prometheus_ 
+_<openhab_host>:8080/rest/metrics/prometheus_ 
 
 Refer to the [Prometheus](https://prometheus.io/) documentation on how to setup a Prometheus instance and add a scrape configuration. A typical scrape config could look like this (excerpt from `/etc/prometheus/prometheus.yml`):
 
@@ -55,7 +55,7 @@ scrape_configs:
   - job_name: 'openhab'
     scrape_interval: 1m
     scheme: http
-    metrics_path: /metrics/prometheus
+    metrics_path: /rest/metrics/prometheus
     static_configs:
     - targets:
       - 'openhab.local:8080'
