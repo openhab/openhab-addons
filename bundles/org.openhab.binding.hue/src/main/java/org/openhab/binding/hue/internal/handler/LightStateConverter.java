@@ -68,7 +68,7 @@ public class LightStateConverter {
      * @return light state representing the {@link HSBType}.
      */
     public static StateUpdate toColorLightState(HSBType hsbType, State lightState) {
-        // XY color more is the implicit default: Use XY color mode if i) no color mode is set or ii) if the bulb is in
+        // XY color is the implicit default: Use XY color mode if i) no color mode is set or ii) if the bulb is in
         // CT mode or iii) already in XY mode. Only if the bulb is in HS mode, use this one.
         StateUpdate stateUpdate = ColorMode.HS.equals(lightState.getColorMode()) ? toHSBColorLightState(hsbType)
                 : toXYColorLightState(hsbType);
