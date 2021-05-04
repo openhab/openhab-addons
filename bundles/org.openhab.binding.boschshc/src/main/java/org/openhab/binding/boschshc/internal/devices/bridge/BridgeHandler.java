@@ -318,7 +318,8 @@ public class BridgeHandler extends BaseBridgeHandler {
                         logger.debug("Registered device: {} - looking for {}", deviceId, update.deviceId);
 
                         if (deviceId != null && update.deviceId.equals(deviceId)) {
-                            logger.debug("Found child: {} - calling processUpdate with {}", handler, update.state);
+                            logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler, update.id,
+                                    update.state);
                             handler.processUpdate(update.id, update.state);
                         }
                     } else {
@@ -473,7 +474,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
 
         @Nullable
-        T state = gson.fromJson(content, stateClass);
+        T state = BoschSHCServiceState.fromJson(content, stateClass);
         if (state == null) {
             throw new BoschSHCException(String.format("Received invalid, expected type %s", stateClass.getName()));
         }

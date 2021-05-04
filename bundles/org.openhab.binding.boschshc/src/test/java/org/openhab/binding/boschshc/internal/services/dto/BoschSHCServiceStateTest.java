@@ -33,6 +33,17 @@ class TestState extends BoschSHCServiceState {
 }
 
 /**
+ * Test class
+ *
+ * @author Christian Oeing - Initial contribution
+ */
+class TestState2 extends BoschSHCServiceState {
+    public TestState2() {
+        super("testState2");
+    }
+}
+
+/**
  * Unit tests for BoschSHCServiceStateTest
  *
  * @author Christian Oeing - Initial contribution
@@ -53,5 +64,16 @@ public class BoschSHCServiceStateTest {
         var state = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
                 TestState.class);
         assertNotEquals(null, state);
+    }
+
+    /**
+     * This checks for a bug we had where the expected type stayed the same for different state classes
+     */
+    @Test
+    public void fromJson_stateObjectForValidJsonAfterOtherState() {
+        BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState\"}", JsonObject.class), TestState.class);
+        var state2 = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState2\"}", JsonObject.class),
+                TestState2.class);
+        assertNotEquals(null, state2);
     }
 }

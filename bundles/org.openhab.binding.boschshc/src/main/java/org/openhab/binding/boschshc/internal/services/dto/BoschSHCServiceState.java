@@ -13,6 +13,8 @@
 package org.openhab.binding.boschshc.internal.services.dto;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -24,15 +26,18 @@ import com.google.gson.annotations.SerializedName;
  * @author Christian Oeing - Initial contribution
  */
 public class BoschSHCServiceState {
+
     /**
      * gson instance to convert a class to json string and back.
      */
     private static final Gson gson = new Gson();
 
+    private static final Logger logger = LoggerFactory.getLogger(BoschSHCServiceState.class);
+
     /**
-     * State type. Initialized when first instance is created.
+     * State type. Initialized when instance is created.
      */
-    private static @Nullable String stateType = null;
+    private @Nullable String stateType = null;
 
     @SerializedName("@type")
     private final String type;
@@ -51,7 +56,23 @@ public class BoschSHCServiceState {
 
     protected boolean isValid() {
         String expectedType = stateType;
-        return expectedType != null && expectedType.equals(this.type);
+        if (expectedType == null || !expectedType.equals(this.type)) {
+            logger.debug(String.format("Expected state type %s for state class %s, received %s", expectedType,
+                    this.getClass().getName(), this.type));
+            return false;
+        }
+
+        return true;
+    }
+
+    public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(String json,
+            Class<TState> stateClass) {
+        var state = gson.fromJson(json, stateClass);
+        if (state == null || !state.isValid()) {
+            return null;
+        }
+
+        return state;
     }
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(JsonElement json,
