@@ -96,7 +96,7 @@ public class MetricsRestController {
 
     @Activate
     protected void activate(Map<@Nullable String, @Nullable Object> configuration) {
-        logger.info("Metrics service activated.");
+        logger.info("Metrics service activated, serving the following URL(s): /rest/metrics/prometheus");
         metricsExporters.add(new InfluxMetricsExporter());
         updateConfig(configuration);
         updateMeterRegistry();
