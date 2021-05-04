@@ -14,9 +14,7 @@ package org.openhab.binding.homeconnect.internal.handler;
 
 import static java.util.Collections.emptyList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.CONNECTED;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.DISCONNECTED;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.KEEP_ALIVE;
+import static org.openhab.binding.homeconnect.internal.client.model.EventType.*;
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
@@ -178,8 +176,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      */
     protected void handleCommand(ChannelUID channelUID, Command command, HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        Optional<HomeConnectApiClient> homeConnectApiClient = getApiClient();
-
         if (command instanceof RefreshType) {
             updateChannel(channelUID);
         } else if (command instanceof StringType && CHANNEL_BASIC_ACTIONS_STATE.equals(channelUID.getId())
@@ -207,9 +203,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 logger.debug("Start custom program. command={} haId={}", command.toFullString(), getThingHaId());
                 apiClient.startCustomProgram(getThingHaId(), command.toFullString());
             }
-        } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())
-                && homeConnectApiClient.isPresent()) {
-            homeConnectApiClient.get().setSelectedProgram(getThingHaId(), command.toFullString());
+        } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())) {
+            apiClient.setSelectedProgram(getThingHaId(), command.toFullString());
         }
     }
 
