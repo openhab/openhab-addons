@@ -527,7 +527,7 @@ public class HomeConnectServlet extends HttpServlet {
     }
 
     private boolean pathMatches(String path, String targetPath) {
-        return path.equals(targetPath) || path.equals(targetPath + SLASH);
+        return targetPath.equals(path) || (targetPath + SLASH).equals(path);
     }
 
     private Optional<HomeConnectBridgeHandler> getBridgeHandler(String bridgeUid) {

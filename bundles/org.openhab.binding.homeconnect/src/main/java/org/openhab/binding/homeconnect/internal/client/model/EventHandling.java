@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.client.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Jonas Brüstel - Initial contribution
  *
  */
+@NonNullByDefault
 public enum EventHandling {
     NONE("none"),
     ACKNOWLEDGE("acknowledge"),
