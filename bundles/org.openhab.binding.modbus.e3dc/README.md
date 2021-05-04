@@ -1,7 +1,5 @@
 # E3DC
 
-<img align="right" src="./doc/E3DC_logo.png"/>
-
 Integrates the Home Power Plants from E3/DC GmbH into openHAB. 
 See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
 The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
