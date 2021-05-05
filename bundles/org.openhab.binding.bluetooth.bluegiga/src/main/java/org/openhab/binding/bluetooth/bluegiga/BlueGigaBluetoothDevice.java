@@ -185,7 +185,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
 
     @Override
     public boolean discoverServices() {
-        if (currentProcedure != PROCEDURE_NONE) {
+        if (!PROCEDURE_NONE.equals(currentProcedure)) {
             return false;
         }
 
@@ -218,7 +218,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                     new BluetoothException("Unable to find CCC for characteristic [" + characteristic.getUuid() + "]"));
         }
 
-        if (currentProcedure != PROCEDURE_NONE) {
+        if (!PROCEDURE_NONE.equals(currentProcedure)) {
             return CompletableFuture.failedFuture(new BluetoothException("Another procedure is already in progress"));
         }
 
@@ -264,7 +264,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                     new BluetoothException("Unable to find CCC for characteristic [" + characteristic.getUuid() + "]"));
         }
 
-        if (currentProcedure != PROCEDURE_NONE) {
+        if (!PROCEDURE_NONE.equals(currentProcedure)) {
             return CompletableFuture.failedFuture(new BluetoothException("Another procedure is already in progress"));
         }
 
@@ -311,7 +311,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             return CompletableFuture.failedFuture(new BluetoothException("Not connected"));
         }
 
-        if (currentProcedure != PROCEDURE_NONE) {
+        if (!PROCEDURE_NONE.equals(currentProcedure)) {
             return CompletableFuture.failedFuture(new BluetoothException("Another procedure is already in progress"));
         }
 
@@ -336,7 +336,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             return CompletableFuture.failedFuture(new BluetoothException("Not connected"));
         }
 
-        if (currentProcedure != PROCEDURE_NONE) {
+        if (!PROCEDURE_NONE.equals(currentProcedure)) {
             return CompletableFuture.failedFuture(new BluetoothException("Another procedure is already in progress"));
         }
 
@@ -564,7 +564,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             return;
         }
 
-        if (currentProcedure == PROCEDURE_NONE) {
+        if (!PROCEDURE_NONE.equals(currentProcedure)) {
             logger.debug("BlueGiga procedure completed but procedure is null with connection {}, address {}",
                     connection, address);
             return;

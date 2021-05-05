@@ -80,6 +80,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             ScheduledFuture<?> prevFuture = updateChannelsFutureRef.get();
@@ -94,6 +95,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
                     logger.trace("REFRESH received. Delaying by {} ms to avoid throttle excessive REFRESH",
                             delayRemainingMillis);
                 }
+                // Compare by reference to check if the future changed
                 if (prevFuture == newFuture) {
                     logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
                             lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
