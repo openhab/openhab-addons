@@ -15,8 +15,11 @@ package org.openhab.binding.nuki.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
 import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
+import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
@@ -46,18 +49,17 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(NukiHandlerFactory.class);
 
-    private final HttpService httpService;
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
     private @Nullable String callbackUrl;
-    private @Nullable NukiApiServlet nukiApiServlet;
+    private NukiApiServlet nukiApiServlet;
 
     @Activate
     public NukiHandlerFactory(@Reference HttpService httpService, @Reference final HttpClientFactory httpClientFactory,
             @Reference NetworkAddressService networkAddressService) {
-        this.httpService = httpService;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.networkAddressService = networkAddressService;
+        this.nukiApiServlet = new NukiApiServlet(httpService);
     }
 
     @Override
@@ -71,18 +73,17 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
-            callbackUrl = createCallbackUrl();
+            callbackUrl = createCallbackUrl(thing.getUID().getId());
             NukiBridgeHandler nukiBridgeHandler = new NukiBridgeHandler((Bridge) thing, httpClient, callbackUrl);
             if (!nukiBridgeHandler.isInitializable()) {
                 return null;
-            }
-            if (nukiApiServlet == null) {
-                nukiApiServlet = new NukiApiServlet(httpService);
             }
             nukiApiServlet.add(nukiBridgeHandler);
             return nukiBridgeHandler;
         } else if (NukiBindingConstants.THING_TYPE_SMARTLOCK_UIDS.contains(thingTypeUID)) {
             return new NukiSmartLockHandler(thing);
+        } else if (NukiBindingConstants.THING_TYPE_OPENER_UIDS.contains(thingTypeUID)) {
+            return new NukiOpenerHandler(thing);
         }
         logger.trace("No valid Handler found for Thing[{}]!", thingTypeUID);
         return null;
@@ -92,19 +93,17 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     public void unregisterHandler(Thing thing) {
         super.unregisterHandler(thing);
         logger.trace("NukiHandlerFactory:unregisterHandler({})", thing);
-        if (thing.getHandler() instanceof NukiBridgeHandler && nukiApiServlet != null) {
+        if (thing.getHandler() instanceof NukiBridgeHandler) {
             nukiApiServlet.remove((NukiBridgeHandler) thing.getHandler());
-            if (nukiApiServlet.countNukiBridgeHandlers() == 0) {
-                nukiApiServlet = null;
-            }
         }
     }
 
-    private @Nullable String createCallbackUrl() {
+    private @Nullable String createCallbackUrl(String bridgeId) {
         logger.trace("createCallbackUrl()");
         if (callbackUrl != null) {
             return callbackUrl;
         }
+        @Nullable
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found.");
@@ -116,7 +115,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, ipAddress + ":" + port);
+        String callbackUrl = NukiLinkBuilder.callbackUri(ipAddress, port, bridgeId).toString();
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }
