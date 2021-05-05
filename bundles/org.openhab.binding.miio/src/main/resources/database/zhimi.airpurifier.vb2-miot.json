@@ -53,7 +53,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"button-toggle\"\u003d\"Toggle\",\"button-toggle-mode\"\u003d\"Toggle Mode\"]"
+				"readmeComment": "Value mapping `[\"button-toggle\"\u003d\"Toggle\",\"button-toggle-mode\"\u003d\"Toggle Mode\"]`"
 			},
 			{
 				"property": "fault",
@@ -101,7 +101,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\",\"6\"\u003d\"timer_error1\",\"7\"\u003d\"timer_error2\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\",\"6\"\u003d\"timer_error1\",\"7\"\u003d\"timer_error2\"]`"
 			},
 			{
 				"property": "on",
@@ -152,7 +152,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"0\"\u003d\"Sleep\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"0\"\u003d\"Sleep\"]`"
 			},
 			{
 				"property": "mode",
@@ -188,7 +188,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Night\",\"2\"\u003d\"Favourite\",\"3\"\u003d\"Manual\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Night\",\"2\"\u003d\"Favourite\",\"3\"\u003d\"Manual\"]`"
 			},
 			{
 				"property": "pm2.5-density",
@@ -201,7 +201,7 @@
 					"minimum": 0,
 					"maximum": 600,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -236,7 +236,7 @@
 				"stateDescription": {
 					"minimum": -40,
 					"maximum": 125,
-					"pattern": "%.1f",
+					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -345,7 +345,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"brightest\",\"1\"\u003d\"glimmer\",\"2\"\u003d\"not bright\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"brightest\",\"1\"\u003d\"glimmer\",\"2\"\u003d\"not bright\"]`"
 			},
 			{
 				"property": "on1",
@@ -736,7 +736,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"waiting\",\"1\"\u003d\"ready\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"waiting\",\"1\"\u003d\"ready\"]`"
 			},
 			{
 				"property": "aqi-goodh",
@@ -785,7 +785,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"continue\",\"1\"\u003d\"hold\",\"2\"\u003d\"sleep\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"continue\",\"1\"\u003d\"hold\",\"2\"\u003d\"sleep\"]`"
 			},
 			{
 				"property": "aqi-state",
@@ -825,7 +825,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"AQI_GOOD_L\",\"1\"\u003d\"AQI_GOOD_H\",\"2\"\u003d\"AQI_MID_L\",\"3\"\u003d\"AQI_MID_H\",\"4\"\u003d\"AQI_BAD_L\",\"5\"\u003d\"AQI_BAD_H\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"AQI_GOOD_L\",\"1\"\u003d\"AQI_GOOD_H\",\"2\"\u003d\"AQI_MID_L\",\"3\"\u003d\"AQI_MID_H\",\"4\"\u003d\"AQI_BAD_L\",\"5\"\u003d\"AQI_BAD_H\"]`"
 			},
 			{
 				"property": "rfid-tag",
@@ -1005,7 +1005,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"REASON_HW_BOOT\",\"1\"\u003d\"REASON_USER_REBOOT\",\"2\"\u003d\"REASON_UPDATE\",\"3\"\u003d\"REASON_WDT\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"REASON_HW_BOOT\",\"1\"\u003d\"REASON_USER_REBOOT\",\"2\"\u003d\"REASON_UPDATE\",\"3\"\u003d\"REASON_WDT\"]`"
 			},
 			{
 				"property": "manual-level",
@@ -1033,7 +1033,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"level1\",\"2\"\u003d\"level2\",\"3\"\u003d\"level3\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"level1\",\"2\"\u003d\"level2\",\"3\"\u003d\"level3\"]`"
 			},
 			{
 				"property": "powertime",
@@ -1091,7 +1091,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"91\"\u003d\"India\",\"44\"\u003d\"UK\",\"852\"\u003d\"Hong Kong\",\"886\"\u003d\"Taiwan\",\"82\"\u003d\"Korea\"]"
+				"readmeComment": "Value mapping `[\"91\"\u003d\"India\",\"44\"\u003d\"UK\",\"852\"\u003d\"Hong Kong\",\"886\"\u003d\"Taiwan\",\"82\"\u003d\"Korea\"]`"
 			}
 		],
 		"experimental": false

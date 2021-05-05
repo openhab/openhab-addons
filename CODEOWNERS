@@ -9,6 +9,8 @@
 /bundles/org.openhab.automation.jythonscripting/ @openhab/add-ons-maintainers
 /bundles/org.openhab.automation.pidcontroller/ @fwolter
 /bundles/org.openhab.binding.adorne/ @theiding
+/bundles/org.openhab.binding.ahawastecollection/ @soenkekueper
+/bundles/org.openhab.binding.airq/ @aurelio1
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.alarmdecoder/ @bobadair @billfor
@@ -35,6 +37,7 @@
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
+/bundles/org.openhab.binding.bmwconnecteddrive/ @weymann @ntruchsess
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.boschshc/ @stefan-kaestle @coeing @GerdZanker
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
@@ -66,6 +69,7 @@
 /bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.ecobee/ @mhilbush
+/bundles/org.openhab.binding.ecotouch/ @sibbi77
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.enigma2/ @gdolfen
@@ -95,8 +99,10 @@
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017
 /bundles/org.openhab.binding.groheondus/ @FlorianSW
+/bundles/org.openhab.binding.haassohnpelletstove/ @chingon007
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
 /bundles/org.openhab.binding.haywardomnilogic/ @matchews
+/bundles/org.openhab.binding.hccrubbishcollection/ @cossey
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
 /bundles/org.openhab.binding.hdpowerview/ @beowulfe
 /bundles/org.openhab.binding.helios/ @kgoderis

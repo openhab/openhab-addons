@@ -41,7 +41,7 @@ public class ModbusReadRequestMessage extends NibeHeatPumpBaseMessage {
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
         if (NibeHeatPumpProtocol.isModbus40ReadRequestPdu(data)) {
             super.encodeMessage(data);
-            coilAddress = (data[4] & 0xFF) << 8 | (data[3] & 0xFF);
+            coilAddress = (rawMessage[4] & 0xFF) << 8 | (rawMessage[3] & 0xFF);
         } else {
             throw new NibeHeatPumpException("Not Read Request message");
         }
@@ -49,12 +49,8 @@ public class ModbusReadRequestMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-        return createModbus40ReadPdu(coilAddress);
-    }
-
-    private byte[] createModbus40ReadPdu(int coilAddress) {
         byte[] data = new byte[6];
-        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_TO_NIBE;
+        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_REQ;
         data[1] = NibeHeatPumpProtocol.CMD_MODBUS_READ_REQ;
         data[2] = (byte) 0x02; // data len
         data[3] = (byte) (coilAddress & 0xFF);

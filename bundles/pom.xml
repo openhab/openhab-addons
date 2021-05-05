@@ -41,6 +41,8 @@
     <module>org.openhab.transform.xslt</module>
     <!-- bindings -->
     <module>org.openhab.binding.adorne</module>
+    <module>org.openhab.binding.ahawastecollection</module>
+    <module>org.openhab.binding.airq</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
     <module>org.openhab.binding.alarmdecoder</module>
@@ -67,6 +69,7 @@
     <module>org.openhab.binding.bluetooth.govee</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
+    <module>org.openhab.binding.bmwconnecteddrive</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.boschshc</module>
     <module>org.openhab.binding.bosesoundtouch</module>
@@ -98,6 +101,7 @@
     <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.ecobee</module>
+    <module>org.openhab.binding.ecotouch</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
@@ -127,8 +131,10 @@
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
     <module>org.openhab.binding.groheondus</module>
+    <module>org.openhab.binding.haassohnpelletstove</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.haywardomnilogic</module>
+    <module>org.openhab.binding.hccrubbishcollection</module>
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.helios</module>

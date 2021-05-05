@@ -1,8 +1,8 @@
 # EspMilightHub Binding
 
 This binding allows an open source esp8266 based bridge to automatically find and add Milight globes.
-The hubs can be built from 2 ready made boards and only need connecting with 7 wires. 
-They can be very easy to build with no soldering needed. 
+The hubs can be built from 2 ready made boards and only need connecting with 7 wires.
+They can be very easy to build with no soldering needed.
 
 Advantages to using this DIY bridge over the OEM bridge:
 
@@ -12,7 +12,7 @@ Advantages to using this DIY bridge over the OEM bridge:
 
 ## Setup the hardware
 
-In depth details on how to build and what the bridge is can be found here: <http://blog.christophermullins.com/2017/02/11/milight-wifi-gateway-emulator-on-an-esp8266>
+In depth details on how to build and what the bridge is can be found here: <https://blog.christophermullins.com/2017/02/11/milight-wifi-gateway-emulator-on-an-esp8266>
 
 A quick overview of the steps to get the hardware going are:
 
@@ -29,7 +29,7 @@ A quick overview of the steps to get the hardware going are:
 
 ## Setup the Firmware
 
-Enter the control panel for the ESP8266 by using any browser and enter the IP address. 
+Enter the control panel for the ESP8266 by using any browser and enter the IP address.
 The following options need to be changed in the firmware for the binding to work.
 Click on SETTINGS>MQTT>:
 
@@ -42,7 +42,7 @@ Leave this blank.
 **mqtt_state_topic_pattern:**
 `milight/states/:device_id/:device_type/:group_id`
 
-**group_state_fields:** 
+**group_state_fields:**
 IMPORTANT: Make sure only the following are ticked:
 
 + state
@@ -93,6 +93,8 @@ To remove a saved state from your MQTT broker that causes an entry in your INBOX
 mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' -n -r
 ```
 
+Note that the group 0 (or ALL group) is not autodiscovered as a thing and thus has to be added manually if needed (see section [Using the group 0](#using-the-group-0) for details on when and how to do this)
+
 ## Thing Configuration
 
 | Parameter | Description | Required | Default |
@@ -138,19 +140,34 @@ This binding requires things to have a specific format for the unique ID, the au
 If doing textual configuration you need to add the Device ID and Group ID together to create the things unique ID.
 The DeviceID is different for each remote.
 The GroupID can be 0 (all channels on the remote), or 1 to 8 for each of the individual channels on the remote).
-If you do not understand this please use auto discovery to do it for you. 
+If you do not understand this please use auto discovery to do it for you.
 
 The formula is
 DeviceID + GroupID = ThingUID
 
 For example:
 
-| Device ID | Group ID |ThingUID  | 
+| Device ID | Group ID |ThingUID  |
 |-----------|----------|----------|
-| 0xE6C     | 4        | 0xE6C4   | 
-| 0xB4CA    | 4        | 0xB4CA4  | 
+| 0xE6C     | 4        | 0xE6C4   |
+| 0xB4CA    | 4        | 0xB4CA4  |
 | 0xB4CA    | 8        | 0xB4CA8  |
 | 0xB4CA    | 0        | 0xB4CA0  |
+
+## Using Group 0
+
+The group 0 (or ALL group) with the Group ID 0 can be used to control all bulbs that are paired with one specific remote at once.
+While this functionality can also be achieved by using openHAB groups with even greater flexibility, the group 0 must be setup if you want to capture physical remote control events for the ALL group, and keep physical devices synchronized to their openHAB representations.
+Milight remotes send all commands with the Group ID 0 after the master ON/OFF buttons have been used.
+If the group 0 has not been setup these events will be lost and your Item states will no longer be synchonized with the actual device states until you issue a command via openHAB.
+If you do not use a remote at all or you only control other bulbs than the ones controlled by openHAB you should not need to setup the ALL group.
+
+Since the group 0 is not needed in every case the autodiscovery feature will not detect this group as a Thing automatically.
+To create the group, use textual files or the openHAB UI to manually add a Thing with the correct Unique ID as described in section [Important for Textual Configuration](#important-for-textual-configuration).
+To create a Thing for the group 0, simply create a new Thing that has the same type as one of the auto discovered Things of the same remote and modify the ThingUID as described in section linked above.
+
+If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the thing for group 0.
+Only if you want the controls do you need to link any channels and create the items, as creating the thing will subscribe the binding to the MQTT topic for group 0.
 
 ## Full Example
 
@@ -180,7 +197,7 @@ String Hallway_BulbMode "Bulb Mode" {channel="mqtt:rgb_cct:0xE6C4:bulbMode"}
 *.sitemap
 
 ```
-        Text label="Hallway" icon="light" 
+        Text label="Hallway" icon="light"
         {
             Switch      item=Hallway_Level
             Slider      item=Hallway_Level
@@ -188,6 +205,6 @@ String Hallway_BulbMode "Bulb Mode" {channel="mqtt:rgb_cct:0xE6C4:bulbMode"}
             Colorpicker item=Hallway_Colour
             Selection   item=Hallway_DiscoMode
             Text        item=Hallway_BulbMode
-            Switch item=Hallway_BulbCommand mappings=[next_mode='Mode +', previous_mode='Mode -', mode_speed_up='Speed +', mode_speed_down='Speed -', set_white='White', night_mode='Night' ]   
+            Switch item=Hallway_BulbCommand mappings=[next_mode='Mode +', previous_mode='Mode -', mode_speed_up='Speed +', mode_speed_down='Speed -', set_white='White', night_mode='Night' ]
         }
 ```
