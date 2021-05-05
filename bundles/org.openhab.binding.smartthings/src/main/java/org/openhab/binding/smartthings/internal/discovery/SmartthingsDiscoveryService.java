@@ -80,7 +80,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     protected void unsetSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
         // Make sure it is this handleFactory that should be unset
-        if (hubCommand == smartthingsHubCommand) {
+        if (Objects.equals(hubCommand, smartthingsHubCommand)) {
             this.smartthingsHubCommand = null;
         }
     }
