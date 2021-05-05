@@ -281,9 +281,9 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (JsonSyntaxException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
             if (response == null) {
-                logger.warn("Faulty response: is null");
+                logger.trace("Faulty response: is null");
             } else {
-                logger.warn("Faulty response: {}", response.toString());
+                logger.trace("Faulty response: {}", response.toString());
             }
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

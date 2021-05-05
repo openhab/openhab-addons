@@ -14,11 +14,4 @@
 
   <name>openHAB Add-ons :: Bundles :: SenecHome Binding</name>
 
-  <dependencies>
-    <dependency>
-      <artifactId>json</artifactId>
-      <groupId>org.json</groupId>
-      <version>20180813</version>
-    </dependency>
-  </dependencies>
 </project>
