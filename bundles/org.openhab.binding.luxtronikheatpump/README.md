@@ -53,7 +53,6 @@ The following channels are holding read only values:
 | temperatureOutside | Number:Temperature |   | Outside temperature |
 | temperatureOutsideMean | Number:Temperature |   | Average temperature outside over 24 h (heating limit function) |
 | temperatureHotWater | Number:Temperature |   | Hot water actual temperature |
-| temperatureHotWaterTarget | Number:Temperature |   | Hot water target temperature |
 | temperatureHeatSourceInlet | Number:Temperature | x | Heat source inlet temperature |
 | temperatureHeatSourceOutlet | Number:Temperature | x | Heat source outlet temperature |
 | temperatureMixingCircuit1Flow | Number:Temperature | x | Mixing circuit 1 Flow temperature |
@@ -253,7 +252,7 @@ The following channels are also writable:
 | channel  | type   | advanced | description                  |
 |----------|--------|----------|------------------------------|
 | temperatureHeatingParallelShift | Number:Temperature |   | Heating temperature (parallel shift) |
-| temperatureTargetHotWater_2 | Number:Temperature |   | Hot water temperature |
+| temperatureHotWaterTarget | Number:Temperature |   | Hot water target temperature |
 | heatingMode | Number |   | Heating mode |
 | hotWaterMode | Number |   | Hot water operating mode |
 | thermalDisinfectionMonday | Switch |  x  | Thermal disinfection (Monday) |
