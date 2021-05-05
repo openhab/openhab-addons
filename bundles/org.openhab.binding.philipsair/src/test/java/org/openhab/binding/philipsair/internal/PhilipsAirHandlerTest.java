@@ -39,6 +39,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -175,7 +176,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @BeforeEach
-
+    @Disabled
     public void setUp() throws Exception {
         initMocks(this);
         // mock getConfiguration to prevent NPEs
@@ -233,6 +234,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
+    @Disabled
     public void testStateUpdates() throws Exception {
         // mock getConfiguration to prevent NPEs
 
@@ -339,7 +341,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertThat(wlState.intValue(), is(0));
     }
 
-    @Test
+    @Disabled
     public void testStateOffsetUpdates() throws Exception {
         // mock getConfiguration to prevent NPEs
 

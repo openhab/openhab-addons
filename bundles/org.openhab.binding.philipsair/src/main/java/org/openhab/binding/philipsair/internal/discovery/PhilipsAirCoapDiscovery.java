@@ -16,12 +16,9 @@ import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants
 import static org.openhab.core.thing.Thing.*;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -31,7 +28,6 @@ import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.Utils;
-import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.CoAP.Type;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.CoapEndpoint;
@@ -48,6 +44,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.net.NetUtil;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -81,12 +78,16 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapDiscovery.class);
     private CoapClient client = new CoapClient();
     private @Nullable ScheduledFuture<?> coapDiscoveryJob;
+    private NetworkAddressService networkAddressService;
 
     @Activate
-    public PhilipsAirCoapDiscovery(@Reference ConfigurationAdmin configAdmin) throws IllegalArgumentException {
+    public PhilipsAirCoapDiscovery(@Reference ConfigurationAdmin configAdmin,
+            @Reference NetworkAddressService networkAddressService) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
         NetworkConfig netConfig = NetworkConfig.createStandardWithoutFile();
         CoapEndpoint endpoint = new CoapEndpoint.Builder().setNetworkConfig(netConfig).build();
+        this.networkAddressService = networkAddressService;
+
         client = new CoapClient();
         client.setEndpoint(endpoint);
     }
@@ -119,29 +120,20 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Start COAP discovery");
-        for (InetAddress host : getBroadcastAddresses()) {
+        HashSet<String> broadcastAddresses = new HashSet(NetUtil.getAllBroadcastAddresses());
+        String configuredBroadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
+        if (configuredBroadcastAddress != null) {
+            broadcastAddresses.add(configuredBroadcastAddress);
+        }
+        broadcastAddresses.add("224.0.1.187");
+        logger.debug("Broadcast to {} addresses", broadcastAddresses.size());
+        for (String host : broadcastAddresses) {
             try {
-                mget(client, COAP_PORT, PATH, host.getHostName());
+                mget(client, COAP_PORT, PATH, host);
             } catch (ConnectorException | IOException e) {
                 logger.debug("Error while discovering: {}", e.getMessage(), e);
             }
         }
-    }
-
-    private List<InetAddress> getBroadcastAddresses() {
-        ArrayList<InetAddress> addresses = new ArrayList<>();
-
-        for (String broadcastAddress : NetUtil.getAllBroadcastAddresses()) {
-            try {
-                addresses.add(InetAddress.getByName(broadcastAddress));
-            } catch (UnknownHostException e) {
-                // The broadcastAddress is supposed to be raw IP, not a hostname, like 192.168.0.255.
-                // Getting UnknownHost on it would be totally strange, some internal system error.
-                logger.warn("Error broadcasting to {}: {}", broadcastAddress, e.getMessage());
-            }
-        }
-
-        return addresses;
     }
 
     public void discovered(String response, String host) {
@@ -170,14 +162,15 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private void mget(CoapClient client, int port, String resourcePath, String host)
             throws ConnectorException, IOException {
         String uri;
-        uri = "coap://" + CoAP.MULTICAST_IPV4.getHostAddress() + ":" + port + "/" + resourcePath;
+        uri = "coap://" + host + ":" + port + "/" + resourcePath;
+        logger.debug("Send discovery request: {}", uri);
         client.setURI(uri);
         Request multicastRequest = Request.newGet();
         multicastRequest.setType(Type.NON);
         // sends a multicast request
         MultiCoapHandler handler = new MultiCoapHandler(this, logger);
         client.advanced(handler, multicastRequest);
-        while (handler.waitOn(2000)) {
+        while (handler.waitOn(5000)) {
             ;
         }
     }
