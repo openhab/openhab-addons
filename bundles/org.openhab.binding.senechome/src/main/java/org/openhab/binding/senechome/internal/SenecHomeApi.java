@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.MalformedJsonException;
 
 /**
  * The {@link SenecHomeApi} class configures http client and
@@ -86,17 +87,22 @@ public class SenecHomeApi {
                 logger.trace("Got unexpected response code {}", response.getStatus());
                 throw new IOException("Got unexpected response code " + response.getStatus());
             }
-        } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (MalformedJsonException | JsonSyntaxException | InterruptedException | TimeoutException
+                | ExecutionException e) {
             logger.trace("Issue with getting SenecHomeResponse");
             logger.trace("location: {}", location);
             logger.trace("request: {}", request.toString());
             logger.trace("request.getHeaders: {}", request.getHeaders());
-            logger.trace("response: {}", response.toString());
-            logger.trace("response.getHeaders: {}", response.getHeaders());
-            if (response.getContent() == null) {
-                logger.trace("response.getContent is null");
+            if (response == null) {
+                logger.trace("response is null");
             } else {
-                logger.trace("response.getContentAsString: {}", response.getContentAsString());
+                logger.trace("response: {}", response.toString());
+                logger.trace("response.getHeaders: {}", response.getHeaders());
+                if (response.getContent() == null) {
+                    logger.trace("response.getContent is null");
+                } else {
+                    logger.trace("response.getContentAsString: {}", response.getContentAsString());
+                }
             }
             throw e;
         }
