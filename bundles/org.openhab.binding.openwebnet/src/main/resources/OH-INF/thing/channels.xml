@@ -37,6 +37,141 @@
 		</tags>
 	</channel-type>
 
+	<!-- Thermo channels -->
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature (read only)</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<!-- <channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature (read only)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+		</channel-type> -->
+
+	<channel-type id="function">
+		<item-type>String</item-type>
+		<label>Thermo Function</label>
+		<description>Thermo function of the thermostat (read/write)</description>
+		<state>
+			<options>
+				<option value="COOLING">Cooling</option>
+				<option value="HEATING">Heating</option>
+				<option value="GENERIC">Generic</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- <channel-type id="heatingCoolingMode" advanced="true">
+		<item-type>String</item-type>
+		<label>HeatingCoolingMode</label>
+		<description>HeatingCoolingMode of the thermostat (read only)</description>
+		<tags>
+		<tag>homekit:HeatingCoolingMode</tag>
+		</tags>
+		<state readOnly="true">
+		<options>
+		<option value="cool">cool</option>
+		<option value="heat">heat</option>
+		<option value="heatcool">heatcool</option>
+		<option value="off">off</option>
+		</options>
+		</state>
+		</channel-type> -->
+
+	<!-- <channel-type id="heating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heating Is</label>
+		<description>Heating is active (read only)</description>
+		<state readOnly="true"/>
+		</channel-type> -->
+
+	<!-- <channel-type id="cooling" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Cooling Is</label>
+		<description>Cooling is active (read only)</description>
+		<state readOnly="true"/>
+		</channel-type> -->
+
+	<!-- <channel-type id="activeMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Current operation mode (active mode) of the thermostat (read only)</description>
+		<state readOnly="true">
+		<options>
+		<option value="AUTO">Auto</option>
+		<option value="MANUAL">Manual</option>
+		<option value="PROTECTION">Protection</option>
+		<option value="OFF">Off</option>
+		</options>
+		</state>
+		</channel-type> -->
+
+	<!-- <channel-type id="localMode">
+		<item-type>String</item-type>
+		<label>Local Mode</label>
+		<description>Local mode of the thermostat (read only)</description>
+		<state readOnly="true">
+		<options>
+		<option value="3">+3</option>
+		<option value="2">+2</option>
+		<option value="1">+1</option>
+		<option value="NORMAL">Normal</option>
+		<option value="-1">-1</option>
+		<option value="-2">-2</option>
+		<option value="-3">-3</option>
+		<option value="PROTECTION">Protection</option>
+		<option value="OFF">Off</option>
+		</options>
+		</state>
+		</channel-type> -->
+
+	<channel-type id="setpointTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Setpoint temperature (read/write)</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>TargetTemperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Set mode of the thermostat (read/write)</description>
+		<state>
+			<options>
+				<option value="MANUAL">Manual</option>
+				<option value="PROTECTION">Protection</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="speedFanCoil">
+		<item-type>String</item-type>
+		<label>Set fan speed</label>
+		<description>Set speed of the Fan Coil (read/write)</description>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="SPEED_1">Fan speed 1</option>
+				<option value="SPEED_2">Fan speed 2</option>
+				<option value="SPEED_3">Fan speed 3</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- Energy channels -->
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>

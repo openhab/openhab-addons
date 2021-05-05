@@ -26,7 +26,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link OpenWebNetBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Massimo Valla - Initial contribution
- * @author Andrea Conte - Energy management
+ * @author Andrea Conte - Energy management, Thermoregulation
+ * @author Gilberto Cocchi - Thermoregulation
  */
 
 @NonNullByDefault
@@ -55,6 +56,15 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
     public static final String THING_LABEL_BUS_ENERGY_METER = "Energy Meter";
+    // TODO support for bus_temp_sensor
+    // public static final ThingTypeUID THING_TYPE_BUS_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "bus_temp_sensor");
+    // public static final String THING_LABEL_BUS_TEMP_SENSOR = "Temperature Sensor";
+    public static final ThingTypeUID THING_TYPE_BUS_THERMOSTAT = new ThingTypeUID(BINDING_ID, "bus_thermostat");
+    public static final String THING_LABEL_BUS_THERMOSTAT = "Thermostat (stand-alone)";
+    // TODO support for bus_cu_thermostat
+    // public static final ThingTypeUID THING_TYPE_BUS_THERMO_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
+    // "bus_cu_thermostat");
+    // public static final String THING_LABEL_BUS_THERMO_CENTRAL_UNIT = "Thermo Central Unit";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -79,6 +89,11 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> AUTOMATION_SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ZB_AUTOMATION, THING_TYPE_BUS_AUTOMATION));
 
+    // ## Thermoregulation
+    public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_BUS_THERMOSTAT)); // TODO , THING_TYPE_BUS_TEMP_SENSOR,
+                                                       // THING_TYPE_BUS_THERMO_CENTRAL_UNIT));
+
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_BUS_ENERGY_METER));
@@ -86,7 +101,8 @@ public class OpenWebNetBindingConstants {
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
-                    ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
+                    THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES,
+                    GENERIC_SUPPORTED_THING_TYPES)
             .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
 
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = new HashSet<>(
@@ -105,6 +121,22 @@ public class OpenWebNetBindingConstants {
 
     // automation
     public static final String CHANNEL_SHUTTER = "shutter";
+
+    // thermo
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    // tbd public static final String CHANNEL_TEMP_TARGET = "targetTemperature";
+    public static final String CHANNEL_FUNCTION = "function"; // former: "thermoFunction";
+    public static final String CHANNEL_HEATING_COOLING_MODE = "thermostatMode"; // former: "heatingCoolingMode";
+    // tbd public static final String CHANNEL_HEATING = "heating";
+    // tbd public static final String CHANNEL_COOLING = "cooling";
+    // tbd public static final String CHANNEL_ACTIVE_MODE = "activeMode";
+    // tbd public static final String CHANNEL_LOCAL_MODE = "localMode";
+    public static final String CHANNEL_TEMP_SETPOINT = "setpointTemperature";
+    public static final String CHANNEL_MODE = "mode"; // former: setMode
+    // tbd public static final String CHANNEL_ALL_TEMP_SETPOINT = "allSetpointTemperature";
+    // tbd public static final String CHANNEL_ALL_SET_MODE = "allSetMode";
+    // tbd public static final String CHANNEL_ALL_THERMO_FUNCTION = "allThermoFunction";
+    public static final String CHANNEL_FAN_SPEED = "speedFanCoil";
 
     // energy management
     public static final String CHANNEL_POWER = "power";

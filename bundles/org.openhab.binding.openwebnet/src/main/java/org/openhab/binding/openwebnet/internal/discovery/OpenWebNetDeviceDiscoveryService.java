@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
  * bridge/gateway
  *
  * @author Massimo Valla - Initial contribution
- * @author Andrea Conte - Energy management
+ * @author Andrea Conte - Energy management, Thermoregulation
+ * @author Gilberto Cocchi - Thermoregulation
  */
 @NonNullByDefault
 public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
@@ -131,6 +132,29 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
 
+            // TODO: support for bus_temp_sensor
+            case SCS_TEMP_SENSOR: {
+                logger.warn("newDiscoveryResult() Unsupported channel! WHERE={}, deviceType={}", where, deviceType);
+                // thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_TEMP_SENSOR;
+                // thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_TEMP_SENSOR;
+                // deviceWho = Who.THERMOREGULATION;
+                break;
+            }
+            case SCS_THERMOSTAT: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMOSTAT;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMOSTAT;
+                deviceWho = Who.THERMOREGULATION;
+                break;
+            }
+
+            // TODO: support for bus_cu_thermostat
+            case SCS_THERMO_CENTRAL_UNIT: {
+                logger.warn("newDiscoveryResult() Unsupported channel! WHERE={}, deviceType={}", where, deviceType);
+                // thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CENTRAL_UNIT;
+                // thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMO_CENTRAL_UNIT;
+                // deviceWho = Who.THERMOREGULATION;
+                break;
+            }
             case SCS_ENERGY_METER: {
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ENERGY_METER;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ENERGY_METER;
