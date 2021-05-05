@@ -12,18 +12,24 @@
  */
 package org.openhab.binding.nuki.internal.handler;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
+import javax.ws.rs.core.UriBuilder;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.nuki.internal.NukiBindingConstants;
-import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackAddResponse;
-import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackListResponse;
-import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackRemoveResponse;
-import org.openhab.binding.nuki.internal.dataexchange.BridgeInfoResponse;
-import org.openhab.binding.nuki.internal.dataexchange.NukiHttpClient;
+import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
+import org.openhab.binding.nuki.internal.dataexchange.*;
+import org.openhab.binding.nuki.internal.discovery.NukiDeviceDiscoveryService;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListCallbackDto;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -31,6 +37,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,33 +47,50 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Katter - Initial contribution
+ * @contributer Jan Vybíral - Improved callback handling
  */
 public class NukiBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NukiBridgeHandler.class);
     private static final int JOB_INTERVAL = 600;
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private NukiHttpClient nukiHttpClient;
-    private String callbackUrl;
+    private final String callbackUrl;
     private ScheduledFuture<?> checkBridgeOnlineJob;
     private String bridgeIp;
+    private Integer bridgePort;
     private boolean manageCallbacks;
     private boolean initializable;
 
     public NukiBridgeHandler(Bridge bridge, HttpClient httpClient, String callbackUrl) {
         super(bridge);
         logger.debug("Instantiating NukiBridgeHandler({}, {}, {})", bridge, httpClient, callbackUrl);
-        this.httpClient = httpClient;
         this.callbackUrl = callbackUrl;
+        this.httpClient = httpClient;
+
+        // initialize config from discovered propeties
+        initConfigFromProperty(NukiBindingConstants.PROPERTY_BRIDGE_IP, NukiBindingConstants.CONFIG_IP,
+                String::toString);
+        initConfigFromProperty(NukiBindingConstants.PROPERTY_BRIDGE_PORT, NukiBindingConstants.CONFIG_PORT,
+                value -> new BigDecimal(value).intValue());
+        initConfigFromProperty(NukiBindingConstants.PROPERTY_BRIDGE_TOKEN, NukiBindingConstants.CONFIG_API_TOKEN,
+                String::toString);
+
         this.initializable = getConfig().get(NukiBindingConstants.CONFIG_IP) != null
-                && getConfig().get(NukiBindingConstants.CONFIG_API_TOKEN) != null;
+                && getConfig().get(NukiBindingConstants.CONFIG_API_TOKEN) != null
+                && getConfig().get(NukiBindingConstants.CONFIG_PORT) != null;
+    }
+
+    private void initConfigFromProperty(String propertyName, String configName, Function<String, Object> converter) {
+        String propertyValue = thing.getProperties().get(propertyName);
+        if (propertyValue != null) {
+            getConfig().put(configName, converter.apply(propertyValue));
+            thing.setProperty(propertyName, null);
+        }
     }
 
     public NukiHttpClient getNukiHttpClient() {
-        if (nukiHttpClient == null) {
-            nukiHttpClient = new NukiHttpClient(httpClient, getConfig());
-        }
         return nukiHttpClient;
     }
 
@@ -74,21 +98,40 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         return initializable;
     }
 
+    @Nullable
+    private String getStringConfig(String key) {
+        Object value = getConfig().get(key);
+        return value == null ? null : value.toString();
+    }
+
+    @Nullable
+    private Integer getIntConfig(String key) {
+        Object value = getConfig().get(key);
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void initialize() {
         logger.debug("initialize() for Bridge[{}].", getThing().getUID());
         Configuration config = getConfig();
-        bridgeIp = (String) config.get(NukiBindingConstants.CONFIG_IP);
+        bridgeIp = getStringConfig(NukiBindingConstants.CONFIG_IP);
+        bridgePort = getIntConfig(NukiBindingConstants.CONFIG_PORT);
+        String token = getStringConfig(NukiBindingConstants.CONFIG_API_TOKEN);
         manageCallbacks = (Boolean) config.get(NukiBindingConstants.CONFIG_MANAGECB);
-        if (bridgeIp == null) {
+        if (bridgeIp == null || bridgePort == null) {
             logger.debug("NukiBridgeHandler[{}] is not initializable, IP setting is unset in the configuration!",
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP setting is unset");
-        } else if (config.get(NukiBindingConstants.CONFIG_API_TOKEN) == null) {
+        } else if (token == null) {
             logger.debug("NukiBridgeHandler[{}] is not initializable, apiToken setting is unset in the configuration!",
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "apiToken setting is unset");
         } else {
+            nukiHttpClient = new NukiHttpClient(httpClient, bridgeIp, bridgePort, token);
             scheduler.execute(this::initializeHandler);
             checkBridgeOnlineJob = scheduler.scheduleWithFixedDelay(this::checkBridgeOnline, JOB_INTERVAL, JOB_INTERVAL,
                     TimeUnit.SECONDS);
@@ -103,6 +146,9 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("dispose() for Bridge[{}].", getThing().getUID());
+        if (manageCallbacks) {
+            unregisterCallback();
+        }
         nukiHttpClient = null;
         if (checkBridgeOnlineJob != null && !checkBridgeOnlineJob.isCancelled()) {
             checkBridgeOnlineJob.cancel(true);
@@ -110,10 +156,22 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         checkBridgeOnlineJob = null;
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(NukiDeviceDiscoveryService.class);
+    }
+
     private synchronized void initializeHandler() {
         logger.debug("initializeHandler() for Bridge[{}].", bridgeIp);
+
         BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
         if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
+            updateProperty(NukiBindingConstants.PROPERTY_FIRMWARE_VERSION, bridgeInfoResponse.getFirmwareVersion());
+            updateProperty(NukiBindingConstants.PROPERTY_WIFI_FIRMWARE_VERSION,
+                    bridgeInfoResponse.getWifiFirmwareVersion());
+            updateProperty(NukiBindingConstants.PROPERTY_HARDWARE_ID,
+                    Integer.toString(bridgeInfoResponse.getHardwareId()));
+            updateProperty(NukiBindingConstants.PROPERTY_SERVER_ID, Integer.toString(bridgeInfoResponse.getServerId()));
             if (manageCallbacks) {
                 manageNukiBridgeCallbacks();
             }
@@ -149,46 +207,69 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private List<BridgeApiCallbackListCallbackDto> listCallbacks() {
+        BridgeCallbackListResponse bridgeCallbackListResponse = getNukiHttpClient().getBridgeCallbackList();
+        if (bridgeCallbackListResponse.isSuccess()) {
+            return bridgeCallbackListResponse.getCallbacks();
+        } else {
+            logger.debug("Failed to list callbacks for Bridge[{}] - status {}, message {}", bridgeIp,
+                    bridgeCallbackListResponse.getStatus(), bridgeCallbackListResponse.getMessage());
+            return null;
+        }
+    }
+
     private void manageNukiBridgeCallbacks() {
         logger.debug("manageNukiBridgeCallbacks() for Bridge[{}].", bridgeIp);
-        BridgeCallbackListResponse bridgeCallbackListResponse = getNukiHttpClient().getBridgeCallbackList();
-        List<BridgeApiCallbackListCallbackDto> callbacks = bridgeCallbackListResponse.getCallbacks();
-        boolean callbackExists = false;
-        int callbackCount = callbacks == null ? 0 : callbacks.size();
-        if (callbacks != null) {
-            for (BridgeApiCallbackListCallbackDto callback : callbacks) {
-                if (callback.getUrl().equals(callbackUrl)) {
-                    logger.debug("callbackUrl[{}] already existing on Bridge[{}].", callbackUrl, bridgeIp);
-                    callbackExists = true;
-                    continue;
-                }
-                if (callback.getUrl().contains(NukiBindingConstants.CALLBACK_ENDPOINT)) {
-                    logger.debug("Partial callbackUrl[{}] found on Bridge[{}] - Removing it!", callbackUrl, bridgeIp);
-                    BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = getNukiHttpClient()
-                            .getBridgeCallbackRemove(callback.getId());
-                    if (bridgeCallbackRemoveResponse.getStatus() == HttpStatus.OK_200) {
-                        logger.debug("Successfully removed callbackUrl[{}] on Bridge[{}]!", callbackUrl, bridgeIp);
-                        callbackCount--;
-                    }
-                }
-            }
+
+        List<BridgeApiCallbackListCallbackDto> callbacks = listCallbacks();
+        if (callbacks == null) {
+            return;
         }
-        if (!callbackExists) {
-            if (callbackCount == 3) {
-                logger.debug("Already 3 callback URLs existing on Bridge[{}] - Removing ID 0!", bridgeIp);
-                BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = getNukiHttpClient()
-                        .getBridgeCallbackRemove(0);
-                if (bridgeCallbackRemoveResponse.getStatus() == HttpStatus.OK_200) {
-                    logger.debug("Successfully removed callbackUrl[{}] on Bridge[{}]!", callbackUrl, bridgeIp);
-                    callbackCount--;
-                }
-            }
-            logger.debug("Adding callbackUrl[{}] to Bridge[{}]!", callbackUrl, bridgeIp);
-            BridgeCallbackAddResponse bridgeCallbackAddResponse = getNukiHttpClient().getBridgeCallbackAdd(callbackUrl);
-            if (bridgeCallbackAddResponse.getStatus() == HttpStatus.OK_200) {
-                logger.debug("Successfully added callbackUrl[{}] on Bridge[{}]!", callbackUrl, bridgeIp);
-                callbackExists = true;
-            }
+
+        List<Integer> callbacksToRemove = new ArrayList<>(3);
+
+        // callback already registered - do nothing
+        if (callbacks.stream().anyMatch(callback -> callback.getUrl().equals(callbackUrl))) {
+            logger.debug("callbackUrl[{}] already existing on Bridge[{}].", callbackUrl, bridgeIp);
+            return;
         }
+        // delete callbacks for this bridge registered for different host
+        String path = NukiLinkBuilder.callbackPath(getThing().getUID().getId()).build().toString();
+        callbacks.stream().filter(callback -> callback.getUrl().endsWith(path))
+                .map(BridgeApiCallbackListCallbackDto::getId).forEach(callbacksToRemove::add);
+        // delete callbacks for this bridge registered without bridgeId query (created by previous binding version)
+        String urlWithoutQuery = UriBuilder.fromUri(callbackUrl).replaceQuery("").build().toString();
+        callbacks.stream().filter(callback -> callback.getUrl().equals(urlWithoutQuery))
+                .map(BridgeApiCallbackListCallbackDto::getId).forEach(callbacksToRemove::add);
+
+        if (callbacks.size() - callbacksToRemove.size() == 3) {
+            logger.debug("Already 3 callback URLs existing on Bridge[{}] - Removing ID 0!", bridgeIp);
+            callbacksToRemove.add(0);
+        }
+
+        callbacksToRemove.forEach(callbackId -> {
+            BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = getNukiHttpClient()
+                    .getBridgeCallbackRemove(callbackId);
+            if (bridgeCallbackRemoveResponse.getStatus() == HttpStatus.OK_200) {
+                logger.debug("Successfully removed callbackUrl[{}] on Bridge[{}]!", callbackUrl, bridgeIp);
+            }
+        });
+
+        logger.debug("Adding callbackUrl[{}] to Bridge[{}]!", callbackUrl, bridgeIp);
+        BridgeCallbackAddResponse bridgeCallbackAddResponse = getNukiHttpClient().getBridgeCallbackAdd(callbackUrl);
+        if (bridgeCallbackAddResponse.getStatus() == HttpStatus.OK_200) {
+            logger.debug("Successfully added callbackUrl[{}] on Bridge[{}]!", callbackUrl, bridgeIp);
+        }
+    }
+
+    private void unregisterCallback() {
+        List<BridgeApiCallbackListCallbackDto> callbacks = listCallbacks();
+        if (callbacks == null) {
+            return;
+        }
+
+        callbacks.stream().filter(callback -> callback.getUrl().equals(callbackUrl))
+                .map(BridgeApiCallbackListCallbackDto::getId)
+                .forEach(callbackId -> getNukiHttpClient().getBridgeCallbackRemove(callbackId));
     }
 }

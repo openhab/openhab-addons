@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.nuki.internal.dataexchange;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListCallbackDto;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListDto;
 
@@ -24,13 +26,15 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListDto;
  */
 public class BridgeCallbackListResponse extends NukiBaseResponse {
 
-    private List<BridgeApiCallbackListCallbackDto> callbacks;
+    private List<BridgeApiCallbackListCallbackDto> callbacks = Collections.emptyList();
 
     public BridgeCallbackListResponse(int status, String message, BridgeApiCallbackListDto bridgeApiCallbackListDto) {
         super(status, message);
         if (bridgeApiCallbackListDto != null) {
             this.setSuccess(true);
-            this.callbacks = bridgeApiCallbackListDto.getCallbacks();
+            if (bridgeApiCallbackListDto.getCallbacks() != null) {
+                this.callbacks = bridgeApiCallbackListDto.getCallbacks();
+            }
         }
     }
 
@@ -38,6 +42,7 @@ public class BridgeCallbackListResponse extends NukiBaseResponse {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
     }
 
+    @NonNull
     public List<BridgeApiCallbackListCallbackDto> getCallbacks() {
         return callbacks;
     }

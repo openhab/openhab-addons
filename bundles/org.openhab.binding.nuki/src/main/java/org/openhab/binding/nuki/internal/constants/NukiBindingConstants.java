@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nuki.internal;
+package org.openhab.binding.nuki.internal.constants;
 
 import java.util.Collections;
 import java.util.Set;
@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Markus Katter - Initial contribution
  * @contributer Christian Hoefler - Door sensor integration
+ * @contributer Jan Vybíral - Opener integration
  */
 public class NukiBindingConstants {
 
@@ -33,38 +34,55 @@ public class NukiBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_SMARTLOCK = new ThingTypeUID(BINDING_ID, "smartlock");
+    public static final ThingTypeUID THING_TYPE_OPENER = new ThingTypeUID(BINDING_ID, "opener");
 
     public static final Set<ThingTypeUID> THING_TYPE_BRIDGE_UIDS = Collections.singleton(THING_TYPE_BRIDGE);
     public static final Set<ThingTypeUID> THING_TYPE_SMARTLOCK_UIDS = Collections.singleton(THING_TYPE_SMARTLOCK);
+    public static final Set<ThingTypeUID> THING_TYPE_OPENER_UIDS = Collections.singleton(THING_TYPE_OPENER);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .concat(THING_TYPE_BRIDGE_UIDS.stream(), THING_TYPE_SMARTLOCK_UIDS.stream()).collect(Collectors.toSet());
+            .of(THING_TYPE_BRIDGE_UIDS, THING_TYPE_SMARTLOCK_UIDS, THING_TYPE_OPENER_UIDS).flatMap(Set::stream)
+            .collect(Collectors.toSet());
 
-    // List of all Channel ids
+    // Device Types
+    public static final int DEVICE_SMART_LOCK = 0;
+    public static final int DEVICE_OPENER = 2;
+    public static final Set<Integer> SUPPORTED_DEVICES = Set.of(DEVICE_OPENER, DEVICE_SMART_LOCK);
+
+    // Properties
+    public static final String PROPERTY_WIFI_FIRMWARE_VERSION = "wifiFirmwareVersion";
+    public static final String PROPERTY_HARDWARE_ID = "hardwareId";
+    public static final String PROPERTY_SERVER_ID = "serverId";
+    public static final String PROPERTY_FIRMWARE_VERSION = "firmwareVersion";
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_NUKI_ID = "nukiId";
+    public static final String PROPERTY_BRIDGE_ID = "bridgeId";
+    public static final String PROPERTY_BRIDGE_TOKEN = "bridgeToken";
+    public static final String PROPERTY_BRIDGE_IP = "bridgeIp";
+    public static final String PROPERTY_BRIDGE_PORT = "bridgePort";
+
+    // List of all Smart Lock Channel ids
     public static final String CHANNEL_SMARTLOCK_LOCK = "lock";
     public static final String CHANNEL_SMARTLOCK_STATE = "lockState";
     public static final String CHANNEL_SMARTLOCK_LOW_BATTERY = "lowBattery";
+    public static final String CHANNEL_SMARTLOCK_KEYPAD_LOW_BATTERY = "keypadLowBattery";
+    public static final String CHANNEL_SMARTLOCK_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_SMARTLOCK_BATTERY_CHARGING = "batteryCharging";
     public static final String CHANNEL_SMARTLOCK_DOOR_STATE = "doorsensorState";
+
+    // List of all Opener Channel ids
+    public static final String CHANNEL_OPENER_STATE = "openerState";
+    public static final String CHANNEL_OPENER_MODE = "openerMode";
+    public static final String CHANNEL_OPENER_LOW_BATTERY = "openerLowBattery";
+    public static final String CHANNEL_OPENER_RING_ACTION_STATE = "ringActionState";
+    public static final String CHANNEL_OPENER_RING_ACTION_TIMESTAMP = "ringActionTimestamp";
 
     // List of all config-description parameters
     public static final String CONFIG_IP = "ip";
     public static final String CONFIG_PORT = "port";
     public static final String CONFIG_MANAGECB = "manageCallbacks";
     public static final String CONFIG_API_TOKEN = "apiToken";
-    public static final String CONFIG_NUKI_ID = "nukiId";
     public static final String CONFIG_UNLATCH = "unlatch";
-
-    // Nuki Bridge API REST Endpoints
-    public static final String URI_INFO = "http://%s:%s/info?token=%s";
-    public static final String URI_LOCKSTATE = "http://%s:%s/lockState?token=%s&nukiId=%s";
-    public static final String URI_LOCKACTION = "http://%s:%s/lockAction?token=%s&nukiId=%s&action=%s";
-    public static final String URI_CBADD = "http://%s:%s/callback/add?token=%s&url=%s";
-    public static final String URI_CBLIST = "http://%s:%s/callback/list?token=%s";
-    public static final String URI_CBREMOVE = "http://%s:%s/callback/remove?token=%s&id=%s";
-
-    // openHAB Callback Endpoint & Nuki Bridge Callback URL
-    public static final String CALLBACK_ENDPOINT = "/nuki/bcb";
-    public static final String CALLBACK_URL = "http://%s" + CALLBACK_ENDPOINT;
 
     // Nuki Bridge API Lock Actions
     public static final int LOCK_ACTIONS_UNLOCK = 1;

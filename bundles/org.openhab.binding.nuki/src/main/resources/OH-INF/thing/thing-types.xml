@@ -9,6 +9,12 @@
 		<label>Nuki Bridge</label>
 		<description>This bridge represents a Nuki Bridge on your local network. Nuki Smart Locks have to be paired via
 			Bluetooth with it.</description>
+		<properties>
+			<property name="hardwareId">-</property>
+			<property name="serverId">-</property>
+			<property name="firmwareVersion">-</property>
+			<property name="wifiFirmwareVersion">-</property>
+		</properties>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
 				<label>IP Address</label>
@@ -16,7 +22,7 @@
 				<description>The IP address of the Nuki Bridge. Look it up on your router. It is recommended to set a static IP
 					address lease for the Nuki Bridge (and for your openHAB server too) on your router.</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false">
+			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
 				<description>The Port which you configured during Initial Bridge setup
 					(https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).</description>
@@ -37,7 +43,7 @@
 	</bridge-type>
 
 	<!-- Nuki Smart Lock (Thing Type) -->
-	<thing-type id="smartlock">
+	<thing-type id="smartlock" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -47,14 +53,17 @@
 			<channel id="lock" typeId="smartlockLock"/>
 			<channel id="lockState" typeId="smartlockState"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="keypadLowBattery" typeId="system.low-battery"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="batteryCharging" typeId="smartLockBatteryCharging"/>
 			<channel id="doorsensorState" typeId="smartlockDoorState"/>
 		</channels>
+		<properties>
+			<property name="name">-</property>
+			<property name="firmwareVersion">-</property>
+		</properties>
+		<representation-property>nukiId</representation-property>
 		<config-description>
-			<parameter name="nukiId" type="text" required="true">
-				<label>Nuki ID</label>
-				<description>The 8-digit hexadecimal string that identifies the Nuki Smart Lock. Look it up on the sticker on the
-					back of the Nuki Smart Lock (remove mounting plate).</description>
-			</parameter>
 			<parameter name="unlatch" type="boolean" required="false">
 				<label>Unlatch</label>
 				<description>If switched to On (or set to true) the Nuki Smart Lock will unlock the door but then also automatically
@@ -62,6 +71,27 @@
 				<default>false</default>
 			</parameter>
 		</config-description>
+	</thing-type>
+
+	<!-- Nuki Opener (Thing Type) -->
+	<thing-type id="opener" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Nuki Opener</label>
+		<description>Nuki Opener which is paired via Bluetooth to a Nuki Bridge.</description>
+		<channels>
+			<channel id="openerState" typeId="openerState"/>
+			<channel id="openerMode" typeId="openerMode"/>
+			<channel id="openerLowBattery" typeId="system.low-battery"/>
+			<channel id="ringActionState" typeId="ringActionState"/>
+			<channel id="ringActionTimestamp" typeId="ringActionTimestamp"/>
+		</channels>
+		<properties>
+			<property name="name">-</property>
+			<property name="firmwareVersion">-</property>
+		</properties>
+		<representation-property>nukiId</representation-property>
 	</thing-type>
 
 	<!-- Channel Type -->
@@ -101,13 +131,38 @@
 				<option value="255">UNDEFINED</option>
 			</options>
 		</state>
+		<command>
+			<options>
+				<option value="1">Unlock</option>
+				<option value="2">Lock</option>
+				<option value="3">Unlatch</option>
+				<option value="4">Lock'n'go</option>
+				<option value="5">Lock'n'go with unlatch</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+
+	<channel-type id="smartLockBatteryCharging">
+		<item-type>Switch</item-type>
+		<label>Battery Charging</label>
+		<description>Use this channel to display the current state of charging</description>
+		<category>Energy</category>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Battery is not charging</option>
+				<option value="ON">Battery is charging</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
 	<channel-type id="smartlockDoorState">
 		<item-type>Number</item-type>
 		<label>Door State</label>
 		<description>Use this channel to display the current state of the door sensor</description>
 		<category>Door</category>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="0">Unavailable</option>
 				<option value="1">Deactivated</option>
@@ -117,6 +172,71 @@
 				<option value="5">Calibrating</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
+	<channel-type id="openerState">
+		<item-type>Number</item-type>
+		<label>Opener State</label>
+		<description>Use this channel if you want to execute other supported opener actions or to display the current opener
+			state.</description>
+		<category>FrontDoor</category>
+		<state>
+			<options>
+				<option value="0">Untrained</option>
+				<option value="1">Online</option>
+				<option value="3">Ring to open active</option>
+				<option value="5">Open</option>
+				<option value="7">Opening</option>
+				<option value="253">Boot run</option>
+				<option value="255">Undefined</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="1">Activate ring to open</option>
+				<option value="2">Deactivate ring to open</option>
+				<option value="3">Electric strike actuation</option>
+				<option value="4">Activate continuous mode</option>
+				<option value="5">Deactivate continuous mode</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="openerMode">
+		<item-type>Number</item-type>
+		<label>Opener Mode</label>
+		<description>Use this channel to display/set current mode of the opener</description>
+		<category>FrontDoor</category>
+		<state readOnly="true">
+			<options>
+				<option value="2">Door mode</option>
+				<option value="3">Continuous mode</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="ringActionState">
+		<item-type>Switch</item-type>
+		<label>Ring Action State</label>
+		<description>Use this channel to display current ring action state (if doorbell is being rung)</description>
+		<category>Siren</category>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Doorbell is not ringing</option>
+				<option value="ON">Doorbell is ringing</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="ringActionTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Ring Action Timestamp</label>
+		<description>Time of last ring action</description>
+		<category>Siren</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 </thing:thing-descriptions>

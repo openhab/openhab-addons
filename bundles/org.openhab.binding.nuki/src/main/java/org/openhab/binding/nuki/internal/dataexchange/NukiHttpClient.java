@@ -13,25 +13,22 @@
 package org.openhab.binding.nuki.internal.dataexchange;
 
 import java.io.InterruptedIOException;
-import java.math.BigDecimal;
 import java.net.SocketException;
-import java.net.URLEncoder;
-import java.time.Instant;
+import java.net.URI;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.nuki.internal.NukiBindingConstants;
-import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackAddDto;
-import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListDto;
-import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackRemoveDto;
-import org.openhab.binding.nuki.internal.dto.BridgeApiInfoDto;
-import org.openhab.binding.nuki.internal.dto.BridgeApiLockActionDto;
-import org.openhab.binding.nuki.internal.dto.BridgeApiLockStateDto;
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
+import org.openhab.binding.nuki.internal.constants.OpenerAction;
+import org.openhab.binding.nuki.internal.constants.SmartLockAction;
+import org.openhab.binding.nuki.internal.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,45 +38,27 @@ import com.google.gson.Gson;
  * The {@link NukiHttpClient} class is responsible for getting data from the Nuki Bridge.
  *
  * @author Markus Katter - Initial contribution
+ * @contributer Jan Vybíral - Hashed token authentication
  */
+@NonNullByDefault
 public class NukiHttpClient {
 
     private final Logger logger = LoggerFactory.getLogger(NukiHttpClient.class);
-    private static final long CACHE_PERIOD = 5;
 
-    private HttpClient httpClient;
-    private Configuration configuration;
-    private Gson gson;
-    private BridgeLockStateResponse bridgeLockStateResponseCache;
+    private final HttpClient httpClient;
+    private final Gson gson;
+    private final NukiLinkBuilder linkBuilder;
 
-    public NukiHttpClient(HttpClient httpClient, Configuration configuration) {
-        logger.debug("Instantiating NukiHttpClient({})", configuration);
-        this.configuration = configuration;
+    public NukiHttpClient(HttpClient httpClient, String ip, int port, String apiToken) {
+        logger.debug("Instantiating NukiHttpClient({}:{})", ip, port);
         this.httpClient = httpClient;
         gson = new Gson();
+        linkBuilder = new NukiLinkBuilder(ip, port, apiToken);
     }
 
-    private String prepareUri(String uriTemplate, String... additionalArguments) {
-        String configIp = (String) configuration.get(NukiBindingConstants.CONFIG_IP);
-        BigDecimal configPort = (BigDecimal) configuration.get(NukiBindingConstants.CONFIG_PORT);
-        String configApiToken = (String) configuration.get(NukiBindingConstants.CONFIG_API_TOKEN);
-        String[] parameters = new String[additionalArguments.length + 3];
-        parameters[0] = configIp;
-        parameters[1] = configPort.toString();
-        parameters[2] = configApiToken;
-        System.arraycopy(additionalArguments, 0, parameters, 3, additionalArguments.length);
-        String uri = String.format(uriTemplate, parameters);
-        logger.trace("prepareUri(...):URI[{}]", uri);
-        return uri;
-    }
-
-    private synchronized ContentResponse executeRequest(String uri)
+    private synchronized ContentResponse executeRequest(URI uri)
             throws InterruptedException, ExecutionException, TimeoutException {
         logger.debug("executeRequest({})", uri);
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-        }
         ContentResponse contentResponse = httpClient.GET(uri);
         logger.debug("contentResponseAsString[{}]", contentResponse.getContentAsString());
         return contentResponse;
@@ -113,9 +92,8 @@ public class NukiHttpClient {
 
     public BridgeInfoResponse getBridgeInfo() {
         logger.debug("getBridgeInfo() in thread {}", Thread.currentThread().getId());
-        String uri = prepareUri(NukiBindingConstants.URI_INFO);
         try {
-            ContentResponse contentResponse = executeRequest(uri);
+            ContentResponse contentResponse = executeRequest(linkBuilder.info());
             int status = contentResponse.getStatus();
             String response = contentResponse.getContentAsString();
             logger.debug("getBridgeInfo status[{}] response[{}]", status, response);
@@ -133,28 +111,41 @@ public class NukiHttpClient {
         }
     }
 
-    public BridgeLockStateResponse getBridgeLockState(String nukiId) {
-        logger.debug("getBridgeLockState({}) in thread {}", nukiId, Thread.currentThread().getId());
-        long timestampSecs = Instant.now().getEpochSecond();
-        if (this.bridgeLockStateResponseCache != null
-                && timestampSecs < this.bridgeLockStateResponseCache.getCreated().getEpochSecond() + CACHE_PERIOD) {
-            logger.debug("Returning LockState from cache - now[{}]<created[{}]+cachePeriod[{}]", timestampSecs,
-                    this.bridgeLockStateResponseCache.getCreated().getEpochSecond(), CACHE_PERIOD);
-            return bridgeLockStateResponseCache;
-        } else {
-            logger.debug("Requesting LockState from Bridge.");
-        }
-        String uri = prepareUri(NukiBindingConstants.URI_LOCKSTATE, nukiId);
+    public BridgeListResponse getList() {
+        logger.debug("getList() in thread {}", Thread.currentThread().getId());
         try {
-            ContentResponse contentResponse = executeRequest(uri);
+            ContentResponse contentResponse = executeRequest(linkBuilder.list());
+            int status = contentResponse.getStatus();
+            String response = contentResponse.getContentAsString();
+            logger.debug("getList status[{}] response[{}]", status, response);
+            if (status == HttpStatus.OK_200) {
+                BridgeApiListDeviceDto[] bridgeApiInfoDtoArray = gson.fromJson(response,
+                        BridgeApiListDeviceDto[].class);
+                logger.debug("getList OK");
+                return new BridgeListResponse(status, contentResponse.getReason(),
+                        Arrays.asList(bridgeApiInfoDtoArray));
+            } else {
+                logger.debug("Could not get Bridge Info! Status[{}] - Response[{}]", status, response);
+                return new BridgeListResponse(status, contentResponse.getReason(), null);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not get List! Exception[{}]", e.getMessage());
+            return new BridgeListResponse(handleException(e));
+        }
+    }
+
+    public BridgeLockStateResponse getBridgeLockState(String nukiId, int deviceType) {
+        logger.debug("getBridgeLockState({}) in thread {}", nukiId, Thread.currentThread().getId());
+
+        try {
+            ContentResponse contentResponse = executeRequest(linkBuilder.lockState(nukiId, deviceType));
             int status = contentResponse.getStatus();
             String response = contentResponse.getContentAsString();
             logger.debug("getBridgeLockState status[{}] response[{}]", status, response);
             if (status == HttpStatus.OK_200) {
                 BridgeApiLockStateDto bridgeApiLockStateDto = gson.fromJson(response, BridgeApiLockStateDto.class);
                 logger.debug("getBridgeLockState OK");
-                return bridgeLockStateResponseCache = new BridgeLockStateResponse(status, contentResponse.getReason(),
-                        bridgeApiLockStateDto);
+                return new BridgeLockStateResponse(status, contentResponse.getReason(), bridgeApiLockStateDto);
             } else {
                 logger.debug("Could not get Lock State! Status[{}] - Response[{}]", status, response);
                 return new BridgeLockStateResponse(status, contentResponse.getReason(), null);
@@ -165,11 +156,18 @@ public class NukiHttpClient {
         }
     }
 
-    public BridgeLockActionResponse getBridgeLockAction(String nukiId, int lockAction) {
+    public BridgeLockActionResponse getSmartLockAction(String nukiId, SmartLockAction action) {
+        return getBridgeLockAction(nukiId, action.getAction(), NukiBindingConstants.DEVICE_SMART_LOCK);
+    }
+
+    public BridgeLockActionResponse getOpenerAction(String nukiId, OpenerAction action) {
+        return getBridgeLockAction(nukiId, action.getAction(), NukiBindingConstants.DEVICE_OPENER);
+    }
+
+    private BridgeLockActionResponse getBridgeLockAction(String nukiId, int lockAction, int deviceType) {
         logger.debug("getBridgeLockAction({}, {}) in thread {}", nukiId, lockAction, Thread.currentThread().getId());
-        String uri = prepareUri(NukiBindingConstants.URI_LOCKACTION, nukiId, Integer.toString(lockAction));
         try {
-            ContentResponse contentResponse = executeRequest(uri);
+            ContentResponse contentResponse = executeRequest(linkBuilder.lockAction(nukiId, deviceType, lockAction));
             int status = contentResponse.getStatus();
             String response = contentResponse.getContentAsString();
             logger.debug("getBridgeLockAction status[{}] response[{}]", status, response);
@@ -190,8 +188,7 @@ public class NukiHttpClient {
     public BridgeCallbackAddResponse getBridgeCallbackAdd(String callbackUrl) {
         logger.debug("getBridgeCallbackAdd({}) in thread {}", callbackUrl, Thread.currentThread().getId());
         try {
-            String uri = prepareUri(NukiBindingConstants.URI_CBADD, URLEncoder.encode(callbackUrl, "UTF-8"));
-            ContentResponse contentResponse = executeRequest(uri);
+            ContentResponse contentResponse = executeRequest(linkBuilder.callbackAdd(callbackUrl));
             int status = contentResponse.getStatus();
             String response = contentResponse.getContentAsString();
             logger.debug("getBridgeCallbackAdd status[{}] response[{}]", status, response);
@@ -212,9 +209,8 @@ public class NukiHttpClient {
 
     public BridgeCallbackListResponse getBridgeCallbackList() {
         logger.debug("getBridgeCallbackList() in thread {}", Thread.currentThread().getId());
-        String uri = prepareUri(NukiBindingConstants.URI_CBLIST);
         try {
-            ContentResponse contentResponse = executeRequest(uri);
+            ContentResponse contentResponse = executeRequest(linkBuilder.callbackList());
             int status = contentResponse.getStatus();
             String response = contentResponse.getContentAsString();
             logger.debug("getBridgeCallbackList status[{}] response[{}]", status, response);
@@ -236,8 +232,7 @@ public class NukiHttpClient {
     public BridgeCallbackRemoveResponse getBridgeCallbackRemove(int id) {
         logger.debug("getBridgeCallbackRemove({}) in thread {}", id, Thread.currentThread().getId());
         try {
-            String uri = prepareUri(NukiBindingConstants.URI_CBREMOVE, Integer.toString(id));
-            ContentResponse contentResponse = executeRequest(uri);
+            ContentResponse contentResponse = executeRequest(linkBuilder.callbackRemove(id));
             int status = contentResponse.getStatus();
             String response = contentResponse.getContentAsString();
             logger.debug("getBridgeCallbackRemove status[{}] response[{}]", status, response);
