@@ -603,7 +603,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 SelectionKey selKey = it.next();
                 it.remove();
                 if (selKey.isValid()) {
-                    if (selKey.isAcceptable() && selKey == listenerKey) {
+                    if (selKey.isAcceptable() && selKey.equals(listenerKey)) {
                         try {
                             SocketChannel newChannel = listenerChannel.accept();
                             newChannel.configureBlocking(false);
