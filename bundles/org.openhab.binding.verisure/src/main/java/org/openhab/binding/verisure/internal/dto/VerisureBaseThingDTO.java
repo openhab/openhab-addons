@@ -264,7 +264,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             return broadband;
         }
 
-        public List<Climate> getClimates() {
+        public @Nullable List<Climate> getClimates() {
             return climates;
         }
 

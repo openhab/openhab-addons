@@ -42,6 +42,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
@@ -655,6 +656,19 @@ public class VerisureSession {
         }
     }
 
+    private @Nullable VerisureBatteryStatusDTO getBatteryStatus(String deviceId,
+            VerisureBatteryStatusDTO @Nullable [] batteryStatus) {
+        if (batteryStatus != null) {
+            for (VerisureBatteryStatusDTO verisureBatteryStatusDTO : batteryStatus) {
+                String id = verisureBatteryStatusDTO.getId();
+                if (id != null && id.equals(deviceId)) {
+                    return verisureBatteryStatusDTO;
+                }
+            }
+        }
+        return null;
+    }
+
     private synchronized void updateClimateStatus(VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
@@ -671,39 +685,53 @@ public class VerisureSession {
             VerisureClimatesDTO thing = postJSONVerisureAPI(url, queryQLClimates, VerisureClimatesDTO.class);
             logger.debug("REST Response ({})", thing);
             List<VerisureClimatesDTO.Climate> climateList = thing.getData().getInstallation().getClimates();
-            climateList.forEach(climate -> {
-                // If thing is Mouse detection device, then skip it, but fetch temperature from it
-                String type = climate.getDevice().getGui().getLabel();
-                if ("MOUSE".equals(type)) {
-                    logger.debug("Mouse detection device!");
+            if (climateList != null) {
+                climateList.forEach(climate -> {
+                    // If thing is Mouse detection device, then skip it, but fetch temperature from it
+                    String type = climate.getDevice().getGui().getLabel();
+                    if ("MOUSE".equals(type)) {
+                        logger.debug("Mouse detection device!");
+                        String deviceId = climate.getDevice().getDeviceLabel();
+                        if (deviceId != null) {
+                            deviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
+                            VerisureThingDTO mouseThing = verisureThings.get(deviceId);
+                            if (mouseThing != null && mouseThing instanceof VerisureMiceDetectionDTO) {
+                                VerisureMiceDetectionDTO miceDetectorThing = (VerisureMiceDetectionDTO) mouseThing;
+                                miceDetectorThing.setTemperatureValue(climate.getTemperatureValue());
+                                miceDetectorThing.setTemperatureTime(climate.getTemperatureTimestamp());
+                                notifyListeners(miceDetectorThing);
+                                logger.debug("Found climate thing for a Verisure Mouse Detector");
+                            }
+                        }
+                        return;
+                    }
+                    VerisureClimatesDTO cThing = new VerisureClimatesDTO();
+                    VerisureClimatesDTO.Installation inst = new VerisureClimatesDTO.Installation();
+                    inst.setClimates(Collections.singletonList(climate));
+                    VerisureClimatesDTO.Data data = new VerisureClimatesDTO.Data();
+                    data.setInstallation(inst);
+                    cThing.setData(data);
+                    // Set unique deviceID
                     String deviceId = climate.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        deviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
-                        VerisureThingDTO mouseThing = verisureThings.get(deviceId);
-                        if (mouseThing != null && mouseThing instanceof VerisureMiceDetectionDTO) {
-                            VerisureMiceDetectionDTO miceDetectorThing = (VerisureMiceDetectionDTO) mouseThing;
-                            miceDetectorThing.setTemperatureValue(climate.getTemperatureValue());
-                            miceDetectorThing.setTemperatureTime(climate.getTemperatureTimestamp());
-                            notifyListeners(miceDetectorThing);
-                            logger.debug("Found climate thing for a Verisure Mouse Detector");
+                        try {
+                            VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
+                                    VerisureBatteryStatusDTO[].class);
+                            VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId,
+                                    batteryStatusThingArray);
+                            if (batteryStatus != null) {
+                                logger.debug("REST Response ({})", batteryStatus);
+                                cThing.setBatteryStatus(batteryStatus);
+                            }
+                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
+                            logger.warn("Failed to query for smartlock status: {}", e.getMessage());
                         }
+                        // Set location
+                        cThing.setLocation(climate.getDevice().getArea());
+                        notifyListenersIfChanged(cThing, installation, deviceId);
                     }
-                    return;
-                }
-                VerisureClimatesDTO cThing = new VerisureClimatesDTO();
-                VerisureClimatesDTO.Installation inst = new VerisureClimatesDTO.Installation();
-                inst.setClimates(Collections.singletonList(climate));
-                VerisureClimatesDTO.Data data = new VerisureClimatesDTO.Data();
-                data.setInstallation(inst);
-                cThing.setData(data);
-                // Set unique deviceID
-                String deviceId = climate.getDevice().getDeviceLabel();
-                if (deviceId != null) {
-                    // Set location
-                    cThing.setLocation(climate.getDevice().getArea());
-                    notifyListenersIfChanged(cThing, installation, deviceId);
-                }
-            });
+                });
+            }
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
                 | PostToAPIException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
@@ -736,6 +764,17 @@ public class VerisureSession {
                 // Set unique deviceID
                 String deviceId = doorWindow.getDevice().getDeviceLabel();
                 if (deviceId != null) {
+                    try {
+                        VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
+                                VerisureBatteryStatusDTO[].class);
+                        VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId, batteryStatusThingArray);
+                        if (batteryStatus != null) {
+                            logger.debug("REST Response ({})", batteryStatus);
+                            dThing.setBatteryStatus(batteryStatus);
+                        }
+                    } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
+                        logger.warn("Failed to query for smartlock status: {}", e.getMessage());
+                    }
                     // Set location
                     dThing.setLocation(doorWindow.getDevice().getArea());
                     notifyListenersIfChanged(dThing, installation, deviceId);
