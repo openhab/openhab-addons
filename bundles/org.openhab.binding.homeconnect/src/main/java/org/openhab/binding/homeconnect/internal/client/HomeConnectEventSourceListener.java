@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -188,24 +189,17 @@ public class HomeConnectEventSourceListener {
 
                 items.forEach(item -> {
                     JsonObject obj = (JsonObject) item;
-                    String key = obj.get("key") != null ? obj.get("key").getAsString() : null;
-                    String value = obj.get("value") != null && !obj.get("value").isJsonNull()
-                            ? obj.get("value").getAsString()
-                            : null;
-                    String unit = obj.get("unit") != null ? obj.get("unit").getAsString() : null;
-                    String name = obj.get("name") != null ? obj.get("name").getAsString() : null;
-                    String uri = obj.get("uri") != null ? obj.get("uri").getAsString() : null;
-                    EventLevel level = obj.get("level") != null
-                            ? EventLevel.valueOfLevel(obj.get("level").getAsString())
-                            : null;
-                    EventHandling handling = obj.get("handling") != null
-                            ? EventHandling.valueOfHandling(obj.get("handling").getAsString())
-                            : null;
-                    Long timestamp = obj.get("timestamp") != null ? obj.get("timestamp").getAsLong() : null;
-                    ZonedDateTime creation = timestamp != null
-                            ? ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
-                                    TimeZone.getDefault().toZoneId())
-                            : null;
+                    String key = getJsonElementAsString(obj, "key").orElse(null);
+                    String value = getJsonElementAsString(obj, "value").orElse(null);
+                    String unit = getJsonElementAsString(obj, "unit").orElse(null);
+                    String name = getJsonElementAsString(obj, "name").orElse(null);
+                    String uri = getJsonElementAsString(obj, "uri").orElse(null);
+                    EventLevel level = getJsonElementAsString(obj, "level").map(EventLevel::valueOfLevel).orElse(null);
+                    EventHandling handling = getJsonElementAsString(obj, "handling").map(EventHandling::valueOfHandling)
+                            .orElse(null);
+                    ZonedDateTime creation = getJsonElementAsLong(obj, "timestamp").map(timestamp -> ZonedDateTime
+                            .ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId()))
+                            .orElse(ZonedDateTime.now());
 
                     events.add(new Event(haId, type, key, name, uri, creation, level, handling, value, unit));
                 });
@@ -217,5 +211,15 @@ public class HomeConnectEventSourceListener {
         }
 
         return events;
+    }
+
+    private Optional<Long> getJsonElementAsLong(JsonObject jsonObject, String elementName) {
+        var element = jsonObject.get(elementName);
+        return element == null || element.isJsonNull() ? Optional.empty() : Optional.of(element.getAsLong());
+    }
+
+    private Optional<String> getJsonElementAsString(JsonObject jsonObject, String elementName) {
+        var element = jsonObject.get(elementName);
+        return element == null || element.isJsonNull() ? Optional.empty() : Optional.of(element.getAsString());
     }
 }
