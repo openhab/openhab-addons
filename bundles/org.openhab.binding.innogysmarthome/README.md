@@ -105,7 +105,7 @@ When `invert` is `true` than `0` on innogy is `UP` and `100` is `DOWN`.
 
 ### Configuring the SmartHome Controller (SHC)
 
-The SmartHome Controller (SHC) can be configured in the Paper UI as follows:
+The SmartHome Controller (SHC) can be configured in the UI as follows:
 
 After the "innogy SmartHome Controller" is added via the Inbox, edit the controller and add the "Authorization code" by following the hints in the description.
 Save your changes.
@@ -116,7 +116,7 @@ Be sure it is connected to the Internet.
 
 Authorization is done as oauth2 workflow with the innogy API.
 
-To receive the auth-code, go to one of the following URLs depending on your brand and login with your credentials (you can find this link also in the SHC thing in Paper UI, if you edit it):
+To receive the auth-code, go to one of the following URLs depending on your brand and login with your credentials (you can find this link also in the SHC thing in the UI, if you edit it):
 https://auth.services-smarthome.de/AUTH
 * [innogy SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE)
 * [SmartHome Austria authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
@@ -138,9 +138,9 @@ All devices bound to the bridge are found by the discovery service once the SHC 
 As device discovery is not implemented as a background service, you should start it manually in the Inbox to find all devices.
 Now you can add all devices from your Inbox as things.
 
-### Manual configuration
+### File based configuration
 
-As an alternative to the automatic discovery process and graphical configuration using Paper UI, innogy things can be configured manually.
+As an alternative to using automatic discovery, innogy things can be configured using .things files.
 The innogy SmartHome Controller (SHC) can be configured using the following syntax:
 
 ```
@@ -163,7 +163,7 @@ All other innogy devices can be added using the following syntax:
 Thing WDS <thing-id> "<thing-name>" @ "<room-name>" [ id="<the-device-id>" ]
 ```
 
-The device ID (e.g. e9a74941a3807b57332214f346fb1129) can be found in the Paper UI inbox, as you find it below all things there in the form `innogysmarthome:<device-type>:<bridge-id>:<the-device-id>` (example: `innogysmarthome:WSC2:SMARTHOME01:e9a74941a3807b57332214f346fb1129`).
+The device ID (e.g. e9a74941a3807b57332214f346fb1129) can be found in the Inbox, as you find it below all things there in the form `innogysmarthome:<device-type>:<bridge-id>:<the-device-id>` (example: `innogysmarthome:WSC2:SMARTHOME01:e9a74941a3807b57332214f346fb1129`).
 
 However, a full example .things configuration look like this:
 
@@ -227,7 +227,7 @@ end
 
 ## Resolving certificate issues
 
-If the bridge stays offline with the following status shown in the Paper UI, the reason could be an expired certificate:
+If the bridge stays offline with the following status shown in the UI, the reason could be an expired certificate:
 
 `OFFLINE - COMMUNICATION_ERROR sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target`
 

@@ -189,7 +189,7 @@ Channels have the default tags as follows:
 
 ## Advanced Parameters
 
-This section describes the optional advanced parameters that can be configured for a Miniserver. They can be set using UI (e.g. Paper UI) or in a .things file.
+This section describes the optional advanced parameters that can be configured for a Miniserver.
 If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:

@@ -3,7 +3,7 @@
 The DSC PowerSeries Alarm System is a popular do-it-yourself home security system, which can be monitored and controlled remotely through a standard web-browser or mobile device.
 
 This is the binding for the DSC PowerSeries Alarm System, utilizing either the EyezOn Envisalink 4/3/2DS interface or the DSC IT-100 RS-232 interface.
-It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.  
+It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.
 Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
 
 ## Supported Things
@@ -27,16 +27,16 @@ Most settings are through thing configuration parameters.
 
 ## Discovery
 
-The DSC Alarm binding incorporates a discovery modes in order to find DSC Alarm systems.  
+The DSC Alarm binding incorporates a discovery modes in order to find DSC Alarm systems.
 There is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.
-This bridge discovery mode is started manually through Paper UI.  
+This bridge discovery mode is started manually through the UI.
 After a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.
 The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
 
 Note:
 The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.
 This may create issues on the network so it is suggested that caution be used when trying this discovery.
-The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the Paper UI.
+The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the UI.
 And then allow the binding to discover the DSC Alarm things.
 
 ## Thing Configuration
@@ -55,8 +55,8 @@ The following table shows the available configuration parameters for each thing.
 	<tr><td>keypad</td><td>No parameters</td></tr>
 </table>
 
-The binding can be configured manually if discovery is not used.  
-A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.  
+The binding can be configured manually if discovery is not used.
+A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.
 Here is an example of a thing configuration file called 'dscalarm.things':
 
 ```perl
@@ -175,7 +175,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 1=ON<br/>
 2=Flashing<br/></td></tr>
     <tr><td>keypad_lcd_update</td><td>String</td><td>Text Changes of the IT-100 LCD Menu.</td></tr>
-    <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>    
+    <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>
 </table>
 
 ##Example
