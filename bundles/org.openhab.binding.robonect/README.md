@@ -1,15 +1,13 @@
 # Robonect Binding
 
-Robonect is a piece of hardware which has to be put into your Husqvarna, Gardena and other branded automower and makes 
-it accessible in your internal network. 
+Robonect is a piece of hardware which has to be put into your Husqvarna, Gardena and other branded automower and makes it accessible in your internal network.
 More details about the Robonect module can be found at [robonect.de](https://forum.robonect.de/)
 
-This binding integrates mowers having the robonect module installed as a thing into the home automation solution, allowing to
-control the mower and react on mower status changes in rules. 
+This binding integrates mowers having the robonect module installed as a thing into the home automation solution, allowing to control the mower and react on mower status changes in rules.
 
 ## Supported Things
 
-The binding exposes just one Thing type which is the `mower`.
+The binding supports one Thing type which is the `mower`.
 
 Tested mowers
 
@@ -23,11 +21,11 @@ Tested mowers
 
 ## Discovery
 
-Robonect does not support automatic discovery. So the thing has to be added manually either via Paper UI or things configuration.
+Automatic discovery is not supported.
 
 ## Thing Configuration
 
-following configuration settings are supported for the `mower` thing.
+The following configuration settings are supported for the `mower` thing.
 
 | parameter name | mandatory | description                                                                                       |
 |----------------|-----------|---------------------------------------------------------------------------------------------------|
@@ -39,7 +37,7 @@ following configuration settings are supported for the `mower` thing.
 | timezone       | no        | the timezone as configured in Robonect on the robot (default: Europe/Berlin)                      |
 
 
-An example things configuration might look like
+An example things configuration might look like:
 
 ```java
 Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInterval="5", user="gardener", password = "cutter"]
@@ -71,7 +69,7 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 
 ### Offline Trigger Channel
 
-This channel s triggered if the mower is longer than the configured `offlineTriggerTimeout` offline. 
+This channel s triggered if the mower is longer than the configured `offlineTriggerTimeout` offline.
 This may indicate that the mower may stuck somewhere in error state but does not have a signal.
 
 ## Full Example

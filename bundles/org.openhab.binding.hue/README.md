@@ -118,7 +118,7 @@ or
 0107 motion-sensor "Motion Sensor" @ "Entrance" [ sensorId="4" ]
 ```
 
-You can freely choose the thing identifier (such as motion-sensor), its name (such as "Motion Sensor") and the location (such as "Entrance"). The name will then be used e.g. by Paper UI to show the item.
+You can freely choose the thing identifier (such as motion-sensor), its name (such as "Motion Sensor") and the location (such as "Entrance").
 
 The following device types also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state:
 
@@ -144,7 +144,6 @@ group kitchen-bulbs "Kitchen Lamps" @ "Kitchen" [ groupId="1" ]
 ```
 
 You can freely choose the thing identifier (such as kitchen-bulbs), its name (such as "Kitchen Lamps") and the location (such as "Kitchen").
-The name will then be used e.g. by Paper UI to show the item.
 
 The group type also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state.
 
@@ -307,7 +306,7 @@ String LightScene { channel="hue:bridge:1:scene"}
 ```
 
 Note: The bridge ID is in this example **1** but can be different in each system.
-Also, if you are doing all your configuration through files and do not use Paper UI and the Inbox, you may add the full bridge id to the channel definitions (e.g. `channel="hue:0210:00178810d0dc:bulb1:color`) instead of the short version (e.g. `channel="hue:0210:1:bulb1:color`) to prevent frequent discovery messages in the log file.
+Also, if you are doing all your configuration through files, you may add the full bridge id to the channel definitions (e.g. `channel="hue:0210:00178810d0dc:bulb1:color`) instead of the short version (e.g. `channel="hue:0210:1:bulb1:color`) to prevent frequent discovery messages in the log file.
 
 ### demo.sitemap:
 

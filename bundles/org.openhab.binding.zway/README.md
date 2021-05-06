@@ -163,10 +163,6 @@ Unsupported Z-Way device types: Camera, SensorMultiline, Text. The integration o
 The locations of the Z-Way devices are loaded during the discovery.
 Based on the location ID of Z-Way device, the name of the Z-Way room is then allocated to the location property of the thing.
 
-## Example
-
-Because textual configuration isn't useful, follow the instructions in the [Getting Started](doc/GETTING_STARTED.md) document.
-
 ## Developer stuff
 
 ### Known issues

@@ -152,7 +152,7 @@ Bridge dsmr:dsmrBridge:myDSMRDevice [serialPort="/dev/ttyUSB0"] {
 
 #### Item configuration
 
-Paper UI. Item configuration can be done in the regular way.
+Item configuration can be done in the regular way.
 
 Manual configuration:
 The following channels are supported:

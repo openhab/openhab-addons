@@ -19,7 +19,7 @@ No auto-discovery is currently possible.
 
 ## Configuration of the thing
 
-The configuration can be done via the Paper UI web interface, or manually by adding a Thing to your `.things` file:
+The configuration can be done by adding a Rain Forecast Thing using the UI, or by adding it to a `.things` file:
 
 ```
 Thing buienradar:rain_forecast:home [ location="52.198864211111925,5.4192629660193585" ]

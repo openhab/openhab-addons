@@ -112,7 +112,7 @@ If you want to later receive push notifications (device status) from Legrand for
 
 ![Tutorial 3](doc/images/tutorial-3.png)
 
-Now that you have got your bridge _ONLINE_ it is time to discover your devices! Go to Paper UI Inbox and search for **"BTicino Smarther Chronothermostat"** things.
+Now that you have got your bridge _ONLINE_ it is time to discover your devices! Go to Inbox in the UI and search for **"BTicino Smarther Chronothermostat"** things.
 Any BTicino Smarther Chronothermostat device currently available on your account should show up immediately.
 
 If no devices show up you may have to trigger the openHAB discovery several times as bridge will only find active devices known by the Smarther API at the time the discovery is triggered.
