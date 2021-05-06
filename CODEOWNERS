@@ -6,6 +6,7 @@
 
 # Add-on maintainers:
 /bundles/org.openhab.automation.groovyscripting/ @wborn
+/bundles/org.openhab.automation.jsscripting/ @jpg0
 /bundles/org.openhab.automation.jythonscripting/ @openhab/add-ons-maintainers
 /bundles/org.openhab.automation.pidcontroller/ @fwolter
 /bundles/org.openhab.binding.adorne/ @theiding
