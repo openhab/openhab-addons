@@ -36,7 +36,6 @@ public class PrefixedSeekableByteChannel implements SeekableByteChannel {
 
     @Override
     public int read(ByteBuffer dst) throws IOException {
-
         int read = 0;
 
         if (position < prefix.length) {
@@ -63,7 +62,6 @@ public class PrefixedSeekableByteChannel implements SeekableByteChannel {
 
     @Override
     public SeekableByteChannel position(long newPosition) throws IOException {
-
         this.position = newPosition;
 
         if (newPosition > prefix.length) {

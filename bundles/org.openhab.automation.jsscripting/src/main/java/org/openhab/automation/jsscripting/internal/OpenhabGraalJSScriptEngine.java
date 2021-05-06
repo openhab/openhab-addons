@@ -13,8 +13,7 @@
 
 package org.openhab.automation.jsscripting.internal;
 
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_EXTENSION_ACCESSOR;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,17 +47,15 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  */
 public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngineWithInvocable<GraalJSScriptEngine> {
 
-    private static final Logger logger = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     private static final String MODULE_DIR = String.join(File.separator, OpenHAB.getConfigFolder(), "automation", "lib",
             "javascript", "personal");
 
     // these fields start as null because they are populated on first use
-    @NonNullByDefault({})
-    private String engineIdentifier;
-    @NonNullByDefault({})
-    private Consumer<String> scriptDependencyListener;
+    private @NonNullByDefault({}) String engineIdentifier;
+    private @NonNullByDefault({}) Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
 
@@ -115,7 +112,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
         scriptDependencyListener = (Consumer<String>) ctx
                 .getAttribute("oh.dependency-listener"/* CONTEXT_KEY_DEPENDENCY_LISTENER */);
         if (scriptDependencyListener == null) {
-            logger.warn(
+            LOGGER.warn(
                     "Failed to retrieve script script dependency listener from engine bindings. Script dependency tracking will be disabled.");
         }
 
