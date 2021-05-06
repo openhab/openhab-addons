@@ -179,6 +179,7 @@ public class PlugwiseHAControllerRequest<T> {
             try {
                 localTransformer.transform(new StreamSource(input), new StreamResult(output));
             } catch (TransformerException e) {
+                logger.debug("Could not apply XML stylesheet", e);
                 throw new PlugwiseHAException("Could not apply XML stylesheet", e);
             }
         } else {

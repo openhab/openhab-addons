@@ -130,10 +130,6 @@ public class PlugwiseHAController {
         }
     }
 
-    public Appliances getAppliances() throws PlugwiseHAException {
-        return getAppliances(false);
-    }
-
     public Appliances getAppliances(Boolean forceRefresh) throws PlugwiseHAException {
         Appliances appliances = null;
         DomainObjects localDomainObjects = this.domainObjects;
@@ -171,10 +167,6 @@ public class PlugwiseHAController {
         } else {
             return appliances.get(id);
         }
-    }
-
-    public Locations getLocations() throws PlugwiseHAException {
-        return getLocations(false);
     }
 
     public Locations getLocations(Boolean forceRefresh) throws PlugwiseHAException {
