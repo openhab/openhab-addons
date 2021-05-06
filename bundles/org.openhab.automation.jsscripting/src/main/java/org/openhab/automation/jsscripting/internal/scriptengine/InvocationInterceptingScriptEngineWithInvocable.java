@@ -21,8 +21,6 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Delegate allowing AOP-style interception of calls, either before Invocation, or upon a {@link ScriptException}.
  * being thrown.
@@ -30,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param <T> The delegate class
  * @author Jonathan Gilbert - Initial contribution
  */
-@NonNullByDefault
 public abstract class InvocationInterceptingScriptEngineWithInvocable<T extends ScriptEngine & Invocable>
         extends DelegatingScriptEngineWithInvocable<T> {
 

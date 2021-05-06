@@ -59,7 +59,6 @@ public class ScriptExtensionModuleProvider {
     }
 
     private Optional<Value> runtimeModule(String name, String scriptIdentifier, Context ctx) {
-
         Map<String, Object> symbols;
 
         if (DEFAULT_MODULE_NAME.equals(name)) {
