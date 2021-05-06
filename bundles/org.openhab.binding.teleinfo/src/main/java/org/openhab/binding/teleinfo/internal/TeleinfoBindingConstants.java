@@ -68,7 +68,6 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_CBETM_IINST1 = "iinst1";
     public static final String CHANNEL_CBETM_IINST2 = "iinst2";
     public static final String CHANNEL_CBETM_IINST3 = "iinst3";
-    public static final String CHANNEL_CBETM_FRAME_TYPE = "frameType";
     public static final String CHANNEL_CBETM_LONG_IMAX1 = "imax1";
     public static final String CHANNEL_CBETM_LONG_IMAX2 = "imax2";
     public static final String CHANNEL_CBETM_LONG_IMAX3 = "imax3";
