@@ -159,8 +159,8 @@ To set this SenderId to a specific one, you have to use the nextSenderId paramet
 
 ## Thing Configuration
 
-The pairing process of an openHAB thing and an EnOcean device has to be triggered within Paper UI.
-Therefore if you do not want to use Paper UI, a mixed mode configuration approach has to be done.
+The pairing process of an openHAB thing and an EnOcean device has to be triggered within the UI.
+Therefore if you do not want to use the UI, a mixed mode configuration approach has to be done.
 To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
