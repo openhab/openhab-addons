@@ -17,7 +17,6 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.PolyglotException;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocable;
 import org.slf4j.Logger;
@@ -28,11 +27,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-@NonNullByDefault
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable>
         extends InvocationInterceptingScriptEngineWithInvocable<T> {
 
-    private static final Logger stackLogger = LoggerFactory.getLogger("org.openhab.automation.script.javascript.stack");
+    private static final Logger STACK_LOGGER = LoggerFactory
+            .getLogger("org.openhab.automation.script.javascript.stack");
 
     public DebuggingGraalScriptEngine(T delegate) {
         super(delegate);
@@ -42,7 +41,7 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable>
     public ScriptException afterThrowsInvocation(ScriptException se) {
         Throwable cause = se.getCause();
         if (cause instanceof PolyglotException) {
-            stackLogger.error("Failed to execute script:", cause);
+            STACK_LOGGER.error("Failed to execute script:", cause);
         }
         return se;
     }
