@@ -57,6 +57,9 @@ public class Frame implements Serializable {
 
     public String getAsDateTime(Label label) {
         String timestamp = labelToTimestamp.get(label);
+        if (timestamp == null) {
+            return "";
+        }
         return "20" + timestamp.substring(1, 3) + "-" + timestamp.substring(3, 5) + "-" + timestamp.substring(5, 7)
                 + "T" + timestamp.substring(7, 9) + ":" + timestamp.substring(9, 11) + ":"
                 + timestamp.substring(11, 13);
