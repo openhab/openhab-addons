@@ -348,4 +348,100 @@
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="dateType">
+		<item-type>DateTime</item-type>
+		<label>DATE</label>
+		<description>Date and Time</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsnDateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN TIMESTAMP</label>
+		<description>Timestamp of SMAXSN value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsnMinus1DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN-1 TIMESTAMP</label>
+		<description>Timestamp of SMAXSN-1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ccasnDateType">
+		<item-type>DateTime</item-type>
+		<label>CCASN TIMESTAMP</label>
+		<description>Timestamp of CCASN value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ccasnMinus1DateType">
+		<item-type>DateTime</item-type>
+		<label>CCASN-1 TIMESTAMP</label>
+		<description>Timestamp of CCASN-1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="umoy1DateType">
+		<item-type>DateTime</item-type>
+		<label>UMOY1 TIMESTAMP</label>
+		<description>Timestamp of UMOY1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dpm1DateType">
+		<item-type>DateTime</item-type>
+		<label>DPM1 TIMESTAMP</label>
+		<description>Date of DPM1</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fpm1DateType">
+		<item-type>DateTime</item-type>
+		<label>FPM1 TIMESTAMP</label>
+		<description>Date of FPM1</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dpm2DateType">
+		<item-type>DateTime</item-type>
+		<label>DPM2 TIMESTAMP</label>
+		<description>Date of DPM2</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fpm2DateType">
+		<item-type>DateTime</item-type>
+		<label>FPM2 TIMESTAMP</label>
+		<description>Date of FPM2</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dpm3DateType">
+		<item-type>DateTime</item-type>
+		<label>DPM3 TIMESTAMP</label>
+		<description>Date of DPM3</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fpm3DateType">
+		<item-type>DateTime</item-type>
+		<label>FPM3 TIMESTAMP</label>
+		<description>Date of FPM3</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

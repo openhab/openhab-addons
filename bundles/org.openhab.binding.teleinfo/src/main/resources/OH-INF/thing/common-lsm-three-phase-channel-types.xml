@@ -124,4 +124,68 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="smaxsn1DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN1 TIMESTAMP</label>
+		<description>Timestamp of SMAXSN1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsn2DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN2 TIMESTAMP</label>
+		<description>Timestamp of SMAXSN2 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsn3DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN3 TIMESTAMP</label>
+		<description>Timestamp of SMAXSN3 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsn1Minus1DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN1-1 TIMESTAMP</label>
+		<description>Timestamp of SMAXSN1-1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsn2Minus1DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN2-1 TIMESTAMP</label>
+		<description>Timestamp of SMAXSN2-1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxsn3Minus1DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXSN3-1 TIMESTAMP</label>
+		<description>Timestamp of SMAXSN3-1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="umoy2DateType">
+		<item-type>DateTime</item-type>
+		<label>UMOY2 TIMESTAMP</label>
+		<description>Timestamp of UMOY2 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="umoy3DateType">
+		<item-type>DateTime</item-type>
+		<label>UMOY3 TIMESTAMP</label>
+		<description>Timestamp of UMOY3 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

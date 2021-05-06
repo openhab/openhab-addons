@@ -66,7 +66,7 @@ public enum Label {
     // Standard TIC mode labels
     ADSC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     VTIC(ValueType.INTEGER, NOT_A_CHANNEL, Units.ONE),
-    DATE(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    DATE(ValueType.STRING, NOT_A_CHANNEL, CHANNEL_LSM_DATE, Units.ONE),
     NGTF(ValueType.STRING, CHANNEL_LSM_NGTF, Units.ONE),
     LTARF(ValueType.STRING, CHANNEL_LSM_LTARF, Units.ONE),
     EAST(ValueType.INTEGER, CHANNEL_LSM_EAST, Units.WATT_HOUR),
@@ -101,31 +101,34 @@ public enum Label {
     SINSTS1(ValueType.INTEGER, CHANNEL_LSM_SINSTS1, Units.VOLT_AMPERE),
     SINSTS2(ValueType.INTEGER, CHANNEL_LSM_SINSTS2, Units.VOLT_AMPERE),
     SINSTS3(ValueType.INTEGER, CHANNEL_LSM_SINSTS3, Units.VOLT_AMPERE),
-    SMAXSN(ValueType.INTEGER, CHANNEL_LSM_SMAXSN, Units.VOLT_AMPERE),
-    SMAXSN1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN1, Units.VOLT_AMPERE),
-    SMAXSN2(ValueType.INTEGER, CHANNEL_LSM_SMAXSN2, Units.VOLT_AMPERE),
-    SMAXSN3(ValueType.INTEGER, CHANNEL_LSM_SMAXSN3, Units.VOLT_AMPERE),
-    SMAXSN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN_MINUS_1, Units.VOLT_AMPERE),
-    SMAXSN1_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN1_MINUS_1, Units.VOLT_AMPERE),
-    SMAXSN2_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN2_MINUS_1, Units.VOLT_AMPERE),
-    SMAXSN3_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN3_MINUS_1, Units.VOLT_AMPERE),
+    SMAXSN(ValueType.INTEGER, CHANNEL_LSM_SMAXSN, CHANNEL_LSM_SMAXSN_DATE, Units.VOLT_AMPERE),
+    SMAXSN1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN1, CHANNEL_LSM_SMAXSN1_DATE, Units.VOLT_AMPERE),
+    SMAXSN2(ValueType.INTEGER, CHANNEL_LSM_SMAXSN2, CHANNEL_LSM_SMAXSN2_DATE, Units.VOLT_AMPERE),
+    SMAXSN3(ValueType.INTEGER, CHANNEL_LSM_SMAXSN3, CHANNEL_LSM_SMAXSN3_DATE, Units.VOLT_AMPERE),
+    SMAXSN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN_MINUS_1, CHANNEL_LSM_SMAXSN_MINUS_1_DATE, Units.VOLT_AMPERE),
+    SMAXSN1_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN1_MINUS_1, CHANNEL_LSM_SMAXSN1_MINUS_1_DATE,
+            Units.VOLT_AMPERE),
+    SMAXSN2_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN2_MINUS_1, CHANNEL_LSM_SMAXSN2_MINUS_1_DATE,
+            Units.VOLT_AMPERE),
+    SMAXSN3_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXSN3_MINUS_1, CHANNEL_LSM_SMAXSN3_MINUS_1_DATE,
+            Units.VOLT_AMPERE),
     SINSTI(ValueType.INTEGER, CHANNEL_LSM_SINSTI, Units.VOLT_AMPERE),
-    SMAXIN(ValueType.INTEGER, CHANNEL_LSM_SMAXIN, Units.VOLT_AMPERE),
-    SMAXIN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXIN_MINUS_1, Units.VOLT_AMPERE),
-    CCASN(ValueType.INTEGER, CHANNEL_LSM_CCASN, Units.WATT),
-    CCASN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_CCASN_MINUS_1, Units.WATT),
-    CCAIN(ValueType.INTEGER, CHANNEL_LSM_CCAIN, Units.WATT),
-    CCAIN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_CCAIN_MINUS_1, Units.WATT),
-    UMOY1(ValueType.INTEGER, CHANNEL_LSM_UMOY1, Units.VOLT),
-    UMOY2(ValueType.INTEGER, CHANNEL_LSM_UMOY2, Units.VOLT),
-    UMOY3(ValueType.INTEGER, CHANNEL_LSM_UMOY3, Units.VOLT),
+    SMAXIN(ValueType.INTEGER, CHANNEL_LSM_SMAXIN, CHANNEL_LSM_SMAXIN_DATE, Units.VOLT_AMPERE),
+    SMAXIN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_SMAXIN_MINUS_1, CHANNEL_LSM_SMAXIN_MINUS_1_DATE, Units.VOLT_AMPERE),
+    CCASN(ValueType.INTEGER, CHANNEL_LSM_CCASN, CHANNEL_LSM_CCASN_DATE, Units.WATT),
+    CCASN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_CCASN_MINUS_1, CHANNEL_LSM_CCASN_MINUS_1_DATE, Units.WATT),
+    CCAIN(ValueType.INTEGER, CHANNEL_LSM_CCAIN, CHANNEL_LSM_CCAIN_DATE, Units.WATT),
+    CCAIN_MINUS_1(ValueType.INTEGER, CHANNEL_LSM_CCAIN_MINUS_1, CHANNEL_LSM_CCAIN_MINUS_1_DATE, Units.WATT),
+    UMOY1(ValueType.INTEGER, CHANNEL_LSM_UMOY1, CHANNEL_LSM_UMOY1_DATE, Units.VOLT),
+    UMOY2(ValueType.INTEGER, CHANNEL_LSM_UMOY2, CHANNEL_LSM_UMOY2_DATE, Units.VOLT),
+    UMOY3(ValueType.INTEGER, CHANNEL_LSM_UMOY3, CHANNEL_LSM_UMOY3_DATE, Units.VOLT),
     STGE(ValueType.STRING, CHANNEL_LSM_STGE, Units.ONE),
-    DPM1(ValueType.STRING, CHANNEL_LSM_DPM1, Units.ONE),
-    FPM1(ValueType.STRING, CHANNEL_LSM_FPM1, Units.ONE),
-    DPM2(ValueType.STRING, CHANNEL_LSM_DPM2, Units.ONE),
-    FPM2(ValueType.STRING, CHANNEL_LSM_FPM2, Units.ONE),
-    DPM3(ValueType.STRING, CHANNEL_LSM_DPM3, Units.ONE),
-    FPM3(ValueType.STRING, CHANNEL_LSM_FPM3, Units.ONE),
+    DPM1(ValueType.STRING, CHANNEL_LSM_DPM1, CHANNEL_LSM_DPM1_DATE, Units.ONE),
+    FPM1(ValueType.STRING, CHANNEL_LSM_FPM1, CHANNEL_LSM_FPM1_DATE, Units.ONE),
+    DPM2(ValueType.STRING, CHANNEL_LSM_DPM2, CHANNEL_LSM_DPM2_DATE, Units.ONE),
+    FPM2(ValueType.STRING, CHANNEL_LSM_FPM2, CHANNEL_LSM_FPM2_DATE, Units.ONE),
+    DPM3(ValueType.STRING, CHANNEL_LSM_DPM3, CHANNEL_LSM_DPM3_DATE, Units.ONE),
+    FPM3(ValueType.STRING, CHANNEL_LSM_FPM3, CHANNEL_LSM_FPM3_DATE, Units.ONE),
     MSG1(ValueType.STRING, CHANNEL_LSM_MSG1, Units.ONE),
     MSG2(ValueType.STRING, CHANNEL_LSM_MSG2, Units.ONE),
     PRM(ValueType.STRING, CHANNEL_LSM_PRM, Units.ONE),
@@ -138,16 +141,26 @@ public enum Label {
 
     private final ValueType type;
     private final String channelName;
+    private final String timestampChannelName;
     private final Unit<?> unit;
     private final int factor;
 
     Label(ValueType type, String channelName, Unit<?> unit) {
-        this(type, channelName, unit, 1);
+        this(type, channelName, NOT_A_CHANNEL, unit, 1);
+    }
+
+    Label(ValueType type, String channelName, String timestampChannelName, Unit<?> unit) {
+        this(type, channelName, timestampChannelName, unit, 1);
     }
 
     Label(ValueType type, String channelName, Unit<?> unit, int factor) {
+        this(type, channelName, NOT_A_CHANNEL, unit, factor);
+    }
+
+    Label(ValueType type, String channelName, String timestampChannelName, Unit<?> unit, int factor) {
         this.type = type;
         this.channelName = channelName;
+        this.timestampChannelName = timestampChannelName;
         this.unit = unit;
         this.factor = factor;
     }
@@ -158,6 +171,10 @@ public enum Label {
 
     public String getChannelName() {
         return channelName;
+    }
+
+    public String getTimestampChannelName() {
+        return timestampChannelName;
     }
 
     public Unit<?> getUnit() {

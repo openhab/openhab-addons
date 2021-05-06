@@ -119,7 +119,7 @@ public class TeleinfoInputStream extends InputStream {
                 }
                 String labelStr = groupLineTokens[0];
                 String valueString;
-                String timestampString;
+                String timestampString = null;
                 switch (ticMode) {
                     default:
                         valueString = groupLineTokens[1];
@@ -166,6 +166,9 @@ public class TeleinfoInputStream extends InputStream {
                 }
 
                 frame.put(label, valueString);
+                if (timestampString != null) {
+                    frame.putTimestamp(label, timestampString);
+                }
             }
         }
 

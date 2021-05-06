@@ -149,6 +149,9 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                             .valueOf(label.getFactor() * Integer.parseInt(entry.getValue()), label.getUnit()));
                 }
             }
+            if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
+                updateState(label.getTimestampChannelName(), DateTimeType.valueOf(frame.getAsDateTime(label)));
+            }
         }
         try {
             if (frame.getTicMode() == TeleinfoTicMode.HISTORICAL) {

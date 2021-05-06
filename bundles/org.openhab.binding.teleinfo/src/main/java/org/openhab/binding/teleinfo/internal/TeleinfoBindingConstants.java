@@ -149,6 +149,33 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_LSM_CCAIN = "ccain";
     public static final String CHANNEL_LSM_CCAIN_MINUS_1 = "ccainMinus1";
 
+    public static final String CHANNEL_LSM_DATE = "date";
+    public static final String CHANNEL_LSM_SMAXSN_DATE = "smaxsnDate";
+    public static final String CHANNEL_LSM_SMAXSN_MINUS_1_DATE = "smaxsnMinus1Date";
+    public static final String CHANNEL_LSM_CCASN_DATE = "ccasnDate";
+    public static final String CHANNEL_LSM_CCASN_MINUS_1_DATE = "ccasnMinus1Date";
+    public static final String CHANNEL_LSM_UMOY1_DATE = "umoy1Date";
+    public static final String CHANNEL_LSM_DPM1_DATE = "dpm1Date";
+    public static final String CHANNEL_LSM_FPM1_DATE = "fpm1Date";
+    public static final String CHANNEL_LSM_DPM2_DATE = "dpm2Date";
+    public static final String CHANNEL_LSM_FPM2_DATE = "fpm2Date";
+    public static final String CHANNEL_LSM_DPM3_DATE = "dpm3Date";
+    public static final String CHANNEL_LSM_FPM3_DATE = "fpm3Date";
+
+    public static final String CHANNEL_LSM_SMAXIN_DATE = "smaxinDate";
+    public static final String CHANNEL_LSM_SMAXIN_MINUS_1_DATE = "smaxinMinus1Date";
+    public static final String CHANNEL_LSM_CCAIN_DATE = "ccainDate";
+    public static final String CHANNEL_LSM_CCAIN_MINUS_1_DATE = "ccainMinus1Date";
+
+    public static final String CHANNEL_LSM_SMAXSN1_DATE = "smaxsn1Date";
+    public static final String CHANNEL_LSM_SMAXSN2_DATE = "smaxsn2Date";
+    public static final String CHANNEL_LSM_SMAXSN3_DATE = "smaxsn3Date";
+    public static final String CHANNEL_LSM_SMAXSN1_MINUS_1_DATE = "smaxsn1Minus1Date";
+    public static final String CHANNEL_LSM_SMAXSN2_MINUS_1_DATE = "smaxsn2Minus1Date";
+    public static final String CHANNEL_LSM_SMAXSN3_MINUS_1_DATE = "smaxsn3Minus1Date";
+    public static final String CHANNEL_LSM_UMOY2_DATE = "umoy2Date";
+    public static final String CHANNEL_LSM_UMOY3_DATE = "umoy3Date";
+
     public static final String NOT_A_CHANNEL = "";
 
     public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";

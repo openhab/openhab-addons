@@ -84,4 +84,36 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="smaxinDateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXIN TIMESTAMP</label>
+		<description>Timestamp of SMAXIN value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smaxinMinus1DateType">
+		<item-type>DateTime</item-type>
+		<label>SMAXIN-1 TIMESTAMP</label>
+		<description>Timestamp of SMAXIN-1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ccainDateType">
+		<item-type>DateTime</item-type>
+		<label>CCAIN TIMESTAMP</label>
+		<description>Timestamp of CCAIN value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ccainMinus1DateType">
+		<item-type>DateTime</item-type>
+		<label>CCAIN-1 TIMESTAMP</label>
+		<description>Timestamp of CCAIN-1 value</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

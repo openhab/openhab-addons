@@ -33,9 +33,14 @@ public class Frame implements Serializable {
     private static final long serialVersionUID = -1934715078822532494L;
 
     private Map<Label, String> labelToValues = new EnumMap<>(Label.class);
+    private Map<Label, String> labelToTimestamp = new EnumMap<>(Label.class);
 
     public void put(Label label, String value) {
         labelToValues.put(label, value);
+    }
+
+    public void putTimestamp(Label label, String timestamp) {
+        labelToTimestamp.put(label, timestamp);
     }
 
     public @Nullable String get(Label label) {
@@ -48,6 +53,13 @@ public class Frame implements Serializable {
             return Integer.parseInt(value);
         }
         return null;
+    }
+
+    public String getAsDateTime(Label label) {
+        String timestamp = labelToTimestamp.get(label);
+        return "20" + timestamp.substring(1, 3) + "-" + timestamp.substring(3, 5) + "-" + timestamp.substring(5, 7)
+                + "T" + timestamp.substring(7, 9) + ":" + timestamp.substring(9, 11) + ":"
+                + timestamp.substring(11, 13);
     }
 
     public Frame() {
@@ -191,10 +203,15 @@ public class Frame implements Serializable {
 
     public void clear() {
         labelToValues.clear();
+        labelToTimestamp.clear();
     }
 
     public Map<Label, String> getLabelToValues() {
         return labelToValues;
+    }
+
+    public Map<Label, String> getLabelToTimestamp() {
+        return labelToTimestamp;
     }
 
     private char getProgrammeChar() {

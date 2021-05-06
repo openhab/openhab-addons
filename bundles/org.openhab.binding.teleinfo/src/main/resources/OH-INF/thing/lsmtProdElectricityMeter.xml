@@ -83,6 +83,33 @@
 			<channel id="smaxinMinus1" typeId="smaxinMinus1Type"/>
 			<channel id="ccain" typeId="ccainType"/>
 			<channel id="ccainMinus1" typeId="ccainMinus1Type"/>
+
+			<channel id="date" typeId="dateType"/>
+			<channel id="smaxsnDate" typeId="smaxsnDateType"/>
+			<channel id="smaxsnMinus1Date" typeId="smaxsnMinus1DateType"/>
+			<channel id="ccasnDate" typeId="ccasnDateType"/>
+			<channel id="ccasnMinus1Date" typeId="ccasnMinus1DateType"/>
+			<channel id="umoy1Date" typeId="umoy1DateType"/>
+			<channel id="dpm1Date" typeId="dpm1DateType"/>
+			<channel id="fpm1Date" typeId="fpm1DateType"/>
+			<channel id="dpm2Date" typeId="dpm2DateType"/>
+			<channel id="fpm2Date" typeId="fpm2DateType"/>
+			<channel id="dpm3Date" typeId="dpm3DateType"/>
+			<channel id="fpm3Date" typeId="fpm3DateType"/>
+
+			<channel id="smaxinDate" typeId="smaxinDateType"/>
+			<channel id="smaxinMinus1Date" typeId="smaxinMinus1DateType"/>
+			<channel id="ccainDate" typeId="ccainDateType"/>
+			<channel id="ccainMinus1Date" typeId="ccainMinus1DateType"/>
+
+			<channel id="smaxsn1Date" typeId="smaxsn1DateType"/>
+			<channel id="smaxsn2Date" typeId="smaxsn2DateType"/>
+			<channel id="smaxsn3Date" typeId="smaxsn3DateType"/>
+			<channel id="smaxsn1Minus1Date" typeId="smaxsn1Minus1DateType"/>
+			<channel id="smaxsn2Minus1Date" typeId="smaxsn2Minus1DateType"/>
+			<channel id="smaxsn3Minus1Date" typeId="smaxsn3Minus1DateType"/>
+			<channel id="umoy2Date" typeId="umoy2DateType"/>
+			<channel id="umoy3Date" typeId="umoy3DateType"/>
 		</channels>
 
 		<config-description-ref uri="binding:teleinfo:adco"/>
