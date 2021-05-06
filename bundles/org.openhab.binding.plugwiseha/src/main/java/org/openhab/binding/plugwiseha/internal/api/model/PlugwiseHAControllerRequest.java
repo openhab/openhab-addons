@@ -182,7 +182,7 @@ public class PlugwiseHAControllerRequest<T> {
                 throw new PlugwiseHAException("Could not apply XML stylesheet", e);
             }
         } else {
-            throw new PlugwiseHAException("Could not transform XML stylehseet, the transformer is null");
+            throw new PlugwiseHAException("Could not transform XML stylesheet, the transformer is null");
         }
 
         return output.toString();
