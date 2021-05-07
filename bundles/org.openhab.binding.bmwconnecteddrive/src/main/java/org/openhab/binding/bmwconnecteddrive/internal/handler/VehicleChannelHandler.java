@@ -120,7 +120,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateCheckControls(List<CCMMessage> ccl) {
-        if (ccl.size() == 0) {
+        if (ccl.isEmpty()) {
             // No Check Control available - show not active
             CCMMessage ccm = new CCMMessage();
             ccm.ccmDescriptionLong = Constants.NO_ENTRIES;
@@ -169,7 +169,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateServices(List<CBSMessage> sl) {
         // if list is empty add "undefined" element
-        if (sl.size() == 0) {
+        if (sl.isEmpty()) {
             CBSMessage cbsm = new CBSMessage();
             cbsm.cbsType = Constants.NO_ENTRIES;
             cbsm.cbsDescription = Constants.NO_ENTRIES;
@@ -225,7 +225,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateDestinations(List<Destination> dl) {
         // if list is empty add "undefined" element
-        if (dl.size() == 0) {
+        if (dl.isEmpty()) {
             Destination dest = new Destination();
             dest.city = Constants.NO_ENTRIES;
             dest.lat = -1;

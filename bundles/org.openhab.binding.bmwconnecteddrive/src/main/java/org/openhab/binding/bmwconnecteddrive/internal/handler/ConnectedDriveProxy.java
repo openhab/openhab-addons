@@ -98,7 +98,7 @@ public class ConnectedDriveProxy {
         vehicleUrl = "https://" + getRegionServer() + "/webapi/v1/user/vehicles";
         baseUrl = vehicleUrl + "/";
         legacyUrl = "https://" + getRegionServer() + "/api/vehicle/dynamic/v1/";
-        navigationAPIUrl = "https://" + getRegionServer() + "/api/vehicle/navigation/";
+        navigationAPIUrl = "https://" + getRegionServer() + "/api/vehicle/navigation/v1/";
     }
 
     private synchronized void call(final String url, final boolean post, final @Nullable MultiMap<String> params,

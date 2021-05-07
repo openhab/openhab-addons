@@ -86,10 +86,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     public static boolean checkConfiguration(ConnectedDriveConfiguration config) {
         if (Constants.EMPTY.equals(config.userName) || Constants.EMPTY.equals(config.password)) {
             return false;
-        } else if (BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region)) {
-            return true;
         } else {
-            return false;
+            return BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region);
         }
     }
 

@@ -28,6 +28,11 @@
 		<label>Hybrid Range</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="range-hybrid-max-channel">
+		<item-type>Number:Length</item-type>
+		<label>Hybrid Range if Fully Charged</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
