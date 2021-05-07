@@ -73,6 +73,7 @@ public class ConnectedDriveProxy {
     final String baseUrl;
     final String vehicleUrl;
     final String legacyUrl;
+    final String navigationAPIUrl;
     final String vehicleStatusAPI = "/status";
     final String lastTripAPI = "/statistics/lastTrip";
     final String allTripsAPI = "/statistics/allTrips";
@@ -97,6 +98,7 @@ public class ConnectedDriveProxy {
         vehicleUrl = "https://" + getRegionServer() + "/webapi/v1/user/vehicles";
         baseUrl = vehicleUrl + "/";
         legacyUrl = "https://" + getRegionServer() + "/api/vehicle/dynamic/v1/";
+        navigationAPIUrl = "https://" + getRegionServer() + "/api/vehicle/navigation/";
     }
 
     private synchronized void call(final String url, final boolean post, final @Nullable MultiMap<String> params,
@@ -179,6 +181,11 @@ public class ConnectedDriveProxy {
     public void requestLegacyVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
         // see https://github.com/jupe76/bmwcdapi/search?q=dynamic%2Fv1
         get(legacyUrl + config.vin + "?offset=-60", null, callback);
+    }
+
+    public void requestLNavigation(VehicleConfiguration config, StringResponseCallback callback) {
+        // see https://github.com/jupe76/bmwcdapi/search?q=dynamic%2Fv1
+        get(navigationAPIUrl + config.vin, null, callback);
     }
 
     public void requestLastTrip(VehicleConfiguration config, StringResponseCallback callback) {
