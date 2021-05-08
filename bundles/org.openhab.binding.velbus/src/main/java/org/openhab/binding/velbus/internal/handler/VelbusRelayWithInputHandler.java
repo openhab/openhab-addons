@@ -114,17 +114,17 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
 
                 byte channelJustPressed = packet[5];
                 if (isTriggerChannel(address, channelJustPressed)) {
-                    triggerChannel("CH6t", CommonTriggerEvents.PRESSED);
+                    triggerChannel("CH6", CommonTriggerEvents.PRESSED);
                 }
 
                 byte channelJustReleased = packet[6];
                 if (isTriggerChannel(address, channelJustReleased)) {
-                    triggerChannel("CH6t", CommonTriggerEvents.RELEASED);
+                    triggerChannel("CH6", CommonTriggerEvents.RELEASED);
                 }
 
                 byte channelLongPressed = packet[7];
                 if (isTriggerChannel(address, channelLongPressed)) {
-                    triggerChannel("CH6t", CommonTriggerEvents.LONG_PRESSED);
+                    triggerChannel("CH6", CommonTriggerEvents.LONG_PRESSED);
                 }
             }
         }
