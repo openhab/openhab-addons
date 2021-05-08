@@ -14,11 +14,23 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.util.MultiMap;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.BimmerConstants;
@@ -72,4 +84,142 @@ public class AuthTest {
         logger.info("Token {}", t.getBearerToken());
         logger.info("Expires {}", t.isExpired());
     }
+
+    @Test
+    public void testJavaHttpAuth() {
+        ConnectedDriveConfiguration config = new ConnectedDriveConfiguration();
+        config.region = BimmerConstants.REGION_ROW;
+        config.userName = "marika.weymann@gmail.com";
+        config.password = "P4nd4b3r";
+
+        final StringBuilder legacyAuth = new StringBuilder();
+        legacyAuth.append("https://");
+        legacyAuth.append(BimmerConstants.AUTH_SERVER_MAP.get(config.region));
+        legacyAuth.append(BimmerConstants.OAUTH_ENDPOINT);
+        URL url;
+        try {
+
+            final MultiMap<String> dataMap = new MultiMap<String>();
+            dataMap.add("grant_type", "password");
+            dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
+            dataMap.add(USERNAME, config.userName);
+            dataMap.add(PASSWORD, config.password);
+
+            String urlContent = UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
+            System.out.println(urlContent);
+            url = new URL(legacyAuth.toString() + "?" + urlContent);
+            System.out.println(url.toString());
+            System.out.println(Integer.toString(urlContent.length()));
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty(HttpHeader.CONTENT_LENGTH.asString(), Integer.toString(124));
+            con.setRequestProperty(HttpHeader.CONTENT_TYPE.asString(), "application/x-www-form-urlencoded");
+            // System.out.println(con.getHeaderField(HttpHeader.CONTENT_LENGTH.asString()));
+            // con.setRequestProperty(HttpHeader.CONNECTION.asString(), KEEP_ALIVE);
+            con.setRequestProperty(HttpHeader.HOST.asString(), BimmerConstants.SERVER_MAP.get(config.region));
+            con.setRequestProperty(HttpHeader.AUTHORIZATION.asString(),
+                    BimmerConstants.AUTHORIZATION_VALUE_MAP.get(config.region));
+            con.setRequestProperty(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
+            con.setRequestProperty(HttpHeader.REFERER.asString(), BimmerConstants.REFERER_URL);
+            System.out.println(con.getHeaderFields());
+            int status = con.getResponseCode();
+            System.out.println("Status: " + status);
+            if (status < 400) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer content = new StringBuffer();
+                while ((inputLine = in.readLine()) != null) {
+                    content.append(inputLine);
+                }
+                System.out.println("Content: " + content.toString());
+                in.close();
+            }
+            System.out.println(con.getContentLength());
+            con.disconnect();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    /**
+     * @Test
+     *       public void testJavaHttpAuth2() {
+     *       ConnectedDriveConfiguration config = new ConnectedDriveConfiguration();
+     *       config.region = BimmerConstants.REGION_ROW;
+     *       config.userName = "marika.weymann@gmail.com";
+     *       config.password = "P4nd4b3r";
+     *
+     *       final StringBuilder legacyAuth = new StringBuilder();
+     *       legacyAuth.append("https://");
+     *       legacyAuth.append(BimmerConstants.AUTH_SERVER_MAP.get(config.region));
+     *       legacyAuth.append(BimmerConstants.OAUTH_ENDPOINT);
+     *       URL url;
+     *       try {
+     *
+     *       final MultiMap<String> dataMap = new MultiMap<String>();
+     *       dataMap.add("grant_type", "password");
+     *       dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
+     *       dataMap.add(USERNAME, config.userName);
+     *       dataMap.add(PASSWORD, config.password);
+     *
+     *       String urlContent = UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
+     *       System.out.println(urlContent);
+     *       url = new URL(legacyAuth.toString() + "?" + urlContent);
+     *       System.out.println(url.toString());
+     *       System.out.println(Integer.toString(urlContent.length()));
+     *       HttpURLConnection con = (HttpURLConnection) url.openConnection();
+     *       con.setRequestMethod("POST");
+     *       con.setRequestProperty(HttpHeader.CONTENT_TYPE.asString(), "application/x-www-form-urlencoded");
+     *       con.setRequestProperty(HttpHeader.CONTENT_LENGTH.asString(), Integer.toString(urlContent.length()));
+     *       con.setRequestProperty(HttpHeader.CONNECTION.asString(), KEEP_ALIVE);
+     *       con.setRequestProperty(HttpHeader.HOST.asString(), BimmerConstants.SERVER_MAP.get(config.region));
+     *       con.setRequestProperty(HttpHeader.AUTHORIZATION.asString(),
+     *       BimmerConstants.AUTHORIZATION_VALUE_MAP.get(config.region));
+     *       con.setRequestProperty(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
+     *       con.setRequestProperty(HttpHeader.REFERER.asString(), BimmerConstants.REFERER_URL);
+     *       System.out.println(con.getHeaderField(HttpHeader.CONTENT_LENGTH.asString()));
+     *       System.out.println(con.getHeaderFields());
+     *       int status = con.getResponseCode();
+     *       System.out.println("Status: " + status);
+     *       if (status < 400) {
+     *       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+     *       String inputLine;
+     *       StringBuffer content = new StringBuffer();
+     *       while ((inputLine = in.readLine()) != null) {
+     *       content.append(inputLine);
+     *       }
+     *       System.out.println("Content: " + content.toString());
+     *       in.close();
+     *       }
+     *       System.out.println(con.getContentLength());
+     *       var client = new HttpClient();
+     *
+     *       // create a request
+     *       var request = HttpRequest.newBuilder(URI.create("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"))
+     *       .header("accept", "application/json").build();
+     *
+     *       // use the client to send the request
+     *       var response = client.send(request, new JsonBodyHandler<>(APOD.class));
+     *
+     *       // the response:
+     *       System.out.println(response.body().get().title);
+     *
+     *       } catch (MalformedURLException e) {
+     *       // TODO Auto-generated catch block
+     *       e.printStackTrace();
+     *       } catch (ProtocolException e) {
+     *       // TODO Auto-generated catch block
+     *       e.printStackTrace();
+     *       } catch (IOException e) {
+     *       // TODO Auto-generated catch block
+     *       e.printStackTrace();
+     *       }
+     *       }
+     */
 }
