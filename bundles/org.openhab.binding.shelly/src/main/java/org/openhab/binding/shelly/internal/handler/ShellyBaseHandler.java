@@ -101,8 +101,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
 
-    private @Nullable ScheduledFuture<?> asyncButtonRelease;
-
     // delay before enabling channel
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
     protected final ShellyChannelCache cache;
@@ -1222,11 +1220,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             job.cancel(true);
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
-        }
-        job = asyncButtonRelease;
-        if (job != null) {
-            job.cancel(true);
-            asyncButtonRelease = null;
         }
 
         coap.stop();

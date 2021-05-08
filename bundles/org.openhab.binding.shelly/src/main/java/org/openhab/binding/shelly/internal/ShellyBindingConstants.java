@@ -191,8 +191,6 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_UPDATE_NEW_VERS = "updateNewVersion";
     public static final String PROPERTY_COAP_DESCR = "coapDeviceDescr";
     public static final String PROPERTY_COAP_VERSION = "coapVersion";
-    public static final String PROPERTY_STATS_TIMEOUTS = "statsTimeoutErrors";
-    public static final String PROPERTY_STATS_TRECOVERED = "statsTimeoutsRecovered";
     public static final String PROPERTY_COIOTAUTO = "coiotAutoEnable";
 
     // Relay
