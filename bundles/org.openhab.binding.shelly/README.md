@@ -17,6 +17,7 @@ The binding gets in sync with the next status refresh.
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
 Also check out the [Shelly Manager](doc/ShellyManager.md), which
+
 - provides detailed information on your Shellys
 - helps to diagnose WiFi issues or device instabilities
 - includes some common actions and 
@@ -276,6 +277,7 @@ Check the channel definitions for the various devices to see if the device suppo
 You could use the Shelly App to set the timing for those events. 
 
 If you want to use those events triggering a rule:
+
 - If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
 - For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event 
 
@@ -309,7 +311,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 |BATTERY     |Device reported an update to the battery status.                                                                 |
 |TEMP_UNDER  |Below "temperature under" threshold                                                                              |
 |TEMP_OVER   |Above "temperature over" threshold                                                                               |
-
+|VIBRATION   |A vibration/tamper was detected (DW2 only)                                                                       |
 
 Refer to section [Full Example:shelly.rules](#shelly-rules) for examples how to catch alarm triggers in openHAB rules
 
@@ -803,6 +805,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |lastError    |String   |yes      |Last device error.                                                     |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+|device    |alarm        |Trigger  |yes      |Will receive trigger VIBRATION if DW2 detects vibration                |
 
 ### Shelly Motion (thing-type: shellymotion)
 
@@ -1090,8 +1093,8 @@ when
     Channel "shelly:shelly25-roller:XXXXXX:device#alarm"    triggered
 then
     if (receivedEvent !== null) { // A (channel) event triggered the rule
-        eventSource = receivedEvent.getChannel().asString 
-        eventType = receivedEvent.getEvent()
+        eventSource = triggeredChannel
+        eventType = receivedEvent
         ...
     } 
 end

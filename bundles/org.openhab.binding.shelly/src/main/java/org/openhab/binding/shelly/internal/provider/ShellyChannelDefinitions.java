@@ -175,7 +175,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VOLTAGE, "sensorADC", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CONTACT, "sensorContact", ITEMT_CONTACT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SSTATE, "sensorState", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "sensorVibration", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION_TS, "motionTimestamp", ITEMT_DATETIME))
@@ -424,8 +423,6 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_VIBRATION);
         }
         if (sdata.accel != null) { // DW2
-            addChannel(thing, newChannels, sdata.accel.vibration != null, CHANNEL_GROUP_SENSOR,
-                    CHANNEL_SENSOR_VIBRATION);
             addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
         }
 
@@ -564,18 +561,17 @@ public class ShellyChannelDefinitions {
         public String getGroupAttribute(String attribute) {
             String key = PREFIX_GROUP + group + "." + attribute;
             String value = messages.getText(key);
-            return value != null && !value.equals(key) ? value : "";
+            return !value.equals(key) ? value : "";
         }
 
         public String getChannelAttribute(String attribute) {
             String key = PREFIX_CHANNEL + channel + "." + attribute;
             String value = messages.getText(key);
-            return value != null && !value.equals(key) ? value : "";
+            return !value.equals(key) ? value : "";
         }
 
         private String getText(String key) {
-            String text = messages.get(key);
-            return text != null ? text : "";
+            return messages.get(key);
         }
     }
 
