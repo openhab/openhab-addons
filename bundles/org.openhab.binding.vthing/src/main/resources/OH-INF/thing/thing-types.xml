@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vthing"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vlamp">
+		<label>VLamp</label>
+		<description>Virtual Lamp</description>
+
+		<channels>
+			<channel id="state" typeId="system.power"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="ontime" typeId="ontime"/>
+		</channels>
+
+		<config-description>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="state">
+		<item-type>OnOffType</item-type>
+		<label>State Channel</label>
+		<description>State ON/OFF</description>
+	</channel-type>
+
+	<channel-type id="ontime">
+		<item-type>StringType</item-type>
+		<label>ontime Channel</label>
+		<description>current Ontime as String</description>
+	</channel-type>
+
+	<channel-type id="color">
+		<item-type>HSBType</item-type>
+		<label>Brightness Channel</label>
+		<description>Brightness</description>
+	</channel-type>
+
+</thing:thing-descriptions>
