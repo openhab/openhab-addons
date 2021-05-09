@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.juicenet.internal.handler;
 
 import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
@@ -113,6 +125,9 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
+                case DEVICE_NAME:
+                    updateState(DEVICE_NAME, new StringType(name));
+                    break;
                 case DEVICE_STATE:
                 case DEVICE_OVERRIDE:
                 case DEVICE_CHARGING_TIME_LEFT:
@@ -152,22 +167,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         try {
 
             switch (channelUID.getId()) {
-                case DEVICE_OVERRIDE:
-                    if (channelUID.getId().equals(DEVICE_OVERRIDE)) {
-                        if (!(command instanceof OnOffType)) {
-                            return;
-                        }
-
-                        if (command.equals(OnOffType.ON)) {
-                            getApi().setOverride(token, deviceStatus.charging.wh_energy_at_plugin,
-                                    deviceStatus.unit_time, 0);
-
-                        } else {
-                            getApi().setOverride(token, 0, null, 0);
-                        }
-
-                    }
-                    break;
                 case DEVICE_AMPS_LIMIT:
                     int limit = ((QuantityType<?>) command).intValue();
 

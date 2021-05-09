@@ -14,6 +14,7 @@
 		<description>JuiceBox EV-Charger</description>
 
 		<channels>
+			<channel id="name" typeId="name_type"/>
 			<channel id="charging_state" typeId="charging_state_type"/>
 
 			<channel id="state" typeId="state_type"/>
@@ -55,6 +56,13 @@
 		</properties>
 		<representation-property>unit_id</representation-property>
 	</thing-type>
+
+	<channel-type id="name_type">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Juice Box name.</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="charging_state_type">
 		<item-type>String</item-type>
@@ -151,8 +159,8 @@
 	<channel-type id="wh_energy_type">
 		<item-type>Number:Energy</item-type>
 		<label>Current Energy</label>
-		<description>Current amount of energy poured to the vehicle. (Wh)</description>
-		<state readOnly="true" pattern="%.2f kWh"/>
+		<description>Current power level of vehicle. (Wh)</description>
+		<state readOnly="true" pattern="%.1f kWh"/>
 	</channel-type>
 
 	<channel-type id="savings_type">

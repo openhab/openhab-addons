@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.juicenet.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link JuiceNetBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jeff James - Initial contribution
  */
+@NonNullByDefault
 public class JuiceNetBridgeConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.
      */
-    public String api_token;
+    public String api_token = "";
     public int refreshInterval;
 }

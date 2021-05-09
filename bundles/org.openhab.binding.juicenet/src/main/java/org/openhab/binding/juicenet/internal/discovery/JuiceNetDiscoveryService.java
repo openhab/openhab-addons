@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.juicenet.internal.handler.JuiceNetBridgeHandler;
@@ -52,16 +51,8 @@ public class JuiceNetDiscoveryService extends AbstractDiscoveryService
 
     public JuiceNetDiscoveryService() {
         super(DISCOVERABLE_THING_TYPES_UIDS, 0, false);
-        // String uids = SUPPORTED_THING_TYPES_UIDS.toString();
-        // logger.debug("Thing types: {} registered.", uids);
     }
 
-    /**
-     * Activate the bundle: save properties
-     *
-     * @param componentContext
-     * @param configProperties set of properties from cfg (use same names as in thing config)
-     */
     @Override
     public void activate() {
         super.activate(null);
@@ -98,7 +89,7 @@ public class JuiceNetDiscoveryService extends AbstractDiscoveryService
 
         ThingUID uid = new ThingUID(DEVICE_THING_TYPE, bridgeUID, id);
 
-        Map<@NonNull String, @NonNull Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(DEVICE_PROP_UNIT_ID, id);
         properties.put(DEVICE_PROP_NAME, name);
         properties.put(DEVICE_PROP_TOKEN, token);

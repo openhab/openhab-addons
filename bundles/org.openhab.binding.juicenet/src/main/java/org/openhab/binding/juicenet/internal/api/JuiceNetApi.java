@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.juicenet.internal.api;
 
 import java.io.IOException;
@@ -6,8 +18,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +36,7 @@ import com.google.gson.JsonParser;
  *
  * @author Jeff James - Initial contribution
  */
+@NonNullByDefault
 public class JuiceNetApi {
     private final Logger logger = LoggerFactory.getLogger(JuiceNetApi.class);
 
@@ -30,7 +45,8 @@ public class JuiceNetApi {
     private static final String API_DEVICE = API_HOST + "box_api_secure";
 
     protected String apiToken = "";
-    protected JuiceNetHttp httpApi;
+    protected JuiceNetHttp httpApi = new JuiceNetHttp();
+    @Nullable
     protected ThingUID bridgeUID;
 
     public boolean initialize(String apiToken, ThingUID bridgeUID) throws JuiceNetApiException {
@@ -45,7 +61,7 @@ public class JuiceNetApi {
 
     public List<JuiceNetApiDevice> queryDeviceList() throws JuiceNetApiException, IOException, InterruptedException {
         Map<String, Object> params = new HashMap<>();
-        HttpResponse<@NonNull String> response;
+        HttpResponse<String> response;
 
         params.put("cmd", "get_account_units");
         params.put("device_id", bridgeUID.getAsString()); // bridgeUID.toString());
@@ -57,7 +73,7 @@ public class JuiceNetApi {
             throw new JuiceNetApiException("Unable to retrieve device list, please check configuration.");
         }
 
-        logger.trace(response.body());
+        logger.trace("{}", response.body());
 
         JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
         boolean success = jsonResponse.get("success").getAsBoolean();
@@ -76,7 +92,7 @@ public class JuiceNetApi {
             throws JuiceNetApiException, IOException, InterruptedException {
 
         Map<String, Object> params = new HashMap<>();
-        HttpResponse<@NonNull String> response;
+        HttpResponse<String> response;
 
         params.put("cmd", "get_state");
         params.put("account_token", apiToken);
@@ -89,7 +105,7 @@ public class JuiceNetApi {
             throw new JuiceNetApiException("Unable to retrieve device status, please check configuration.");
         }
 
-        logger.trace(response.body());
+        logger.trace("{}", response.body());
 
         JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
         boolean success = jsonResponse.get("success").getAsBoolean();
@@ -100,12 +116,12 @@ public class JuiceNetApi {
 
         final JuiceNetApiDeviceStatus deviceStatus = new Gson().fromJson(jsonResponse, JuiceNetApiDeviceStatus.class);
 
-        return deviceStatus;
+        return Objects.requireNonNull(deviceStatus);
     }
 
     public JuiceNetApiInfo queryInfo(String token) throws IOException, InterruptedException, JuiceNetApiException {
         Map<String, Object> params = new HashMap<>();
-        HttpResponse<@NonNull String> response;
+        HttpResponse<String> response;
 
         params.put("cmd", "get_info");
         params.put("account_token", apiToken);
@@ -118,17 +134,17 @@ public class JuiceNetApi {
             throw new JuiceNetApiException("Unable to retrieve device status, please check configuration.");
         }
 
-        logger.trace(response.body());
+        logger.trace("{}", response.body());
 
         final JuiceNetApiInfo info = new Gson().fromJson(response.body(), JuiceNetApiInfo.class);
 
-        return info;
+        return Objects.requireNonNull(info);
     }
 
     public JuiceNetApiTouSchedule queryTOUSchedule(String token)
             throws IOException, InterruptedException, JuiceNetApiException {
         Map<String, Object> params = new HashMap<>();
-        HttpResponse<@NonNull String> response;
+        HttpResponse<String> response;
 
         params.put("cmd", "get_schedule");
         params.put("account_token", apiToken);
@@ -141,7 +157,7 @@ public class JuiceNetApi {
             throw new JuiceNetApiException("Unable to retrieve device TOU schedule, please check configuration.");
         }
 
-        logger.trace(response.body());
+        logger.trace("{}", response.body());
 
         JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
         boolean success = jsonResponse.get("success").getAsBoolean();
@@ -153,13 +169,13 @@ public class JuiceNetApi {
         final JuiceNetApiTouSchedule deviceTouSchedule = new Gson().fromJson(jsonResponse,
                 JuiceNetApiTouSchedule.class);
 
-        return deviceTouSchedule;
+        return Objects.requireNonNull(deviceTouSchedule);
     }
 
     public void setOverride(String token, int energy_at_plugin, Long override_time, int energy_to_add)
             throws IOException, InterruptedException, JuiceNetApiException {
         Map<String, Object> params = new HashMap<>();
-        HttpResponse<@NonNull String> response;
+        HttpResponse<String> response;
 
         params.put("cmd", "set_override");
         params.put("account_token", apiToken);
@@ -175,13 +191,13 @@ public class JuiceNetApi {
             throw new JuiceNetApiException("Unable to setOverride, please check configuration.");
         }
 
-        logger.trace(response.body());
+        logger.trace("{}", response.body());
     }
 
     public void setCurrentLimit(String token, int limit)
             throws IOException, InterruptedException, JuiceNetApiException {
         Map<String, Object> params = new HashMap<>();
-        HttpResponse<@NonNull String> response;
+        HttpResponse<String> response;
 
         params.put("cmd", "set_limit");
         params.put("account_token", apiToken);
@@ -195,26 +211,26 @@ public class JuiceNetApi {
             throw new JuiceNetApiException("Unable to setOverride, please check configuration.");
         }
 
-        logger.trace(response.body());
+        logger.trace("{}", response.body());
     }
 
     public static class JuiceNetApiDevice {
-        public String name;
-        public String token;
-        public String unit_id;
+        public String name = "";
+        public String token = "";
+        public String unit_id = "";
     }
 
     public static class JuiceNetApiDeviceStatus {
-        public String ID;
-        public Long info_timestamp;
+        public String ID = "";
+        public Long info_timestamp = (long) 0;
         public boolean show_override;
-        public String state;
-        public JuiceNetApiDeviceChargingStatus charging;
-        public JuiceNetApiDeviceLifetimeStatus lifetime;
+        public String state = "";
+        public JuiceNetApiDeviceChargingStatus charging = new JuiceNetApiDeviceChargingStatus();
+        public JuiceNetApiDeviceLifetimeStatus lifetime = new JuiceNetApiDeviceLifetimeStatus();
         public int charging_time_left;
-        public Long plug_unplug_time;
-        public Long target_time;
-        public Long unit_time;
+        public Long plug_unplug_time = (long) 0;
+        public Long target_time = (long) 0;
+        public Long unit_time = (long) 0;
         public int car_id;
         public int temperature;
     }
@@ -238,35 +254,35 @@ public class JuiceNetApi {
     }
 
     public static class JuiceNetApiInfo {
-        public String name;
-        public String address;
-        public String city;
-        public String zip;
-        public String country_code;
-        public String ip;
+        public String name = "";
+        public String address = "";
+        public String city = "";
+        public String zip = "";
+        public String country_code = "";
+        public String ip = "";
         public int gascost;
         public int mpg;
         public int ecost;
         public int whpermile;
-        public String timeZoneId;
+        public String timeZoneId = "";
         public int amps_wire_rating;
         public int amps_unit_rating;
-        public JuiceNetApiCar[] cars;
+        public JuiceNetApiCar[] cars = {};
     }
 
     public static class JuiceNetApiCar {
         public int car_id;
-        public String description;
+        public String description = "";
         public int battery_size_wh;
         public int battery_range_m;
         public int charging_rate_w;
-        public String model_id;
+        public String model_id = "";
     }
 
     public static class JuiceNetApiTouSchedule {
-        public String type;
-        public JuiceNetApiTouDay weekday;
-        public JuiceNetApiTouDay weenend;
+        public String type = "";
+        public JuiceNetApiTouDay weekday = new JuiceNetApiTouDay();
+        public JuiceNetApiTouDay weenend = new JuiceNetApiTouDay();
     }
 
     public static class JuiceNetApiTouDay {

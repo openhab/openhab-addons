@@ -43,6 +43,7 @@ public class JuiceNetBindingConstants {
     public static final String DEVICE_PROP_TOKEN = "token";
 
     // List of all Channel ids
+    public static final String DEVICE_NAME = "name";
     public static final String DEVICE_CHARGING_STATE = "charging_state";
     public static final String DEVICE_STATE = "state";
     public static final String DEVICE_OVERRIDE = "override";
