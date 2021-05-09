@@ -115,7 +115,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
             properties.put(ATTRIBUTE_UPDATE_URL, "http://" + getDeviceIp(properties) + "/ota?" + updateUrl);
             properties.put(URLPARM_CONNECTION, connection);
 
-            if (update.equalsIgnoreCase("yes")) {
+            if ("yes".equalsIgnoreCase(update)) {
                 // do the update
                 th.setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
                 html += loadHTML(FWUPDATE2_HTML, properties);
@@ -199,9 +199,9 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
                 } else {
                     // convert prod/beta to full url
                     FwRepoEntry fw = getFirmwareRepoEntry(deviceType, mode);
-                    String url = getString(prod ? fw.url : fw.beta_url);
-                    logger.debug("ShellyManager: Map {} release to url {}, version {}", url,
-                            prod ? fw.url : fw.beta_url, prod ? fw.version : fw.beta_ver);
+                    String url = getString(prod ? fw.url : fw.betaUrl);
+                    logger.debug("ShellyManager: Map {} release to url {}, version {}", url, prod ? fw.url : fw.betaUrl,
+                            prod ? fw.version : fw.betaVer);
                     return url;
                 }
             default: // Update from firmware archive
