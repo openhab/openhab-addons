@@ -20,14 +20,13 @@ import org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants;
  * information held by devices and modules.
  *
  * @author Ondrej Pecta - Initial contribution
- * @author Laurent Garnier - new parameters portalUrl and cookieRequired
+ * @author Laurent Garnier - new parameter portalUrl
  */
 @NonNullByDefault
 public class SomfyTahomaConfig {
     private String cloudPortal = SomfyTahomaBindingConstants.TAHOMA_PORTAL;
     private String email = "";
     private String password = "";
-    private boolean cookieRequired = false;
     private int refresh = 30;
     private int statusTimeout = 300;
     private int retries = 10;
@@ -43,10 +42,6 @@ public class SomfyTahomaConfig {
 
     public String getPassword() {
         return password;
-    }
-
-    public boolean isCookieRequired() {
-        return cookieRequired;
     }
 
     public int getRefresh() {
@@ -75,10 +70,6 @@ public class SomfyTahomaConfig {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setCookieRequired(boolean cookieRequired) {
-        this.cookieRequired = cookieRequired;
     }
 
     public void setRetries(int retries) {

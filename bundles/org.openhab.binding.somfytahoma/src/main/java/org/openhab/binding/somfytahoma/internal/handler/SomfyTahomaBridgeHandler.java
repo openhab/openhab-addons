@@ -15,7 +15,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
-import java.net.HttpCookie;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -103,8 +102,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     // List of futures used for command retries
     private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
-
-    private @Nullable HttpCookie cookie;
 
     /**
      * List of executions
@@ -219,8 +216,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
                     + urlEncode(thingConfig.getPassword());
 
-            cookie = null;
-
             ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
                     .content(new StringContentProvider(urlParameters),
                             "application/x-www-form-urlencoded; charset=UTF-8")
@@ -236,13 +231,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Received invalid data (login)");
             } else if (data.isSuccess()) {
-                if (response.getHeaders().get(HttpHeader.SET_COOKIE) != null) {
-                    List<HttpCookie> cookies = HttpCookie.parse(response.getHeaders().get(HttpHeader.SET_COOKIE));
-                    if (!cookies.isEmpty()) {
-                        cookie = cookies.get(0);
-                        logger.debug("Cookie retrieved");
-                    }
-                }
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 String id = registerEvents();
                 if (id != null && !UNAUTHORIZED.equals(id)) {
@@ -657,19 +645,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private Request sendRequestBuilder(String subUrl, HttpMethod method) {
-        Request request = httpClient.newRequest(getApiFullUrl(subUrl)).method(method).timeout(TAHOMA_TIMEOUT,
-                TimeUnit.SECONDS);
-        if (thingConfig.isCookieRequired()) {
-            request = request.header(HttpHeader.ACCEPT, "application/json");
-            if (!"login".equals(subUrl) && cookie != null) {
-                request = request.cookie(cookie);
-            }
-        } else {
-            request = request.header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
-                    .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").header("X-Requested-With", "XMLHttpRequest")
-                    .agent(TAHOMA_AGENT);
-        }
-        return request;
+        return httpClient.newRequest(getApiFullUrl(subUrl)).method(method)
+                .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
+                .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
+                .agent(TAHOMA_AGENT);
     }
 
     private String getApiFullUrl(String subUrl) {
@@ -826,8 +805,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
         if (configurationParameters.containsKey("email") || configurationParameters.containsKey("password")
-                || configurationParameters.containsKey("portalUrl")
-                || configurationParameters.containsKey("cookieRequired")) {
+                || configurationParameters.containsKey("portalUrl")) {
             reLoginNeeded = true;
             tooManyRequests = false;
         }
