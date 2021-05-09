@@ -300,8 +300,6 @@ public class ShellyComponents {
             if (sdata.accel != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
                         toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                        getInteger(sdata.accel.vibration) == 1 ? OnOffType.ON : OnOffType.OFF);
             }
             if (sdata.flood != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -365,8 +363,6 @@ public class ShellyComponents {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
                             getTimestamp(getString(profile.settings.timezone), timestamp));
                 }
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                        getOnOff(sdata.sensor.vibration));
             }
 
             updated |= thingHandler.updateInputs(status);
