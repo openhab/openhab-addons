@@ -96,9 +96,8 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
         } catch (MyWarmupApiException e) {
             queryResponse = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } finally {
-            refreshFromCache();
         }
+        refreshFromCache();
     }
 
     /**

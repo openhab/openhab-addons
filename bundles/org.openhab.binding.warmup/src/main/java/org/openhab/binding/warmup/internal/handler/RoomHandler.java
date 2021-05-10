@@ -118,7 +118,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
 
         if (temp != null) {
-            final int value = temp.multiply(new BigDecimal(10)).intValue();
+            final int value = temp.multiply(BigDecimal.TEN).intValue();
 
             try {
                 final MyWarmupAccountHandler localBridgeHandler = bridgeHandler;
@@ -136,8 +136,8 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     }
 
     private void toggleFrostProtectionMode(OnOffType command) {
-        String roomId = getThing().getProperties().get("Id");
-        String locationId = getThing().getProperties().get("Location Id");
+        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
+        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
         try {
             if (bridgeHandler != null && locationId != null && roomId != null) {
                 bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
