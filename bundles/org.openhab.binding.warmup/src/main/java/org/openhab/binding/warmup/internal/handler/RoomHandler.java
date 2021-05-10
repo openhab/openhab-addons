@@ -121,11 +121,11 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             final int value = temp.multiply(BigDecimal.TEN).intValue();
 
             try {
-                final MyWarmupAccountHandler localBridgeHandler = bridgeHandler;
-                if (localBridgeHandler != null && config != null) {
+                final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+                if (bridgeHandler != null && config != null) {
                     final int overrideDuration = config.getOverrideDuration();
                     if (overrideDuration > 0 && locationId != null && roomId != null) {
-                        localBridgeHandler.getApi().setOverride(locationId, roomId, value, overrideDuration);
+                        bridgeHandler.getApi().setOverride(locationId, roomId, value, overrideDuration);
                         refreshFromServer();
                     }
                 }
@@ -139,6 +139,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
         String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
         try {
+            final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
             if (bridgeHandler != null && locationId != null && roomId != null) {
                 bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
                 refreshFromServer();

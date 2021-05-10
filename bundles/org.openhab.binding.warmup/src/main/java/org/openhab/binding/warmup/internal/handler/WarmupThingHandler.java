@@ -22,6 +22,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -36,31 +37,43 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class WarmupThingHandler extends BaseThingHandler {
 
-    protected @Nullable MyWarmupAccountHandler bridgeHandler;
-
     public WarmupThingHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            bridgeHandler = (MyWarmupAccountHandler) bridge.getHandler();
+        final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null) {
+            updateStatus(ThingStatus.UNKNOWN);
         }
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+
         if (command instanceof RefreshType && bridgeHandler != null) {
             bridgeHandler.refreshFromCache();
         }
     }
 
     protected void refreshFromServer() {
+        final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+
         if (bridgeHandler != null) {
             bridgeHandler.refreshFromServer();
+        }
+    }
+
+    protected @Nullable MyWarmupAccountHandler getBridgeHandler() {
+        final Bridge bridge = getBridge();
+
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return null;
+        } else {
+            return (MyWarmupAccountHandler) bridge.getHandler();
         }
     }
 

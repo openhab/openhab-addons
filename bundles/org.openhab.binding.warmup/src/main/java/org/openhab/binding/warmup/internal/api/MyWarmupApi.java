@@ -80,7 +80,6 @@ public class MyWarmupApi {
     }
 
     private void authenticate() throws MyWarmupApiException {
-
         String body = GSON.toJson(new AuthRequestDTO(configuration.username, configuration.password,
                 WarmupBindingConstants.AUTH_METHOD, WarmupBindingConstants.AUTH_APP_ID));
 
