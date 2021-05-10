@@ -16,7 +16,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlink.handler.*;
+import org.openhab.binding.broadlink.handler.BroadlinkA1Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkRemoteHandler;
+import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel2Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel3V44057Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel4Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkSocketModel1Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkSocketModel2Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkSocketModel3Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkStripModel11K3S2UHandler;
+import org.openhab.binding.broadlink.handler.BroadlinkStripModel1Handler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;

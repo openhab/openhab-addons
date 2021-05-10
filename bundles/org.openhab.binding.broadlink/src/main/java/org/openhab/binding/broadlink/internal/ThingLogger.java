@@ -13,7 +13,7 @@
 package org.openhab.binding.broadlink.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 
 /**

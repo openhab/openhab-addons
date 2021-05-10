@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal.discovery;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;

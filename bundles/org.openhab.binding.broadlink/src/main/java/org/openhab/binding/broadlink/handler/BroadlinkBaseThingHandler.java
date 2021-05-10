@@ -20,8 +20,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlink.internal.*;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkConfiguration;
+import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
+import org.openhab.binding.broadlink.internal.ThingLogger;
+import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;
@@ -223,7 +226,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public void updateItemStatus() {
         thingLogger.logTrace("updateItemStatus; checking status for device at " + thingConfig.getIpAddress());
         boolean gotStatusOk = getStatusFromDevice();
-        if (gotStatusOk){
+        if (gotStatusOk) {
             // success - device online
             thingLogger.logTrace("updateItemStatus; host found at " + thingConfig.getIpAddress());
             if (!Utils.isOnline(getThing())) {

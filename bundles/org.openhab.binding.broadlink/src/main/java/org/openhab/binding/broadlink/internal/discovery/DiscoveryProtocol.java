@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal.discovery;
 
-import java.net.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
