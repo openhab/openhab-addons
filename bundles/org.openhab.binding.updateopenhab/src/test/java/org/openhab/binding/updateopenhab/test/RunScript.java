@@ -41,11 +41,11 @@ class RunScript {
 
     @Test
     void runScripts() {
-        // new WindowsUpdater(TargetVersion.STABLE).run();
-        // new WindowsUpdater(TargetVersion.MILESTONE).run();
-        // new WindowsUpdater(TargetVersion.SNAPSHOT).run();
-        // new DebianUpdater(TargetVersion.STABLE).run();
-        // new DebianUpdater(TargetVersion.MILESTONE).run();
-        // new DebianUpdater(TargetVersion.SNAPSHOT).run();
+        // new WindowsUpdater(TargetVersion.STABLE, "").run();
+        // new WindowsUpdater(TargetVersion.MILESTONE, "").run();
+        // new WindowsUpdater(TargetVersion.SNAPSHOT, "").run();
+        // new DebianUpdater(TargetVersion.STABLE, "").run();
+        // new DebianUpdater(TargetVersion.MILESTONE, "").run();
+        // new DebianUpdater(TargetVersion.SNAPSHOT, "").run();
     }
 }

@@ -45,11 +45,9 @@ public class UpdateHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (THING_TYPE_OH_UPDATER.equals(thingTypeUID)) {
             return new UpdateHandler(thing);
         }
-
         return null;
     }
 }

@@ -25,9 +25,9 @@ public enum TargetVersion {
     MILESTONE("unstable"),
     SNAPSHOT("testing");
 
-    public final String label;
+    public final String type;
 
-    private TargetVersion(String label) {
-        this.label = label;
+    private TargetVersion(String type) {
+        this.type = type;
     }
 }

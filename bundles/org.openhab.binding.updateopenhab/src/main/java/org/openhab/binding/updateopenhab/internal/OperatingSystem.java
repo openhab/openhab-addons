@@ -29,21 +29,20 @@ public enum OperatingSystem {
 
     public static OperatingSystem getOperatingSystemVersion() {
         String os = System.getProperty("os.name");
-        if (os == null) {
-            return OperatingSystem.UNKNOWN;
-        }
-        os = os.toLowerCase();
-        if (os.contains("win")) {
-            return OperatingSystem.WINDOWS;
-        }
-        if (os.contains("mac")) {
-            return OperatingSystem.MAC;
-        }
-        if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-            return OperatingSystem.UNIX;
-        }
-        if (os.contains("sunos")) {
-            return OperatingSystem.SOLARIS;
+        if (os != null) {
+            os = os.toLowerCase();
+            if (os.contains("win")) {
+                return OperatingSystem.WINDOWS;
+            }
+            if (os.contains("mac")) {
+                return OperatingSystem.MAC;
+            }
+            if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+                return OperatingSystem.UNIX;
+            }
+            if (os.contains("sunos")) {
+                return OperatingSystem.SOLARIS;
+            }
         }
         return OperatingSystem.UNKNOWN;
     }

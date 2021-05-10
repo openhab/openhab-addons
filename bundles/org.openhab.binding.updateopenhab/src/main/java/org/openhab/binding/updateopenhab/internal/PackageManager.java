@@ -15,14 +15,14 @@ package org.openhab.binding.updateopenhab.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Configuration} class contains fields mapping thing configuration parameters.
+ * The {@link PackageManager} identifies the type of Linux Package Manager.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Configuration {
-
-    public String targetVersion = "STABLE";
-    public String password = "";
-    public int sleepTime = 20;
+public enum PackageManager {
+    UNKNOWN_PACKAGE_MANAGER,
+    DEBIAN_PACKAGE_MANAGER,
+    REDHAT_PACKAGE_MANAGER,
+    GENTOO_PACKAGE_MANAGER;
 }

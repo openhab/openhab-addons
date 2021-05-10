@@ -32,6 +32,15 @@
 				<label>Password</label>
 				<description>The system password (only required on Linux etc.)</description>
 			</parameter>
+
+			<parameter name="sleepTime" type="integer" min="5" max="60" step="5" required="true">
+				<context>time</context>
+				<default>20</default>
+				<label>Shutdown Sleep Time</label>
+				<unitLabel>Seconds</unitLabel>
+				<description>The time that the updater will sleep while waiting for OpenHAB shut down</description>
+			</parameter>
+
 		</config-description>
 
 	</thing-type>

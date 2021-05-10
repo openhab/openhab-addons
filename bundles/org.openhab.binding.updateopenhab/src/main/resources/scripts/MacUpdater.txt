@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# OpenHAB Auto Update Script for Mac OS
+
+# execute command: [EXECUTE_COMMAND]
+  
+# stop OpenHAB
+. "[RUNTIME_FOLDER]/bin/stop" >nul 2>&1
+
+# sleep if OpenHAB was running
+if [ $? -eq 0 ]; then
+   sleep [SLEEP_TIME]
+fi
+
+# update OpenHAB
+. "[RUNTIME_FOLDER]/bin/update" [TARGET_VERSION]
+
+# start OpenHAB
+exec "[EXECUTE_FOLDER]/start.sh"

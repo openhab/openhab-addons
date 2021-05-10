@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# OpenHAB Auto Update Script for Linux / Debian
+
+# execute command: [EXECUTE_COMMAND]
+
+# stop OpenHAB
+systemctl stop openhab.service
+
+# set repository
+echo deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg [TARGET_TYPE] main > /etc/apt/sources.list.d/openhab.list
+
+# update OpenHAB
+apt-get update && apt-get install openhab
+
+# start OpenHAB
+systemctl start openhab.service

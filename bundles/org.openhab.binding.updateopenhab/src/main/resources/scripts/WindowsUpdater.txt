@@ -1,0 +1,26 @@
+@echo off
+
+:: OpenHAB Auto Update Script for Windows
+
+:: execute command: [EXECUTE_COMMAND]
+
+title [TITLE]
+
+:: stop OpenHAB
+call "[RUNTIME_FOLDER]\bin\stop.bat" >nul 2>&1
+
+:: the call to stop trashes the title
+title [TITLE]
+
+:: sleep if OpenHAB was running
+if %ERRORLEVEL% == 0 (
+   echo Waiting for OpenHAB to stop
+   timeout [SLEEP_TIME] /NOBREAK
+)
+
+:: update OpenHAB
+call "[RUNTIME_FOLDER]\bin\update.bat" [TARGET_VERSION]
+cls
+
+:: start OpenHAB
+"[EXECUTE_FOLDER]\start.bat" && exit
