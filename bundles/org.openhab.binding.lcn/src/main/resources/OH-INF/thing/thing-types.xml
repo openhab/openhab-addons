@@ -657,7 +657,7 @@
 	</channel-type>
 
 	<channel-group-type id="hostcommands">
-		<label>Host Command</label>
+		<label>Host Commands</label>
 		<description>Command from LCN to openHAB</description>
 		<channels>
 			<channel typeId="sendKeys" id="sendKeys"/>
