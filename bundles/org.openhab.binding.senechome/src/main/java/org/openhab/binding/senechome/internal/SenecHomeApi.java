@@ -89,21 +89,21 @@ public class SenecHomeApi {
             }
         } catch (MalformedJsonException | JsonSyntaxException | InterruptedException | TimeoutException
                 | ExecutionException e) {
-            logger.trace("Issue with getting SenecHomeResponse");
-            logger.trace("location: {}", location);
-            logger.trace("request: {}", request.toString());
-            logger.trace("request.getHeaders: {}", request.getHeaders());
+            String errorMessage = "\nlocation: " + location;
+            errorMessage += "\nrequest: " + request.toString();
+            errorMessage += "\nrequest.getHeaders: " + request.getHeaders();
             if (response == null) {
-                logger.trace("response is null");
+                errorMessage += "\nresponse: null";
             } else {
-                logger.trace("response: {}", response.toString());
-                logger.trace("response.getHeaders: {}", response.getHeaders());
+                errorMessage += "\nresponse: " + response.toString();
+                errorMessage += "\nresponse.getHeaders: " + response.getHeaders();
                 if (response.getContent() == null) {
-                    logger.trace("response.getContent is null");
+                    errorMessage += "\nresponse.getContent is null";
                 } else {
-                    logger.trace("response.getContentAsString: {}", response.getContentAsString());
+                    errorMessage += "\nresponse.getContentAsString: " + response.getContentAsString();
                 }
             }
+            logger.trace("Issue with getting SenecHomeResponse\n{}", errorMessage);
             throw e;
         }
     }
