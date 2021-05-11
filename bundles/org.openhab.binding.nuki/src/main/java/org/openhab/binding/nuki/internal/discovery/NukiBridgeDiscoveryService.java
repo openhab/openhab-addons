@@ -1,8 +1,21 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.nuki.internal.discovery;
 
 import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
@@ -32,6 +45,7 @@ import com.google.gson.Gson;
  *
  * @author Jan Vybíral - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery." + NukiBindingConstants.BINDING_ID)
 public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
 
@@ -139,8 +153,7 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
             } catch (Exception e) {
                 logger.error("Failed to get API token for bridge {}({}) - {}", bridge.getIp(), bridge.getBridgeId(),
                         e.getMessage());
-                logger.debug(String.format("Failed to get API token for bridge %s(%s)", bridge.getIp(),
-                        bridge.getBridgeId()), e);
+                logger.debug("Failed to get API token for bridge {}({})", bridge.getIp(), bridge.getBridgeId(), e);
             }
             discoverBridge(bridge, "");
         }

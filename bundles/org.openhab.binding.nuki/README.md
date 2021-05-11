@@ -39,6 +39,7 @@ The following configuration options are available:
 
 Bridges on local network can be discovered automatically if both Nuki Bridge and openHAB have working internet connection. You can check whether discovery
 is working by checking [discovery API endpoint](https://api.nuki.io/discover/bridges). To discover bridges do the following:
+
 * In openHAB UI add new thing, select Nuki Binding and start scan
 * Within 30s press button on Nuki Bridge you want to discover
 * Bridge should appear in inbox
@@ -97,16 +98,16 @@ The following configuration options are available:
 - **lowBattery** (Switch)  
     Use this channel to receive a low battery warning.
   
-  **keypadLowBattery** (Switch)
+- **keypadLowBattery** (Switch)
     Use this channel to receive a low battery warning for keypad paired with smart lock.
   
-  **batteryLevel** (Number)
+- **batteryLevel** (Number)
     Use this channel to monitor current battery level of smart lock.
   
-  **batteryCharging** (Switch)
+- **batteryCharging** (Switch)
     Use this channel to monitor charging of smart lock.
 
-- **doorsensorState** (Number)  
+- **doorsensorState** (Number)
     Use this channel if you want to display the current door state provided by the door sensor.
   
   | Action | Name                     |
@@ -127,7 +128,7 @@ Nuki Opener has no configuration properties.
 - **openerState** (Number)
   Use this channel if you want to execute supported Opener actions or monitor current Opener state.
   Supported actions are:
-  
+
   | Action | Name                       |
   |--------|----------------------------|
   | 1      | Activate ring to open      |
@@ -161,7 +162,7 @@ Nuki Opener has no configuration properties.
 
 - **ringActionState** (Switch)
   Use this channel to receive notification when doorbell rings.
-  
+
 - **ringActionTimestamp** (DateTime)
   Use this channel to get timestamp of last time doorbell was rung.
 

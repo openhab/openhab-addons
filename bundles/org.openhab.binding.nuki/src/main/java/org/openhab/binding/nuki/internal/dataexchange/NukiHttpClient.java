@@ -28,7 +28,13 @@ import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
 import org.openhab.binding.nuki.internal.constants.OpenerAction;
 import org.openhab.binding.nuki.internal.constants.SmartLockAction;
-import org.openhab.binding.nuki.internal.dto.*;
+import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackAddDto;
+import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListDto;
+import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackRemoveDto;
+import org.openhab.binding.nuki.internal.dto.BridgeApiInfoDto;
+import org.openhab.binding.nuki.internal.dto.BridgeApiListDeviceDto;
+import org.openhab.binding.nuki.internal.dto.BridgeApiLockActionDto;
+import org.openhab.binding.nuki.internal.dto.BridgeApiLockStateDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
