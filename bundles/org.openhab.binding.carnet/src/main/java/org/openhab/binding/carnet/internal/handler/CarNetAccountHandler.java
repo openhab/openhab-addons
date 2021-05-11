@@ -90,7 +90,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         try {
             SslContextFactory ssl = new SslContextFactory();
             String[] excludedCiphersWithoutTlsRsaExclusion = Arrays.stream(ssl.getExcludeCipherSuites())
-                    .filter(cipher -> !cipher.equals("^TLS_RSA_.*$")).toArray(String[]::new);
+                    .filter(cipher -> !"^TLS_RSA_.*$".equals(cipher)).toArray(String[]::new);
             ssl.setExcludeCipherSuites(excludedCiphersWithoutTlsRsaExclusion);
             httpClient = new HttpClient(ssl);
             httpClient.start();

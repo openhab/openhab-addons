@@ -17,9 +17,12 @@ The binding itself has no configuration options
 
 ## Supported Things
 
-### CarNet Account (account)
+### CarNet Account (myaudi, skoda)
 
 The Account thing implements the online connect to the CarNet service.
+The binding supports myAudi (myaudi) and Skoda Connect (skoda).
+Depending on brand, car model and activated license a different set of channels and actions are supported,
+
 An account is required to setup the connection (register on the manufacture's portal, e.g. myAudi.de).
 Usually the manufacturer supports to register a single or multiple vehicles under this account (identified by their unique vehicle identification number - VIN).
 Once the account gets online the binding retrieves the complete vehicle list and creates a thing per vehicle.
@@ -28,8 +31,6 @@ Thing Configuration
 
 |Parameter         | Description                                                                               |Mandatory| Default   |
 |------------------|-------------------------------------------------------------------------------------------|---------|-------------------|
-| brand            | Car brand, currently only Audi is supported                                               | yes     | none              |
-| country          | Market / country where the vehicle is registered. There are 3 platforms: DE=All Europe incl. Canada, US=USA and CN=China | yes     |DE        |
 | user             | User ID for your CarNet account (same as login id for the manuafacturer's portal)         | yes     | none      |
 | password         | Password for the CarNet account (same as portal)                                          | yes     | none      |
 | pollingInterval  | Refresh interval in minutes for data refresh (CarNet is not event driven)                 | yes     | 15        |

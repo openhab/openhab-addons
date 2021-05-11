@@ -224,19 +224,19 @@ public class CarNetIChanneldMapper {
         Unit<?> unit = null;
 
         String fieldUnit = gs(field.unit);
-        if (fieldUnit.isEmpty() || fieldUnit.equalsIgnoreCase("null")) {
+        if (fieldUnit.isEmpty() || "null".equalsIgnoreCase(fieldUnit)) {
             return definition;
         }
         if (fieldUnit.contains("%")) {
             itemType = ITEMT_PERCENT;
             unit = Units.PERCENT;
-        } else if (fieldUnit.equalsIgnoreCase("d")) {
+        } else if ("d".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_TIME;
             unit = QDAYS;
-        } else if (fieldUnit.equalsIgnoreCase("min")) {
+        } else if ("min".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_TIME;
             unit = QMINUTES;
-        } else if (fieldUnit.equalsIgnoreCase("l")) {
+        } else if ("l".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_VOLUME;
             unit = Units.LITRE;
             /*
@@ -244,28 +244,28 @@ public class CarNetIChanneldMapper {
              * itemType = ITEMT_VOLUME;
              * unit = CustomUnits.GALLON;
              */
-        } else if (fieldUnit.equalsIgnoreCase("dK")) {
+        } else if ("dK".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_TEMP;
             unit = DKELVIN;
-        } else if (fieldUnit.equalsIgnoreCase("C")) {
+        } else if ("C".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_TEMP;
             unit = SIUnits.CELSIUS;
-        } else if (fieldUnit.equalsIgnoreCase("F")) {
+        } else if ("F".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_TEMP;
             unit = ImperialUnits.FAHRENHEIT;
-        } else if (fieldUnit.equalsIgnoreCase("km")) {
+        } else if ("km".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_DISTANCE;
             unit = KILOMETRE;
-        } else if (fieldUnit.equalsIgnoreCase("mi")) {
+        } else if ("mi".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_DISTANCE;
             unit = ImperialUnits.MILE;
-        } else if (fieldUnit.equalsIgnoreCase("in")) {
+        } else if ("in".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_DISTANCE;
             unit = ImperialUnits.INCH;
-        } else if (fieldUnit.equalsIgnoreCase("km/h")) {
+        } else if ("km/h".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_SPEED;
             unit = SIUnits.KILOMETRE_PER_HOUR;
-        } else if (fieldUnit.equalsIgnoreCase("mph") || fieldUnit.equalsIgnoreCase("mi/h")) {
+        } else if ("mph".equalsIgnoreCase(fieldUnit) || "mi/h".equalsIgnoreCase(fieldUnit)) {
             itemType = ITEMT_SPEED;
             unit = ImperialUnits.MILES_PER_HOUR;
         } else {
@@ -289,7 +289,7 @@ public class CarNetIChanneldMapper {
         entry.groupName = group;
         entry.channelName = channel;
         entry.itemType = itemType;
-        if (itemType.equals(ITEMT_PERCENT) && (unit == null)) {
+        if (ITEMT_PERCENT.equals(itemType) && (unit == null)) {
             entry.unit = Units.PERCENT;
         } else {
             entry.unit = unit;
@@ -304,8 +304,8 @@ public class CarNetIChanneldMapper {
 
     public ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,
             @Nullable Unit<?> unit) {
-        boolean advanced = group.equals(CHANNEL_GROUP_STATUS) || group.equals(CHANNEL_GROUP_WINDOWS)
-                || group.equals(CHANNEL_GROUP_DOORS) || group.equals(CHANNEL_GROUP_TIRES);
+        boolean advanced = CHANNEL_GROUP_STATUS.equals(group) || CHANNEL_GROUP_WINDOWS.equals(group)
+                || CHANNEL_GROUP_DOORS.equals(group) || CHANNEL_GROUP_TIRES.equals(group);
         return add(name, id, channel, itemType, group, unit, advanced, true);
     }
 

@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
@@ -36,6 +37,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class CarNetVehicleServiceDestinations extends CarNetVehicleBaseService {
     public CarNetVehicleServiceDestinations(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(thingHandler, api);

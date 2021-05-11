@@ -432,8 +432,8 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION, getStringType(action));
             }
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, getStringType(actionStatus));
-            boolean inProgress = actionStatus.equalsIgnoreCase(CNAPI_REQUEST_IN_PROGRESS)
-                    || actionStatus.equalsIgnoreCase(CNAPI_REQUEST_QUEUED);
+            boolean inProgress = CNAPI_REQUEST_IN_PROGRESS.equalsIgnoreCase(actionStatus)
+                    || CNAPI_REQUEST_QUEUED.equalsIgnoreCase(actionStatus);
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING,
                     inProgress ? OnOffType.ON : OnOffType.OFF);
         }
@@ -456,7 +456,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             Map<String, CarNetPendingRequest> requests = api.getPendingRequests();
             for (Map.Entry<String, CarNetPendingRequest> e : requests.entrySet()) {
                 CarNetPendingRequest request = e.getValue();
-                if (request.service.equalsIgnoreCase(CNAPI_SERVICE_VEHICLE_STATUS_REPORT)) {
+                if (CNAPI_SERVICE_VEHICLE_STATUS_REPORT.equalsIgnoreCase(request.service)) {
                     pending = true;
                 }
             }
@@ -493,7 +493,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                     }
                 }
 
-                if (!request.service.equalsIgnoreCase(CNAPI_SERVICE_VEHICLE_STATUS_REPORT)) {
+                if (!CNAPI_SERVICE_VEHICLE_STATUS_REPORT.equalsIgnoreCase(request.service)) {
                     updateActionStatus("", request.status);
                 }
                 if (!request.isInProgress()) {

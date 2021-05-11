@@ -141,7 +141,7 @@ public class CarNetException extends Exception {
     }
 
     private boolean isEmpty() {
-        return nonNullString(super.getMessage()).equals(NONE);
+        return NONE.equals(nonNullString(super.getMessage()));
     }
 
     private static String nonNullString(@Nullable String s) {

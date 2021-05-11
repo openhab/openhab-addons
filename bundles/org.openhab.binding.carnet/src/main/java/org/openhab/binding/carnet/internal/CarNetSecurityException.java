@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.carnet.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.CarNetApiResult;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiResult;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class CarNetSecurityException extends CarNetException {
     private static final long serialVersionUID = 3774082851695011862L;
 

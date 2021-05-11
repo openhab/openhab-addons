@@ -133,7 +133,7 @@ public class CarNetApiGSonDTO {
             public String vin;
 
             public boolean isPairingCompleted() {
-                return pairingStatus.equalsIgnoreCase("PAIRINGCOMPLETE");
+                return "PAIRINGCOMPLETE".equalsIgnoreCase(pairingStatus);
             }
         }
 

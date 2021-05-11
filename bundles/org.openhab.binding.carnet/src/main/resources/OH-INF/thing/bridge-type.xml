@@ -25,11 +25,11 @@
 		<config-description-ref uri="bridge-type:carnet:account"/>
 	</bridge-type>
 
-    <bridge-type id="seat">
-        <label>SEAT Account (CarNet)</label>
-        <description>This thing represents a Skoda CarNet Account.</description>
+	<bridge-type id="seat">
+		<label>SEAT Account (CarNet)</label>
+		<description>This thing represents a Skoda CarNet Account.</description>
 
-        <config-description-ref uri="bridge-type:carnet:account"/>
-    </bridge-type>
+		<config-description-ref uri="bridge-type:carnet:account"/>
+	</bridge-type>
 
 </thing:thing-descriptions>

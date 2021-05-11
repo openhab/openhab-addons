@@ -75,7 +75,7 @@ public class CarNetPendingRequest {
     }
 
     public boolean isInProgress() {
-        return status.equalsIgnoreCase(CNAPI_REQUEST_IN_PROGRESS) || status.equalsIgnoreCase(CNAPI_REQUEST_QUEUED);
+        return CNAPI_REQUEST_IN_PROGRESS.equalsIgnoreCase(status) || CNAPI_REQUEST_QUEUED.equalsIgnoreCase(status);
     }
 
     public boolean isExpired() {

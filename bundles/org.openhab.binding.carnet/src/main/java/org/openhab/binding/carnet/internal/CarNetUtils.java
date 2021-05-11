@@ -183,7 +183,7 @@ public class CarNetUtils {
     }
 
     public static OnOffType getOnOff(@Nullable String value) {
-        return (value != null ? value.equalsIgnoreCase("on") ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+        return (value != null ? "on".equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }
 
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {

@@ -136,7 +136,7 @@ public abstract class CarNetApiBase {
         CarNetServiceAvailability serviceStatus = new CarNetServiceAvailability();
         for (CarNetServiceInfo si : operation.serviceInfo) {
             // Check service enabled status, maybe we need also to check serviceEol
-            boolean enabled = si.serviceStatus.status.equalsIgnoreCase("Enabled")
+            boolean enabled = "Enabled".equalsIgnoreCase(si.serviceStatus.status)
                     && (!si.licenseRequired || si.cumulatedLicense.status.equalsIgnoreCase("ACTIVATED"));
             switch (si.serviceId) {
                 case CNAPI_SERVICE_VEHICLE_STATUS_REPORT:
@@ -186,7 +186,7 @@ public abstract class CarNetApiBase {
 
     public String getApiUrl() throws CarNetException {
         String url = getHomeReguionUrl();
-        if (!url.equalsIgnoreCase(CNAPI_VWG_MAL_1A_CONNECT)) {
+        if (!CNAPI_VWG_MAL_1A_CONNECT.equalsIgnoreCase(url)) {
             // Change base url depending on country selector
             url = url.replace("https://mal-", "https://fal-").replace("/api", "/fs-car");
             config.apiUrlPrefix = url;
@@ -209,7 +209,6 @@ public abstract class CarNetApiBase {
         CNVehicleDetails details = callApi(vin, CNAPI_URI_VEHICLE_DETAILS, headers, "getVehicleDetails",
                 CNVehicleDetails.class);
         return details.vehicleDataDetail;
-
     }
 
     public CarNetVehicleStatus getVehicleStatus() throws CarNetException {
@@ -243,7 +242,7 @@ public abstract class CarNetApiBase {
     public CarNetDestinationList getDestinations() throws CarNetException {
         // The API returns 403 when service is not available, but
         String json = callApi(CNAPI_URI_DESTINATIONS, "getDestinations", String.class);
-        if (json.equals("{\"destinations\":null}")) {
+        if ("{\"destinations\":null}".equals(json)) {
             // This services returns an empty list rather than http 403 when access is not allowed
             // in this case try to load test data
             String test = loadJson("getDestinations");

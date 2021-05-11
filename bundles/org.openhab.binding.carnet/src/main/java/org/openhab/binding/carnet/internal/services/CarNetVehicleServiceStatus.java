@@ -164,7 +164,7 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
     }
 
     private boolean checkMaintenance(CNStatusField field, ChannelIdMapEntry definition) {
-        if (definition.symbolicName.contains("MAINT_ALARM") && field.value.equals("1")) {
+        if (definition.symbolicName.contains("MAINT_ALARM") && "1".equals(field.value)) {
             // MAINT_ALARM_INSPECTION+MAINT_ALARM_OIL_CHANGE + MAINT_ALARM_OIL_MINIMUM
             logger.debug("{}: Maintenance required: {} has incorrect pressure", thingId, definition.symbolicName);
             return true;
@@ -178,8 +178,8 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
 
     private boolean checkLocked(CNStatusField field, ChannelIdMapEntry definition) {
         if (definition.symbolicName.contains("LOCK")) {
-            boolean result = (definition.symbolicName.contains("LOCK2") && field.value.equals("2"))
-                    || (definition.symbolicName.contains("LOCK3") && field.value.equals("3"));
+            boolean result = (definition.symbolicName.contains("LOCK2") && "2".equals(field.value))
+                    || (definition.symbolicName.contains("LOCK3") && "3".equals(field.value));
             if (!result) {
                 logger.debug("{}: Vehicle is not completetly locked: {}={}", thingId, definition.channelName,
                         field.value);
@@ -191,7 +191,7 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
 
     private boolean checkWindows(CNStatusField field, ChannelIdMapEntry definition) {
         if ((definition.symbolicName.contains("WINDOWS") || definition.symbolicName.contains("SUN_ROOF_MOTOR_COVER"))
-                && definition.symbolicName.contains("STATE3") && !field.value.equals("3")) {
+                && definition.symbolicName.contains("STATE3") && !"3".equals(field.value)) {
             logger.debug("{}: Window {} is not closed ({})", thingId, definition.channelName, field.value);
         }
         return true;
@@ -199,7 +199,7 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
 
     private boolean checkTires(CNStatusField field, ChannelIdMapEntry definition) {
         if (definition.symbolicName.contains("TIREPRESS") && definition.symbolicName.contains("CURRENT")
-                && !field.value.equals("1")) {
+                && !"1".equals(field.value)) {
             logger.debug("{}: Tire pressure for {} is not ok", thingId, definition.channelName);
         }
         return true;
