@@ -133,16 +133,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             notificationSchedule.cancel(false);
         }
         super.dispose();
-        scheduler.schedule(() -> {
-            try {
-                // switch off active power updates
-                bridgeHandler.gateway.send(EnergyManagement.setActivePowerNotificationsTime(deviceWhere.value(), 0));
-            } catch (Exception e) {
-                logger.warn(
-                        "dispose() For WHERE={} could not UN-subscribe from active power changes notifications. Exception={}",
-                        deviceWhere, e.getMessage());
-            }
-        }, 1, TimeUnit.MINUTES);
     }
 
     @Override
