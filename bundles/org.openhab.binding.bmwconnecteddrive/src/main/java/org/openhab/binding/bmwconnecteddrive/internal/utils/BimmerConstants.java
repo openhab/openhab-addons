@@ -35,12 +35,21 @@ public class BimmerConstants {
 
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/country_selector.py
     public static final String AUTH_SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us/gcdm";
-    public static final String AUTH_SERVER_CHINA = "b2vapi.bmwgroup.cn/gcdm";
-    public static final String AUTH_SERVER_ROW = "b2vapi.bmwgroup.com/gcdm";
+    public static final String AUTH_SERVER_CHINA = "customer.bmwgroup.cn/gcdm";
+    public static final String AUTH_SERVER_ROW = "customer.bmwgroup.com/gcdm";
     public static final Map<String, String> AUTH_SERVER_MAP = Map.of(REGION_NORTH_AMERICA, AUTH_SERVER_NORTH_AMERICA,
             REGION_CHINA, AUTH_SERVER_CHINA, REGION_ROW, AUTH_SERVER_ROW);
 
-    public static final String OAUTH_ENDPOINT = "/oauth/token";
+    // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/country_selector.py
+    public static final String LEGACY_AUTH_SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us/gcdm";
+    public static final String LEGACY_AUTH_SERVER_CHINA = "b2vapi.bmwgroup.cn/gcdm";
+    public static final String LEGACY_AUTH_SERVER_ROW = "b2vapi.bmwgroup.com/gcdm";
+    public static final Map<String, String> LEGACY_AUTH_SERVER_MAP = Map.of(REGION_NORTH_AMERICA,
+            LEGACY_AUTH_SERVER_NORTH_AMERICA, REGION_CHINA, LEGACY_AUTH_SERVER_CHINA, REGION_ROW,
+            LEGACY_AUTH_SERVER_ROW);
+
+    public static final String OAUTH_ENDPOINT = "/oauth/authenticate";
+    public static final String LEGACY_OAUTH_ENDPOINT = "/oauth/token";
 
     public static final String SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
     public static final String SERVER_CHINA = "b2vapi.bmwgroup.cn:8592";

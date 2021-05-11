@@ -41,7 +41,7 @@
 	<channel-type id="soc-max-channel">
 		<item-type>Number:Power</item-type>
 		<label>Max Battery Capacity</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="remaining-fuel-channel">
 		<item-type>Number:Volume</item-type>

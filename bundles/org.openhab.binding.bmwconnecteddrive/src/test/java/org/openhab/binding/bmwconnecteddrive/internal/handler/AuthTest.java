@@ -85,12 +85,11 @@ public class AuthTest {
         logger.info("Expires {}", t.isExpired());
     }
 
-    @Test
     public void testJavaHttpAuth() {
         ConnectedDriveConfiguration config = new ConnectedDriveConfiguration();
         config.region = BimmerConstants.REGION_ROW;
-        config.userName = "marika.weymann@gmail.com";
-        config.password = "P4nd4b3r";
+        config.userName = "bla";
+        config.password = "bla";
 
         final StringBuilder legacyAuth = new StringBuilder();
         legacyAuth.append("https://");
@@ -137,89 +136,22 @@ public class AuthTest {
             System.out.println(con.getContentLength());
             con.disconnect();
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (ProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
-    /**
-     * @Test
-     *       public void testJavaHttpAuth2() {
-     *       ConnectedDriveConfiguration config = new ConnectedDriveConfiguration();
-     *       config.region = BimmerConstants.REGION_ROW;
-     *       config.userName = "marika.weymann@gmail.com";
-     *       config.password = "P4nd4b3r";
-     *
-     *       final StringBuilder legacyAuth = new StringBuilder();
-     *       legacyAuth.append("https://");
-     *       legacyAuth.append(BimmerConstants.AUTH_SERVER_MAP.get(config.region));
-     *       legacyAuth.append(BimmerConstants.OAUTH_ENDPOINT);
-     *       URL url;
-     *       try {
-     *
-     *       final MultiMap<String> dataMap = new MultiMap<String>();
-     *       dataMap.add("grant_type", "password");
-     *       dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
-     *       dataMap.add(USERNAME, config.userName);
-     *       dataMap.add(PASSWORD, config.password);
-     *
-     *       String urlContent = UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
-     *       System.out.println(urlContent);
-     *       url = new URL(legacyAuth.toString() + "?" + urlContent);
-     *       System.out.println(url.toString());
-     *       System.out.println(Integer.toString(urlContent.length()));
-     *       HttpURLConnection con = (HttpURLConnection) url.openConnection();
-     *       con.setRequestMethod("POST");
-     *       con.setRequestProperty(HttpHeader.CONTENT_TYPE.asString(), "application/x-www-form-urlencoded");
-     *       con.setRequestProperty(HttpHeader.CONTENT_LENGTH.asString(), Integer.toString(urlContent.length()));
-     *       con.setRequestProperty(HttpHeader.CONNECTION.asString(), KEEP_ALIVE);
-     *       con.setRequestProperty(HttpHeader.HOST.asString(), BimmerConstants.SERVER_MAP.get(config.region));
-     *       con.setRequestProperty(HttpHeader.AUTHORIZATION.asString(),
-     *       BimmerConstants.AUTHORIZATION_VALUE_MAP.get(config.region));
-     *       con.setRequestProperty(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
-     *       con.setRequestProperty(HttpHeader.REFERER.asString(), BimmerConstants.REFERER_URL);
-     *       System.out.println(con.getHeaderField(HttpHeader.CONTENT_LENGTH.asString()));
-     *       System.out.println(con.getHeaderFields());
-     *       int status = con.getResponseCode();
-     *       System.out.println("Status: " + status);
-     *       if (status < 400) {
-     *       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-     *       String inputLine;
-     *       StringBuffer content = new StringBuffer();
-     *       while ((inputLine = in.readLine()) != null) {
-     *       content.append(inputLine);
-     *       }
-     *       System.out.println("Content: " + content.toString());
-     *       in.close();
-     *       }
-     *       System.out.println(con.getContentLength());
-     *       var client = new HttpClient();
-     *
-     *       // create a request
-     *       var request = HttpRequest.newBuilder(URI.create("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"))
-     *       .header("accept", "application/json").build();
-     *
-     *       // use the client to send the request
-     *       var response = client.send(request, new JsonBodyHandler<>(APOD.class));
-     *
-     *       // the response:
-     *       System.out.println(response.body().get().title);
-     *
-     *       } catch (MalformedURLException e) {
-     *       // TODO Auto-generated catch block
-     *       e.printStackTrace();
-     *       } catch (ProtocolException e) {
-     *       // TODO Auto-generated catch block
-     *       e.printStackTrace();
-     *       } catch (IOException e) {
-     *       // TODO Auto-generated catch block
-     *       e.printStackTrace();
-     *       }
-     *       }
-     */
+
+    public void testCumstomerBMWAuthenticate() {
+        ConnectedDriveConfiguration c = new ConnectedDriveConfiguration();
+        c.region = "ROW";
+        c.userName = "bla";
+        c.password = "bla";
+
+        HttpClient hc = mock(HttpClient.class);
+        HttpClientFactory hct = mock(HttpClientFactory.class);
+        when(hct.getCommonHttpClient()).thenReturn(hc);
+        when(hct.createHttpClient(AUTH_HTTP_CLIENT_NAME)).thenReturn(hc);
+        AuthProbes auth = new AuthProbes(hct, c);
+        auth.updateToken();
+    }
 }

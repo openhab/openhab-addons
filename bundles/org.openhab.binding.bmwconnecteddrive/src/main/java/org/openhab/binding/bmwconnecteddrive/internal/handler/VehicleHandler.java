@@ -684,7 +684,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            vehicleStatusCallback.onError(error);
+            // vehicleStatusCallback.onError(error);
         }
     }
 
