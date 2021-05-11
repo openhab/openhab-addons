@@ -64,7 +64,7 @@ public class CarNetDiscoveryService extends AbstractDiscoveryService implements 
             return;
         }
         for (CarNetVehicleInformation vehicle : vehicleList) {
-            logger.debug("Discovery for [{}]", vehicle.getId());
+            logger.debug("VIN {} discovery, create thing", vehicle.getId());
             Map<String, Object> properties = new TreeMap<String, Object>();
             ThingUID uid = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vehicle.getId());
             properties.put(PROPERTY_VIN, vehicle.vin);

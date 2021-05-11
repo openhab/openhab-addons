@@ -34,7 +34,6 @@ import org.openhab.binding.carnet.internal.CarNetTextResources;
 import org.openhab.binding.carnet.internal.CarNetUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails.CNCarPortData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleList;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
@@ -170,23 +169,12 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         CarNetVehicleList vehices = api.getVehicles();
         vehicleList = new ArrayList<CarNetVehicleInformation>();
         for (String vin : vehices.userVehicles.vehicle) {
-            CarNetVehicleDetails details;
-            try {
-                config.vehicle.vin = vin;
-                api.setConfig(config);
-                config.apiUrlPrefix = api.getApiUrl();
-                api.setConfig(config);
-                details = api.getVehicleDetails(vin);
-            } catch (CarNetException e) {
-                logger.debug("Unable to get vehicle details for VIN {}", vin);
-                CNCarPortData carportData = new CNCarPortData();
-                details = new CarNetVehicleDetails();
-                details.carportData = carportData;
-                details.vin = vin;
-                details.brand = config.account.brand;
-            }
-            CarNetVehicleInformation vehicle = new CarNetVehicleInformation(details);
-            vehicleList.add(vehicle);
+            config.vehicle.vin = vin;
+            api.setConfig(config);
+            config.apiUrlPrefix = api.getApiUrl();
+            api.setConfig(config);
+            CarNetVehicleDetails details = api.getVehicleDetails(vin);
+            vehicleList.add(new CarNetVehicleInformation(details));
         }
         informVehicleInformationListeners(vehicleList);
 

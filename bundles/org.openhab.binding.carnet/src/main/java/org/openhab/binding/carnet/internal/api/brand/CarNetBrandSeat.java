@@ -27,8 +27,6 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
  */
 @NonNullByDefault
 public class CarNetBrandSeat extends CarNetApiBase {
-    public static final String CNAPI_BASE_URL_VW = "https://msg.volkswagen.de/fs-car/";
-
     public CarNetBrandSeat(CarNetHttpClient httpClient, CarNetTokenManager tokenManager) {
         super(httpClient, tokenManager);
     }
@@ -38,7 +36,7 @@ public class CarNetBrandSeat extends CarNetApiBase {
         CarNetApiProperties properties = new CarNetApiProperties();
         properties.brand = CNAPI_BRAND_SEAT;
         properties.xcountry = "ES";
-        properties.apiDefaultUrl = ""; // NAPI_BASE_URL_VW;
+        properties.apiDefaultUrl = "";
         properties.clientId = "50f215ac-4444-4230-9fb1-fe15cd1a9bcc@apps_vw-dilab_com";
         properties.xClientId = "9dcc70f0-8e79-423a-a3fa-4065d99088b4";
         properties.authScope = "openid profile mbb cars birthdate nickname address phone";
