@@ -8,11 +8,15 @@ It should support devices which support CEC. See [libcec supported devices](http
 
 ## Discovery
 
-This version supports manual discovery. You can invoke discovery via the Refresh link in Paper UI. It will invoke device discovery on the CEC bus. This can take ~30s to switch on and enumerate the devices so is not suitable for continuous background refresh.
+This version supports manual discovery. You can invoke discovery via the (+) button in the things UI, selecting the HdmiCEC binding and then use "Scan" . It will invoke device discovery on the CEC bus. This can take ~30s to switch on and enumerate the devices so is not suitable for continuous background refresh. It's best to have the devices on while the scan takes place as they can change their CEC names based on state.
 
 ## Binding Configuration
 
-The binding requires LibCEC to be installed and configured. 
+The binding requires LibCEC to be installed and configured. On a Raspberry Pi that can be done with:
+
+```shell
+sudo apt-get install cec-utils
+```
 
 ```
 // Things file for Raspberry Pi3
@@ -21,13 +25,66 @@ Bridge hdmicec:bridge:local [ cecClientPath="/usr/bin/cec-client", comPort="RPI"
 
 For Raspberry Pi, add the openhab user to the video group.
 
-```
+```shell
 sudo adduser openhab video
 ```
 
 ## Thing Configuration
 
-Things need to be configured with the deviceIndex (a hex number) and address of the form n.n.n.n - these are found with the discovery process. Currently all devices are pulled in, regardless of type (TV, audio, player, recorder), and treated as the same device type. 
+Things need to be configured with the deviceIndex (a hex number) and address of the form n.n.n.n - these are found with the discovery process. Currently all devices are pulled in, regardless of type (TV, audio, player, recorder), and treated as the same device type. If you wish to manually configure devices, these can be discovered by running `/usr/bin/cec-client` and then `scan`. You'll see a bunch of CEC traffic, and then the results will look like:
+
+```
+CEC bus information
+===================
+device #0: TV                     <--- deviceIndex 0
+address:       0.0.0.0            <--- address
+active source: no
+vendor:        Unknown
+osd string:    TV
+CEC version:   1.4
+power status:  on
+language:      eng
+
+
+device #1: Recorder 1
+address:       1.5.0.0
+active source: no
+vendor:        Pulse Eight
+osd string:    CECTester
+CEC version:   1.4
+power status:  on
+language:      eng
+
+
+device #3: Tuner 1
+address:       1.0.0.0
+active source: no
+vendor:        Denon
+osd string:    AV Receiver
+CEC version:   unknown
+power status:  standby
+language:      ???
+
+
+device #4: Playback 1
+address:       1.1.0.0
+active source: yes
+vendor:        Toshiba
+osd string:    Fire TV Stick
+CEC version:   1.4
+power status:  on
+language:      ???
+
+
+device #5: Audio
+address:       1.0.0.0
+active source: no
+vendor:        Denon
+osd string:    AVR-X3500H
+CEC version:   1.4
+power status:  standby
+language:      ???
+```
 
 ## Channels
 
