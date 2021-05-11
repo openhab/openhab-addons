@@ -172,10 +172,7 @@ public class ModbusGainOffsetProfileTest {
         // Workaround for errors like "java.lang.UnsupportedOperationException: °C is non-linear, cannot convert"
         if (expectedStateUpdateTowardsItem instanceof QuantityType<?>) {
             assertTrue(actualStateUpdateTowardsItem instanceof QuantityType<?>);
-            assertEquals(((QuantityType<?>) expectedStateUpdateTowardsItem).getUnit(),
-                    ((QuantityType<?>) actualStateUpdateTowardsItem).getUnit());
-            assertEquals(((QuantityType<?>) expectedStateUpdateTowardsItem).toBigDecimal(),
-                    ((QuantityType<?>) actualStateUpdateTowardsItem).toBigDecimal());
+            assertEquals(expectedStateUpdateTowardsItem, actualStateUpdateTowardsItem);
         } else {
             assertEquals(expectedStateUpdateTowardsItem, actualStateUpdateTowardsItem);
         }
