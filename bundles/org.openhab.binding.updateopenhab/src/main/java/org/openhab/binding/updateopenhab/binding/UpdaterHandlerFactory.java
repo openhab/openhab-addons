@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link UpdateHandlerFactory} is responsible for creating things and thing
+ * The {@link UpdaterHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.updateopenhab", service = ThingHandlerFactory.class)
-public class UpdateHandlerFactory extends BaseThingHandlerFactory {
+public class UpdaterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OH_UPDATER);
 
@@ -46,7 +46,7 @@ public class UpdateHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_OH_UPDATER.equals(thingTypeUID)) {
-            return new UpdateHandler(thing);
+            return new UpdaterHandler(thing);
         }
         return null;
     }

@@ -35,14 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link UpdateHandler} is responsible for handling commands, which are sent to one of the channels.
+ * The {@link UpdaterHandler} is responsible for handling commands, which are sent to one of the channels.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class UpdateHandler extends BaseThingHandler {
+public class UpdaterHandler extends BaseThingHandler {
 
-    protected final Logger logger = LoggerFactory.getLogger(UpdateHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(UpdaterHandler.class);
 
     private TargetVersionType targetVersion;
     private @Nullable BaseUpdater updater;
@@ -53,7 +53,7 @@ public class UpdateHandler extends BaseThingHandler {
     /**
      * Constructor
      */
-    public UpdateHandler(Thing thing) {
+    public UpdaterHandler(Thing thing) {
         super(thing);
         targetVersion = TargetVersionType.STABLE;
     }
