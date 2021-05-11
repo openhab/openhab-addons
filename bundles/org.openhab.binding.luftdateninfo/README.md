@@ -19,7 +19,7 @@ There's no auto discovery. See Thing configuration how to setup a Sensor.
 
 ## Thing Configuration
 
-Choose either a local IP address of your personal owned sonsor _or_ a sensor id of an external one.
+Choose either a local IP address of your personal owned sensor _or_ a sensor id of an external one.
 
 | Parameter       | Description                                                          |
 |-----------------|----------------------------------------------------------------------|
