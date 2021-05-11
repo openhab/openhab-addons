@@ -27,7 +27,7 @@ The table below lists the Nest binding thing types:
 The Nest API uses OAuth for authorization.
 Therefore the binding needs some authorization parameters before it can access your Nest account via the Nest API.
 
-To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant).
+To get these authorization parameters you first need to sign up as a [Nest Developer](https://developers.google.com/nest/device-access) and [register a new Product](https://developer.nest.com/products/new) (No longer free - $5 fee and instant).
 
 While registering a new Product (on the Product Details page) make sure to:
 
