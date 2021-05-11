@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.updateopenhab.internal;
+package org.openhab.binding.updateopenhab.binding;
 
-import static org.openhab.binding.updateopenhab.internal.BindingConstants.THING_TYPE_OH_UPDATER;
+import static org.openhab.binding.updateopenhab.binding.BindingConstants.THING_TYPE_OH_UPDATER;
 
 import java.util.Set;
 

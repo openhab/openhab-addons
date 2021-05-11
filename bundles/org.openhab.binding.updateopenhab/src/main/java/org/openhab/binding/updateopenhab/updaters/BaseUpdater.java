@@ -35,7 +35,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.updateopenhab.internal.TargetVersion;
 import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,13 +61,13 @@ public abstract class BaseUpdater implements Runnable {
 
     private static final Boolean RUN_LOCK = Boolean.valueOf(true);
 
-    private static final int MIN_SLEEP_SECS = 5; // seconds
-    private static final int DEF_SLEEP_SECS = 20;
-    private static final int MAX_SLEEP_SECS = 60;
+    public static final int MIN_SLEEP_SECS = 5; // seconds
+    public static final int DEF_SLEEP_SECS = 20;
+    public static final int MAX_SLEEP_SECS = 60;
 
-    private static final TargetVersion DEF_TARGET_VER = TargetVersion.STABLE;
+    public static final TargetVersionType DEF_TARGET_VER = TargetVersionType.STABLE;
 
-    private TargetVersion targetVersion = DEF_TARGET_VER;
+    private TargetVersionType targetVersionType = DEF_TARGET_VER;
 
     protected static final String FILE_ID = "update-openhab";
 
@@ -108,7 +107,7 @@ public abstract class BaseUpdater implements Runnable {
         placeHolders.put(PlaceHolder.TITLE, TITLE);
         placeHolders.put(PlaceHolder.PASSWORD, "");
         placeHolders.put(PlaceHolder.SLEEP_TIME, Integer.toString(DEF_SLEEP_SECS));
-        placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersion.type);
+        placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersionType.label);
         placeHolders.put(PlaceHolder.USERDATA_FOLDER, OpenHAB.getUserDataFolder());
         placeHolders.put(PlaceHolder.LOGBACK_FILENAME, FILE_ID + ".log");
         initializeExtendedPlaceholders();
@@ -141,9 +140,9 @@ public abstract class BaseUpdater implements Runnable {
      * @param targetVersion
      * @return this instance
      */
-    public BaseUpdater setTargetVersion(TargetVersion targetVersion) {
-        this.targetVersion = targetVersion;
-        placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersion.type);
+    public BaseUpdater setTargetVersion(TargetVersionType targetVersion) {
+        this.targetVersionType = targetVersion;
+        placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersion.label);
         return this;
     }
 
@@ -405,9 +404,9 @@ public abstract class BaseUpdater implements Runnable {
      *
      * @return version e.g. 3.0.2, 3.1.0.M4, 3.1.0-SNAPSHOT, or VERSION_NOT_DEFINED
      */
-    public String getLatestTargetVersion() {
+    public String getRemoteVersion() {
         String result;
-        switch (getTargetVersion()) {
+        switch (getTargetVersionType()) {
             case STABLE:
                 result = getArtifactoryLatestVersion(RELEASE_ARTIFACT_URL);
                 break;
@@ -432,7 +431,7 @@ public abstract class BaseUpdater implements Runnable {
      *
      * @return the version number, or VERSION_NOT_DEFINED
      */
-    public static String getRunningVersion() {
+    public static String getActualVersion() {
         String oldVersion = OpenHAB.getVersion();
         return oldVersion.isEmpty() ? VERSION_NOT_DEFINED : oldVersion;
     }
@@ -442,19 +441,80 @@ public abstract class BaseUpdater implements Runnable {
      *
      * @return target version = STABLE, MILESTONE, or SNAPSHOT
      */
-    public TargetVersion getTargetVersion() {
-        return targetVersion;
+    public TargetVersionType getTargetVersionType() {
+        return targetVersionType;
     }
 
     /**
-     * Implementation of run() interface that creates and runs an updater script based the OS
-     * and target upgrade versions.
+     * This a helper method that converts the index'th element of a version String[] array to an integer value. If there
+     * is no index'th element or its value is not an integer, this is interpreted as 0.
+     *
+     * @param verStringArray set of parts of a version String[] array e.g. "3.2.1"
+     * @param index the element of the String[] array to convert e.g. index 0 of "3.2.1" is "3"
+     * @return the integer value, or 0 if no integer found
+     */
+    private static Integer convertStringArrayElementToInteger(String[] verStringArray, int index) {
+        try {
+            return index < verStringArray.length ? Integer.valueOf(verStringArray[index]) : 0;
+        } catch (NumberFormatException e) {
+        }
+        return 0;
+    }
+
+    /**
+     * Indicates if an update is available. Compares the actual running version against the latest remote version, and
+     * returns whether the latter is a higher version than the former.
+     * <p>
+     * e.g. compares two strings such as 3.2.1 / 3.2.1.M1 / 3.2.1-SNAPSHOT against each other.
+     * <p>
+     * The comparison behaves differently depending on the value of {@link TargetVersionType} ..
+     * <li>{@link TargetVersionType.STABLE} compares each integer part of the two version strings
+     * <li>{@link TargetVersionType.MILESTONE} as 'STABLE' and if the same, compares 'M' parts
+     * <li>{@link TargetVersionType.SNAPSHOT} as for 'STABLE' and if the same, returns {@link TriState.DONT_KNOW}
+     *
+     * @return {@link TriState.YES}, or {@link TriState.NO}, or {@link TriState.DONT_KNOW}
+     */
+    public TriState getRemoteVersionHigher() {
+        // split the version strings into parts
+        String[] actVerParts = getActualVersion().replace("-", ".").split("\\.");
+        String[] remVerParts = getRemoteVersion().replace("-", ".").split("\\.");
+
+        // compare the first three parts e.g. 3.0.0 <=> 3.0.1
+        int compareOverall = 0;
+        for (int i = 0; i < 3; i++) {
+            int compareResult = convertStringArrayElementToInteger(actVerParts, i)
+                    .compareTo(convertStringArrayElementToInteger(remVerParts, i));
+            if (compareResult != 0) {
+                compareOverall = compareResult;
+                break;
+            }
+        }
+        // if the first three parts are all equal, compare the fourth part
+        if (compareOverall == 0) {
+            switch (getTargetVersionType()) {
+                case SNAPSHOT:
+                    // can't say if one snapshot is newer than another e.g. 3.0.0-SNAPSHOT
+                    return TriState.DONT_KNOW;
+                case MILESTONE:
+                    // compare the fourth part e.g. 3.0.0.M1 <=> 3.0.0.M2
+                    if (remVerParts.length > 3) {
+                        // alpha numeric compare (works until M9)
+                        compareOverall = actVerParts.length > 3 ? actVerParts[3].compareTo(remVerParts[3]) : 1;
+                    }
+                default:
+            }
+        }
+        return compareOverall < 0 ? TriState.YES : TriState.NO;
+    }
+
+    /**
+     * Implementation of {@link Runnable}.run() interface method that first creates and then runs an updater script.
      */
     @Override
     public void run() {
         synchronized (RUN_LOCK) {
             // check the update target version is defined
-            String latestVersion = getLatestTargetVersion();
+            String latestVersion = getRemoteVersion();
             if (VERSION_NOT_DEFINED.equals(latestVersion)) {
                 logger.debug("Target version is not defined");
                 return;
@@ -477,7 +537,7 @@ public abstract class BaseUpdater implements Runnable {
             // create the log-back file
             if (!createLogbackFile(
                     String.format("Restarted OpenHAB after update process [%s => %s] was initiated on %tc",
-                            getRunningVersion(), latestVersion, Calendar.getInstance()))) {
+                            getActualVersion(), latestVersion, Calendar.getInstance()))) {
                 logger.debug("Failed to create log back file");
                 return;
             }
@@ -487,8 +547,7 @@ public abstract class BaseUpdater implements Runnable {
                 logger.debug("Failed to run OpenHAB update script");
                 return;
             }
-            logger.info("Stopping OpenHAB and initiating update process [{} => {}]", getRunningVersion(),
-                    latestVersion);
+            logger.info("Stopping OpenHAB and initiating update process [{} => {}]", getActualVersion(), latestVersion);
         }
     }
 }

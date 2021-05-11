@@ -10,19 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.updateopenhab.internal;
+package org.openhab.binding.updateopenhab.updaters;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PackageManager} identifies the type of Linux Package Manager.
+ * This is an enum that can have three values.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum PackageManager {
-    UNKNOWN_PACKAGE_MANAGER,
-    DEBIAN_PACKAGE_MANAGER,
-    REDHAT_PACKAGE_MANAGER,
-    GENTOO_PACKAGE_MANAGER;
+public enum TriState {
+    DONT_KNOW("don't know"),
+    NO("no"),
+    YES("yes");
+
+    public final String label;
+
+    TriState(String label) {
+        this.label = label;
+    }
 }

@@ -10,24 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.updateopenhab.internal;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.updateopenhab.restapi;
 
 /**
- * The {@link TargetVersion} determines what type of update to apply
+ * This is a DTO for OpenHAB self updating features.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-@NonNullByDefault
-public enum TargetVersion {
-    STABLE("stable"),
-    MILESTONE("unstable"),
-    SNAPSHOT("testing");
-
-    public final String type;
-
-    private TargetVersion(String type) {
-        this.type = type;
-    }
+public class UpdaterDTO {
+    String runningVersion;
+    String targetVersionType;
+    String remoteVersion;
+    String remoteVersionHigher;
 }

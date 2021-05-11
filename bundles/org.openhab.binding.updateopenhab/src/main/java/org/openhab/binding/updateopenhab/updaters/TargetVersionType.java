@@ -10,19 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.updateopenhab.internal;
+package org.openhab.binding.updateopenhab.updaters;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Configuration} class contains fields mapping thing configuration parameters.
+ * The {@link TargetVersionType} determines what type of update to apply
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Configuration {
+public enum TargetVersionType {
+    STABLE("stable"),
+    MILESTONE("unstable"),
+    SNAPSHOT("testing");
 
-    public String targetVersion = "STABLE";
-    public String password = "";
-    public int sleepTime = 20;
+    public final String label;
+
+    private TargetVersionType(String label) {
+        this.label = label;
+    }
 }

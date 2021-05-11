@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.updateopenhab.internal;
+package org.openhab.binding.updateopenhab.binding;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +18,10 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.updateopenhab.updaters.BaseUpdater;
+import org.openhab.binding.updateopenhab.updaters.OperatingSystem;
+import org.openhab.binding.updateopenhab.updaters.TargetVersionType;
 import org.openhab.binding.updateopenhab.updaters.UpdaterFactory;
+import org.openhab.binding.updateopenhab.updaters.UpdaterStates;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -41,7 +44,7 @@ public class UpdateHandler extends BaseThingHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(UpdateHandler.class);
 
-    private TargetVersion targetVersion;
+    private TargetVersionType targetVersion;
     private @Nullable BaseUpdater updater;
     private @Nullable ScheduledFuture<?> refreshTask;
 
@@ -52,7 +55,7 @@ public class UpdateHandler extends BaseThingHandler {
      */
     public UpdateHandler(Thing thing) {
         super(thing);
-        targetVersion = TargetVersion.STABLE;
+        targetVersion = TargetVersionType.STABLE;
     }
 
     @Override
@@ -75,14 +78,18 @@ public class UpdateHandler extends BaseThingHandler {
     public void initialize() {
         Configuration config = getConfigAs(Configuration.class);
         try {
-            targetVersion = TargetVersion.valueOf(config.targetVersion);
+            targetVersion = TargetVersionType.valueOf(config.targetVersion);
         } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
-        updater = UpdaterFactory.newUpdater(targetVersion, config.password, config.sleepTime);
-        if (updater == null) {
+        BaseUpdater updater = this.updater = UpdaterFactory.newUpdater();
+        if (updater != null) {
+            updater.setTargetVersion(targetVersion);
+            updater.setPassword(config.password);
+            updater.setSleepTime(config.sleepTime);
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
@@ -97,7 +104,7 @@ public class UpdateHandler extends BaseThingHandler {
         if (refreshTask == null || refreshTask.isCancelled()) {
             this.refreshTask = scheduler.scheduleWithFixedDelay(() -> {
                 updateChanels();
-            }, 0, 60, TimeUnit.MINUTES);
+            }, 5, 60, TimeUnit.MINUTES);
         }
     }
 
@@ -110,18 +117,18 @@ public class UpdateHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChanels() {
+    private synchronized void updateChanels() {
         if (!initialized) {
             return;
         }
 
         updateState(BindingConstants.CHANNEL_UPDATE_COMMAND, OnOffType.OFF);
-        updateState(BindingConstants.CHANNEL_ACTUAL_OH_VERSION, UpdaterStates.getRunningVersion());
+        updateState(BindingConstants.CHANNEL_ACTUAL_OH_VERSION, UpdaterStates.getActualVersion());
 
         BaseUpdater updater = this.updater;
         if (updater != null) {
-            updateState(BindingConstants.CHANNEL_LATEST_OH_VERSION, UpdaterStates.getLatestVersion(updater));
-            updateState(BindingConstants.CHANNEL_UPDATE_AVAILABLE, UpdaterStates.getUpdateAvailable(updater));
+            updateState(BindingConstants.CHANNEL_LATEST_OH_VERSION, UpdaterStates.getRemoteVersion(updater));
+            updateState(BindingConstants.CHANNEL_UPDATE_AVAILABLE, UpdaterStates.getRemoteVersionHigher(updater));
         } else {
             updateState(BindingConstants.CHANNEL_LATEST_OH_VERSION, UnDefType.UNDEF);
             updateState(BindingConstants.CHANNEL_UPDATE_AVAILABLE, UnDefType.UNDEF);

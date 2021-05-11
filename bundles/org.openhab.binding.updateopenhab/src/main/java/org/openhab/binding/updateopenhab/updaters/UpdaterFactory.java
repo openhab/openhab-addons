@@ -19,9 +19,6 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.updateopenhab.internal.OperatingSystem;
-import org.openhab.binding.updateopenhab.internal.PackageManager;
-import org.openhab.binding.updateopenhab.internal.TargetVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,26 +75,20 @@ public class UpdaterFactory {
      * @param sleepTime number of seconds that scripts shall sleep while OpenHAB shuts down
      * @return an instance of the respective xxxUpdater class
      */
-    public static @Nullable BaseUpdater newUpdater(TargetVersion targetVersion, String password, int sleepTime) {
+    public static @Nullable BaseUpdater newUpdater() {
         switch (OperatingSystem.getOperatingSystemVersion()) {
             case WINDOWS:
-                return new WindowsUpdater().setTargetVersion(targetVersion).setPassword(password)
-                        .setSleepTime(sleepTime);
+                return new WindowsUpdater();
             case MAC:
-                return new MacUpdater().setTargetVersion(targetVersion).setPassword(password).setSleepTime(sleepTime);
+                return new MacUpdater();
             case UNIX:
                 switch (getLinuxPackageManager()) {
                     case DEBIAN_PACKAGE_MANAGER:
-                        return new DebianUpdater().setTargetVersion(targetVersion).setPassword(password)
-                                .setSleepTime(sleepTime);
+                        return new DebianUpdater();
                     case REDHAT_PACKAGE_MANAGER:
-                        // TODO
-                        // return new RedHatUpdater().setTargetVersion(targetVersion).setPassword(password)
-                        // .setSleepTime(sleepTime);
+                        // TODO return new RedHatUpdater();
                     case GENTOO_PACKAGE_MANAGER:
-                        // TODO
-                        // return new GentooUpdater().setTargetVersion(targetVersion).setPassword(password)
-                        // .setSleepTime(sleepTime);
+                        // TODO return new GentooUpdater();
                     default:
                 }
             default:
