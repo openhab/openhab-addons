@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.nuki.internal.constants;
 
 import java.net.URI;
@@ -114,7 +126,7 @@ public class NukiLinkBuilder {
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("SHA-256 Algorithm not supported", e);
         }
         byte[] rawHash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
         return HexUtils.bytesToHex(rawHash).toLowerCase(Locale.ROOT);

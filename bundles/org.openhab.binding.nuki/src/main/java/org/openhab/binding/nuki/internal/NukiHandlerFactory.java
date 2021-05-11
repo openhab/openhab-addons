@@ -93,8 +93,10 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     public void unregisterHandler(Thing thing) {
         super.unregisterHandler(thing);
         logger.trace("NukiHandlerFactory:unregisterHandler({})", thing);
-        if (thing.getHandler() instanceof NukiBridgeHandler) {
-            nukiApiServlet.remove((NukiBridgeHandler) thing.getHandler());
+        @Nullable
+        ThingHandler handler = thing.getHandler();
+        if (handler instanceof NukiBridgeHandler) {
+            nukiApiServlet.remove((NukiBridgeHandler) handler);
         }
     }
 

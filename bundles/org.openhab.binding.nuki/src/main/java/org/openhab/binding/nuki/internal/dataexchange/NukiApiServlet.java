@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
@@ -49,6 +50,7 @@ import com.google.gson.Gson;
  * @contributer Christian Hoefler - Door sensor integration
  * @contributer Jan Vybíral
  */
+@NonNullByDefault
 public class NukiApiServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(NukiApiServlet.class);
@@ -65,7 +67,7 @@ public class NukiApiServlet extends HttpServlet {
         gson = new Gson();
     }
 
-    public void add(@NonNull NukiBridgeHandler nukiBridgeHandler) {
+    public void add(NukiBridgeHandler nukiBridgeHandler) {
         logger.trace("Adding NukiBridgeHandler[{}] for Bridge[{}] to NukiApiServlet.",
                 nukiBridgeHandler.getThing().getUID(),
                 nukiBridgeHandler.getThing().getConfiguration().get(NukiBindingConstants.CONFIG_IP));
@@ -124,7 +126,7 @@ public class NukiApiServlet extends HttpServlet {
         response.getWriter().write(gson.toJson(responseEntity.getData()));
     }
 
-    private ResponseEntity doHandle(@NonNull BridgeApiLockStateRequestDto request, @Nullable String bridgeId) {
+    private ResponseEntity doHandle(BridgeApiLockStateRequestDto request, @Nullable String bridgeId) {
         String nukiId = request.getNukiId().toString();
         String nukiIdThing;
         for (NukiBridgeHandler nukiBridgeHandler : nukiBridgeHandlers) {
@@ -150,11 +152,14 @@ public class NukiApiServlet extends HttpServlet {
                 new NukiHttpServerStatusResponseDto("Smart Lock not found!"));
     }
 
+    @Nullable
     private BridgeApiLockStateRequestDto getBridgeApiLockStateRequestDto(HttpServletRequest request) {
         logger.trace("getBridgeApiLockStateRequestDto(...)");
+        @Nullable
         String requestContent = null;
         try (BufferedReader reader = request.getReader()) {
             requestContent = readAll(reader);
+            @Nullable
             BridgeApiLockStateRequestDto bridgeApiLockStateRequestDto = gson.fromJson(requestContent,
                     BridgeApiLockStateRequestDto.class);
             if (bridgeApiLockStateRequestDto != null && bridgeApiLockStateRequestDto.getNukiId() != null) {
@@ -183,8 +188,10 @@ public class NukiApiServlet extends HttpServlet {
         return sb.toString();
     }
 
+    @Nullable
     private AbstractNukiDeviceHandler getDeviceHandler(Thing thing) {
         logger.trace("getDeviceHandler(...) from thing[{}]", thing.getUID());
+        @Nullable
         AbstractNukiDeviceHandler nsh = (AbstractNukiDeviceHandler) thing.getHandler();
         if (nsh == null) {
             logger.debug("Could not get AbstractNukiDeviceHandler for ThingUID[{}]!", thing.getUID());
