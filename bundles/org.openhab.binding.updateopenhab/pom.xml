@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.updateopenhab</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: UpdateOpenHab Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Update OpenHab Binding</name>
 
 </project>
