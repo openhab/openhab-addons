@@ -106,8 +106,9 @@ public class EMSHandler extends BaseThingHandler {
         Calendar date = Calendar.getInstance();
         for (int days = 0; days < 7; days++) {
             int observationDay = date.get(Calendar.DAY_OF_MONTH);
-            String observationDaate = (date.get(Calendar.DAY_OF_MONTH) + 1) + "." + (date.get(Calendar.MONTH) + 1) + "."
+            String observationDaate = date.get(Calendar.DAY_OF_MONTH) + "." + (date.get(Calendar.MONTH) + 1) + "."
                     + date.get(Calendar.YEAR);
+            logger.info("{}", observationDaate);
             double dailyProduction = 0;
             int dCounter = 0;
             double dCloduiness = 0;
