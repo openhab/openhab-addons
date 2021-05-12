@@ -130,6 +130,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     @Override
     public void dispose() {
         if (notificationSchedule != null) {
+            logger.debug("dispose() scheduler stopped.");
+
             notificationSchedule.cancel(false);
         }
         super.dispose();
