@@ -15,8 +15,10 @@ package org.openhab.binding.carnet.internal.api.brand;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_BRAND_AUDI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
+import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 
@@ -26,7 +28,7 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetBrandApiAudi extends CarNetApiBase {
+public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuthenticator {
     public static final String CNAPI_AUDI_TOKEN_URL = "https://app-api.my.audi.com/myaudiappidk/v1/token";
     public static final String CNAPI_URL_AUDI_GET_TOKEN = "https://id.audi.com/v1/token";
     public static final String CNAPI_AUDIURL_OPERATIONS = "https://msg.audi.de/myaudi/vehicle-management/v2/vehicles";
@@ -54,6 +56,11 @@ public class CarNetBrandApiAudi extends CarNetApiBase {
         properties.xappName = "myAudi";
         properties.xrequest = "de.myaudi.mobile.assistant";
         return properties;
+    }
+
+    @Override
+    public String updateAuthorizationUrl(String url) throws CarNetException {
+        return url + "&prompt=login&ui_locales=de-DE%20de";
     }
 
     /*

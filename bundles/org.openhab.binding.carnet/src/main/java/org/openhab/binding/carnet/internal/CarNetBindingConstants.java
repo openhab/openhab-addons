@@ -45,17 +45,21 @@ public class CarNetBindingConstants {
     // List of all Thing Type UIDs
     public static final String THING_MYAUDI = "myaudi";
     public static final String THING_VOLKSWAGEN = "volkswagen";
+    public static final String THING_VWID = "vwid";
+    public static final String THING_VWGO = "vwgo";
     public static final String THING_SKODA = "skoda";
     public static final String THING_SEAT = "seat";
 
     public static final ThingTypeUID THING_TYPE_MYAUDI = new ThingTypeUID(BINDING_ID, THING_MYAUDI);
     public static final ThingTypeUID THING_TYPE_VW = new ThingTypeUID(BINDING_ID, THING_VOLKSWAGEN);
+    public static final ThingTypeUID THING_TYPE_VWID = new ThingTypeUID(BINDING_ID, THING_VWID);
+    public static final ThingTypeUID THING_TYPE_VWGO = new ThingTypeUID(BINDING_ID, THING_VWGO);
     public static final ThingTypeUID THING_TYPE_SKODA = new ThingTypeUID(BINDING_ID, THING_SKODA);
     public static final ThingTypeUID THING_TYPE_SEAT = new ThingTypeUID(BINDING_ID, THING_SEAT);
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_SKODA, THING_TYPE_SEAT, THING_TYPE_VEHICLE)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_VWID, THING_TYPE_VWGO,
+                    THING_TYPE_SKODA, THING_TYPE_SEAT, THING_TYPE_VEHICLE).collect(Collectors.toSet()));
 
     // List of all ChannelGroups and Channels
     public static final String CHANNEL_GROUP_GENERAL = "general";

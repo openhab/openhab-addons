@@ -105,9 +105,9 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         // Generate a unique Id for all tokens of the new Account thing, but also of all depending Vehicle things. This
         // allows sharing the tokens across all things associated with the account.
         config.account = getConfigAs(CarNetAccountConfiguration.class);
-        api = createApi(config);
         config.tokenSetId = tokenManager.generateTokenSetId();
-        tokenManager.setHttpClient(config.tokenSetId, http);
+        api = createApi(config);
+        tokenManager.setup(http, api);
     }
 
     public CarNetApiBase createApi(CarNetCombinedConfig config) {
@@ -120,6 +120,12 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
                 return new CarNetBrandApiAudi(http, tokenManager);
             case THING_VOLKSWAGEN:
                 config.account.brand = CNAPI_BRAND_VW;
+                return new CarNetBrandApiVW(http, tokenManager);
+            case THING_VWID:
+                config.account.brand = CNAPI_BRAND_VWID;
+                return new CarNetBrandApiVW(http, tokenManager);
+            case THING_VWGO:
+                config.account.brand = CNAPI_BRAND_VWGO;
                 return new CarNetBrandApiVW(http, tokenManager);
             case THING_SKODA:
                 config.account.brand = CNAPI_BRAND_SKODA;

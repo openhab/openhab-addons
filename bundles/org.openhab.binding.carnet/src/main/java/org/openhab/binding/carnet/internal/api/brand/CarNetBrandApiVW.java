@@ -24,6 +24,7 @@ import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
+import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetBrandApiVW extends CarNetApiBase {
+public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(CarNetBrandApiVW.class);
 
     public CarNetBrandApiVW(CarNetHttpClient httpClient, CarNetTokenManager tokenManager) {
@@ -57,6 +58,11 @@ public class CarNetBrandApiVW extends CarNetApiBase {
         properties.xappName = "eRemote";
         properties.xappVersion = "5.1.2";
         return properties;
+    }
+
+    @Override
+    public String updateAuthorizationUrl(String url) throws CarNetException {
+        return url; // + "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
     }
 
     @Override
@@ -92,4 +98,24 @@ public class CarNetBrandApiVW extends CarNetApiBase {
         }
         return null;
     }
+
+    /*
+     * private String[] getCodeChallenge() {
+     * String hash = "";
+     * String result = "";
+     * while (hash === "" || hash.indexOf("+") !== -1 || hash.indexOf("/") !== -1 || hash.indexOf("=") !== -1 ||
+     * result.indexOf("+") !== -1 || result.indexOf("/") !== -1) {
+     * String chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+     * result = "";
+     * for (let i = 64; i > 0; --i) {
+     * result += chars[Math.floor(Math.random() * chars.length)];
+     * }
+     * result = Buffer.from(result).toString("base64");
+     * result = result.replace(/=/g, "");
+     * hash = crypto.createHash("sha256").update(result).digest("base64");
+     * hash = hash.slice(0, hash.length - 1);
+     * }
+     * return [result, hash];
+     * }
+     */
 }

@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class CarNetApiConstants {
     public static final String CNAPI_BRAND_AUDI = "Audi";
     public static final String CNAPI_BRAND_VW = "VW";
+    public static final String CNAPI_BRAND_VWID = "Id";
+    public static final String CNAPI_BRAND_VWGO = "Go";
     public static final String CNAPI_BRAND_SKODA = "Skoda";
     public static final String CNAPI_BRAND_SEAT = "Seat";
 

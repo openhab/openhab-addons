@@ -29,6 +29,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.CarNetSecurityException;
@@ -49,10 +50,11 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @Component(service = CarNetTokenManager.class)
-public class CarNetTokenManager {
+public class CarNetTokenManager implements CarNetBrandAuthenticator {
     private static final String UTF_8 = StandardCharsets.UTF_8.name();
     private final Logger logger = LoggerFactory.getLogger(CarNetTokenManager.class);
     private final Gson gson = new Gson();
+    private @Nullable CarNetBrandAuthenticator authenticator;
     private Map<String, TokenSet> accountTokens = new HashMap<>();
     private CarNetHttpClient http = new CarNetHttpClient();
     private CopyOnWriteArrayList<CarNetToken> securityTokens = new CopyOnWriteArrayList<CarNetToken>();
@@ -63,8 +65,17 @@ public class CarNetTokenManager {
         private String csrf = "";
     }
 
-    public void setHttpClient(String tokenSetId, CarNetHttpClient httpClient) {
+    public void setup(CarNetHttpClient httpClient, CarNetBrandAuthenticator authenticator) {
         this.http = httpClient;
+        this.authenticator = authenticator;
+    }
+
+    @Override
+    public String updateAuthorizationUrl(String url) throws CarNetException {
+        if (authenticator != null) {
+            return authenticator.updateAuthorizationUrl(url);
+        }
+        throw new CarNetException("No authenticator active");
     }
 
     /**
@@ -117,8 +128,8 @@ public class CarNetTokenManager {
             String nonce = generateNonce();
             url = CNAPI_OAUTH_AUTHORIZE_URL + "?response_type=" + urlEncode(config.api.responseType) + "&client_id="
                     + urlEncode(config.api.clientId) + "&redirect_uri=" + urlEncode(config.api.redirect_uri) + "&scope="
-                    + urlEncode(config.api.authScope) + "&state=" + state + "&nonce=" + nonce
-                    + "&prompt=login&ui_locales=de-DE%20de";
+                    + urlEncode(config.api.authScope) + "&state=" + state + "&nonce=" + nonce;
+            url = updateAuthorizationUrl(url);
             http.get(url, headers, false);
             url = http.getRedirect(); // Signin URL
             if (url.isEmpty()) {

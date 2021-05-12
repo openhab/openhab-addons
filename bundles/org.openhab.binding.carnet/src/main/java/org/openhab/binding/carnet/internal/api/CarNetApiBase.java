@@ -72,7 +72,7 @@ import com.google.gson.Gson;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public abstract class CarNetApiBase {
+public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(CarNetApiBase.class);
     protected final Gson gson = new Gson();
 
@@ -118,6 +118,11 @@ public abstract class CarNetApiBase {
 
     public CarNetApiProperties getProperties() {
         return new CarNetApiProperties();
+    }
+
+    @Override
+    public String updateAuthorizationUrl(String url) throws CarNetException {
+        return url; // default: no modification
     }
 
     private CarNetOidcConfig getOidcConfig() throws CarNetException {

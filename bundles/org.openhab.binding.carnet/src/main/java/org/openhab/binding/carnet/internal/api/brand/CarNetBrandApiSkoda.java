@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
+import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_BRAND_VW;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
@@ -33,7 +35,7 @@ public class CarNetBrandApiSkoda extends CarNetApiBase {
     @Override
     public CarNetApiProperties getProperties() {
         CarNetApiProperties properties = new CarNetApiProperties();
-        properties.brand = "VW"; // CNAPI_BRAND_SKODA;
+        properties.brand = CNAPI_BRAND_VW; // it's "VW", not "Skoda"
         properties.xcountry = "CZ";
         properties.apiDefaultUrl = "";
         properties.clientId = "7f045eee-7003-4379-9968-9355ed2adb06@apps_vw-dilab_com";
