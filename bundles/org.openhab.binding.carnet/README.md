@@ -17,11 +17,20 @@ The binding itself has no configuration options
 
 ## Supported Things
 
-### CarNet Account (myaudi, skoda)
+### CarNet Account (myaudi, volkswagen, skoda)
 
 The Account thing implements the online connect to the CarNet service.
 The binding supports myAudi (myaudi) and Skoda Connect (skoda).
 Depending on brand, car model and activated license a different set of channels and actions are supported,
+
+Some verified vehicles
+|Brand     |Model |Year|Type      |Market|Notes                                                        |Doorlock|Clima|Preheat|
+|----------|------|----|----------|------|-------------------------------------------------------------|--------|-----|-------|
+|Audi      |A6    |2020|Diesel    |DE    |TripData service doesn't work even with valid license        |yes     |no   |n/a    |
+|Skoda     |Superb|2020|Hybrid    |CH    |                                                             |        |     |       |
+|Volkswagen|eGolf |    |Electrical|DE    |                                                             |        |     |       |
+|Volkswagen|Tiguan|2021|Diesel    |DE    |                                                             |        |     |       |
+
 
 An account is required to setup the connection (register on the manufacture's portal, e.g. myAudi.de).
 Usually the manufacturer supports to register a single or multiple vehicles under this account (identified by their unique vehicle identification number - VIN).
@@ -30,12 +39,21 @@ Once the account gets online the binding retrieves the complete vehicle list and
 Thing Configuration
 
 |Parameter         | Description                                                                               |Mandatory| Default   |
-|------------------|-------------------------------------------------------------------------------------------|---------|-------------------|
+|------------------|-------------------------------------------------------------------------------------------|---------|-----------|
 | user             | User ID for your CarNet account (same as login id for the manuafacturer's portal)         | yes     | none      |
 | password         | Password for the CarNet account (same as portal)                                          | yes     | none      |
-| pollingInterval  | Refresh interval in minutes for data refresh (CarNet is not event driven)                 | yes     | 15        |
+| pollingInterval  | Refresh interval in minutes for data refresh (CarNet is not event driven)                 | yes     | 30        |
 
 The account thing has no channels.
+
+### Status Codes / Errors
+
+|Code         |Message                                                                          |Description                                       |
+|-------------|---------------------------------------------------------------------------------|--------------------------------------------------|
+|VSR.9007     |Service disabled, legitimation is pending. Check data privacy settings in the MMI|Check Data Privacy settings in MMI, give consent  |
+|VSR.9025     |TSS responded: 429                                                               |AOI has been throttled, increase polling interval |
+|VSR.9026     |Technical validation error                                                       |Some technical problem, check log, enable DEBUG   |
+|business.1003]Request is already pending                                                       |There is already a request peneindg, await result |
 
 ### Vehicle (vehicle)
 
@@ -108,7 +126,7 @@ The following channels are available depending on the vehicle type:
 |              | distanceAdBlue          | Number:Length        | yes     | Distance before the next Ad Blue fill-up is required.                                 |
 | range        | totalRange              | Number:Length        | yes     | Total remaining range.                                                                |
 |              | primaryRange            | Number:Length        | yes     | Range or the primary battery engine system.                                           |
-|              | primaryFuelType         | Number               | yes     | Fuel type of the primary engine system.                                               |
+|              | primaryFuelType         | Number               | yes     | Fuel type of the primary engine system (5=Diesel)                                     |
 |              | secondaryRange          | Number:Length        | yes     | ??? Range or the secondary battery?                                                   |
 |              | secondaryFuelType       | Number               | yes     | ???  Drive                                                                            |
 |              | fuelPercentage          | Number:Dimensionless | yes     | Percentage of fuel remaining.                                                         |

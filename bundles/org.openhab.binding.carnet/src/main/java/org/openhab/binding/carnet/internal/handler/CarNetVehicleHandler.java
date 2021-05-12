@@ -140,7 +140,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             handler.registerListener(this);
             setupPollingJob();
-        }, 1, TimeUnit.SECONDS);
+        }, 3, TimeUnit.SECONDS);
     }
 
     /**

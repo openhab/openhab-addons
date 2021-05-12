@@ -66,11 +66,11 @@ public class CarNetApiErrorDTO {
     }
 
     public boolean isApiThrottle() {
+        // {"error":{"errorCode":"VSR.technical.9025","description":"TSS responded: 429 -"}}
         return code.contains("technical.9025");
     }
 
     public boolean isTechValidationError() {
-        // {"error":{"errorCode":"VSR.technical.9025","description":"TSS responded: 429 -"}}
         return code.contains("technical.9026");
     }
 
