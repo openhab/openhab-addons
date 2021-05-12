@@ -5,13 +5,14 @@
 # execute command: [EXECUTE_COMMAND]
 
 # stop OpenHAB
-systemctl stop openhab.service
+echo [PASSWORD] | sudo -S -k systemctl stop openhab.service
 
 # set repository
-echo deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg [TARGET_TYPE] main > /etc/apt/sources.list.d/openhab.list
+echo [PASSWORD] | sudo -S -k sh -c 'echo "deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg [TARGET_TYPE] main" > /etc/apt/sources.list.d/openhab.list'
 
 # update OpenHAB
-apt-get update && apt-get install openhab
+echo [PASSWORD] | sudo -S -k apt-get update
+echo [PASSWORD] | sudo -S -k apt-get install openhab
 
 # start OpenHAB
-systemctl start openhab.service
+echo [PASSWORD] | sudo -S -k systemctl start openhab.service

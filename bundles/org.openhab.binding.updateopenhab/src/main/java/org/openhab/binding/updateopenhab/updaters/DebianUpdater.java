@@ -24,8 +24,9 @@ public class DebianUpdater extends BaseUpdater {
 
     private static final String EXECUTE_FOLDER = "/usr/share/openhab/";
     private static final String EXECUTE_FILENAME = FILE_ID + ".sh";
-    private static final String EXECUTE_COMMAND = "echo " + PlaceHolder.PASSWORD.key + " | sudo -S -k nohup sh "
-            + EXECUTE_FILENAME + " >/dev/null 2>&1";
+    private static final String EXECUTE_COMMAND = "'echo " + PlaceHolder.PASSWORD.key + " | sudo -S -k nohup sh "
+            + EXECUTE_FILENAME + " >" + FILE_ID + ".out 2>&1'";
+
     private static final String RUNTIME_FOLDER = EXECUTE_FOLDER + "/runtime";
 
     @Override
