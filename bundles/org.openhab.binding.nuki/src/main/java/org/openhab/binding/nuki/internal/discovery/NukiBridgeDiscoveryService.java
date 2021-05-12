@@ -29,6 +29,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -89,6 +90,11 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    private static String generateBridgeId(String bridgeNukiId) {
+        String hash = NukiLinkBuilder.sha256(InstanceUUID.get() + ":" + bridgeNukiId);
+        return hash.substring(0, 10);
+    }
+
     private void discoverBridges(WebApiBridgeDiscoveryDto discoveryResult) {
         logger.debug("Discovery finished, found {} bridges", discoveryResult);
 
@@ -109,8 +115,9 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
         }
 
         DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID(NukiBindingConstants.THING_TYPE_BRIDGE, bridgeData.getBridgeId())).withLabel(name)
-                .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_ID, bridgeData.getBridgeId())
+                .create(new ThingUID(NukiBindingConstants.THING_TYPE_BRIDGE,
+                        generateBridgeId(bridgeData.getBridgeId())))
+                .withLabel(name).withProperty(NukiBindingConstants.PROPERTY_BRIDGE_ID, bridgeData.getBridgeId())
                 .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_IP, bridgeData.getIp())
                 .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_PORT, bridgeData.getPort())
                 .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_TOKEN, token)

@@ -51,7 +51,6 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
-    private @Nullable String callbackUrl;
     private NukiApiServlet nukiApiServlet;
 
     @Activate
@@ -73,7 +72,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
-            callbackUrl = createCallbackUrl(thing.getUID().getId());
+            String callbackUrl = createCallbackUrl(thing.getUID().getId());
             NukiBridgeHandler nukiBridgeHandler = new NukiBridgeHandler((Bridge) thing, httpClient, callbackUrl);
             if (!nukiBridgeHandler.isInitializable()) {
                 return null;
@@ -102,9 +101,6 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private @Nullable String createCallbackUrl(String bridgeId) {
         logger.trace("createCallbackUrl()");
-        if (callbackUrl != null) {
-            return callbackUrl;
-        }
         @Nullable
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
