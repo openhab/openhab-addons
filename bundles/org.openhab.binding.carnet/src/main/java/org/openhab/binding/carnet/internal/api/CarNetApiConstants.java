@@ -68,6 +68,7 @@ public class CarNetApiConstants {
     public static final String CNAPI_VWG_MAL_1A_CONNECT = "https://mal-1a.prd.ece.vwg-connect.com/api";
     public static final String CNAPI_VWG_MAL_3A_CONNECT = "https://mal-3a.prd.eu.dp.vwg-connect.com/api";
     public static final String CNAPI_VWG_FAL_3A_CONNECT = "https://fal-3a.prd.eu.dp.vwg-connect.com";
+    public static final String CNAPI_URL_GET_SEC_REGISTER = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/register";
     public static final String CNAPI_URL_GET_SEC_TOKEN = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
     public static final String CNAPI_VWURL_OPERATIONS = "rolesrights/operationlist/v3/vehicles/{2}";
     public static final String CNAPI_VWURL_HOMEREGION = CNAPI_VWG_MAL_1A_CONNECT + "/cs/vds/v1/vehicles/{2}/homeRegion";

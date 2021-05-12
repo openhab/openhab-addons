@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
@@ -22,6 +23,7 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class CarNetBrandApiID extends CarNetApiBase {
     public CarNetBrandApiID(CarNetHttpClient httpClient, CarNetTokenManager tokenManager) {
         super(httpClient, tokenManager);

@@ -111,7 +111,7 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
          * refresh fails.
          */
         String url = "", html = "", csrf = "";
-        String idToken = "", accessToken = "", expiresIn = "";
+        String userId = "", idToken = "", accessToken = "", expiresIn = "";
         Map<String, String> headers = new LinkedHashMap<>();
         Map<String, String> data = new LinkedHashMap<>();
         try {
@@ -185,9 +185,10 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
             while (count-- > 0) {
                 html = http.get(url, headers, false);
                 url = http.getRedirect(); // Continue URL
-                // if (url.contains("&user_id=")) {
-                // userId = getUrlParm(url, "user_id");
-                // }
+                if (url.contains("&userId")) {
+                    userId = getUrlParm(url, "userId");
+                    break;
+                }
                 /*
                  * if (url.contains("&code=")) {
                  * authCode = getUrlParm(url, "code");
@@ -209,31 +210,34 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
                     break;
                 }
             }
+
+            // In this case the id and access token were returned by the login process
+            logger.trace("{}: OAuth successful, idToken/userId was retrieved", config.vehicle.vin);
+            tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
+            tokens.csrf = csrf;
         } catch (CarNetException | UnsupportedEncodingException e) {
+            logger.warn("Login failed: {}", e.toString());
             throw new CarNetSecurityException("Login failed", e);
+        }
+        if (userId.isEmpty() && idToken.isEmpty()) {
+            throw new CarNetException("OAuth failed, check credentials!");
         }
 
         try {
             CNApiToken token;
             String json = "";
-            if (!idToken.isEmpty()) {
-                // In this case the id and access token were returned by the login process
-                logger.trace("{}: OAuth successful, idToken and accessToken retrieved", config.vehicle.vin);
-                tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
-            }
-            logger.debug("{}: OAuth successful", config.vehicle.vin);
-            tokens.csrf = csrf;
 
             // Last step: Request the access token from the VW token management
             // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
             // tokens. The tokenSetId provides access to that set.
+
             logger.debug("{}: Get VW Token", config.vehicle.vin);
             headers.clear();
             headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
-            headers.put(CNAPI_HEADER_APP, config.api.xappName);
-            headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
             headers.put(CNAPI_HEADER_CLIENTID, config.api.xClientId);
             headers.put(CNAPI_HEADER_HOST, "mbboauth-1d.prd.ece.vwg-connect.com");
+            headers.put(CNAPI_HEADER_APP, config.api.xappName);
+            headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
             headers.put(HttpHeader.ACCEPT.toString(), "*/*");
             data.clear();
             data.put("grant_type", "id_token");

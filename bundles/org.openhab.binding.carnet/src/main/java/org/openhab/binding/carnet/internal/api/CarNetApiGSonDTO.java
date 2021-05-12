@@ -23,6 +23,11 @@ import com.google.gson.annotations.SerializedName;
  */
 public class CarNetApiGSonDTO {
 
+    public class CarNetClientRegisterResult {
+        @SerializedName("client_id")
+        public String clientId;
+    }
+
     public static class CNApiToken {
         @SerializedName("token_type")
         public String authType;

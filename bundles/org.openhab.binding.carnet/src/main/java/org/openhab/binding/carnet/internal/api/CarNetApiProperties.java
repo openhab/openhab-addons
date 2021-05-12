@@ -34,6 +34,9 @@ public class CarNetApiProperties {
     public String redirect_uri = "";
     public String xrequest = "";
     public String responseType = "";
+    public String xappId = "";
     public String xappName = "";
     public String xappVersion = "";
+    public String clientName = "";
+    public String clientPlatform = "";
 }

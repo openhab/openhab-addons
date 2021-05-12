@@ -51,18 +51,20 @@ public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthen
         properties.apiDefaultUrl = "https://msg.volkswagen.de/fs-car";
         properties.clientId = "9496332b-ea03-4091-a224-8c746b885068@apps_vw-dilab_com";
         properties.xClientId = "38761134-34d0-41f3-9a73-c4be88d7d337";
-        properties.authScope = "openid profile mbb email cars birthdate badge address vin";
-        properties.redirect_uri = "carnet://identity-kit/Flogin";
+        // properties.authScope = "openid profile mbb email cars birthdate badge address vin";
+        properties.authScope = "openid profile mbb cars birthdate nickname address phone";
+        properties.redirect_uri = "carnet://identity-kit/login";
         properties.xrequest = "de.volkswagen.carnet.eu.eremote";
-        properties.responseType = "id_token token code";
+        properties.responseType = "id_token token";
         properties.xappName = "eRemote";
         properties.xappVersion = "5.1.2";
+        properties.xappId = "de.volkswagen.car-net.eu.e-remote";
         return properties;
     }
 
     @Override
     public String updateAuthorizationUrl(String url) throws CarNetException {
-        return url; // + "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
+        return url + "&prompt=login"; // + "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
     }
 
     @Override
