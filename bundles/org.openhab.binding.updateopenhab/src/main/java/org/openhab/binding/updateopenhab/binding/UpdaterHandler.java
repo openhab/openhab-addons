@@ -76,20 +76,31 @@ public class UpdaterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Configuration config = getConfigAs(Configuration.class);
-        try {
-            targetVersion = TargetVersionType.valueOf(config.targetVersion);
-        } catch (IllegalArgumentException e) {
+        BaseUpdater updater = this.updater = UpdaterFactory.newUpdater();
+        if (updater == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
-        BaseUpdater updater = this.updater = UpdaterFactory.newUpdater();
-        if (updater != null) {
-            updater.setTargetVersion(targetVersion);
+        Configuration config = getConfigAs(Configuration.class);
+        try {
+            updater.setTargetVersion(config.targetVersion);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Bad targetVersion {}.", targetVersion);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
+        try {
             updater.setPassword(config.password);
-            updater.setSleepTime(config.sleepTime);
-        } else {
+        } catch (IllegalArgumentException e) {
+            logger.debug("Bad password {}.", config.password);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
+        try {
+            updater.setSleepTime(config.sleepTime.toString());
+        } catch (IllegalArgumentException e) {
+            logger.debug("Bad sleepTime {}.", config.sleepTime);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
@@ -104,7 +115,7 @@ public class UpdaterHandler extends BaseThingHandler {
         if (refreshTask == null || refreshTask.isCancelled()) {
             this.refreshTask = scheduler.scheduleWithFixedDelay(() -> {
                 updateChanels();
-            }, 5, 60, TimeUnit.MINUTES);
+            }, 5, 3600, TimeUnit.SECONDS);
         }
     }
 

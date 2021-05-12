@@ -24,5 +24,5 @@ public class Configuration {
 
     public String targetVersion = "STABLE";
     public String password = "";
-    public int sleepTime = 20;
+    public Integer sleepTime = 20;
 }

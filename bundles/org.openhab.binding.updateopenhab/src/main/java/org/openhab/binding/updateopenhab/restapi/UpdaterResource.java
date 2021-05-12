@@ -28,7 +28,6 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.updateopenhab.updaters.BaseUpdater;
-import org.openhab.binding.updateopenhab.updaters.TargetVersionType;
 import org.openhab.binding.updateopenhab.updaters.UpdaterFactory;
 import org.openhab.core.auth.Role;
 import org.openhab.core.io.rest.RESTConstants;
@@ -61,18 +60,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @NonNullByDefault
 public class UpdaterResource implements RESTResource {
 
-    private static final String OK_REQUEST = "Request succeeded!";
+    private static final String RESPONSE_OK = "Request succeeded!";
+    private static final String RESPONSE_STARTED_UPDATE = "Started OpenHAB self update process";
+
     private static final String BAD_REQUEST = "Bad request!";
-    private static final String BAD_REQUEST_TYPE_PARAMETER = "Invalid 'type' parameter.";
-    private static final String BAD_REQUEST_VALUE_PARAMETER = "Missing 'value' parameter.";
+    private static final String BAD_QUERYPARAM_TARGETVERSION = "Invalid 'targetVersion' parameter.";
+    private static final Object BAD_QUERYPARAM_SLEEPTIME = "Invalid 'sleepTime' parameter.";
+    private static final String BAD_QUERYPARAM_PASSWORD = "Invalid 'password' query parameter.";
+
     private static final String SERVER_ERROR_UPDATER_MISSING = "Updater class not initialized.";
 
     public static final String URL_PATH = "updater";
-
-    // default values
-    private TargetVersionType targetVersion = BaseUpdater.DEF_TARGET_VER;
-    private String linuxPassword = "";
-    private int sleepTime = BaseUpdater.DEF_SLEEP_SECS;
 
     private @Nullable BaseUpdater updater;
 
@@ -80,25 +78,22 @@ public class UpdaterResource implements RESTResource {
 
     @Activate
     public UpdaterResource() {
-        BaseUpdater updater = this.updater = UpdaterFactory.newUpdater();
-        if (updater != null) {
-            updater.setTargetVersion(targetVersion);
-            updater.setPassword(linuxPassword);
-            updater.setSleepTime(sleepTime);
-        }
+        this.updater = UpdaterFactory.newUpdater();
     }
 
     @GET
-    @Path("/status")
+    @Path("/getstatus")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(operationId = "getStatus", summary = "Get the updater status.", responses = {
-            @ApiResponse(responseCode = "200", description = OK_REQUEST),
+            @ApiResponse(responseCode = "200", description = RESPONSE_OK),
             @ApiResponse(responseCode = "500", description = SERVER_ERROR_UPDATER_MISSING) })
     public Response getStatus() {
         BaseUpdater updater = this.updater;
+        // server error if updater is null
         if (updater == null) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(SERVER_ERROR_UPDATER_MISSING).build();
         }
+        // populate and return the DTO
         UpdaterDTO dto = new UpdaterDTO();
         dto.runningVersion = BaseUpdater.getActualVersion();
         dto.targetVersionType = updater.getTargetVersionType().name();
@@ -108,45 +103,40 @@ public class UpdaterResource implements RESTResource {
     }
 
     @GET
-    @Path("/password")
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Operation(operationId = "postPassword", summary = "Set the updater system password.", responses = {
-            @ApiResponse(responseCode = "200", description = OK_REQUEST),
-            @ApiResponse(responseCode = "400", description = BAD_REQUEST_VALUE_PARAMETER),
-            @ApiResponse(responseCode = "500", description = SERVER_ERROR_UPDATER_MISSING) })
-    public Response postPassword(@QueryParam("value") @Nullable String value) {
-        BaseUpdater updater = this.updater;
-        if (updater == null) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(SERVER_ERROR_UPDATER_MISSING).build();
-        }
-        if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(BAD_REQUEST_VALUE_PARAMETER).build();
-        }
-        updater.setPassword(value);
-        return Response.ok("Password set to: " + value).build();
-    }
-
-    @GET
-    @Path("/targetversion")
+    @Path("/setvalue")
     @Consumes(MediaType.TEXT_PLAIN)
     @Operation(operationId = "postTargetVerionType", summary = "Set the target update version type.", responses = {
-            @ApiResponse(responseCode = "200", description = OK_REQUEST),
-            @ApiResponse(responseCode = "400", description = BAD_REQUEST_TYPE_PARAMETER),
+            @ApiResponse(responseCode = "200", description = RESPONSE_OK),
+            @ApiResponse(responseCode = "400", description = BAD_REQUEST),
             @ApiResponse(responseCode = "500", description = SERVER_ERROR_UPDATER_MISSING) })
-    public Response postTargetVerionType(@QueryParam("type") @Nullable String type) {
+    public Response postTargetVerionType(@QueryParam("targetVersion") @Nullable String targetVersion,
+            @QueryParam("sleepTime") @Nullable String sleepTime) {
+        // server error if updater is null
         BaseUpdater updater = this.updater;
         if (updater == null) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(SERVER_ERROR_UPDATER_MISSING).build();
         }
-        if (type != null) {
+
+        // process any query parameters
+        boolean modified = false;
+        if (targetVersion != null) {
             try {
-                TargetVersionType targetVersion = TargetVersionType.valueOf(type.toUpperCase());
                 updater.setTargetVersion(targetVersion);
-                return Response.ok("Target version type set to: " + targetVersion.name()).build();
+                modified = true;
             } catch (IllegalArgumentException e) {
+                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_TARGETVERSION).build();
             }
         }
-        return Response.status(Status.BAD_REQUEST).entity(BAD_REQUEST_TYPE_PARAMETER).build();
+        if (sleepTime != null) {
+            try {
+                updater.setSleepTime(sleepTime);
+                modified = true;
+            } catch (IllegalArgumentException e) {
+                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_SLEEPTIME).build();
+            }
+        }
+
+        return modified ? Response.ok(RESPONSE_OK).build() : Response.notModified().build();
     }
 
     // FOR TESTING BUILD: un- comment the following line
@@ -154,20 +144,50 @@ public class UpdaterResource implements RESTResource {
     // FOR RELEASE BUILD: un-comment the following two lines
     // @ POST
     // @ RolesAllowed({ Role.ADMIN })
-    @Path("/executeupdate")
+    @Path("/update")
     @Operation(operationId = "executeUpdate", summary = "Update OpenHAB to the latest available (stable/milestone/snapshot) version.", responses = {
-            @ApiResponse(responseCode = "200", description = OK_REQUEST),
+            @ApiResponse(responseCode = "200", description = RESPONSE_OK),
             @ApiResponse(responseCode = "400", description = BAD_REQUEST),
             @ApiResponse(responseCode = "500", description = SERVER_ERROR_UPDATER_MISSING) })
-    public Response executeUpdate(@QueryParam("say") @Nullable String say) {
+    public Response executeUpdate(@QueryParam("targetVersion") @Nullable String targetVersion,
+            @QueryParam("sleepTime") @Nullable String sleepTime, @QueryParam("password") @Nullable String password,
+            @QueryParam("say") @Nullable String say) {
+        // server error if updater is null
         BaseUpdater updater = this.updater;
         if (updater == null) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(SERVER_ERROR_UPDATER_MISSING).build();
         }
+
+        // check the magic word
         if (!"please".equalsIgnoreCase(say)) {
             return Response.status(Status.BAD_REQUEST).entity(BAD_REQUEST).build();
         }
+
+        // process any query parameters
+        if (targetVersion != null) {
+            try {
+                updater.setTargetVersion(targetVersion);
+            } catch (IllegalArgumentException e) {
+                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_TARGETVERSION).build();
+            }
+        }
+        if (sleepTime != null) {
+            try {
+                updater.setSleepTime(sleepTime);
+            } catch (IllegalArgumentException e) {
+                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_SLEEPTIME).build();
+            }
+        }
+        if (password != null) {
+            try {
+                updater.setPassword(password);
+            } catch (IllegalArgumentException e) {
+                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_PASSWORD).build();
+            }
+        }
+
+        // start the update process
         executorService.submit(updater);
-        return Response.ok("OpenHAB self update process started!").build();
+        return Response.ok(RESPONSE_STARTED_UPDATE).build();
     }
 }

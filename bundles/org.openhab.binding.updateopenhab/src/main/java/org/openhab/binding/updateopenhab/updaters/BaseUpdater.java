@@ -61,13 +61,11 @@ public abstract class BaseUpdater implements Runnable {
 
     private static final Boolean RUN_LOCK = Boolean.valueOf(true);
 
-    public static final int MIN_SLEEP_SECS = 5; // seconds
-    public static final int DEF_SLEEP_SECS = 20;
-    public static final int MAX_SLEEP_SECS = 60;
+    private static final Integer MIN_SLEEP_SECS = 5; // seconds
+    private static final Integer DEFAULT_SLEEP_SECS = 20;
+    private static final Integer MAX_SLEEP_SECS = 60;
 
-    public static final TargetVersionType DEF_TARGET_VER = TargetVersionType.STABLE;
-
-    private TargetVersionType targetVersionType = DEF_TARGET_VER;
+    private TargetVersionType targetVersionType = TargetVersionType.STABLE;
 
     protected static final String FILE_ID = "update-openhab";
 
@@ -106,7 +104,7 @@ public abstract class BaseUpdater implements Runnable {
     public BaseUpdater() {
         placeHolders.put(PlaceHolder.TITLE, TITLE);
         placeHolders.put(PlaceHolder.PASSWORD, "");
-        placeHolders.put(PlaceHolder.SLEEP_TIME, Integer.toString(DEF_SLEEP_SECS));
+        placeHolders.put(PlaceHolder.SLEEP_TIME, DEFAULT_SLEEP_SECS.toString());
         placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersionType.label);
         placeHolders.put(PlaceHolder.USERDATA_FOLDER, OpenHAB.getUserDataFolder());
         placeHolders.put(PlaceHolder.LOGBACK_FILENAME, FILE_ID + ".log");
@@ -137,22 +135,40 @@ public abstract class BaseUpdater implements Runnable {
     /**
      * Property setter.
      *
-     * @param targetVersion
+     * @param targetVersionString string representation of a target version i.e. STABLE, MILESTONE, SNAPSHOT
      * @return this instance
+     * @throws IllegalArgumentException
      */
-    public BaseUpdater setTargetVersion(TargetVersionType targetVersion) {
-        this.targetVersionType = targetVersion;
-        placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersion.label);
+    public BaseUpdater setTargetVersion(String targetVersionString) throws IllegalArgumentException {
+        targetVersionType = TargetVersionType.valueOf(targetVersionString.toUpperCase());
+        placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersionType.label);
         return this;
     }
 
     /**
      * Property setter.
      *
-     * @param password
+     * @param password a valid password containing no whitespace, and 30 or fewer characters long
      * @return this instance
+     * @throws IllegalArgumentException
      */
-    public BaseUpdater setPassword(String password) {
+    public BaseUpdater setPassword(String password) throws IllegalArgumentException {
+        // prevent buffer overrun attacks by checking that the string length is <= 30 (say)
+        if (password.length() > 30) {
+            IllegalArgumentException e = new IllegalArgumentException(
+                    String.format("Password %s is too long.", password));
+            logger.debug("{}", e.getMessage());
+            throw e;
+        }
+        // prevent script injection attacks by checking that the string contains no whitespace
+        for (int i = 0; i < password.length(); i++) {
+            if (Character.isWhitespace(password.charAt(i))) {
+                IllegalArgumentException e = new IllegalArgumentException(
+                        String.format("Password %s contains whitespace.", password));
+                logger.debug("{}", e.getMessage());
+                throw e;
+            }
+        }
         placeHolders.put(PlaceHolder.PASSWORD, password);
         return this;
     }
@@ -160,13 +176,24 @@ public abstract class BaseUpdater implements Runnable {
     /**
      * Property setter.
      *
-     * @param sleepTime
+     * @param sleepTimeString string representation of an integer between 5 and 30 (seconds)
      * @return this instance
+     * @throws IllegalArgumentException
      */
-    public BaseUpdater setSleepTime(int sleepTime) {
-        if ((MIN_SLEEP_SECS <= sleepTime) && (sleepTime <= MAX_SLEEP_SECS)) {
-            placeHolders.put(PlaceHolder.SLEEP_TIME, Integer.toString(sleepTime));
+    public BaseUpdater setSleepTime(String sleepTimeString) throws IllegalArgumentException {
+        Integer sleepTimeInteger;
+        try {
+            sleepTimeInteger = Integer.valueOf(sleepTimeString);
+        } catch (NumberFormatException e) {
+            sleepTimeInteger = -1;
         }
+        if ((MIN_SLEEP_SECS > sleepTimeInteger) || (sleepTimeInteger > MAX_SLEEP_SECS)) {
+            IllegalArgumentException exception = new IllegalArgumentException(
+                    String.format("Argument value {} is invalid.", sleepTimeString));
+            logger.debug("{}", exception.getMessage());
+            throw exception;
+        }
+        placeHolders.put(PlaceHolder.SLEEP_TIME, sleepTimeInteger.toString());
         return this;
     }
 
