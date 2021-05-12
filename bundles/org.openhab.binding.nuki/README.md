@@ -43,7 +43,7 @@ The following configuration options are available:
 
 | Parameter | Description                                                                                                                                                                                               | Comment       |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| nukiId    | The `Nuki-ID` of the Nuki Smart Lock. It is a 8-digit hexadecimal string. Look it up on the sticker on the back of the Nuki Smart Lock (remove mounting plate). It can also be queried in the Nuki app (Sidebar > Manage my devices > Smart Lock > [Your lock] > Connection status, then tap anywhere on the screen)                                         | Required      |
+| nukiId    | The `Nuki-ID` of the Nuki Smart Lock. It is a 8-digit hexadecimal string. Look it up on the sticker on the back of the Nuki Smart Lock (remove mounting plate). It can also be retrieved in the Nuki app (Sidebar > Manage my devices > Smart Lock > [Your lock] > Connection status, then tap anywhere on the screen)                                         | Required      |
 | unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
 
 ## Supported Channels
