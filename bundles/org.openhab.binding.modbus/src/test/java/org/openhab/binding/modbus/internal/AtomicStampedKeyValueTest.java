@@ -16,11 +16,13 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class AtomicStampedKeyValueTest {
 
     @Test

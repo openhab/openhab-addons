@@ -46,7 +46,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class ModbusGainOffsetProfileTest {
 
-    private static Stream<Arguments> provideArgsForBoth() {
+    static Stream<Arguments> provideArgsForBoth() {
         return Stream.of(
                 // dimensionless
                 Arguments.of("100", "0.5", "250", "175.0"), Arguments.of("0", "1 %", "250", "250 %"),
@@ -81,9 +81,8 @@ public class ModbusGainOffsetProfileTest {
         );
     }
 
-    private static Stream<Arguments> provideAdditionalArgsForStateUpdateFromHandler() {
+    static Stream<Arguments> provideAdditionalArgsForStateUpdateFromHandler() {
         return Stream.of(
-
                 // Dimensionless conversion 2.5/1% = 250%/1% = 250
                 Arguments.of("0", "1 %", "250", "250 %"), Arguments.of("2 %", "1 %", "249.9800", "250.0000 %"),
                 Arguments.of("50", "2 m/s", new DecimalType("3"), "106 m/s"),
@@ -169,17 +168,11 @@ public class ModbusGainOffsetProfileTest {
         Type expectedStateUpdateTowardsItem = (expectedUpdateTowardsItemObj instanceof String)
                 ? new QuantityType((String) expectedUpdateTowardsItemObj)
                 : (Type) expectedUpdateTowardsItemObj;
-        // Workaround for errors like "java.lang.UnsupportedOperationException: °C is non-linear, cannot convert"
-        if (expectedStateUpdateTowardsItem instanceof QuantityType<?>) {
-            assertTrue(actualStateUpdateTowardsItem instanceof QuantityType<?>);
-            assertEquals(expectedStateUpdateTowardsItem, actualStateUpdateTowardsItem);
-        } else {
-            assertEquals(expectedStateUpdateTowardsItem, actualStateUpdateTowardsItem);
-        }
+        assertEquals(expectedStateUpdateTowardsItem, actualStateUpdateTowardsItem);
         verifyNoMoreInteractions(callback);
     }
 
-    private static Stream<Arguments> provideAdditionalArgsForCommandFromItem() {
+    static Stream<Arguments> provideAdditionalArgsForCommandFromItem() {
         return Stream.of(
                 // Dimensionless conversion 2.5/1% = 250%/1% = 250
                 // gain in %, command as bare ratio and the other way around
@@ -208,7 +201,7 @@ public class ModbusGainOffsetProfileTest {
 
     /**
      *
-     * Test profile behaviour when item receives command
+     * Test profile behavior when item receives command
      *
      * @param preGainOffset profile pre-gain-offset
      * @param gain profile gain
