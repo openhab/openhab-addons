@@ -116,12 +116,12 @@ public class NukiLinkBuilder {
     private URI buildWithAuth(UriBuilder builder) {
         String ts = formatter.format(OffsetDateTime.now(ZoneOffset.UTC));
         Integer rnr = random.nextInt(65536);
-        String hashedToken = hash(ts + "," + rnr + "," + token);
+        String hashedToken = sha256(ts + "," + rnr + "," + token);
 
         return builder.queryParam("ts", ts).queryParam("rnr", rnr).queryParam("hash", hashedToken).build();
     }
 
-    private String hash(String data) {
+    public static String sha256(String data) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
