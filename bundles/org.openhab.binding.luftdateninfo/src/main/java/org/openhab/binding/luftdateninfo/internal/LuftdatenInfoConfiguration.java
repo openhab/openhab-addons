@@ -13,6 +13,7 @@
 package org.openhab.binding.luftdateninfo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.luftdateninfo.internal.utils.Constants;
 
 /**
  * The {@link LuftdatenInfoConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,5 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LuftdatenInfoConfiguration {
 
-    public int sensorid = -1;
+    public int sensorid = Constants.UNDEF;
+
+    public String ipAddress = Constants.EMPTY;
 }
