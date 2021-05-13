@@ -70,9 +70,18 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
         logger.debug("Instantiating {}({})", getClass().getSimpleName(), thing);
         String id = thing.getProperties().get(NukiBindingConstants.PROPERTY_NUKI_ID);
         if (id == null) {
-            throw new IllegalStateException(
-                    String.format("%s is missing from properties of %s. Delete thing and add it again using discovery",
-                            NukiBindingConstants.PROPERTY_NUKI_ID, thing));
+            Object idFromOldConfig = getConfig().get(NukiBindingConstants.PROPERTY_NUKI_ID);
+            if (idFromOldConfig != null) {
+                logger.warn(
+                        "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
+                        thing.getUID());
+                int nukiId = Integer.parseInt(idFromOldConfig.toString(), 16);
+                this.nukiId = Integer.toString(nukiId);
+            } else {
+                throw new IllegalStateException(String.format(
+                        "%s is missing from properties of %s. Delete thing and add it again using discovery",
+                        NukiBindingConstants.PROPERTY_NUKI_ID, thing));
+            }
         } else {
             nukiId = id;
         }
