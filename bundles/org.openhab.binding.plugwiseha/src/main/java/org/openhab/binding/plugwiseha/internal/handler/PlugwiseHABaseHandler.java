@@ -59,7 +59,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
     private Class<?> clazz;
 
     // Constructor
-
+    @SuppressWarnings("null")
     public PlugwiseHABaseHandler(Thing thing) {
         super(thing);
         clazz = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1]);

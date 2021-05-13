@@ -54,7 +54,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
             ZonedDateTime dateTime = ZonedDateTime.parse(str, DateTimeConverter.FORMAT);
             return dateTime;
         } catch (DateTimeParseException e) {
-            logger.debug("Invalid datetime format in {" + str + "}");
+            logger.debug("Invalid datetime format in {}", str);
             return null;
         }
     }

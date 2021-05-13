@@ -214,6 +214,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    @SuppressWarnings("null")
     private void cancelRefreshJob() {
         synchronized (this) {
             if (this.refreshJob != null) {

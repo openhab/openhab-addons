@@ -82,8 +82,14 @@ public class PlugwiseHAController {
         this.smileId = smileId;
 
         this.xStream = new PlugwiseHAXStream();
-        this.domainObjectsTransformer = PlugwiseHAController
-                .setXSLT(new StreamSource(getClass().getClassLoader().getResourceAsStream("domain_objects.xslt")));
+
+        ClassLoader localClassLoader = getClass().getClassLoader();
+        if (localClassLoader != null) {
+            this.domainObjectsTransformer = PlugwiseHAController
+                    .setXSLT(new StreamSource(localClassLoader.getResourceAsStream("domain_objects.xslt")));
+        } else {
+            throw new PlugwiseHAException("PlugwiseHAController.domainObjectsTransformer could not be initialized");
+        }
     }
 
     // Public methods
@@ -412,6 +418,7 @@ public class PlugwiseHAController {
                 this.port, this.username, this.smileId);
     }
 
+    @SuppressWarnings("null")
     private <T> T executeRequest(PlugwiseHAControllerRequest<T> request) throws PlugwiseHAException {
         T result;
         result = request.execute();
