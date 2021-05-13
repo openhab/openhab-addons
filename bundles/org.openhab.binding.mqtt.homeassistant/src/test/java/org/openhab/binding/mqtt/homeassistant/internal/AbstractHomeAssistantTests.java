@@ -82,7 +82,9 @@ public abstract class AbstractHomeAssistantTests {
     protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
     protected @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
 
-    protected final MqttChannelTypeProvider channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry));
+    @SuppressWarnings("NotNullFieldNotInitialized")
+    protected @NonNullByDefault({}) MqttChannelTypeProvider channelTypeProvider;
+
     protected final Bridge bridgeThing = BridgeBuilder.create(BRIDGE_TYPE_UID, BRIDGE_UID).build();
     protected final BrokerHandler bridgeHandler = spy(new BrokerHandler(bridgeThing));
     protected final Thing haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).build();
@@ -98,6 +100,8 @@ public abstract class AbstractHomeAssistantTests {
         when(transformationServiceProvider
                 .getTransformationService(JinjaTransformationProfile.PROFILE_TYPE_UID.getId()))
                         .thenReturn(jinjaTransformationService);
+
+        channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry));
 
         doReturn(CompletableFuture.completedFuture(true)).when(bridgeConnection).subscribe(any(), any());
         doReturn(CompletableFuture.completedFuture(true)).when(bridgeConnection).unsubscribe(any(), any());
