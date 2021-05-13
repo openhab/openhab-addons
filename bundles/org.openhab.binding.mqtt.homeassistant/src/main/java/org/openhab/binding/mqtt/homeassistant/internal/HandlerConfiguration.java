@@ -28,6 +28,9 @@ import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThin
  */
 @NonNullByDefault
 public class HandlerConfiguration {
+    public static final String PROPERTY_BASETOPIC = "basetopic";
+    public static final String PROPERTY_TOPICS = "topics";
+    public static final String DEFAULT_BASETOPIC = "homeassistant";
     /**
      * hint: cannot be final, or <code>getConfigAs</code> will not work.
      * The MQTT prefix topic
@@ -64,7 +67,7 @@ public class HandlerConfiguration {
     public List<String> topics;
 
     public HandlerConfiguration() {
-        this("homeassistant", Collections.emptyList());
+        this(DEFAULT_BASETOPIC, Collections.emptyList());
     }
 
     public HandlerConfiguration(String basetopic, List<String> topics) {
@@ -80,8 +83,8 @@ public class HandlerConfiguration {
      * @return the modified properties
      */
     public <T extends Map<String, Object>> T appendToProperties(T properties) {
-        properties.put("basetopic", basetopic);
-        properties.put("topics", topics);
+        properties.put(PROPERTY_BASETOPIC, basetopic);
+        properties.put(PROPERTY_TOPICS, topics);
         return properties;
     }
 }
