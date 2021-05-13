@@ -89,7 +89,7 @@ The following matrix lists the capabilities (channels) for each type:
 |t19|x|x|x|x||||||x|x|
 |t1A|||x|x|||||||||x|x|x|x|x|x|x|x|
 
-|Thing type / Channel | DateTime / lastStatusStored | Number / healthy |Rollershutter / rollershutter|(see down) / rollershutterstate|(see down) / mode|(see down) / fan|Switch / status|Number / setpoint|Switch / setAsMeasured|Switch / measured|Switch / statusAlarm|Switch / onOffAlarm|Switch / rearmAlarm|
+|Thing type / Channel | DateTime / lastStatusStored | Number / healthy |Rollershutter / rollershutter|(see below) / rollershutterstate|(see down) / mode|(see down) / fan|Switch / status|Number / setpoint|Switch / setAsMeasured|Switch / measured|Switch / statusAlarm|Switch / onOffAlarm|Switch / rearmAlarm|
 |-- |-- | --|- | -- | -- |--|--|--|--|--|--|--|--|
 |t21|x|x||x|
 |t22|x|x|x|x|
