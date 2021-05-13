@@ -18,6 +18,8 @@ import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
@@ -31,6 +33,7 @@ import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 @NonNullByDefault
 public class DateTimeConverter extends AbstractSingleValueConverter {
 
+    private final Logger logger = LoggerFactory.getLogger(DateTimeConverter.class);
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME; // default Date format that
 
     @Override
@@ -51,7 +54,8 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
             ZonedDateTime dateTime = ZonedDateTime.parse(str, DateTimeConverter.FORMAT);
             return dateTime;
         } catch (DateTimeParseException e) {
-            throw new RuntimeException("Invalid datetime format in {" + str + "}");
+            logger.debug("Invalid datetime format in {" + str + "}");
+            return null;
         }
     }
 
