@@ -1,13 +1,11 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 
-@SuppressWarnings("ConstantConditions")
 public class SwitchTests extends AbstractComponentTests {
 
     @Test
@@ -30,11 +28,8 @@ public class SwitchTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        var stateChannel = component.getChannel(Switch.switchChannelID);
-        assertThat(stateChannel.getChannel().getLabel(), is("state"));
-        assertThat(stateChannel.getState().getStateTopic(), is("zigbee2mqtt/th1"));
-        assertThat(stateChannel.getState().getCommandTopic(), is("zigbee2mqtt/th1/set/auto_lock"));
-        assertThat(stateChannel.getState().getCache(), is(instanceOf(OnOffValue.class)));
+        assertChannel(component, Switch.switchChannelID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock", "state",
+                OnOffValue.class);
     }
 
     @Test
@@ -55,11 +50,7 @@ public class SwitchTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        var stateChannel = component.getChannel(Switch.switchChannelID);
-        assertThat(stateChannel.getChannel().getLabel(), is("state"));
-        assertThat(stateChannel.getState().getStateTopic(), is("zigbee2mqtt/th1"));
-        assertThat(stateChannel.getState().getCommandTopic(), is(""));
-        assertThat(stateChannel.getState().getCache(), is(instanceOf(OnOffValue.class)));
+        assertChannel(component, Switch.switchChannelID, "zigbee2mqtt/th1", "", "state", OnOffValue.class);
     }
 
     @Test
@@ -80,10 +71,7 @@ public class SwitchTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        var stateChannel = component.getChannel(Switch.switchChannelID);
-        assertThat(stateChannel.getChannel().getLabel(), is("state"));
-        assertThat(stateChannel.getState().getStateTopic(), is(""));
-        assertThat(stateChannel.getState().getCommandTopic(), is("zigbee2mqtt/th1/set/auto_lock"));
-        assertThat(stateChannel.getState().getCache(), is(instanceOf(OnOffValue.class)));
+        assertChannel(component, Switch.switchChannelID, "", "zigbee2mqtt/th1/set/auto_lock", "state",
+                OnOffValue.class);
     }
 }

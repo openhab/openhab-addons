@@ -1,5 +1,7 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.nio.charset.StandardCharsets;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
@@ -59,6 +62,16 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         var component = componentDiscoveredListener.getDiscoveredComponent();
         assertThat(component, CoreMatchers.notNullValue());
         return component;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    protected static void assertChannel(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String stateTopic, String commandTopic, String label, Class<? extends Value> valueClass) {
+        var stateChannel = component.getChannel(channelId);
+        assertThat(stateChannel.getChannel().getLabel(), is(label));
+        assertThat(stateChannel.getState().getStateTopic(), is(stateTopic));
+        assertThat(stateChannel.getState().getCommandTopic(), is(commandTopic));
+        assertThat(stateChannel.getState().getCache(), is(instanceOf(valueClass)));
     }
 
     @NonNullByDefault

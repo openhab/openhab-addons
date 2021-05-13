@@ -39,18 +39,18 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
-    private static final String ACTION_CH_ID = "action";
-    private static final String AUX_CH_ID = "aux";
-    private static final String AWAY_MODE_CH_ID = "awayMode";
-    private static final String CURRENT_TEMPERATURE_CH_ID = "currentTemperature";
-    private static final String FAN_MODE_CH_ID = "fanMode";
-    private static final String HOLD_CH_ID = "hold";
-    private static final String MODE_CH_ID = "mode";
-    private static final String SWING_CH_ID = "swing";
-    private static final String TEMPERATURE_CH_ID = "temperature";
-    private static final String TEMPERATURE_HIGH_CH_ID = "temperatureHigh";
-    private static final String TEMPERATURE_LOW_CH_ID = "temperatureLow";
-    private static final String POWER_CH_ID = "power";
+    public static final String ACTION_CH_ID = "action";
+    public static final String AUX_CH_ID = "aux";
+    public static final String AWAY_MODE_CH_ID = "awayMode";
+    public static final String CURRENT_TEMPERATURE_CH_ID = "currentTemperature";
+    public static final String FAN_MODE_CH_ID = "fanMode";
+    public static final String HOLD_CH_ID = "hold";
+    public static final String MODE_CH_ID = "mode";
+    public static final String SWING_CH_ID = "swing";
+    public static final String TEMPERATURE_CH_ID = "temperature";
+    public static final String TEMPERATURE_HIGH_CH_ID = "temperatureHigh";
+    public static final String TEMPERATURE_LOW_CH_ID = "temperatureLow";
+    public static final String POWER_CH_ID = "power";
 
     private static final String CELSIUM = "C";
     private static final String FAHRENHEIT = "F";
