@@ -34,8 +34,8 @@ public class IpObserverBindingConstants {
     // List of all Channel ids
     public static final String TEMP_INDOOR = "temperatureIndoor";
     public static final String TEMP_OUTDOOR = "temperatureOutdoor";
-    public static final String INDOOR_HUMIDITY = "indoorHumidity";
-    public static final String OUTDOOR_HUMIDITY = "outdoorHumidity";
+    public static final String INDOOR_HUMIDITY = "humidityIndoor";
+    public static final String OUTDOOR_HUMIDITY = "humidityOutdoor";
     public static final String ABS_PRESSURE = "pressureAbsolute";
     public static final String REL_PRESSURE = "pressureRelative";
     public static final String WIND_DIRECTION = "windDirection";
@@ -46,13 +46,13 @@ public class IpObserverBindingConstants {
     public static final String SOLAR_RADIATION = "solarRadiation";
     public static final String UV = "uv";
     public static final String UV_INDEX = "uvIndex";
-    public static final String HOURLY_RAIN_RATE = "hourlyRainRate";
+    public static final String HOURLY_RAIN_RATE = "rainHourlyRate";
     public static final String DAILY_RAIN = "rainToday";
     public static final String WEEKLY_RAIN = "rainForWeek";
     public static final String MONTHLY_RAIN = "rainForMonth";
     public static final String YEARLY_RAIN = "rainForYear";
-    public static final String INDOOR_BATTERY = "indoorBattery";
-    public static final String OUTDOOR_BATTERY = "outdoorBattery";
+    public static final String INDOOR_BATTERY = "batteryIndoor";
+    public static final String OUTDOOR_BATTERY = "batteryOutdoor";
     public static final String RESPONSE_TIME = "responseTime";
     public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
 }

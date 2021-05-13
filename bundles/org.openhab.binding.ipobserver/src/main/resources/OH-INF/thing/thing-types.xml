@@ -11,15 +11,18 @@
 		<description>Use for any weather station sold under multiple brands that come with an IP Observer unit.</description>
 		<channels>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
 			<channel id="indoorHumidity" typeId="indoorHumidity"/>
 			<channel id="outdoorHumidity" typeId="outdoorHumidity"/>
 >>>>>>> Fix merge conflicts.
+=======
+>>>>>>> Rename channels to put kind first.
 			<channel id="temperatureIndoor" typeId="temperatureIndoor"/>
 			<channel id="temperatureOutdoor" typeId="temperatureOutdoor"/>
-			<channel id="indoorHumidity" typeId="indoorHumidity"/>
-			<channel id="outdoorHumidity" typeId="outdoorHumidity"/>
+			<channel id="humidityIndoor" typeId="humidityIndoor"/>
+			<channel id="humidityOutdoor" typeId="humidityOutdoor"/>
 			<channel id="pressureAbsolute" typeId="pressureAbsolute"/>
 			<channel id="pressureRelative" typeId="pressureRelative"/>
 			<channel id="windDirection" typeId="windDirection"/>
@@ -30,13 +33,13 @@
 			<channel id="solarRadiation" typeId="solarRadiation"/>
 			<channel id="uv" typeId="uv"/>
 			<channel id="uvIndex" typeId="uvIndex"/>
-			<channel id="hourlyRainRate" typeId="hourlyRainRate"/>
+			<channel id="rainHourlyRate" typeId="rainHourlyRate"/>
 			<channel id="rainToday" typeId="rainToday"/>
 			<channel id="rainForWeek" typeId="rainForWeek"/>
 			<channel id="rainForMonth" typeId="rainForMonth"/>
 			<channel id="rainForYear" typeId="rainForYear"/>
-			<channel id="outdoorBattery" typeId="outdoorBattery"/>
-			<channel id="indoorBattery" typeId="indoorBattery"/>
+			<channel id="batteryOutdoor" typeId="batteryOutdoor"/>
+			<channel id="batteryIndoor" typeId="batteryIndoor"/>
 			<channel id="responseTime" typeId="responseTime"/>
 			<channel id="lastUpdatedTime" typeId="lastUpdatedTime"/>
 		</channels>
@@ -81,16 +84,16 @@
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="indoorHumidity">
+	<channel-type id="humidityIndoor">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Indoor Humidity</label>
+		<label>Humidity Indoor</label>
 		<description>Current Humidity Indoors</description>
 		<category>Humidity</category>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="outdoorHumidity">
+	<channel-type id="humidityOutdoor">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Outdoor Humidity</label>
+		<label>Humidity Outdoor</label>
 		<description>Current Humidity Outdoors</description>
 		<category>Humidity</category>
 		<state pattern="%.0f %%" readOnly="true"/>
@@ -165,9 +168,9 @@
 		<category>Wind</category>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="hourlyRainRate">
+	<channel-type id="rainHourlyRate">
 		<item-type>Number:Length</item-type>
-		<label>Hourly Rain Rate</label>
+		<label>Rain Hourly Rate</label>
 		<description>How much rain will fall in an Hour if the rate continues.</description>
 		<category>Rain</category>
 		<state pattern="%.2f" readOnly="true"/>
@@ -200,9 +203,9 @@
 		<category>Rain</category>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="outdoorBattery" advanced="true">
+	<channel-type id="batteryOutdoor" advanced="true">
 		<item-type>String</item-type>
-		<label>Outdoor Battery</label>
+		<label>Battery Outdoor</label>
 		<description>Outdoor Battery Status</description>
 		<category>Battery</category>
 		<state readOnly="true">
@@ -212,9 +215,9 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="indoorBattery" advanced="true">
+	<channel-type id="batteryIndoor" advanced="true">
 		<item-type>String</item-type>
-		<label>Indoor Battery</label>
+		<label>Battery Indoor</label>
 		<description>Indoor Battery Status</description>
 		<category>Battery</category>
 		<state readOnly="true">

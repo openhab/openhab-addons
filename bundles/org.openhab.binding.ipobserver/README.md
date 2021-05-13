@@ -31,8 +31,8 @@ Auto discovery is not supported as it would require a IP scan that would take lo
 |-----------------------|-----------------------|------------------------------|
 | temperatureIndoor     | Number:Temperature    | The temperature indoors. |
 | temperatureOutdoor    | Number:Temperature    | The temperature outdoors. |
-| indoorHumidity        | Number:Dimensionless  | The humidity indoors. |
-| outdoorHumidity       | Number:Dimensionless  | The humidity outdoors. |
+| humidityIndoor        | Number:Dimensionless  | The humidity indoors. |
+| humidityOutdoor       | Number:Dimensionless  | The humidity outdoors. |
 | pressureAbsolute      | Number:Pressure       | The atmospheric pressure directly measured by the sensor. |
 | pressureRelative      | Number:Pressure       | The pressure adjusted to sea level to allow easier comparisons between different locations. |
 | windDirection         | Number:Angle          | The angle in degrees that the wind is comming from. |
@@ -43,12 +43,12 @@ Auto discovery is not supported as it would require a IP scan that would take lo
 | solarRadiation        | Number                | Solar radiation. |
 | uv                    | Number                | UV measurement. |
 | uvIndex               | Number                | The UV index. |
-| hourlyRainRate        | Number:Length         | The amount of rain that will fall, if it continues to fall at the same rate for an hour. Measures how heavy the current rain is falling. |
+| rainHourlyRate        | Number:Length         | The amount of rain that will fall, if it continues to fall at the same rate for an hour. Measures how heavy the current rain is falling. |
 | rainToday             | Number:Length         | Amount of rain since 12:00am. |
 | rainForWeek           | Number:Length         | Amount of rain for the week. |
 | rainForMonth          | Number:Length         | Amount of rain for the month. |
 | rainForYear           | Number:Length         | Amount of rain for the year. |
-| indoorBattery         | String                | Battery status, if it is low or normal. |
-| outdoorBattery        | String                | Battery status, if it is low or normal. |
+| batteryIndoor         | String                | Battery status, if it is low or normal. |
+| batteryOutdoor        | String                | Battery status, if it is low or normal. |
 | responseTime          | Number:Time           | How long it took the weather station to reply to a request for the data. |
 | lastUpdatedTime       | String                | The time scraped from the weather station when it last read the sensors. |
