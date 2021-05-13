@@ -137,7 +137,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 |"|pingInterval=30 |Interval in seconds to check for device presence|
 |"|subscriptionInterval=2|Interval in minutes to subscribe Souliss Gateway|
 |"|healthyInterval=35|Interval in seconds to send nodes healthy|
-|"|userIndex=70|Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)|
+|"|userIndex=70|Generally the default value works well. It must be different from other user interfaces (ex: SoulissApp)|
 |"|nodeIndex=120|Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)|
 |T11|sleep=5|Set sleep timer in cycles|
 |T12|||
