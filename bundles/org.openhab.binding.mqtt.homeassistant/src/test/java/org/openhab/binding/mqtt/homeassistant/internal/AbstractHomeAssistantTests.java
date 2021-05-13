@@ -42,6 +42,11 @@ import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.transform.jinja.internal.JinjaTransformationService;
 import org.openhab.transform.jinja.internal.profiles.JinjaTransformationProfile;
 
+/**
+ * Abstract class for HomeAssistant unit tests.
+ *
+ * @author Anton Kharuzhy - Initial contribution
+ */
 @SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)

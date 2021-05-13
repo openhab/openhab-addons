@@ -27,6 +27,11 @@ import org.openhab.binding.mqtt.homeassistant.internal.component.Climate;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
+/**
+ * Tests for {@link HomeAssistantThingHandler}
+ *
+ * @author Anton Kharuzhy - Initial contribution
+ */
 @SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
 public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {

@@ -27,6 +27,11 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
+/**
+ * Tests for {@link HomeAssistantDiscovery}
+ *
+ * @author Anton Kharuzhy - Initial contribution
+ */
 @SuppressWarnings({ "ConstantConditions", "unchecked" })
 @ExtendWith(MockitoExtension.class)
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {

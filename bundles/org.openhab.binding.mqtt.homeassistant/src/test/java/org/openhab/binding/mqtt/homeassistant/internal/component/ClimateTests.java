@@ -8,6 +8,11 @@ import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 
+/**
+ * Tests for {@link Climate}
+ *
+ * @author Anton Kharuzhy - Initial contribution
+ */
 public class ClimateTests extends AbstractComponentTests {
 
     @Test

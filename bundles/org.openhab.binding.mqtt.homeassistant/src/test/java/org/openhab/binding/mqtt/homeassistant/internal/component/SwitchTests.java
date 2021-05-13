@@ -6,6 +6,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 
+/**
+ * Tests for {@link Switch}
+ *
+ * @author Anton Kharuzhy - Initial contribution
+ */
 public class SwitchTests extends AbstractComponentTests {
 
     @Test

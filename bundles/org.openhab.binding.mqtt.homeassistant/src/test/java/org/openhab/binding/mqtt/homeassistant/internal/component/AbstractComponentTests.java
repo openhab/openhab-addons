@@ -30,6 +30,12 @@ import org.openhab.core.common.ThreadPoolManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * Abstract class for components tests.
+ * TODO: need a way to test all channel properties, not only topics.
+ *
+ * @author Anton Kharuzhy - Initial contribution
+ */
 @ExtendWith(MockitoExtension.class)
 public abstract class AbstractComponentTests extends AbstractHomeAssistantTests {
     protected LatchComponentDiscoveredListener componentDiscoveredListener = new LatchComponentDiscoveredListener();
