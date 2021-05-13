@@ -50,6 +50,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.AbstractTarget;
@@ -71,8 +72,6 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
-
-import tech.units.indriya.format.SimpleUnitFormat;
 
 /**
  * The {@link SnmpTargetHandler} is responsible for handling commands, which are
@@ -281,9 +280,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     logger.warn("units only supported for readonly channels, ignored for channel {}", channel.getUID());
                 } else {
                     try {
-                        unit = SimpleUnitFormat.getInstance().parse(config.unit);
+                        unit = UnitUtils.parseUnit(config.unit);
                     } catch (MeasurementParseException e) {
-                        logger.warn("unrecognised unit {}, ignored for channel {}", config.unit, channel.getUID());
+                        logger.warn("unrecognised unit '{}', ignored for channel '{}'", config.unit, channel.getUID());
                     }
                 }
             }
