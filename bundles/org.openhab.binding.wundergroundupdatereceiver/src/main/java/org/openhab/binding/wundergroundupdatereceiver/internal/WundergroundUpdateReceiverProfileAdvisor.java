@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.wundergroundupdatereceiver.internal;
 
-import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.BINDING_ID;
-import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.LAST_RECEIVED_DATETIME_TYPE;
+import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,7 +48,7 @@ public class WundergroundUpdateReceiverProfileAdvisor implements ProfileAdvisor 
         if (channelTypeUID == null || !channelTypeUID.getBindingId().equals(BINDING_ID)) {
             return null;
         }
-        if (LAST_RECEIVED_DATETIME_TYPE.equals(channelTypeUID)) {
+        if (LAST_RECEIVED_DATETIME_CHANNELTYPEUID.equals(channelTypeUID)) {
             return SystemProfiles.TIMESTAMP_UPDATE;
         }
         return SystemProfiles.DEFAULT;

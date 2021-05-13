@@ -12,25 +12,21 @@
  */
 package org.openhab.binding.wundergroundupdatereceiver.internal;
 
-import static java.util.Map.entry;
-import static org.openhab.core.library.unit.ImperialUnits.*;
 import static org.openhab.core.library.unit.SIUnits.METRE;
-import static org.openhab.core.library.unit.Units.*;
 
-import java.util.Map;
 import java.util.Set;
 
-import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
-import tec.uom.se.format.SimpleUnitFormat;
-import tec.uom.se.function.MultiplyConverter;
-import tec.uom.se.unit.TransformedUnit;
+import tech.units.indriya.format.SimpleUnitFormat;
+import tech.units.indriya.function.MultiplyConverter;
+import tech.units.indriya.unit.TransformedUnit;
 
 /**
  * The {@link WundergroundUpdateReceiverBindingConstants} class defines common constants, which are
@@ -44,17 +40,35 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String BINDING_ID = "wundergroundupdatereceiver";
 
     public static final String STATION_ID_PARAMETER = "ID";
+    public static final String REPRESENTATION_PROPERTY = "stationId";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UPDATE_RECEIVER = new ThingTypeUID(BINDING_ID,
             "wundergroundUpdateReceiver");
+    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UPDATE_RECEIVER);
 
+    // Excluded technical paramter names
+    public static final String REALTIME_MARKER = "realtime";
+    public static final String PASSWORD = "PASSWORD";
+    public static final String ACTION = "action";
+
+    // List of default channeltypes added to
     public static final String LAST_RECEIVED_DATETIME = "last-received";
-    public static final ChannelTypeUID LAST_RECEIVED_DATETIME_TYPE = new ChannelTypeUID(BINDING_ID,
-            "last-received-datetime");
     public static final String LAST_QUERY = "last-query";
+    public static final String LAST_QUERY_STATE = LAST_QUERY + "-state";
+    public static final String LAST_QUERY_TRIGGER = LAST_QUERY + "-trigger";
 
-    // List of all Channel ids without groups
+    // Channel groups
+    public static final String METADATA_GROUP = "metadata-group";
+    public static final String WIND_GROUP = "wind-group";
+    public static final String TEMPERATURE_GROUP = "temperature-group";
+    public static final String HUMIDITY_GROUP = "humidity-group";
+    public static final String RAIN_GROUP = "rain-group";
+    public static final String SUNLIGHT_GROUP = "sunlight-group";
+    public static final String PRESSURE_GROUP = "pressure-group";
+    public static final String POLLUTION_GROUP = "pollution-group";
+
+    // Known or observed request paramters received from weather stations submitting to wunderground.com
     public static final String DATEUTC = "dateutc";
     public static final String SOFTWARE_TYPE = "softwaretype";
     public static final String LOW_BATTERY = "lowbatt";
@@ -107,35 +121,92 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String AQ_PM10 = "AqPM10";
     public static final String AQ_OZONE = "AqOZONE";
 
+    public static final ChannelTypeUID LAST_RECEIVED_DATETIME_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "last-received-datetime");
+    public static final ChannelTypeUID LAST_QUERY_STATE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            LAST_QUERY_STATE);
+    public static final ChannelTypeUID LAST_QUERY_TRIGGER_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            LAST_QUERY_TRIGGER);
+    public static final ChannelTypeUID DATETIME_UTC_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "datetime-utc");
+    public static final ChannelTypeUID LOW_BATTERY_CHANNELTYPEUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY
+            .getUID();
+    public static final ChannelTypeUID SOFTWARETYPE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "softwaretype");
+    public static final ChannelTypeUID REALTIME_FREQUENCY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "realtime-frequency");
+    public static final ChannelTypeUID WIND_SPEED_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "wind-speed");
+    public static final ChannelTypeUID WIND_DIRECTION_CHANNELTYPEUID = DefaultSystemChannelTypeProvider.SYSTEM_WIND_DIRECTION
+            .getUID();
+    public static final ChannelTypeUID GUST_SPEED_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "wind-gust-speed");
+    public static final ChannelTypeUID GUST_DIRECTION_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "wind-gust-direction");
+    public static final ChannelTypeUID WIND_SPEED_AVG_2MIN_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "wind-speed-avg-2min");
+    public static final ChannelTypeUID WIND_DIRECTION_AVG_2MIN_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "wind-direction-avg-2min");
+    public static final ChannelTypeUID GUST_SPEED_10MIN_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "wind-gust-speed-10min");
+    public static final ChannelTypeUID GUST_DIRECTION_10MIN_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "wind-gust-direction-10min");
+    public static final ChannelTypeUID TEMPERATURE_CHANNELTYPEUID = DefaultSystemChannelTypeProvider.SYSTEM_OUTDOOR_TEMPERATURE
+            .getUID();
+    public static final ChannelTypeUID HUMIDITY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "humidity");
+    public static final ChannelTypeUID INDOOR_HUMIDITY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "indoor-humidity");
+    public static final ChannelTypeUID DEW_POINT_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "dew-point");
+    public static final ChannelTypeUID WIND_CHILL_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "wind-chill");
+    // for extra outdoor sensors use temp2f, temp3f, and so on
+    public static final ChannelTypeUID INDOOR_TEMPERATURE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "indoor-temperature");
+    // for sensors 2,3,4 use soiltemp2f, soiltemp3f, and soiltemp4f
+    public static final ChannelTypeUID SOIL_TEMPERATURE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "soil-temperature");
+    public static final ChannelTypeUID RAIN_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "rain");
+    public static final ChannelTypeUID RAIN_DAILY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "rain-daily");
+    public static final ChannelTypeUID RAIN_WEEKLY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "rain-weekly");
+    public static final ChannelTypeUID RAIN_MONTHLY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "rain-monthly");
+    public static final ChannelTypeUID RAIN_YEARLY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "rain-yearly");
+    public static final ChannelTypeUID METAR_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "metar");
+    public static final ChannelTypeUID CLOUDS_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "clouds");
+    // for sensors 2,3,4 use soilmoisture2, soilmoisture3, and soilmoisture4
+    public static final ChannelTypeUID SOIL_MOISTURE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "soil-moisture");
+    // for sensor 2 use leafwetness2
+    public static final ChannelTypeUID LEAFWETNESS_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "leafwetness");
+    public static final ChannelTypeUID SOLARRADIATION_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "solarradiation");
+    public static final ChannelTypeUID UV_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "uv");
+    public static final ChannelTypeUID VISIBILITY_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "visibility");
+    public static final ChannelTypeUID BAROMETRIC_PRESSURE_CHANNELTYPEUID = DefaultSystemChannelTypeProvider.SYSTEM_BAROMETRIC_PRESSURE
+            .getUID();
+    public static final ChannelTypeUID NITRIC_OXIDE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "nitric-oxide");
+    public static final ChannelTypeUID NITROGEN_DIOXIDE_MEASURED_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "nitrogen-dioxide-measured");
+    public static final ChannelTypeUID NITROGEN_DIOXIDE_NOX_NO_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "nitrogen-dioxide-nox-no");
+    public static final ChannelTypeUID NITROGEN_DIOXIDE_NOY_NO_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "nitrogen-dioxide-noy-no");
+    public static final ChannelTypeUID NITROGEN_OXIDES_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "nitrogen-oxides");
+    public static final ChannelTypeUID TOTAL_REACTIVE_NITROGEN_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "total-reactive-nitrogen");
+    public static final ChannelTypeUID NO3_ION_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "no3-ion");
+    public static final ChannelTypeUID SO4_ION_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "so4-ion");
+    public static final ChannelTypeUID SULFUR_DIOXIDE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "sulfur-dioxide");
+    public static final ChannelTypeUID SULFUR_DIOXIDE_TRACE_LEVELS_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "sulfur-dioxide-trace-levels");
+    public static final ChannelTypeUID CARBON_MONOXIDE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "carbon-monoxide");
+    public static final ChannelTypeUID CARBON_MONOXIDE_TRACE_LEVELS_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "carbon-monoxide-trace-levels");
+    public static final ChannelTypeUID ELEMENTAL_CARBON_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            "elemental-carbon");
+    public static final ChannelTypeUID ORGANIC_CARBON_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "organic-carbon");
+    public static final ChannelTypeUID BLACK_CARBON_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "black-carbon");
+    public static final ChannelTypeUID AETHALOMETER_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "aethalometer");
+    public static final ChannelTypeUID PM2_5_MASS_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "pm2_5-mass");
+    public static final ChannelTypeUID PM10_MASS_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "pm10-mass");
+    public static final ChannelTypeUID OZONE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "ozone");
+
     public static final Unit<Length> NAUTICAL_MILE = addUnit(
-            new TransformedUnit<>("NM", METRE, new MultiplyConverter(1852.0)));
-
-    public static final Set<String> CHANNEL_KEYS = Set.of(DATEUTC, SOFTWARE_TYPE, LOW_BATTERY, REALTIME_FREQUENCY,
-            WIND_DIRECTION, WIND_SPEED, GUST_SPEED, GUST_DIRECTION, WIND_SPEED_AVG_2MIN, WIND_DIRECTION_AVG_2MIN,
-            GUST_SPEED_AVG_10MIN, GUST_DIRECTION_AVG_10MIN, TEMPERATURE, INDOOR_TEMPERATURE, SOIL_TEMPERATURE,
-            WIND_CHILL, HUMIDITY, INDOOR_HUMIDITY, DEWPOINT, SOIL_MOISTURE, LEAF_WETNESS, RAIN_IN, DAILY_RAIN_IN,
-            WEEKLY_RAIN_IN, MONTHLY_RAIN_IN, YEARLY_RAIN_IN, SOLAR_RADIATION, UV, VISIBILITY, WEATHER, CLOUDS, BAROM_IN,
-            AQ_NO, AQ_NO2, AQ_NO2T, AQ_NO2Y, AQ_NOX, AQ_NOY, AQ_NO3, AQ_SO2, AQ_SO2T, AQ_SO4, AQ_CO, AQ_COT, AQ_EC,
-            AQ_OC, AQ_BC, AQ_UV_AETH, AQ_PM2_5, AQ_PM10, AQ_OZONE);
-
-    public static final Map<String, Unit<? extends Quantity<?>>> CHANNEL_UNIT_MAPPING = Map.ofEntries(
-            entry(TEMPERATURE, FAHRENHEIT), entry(DEWPOINT, FAHRENHEIT), entry(SOIL_TEMPERATURE, FAHRENHEIT),
-            entry(WIND_CHILL, FAHRENHEIT), entry(INDOOR_TEMPERATURE, FAHRENHEIT), entry(WIND_SPEED, MILES_PER_HOUR),
-            entry(GUST_SPEED, MILES_PER_HOUR), entry(WIND_SPEED_AVG_2MIN, MILES_PER_HOUR),
-            entry(GUST_SPEED_AVG_10MIN, MILES_PER_HOUR), entry(WIND_DIRECTION, DEGREE_ANGLE),
-            entry(GUST_DIRECTION, DEGREE_ANGLE), entry(WIND_DIRECTION_AVG_2MIN, DEGREE_ANGLE),
-            entry(GUST_DIRECTION_AVG_10MIN, DEGREE_ANGLE), entry(BAROM_IN, INCH_OF_MERCURY), entry(RAIN_IN, INCH),
-            entry(DAILY_RAIN_IN, INCH), entry(WEEKLY_RAIN_IN, INCH), entry(MONTHLY_RAIN_IN, INCH),
-            entry(YEARLY_RAIN_IN, INCH), entry(SOLAR_RADIATION, IRRADIANCE), entry(AQ_NO, PARTS_PER_BILLION),
-            entry(AQ_NO2, PARTS_PER_BILLION), entry(AQ_NO2T, PARTS_PER_BILLION), entry(AQ_NO2Y, PARTS_PER_BILLION),
-            entry(AQ_NOX, PARTS_PER_BILLION), entry(AQ_NOY, PARTS_PER_BILLION), entry(AQ_SO2, PARTS_PER_BILLION),
-            entry(AQ_SO2T, PARTS_PER_BILLION), entry(AQ_COT, PARTS_PER_BILLION), entry(AQ_OZONE, PARTS_PER_BILLION),
-            entry(AQ_CO, PARTS_PER_MILLION), entry(AQ_NO3, MICROGRAM_PER_CUBICMETRE),
-            entry(AQ_SO4, MICROGRAM_PER_CUBICMETRE), entry(AQ_EC, MICROGRAM_PER_CUBICMETRE),
-            entry(AQ_OC, MICROGRAM_PER_CUBICMETRE), entry(AQ_BC, MICROGRAM_PER_CUBICMETRE),
-            entry(AQ_UV_AETH, MICROGRAM_PER_CUBICMETRE), entry(AQ_PM2_5, MICROGRAM_PER_CUBICMETRE),
-            entry(AQ_PM10, MICROGRAM_PER_CUBICMETRE), entry(HUMIDITY, PERCENT), entry(INDOOR_HUMIDITY, PERCENT),
-            entry(SOIL_MOISTURE, PERCENT), entry(LEAF_WETNESS, PERCENT), entry(VISIBILITY, NAUTICAL_MILE));
+            new TransformedUnit<>("NM", METRE, MultiplyConverter.of(1852.0)));
 
     static {
         SimpleUnitFormat.getInstance().label(NAUTICAL_MILE, "NM");

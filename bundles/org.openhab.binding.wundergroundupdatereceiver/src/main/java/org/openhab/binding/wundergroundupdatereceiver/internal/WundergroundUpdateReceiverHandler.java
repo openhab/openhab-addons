@@ -17,13 +17,13 @@ import static org.openhab.binding.wundergroundupdatereceiver.internal.Wundergrou
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -35,6 +35,9 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,25 +51,37 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverHandler.class);
-    private final WundergroundUpdateReceiverServlet wundergroundUpdateReceiverServlet;
-    private final ChannelUID lastReceivedChannel;
-    private final ChannelUID queryStateChannel;
-    private final ChannelUID queryTriggerChannel;
-    private WundergroundUpdateReceiverConfiguration config = new WundergroundUpdateReceiverConfiguration();
-
     public String getStationId() {
         return config.stationId;
     }
 
+    private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverHandler.class);
+    private final WundergroundUpdateReceiverServlet wundergroundUpdateReceiverServlet;
+    private final WundergroundUpdateReceiverDiscoveryService discoveryService;
+    private final WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider;
+    private final ChannelTypeRegistry channelTypeRegistry;
+
+    private final ChannelUID lastReceivedChannel;
+    private final ChannelUID queryStateChannel;
+    private final ChannelUID queryTriggerChannel;
+
+    private WundergroundUpdateReceiverConfiguration config = new WundergroundUpdateReceiverConfiguration();
+
     public WundergroundUpdateReceiverHandler(Thing thing,
-            @Nullable WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet) {
+            WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet,
+            WundergroundUpdateReceiverDiscoveryService discoveryService,
+            WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider,
+            ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
-        lastReceivedChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), "metadata"),
+        this.discoveryService = discoveryService;
+        this.channelTypeProvider = channelTypeProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.lastReceivedChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), METADATA_GROUP),
                 LAST_RECEIVED_DATETIME);
-        queryTriggerChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), "metadata"),
-                LAST_QUERY + "-trigger");
-        queryStateChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), "metadata"), LAST_QUERY + "-state");
+        this.queryTriggerChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), METADATA_GROUP),
+                LAST_QUERY_TRIGGER);
+        this.queryStateChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), METADATA_GROUP),
+                LAST_QUERY_STATE);
         this.wundergroundUpdateReceiverServlet = Objects.requireNonNull(wunderGroundUpdateReceiverServlet);
     }
 
@@ -85,6 +100,28 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
     public void initialize() {
         this.config = Objects.requireNonNull(getConfigAs(WundergroundUpdateReceiverConfiguration.class));
         wundergroundUpdateReceiverServlet.addHandler(this);
+        @Nullable
+        Map<String, String[]> requestParameters = discoveryService.getUnhandledStationRequest(config.stationId);
+        if (requestParameters != null && thing.getChannels().size() == 3) {
+            ThingBuilder thingBuilder = editThing();
+            requestParameters.forEach((String parameter, String[] query) -> {
+                @Nullable
+                WundergroundUpdateReceiverParameterMapping channelTypeMapping = WundergroundUpdateReceiverParameterMapping
+                        .getOrCreateMapping(parameter, String.join("", query), channelTypeProvider);
+                if (channelTypeMapping == null) {
+                    return;
+                }
+                ChannelBuilder channelBuilder = ChannelBuilder
+                        .create(new ChannelUID(thing.getUID(), channelTypeMapping.channelGroup, parameter))
+                        .withType(channelTypeMapping.channelTypeId)
+                        .withAcceptedItemType(
+                                channelTypeRegistry.getChannelType(channelTypeMapping.channelTypeId).getItemType())
+                        .withConfiguration(thing.getConfiguration());
+                thingBuilder.withChannel(channelBuilder.build());
+            });
+            updateThing(thingBuilder.build());
+        }
+        discoveryService.removeUnhandledStationId(config.stationId);
         if (wundergroundUpdateReceiverServlet.isActive()) {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Wunderground update receiver listening for updates to station id {}", config.stationId);
@@ -101,14 +138,10 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         logger.debug("Wunderground update receiver stopped listening for updates to station id {}", config.stationId);
     }
 
-    public void updateChannelStates(WundergroundUpdateReceiverHandler handler, Map<String, String> channelIds) {
-        channelIds.forEach((channelId, state) -> {
-            if (WundergroundUpdateReceiverBindingConstants.CHANNEL_KEYS.contains(channelId)) {
-                updateChannelState(channelId, state);
-            }
-        });
-        updateState(lastReceivedChannel, StringType.valueOf(UUID.randomUUID().toString()));
-        String lastQuery = channelIds.getOrDefault(LAST_QUERY, "");
+    public void updateChannelStates(Map<String, String> requestParameters) {
+        requestParameters.forEach(this::updateChannelState);
+        updateState(lastReceivedChannel, new DateTimeType());
+        String lastQuery = requestParameters.getOrDefault(LAST_QUERY, "");
         if (lastQuery.isEmpty()) {
             return;
         }
@@ -120,9 +153,9 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         updateChannelState(channelId, String.join("", stateParts));
     }
 
-    public void updateChannelState(String channelId, String state) {
+    public void updateChannelState(String parameterName, String state) {
         Optional<Channel> channel = getThing().getChannels().stream()
-                .filter(ch -> channelId.equals(ch.getUID().getIdWithoutGroup())).findFirst();
+                .filter(ch -> parameterName.equals(ch.getUID().getIdWithoutGroup())).findFirst();
         if (channel.isPresent()) {
             ChannelUID channelUID = channel.get().getUID();
             @Nullable
@@ -137,10 +170,10 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
                 return;
             }
             @Nullable
-            Unit<? extends Quantity<?>> unit = CHANNEL_UNIT_MAPPING.get(channelId);
+            Unit<? extends Quantity<?>> unit = WundergroundUpdateReceiverParameterMapping.getUnit(parameterName);
             if (unit != null) {
                 updateState(channelUID, new QuantityType<>(numberValue, unit));
-            } else if (LOW_BATTERY.equals(channelId)) {
+            } else if (LOW_BATTERY.equals(parameterName)) {
                 updateState(channelUID, OnOffType.from(state));
             } else {
                 updateState(channelUID, new DecimalType(numberValue));

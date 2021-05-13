@@ -14,8 +14,6 @@ package org.openhab.binding.wundergroundupdatereceiver.internal;
 
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
@@ -23,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,18 +38,30 @@ import org.osgi.service.http.HttpService;
 @Component(configurationPid = "binding.wundergroundupdatereceiver", service = ThingHandlerFactory.class)
 public class WundergroundUpdateReceiverHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UPDATE_RECEIVER);
-    private final HttpService httpService;
-    private @Nullable WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet;
+    private final WundergroundUpdateReceiverDiscoveryService discoveryService;
+    private final ChannelTypeRegistry channelTypeRegistry;
+    private final WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider;
+    private final WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet;
 
     @Activate
-    public WundergroundUpdateReceiverHandlerFactory(@Reference HttpService httpService) {
-        this.httpService = httpService;
+    public WundergroundUpdateReceiverHandlerFactory(@Reference HttpService httpService,
+            @Reference WundergroundUpdateReceiverDiscoveryService discoveryService,
+            @Reference WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider,
+            @Reference ChannelTypeRegistry channelTypeRegistry) {
+        this.discoveryService = discoveryService;
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.channelTypeProvider = channelTypeProvider;
+        this.wunderGroundUpdateReceiverServlet = new WundergroundUpdateReceiverServlet(httpService,
+                this.discoveryService);
+        this.discoveryService.servletControls = this.wunderGroundUpdateReceiverServlet;
+        if (this.discoveryService.isBackgroundDiscoveryEnabled()) {
+            this.wunderGroundUpdateReceiverServlet.activate();
+        }
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return WundergroundUpdateReceiverBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -58,10 +69,8 @@ public class WundergroundUpdateReceiverHandlerFactory extends BaseThingHandlerFa
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_UPDATE_RECEIVER.equals(thingTypeUID)) {
-            WundergroundUpdateReceiverServlet servlet = this.wunderGroundUpdateReceiverServlet == null
-                    ? (this.wunderGroundUpdateReceiverServlet = new WundergroundUpdateReceiverServlet(this.httpService))
-                    : this.wunderGroundUpdateReceiverServlet;
-            return new WundergroundUpdateReceiverHandler(thing, servlet);
+            return new WundergroundUpdateReceiverHandler(thing, this.wunderGroundUpdateReceiverServlet,
+                    this.discoveryService, this.channelTypeProvider, this.channelTypeRegistry);
         }
 
         return null;
@@ -69,12 +78,8 @@ public class WundergroundUpdateReceiverHandlerFactory extends BaseThingHandlerFa
 
     @Override
     protected void deactivate(ComponentContext componentContext) {
-        @Nullable
-        WundergroundUpdateReceiverServlet servlet = this.wunderGroundUpdateReceiverServlet;
-        if (servlet != null) {
-            servlet.dispose();
-        }
-        this.wunderGroundUpdateReceiverServlet = null;
+        this.wunderGroundUpdateReceiverServlet.deactivate();
+        this.wunderGroundUpdateReceiverServlet.dispose();
         super.deactivate(componentContext);
     }
 }

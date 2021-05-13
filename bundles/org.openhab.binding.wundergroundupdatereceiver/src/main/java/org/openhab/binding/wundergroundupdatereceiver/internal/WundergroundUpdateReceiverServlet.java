@@ -47,7 +47,8 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Demus - Initial contribution
  */
 @NonNullByDefault
-public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
+public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet
+        implements WundergroundUpdateReceiverServletControls {
 
     public static final String SERVLET_URL = "/weatherstation/updateweatherstation.php";
     private static final long serialVersionUID = -5296703727081438023L;
@@ -56,12 +57,15 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
     private final Map<String, WundergroundUpdateReceiverHandler> handlers = new HashMap<>();
 
     private static final Object LOCK = new Object();
+    private final WundergroundUpdateReceiverDiscoveryService discoveryService;
 
     private boolean active = false;
     private String errorDetail = "";
 
-    public WundergroundUpdateReceiverServlet(HttpService httpService) {
+    public WundergroundUpdateReceiverServlet(HttpService httpService,
+            WundergroundUpdateReceiverDiscoveryService discoveryService) {
         super(httpService);
+        this.discoveryService = discoveryService;
     }
 
     public boolean isActive() {
@@ -108,10 +112,13 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
     public void addHandler(WundergroundUpdateReceiverHandler handler) {
         synchronized (this.handlers) {
             if (this.handlers.containsKey(handler.getStationId())) {
-                throw new IllegalArgumentException(String
-                        .format("Handler handling request for stationId %s is already added", handler.getStationId()));
+                errorDetail = "Handler handling request for stationId " + handler.getStationId() + " is already added";
+                logger.warn("Error during handler registration - StationId {} already being handled",
+                        handler.getStationId());
+                return;
             }
             this.handlers.put(handler.getStationId(), handler);
+            errorDetail = "";
             if (!isActive()) {
                 activate();
             }
@@ -124,7 +131,7 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
             if (handler != null) {
                 this.handlers.remove(stationId);
             }
-            if (this.handlers.isEmpty()) {
+            if (this.handlers.isEmpty() && !this.discoveryService.isBackgroundDiscoveryEnabled()) {
                 deactivate();
             }
         }
@@ -146,16 +153,17 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
         }
         logger.trace("doGet {}", req.getQueryString());
 
-        Optional<WundergroundUpdateReceiverHandler> maybeHandler = Optional
-                .ofNullable(this.handlers.get(req.getParameter(STATION_ID_PARAMETER)));
-        maybeHandler.ifPresent(handler -> {
+        String stationId = req.getParameter(STATION_ID_PARAMETER);
+        Optional.ofNullable(this.handlers.get(stationId)).ifPresentOrElse(handler -> {
             Map<String, String> states = req.getParameterMap().entrySet().stream()
                     .collect(toMap(Map.Entry::getKey, e -> String.join("", e.getValue())));
             String queryString = req.getQueryString();
             if (queryString != null && queryString.length() > 0) {
                 states.put(LAST_QUERY, queryString);
             }
-            handler.updateChannelStates(handler, states);
+            handler.updateChannelStates(states);
+        }, () -> {
+            this.discoveryService.addUnhandledStationId(stationId, req.getParameterMap());
         });
 
         resp.setStatus(HttpServletResponse.SC_OK);
@@ -172,7 +180,11 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
     public void deactivate() {
         synchronized (LOCK) {
             logger.debug("Stopping servlet {} at {}", getClass().getSimpleName(), SERVLET_URL);
-            super.deactivate(SERVLET_URL);
+            try {
+                super.deactivate(SERVLET_URL);
+            } catch (IllegalArgumentException ignored) {
+                // SERVLET_URL is already unregistered
+            }
             errorDetail = "";
             active = false;
         }
@@ -196,6 +208,7 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet {
         synchronized (this.handlers) {
             Set<String> stationIds = new HashSet<>(getStationIds());
             stationIds.forEach(this::removeHandler);
+            deactivate();
         }
     }
 }
