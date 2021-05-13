@@ -165,7 +165,7 @@ Thing ID:
 ```
 
 
-## Things  
+## Full Example
 
 Examples to configure items 
 Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location" [ <parameters> ]
