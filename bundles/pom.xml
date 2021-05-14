@@ -141,6 +141,7 @@
     <module>org.openhab.binding.helios</module>
     <module>org.openhab.binding.heliosventilation</module>
     <module>org.openhab.binding.heos</module>
+    <module>org.openhab.binding.homeconnect</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.homewizard</module>
     <module>org.openhab.binding.hpprinter</module>
@@ -336,6 +337,7 @@
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
+    <module>org.openhab.binding.warmup</module>
     <module>org.openhab.binding.weathercompany</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.webthing</module>
