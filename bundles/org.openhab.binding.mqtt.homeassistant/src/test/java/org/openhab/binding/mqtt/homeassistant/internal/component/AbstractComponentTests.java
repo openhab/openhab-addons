@@ -74,7 +74,6 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         try {
             assert latch.await(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
             assertThat(e.getMessage(), false);
         }
         var component = componentDiscoveredListener.getDiscoveredComponent();
