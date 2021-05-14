@@ -17,7 +17,7 @@ import java.io.Serializable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Senec Temperature information.
+ * Senec Temperature information from "TEMPMEASURE" section.
  *
  * @author Erwin Guib - Initial Contribution
  */

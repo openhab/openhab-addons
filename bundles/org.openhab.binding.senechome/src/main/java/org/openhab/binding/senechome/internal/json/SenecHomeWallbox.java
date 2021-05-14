@@ -18,7 +18,7 @@ import java.util.Arrays;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Senec wallbox specific data.
+ * Senec wallbox specific data from "WALLBOX" section.
  *
  * @author Erwin Guib - Initial Contribution
  */

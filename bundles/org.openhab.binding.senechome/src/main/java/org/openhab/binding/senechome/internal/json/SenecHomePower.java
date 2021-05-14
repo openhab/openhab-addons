@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Json model of senec home devices: This sub model provides the current power statistics by the inverter.
  *
- * PV1
+ * Section "PV1" in Senec JSON.
  *
  * @author Steven Schwarznau - Initial Contribution
  */
