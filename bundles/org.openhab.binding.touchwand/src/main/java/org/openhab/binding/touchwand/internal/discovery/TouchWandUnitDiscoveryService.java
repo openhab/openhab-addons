@@ -58,7 +58,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
     private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE, CONNECTIVITY_RISCO,
-            CONNECTIVITY_PIMA };
+            CONNECTIVITY_PIMA, CONNECTIVITY_ACWAND };
     private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
@@ -97,7 +97,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                         }
                         String type = touchWandUnit.getType();
                         if (!Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(type)) {
-                            logger.debug("Unit discovery skipping unsupported unit type : {} ", type);
+                            logger.info("Unit discovery skipping unsupported unit type : {} ", type);
                             continue;
                         }
                         switch (type) {
@@ -118,6 +118,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                                 break;
                             case TYPE_BSENSOR:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_BSENSOR);
+                                break;
+                            case TYPE_THERMOSTAT:
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_THERMOSTAT);
                                 break;
                             default:
                                 continue;
