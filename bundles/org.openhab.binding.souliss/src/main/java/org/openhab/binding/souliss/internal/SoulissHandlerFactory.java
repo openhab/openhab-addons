@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.souliss.internal;
 
-import static org.openhab.binding.souliss.SoulissBindingConstants.*;
+import static org.openhab.binding.souliss.internal.SoulissBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissT11Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT12Handler;
