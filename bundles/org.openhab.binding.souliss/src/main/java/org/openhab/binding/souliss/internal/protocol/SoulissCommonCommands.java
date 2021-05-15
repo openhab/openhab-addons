@@ -218,38 +218,40 @@ public class SoulissCommonCommands {
         byte iNodeIndex = SoulissBindingNetworkParameters.DEFAULT_NODE_INDEX;
 
         // Broadcast the message over all the network interfaces
-        Enumeration<NetworkInterface> interfaces;
+        Enumeration<@Nullable NetworkInterface> interfaces;
         try {
             interfaces = NetworkInterface.getNetworkInterfaces();
 
             while (interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue;
-                }
-                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                    InetAddress[] broadcast = new InetAddress[3];
-                    broadcast[0] = InetAddress.getByName("224.0.0.1");
-                    broadcast[1] = InetAddress.getByName("255.255.255.255");
-                    broadcast[2] = interfaceAddress.getBroadcast();
-                    for (InetAddress bc : broadcast) {
-                        // Send the broadcast package!
-                        if (bc != null) {
-                            try {
-                                ArrayList<Byte> buf = buildVNetFrame(macacoFrame, "255.255.255.255", iUserIndex,
-                                        iNodeIndex);
-                                byte[] merd = toByteArray(buf);
-                                DatagramPacket packet = new DatagramPacket(merd, merd.length, bc,
-                                        SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
-                                socket.send(packet);
+                if (networkInterface != null) {
+                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                        continue;
+                    }
+                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                        InetAddress[] broadcast = new InetAddress[3];
+                        broadcast[0] = InetAddress.getByName("224.0.0.1");
+                        broadcast[1] = InetAddress.getByName("255.255.255.255");
+                        broadcast[2] = interfaceAddress.getBroadcast();
+                        for (InetAddress bc : broadcast) {
+                            // Send the broadcast package!
+                            if (bc != null) {
+                                try {
+                                    ArrayList<Byte> buf = buildVNetFrame(macacoFrame, "255.255.255.255", iUserIndex,
+                                            iNodeIndex);
+                                    byte[] merd = toByteArray(buf);
+                                    DatagramPacket packet = new DatagramPacket(merd, merd.length, bc,
+                                            SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
+                                    socket.send(packet);
 
-                            } catch (IOException e) {
-                                logger.debug("IO error: {}", e.getMessage());
-                            } catch (Exception e) {
-                                logger.debug("{}", e.getMessage(), e);
+                                } catch (IOException e) {
+                                    logger.debug("IO error: {}", e.getMessage());
+                                } catch (Exception e) {
+                                    logger.debug("{}", e.getMessage(), e);
+                                }
+                                logger.debug("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
+                                        networkInterface.getDisplayName());
                             }
-                            logger.debug("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
-                                    networkInterface.getDisplayName());
                         }
                     }
                 }
