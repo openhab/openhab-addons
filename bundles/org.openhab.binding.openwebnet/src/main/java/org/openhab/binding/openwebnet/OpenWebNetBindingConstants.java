@@ -124,19 +124,13 @@ public class OpenWebNetBindingConstants {
 
     // thermo
     public static final String CHANNEL_TEMPERATURE = "temperature";
-    // tbd public static final String CHANNEL_TEMP_TARGET = "targetTemperature";
-    public static final String CHANNEL_FUNCTION = "function"; // former: "thermoFunction";
-    public static final String CHANNEL_HEATING_COOLING_MODE = "thermostatMode"; // former: "heatingCoolingMode";
-    // tbd public static final String CHANNEL_HEATING = "heating";
-    // tbd public static final String CHANNEL_COOLING = "cooling";
-    // tbd public static final String CHANNEL_ACTIVE_MODE = "activeMode";
-    // tbd public static final String CHANNEL_LOCAL_MODE = "localMode";
+    public static final String CHANNEL_FUNCTION = "function";
+    public static final String CHANNEL_HEATING_COOLING_MODE = "thermostatMode";
     public static final String CHANNEL_TEMP_SETPOINT = "setpointTemperature";
-    public static final String CHANNEL_MODE = "mode"; // former: setMode
-    // tbd public static final String CHANNEL_ALL_TEMP_SETPOINT = "allSetpointTemperature";
-    // tbd public static final String CHANNEL_ALL_SET_MODE = "allSetMode";
-    // tbd public static final String CHANNEL_ALL_THERMO_FUNCTION = "allThermoFunction";
+    public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_FAN_SPEED = "speedFanCoil";
+    public static final String CHANNEL_CONDITIONING_VALVE = "conditioningValve";
+    public static final String CHANNEL_HEATING_VALVE = "heatingValve";
 
     // energy management
     public static final String CHANNEL_POWER = "power";

@@ -16,12 +16,8 @@
 		<channels>
 			<!-- read only -->
 			<channel id="temperature" typeId="temperature"/>
-			<!--<channel id="targetTemperature" typeId="targetTemperature"/> -->
-			<!--<channel id="heatingCoolingMode" typeId="heatingCoolingMode"/> -->
-			<!--<channel id="heating" typeId="heating"/> -->
-			<!--<channel id="cooling" typeId="cooling"/> -->
-			<!--<channel id="activeMode" typeId="activeMode"/> -->
-			<!--<channel id="localMode" typeId="localMode"/> -->
+			<channel id="conditioningValve" typeId="conditioningValve"/>
+			<channel id="heatingValve" typeId="heatingValve"/>
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="function" typeId="function"/>

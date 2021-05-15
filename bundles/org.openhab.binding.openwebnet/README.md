@@ -124,7 +124,9 @@ For any manually added device, you must configure:
   - example for BUS/SCS device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
   - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
-## Channels
+## Channels 
+
+### Lighting & Automation...
 
 Devices support some of the following channels:
 
@@ -139,6 +141,10 @@ Devices support some of the following channels:
 | `function`         | bus_thermostat | String        | The zone set thermo function: `HEAT`, `COOL` or `GENERIC` (heating + cooling)     |      R/W     |
 | `mode`                | bus_thermostat | String        | The zone set mode: `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
 | `speedFanCoil`                | bus_thermostat | String        | The speed of the fancoil associated to the zone: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`    |     R/W    |
+
+### Thermo
+dfgdfgf
+
 ### Notes on channels
 
 #### `shutter` position
