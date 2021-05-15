@@ -55,10 +55,12 @@ public class SoulissBindingNetworkParameters {
     }
 
     public static void closeDatagramSocket() {
-        if (datagramSocket != null) {
-            datagramSocket.close();
+        @Nullable
+        DatagramSocket localDatagramSocket = datagramSocket;
+        if (localDatagramSocket != null) {
+            localDatagramSocket.close();
         }
-        datagramSocket = null;
+        localDatagramSocket = null;
     }
 
     public static void setDatagramSocket(@Nullable DatagramSocket datagramSocket) {

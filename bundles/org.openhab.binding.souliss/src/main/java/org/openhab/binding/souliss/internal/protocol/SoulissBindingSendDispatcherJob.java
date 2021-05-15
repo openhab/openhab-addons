@@ -51,8 +51,10 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
 
     public SoulissBindingSendDispatcherJob(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
-        if (this.gwHandler != null) {
-            SoulissBindingSendDispatcherJob.ipAddressOnLAN = this.gwHandler.ipAddressOnLAN;
+        @Nullable
+        SoulissGatewayHandler localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+            SoulissBindingSendDispatcherJob.ipAddressOnLAN = localGwHandler.ipAddressOnLAN;
         }
     }
 
@@ -148,8 +150,10 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                             "SendDispatcherJob - Functional Code 0x{} - Packet: {} - Elementi rimanenti in lista: {}",
                             Integer.toHexString(sp.packet.getData()[7]), macacoToString(sp.packet.getData()),
                             packetsList.size());
-                    if (sp.socket != null) {
-                        sp.socket.send(sp.packet);
+                    @Nullable
+                    DatagramSocket localSocket = sp.socket;
+                    if (localSocket != null) {
+                        localSocket.send(sp.packet);
                     }
                 }
                 // confronta gli stati in memoria con i frame inviati. Se

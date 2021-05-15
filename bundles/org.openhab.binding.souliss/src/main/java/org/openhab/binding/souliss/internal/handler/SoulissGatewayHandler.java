@@ -188,7 +188,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
                 if (datagramSocketDefaultPort != null) {
                     udpServerDefaultPortRunnableClass = new SoulissBindingUDPServerJob(datagramSocketDefaultPort,
                             SoulissBindingNetworkParameters.discoverResult);
-                    // Changes from scheduleAtFixedRate - Luca Calcaterra
                     scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
                             SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
                 }
@@ -197,18 +196,15 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // START JOB PING
 
             SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
-            // Changes from scheduleAtFixedRate - Luca Calcaterra
             scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2,
                     soulissGatewayJobPingRunnable.getPingRefreshInterval(), TimeUnit.SECONDS);
 
             SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
                     bridge);
-            // Changes from scheduleAtFixedRate - Luca Calcaterra
             scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
                     soulissGatewayJobSubscriptionRunnable.getSubscriptionRefreshInterval(), TimeUnit.MINUTES);
 
             SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
-            // Changes from scheduleAtFixedRate - Luca Calcaterra
             scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
                     soulissGatewayJobHealthyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
 

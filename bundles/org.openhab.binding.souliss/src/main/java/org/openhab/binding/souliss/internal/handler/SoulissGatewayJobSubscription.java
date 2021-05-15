@@ -30,9 +30,11 @@ public class SoulissGatewayJobSubscription extends Thread {
     private SoulissGatewayHandler gwHandler;
 
     public SoulissGatewayJobSubscription(Bridge bridge) {
-        this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
-        if (this.gwHandler != null) {
-            setSubscriptionRefreshInterval(this.gwHandler.subscriptionRefreshInterval);
+        @Nullable
+        SoulissGatewayHandler localGwHandler = this.gwHandler;
+        localGwHandler = (SoulissGatewayHandler) bridge.getHandler();
+        if (localGwHandler != null) {
+            setSubscriptionRefreshInterval(localGwHandler.subscriptionRefreshInterval);
         }
     }
 
@@ -50,8 +52,9 @@ public class SoulissGatewayJobSubscription extends Thread {
     }
 
     private void sendSubscription() {
-        if (gwHandler != null) {
-            gwHandler.sendSubscription();
+        SoulissGatewayHandler localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+            localGwHandler.sendSubscription();
         }
     }
 }
