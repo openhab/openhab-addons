@@ -78,98 +78,96 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.toString().equals(GATEWAY_THING_TYPE.getAsString().toLowerCase())) {
-            logger.debug("Create handler for Gateway '{}'", thingTypeUID);
+        if (thingTypeUID.equals(GATEWAY_THING_TYPE)) {
             // get last byte of IP number
             Configuration gwConfigurationMap = thing.getConfiguration();
             String ipAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
             SoulissBindingNetworkParameters.addGateway((byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]), thing);
             return new SoulissGatewayHandler((Bridge) thing);
-        } else if (thingTypeUID.toString().equals(T11_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T11_THING_TYPE)) {
             logger.debug("Create handler for T11 '{}'", thingTypeUID);
             return new SoulissT11Handler(thing);
-        } else if (thingTypeUID.toString().equals(T12_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T12_THING_TYPE)) {
             logger.debug("Create handler for T12 '{}'", thingTypeUID);
             return new SoulissT12Handler(thing);
-        } else if (thingTypeUID.toString().equals(T13_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T13_THING_TYPE)) {
             logger.debug("Create handler for T13 '{}'", thingTypeUID);
             return new SoulissT13Handler(thing);
-        } else if (thingTypeUID.toString().equals(T14_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T14_THING_TYPE)) {
             logger.debug("Create handler for T14 '{}'", thingTypeUID);
             return new SoulissT14Handler(thing);
-        } else if (thingTypeUID.toString().equals(T16_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T16_THING_TYPE)) {
             logger.debug("Create handler for T16 '{}'", thingTypeUID);
             return new SoulissT16Handler(thing);
-        } else if (thingTypeUID.toString().equals(T18_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T18_THING_TYPE)) {
             logger.debug("Create handler for T18 '{}'", thingTypeUID);
             return new SoulissT18Handler(thing);
-        } else if (thingTypeUID.toString().equals(T19_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T19_THING_TYPE)) {
             logger.debug("Create handler for T19 '{}'", thingTypeUID);
             return new SoulissT19Handler(thing);
-        } else if (thingTypeUID.toString().equals(T1A_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T1A_THING_TYPE)) {
             logger.debug("Create handler for T1A '{}'", thingTypeUID);
             return new SoulissT1AHandler(thing);
-        } else if (thingTypeUID.toString().equals(T21_THING_TYPE.getAsString().toLowerCase())
-                || (thingTypeUID.toString().equals(T22_THING_TYPE.getAsString().toLowerCase()))) {
+        } else if (thingTypeUID.equals(T21_THING_TYPE) || (thingTypeUID.equals(T22_THING_TYPE))) {
             logger.debug("Create handler for T21/T22 '{}'", thingTypeUID);
             return new SoulissT22Handler(thing);
-        } else if (thingTypeUID.toString().equals(T31_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T31_THING_TYPE)) {
             logger.debug("Create handler for T31 '{}'", thingTypeUID);
             return new SoulissT31Handler(thing);
-        } else if (thingTypeUID.toString().equals(T41_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T41_THING_TYPE)) {
             logger.debug("Create handler for T41 '{}'", thingTypeUID);
             return new SoulissT41Handler(thing);
-        } else if (thingTypeUID.toString().equals(T42_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T42_THING_TYPE)) {
             logger.debug("Create handler for T42 '{}'", thingTypeUID);
             return new SoulissT42Handler(thing);
-        } else if (thingTypeUID.toString().equals(T51_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T51_THING_TYPE)) {
             logger.debug("Create handler for T51 '{}'", thingTypeUID);
             return new SoulissT51Handler(thing);
-        } else if (thingTypeUID.toString().equals(T52_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T52_THING_TYPE)) {
             logger.debug("Create handler for T52 '{}'", thingTypeUID);
             return new SoulissT52Handler(thing);
-        } else if (thingTypeUID.toString().equals(T53_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T53_THING_TYPE)) {
             logger.debug("Create handler for T53 '{}'", thingTypeUID);
             return new SoulissT53Handler(thing);
-        } else if (thingTypeUID.toString().equals(T54_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T54_THING_TYPE)) {
             logger.debug("Create handler for T54 '{}'", thingTypeUID);
             return new SoulissT54Handler(thing);
-        } else if (thingTypeUID.toString().equals(T55_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T55_THING_TYPE)) {
             logger.debug("Create handler for T55 '{}'", thingTypeUID);
             return new SoulissT55Handler(thing);
-        } else if (thingTypeUID.toString().equals(T56_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T56_THING_TYPE)) {
             logger.debug("Create handler for T56 '{}'", thingTypeUID);
             return new SoulissT56Handler(thing);
-        } else if (thingTypeUID.toString().equals(T57_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T57_THING_TYPE)) {
             logger.debug("Create handler for T57 '{}'", thingTypeUID);
             return new SoulissT57Handler(thing);
-        } else if (thingTypeUID.toString().equals(T61_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T61_THING_TYPE)) {
             logger.debug("Create handler for T61 '{}'", thingTypeUID);
             return new SoulissT61Handler(thing);
-        } else if (thingTypeUID.toString().equals(T62_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T62_THING_TYPE)) {
             logger.debug("Create handler for T62 '{}'", thingTypeUID);
             return new SoulissT62Handler(thing);
-        } else if (thingTypeUID.toString().equals(T63_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T63_THING_TYPE)) {
             logger.debug("Create handler for T63 '{}'", thingTypeUID);
             return new SoulissT63Handler(thing);
-        } else if (thingTypeUID.toString().equals(T64_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T64_THING_TYPE)) {
             logger.debug("Create handler for T64 '{}'", thingTypeUID);
             return new SoulissT64Handler(thing);
-        } else if (thingTypeUID.toString().equals(T65_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T65_THING_TYPE)) {
             logger.debug("Create handler for T65 '{}'", thingTypeUID);
             return new SoulissT65Handler(thing);
-        } else if (thingTypeUID.toString().equals(T66_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T66_THING_TYPE)) {
             logger.debug("Create handler for T66 '{}'", thingTypeUID);
             return new SoulissT66Handler(thing);
-        } else if (thingTypeUID.toString().equals(T67_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T67_THING_TYPE)) {
             logger.debug("Create handler for T67 '{}'", thingTypeUID);
             return new SoulissT67Handler(thing);
-        } else if (thingTypeUID.toString().equals(T68_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(T68_THING_TYPE)) {
             logger.debug("Create handler for T68 '{}'", thingTypeUID);
             return new SoulissT68Handler(thing);
-        } else if (thingTypeUID.toString().equals(TOPICS_THING_TYPE.getAsString().toLowerCase())) {
+        } else if (thingTypeUID.equals(TOPICS_THING_TYPE)) {
             logger.debug("Create handler for Action Messages (Topics) '{}'", thingTypeUID);
-            SoulissBindingNetworkParameters.addTopics(thing.getUID().getAsString().split(":")[2], thing);
+            SoulissBindingNetworkParameters.addTopics(thing.getUID().getId(), thing);
             return new SoulissTopicsHandler(thing);
         }
 
