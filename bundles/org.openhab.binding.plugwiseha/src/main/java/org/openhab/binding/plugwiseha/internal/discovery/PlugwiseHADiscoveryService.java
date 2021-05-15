@@ -177,8 +177,8 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                    .withLabel(applianceName).withProperties(configProperties).withRepresentationProperty(applianceId)
-                    .build();
+                    .withLabel(applianceName).withProperties(configProperties)
+                    .withRepresentationProperty(APPLIANCE_CONFIG_ID).build();
 
             thingDiscovered(discoveryResult);
 

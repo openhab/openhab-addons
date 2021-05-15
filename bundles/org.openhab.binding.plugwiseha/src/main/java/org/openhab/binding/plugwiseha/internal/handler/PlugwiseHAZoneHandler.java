@@ -112,7 +112,6 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void handleCommand(Location entity, ChannelUID channelUID, Command command) throws PlugwiseHAException {
         String channelID = channelUID.getIdWithoutGroup();
         PlugwiseHABridgeHandler bridge = this.getPlugwiseHABridge();
@@ -124,7 +123,7 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                         if (command instanceof QuantityType) {
                             Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
                                     .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                            QuantityType<Temperature> state = ((QuantityType<Temperature>) command).toUnit(unit);
+                            QuantityType<?> state = ((QuantityType<?>) command).toUnit(unit);
                             if (state != null) {
                                 try {
                                     controller.setLocationThermostat(entity, state.doubleValue());

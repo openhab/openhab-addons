@@ -98,13 +98,8 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
                         bridgeConfig.getUsername(), bridgeConfig.getsmileId());
                 scheduleRefreshJob(bridgeConfig);
             } catch (PlugwiseHAException e) {
-                logger.debug("Unknown error while configuring the Plugwise Home Automation Controller", e);
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
-            } catch (RuntimeException e) {
-                logger.debug("Unknown error while configuring the Plugwise Home Automation Controller", e);
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
             }
-
         } else {
             logger.warn("Invalid config for the Plugwise Home Automation bridge handler with config = {}",
                     bridgeConfig);
@@ -184,12 +179,8 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         } catch (PlugwiseHATimeoutException e) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_TIMEOUT);
         } catch (PlugwiseHAException e) {
-            logger.debug("Unhandled exception while refreshing the Plugwise Home Automation Controller {} - {}",
-                    getThing().getUID(), e.getMessage());
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
-            logger.debug("Unhandled RunTimeException while refreshing the Plugwise Home Automation Controller {} - {}",
-                    getThing().getUID(), e.getMessage());
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
     }

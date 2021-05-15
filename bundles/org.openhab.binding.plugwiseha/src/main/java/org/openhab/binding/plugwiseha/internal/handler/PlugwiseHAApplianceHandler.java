@@ -126,7 +126,6 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void handleCommand(Appliance entity, ChannelUID channelUID, Command command) throws PlugwiseHAException {
         String channelID = channelUID.getIdWithoutGroup();
 
@@ -160,7 +159,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    QuantityType<Temperature> state = ((QuantityType<Temperature>) command).toUnit(unit);
+                    QuantityType<?> state = ((QuantityType<?>) command).toUnit(unit);
 
                     if (state != null) {
                         try {
@@ -189,7 +188,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 if (command instanceof QuantityType) {
                     Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
                             .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                    QuantityType<Temperature> state = ((QuantityType<Temperature>) command).toUnit(unit);
+                    QuantityType<?> state = ((QuantityType<?>) command).toUnit(unit);
 
                     if (state != null) {
                         try {
