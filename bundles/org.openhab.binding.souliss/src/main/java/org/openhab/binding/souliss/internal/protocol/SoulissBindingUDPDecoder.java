@@ -186,8 +186,10 @@ public class SoulissBindingUDPDecoder {
                 (macaco.get(8)).byteValue() };
         logger.debug("decodePingBroadcast. Gateway Discovery. IP: {}", ip);
 
-        if (discoverResult != null) {
-            discoverResult.gatewayDetected(InetAddress.getByAddress(addr), macaco.get(8).toString());
+        @Nullable
+        DiscoverResult localDiscoverResult = SoulissBindingUDPDecoder.discoverResult;
+        if (localDiscoverResult != null) {
+            localDiscoverResult.gatewayDetected(InetAddress.getByAddress(addr), macaco.get(8).toString());
         } else {
             logger.debug("decodePingBroadcast aborted. 'discoverResult' is null");
         }
@@ -223,8 +225,10 @@ public class SoulissBindingUDPDecoder {
                                 byte node = (byte) (j / typXnodo + tgtnode);
                                 logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
                                         lastByteGatewayIP, Integer.toHexString(typical), node, slot);
-                                if (discoverResult != null) {
-                                    discoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
+                                @Nullable
+                                DiscoverResult localDiscoverResult = SoulissBindingUDPDecoder.discoverResult;
+                                if (localDiscoverResult != null) {
+                                    localDiscoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
                                 } else {
                                     logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
                                 }
@@ -298,8 +302,9 @@ public class SoulissBindingUDPDecoder {
                         }
                     }
                 }
-                if (discoverResult != null && !bIsPresent) {
-                    discoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
+                DiscoverResult localDiscoverResult = SoulissBindingUDPDecoder.discoverResult;
+                if (localDiscoverResult != null && !bIsPresent) {
+                    localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
                 }
 
             } catch (Exception ex) {

@@ -141,9 +141,11 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     @Override
     protected synchronized void stopScan() {
-        if (discoveryJob != null) {
-            discoveryJob.cancel(false);
-            discoveryJob = null;
+        @Nullable
+        ScheduledFuture<?> localDiscoveryJob = this.discoveryJob;
+        if (localDiscoveryJob != null) {
+            localDiscoveryJob.cancel(false);
+            localDiscoveryJob = null;
             soulissDiscoverRunnableClass = null;
             logger.info("Discovery Job Stopped");
         }
