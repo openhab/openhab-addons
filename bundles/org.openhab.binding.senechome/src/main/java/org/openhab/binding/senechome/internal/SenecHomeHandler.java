@@ -70,7 +70,9 @@ public class SenecHomeHandler extends BaseThingHandler {
     // divisor to transform from "iso" to kilo UNIT (e.g. W => kW)
     private static final BigDecimal DIVISOR_ISO_TO_KILO = BigDecimal.valueOf(1000);
     // ix (x=1,3,8) types => hex encoded integer value
-    private static final String VALUE_TYPE_INT = "i";
+    private static final String VALUE_TYPE_INT1 = "i1";
+    public static final String VALUE_TYPE_INT3 = "i3";
+    public static final String VALUE_TYPE_INT8 = "i8";
     // ux (x=1,3,6,8) types => hex encoded unsigned value
     private static final String VALUE_TYPE_DECIMAL = "u";
     // fl => hex encoded float
@@ -326,9 +328,25 @@ public class SenecHomeHandler extends BaseThingHandler {
 
         if (type[0] != null) {
             if (type[0].startsWith(VALUE_TYPE_DECIMAL)) {
-                return new BigDecimal(Integer.valueOf(type[1], 16));
-            } else if (type[0].startsWith(VALUE_TYPE_INT)) {
-                return new BigDecimal(Integer.valueOf(type[1], 16));
+                return new BigDecimal(Long.valueOf(type[1], 16));
+            } else if (type[0].startsWith(VALUE_TYPE_INT1)) {
+                Integer val = Integer.valueOf(type[1], 16);
+                if ((val & 0x8000) > 0) {
+                    val = val - 0x10000;
+                }
+                return new BigDecimal(val);
+            } else if (type[0].startsWith(VALUE_TYPE_INT3)) {
+                Long val = Long.valueOf(type[1], 16);
+                if ((Math.abs(val & 0x80000000)) > 0) {
+                    val = val - 0x100000000L;
+                }
+                return new BigDecimal(val);
+            } else if (type[0].startsWith(VALUE_TYPE_INT8)) {
+                Long val = Long.valueOf(type[1], 16);
+                if ((val & 0x80) > 0) {
+                    val = val - 0x100;
+                }
+                return new BigDecimal(val);
             } else if (VALUE_TYPE_FLOAT.equalsIgnoreCase(type[0])) {
                 return parseFloatValue(type[1]);
             }
