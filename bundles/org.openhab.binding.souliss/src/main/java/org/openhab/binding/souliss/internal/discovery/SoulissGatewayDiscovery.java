@@ -82,7 +82,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             udpServerRunnableClass = new SoulissBindingUDPServerJob(datagramSocket,
                     SoulissBindingNetworkParameters.discoverResult);
 
-            // Changes from scheduleAtFixedRate - Luca Calcaterra
             scheduler.scheduleWithFixedDelay(udpServerRunnableClass, 100,
                     SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
 
@@ -132,7 +131,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         }
         // create discovery job, that run discovery class
         if (soulissDiscoverRunnableClass != null) {
-            // Changes from scheduleAtFixedRate - Luca Calcaterra
             discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 100,
                     SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
             logger.debug("Start Discovery Job");
