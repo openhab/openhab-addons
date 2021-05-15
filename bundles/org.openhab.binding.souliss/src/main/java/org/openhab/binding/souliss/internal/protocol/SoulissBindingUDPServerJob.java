@@ -59,7 +59,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
         DatagramSocket localSoulissDatagramSocket = this.soulissDatagramSocket;
         if (localSoulissDatagramSocket != null) {
             int localPort = localSoulissDatagramSocket.getLocalPort();
-            logger.info("Starting UDP Server Job - Server on port {}", localPort);
+            logger.debug("Starting UDP Server Job - Server on port {}", localPort);
         }
     }
 
@@ -85,7 +85,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
                 }
             }
         } else {
-            logger.info("Socket Closed (port {}) - Cannot receive data", soulissDatagramSocket.getLocalPort());
+            logger.debug("Socket Closed (port {}) - Cannot receive data", soulissDatagramSocket.getLocalPort());
         }
     }
 

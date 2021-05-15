@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.souliss")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
 public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
     @Nullable
@@ -71,8 +71,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         String sSymbolicName = FrameworkUtil.getBundle(getClass()).getSymbolicName();
         Version bindingVersion = FrameworkUtil.getBundle(getClass()).getVersion();
 
-        logger.info("Starting: {} - Version: {}", sSymbolicName, bindingVersion.toString());
-        logger.info("Starting Servers");
+        logger.debug("Starting: {} - Version: {}", sSymbolicName, bindingVersion.toString());
+        logger.debug("Starting Servers");
 
         datagramSocket = SoulissDatagramSocketFactory.getSocketDatagram(this.logger);
         if (datagramSocket != null) {
@@ -135,7 +135,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             // Changes from scheduleAtFixedRate - Luca Calcaterra
             discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 100,
                     SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
-            logger.info("Start Discovery Job");
+            logger.debug("Start Discovery Job");
         }
     }
 
@@ -147,7 +147,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             localDiscoveryJob.cancel(false);
             localDiscoveryJob = null;
             soulissDiscoverRunnableClass = null;
-            logger.info("Discovery Job Stopped");
+            logger.debug("Discovery Job Stopped");
         }
         super.stopScan();
     }

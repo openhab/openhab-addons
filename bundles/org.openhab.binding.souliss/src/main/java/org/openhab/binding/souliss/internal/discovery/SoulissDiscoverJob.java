@@ -48,8 +48,7 @@ public class SoulissDiscoverJob implements Runnable {
         void thingDetectedActionMessages(String sTopicNumber, String sTopicVariant);
     }
 
-    @Nullable
-    private DatagramSocket datagramSocket;
+    private @Nullable DatagramSocket datagramSocket;
 
     @Nullable
     SoulissBindingUDPServerJob udpServerOnDefaultPort = null;
@@ -77,7 +76,7 @@ public class SoulissDiscoverJob implements Runnable {
             logger.debug("Sent discovery packet");
 
         } catch (Exception e) {
-            logger.error("Sending a discovery packet failed: {} ", e.getLocalizedMessage());
+            logger.debug("Sending a discovery packet failed: {} ", e.getLocalizedMessage());
         }
 
         ConcurrentMap<Byte, Thing> gwMaps = SoulissBindingNetworkParameters.getHashTableGateways();
