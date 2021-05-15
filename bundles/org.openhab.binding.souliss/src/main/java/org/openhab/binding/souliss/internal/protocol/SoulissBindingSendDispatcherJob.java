@@ -287,10 +287,10 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
 
                     if (this.gwHandler.sendTimeoutToRequeue < time - packetsList.get(i).getTime()) {
                         if (this.gwHandler.sendTimeoutToRemovePacket < time - packetsList.get(i).getTime()) {
-                            logger.info("Packet Execution timeout - Removed");
+                            logger.debug("Packet Execution timeout - Removed");
                             packetsList.remove(i);
                         } else {
-                            logger.info("Packet Execution timeout - Requeued");
+                            logger.debug("Packet Execution timeout - Requeued");
                             packetsList.get(i).setSent(false);
                         }
                     }
