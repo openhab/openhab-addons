@@ -11,7 +11,7 @@
 
 		<config-description>
 			<parameter name="gatewayIpAddress" type="text" required="true" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
-				<label>IP or Host Name</label>
+				<label>IPV4 address</label>
 				<description>Will be resolved by discovery if auto configured
 				</description>
 			</parameter>
