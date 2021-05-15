@@ -13,7 +13,7 @@
 package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.souliss.SoulissBindingConstants;
+import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
