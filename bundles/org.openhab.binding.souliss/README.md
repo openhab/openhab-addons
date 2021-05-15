@@ -22,9 +22,6 @@ You can use SoulissApp and the Souliss binding at the same time, and generally u
 The easiest way is start with a simple example to control an ON/OFF light (though a relay). 
 You can go to project [Souliss](https://github.com/souliss/souliss), see a lot of examples sketches: [Souliss examples](https://github.com/souliss/souliss/tree/friariello/examples)
 
-## Binding Configuration
-
-This binding does not require any special configuration.
 
 ## Discovery
 
