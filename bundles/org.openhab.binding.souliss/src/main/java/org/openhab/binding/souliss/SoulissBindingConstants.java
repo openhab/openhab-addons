@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.souliss;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -102,13 +99,12 @@ public final class SoulissBindingConstants {
     public static final ThingTypeUID T68_THING_TYPE = new ThingTypeUID(BINDING_ID, T68);
     public static final ThingTypeUID TOPICS_THING_TYPE = new ThingTypeUID(BINDING_ID, TOPICS);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(GATEWAY_THING_TYPE, T11_THING_TYPE, T12_THING_TYPE, T13_THING_TYPE,
-                    T14_THING_TYPE, T16_THING_TYPE, T18_THING_TYPE, T19_THING_TYPE, T1A_THING_TYPE, T21_THING_TYPE,
-                    T22_THING_TYPE, T31_THING_TYPE, T41_THING_TYPE, T42_THING_TYPE, T51_THING_TYPE, T52_THING_TYPE,
-                    T53_THING_TYPE, T54_THING_TYPE, T55_THING_TYPE, T56_THING_TYPE, T57_THING_TYPE, T58_THING_TYPE,
-                    T61_THING_TYPE, T62_THING_TYPE, T63_THING_TYPE, T64_THING_TYPE, T65_THING_TYPE, T66_THING_TYPE,
-                    T67_THING_TYPE, T68_THING_TYPE, TOPICS_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(GATEWAY_THING_TYPE, T11_THING_TYPE,
+            T12_THING_TYPE, T13_THING_TYPE, T14_THING_TYPE, T16_THING_TYPE, T18_THING_TYPE, T19_THING_TYPE,
+            T1A_THING_TYPE, T21_THING_TYPE, T22_THING_TYPE, T31_THING_TYPE, T41_THING_TYPE, T42_THING_TYPE,
+            T51_THING_TYPE, T52_THING_TYPE, T53_THING_TYPE, T54_THING_TYPE, T55_THING_TYPE, T56_THING_TYPE,
+            T57_THING_TYPE, T58_THING_TYPE, T61_THING_TYPE, T62_THING_TYPE, T63_THING_TYPE, T64_THING_TYPE,
+            T65_THING_TYPE, T66_THING_TYPE, T67_THING_TYPE, T68_THING_TYPE, TOPICS_THING_TYPE);
 
     // List of all Channel ids
     public static final String ONOFF_CHANNEL = "onOff";
