@@ -32,7 +32,7 @@ public class DebianUpdater extends BaseUpdater {
     private static final String EXECUTE_FILENAME = FILE_ID + ".sh";
     // private static final String EXECUTE_COMMAND = "sh -c ./" + EXECUTE_FILENAME;
     private static final String EXECUTE_COMMAND = "echo " + PlaceHolder.PASSWORD.key + " | sudo -k -S -u "
-            + PlaceHolder.USER_NAME.key + " sh -c ./" + EXECUTE_FILENAME;
+            + PlaceHolder.USER_NAME.key + " ./" + EXECUTE_FILENAME;
 
     private static final String RUNTIME_FOLDER = EXECUTE_FOLDER + "/runtime";
 

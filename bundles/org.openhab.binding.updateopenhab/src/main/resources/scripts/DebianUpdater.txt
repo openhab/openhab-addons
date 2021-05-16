@@ -5,7 +5,7 @@
 # Execute command: [EXECUTE_COMMAND]
 
 # redirect outputs
-exec 1>[STD_OUT_FILENAME]
+exec 1>>[STD_OUT_FILENAME]
 exec 2>&1
 
 # ignore SIGTERM so this script isn't killed when OpenHAB shuts down
