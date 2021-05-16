@@ -18,6 +18,7 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="conditioningValve" typeId="conditioningValve"/>
 			<channel id="heatingValve" typeId="heatingValve"/>
+			<channel id="actuator" typeId="actuator"/>
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="function" typeId="function"/>

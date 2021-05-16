@@ -131,6 +131,7 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_FAN_SPEED = "speedFanCoil";
     public static final String CHANNEL_CONDITIONING_VALVE = "conditioningValve";
     public static final String CHANNEL_HEATING_VALVE = "heatingValve";
+    public static final String CHANNEL_ACTUATOR = "actuator";
 
     // energy management
     public static final String CHANNEL_POWER = "power";

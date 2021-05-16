@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.openwebnet.handler;
 
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_ACTUATOR;
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_CONDITIONING_VALVE;
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_FAN_SPEED;
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_FUNCTION;
@@ -47,7 +48,7 @@ import org.openwebnet4j.message.Thermoregulation;
 import org.openwebnet4j.message.Thermoregulation.FAN_COIL_SPEED;
 import org.openwebnet4j.message.Thermoregulation.FUNCTION;
 import org.openwebnet4j.message.Thermoregulation.OPERATION_MODE;
-import org.openwebnet4j.message.Thermoregulation.VALVE_STATUS;
+import org.openwebnet4j.message.Thermoregulation.VALVE_OR_ACTUATOR_STATUS;
 import org.openwebnet4j.message.Thermoregulation.WHAT;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereThermo;
@@ -89,7 +90,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
             if (deviceWhere != null) {
                 String w = deviceWhere.value();
-                try {                    
+                try {
                     // request single channels updates
                     send(Thermoregulation.requestTemperature(w));
                     send(Thermoregulation.requestSetPointTemperature(w));
@@ -257,6 +258,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 updateSetpoint((Thermoregulation) msg);
             } else if (msg.getDim() == Thermoregulation.DIM.VALVES_STATUS) {
                 updateValveStatus((Thermoregulation) msg);
+            } else if (msg.getDim() == Thermoregulation.DIM.ACTUATOR_STATUS) {
+                updateActuatorStatus((Thermoregulation) msg);
             } else if (msg.getDim() == Thermoregulation.DIM.FAN_COIL_SPEED) {
                 updateFanCoilSpeed((Thermoregulation) msg);
             } else {
@@ -346,16 +349,29 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         logger.debug("updateValveStatus() for thing: {}", thing.getUID());
 
         try {
-            VALVE_STATUS cv = Thermoregulation.parseValveStatus(tmsg, WHAT.CONDITIONING);
+            VALVE_OR_ACTUATOR_STATUS cv = Thermoregulation.parseValveStatus(tmsg, WHAT.CONDITIONING);
             updateState(CHANNEL_CONDITIONING_VALVE, new StringType(cv.toString()));
 
-            VALVE_STATUS hv = Thermoregulation.parseValveStatus(tmsg, WHAT.HEATING);
+            VALVE_OR_ACTUATOR_STATUS hv = Thermoregulation.parseValveStatus(tmsg, WHAT.HEATING);
             updateState(CHANNEL_HEATING_VALVE, new StringType(hv.toString()));
         } catch (FrameException e) {
             logger.warn("updateValveStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
 
             updateState(CHANNEL_CONDITIONING_VALVE, UnDefType.UNDEF);
             updateState(CHANNEL_HEATING_VALVE, UnDefType.UNDEF);
+        }
+    }
+
+    private void updateActuatorStatus(Thermoregulation tmsg) {
+        logger.debug("updateActuatorStatus() for thing: {}", thing.getUID());
+
+        try {
+            VALVE_OR_ACTUATOR_STATUS hv = Thermoregulation.parseActuatorStatus(tmsg);
+            updateState(CHANNEL_ACTUATOR, new StringType(hv.toString()));
+        } catch (FrameException e) {
+            logger.warn("updateActuatorStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
+
+            updateState(CHANNEL_ACTUATOR, UnDefType.UNDEF);
         }
     }
 
