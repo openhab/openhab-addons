@@ -69,10 +69,10 @@ public class IpObserverHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private IpObserverConfiguration config = new IpObserverConfiguration();
 
-    class ChannelHandler {
+    private class ChannelHandler {
         private IpObserverHandler handler;
         private Channel channel;
-        private String currentState = "";
+        private String previousValue = "";
         private Unit<?> unit;
         private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<Class<? extends State>>();
 
@@ -84,14 +84,16 @@ public class IpObserverHandler extends BaseThingHandler {
             acceptedDataTypes.add(acceptable);
         }
 
-        public void processMessage(String sensorValue) {
-            if (!sensorValue.equals(this.currentState)) {
-                this.currentState = sensorValue;
+        public void processValue(String sensorValue) {
+            if (!sensorValue.equals(previousValue)) {
+                previousValue = sensorValue;
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
-                if (state instanceof QuantityType) {
+                if (state == null) {
+                    return;
+                } else if (state instanceof QuantityType) {
                     handler.updateState(this.channel.getUID(),
                             QuantityType.valueOf(Double.parseDouble(sensorValue), unit));
-                } else if (state != null) {
+                } else {
                     this.handler.updateState(this.channel.getUID(), state);
                 }
             }
@@ -131,23 +133,23 @@ public class IpObserverHandler extends BaseThingHandler {
         String value = doc.select("select[name=inBattSta] option[selected]").val();
         ChannelHandler localUpdater = channelHandlers.get("inBattSta");
         if (localUpdater != null) {
-            localUpdater.processMessage(value);
+            localUpdater.processValue(value);
         }
         value = doc.select("select[name=outBattSta] option[selected]").val();
         localUpdater = channelHandlers.get("outBattSta");
         if (localUpdater != null) {
-            localUpdater.processMessage(value);
+            localUpdater.processValue(value);
         }
 
         Elements elements = doc.select("input");
         for (Element element : elements) {
             String elementName = element.attr("name");
             value = element.attr("value");
-            logger.trace("Found element {}, value is {}", elementName, value);
             if (!value.isEmpty()) {
+                logger.trace("Found element {}, value is {}", elementName, value);
                 localUpdater = channelHandlers.get(elementName);
                 if (localUpdater != null) {
-                    localUpdater.processMessage(value);
+                    localUpdater.processValue(value);
                 }
             }
         }
@@ -225,6 +227,7 @@ public class IpObserverHandler extends BaseThingHandler {
             createChannelHandler(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofmonthly");
             createChannelHandler(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "rainofyearly");
         } else {
+            logger.debug("Using metric units of measurement for rain.");
             createChannelHandler(HOURLY_RAIN_RATE, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE),
                     "rainofhourly");
             createChannelHandler(DAILY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofdaily");
@@ -286,6 +289,7 @@ public class IpObserverHandler extends BaseThingHandler {
         createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
         // was outBattSta1 so some units may use this instead?
         createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta");
+        createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
         createChannelHandler(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
         createChannelHandler(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
     }

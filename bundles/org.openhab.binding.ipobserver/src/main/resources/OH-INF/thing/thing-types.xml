@@ -211,6 +211,7 @@
 		<category>Battery</category>
 		<state readOnly="true">
 			<options>
+				<option value="Normal">Normal</option>
 				<option value="0">Normal</option>
 				<option value="1">Low</option>
 			</options>
