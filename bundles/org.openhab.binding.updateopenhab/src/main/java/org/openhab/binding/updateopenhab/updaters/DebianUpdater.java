@@ -30,11 +30,24 @@ public class DebianUpdater extends BaseUpdater {
 
     private static final String EXECUTE_FOLDER = "/usr/share/openhab";
     private static final String EXECUTE_FILENAME = FILE_ID + ".sh";
-    // private static final String EXECUTE_COMMAND = "sh -c ./" + EXECUTE_FILENAME;
-    private static final String EXECUTE_COMMAND = "echo " + PlaceHolder.PASSWORD.key + " | sudo -k -S -u "
-            + PlaceHolder.USER_NAME.key + " ./" + EXECUTE_FILENAME;
-
     private static final String RUNTIME_FOLDER = EXECUTE_FOLDER + "/runtime";
+
+    /*
+     * TESTING: plain shell (works for scripts that require no credentials)
+     * private static final String EXECUTE_COMMAND = "sh -c ./" + EXECUTE_FILENAME;
+     */
+
+    /*
+     * TESTING: inject password and user name to sudo command
+     * private static final String EXECUTE_COMMAND = "printf \"" + PlaceHolder.PASSWORD.key + "\\n\" | sudo -k -S -u " +
+     * PlaceHolder.USER_NAME.key + " ./" + EXECUTE_FILENAME;
+     */
+
+    /*
+     * TESTING: inject password only to sudo command
+     */
+    private static final String EXECUTE_COMMAND = "printf \"" + PlaceHolder.PASSWORD.key + "\\n\" | sudo -k -S ./"
+            + EXECUTE_FILENAME;
 
     @Override
     protected void initializeExtendedPlaceholders() {
