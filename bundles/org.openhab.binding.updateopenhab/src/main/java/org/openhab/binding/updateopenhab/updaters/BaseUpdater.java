@@ -20,8 +20,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -67,25 +67,28 @@ public abstract class BaseUpdater implements Runnable {
 
     private TargetVersionType targetVersionType = TargetVersionType.STABLE;
 
-    protected static final String FILE_ID = "update-openhab";
+    protected static final String FILE_ID = "oh-update";
 
     /**
      * Place holders are keys in the script templates to be replaced by values at runtime
      */
     protected enum PlaceHolder {
-        // BASE place holders: values will be provided by this BaseUpdater class
+        // COMMON place holders: values will be provided by this BaseUpdater class
         TITLE("[TITLE]"),
+        USER_NAME("[USER_NAME]"),
         PASSWORD("[PASSWORD]"),
         SLEEP_TIME("[SLEEP_TIME]"),
         TARGET_TYPE("[TARGET_TYPE]"),
         TARGET_VERSION("[TARGET_VERSION]"),
         USERDATA_FOLDER("[USERDATA_FOLDER]"),
         LOGBACK_FILENAME("[LOGBACK_FILENAME]"),
-        // EXTENDED place holders: values must be provided by classes that extend BaseUpdater
+        // EXTENDED place holders: values **MUST** be provided by classes that extend BaseUpdater
         EXECUTE_COMMAND("[EXECUTE_COMMAND]"),
         EXECUTE_FOLDER("[EXECUTE_FOLDER]"),
         EXECUTE_FILENAME("[EXECUTE_FILENAME]"),
-        RUNTIME_FOLDER("[RUNTIME_FOLDER]");
+        RUNTIME_FOLDER("[RUNTIME_FOLDER]"),
+        // EXTENDED place holders: values **MAY** be provided by classes that extend BaseUpdater
+        STD_OUT_FILENAME("[STD_OUT_FILENAME]");
 
         protected final String key;
 
@@ -102,85 +105,155 @@ public abstract class BaseUpdater implements Runnable {
      * Constructor.
      */
     public BaseUpdater() {
+        // initialise COMMON place holders
         placeHolders.put(PlaceHolder.TITLE, TITLE);
+        placeHolders.put(PlaceHolder.USER_NAME, "");
         placeHolders.put(PlaceHolder.PASSWORD, "");
         placeHolders.put(PlaceHolder.SLEEP_TIME, DEFAULT_SLEEP_SECS.toString());
         placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersionType.label);
         placeHolders.put(PlaceHolder.USERDATA_FOLDER, OpenHAB.getUserDataFolder());
         placeHolders.put(PlaceHolder.LOGBACK_FILENAME, FILE_ID + ".log");
+        placeHolders.put(PlaceHolder.STD_OUT_FILENAME, "");
+        // call the extending class method to initialise the EXTENDED place holders
         initializeExtendedPlaceholders();
-        if (logger.isDebugEnabled()) {
-            logAndDeleteLogbackFile(true, false);
-        } else {
-            logAndDeleteLogbackFile(true, true);
-            deletePriorScriptFile();
+        // log the prior log-back file entries
+        logggerInfoLogbackFile();
+        // delete prior files
+        deletePriorFiles();
+    }
+
+    // ================== Run() method ==================
+
+    /**
+     * Implementation of Runnable.run() interface method that creates and runs an updater script.
+     */
+    @Override
+    public void run() {
+        synchronized (RUN_LOCK) {
+            // refresh the remote version
+            getRemoteLatestVersion();
+
+            // check that all place holders exist
+            if (!checkPlaceHoldersExist()) {
+                logger.debug("Some placeholders do not exist");
+                return;
+            }
+
+            // check the remote version is defined
+            if (VERSION_NOT_DEFINED.equals(placeHolders.get(PlaceHolder.TARGET_VERSION))) {
+                logger.debug("Target version is not defined");
+                return;
+            }
+
+            // replace place holders in the command line with actual values
+            if (!fixupExecuteCommand()) {
+                logger.debug("Could not fix up the command line");
+                return;
+            }
+
+            // log place holder values
+            loggerDebugPlaceHolderValues();
+
+            // create the update script file
+            if (!createScriptFile()) {
+                logger.debug("Failed to create OpenHAB update script file");
+                return;
+            }
+
+            // create the log-back file
+            if (!createLogbackFile()) {
+                logger.debug("Failed to create log back file");
+                return;
+            }
+
+            // execute the update script
+            if (!runScriptFile()) {
+                logger.debug("Failed to run OpenHAB update script");
+                deletePriorFiles();
+                return;
+            }
+
+            // inform the user via the log file
+            loggerInfoUpdateStarted();
         }
     }
 
-    /**
-     * This method is used to initialise the extended place holders.
-     * <p>
-     * Note: it is not allowed to instantiate BaseUpdater directly, and it would throw an exception. Instead one must
-     * instantiate a class that extends BaseUpdater and overrides this method.
-     * <p>
-     * NOTE: classes that extend from BaseUpdater MUST set the following place holder values
-     * <li>EXECUTE_FOLDER = the folder where the update script shall be run from
-     * <li>EXECUTE_FILENAME = the file name of the update script
-     * <li>EXECUTE_COMMAND = the shell command use to execute the update script
-     * <li>RUNTIME_FOLDER = the OpenHAB runtime folder
-     * <p>
-     */
-    protected abstract void initializeExtendedPlaceholders();
+    // ================== Setters ==================
 
     /**
-     * Property setter.
+     * Set the target version.
      *
      * @param targetVersionString string representation of a target version i.e. STABLE, MILESTONE, SNAPSHOT
-     * @return this instance
      * @throws IllegalArgumentException
      */
-    public BaseUpdater setTargetVersion(String targetVersionString) throws IllegalArgumentException {
+    public void setTargetVersion(String targetVersionString) throws IllegalArgumentException {
         targetVersionType = TargetVersionType.valueOf(targetVersionString.toUpperCase());
         placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersionType.label);
-        return this;
     }
 
     /**
-     * Property setter.
+     * Set the password.
      *
-     * @param password a valid password containing no whitespace, and 30 or fewer characters long
-     * @return this instance
+     * @param password a valid password containing no whitespace, and 20 or fewer characters long
      * @throws IllegalArgumentException
      */
-    public BaseUpdater setPassword(String password) throws IllegalArgumentException {
-        // prevent buffer overrun attacks by checking that the string length is <= 30 (say)
-        if (password.length() > 30) {
+    public void setPassword(String password) throws IllegalArgumentException {
+        boolean fail = false;
+        // prevent buffer overrun by checking that the string length is <= 20 (say)
+        if (password.length() > 20) {
+            fail = true;
+        }
+        // prevent script injection by checking that the string contains no whitespace
+        for (int i = 0; i < password.length(); i++) {
+            if (Character.isWhitespace(password.charAt(i))) {
+                fail = true;
+                break;
+            }
+        }
+        if (fail) {
             IllegalArgumentException e = new IllegalArgumentException(
-                    String.format("Password %s is too long.", password));
+                    String.format("Password %s is invalid.", password));
             logger.debug("{}", e.getMessage());
             throw e;
         }
-        // prevent script injection attacks by checking that the string contains no whitespace
-        for (int i = 0; i < password.length(); i++) {
-            if (Character.isWhitespace(password.charAt(i))) {
-                IllegalArgumentException e = new IllegalArgumentException(
-                        String.format("Password %s contains whitespace.", password));
-                logger.debug("{}", e.getMessage());
-                throw e;
-            }
-        }
         placeHolders.put(PlaceHolder.PASSWORD, password);
-        return this;
     }
 
     /**
-     * Property setter.
+     * Set the user name.
      *
-     * @param sleepTimeString string representation of an integer between 5 and 30 (seconds)
-     * @return this instance
+     * @param userName a valid user name containing only alpha numerics, and 20 or fewer characters long
      * @throws IllegalArgumentException
      */
-    public BaseUpdater setSleepTime(String sleepTimeString) throws IllegalArgumentException {
+    public void setUserName(String userName) throws IllegalArgumentException {
+        boolean fail = false;
+        // prevent buffer overrun by checking that the string length is <= 20 (say)
+        if (userName.length() > 20) {
+            fail = true;
+        }
+        // prevent script injection by checking that the string contains only alpha-numeric characters
+        for (int i = 0; i < userName.length(); i++) {
+            if (!Character.isLetter('c')) { // OrDigit(userName.charAt(i))) {
+                fail = true;
+                break;
+            }
+        }
+        if (fail) {
+            IllegalArgumentException e = new IllegalArgumentException(
+                    String.format("User name %s is invalid.", userName));
+            logger.debug("{}", e.getMessage());
+            throw e;
+        }
+        placeHolders.put(PlaceHolder.USER_NAME, userName);
+    }
+
+    /**
+     * Set the sleepTime.
+     *
+     * @param sleepTimeString string representation of an integer between 5 and 30 (seconds)
+     * @throws IllegalArgumentException
+     */
+    public void setSleepTime(String sleepTimeString) throws IllegalArgumentException {
         Integer sleepTimeInteger;
         try {
             sleepTimeInteger = Integer.valueOf(sleepTimeString);
@@ -188,250 +261,22 @@ public abstract class BaseUpdater implements Runnable {
             sleepTimeInteger = -1;
         }
         if ((MIN_SLEEP_SECS > sleepTimeInteger) || (sleepTimeInteger > MAX_SLEEP_SECS)) {
-            IllegalArgumentException exception = new IllegalArgumentException(
+            IllegalArgumentException e = new IllegalArgumentException(
                     String.format("Argument value {} is invalid.", sleepTimeString));
-            logger.debug("{}", exception.getMessage());
-            throw exception;
+            logger.debug("{}", e.getMessage());
+            throw e;
         }
         placeHolders.put(PlaceHolder.SLEEP_TIME, sleepTimeInteger.toString());
-        return this;
     }
 
-    /**
-     * Start an external process to execute the script file.
-     *
-     * @return success
-     */
-    private boolean runUpdateScript() {
-        String executeCommand = placeHolders.get(PlaceHolder.EXECUTE_COMMAND);
-        String directory = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
-        if (executeCommand != null && directory != null) {
-            // split command from the and arguments (if any)
-            List<String> commands;
-            int splitIndex = executeCommand.indexOf(" ");
-            String cmnd;
-            String args;
-            if (splitIndex >= 0) {
-                commands = Arrays.asList(executeCommand.substring(0, splitIndex),
-                        executeCommand.substring(splitIndex + 1));
-                cmnd = commands.get(0);
-                args = commands.get(1);
-            } else {
-                commands = Arrays.asList(executeCommand);
-                cmnd = commands.get(0);
-                args = "null";
-            }
-            logger.debug("Process builder: directory={}, command={}, arguments={}", directory, cmnd, args);
-            ProcessBuilder builder = new ProcessBuilder(commands).directory(new File(directory));
-            try {
-                builder.start();
-                return true;
-            } catch (IOException e) {
-                logger.debug("Failed to start script file: {}", e.getMessage());
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Check if all of the place holders have values.
-     *
-     * @return true if all place holders are non empty strings
-     */
-    private boolean checkPlaceHoldersExist() {
-        boolean fail = false;
-        for (PlaceHolder placeHolder : PlaceHolder.values()) {
-            String placeHolderValue = placeHolders.get(placeHolder);
-            logger.debug("{}:{}", placeHolder.name(), placeHolderValue);
-            fail = fail || (placeHolderValue == null);
-        }
-        return !fail;
-    }
-
-    /**
-     * Replace any place holders in the execute command with their actual values.
-     *
-     * @return success
-     */
-    private boolean fixupExecuteCommand() {
-        String executeCommand = placeHolders.get(PlaceHolder.EXECUTE_COMMAND);
-        if (executeCommand != null) {
-            for (Map.Entry<PlaceHolder, String> placeHolder : placeHolders.entrySet()) {
-                executeCommand = executeCommand.replace(placeHolder.getKey().key, placeHolder.getValue());
-            }
-            placeHolders.put(PlaceHolder.EXECUTE_COMMAND, executeCommand);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Read a text resource from within the jar, convert its place holders to actual values, and write it to
-     * the script file to be executed.
-     *
-     * @return success
-     */
-    private boolean createUpdateScriptFile() {
-        String execFolder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
-        if (execFolder == null) {
-            // no need to log; null value should never occur
-            return false;
-        }
-        String execFilename = placeHolders.get(PlaceHolder.EXECUTE_FILENAME);
-        if (execFilename == null) {
-            // no need to log; null value should never occur
-            return false;
-        }
-
-        // create an input stream to access the resource
-        String resourceId = "/scripts/" + getClass().getSimpleName() + ".txt";
-        InputStream resourceStream = getClass().getResourceAsStream(resourceId);
-        if (resourceStream == null) {
-            logger.debug("Could not find resource id: {}", resourceId);
-            return false;
-        }
-
-        // read script lines from the resource
-        @SuppressWarnings("null")
-        List<String> lines = new BufferedReader(new InputStreamReader(resourceStream, StandardCharsets.UTF_8)).lines()
-                .collect(Collectors.toList());
-
-        // replace all place holders in the script with their actual values
-        for (int line = 0; line < lines.size(); line++) {
-            for (Map.Entry<PlaceHolder, String> placeHolder : placeHolders.entrySet()) {
-                lines.set(line, lines.get(line).replace(placeHolder.getKey().key, placeHolder.getValue()));
-            }
-        }
-
-        // write the script to the file
-        Path execFilePath = Paths.get(execFolder + File.separator + execFilename);
-        try {
-            Files.write(execFilePath, lines);
-            return true;
-        } catch (IOException e) {
-            logger.debug("Error writing script file: {}", e.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * Create the log-back file with the given message in it.
-     *
-     * @param logMessage is the message to be written in the file
-     * @return success
-     */
-    private boolean createLogbackFile(String logMessage) {
-        String execFolder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
-        if (execFolder == null) {
-            // no need to log; null value should never occur
-            return false;
-        }
-        String logbackFilename = placeHolders.get(PlaceHolder.LOGBACK_FILENAME);
-        if (logbackFilename == null) {
-            // no need to log; null value should never occur
-            return false;
-        }
-        Path logbackPath = Paths.get(execFolder + File.separator + logbackFilename);
-        try {
-            Files.write(logbackPath, Arrays.asList(logMessage));
-            return true;
-        } catch (IOException e) {
-            logger.debug("Error writing log-back file: {}", e.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * Read the log-back file (if present) log its contents and delete the file.
-     *
-     * @param outputLog if true then send the log file contents to logger.info()
-     * @param deleteFile if true delete the log file
-     * @return success
-     */
-    private boolean logAndDeleteLogbackFile(boolean outputLog, boolean deleteFile) {
-        String execFolder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
-        if (execFolder == null) {
-            // no need to log; null value should never occur
-            return false;
-        }
-        String logbackFilename = placeHolders.get(PlaceHolder.LOGBACK_FILENAME);
-        if (logbackFilename == null) {
-            // no need to log; null value should never occur
-            return false;
-        }
-        Path logbackPath = Paths.get(execFolder + File.separator + logbackFilename);
-        try {
-            if (outputLog) {
-                List<String> lines = Files.readAllLines(logbackPath);
-                if (lines != null) {
-                    for (String line : lines) {
-                        logger.info(line);
-                    }
-                }
-            }
-            if (deleteFile) {
-                Files.delete(logbackPath);
-            }
-            return true;
-        } catch (IOException e) {
-            // no need to log; the log-back file may simply not be there
-        }
-        return false;
-    }
-
-    /**
-     * Delete any prior script file.
-     */
-    private void deletePriorScriptFile() {
-        String execFolder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
-        if (execFolder == null) {
-            // no need to log; null value should never occur
-            return;
-        }
-        String execFilename = placeHolders.get(PlaceHolder.EXECUTE_FILENAME);
-        if (execFilename == null) {
-            // no need to log; null value should never occur
-            return;
-        }
-        try {
-            Files.deleteIfExists(Paths.get(execFolder + File.separator + execFilename));
-        } catch (IOException e) {
-            logger.debug("Error deleting prior script file: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * Download maven-metadata.xml from the given url and extract its latest OH version.
-     *
-     * @param url source of a maven-metadata.xml file
-     * @return latest available OH version or UNKNOWN_VERSION
-     */
-    private String getArtifactoryLatestVersion(String url) {
-        String result = VERSION_NOT_DEFINED;
-        XMLStreamReader reader;
-        try {
-            reader = XMLInputFactory.newInstance().createXMLStreamReader(new URL(url).openStream());
-            while (reader.hasNext()) {
-                if (reader.next() == XMLStreamConstants.START_ELEMENT) {
-                    if ("latest".equals(reader.getLocalName())) {
-                        result = reader.getElementText();
-                        break;
-                    }
-                }
-            }
-            reader.close();
-        } catch (IOException | XMLStreamException e) {
-            logger.debug("Error reading maven metadata from artifactory: {}", e.getMessage());
-        }
-        return result;
-    }
+    // ================== Getters ==================
 
     /**
      * Get the latest online available OH version for the target upgrade type.
      *
      * @return version e.g. 3.0.2, 3.1.0.M4, 3.1.0-SNAPSHOT, or VERSION_NOT_DEFINED
      */
-    public String getRemoteVersion() {
+    public String getRemoteLatestVersion() {
         String result;
         switch (getTargetVersionType()) {
             case STABLE:
@@ -459,12 +304,18 @@ public abstract class BaseUpdater implements Runnable {
      * @return the version number, or VERSION_NOT_DEFINED
      */
     public static String getActualVersion() {
-        String oldVersion = OpenHAB.getVersion();
+        String oldVersion;
+        try {
+            oldVersion = OpenHAB.getVersion();
+        } catch (NullPointerException e) {
+            // OpenHAB.getVersion() throws an NPE when calling it offline in a JUnit test
+            oldVersion = "";
+        }
         return oldVersion.isEmpty() ? VERSION_NOT_DEFINED : oldVersion;
     }
 
     /**
-     * Return the version type to upgrade to.
+     * Get the version type to upgrade to.
      *
      * @return target version = STABLE, MILESTONE, or SNAPSHOT
      */
@@ -489,7 +340,7 @@ public abstract class BaseUpdater implements Runnable {
     }
 
     /**
-     * Indicates if an update is available. Compares the actual running version against the latest remote version, and
+     * Get whether an update is available. Compares the actual running version against the latest remote version, and
      * returns whether the latter is a higher version than the former.
      * <p>
      * e.g. compares two strings such as 3.2.1 / 3.2.1.M1 / 3.2.1-SNAPSHOT against each other.
@@ -504,7 +355,7 @@ public abstract class BaseUpdater implements Runnable {
     public TriState getRemoteVersionHigher() {
         // split the version strings into parts
         String[] actVerParts = getActualVersion().replace("-", ".").split("\\.");
-        String[] remVerParts = getRemoteVersion().replace("-", ".").split("\\.");
+        String[] remVerParts = getRemoteLatestVersion().replace("-", ".").split("\\.");
 
         // compare the first three parts e.g. 3.0.0 <=> 3.0.1
         int compareOverall = 0;
@@ -516,6 +367,7 @@ public abstract class BaseUpdater implements Runnable {
                 break;
             }
         }
+
         // if the first three parts are all equal, compare the fourth part
         if (compareOverall == 0) {
             switch (getTargetVersionType()) {
@@ -535,46 +387,247 @@ public abstract class BaseUpdater implements Runnable {
     }
 
     /**
-     * Implementation of {@link Runnable}.run() interface method that first creates and then runs an updater script.
+     * Get the latest version on the artifactory. Download maven-metadata.xml from the given url and extract its latest
+     * OH version.
+     *
+     * @param url source of a maven-metadata.xml file
+     * @return latest available OH version or UNKNOWN_VERSION
      */
-    @Override
-    public void run() {
-        synchronized (RUN_LOCK) {
-            // check the update target version is defined
-            String latestVersion = getRemoteVersion();
-            if (VERSION_NOT_DEFINED.equals(latestVersion)) {
-                logger.debug("Target version is not defined");
-                return;
+    private String getArtifactoryLatestVersion(String url) {
+        String result = VERSION_NOT_DEFINED;
+        XMLStreamReader reader;
+        try {
+            reader = XMLInputFactory.newInstance().createXMLStreamReader(new URL(url).openStream());
+            while (reader.hasNext()) {
+                if (reader.next() == XMLStreamConstants.START_ELEMENT) {
+                    if ("latest".equals(reader.getLocalName())) {
+                        result = reader.getElementText();
+                        break;
+                    }
+                }
             }
-            // check that all place holders exist
-            if (!checkPlaceHoldersExist()) {
-                logger.debug("Some placeholders do not exist");
-                return;
-            }
-            // replace place holders in the command line with actual values
-            if (!fixupExecuteCommand()) {
-                logger.debug("Could not fix up the command line");
-                return;
-            }
-            // create the update script file
-            if (!createUpdateScriptFile()) {
-                logger.debug("Failed to create OpenHAB update script file");
-                return;
-            }
-            // create the log-back file
-            if (!createLogbackFile(
-                    String.format("Restarted OpenHAB after update process [%s => %s] was initiated on %tc",
-                            getActualVersion(), latestVersion, Calendar.getInstance()))) {
-                logger.debug("Failed to create log back file");
-                return;
-            }
-            // execute the update script
-            if (!runUpdateScript()) {
-                logAndDeleteLogbackFile(true, false);
-                logger.debug("Failed to run OpenHAB update script");
-                return;
-            }
-            logger.info("Stopping OpenHAB and initiating update process [{} => {}]", getActualVersion(), latestVersion);
+            reader.close();
+        } catch (IOException | XMLStreamException e) {
+            logger.debug("Error reading maven metadata from artifactory: {}", e.getMessage());
         }
+        return result;
+    }
+
+    // ================== MUST be overridden ==================
+
+    /**
+     * This method is used to initialise the extended place holders.
+     * <p>
+     * Note: it is not allowed to instantiate BaseUpdater directly, and it would throw an exception. Instead one must
+     * instantiate a class that extends BaseUpdater and overrides this method.
+     * <p>
+     * NOTE: classes that extend from BaseUpdater **MUST** set the following place holder values
+     * <li>EXECUTE_FOLDER = the folder where the update script shall be run from
+     * <li>EXECUTE_FILENAME = the file name of the update script
+     * <li>EXECUTE_COMMAND = the shell command use to execute the update script
+     * <li>RUNTIME_FOLDER = the OpenHAB runtime folder
+     * <p>
+     * NOTE: classes that extend from BaseUpdater **MAY** set the following place holder values
+     * <li>STD_OUT_FILENAME = the STDOUT and STDERR redirect file
+     */
+    protected abstract void initializeExtendedPlaceholders();
+
+    // ================== Update Process Actions ==================
+
+    /**
+     * Check if all of the place holders have values.
+     *
+     * @return true if all place holders are non empty strings
+     */
+    private boolean checkPlaceHoldersExist() {
+        boolean fail = false;
+        for (PlaceHolder placeHolder : PlaceHolder.values()) {
+            fail = fail || (placeHolders.get(placeHolder) == null);
+        }
+        return !fail;
+    }
+
+    /**
+     * Fix-up place holders in the execute command with their runtime values.
+     *
+     * @return success
+     */
+    private boolean fixupExecuteCommand() {
+        String executeCommand = placeHolders.get(PlaceHolder.EXECUTE_COMMAND);
+        if (executeCommand != null) {
+            for (Map.Entry<PlaceHolder, String> placeHolder : placeHolders.entrySet()) {
+                executeCommand = executeCommand.replace(placeHolder.getKey().key, placeHolder.getValue());
+            }
+            placeHolders.put(PlaceHolder.EXECUTE_COMMAND, executeCommand);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Log the place holder values to DEBUG.
+     */
+    private void loggerDebugPlaceHolderValues() {
+        if (logger.isDebugEnabled()) {
+            for (PlaceHolder placeHolder : PlaceHolder.values()) {
+                logger.debug("{}:{}", placeHolder.name(), placeHolders.get(placeHolder));
+            }
+        }
+    }
+
+    /**
+     * Read a text resource from within the jar, convert its place holders to actual values, and write it to
+     * the script file to be executed. This method MAY be overridden in extending classes.
+     *
+     * @return success
+     */
+    protected boolean createScriptFile() {
+        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+        String filename = placeHolders.get(PlaceHolder.EXECUTE_FILENAME);
+
+        // create an input stream to access the resource
+        String resourceId = "/scripts/" + getClass().getSimpleName() + ".txt";
+        InputStream resourceStream = getClass().getResourceAsStream(resourceId);
+        if (resourceStream == null) {
+            logger.debug("Could not find resource id: {}", resourceId);
+            return false;
+        }
+
+        // read script lines from the resource
+        @SuppressWarnings("null")
+        List<String> templateLines = new BufferedReader(new InputStreamReader(resourceStream, StandardCharsets.UTF_8))
+                .lines().collect(Collectors.toList());
+
+        // remove empty lines and comments and fix-up place holders to their runtime values
+        List<String> outputLines = new ArrayList<>();
+        for (int i = 0; i < templateLines.size(); i++) {
+            String line = templateLines.get(i);
+            if ((!line.isBlank() && !line.startsWith("# ") && !line.startsWith("::"))
+                    || line.contains(PlaceHolder.EXECUTE_COMMAND.key)) {
+                for (Map.Entry<PlaceHolder, String> placeHolder : placeHolders.entrySet()) {
+                    line = line.replace(placeHolder.getKey().key, placeHolder.getValue());
+                }
+                outputLines.add(line);
+            }
+        }
+
+        // write the script lines to the file
+        try {
+            Files.write(Paths.get(folder + File.separator + filename), outputLines);
+            return true;
+        } catch (IOException e) {
+            logger.debug("Error creating script file: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Create the log-back file with a message in it.
+     *
+     * @return success
+     */
+    private boolean createLogbackFile() {
+        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+        String filename = placeHolders.get(PlaceHolder.LOGBACK_FILENAME);
+        try {
+            Files.write(Paths.get(folder + File.separator + filename),
+                    Arrays.asList(String.format("Update [%s => %s] start at %tc; Restarted OpenHAB", getActualVersion(),
+                            placeHolders.get(PlaceHolder.TARGET_VERSION), Calendar.getInstance())));
+            return true;
+        } catch (IOException e) {
+            logger.debug("Error creating log-back file: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Run the update script file.
+     *
+     * @return success
+     */
+    private boolean runScriptFile() {
+        String command = placeHolders.getOrDefault(PlaceHolder.EXECUTE_COMMAND, "");
+        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+
+        ProcessBuilder builder = new ProcessBuilder();
+        builder.command(Arrays.asList(command.split(" ")));
+        builder.directory(new File(folder));
+
+        String redirect = placeHolders.getOrDefault(PlaceHolder.STD_OUT_FILENAME, "");
+        if (!redirect.isEmpty()) {
+            File outFile = new File(folder + File.separator + redirect);
+            builder.redirectOutput(outFile);
+            builder.redirectError(outFile);
+        } else {
+            redirect = "none";
+        }
+
+        try {
+            logger.debug("Starting process: directory={}, command={}, redirect={}", folder, command, redirect);
+            builder.start();
+            logger.debug("Started process: directory={}, command={}, redirect={}", folder, command, redirect);
+            return true;
+        } catch (IOException e) {
+            logger.debug("Failed to start script: {}", e.getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * Read the log-back file (if present) and log its contents to INFO.
+     */
+    private void logggerInfoLogbackFile() {
+        if (logger.isInfoEnabled()) {
+            String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+            String filename = placeHolders.get(PlaceHolder.LOGBACK_FILENAME);
+            try {
+                List<String> lines = Files.readAllLines(Paths.get(folder + File.separator + filename));
+                if (lines != null) {
+                    for (String line : lines) {
+                        logger.info("{}", line);
+                    }
+                }
+            } catch (IOException e) {
+                // do not log this as an error, as the file may simply not be there any more
+            }
+        }
+    }
+
+    /**
+     * Helper method to delete a specific prior script file.
+     *
+     * @param fileId identifies the file to be deleted
+     */
+    private void deletePriorFile(PlaceHolder fileId) {
+        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+        String filename = placeHolders.get(fileId);
+        try {
+            Files.deleteIfExists(Paths.get(folder + File.separator + filename));
+        } catch (IOException e) {
+            logger.debug("Error deleting prior {} file: {}", fileId.name(), e.getMessage());
+        }
+    }
+
+    /**
+     * Delete all prior script files (except when in logger debug mode).
+     */
+    private void deletePriorFiles() {
+        if (!logger.isDebugEnabled()) {
+            deletePriorFile(PlaceHolder.LOGBACK_FILENAME);
+            deletePriorFile(PlaceHolder.STD_OUT_FILENAME);
+            deletePriorFile(PlaceHolder.EXECUTE_FILENAME);
+        }
+    }
+
+    /**
+     * Log an INFO entry in the log file to indicate that update process has started. This method MAY be overridden in
+     * extending classes.
+     *
+     * @param latestVersion
+     */
+    protected void loggerInfoUpdateStarted() {
+        logger.info("Stopping OpenHAB; Starting update [{} => {}]", getActualVersion(),
+                placeHolders.get(PlaceHolder.TARGET_VERSION));
     }
 }

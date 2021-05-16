@@ -2,7 +2,7 @@
 
 :: OpenHAB Auto Update Script for Windows
 
-:: execute command: [EXECUTE_COMMAND]
+:: Execute command: [EXECUTE_COMMAND]
 
 title [TITLE]
 

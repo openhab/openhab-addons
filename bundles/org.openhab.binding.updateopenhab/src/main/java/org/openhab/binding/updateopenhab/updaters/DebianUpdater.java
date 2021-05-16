@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.updateopenhab.updaters;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -22,10 +28,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DebianUpdater extends BaseUpdater {
 
-    private static final String EXECUTE_FOLDER = "/usr/share/openhab/";
+    private static final String EXECUTE_FOLDER = "/usr/share/openhab";
     private static final String EXECUTE_FILENAME = FILE_ID + ".sh";
-    private static final String EXECUTE_COMMAND = "'echo " + PlaceHolder.PASSWORD.key + " | sudo -S -k nohup sh "
-            + EXECUTE_FILENAME + " >" + FILE_ID + ".out 2>&1'";
+    // private static final String EXECUTE_COMMAND = "sh -c ./" + EXECUTE_FILENAME;
+    private static final String EXECUTE_COMMAND = "echo " + PlaceHolder.PASSWORD.key + " | sudo -k -S -u "
+            + PlaceHolder.USER_NAME.key + " sh -c ./" + EXECUTE_FILENAME;
 
     private static final String RUNTIME_FOLDER = EXECUTE_FOLDER + "/runtime";
 
@@ -35,5 +42,25 @@ public class DebianUpdater extends BaseUpdater {
         placeHolders.put(PlaceHolder.EXECUTE_FILENAME, EXECUTE_FILENAME);
         placeHolders.put(PlaceHolder.EXECUTE_COMMAND, EXECUTE_COMMAND);
         placeHolders.put(PlaceHolder.RUNTIME_FOLDER, RUNTIME_FOLDER);
+        placeHolders.put(PlaceHolder.STD_OUT_FILENAME, FILE_ID + ".txt");
+    }
+
+    /**
+     * Unix systems require 'execute' permissions on the script file to allow it to run.
+     */
+    @Override
+    protected boolean createScriptFile() {
+        if (super.createScriptFile()) {
+            String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+            String filename = placeHolders.get(PlaceHolder.EXECUTE_FILENAME);
+            try {
+                Files.setPosixFilePermissions(Paths.get(folder + File.separator + filename),
+                        PosixFilePermissions.fromString("rwxr-xr-x"));
+                return true;
+            } catch (IOException e) {
+                logger.debug("Error setting execute permissions.");
+            }
+        }
+        return false;
     }
 }

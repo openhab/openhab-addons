@@ -2,8 +2,11 @@
 
 # OpenHAB Auto Update Script for Mac OS
 
-# execute command: [EXECUTE_COMMAND]
-  
+# Execute command: [EXECUTE_COMMAND]
+
+# don't terminate when OpenHAB shuts down (i.e. ignore SIGTERM)
+trap "" 15
+
 # stop OpenHAB
 . "[RUNTIME_FOLDER]/bin/stop" >nul 2>&1
 

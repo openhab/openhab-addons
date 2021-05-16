@@ -31,7 +31,7 @@ public class UpdaterStates {
     }
 
     public static State getRemoteVersion(BaseUpdater updater) {
-        String newVersion = updater.getRemoteVersion();
+        String newVersion = updater.getRemoteLatestVersion();
         return BaseUpdater.VERSION_NOT_DEFINED.equals(newVersion) ? UnDefType.UNDEF : StringType.valueOf(newVersion);
     }
 

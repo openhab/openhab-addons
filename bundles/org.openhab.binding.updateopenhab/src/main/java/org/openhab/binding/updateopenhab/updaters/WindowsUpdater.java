@@ -36,4 +36,10 @@ public class WindowsUpdater extends BaseUpdater {
         placeHolders.put(PlaceHolder.EXECUTE_COMMAND, EXECUTE_COMMAND);
         placeHolders.put(PlaceHolder.RUNTIME_FOLDER, RUNTIME_FOLDER);
     }
+
+    @Override
+    protected void loggerInfoUpdateStarted() {
+        super.loggerInfoUpdateStarted();
+        logger.info("Note: this may cause Karaf to report a socket disconnected warning below. Don't worry!");
+    }
 }

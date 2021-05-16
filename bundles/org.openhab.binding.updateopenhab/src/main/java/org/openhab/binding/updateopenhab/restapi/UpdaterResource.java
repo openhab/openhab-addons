@@ -67,6 +67,7 @@ public class UpdaterResource implements RESTResource {
     private static final String BAD_QUERYPARAM_TARGETVERSION = "Invalid 'targetVersion' parameter.";
     private static final Object BAD_QUERYPARAM_SLEEPTIME = "Invalid 'sleepTime' parameter.";
     private static final String BAD_QUERYPARAM_PASSWORD = "Invalid 'password' query parameter.";
+    private static final Object BAD_QUERYPARAM_USER = "Invalid 'user' query parameter.";
 
     private static final String SERVER_ERROR_UPDATER_MISSING = "Updater class not initialized.";
 
@@ -84,52 +85,55 @@ public class UpdaterResource implements RESTResource {
     @GET
     @Path("/getstatus")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(operationId = "getStatus", summary = "Get the updater status.", responses = {
+    @Operation(operationId = "getstatus", summary = "Get the updater status.", responses = {
             @ApiResponse(responseCode = "200", description = RESPONSE_OK),
             @ApiResponse(responseCode = "500", description = SERVER_ERROR_UPDATER_MISSING) })
-    public Response getStatus() {
+    public Response getstatus() {
         BaseUpdater updater = this.updater;
-        // server error if updater is null
+
+        // return server error if updater is null
         if (updater == null) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(SERVER_ERROR_UPDATER_MISSING).build();
         }
+
         // populate and return the DTO
         UpdaterDTO dto = new UpdaterDTO();
         dto.runningVersion = BaseUpdater.getActualVersion();
         dto.targetVersionType = updater.getTargetVersionType().name();
-        dto.remoteVersion = updater.getRemoteVersion();
+        dto.remoteVersion = updater.getRemoteLatestVersion();
         dto.remoteVersionHigher = updater.getRemoteVersionHigher().label;
         return Response.ok(dto).build();
     }
 
     @GET
-    @Path("/setvalue")
+    @Path("/setparameter")
     @Consumes(MediaType.TEXT_PLAIN)
-    @Operation(operationId = "postTargetVerionType", summary = "Set the target update version type.", responses = {
+    @Operation(operationId = "setparameter", summary = "Set updater parameter(s).", responses = {
             @ApiResponse(responseCode = "200", description = RESPONSE_OK),
             @ApiResponse(responseCode = "400", description = BAD_REQUEST),
             @ApiResponse(responseCode = "500", description = SERVER_ERROR_UPDATER_MISSING) })
-    public Response postTargetVerionType(@QueryParam("targetVersion") @Nullable String targetVersion,
-            @QueryParam("sleepTime") @Nullable String sleepTime) {
-        // server error if updater is null
+    public Response setparameter(@QueryParam("targetversion") @Nullable String targetversion,
+            @QueryParam("sleeptime") @Nullable String sleeptime) {
         BaseUpdater updater = this.updater;
+
+        // return server error if updater is null
         if (updater == null) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(SERVER_ERROR_UPDATER_MISSING).build();
         }
 
         // process any query parameters
         boolean modified = false;
-        if (targetVersion != null) {
+        if (targetversion != null) {
             try {
-                updater.setTargetVersion(targetVersion);
+                updater.setTargetVersion(targetversion);
                 modified = true;
             } catch (IllegalArgumentException e) {
                 return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_TARGETVERSION).build();
             }
         }
-        if (sleepTime != null) {
+        if (sleeptime != null) {
             try {
-                updater.setSleepTime(sleepTime);
+                updater.setSleepTime(sleeptime);
                 modified = true;
             } catch (IllegalArgumentException e) {
                 return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_SLEEPTIME).build();
@@ -145,49 +149,49 @@ public class UpdaterResource implements RESTResource {
     // @ POST
     // @ RolesAllowed({ Role.ADMIN })
     @Path("/update")
-    @Operation(operationId = "executeUpdate", summary = "Update OpenHAB to the latest available (stable/milestone/snapshot) version.", responses = {
+    @Operation(operationId = "update", summary = "Initiate update of OpenHAB.", responses = {
             @ApiResponse(responseCode = "200", description = RESPONSE_OK),
             @ApiResponse(responseCode = "400", description = BAD_REQUEST),
             @ApiResponse(responseCode = "500", description = SERVER_ERROR_UPDATER_MISSING) })
-    public Response executeUpdate(@QueryParam("targetVersion") @Nullable String targetVersion,
-            @QueryParam("sleepTime") @Nullable String sleepTime, @QueryParam("password") @Nullable String password,
-            @QueryParam("say") @Nullable String say) {
-        // server error if updater is null
+    public Response update(@QueryParam("say") @Nullable String say, @QueryParam("user") @Nullable String user,
+            @QueryParam("password") @Nullable String password) {
         BaseUpdater updater = this.updater;
+
+        // return server error if updater is null
         if (updater == null) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(SERVER_ERROR_UPDATER_MISSING).build();
         }
 
-        // check the magic word
-        if (!"please".equalsIgnoreCase(say)) {
-            return Response.status(Status.BAD_REQUEST).entity(BAD_REQUEST).build();
+        boolean queryParamsOk = false;
+
+        // either a) check the magic word e.g. on Windows where user name & password are not required
+        if ("please".equalsIgnoreCase(say)) {
+            queryParamsOk = true;
         }
 
-        // process any query parameters
-        if (targetVersion != null) {
+        // and/or b) check user name and password e.g. on Linux
+        if (user != null) {
             try {
-                updater.setTargetVersion(targetVersion);
+                updater.setUserName(user);
             } catch (IllegalArgumentException e) {
-                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_TARGETVERSION).build();
+                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_USER).build();
             }
-        }
-        if (sleepTime != null) {
-            try {
-                updater.setSleepTime(sleepTime);
-            } catch (IllegalArgumentException e) {
-                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_SLEEPTIME).build();
-            }
-        }
-        if (password != null) {
-            try {
-                updater.setPassword(password);
-            } catch (IllegalArgumentException e) {
-                return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_PASSWORD).build();
+            if (password != null) {
+                try {
+                    updater.setPassword(password);
+                    queryParamsOk = true;
+                } catch (IllegalArgumentException e) {
+                    return Response.status(Status.BAD_REQUEST).entity(BAD_QUERYPARAM_PASSWORD).build();
+                }
             }
         }
 
         // start the update process
-        executorService.submit(updater);
-        return Response.ok(RESPONSE_STARTED_UPDATE).build();
+        if (queryParamsOk) {
+            executorService.submit(updater);
+            return Response.ok(RESPONSE_STARTED_UPDATE).build();
+        }
+
+        return Response.status(Status.BAD_REQUEST).entity(BAD_REQUEST).build();
     }
 }
