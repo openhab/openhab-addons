@@ -70,15 +70,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * @author Pavel Cuchriajev
+ * @author Unspecified
  */
-@Component(service = { RESTResource.class })
+@Component
 @JaxrsResource
 @JaxrsName(FilteredEventsResource.PATH_EVENTS_FILTERED)
 @JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + RESTConstants.JAX_RS_NAME + ")")
 @JSONRequired
 @Path(FilteredEventsResource.PATH_EVENTS_FILTERED)
-@RolesAllowed({ Role.USER, Role.ADMIN })
 @Tag(name = FilteredEventsResource.PATH_EVENTS_FILTERED)
 @Singleton
 @NonNullByDefault
@@ -146,7 +145,7 @@ public class FilteredEventsResource implements RESTResource {
                 return itemRegistry.get(itemname);
             }
 
-            private OutboundSseEvent buildEvent(Event event) {
+            private @Nullable OutboundSseEvent buildEvent(Event event) {
                 String type = event.getType();
                 if (type.equals(ItemStateChangedEvent.TYPE) || type.equals(ItemStateEvent.TYPE)
                         || type.equals(ItemUpdatedEvent.TYPE) || type.equals(GroupItemStateChangedEvent.TYPE)) {

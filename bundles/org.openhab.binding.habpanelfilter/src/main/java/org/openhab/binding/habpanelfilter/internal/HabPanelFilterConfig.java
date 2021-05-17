@@ -13,7 +13,7 @@
 package org.openhab.binding.habpanelfilter.internal;
 
 /**
- * @author Pavel Cuchriajev
+ * @author Unspecified
  */
 public class HabPanelFilterConfig {
     public static final String FILTER_GROUP_NAME = "Group_HabPanel_Dashboard";
