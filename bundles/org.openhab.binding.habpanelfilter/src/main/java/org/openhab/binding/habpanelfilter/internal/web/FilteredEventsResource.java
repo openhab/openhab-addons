@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -33,12 +32,10 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.habpanelfilter.internal.HabPanelFilterConfig;
 import org.openhab.binding.habpanelfilter.internal.sse.*;
-import org.openhab.core.auth.Role;
 import org.openhab.core.events.Event;
 import org.openhab.core.io.rest.RESTConstants;
 import org.openhab.core.io.rest.RESTResource;
@@ -63,6 +60,8 @@ import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsName;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -177,8 +176,8 @@ public class FilteredEventsResource implements RESTResource {
                         EnrichedItemDTO dto = EnrichedItemDTOMapper.map(item, true, null, null, Locale.US);
                         eventBean.payload = (new Gson()).toJson(dto);
 
-                        OutboundSseEvent sseEvent = sse.newEventBuilder().name("message").mediaType(MediaType.APPLICATION_JSON_TYPE).data(event)
-                                .build();
+                        OutboundSseEvent sseEvent = sse.newEventBuilder().name("message")
+                                .mediaType(MediaType.APPLICATION_JSON_TYPE).data(event).build();
                         return sseEvent;
                     }
                 }
