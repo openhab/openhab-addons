@@ -97,6 +97,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     send(Thermoregulation.requestFanCoilSpeed(w));
                     send(Thermoregulation.requestMode(w));
                     send(Thermoregulation.requestValveStatus(w));
+                    send(Thermoregulation.requestActuatorStatus(w));
                 } catch (OWNException e) {
                     logger.error("bridgeStatusChanged() OWNException thingUID={}: {}", thing.getUID(), e.getMessage());
                 }
@@ -139,6 +140,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 send(Thermoregulation.requestFanCoilSpeed(w));
                 send(Thermoregulation.requestMode(w));
                 send(Thermoregulation.requestValveStatus(w));
+                send(Thermoregulation.requestActuatorStatus(w));
             } catch (OWNException e) {
                 logger.error("requestChannelState() OWNException thingUID={} channel={}: {}", thing.getUID(),
                         channel.getId(), e.getMessage());
@@ -377,6 +379,20 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-        requestChannelState(new ChannelUID("any:any:any:any"));
+        if (deviceWhere != null) {
+            String w = deviceWhere.value();
+
+            try {
+                // for bus_thermostat request single channels updates
+                send(Thermoregulation.requestTemperature(w));
+                send(Thermoregulation.requestSetPointTemperature(w));
+                send(Thermoregulation.requestFanCoilSpeed(w));
+                send(Thermoregulation.requestMode(w));
+                send(Thermoregulation.requestValveStatus(w));
+                send(Thermoregulation.requestActuatorStatus(w));
+            } catch (OWNException e) {
+                logger.error("refreshDevice() where='{}' --> OWNException {}", w, e.getMessage());
+            }
+        }
     }
 }
