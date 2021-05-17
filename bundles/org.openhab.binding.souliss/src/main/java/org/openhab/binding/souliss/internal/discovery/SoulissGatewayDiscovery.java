@@ -84,7 +84,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
             scheduler.scheduleWithFixedDelay(udpServerRunnableClass, 100,
                     SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
-
         } else {
             logger.debug("Error - datagramSocket is null - Server not started");
         }
@@ -127,7 +126,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             if (datagramSocket != null) {
                 soulissDiscoverRunnableClass = new SoulissDiscoverJob(datagramSocket, this);
             }
-
         }
         // create discovery job, that run discovery class
         if (soulissDiscoverRunnableClass != null) {
@@ -295,7 +293,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
                     }
                 }
             }
-
         }
     }
 }

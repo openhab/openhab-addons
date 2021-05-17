@@ -167,7 +167,7 @@ public class SoulissCommonCommands {
         send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
     }
 
-    public final void sendDBStructFrame(@Nullable DatagramSocket socket, @Nullable String soulissNodeIPAddressOnLAN,
+    public final void sendDBStructFrame(@Nullable DatagramSocket socket, String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add((byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_REQ);
@@ -266,37 +266,40 @@ public class SoulissCommonCommands {
     /*
      * Build VNet Frame
      */
-    @SuppressWarnings("null")
     private final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> macacoFrame2, @Nullable String soulissNodeIPAddress,
             byte iUserIndex, byte iNodeIndex) {
-        ArrayList<Byte> frame = new ArrayList<>();
-        InetAddress ip;
-        try {
-            ip = InetAddress.getByName(soulissNodeIPAddress);
-        } catch (UnknownHostException e) {
-            logger.error("{}", e.getMessage());
+        if (soulissNodeIPAddress != null) {
+            ArrayList<Byte> frame = new ArrayList<>();
+            InetAddress ip;
+            try {
+                ip = InetAddress.getByName(soulissNodeIPAddress);
+            } catch (UnknownHostException e) {
+                logger.error("{}", e.getMessage());
+                return frame;
+            }
+            byte[] dude = ip.getAddress();
+
+            frame.add((byte) 23);// Port
+
+            frame.add((byte) (dude[3] & 0xFF));// es 192.168.1.XX BOARD
+
+            // n broadcast : La comunicazione avviene utilizzando l'indirizzo IP
+            // 255.255.255.255 a cui associare l'indirizzo vNet 0xFFFF.
+            frame.add(soulissNodeIPAddress.compareTo(SoulissBindingUDPConstants.BROADCASTADDR) == 0 ? dude[2] : 0);
+            // 192.168.XX.0
+
+            frame.add(iNodeIndex); // NODE INDEX - source vNet address User Interface
+            frame.add(iUserIndex);// USER INDEX - source vNet address User Interface
+
+            // aggiunge in testa il calcolo
+            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1)); // Length
+            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1));// Length Check 2
+
+            frame.addAll(macacoFrame2);
             return frame;
+        } else {
+            throw new IllegalArgumentException("Cannot build VNet Frame ... Null Souliss IP address");
         }
-        byte[] dude = ip.getAddress();
-
-        frame.add((byte) 23);// Port
-
-        frame.add((byte) (dude[3] & 0xFF));// es 192.168.1.XX BOARD
-
-        // n broadcast : La comunicazione avviene utilizzando l'indirizzo IP
-        // 255.255.255.255 a cui associare l'indirizzo vNet 0xFFFF.
-        frame.add(soulissNodeIPAddress.compareTo(SoulissBindingUDPConstants.BROADCASTADDR) == 0 ? dude[2] : 0);
-        // 192.168.XX.0
-
-        frame.add(iNodeIndex); // NODE INDEX - source vNet address User Interface
-        frame.add(iUserIndex);// USER INDEX - source vNet address User Interface
-
-        // aggiunge in testa il calcolo
-        frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1)); // Length
-        frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1));// Length Check 2
-
-        frame.addAll(macacoFrame2);
-        return frame;
     }
 
     /**
@@ -337,97 +340,113 @@ public class SoulissCommonCommands {
     /**
      * Build PING Frame
      */
-    @SuppressWarnings("null")
     public final void sendPing(@Nullable DatagramSocket datagramSocket, @Nullable String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, byte putIn1, byte putIn2) {
-        ArrayList<Byte> macacoFrame = new ArrayList<>();
-        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
+        if (soulissNodeIPAddressOnLAN != null && datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
 
-        // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add(putIn1);// PUTIN
-        macacoFrame.add(putIn2);// PUTIN
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add(putIn1);// PUTIN
+            macacoFrame.add(putIn2);// PUTIN
 
-        macacoFrame.add((byte) 0x00);// Start Offset
-        macacoFrame.add((byte) 0x00); // Number Of
-        logger.debug("sendPing - {}, IP: {} to port {}", macacoToString(macacoFrame), soulissNodeIPAddressOnLAN,
-                datagramSocket.getLocalPort());
-        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+            macacoFrame.add((byte) 0x00);// Start Offset
+            macacoFrame.add((byte) 0x00); // Number Of
+            logger.debug("sendPing - {}, IP: {} to port {}", macacoToString(macacoFrame), soulissNodeIPAddressOnLAN,
+                    datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send Souliss Ping - Datagram or Ip null");
+        }
     }
 
     /**
      * Build BROADCAST PING Frame
      */
-    @SuppressWarnings("null")
     public final void sendBroadcastGatewayDiscover(@Nullable DatagramSocket datagramSocket) {
-        ArrayList<Byte> macacoFrame = new ArrayList<>();
-        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ);
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ);
 
-        // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x05);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x05);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
 
-        macacoFrame.add((byte) 0x00);// Start Offset
-        macacoFrame.add((byte) 0x00); // Number Of
-        logger.debug("sendBroadcastPing - {} to port {}", macacoToString(macacoFrame), datagramSocket.getLocalPort());
-        sendBroadcastNow(datagramSocket, macacoFrame);
+            macacoFrame.add((byte) 0x00);// Start Offset
+            macacoFrame.add((byte) 0x00); // Number Of
+            logger.debug("sendBroadcastPing - {} to port {}", macacoToString(macacoFrame),
+                    datagramSocket.getLocalPort());
+            sendBroadcastNow(datagramSocket, macacoFrame);
+        } else {
+            logger.warn("Cannot send Broadcast for Gateway discover... DatagramSocket is null");
+        }
     }
 
     /**
      * Build SUBSCRIPTION Frame
      */
-    @SuppressWarnings("null")
-    public final void sendSUBSCRIPTIONframe(@Nullable DatagramSocket datagramSocket,
-            @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int iNodes) {
-        ArrayList<Byte> macacoFrame = new ArrayList<>();
-        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
+    public final void sendSUBSCRIPTIONframe(@Nullable DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, int iNodes) {
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
 
-        // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);
 
-        macacoFrame.add((byte) iNodes);
-        logger.debug("sendSUBSCRIPTIONframe - {}, IP: {} - port: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
-        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+            macacoFrame.add((byte) iNodes);
+            logger.debug("sendSUBSCRIPTIONframe - {}, IP: {} - port: {}", macacoToString(macacoFrame),
+                    soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send subscription frame... DatagramSocket is null");
+        }
     }
 
     /**
      * Build HEALTHY REQUEST Frame
      */
-    @SuppressWarnings("null")
-    public final void sendHealthyRequestFrame(@Nullable DatagramSocket datagramSocket,
-            @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int iNodes) {
-        ArrayList<Byte> macacoFrame = new ArrayList<>();
-        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
+    public final void sendHealthyRequestFrame(@Nullable DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, int iNodes) {
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
 
-        // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);
-        macacoFrame.add((byte) iNodes);
-        logger.debug("sendHealthyRequestFrame - {}, IP: {} - port: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
-        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);
+            macacoFrame.add((byte) iNodes);
+            logger.debug("sendHealthyRequestFrame - {}, IP: {} - port: {}", macacoToString(macacoFrame),
+                    soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send Healthy Request Frame ... DatagramSocket is null");
+        }
     }
 
     /**
      * Build TYPICAL REQUEST Frame
      */
-    @SuppressWarnings("null")
-    public final void sendTypicalRequestFrame(@Nullable DatagramSocket datagramSocket,
-            @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int nodes) {
-        ArrayList<Byte> macacoFrame = new ArrayList<>();
-        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
-        // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00); // startOffset
+    public final void sendTypicalRequestFrame(@Nullable DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, int nodes) {
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00); // startOffset
 
-        macacoFrame.add((byte) nodes); // iNodes
-        logger.debug("sendTypicalRequestFrame - {}, IP: {} - port: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
-        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+            macacoFrame.add((byte) nodes); // iNodes
+            logger.debug("sendTypicalRequestFrame - {}, IP: {} - port: {}", macacoToString(macacoFrame),
+                    soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send Typical Request Frame ... DatagramSocket is null");
+        }
     }
 
     static boolean flag = true;

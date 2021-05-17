@@ -71,7 +71,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
             logger.debug("Push packet in queue - Node {}", node);
         }
 
-        if (packetsList.size() == 0 || node < 0) {
+        if (packetsList.isEmpty() || node < 0) {
             bPacchettoGestito = false;
         } else {
             // OTTIMIZZATORE
@@ -205,7 +205,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     static byte bActualItemState;
     static String sExpected = "";
 
-    @SuppressWarnings("null")
     public void safeSendCheck() {
         // short sVal = getByteAtSlot(macacoFrame, slot);
         // scansione lista paccetti inviati
@@ -218,24 +217,26 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     // controllo lo slot solo se il comando è diverso da ZERO
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
-                        typ = getHandler(ipAddressOnLAN, node, iSlot, this.logger);
+                        @Nullable
+                        SoulissGenericHandler localTyp = SoulissBindingSendDispatcherJob.typ;
+                        localTyp = getHandler(ipAddressOnLAN, node, iSlot, this.logger);
 
-                        if (typ == null) {
+                        if (localTyp == null) {
                             break;
                         }
 
-                        bExpected = typ.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
+                        bExpected = localTyp.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
 
                         // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la
                         // funzione
                         // secureSend
                         if (bExpected < 0) {
-                            typ = null;
+                            localTyp = null;
                         }
 
                         // traduce il comando inviato con lo stato previsto e
                         // poi fa il confronto con lo stato attuale
-                        if (logger.isDebugEnabled() && typ != null) {
+                        if (logger.isDebugEnabled() && localTyp != null) {
                             sCmd = Integer.toHexString(packetsList.get(i).packet.getData()[j]);
                             // comando inviato
                             sCmd = sCmd.length() < 2 ? "0x0" + sCmd.toUpperCase() : "0x" + sCmd.toUpperCase();
@@ -244,18 +245,18 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                                     : "0x" + sExpected.toUpperCase();
                             logger.debug(
                                     "Compare. Node: {} Slot: {} Node Name: {} Command: {} Expected Souliss State: {} - Actual OH item State: {}",
-                                    node, iSlot, typ.getLabel(), sCmd, sExpected, typ.getRawState());
+                                    node, iSlot, localTyp.getLabel(), sCmd, sExpected, localTyp.getRawState());
                         }
 
-                        if (typ != null && checkExpectedState(typ.getRawState(), bExpected)) {
+                        if (localTyp != null && checkExpectedState(localTyp.getRawState(), bExpected)) {
                             // se il valore del tipico coincide con il valore
                             // trasmesso allora pongo il byte a zero.
                             // quando tutti i byte saranno uguale a zero allora
                             // si
                             // cancella il frame
                             packetsList.get(i).packet.getData()[j] = 0;
-                            logger.debug("{} Node: {} Slot: {} - OK Expected State", typ.getLabel(), node, iSlot);
-                        } else if (typ == null) {
+                            logger.debug("{} Node: {} Slot: {} - OK Expected State", localTyp.getLabel(), node, iSlot);
+                        } else if (localTyp == null) {
                             if (bExpected < 0) {
                                 // se il tipico non viene gestito allora metto a zero il byte del relativo
                                 // slot
@@ -285,17 +286,20 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     // è scaduto allora pongo il flag SENT a false
                     long time = System.currentTimeMillis();
 
-                    if (this.gwHandler.sendTimeoutToRequeue < time - packetsList.get(i).getTime()) {
-                        if (this.gwHandler.sendTimeoutToRemovePacket < time - packetsList.get(i).getTime()) {
-                            logger.debug("Packet Execution timeout - Removed");
-                            packetsList.remove(i);
-                        } else {
-                            logger.debug("Packet Execution timeout - Requeued");
-                            packetsList.get(i).setSent(false);
+                    @Nullable
+                    SoulissGatewayHandler localGwHandler = this.gwHandler;
+                    if (localGwHandler != null) {
+                        if (localGwHandler.sendTimeoutToRequeue < time - packetsList.get(i).getTime()) {
+                            if (localGwHandler.sendTimeoutToRemovePacket < time - packetsList.get(i).getTime()) {
+                                logger.debug("Packet Execution timeout - Removed");
+                                packetsList.remove(i);
+                            } else {
+                                logger.debug("Packet Execution timeout - Requeued");
+                                packetsList.get(i).setSent(false);
+                            }
                         }
                     }
                 }
-
             }
         }
     }
@@ -361,78 +365,82 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     /**
      * Pop SocketAndPacket from ArrayList PacketList
      */
-    @SuppressWarnings("null")
     @Nullable
     private synchronized SoulissBindingSocketAndPacketStruct pop() {
         synchronized (this) {
-            // non esegue il pop se bPopSuspend=true
-            // bPopSuspend è impostato dal metodo put
-            if (!bPopSuspend) {
-                t = System.currentTimeMillis();
-                // riporta l'intervallo al minimo solo se:
-                // - la lunghezza della coda minore o uguale a 1;
-                // - se è trascorso il tempo SEND_DELAY.
+            @Nullable
+            SoulissGatewayHandler localGwHandler = this.gwHandler;
+            if (localGwHandler != null) {
+                // non esegue il pop se bPopSuspend=true
+                // bPopSuspend è impostato dal metodo put
+                if (!bPopSuspend) {
+                    t = System.currentTimeMillis();
+                    // riporta l'intervallo al minimo solo se:
+                    // - la lunghezza della coda minore o uguale a 1;
+                    // - se è trascorso il tempo SEND_DELAY.
 
-                if (packetsList.size() <= 1) {
-                    iDelay = sendMinDelay;
-                } else {
-                    iDelay = this.gwHandler.sendRefreshInterval;
-                }
-
-                int iPacket = 0;
-                boolean bFlagWhile = true;
-                // scarta i pacchetti già  inviati
-                while ((iPacket < packetsList.size()) && bFlagWhile) {
-                    if (packetsList.get(iPacket).sent) {
-                        iPacket++;
+                    if (packetsList.size() <= 1) {
+                        iDelay = sendMinDelay;
                     } else {
-                        bFlagWhile = false;
-                    }
-                }
+                        iDelay = localGwHandler.sendRefreshInterval;
 
-                boolean tFlag = (t - tPrec) >= this.gwHandler.sendRefreshInterval;
-
-                // se siamo arrivati alla fine della lista e quindi tutti i
-                // pacchetti sono già  stati inviati allora pongo anche il tFlag
-                // a false (come se il timeout non fosse ancora trascorso)
-                if (iPacket >= packetsList.size()) {
-                    tFlag = false;
-                }
-
-                if (packetsList.size() > 0 && tFlag) {
-                    tPrec = System.currentTimeMillis();
-
-                    // estratto il primo elemento della lista
-                    SoulissBindingSocketAndPacketStruct sp = packetsList.get(iPacket);
-
-                    // GESTIONE PACCHETTO: eliminato dalla lista oppure
-                    // contrassegnato come inviato se è un FORCE
-                    if (packetsList.get(iPacket).packet
-                            .getData()[7] == SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
-                        // flag inviato a true
-                        packetsList.get(iPacket).setSent(true);
-                        // imposto time
-                        packetsList.get(iPacket).setTime(System.currentTimeMillis());
-                    } else {
-                        packetsList.remove(iPacket);
                     }
 
-                    logger.debug("POP: {} packets in memory", packetsList.size());
-                    if (logger.isDebugEnabled()) {
-                        int iPacketSentCounter = 0;
-                        int i = 0;
-                        while ((i < packetsList.size())) {
-                            if (packetsList.get(i).sent) {
-                                iPacketSentCounter++;
-                            }
-                            i++;
+                    int iPacket = 0;
+                    boolean bFlagWhile = true;
+                    // scarta i pacchetti già  inviati
+                    while ((iPacket < packetsList.size()) && bFlagWhile) {
+                        if (packetsList.get(iPacket).sent) {
+                            iPacket++;
+                        } else {
+                            bFlagWhile = false;
                         }
-                        logger.debug("POP: {}  force frame sent", iPacketSentCounter);
                     }
 
-                    logger.debug("Pop frame {} - Delay for 'SendDispatcherThread' setted to {} mills.",
-                            macacoToString(sp.packet.getData()), iDelay);
-                    return sp;
+                    boolean tFlag = (t - tPrec) >= localGwHandler.sendRefreshInterval;
+
+                    // se siamo arrivati alla fine della lista e quindi tutti i
+                    // pacchetti sono già  stati inviati allora pongo anche il tFlag
+                    // a false (come se il timeout non fosse ancora trascorso)
+                    if (iPacket >= packetsList.size()) {
+                        tFlag = false;
+                    }
+
+                    if ((!packetsList.isEmpty()) && tFlag) {
+                        tPrec = System.currentTimeMillis();
+
+                        // estratto il primo elemento della lista
+                        SoulissBindingSocketAndPacketStruct sp = packetsList.get(iPacket);
+
+                        // GESTIONE PACCHETTO: eliminato dalla lista oppure
+                        // contrassegnato come inviato se è un FORCE
+                        if (packetsList.get(iPacket).packet
+                                .getData()[7] == SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
+                            // flag inviato a true
+                            packetsList.get(iPacket).setSent(true);
+                            // imposto time
+                            packetsList.get(iPacket).setTime(System.currentTimeMillis());
+                        } else {
+                            packetsList.remove(iPacket);
+                        }
+
+                        logger.debug("POP: {} packets in memory", packetsList.size());
+                        if (logger.isDebugEnabled()) {
+                            int iPacketSentCounter = 0;
+                            int i = 0;
+                            while ((i < packetsList.size())) {
+                                if (packetsList.get(i).sent) {
+                                    iPacketSentCounter++;
+                                }
+                                i++;
+                            }
+                            logger.debug("POP: {}  force frame sent", iPacketSentCounter);
+                        }
+
+                        logger.debug("Pop frame {} - Delay for 'SendDispatcherThread' setted to {} mills.",
+                                macacoToString(sp.packet.getData()), iDelay);
+                        return sp;
+                    }
                 }
             }
         }
