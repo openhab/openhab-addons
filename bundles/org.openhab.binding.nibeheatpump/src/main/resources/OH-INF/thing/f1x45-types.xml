@@ -5128,6 +5128,13 @@
 		<description>Activates pool heating</description>
 		<state readOnly="false"></state>
 	</channel-type>
+	<channel-type id="f1x45-48132" advanced="true">
+		<item-type>Number</item-type>
+		<label>Temporary Lux</label>
+		<description></description>
+		<state readOnly="false">
+		</state>
+	</channel-type>
 	<channel-type id="f1x45-48133" advanced="true">
 		<item-type>Number</item-type>
 		<label>Period Pool 2</label>

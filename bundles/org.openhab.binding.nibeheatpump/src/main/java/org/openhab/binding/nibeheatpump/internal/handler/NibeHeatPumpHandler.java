@@ -124,7 +124,9 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                             }
                         } catch (TimeoutException e) {
                             logger.debug("Message sending to heat pump failed, no response");
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            // TODO Should be commented out?
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "No response received from the heat pump");
                         } catch (InterruptedException e) {
                             logger.debug("Message sending to heat pump failed, sending interrupted");
                         } catch (NibeHeatPumpException e) {
@@ -218,6 +220,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                     }
                 } catch (TimeoutException e) {
                     logger.warn("Message sending to heat pump failed, no response");
+                    // TODO Should be commented out?
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "No response received from the heat pump");
                 } catch (InterruptedException e) {
@@ -369,6 +372,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private long refreshIntervalMillis() {
         return configuration.refreshInterval * 1000;
+    }
+
+    private long debounceIntervalMillis() {
+        return refreshIntervalMillis() / 2;
     }
 
     private int convertCommandToNibeValue(VariableInformation variableInfo, Command command)
@@ -548,6 +555,26 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         }
     }
 
+    private State normalizeValue(VariableInformation variableInfo, State state, CacheObject oldState) {
+        if (state instanceof DecimalType) {
+            double value = ((DecimalType) state).doubleValue();
+            if (value < variableInfo.minValue || value > variableInfo.maxValue) {
+                // We need to skip this value as this is probably bad value
+                return null;
+            }
+            if (oldState != null) {
+                double oldValue = ((DecimalType) oldState.state).doubleValue();
+                if (oldState.lastUpdateTime + debounceIntervalMillis() <= System.currentTimeMillis()
+                        && Math.abs(value - oldValue) <= variableInfo.threshold) {
+                    // We need to skip this value
+                    return null;
+                }
+            }
+            return state;
+        }
+        return state;
+    }
+
     private void handleVariableUpdate(PumpModel pumpModel, ModbusValue value) {
         logger.debug("Received variable update: {}", value);
         int coilAddress = value.getCoilAddress();
@@ -562,8 +589,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
             CacheObject oldValue = stateMap.get(coilAddress);
 
-            if (oldValue != null && val == oldValue.value
-                    && (oldValue.lastUpdateTime + refreshIntervalMillis() / 2) >= System.currentTimeMillis()) {
+            if (oldValue != null && (val == oldValue.value)) {
                 logger.trace("Value did not change, ignoring update");
             } else {
                 final String channelPrefix = (variableInfo.type == Type.SETTING ? "setting#" : "sensor#");
@@ -571,10 +597,15 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                 final String acceptedItemType = thing.getChannel(channelId).getAcceptedItemType();
 
                 logger.trace("AcceptedItemType for channel {} = {}", channelId, acceptedItemType);
-                State state = convertNibeValueToState(variableInfo, val, acceptedItemType);
-                logger.debug("Setting state {} = {}", coilAddress + ":" + variableInfo.variable, state);
-                stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val));
-                updateState(new ChannelUID(getThing().getUID(), channelId), state);
+                State tempState = convertNibeValueToState(variableInfo, val, acceptedItemType);
+                State state = normalizeValue(variableInfo, tempState, oldValue);
+                if (state == null) {
+                    logger.debug("Disregarded state {} = {}", coilAddress + ":" + variableInfo.variable, tempState);
+                } else {
+                    logger.debug("Setting state {} = {}", coilAddress + ":" + variableInfo.variable, state);
+                    stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val, state));
+                    updateState(new ChannelUID(getThing().getUID(), channelId), state);
+                }
             }
         } else {
             logger.debug("Unknown register {}", coilAddress);
@@ -589,15 +620,19 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         /** Cache value */
         final int value;
 
+        /* Cache state */
+        final State state;
+
         /**
          * Initialize cache object.
          *
          * @param lastUpdateTime Time in milliseconds.
          * @param value Cache value.
          */
-        CacheObject(long lastUpdateTime, int value) {
+        CacheObject(long lastUpdateTime, int value, State state) {
             this.lastUpdateTime = lastUpdateTime;
             this.value = value;
+            this.state = state;
         }
     }
 }

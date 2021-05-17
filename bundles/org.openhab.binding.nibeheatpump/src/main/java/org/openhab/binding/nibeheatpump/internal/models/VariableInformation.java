@@ -36,15 +36,30 @@ public class VariableInformation {
     public int factor;
     public NibeDataType dataType;
     public Type type;
+    public double threshold;
+    public double minValue;
+    public double maxValue;
     public String variable;
 
     public VariableInformation() {
     }
 
     public VariableInformation(int factor, NibeDataType dataType, Type type, String variable) {
+        this(factor, dataType, type, 0, variable);
+    }
+
+    public VariableInformation(int factor, NibeDataType dataType, Type type, double threshold, String variable) {
+        this(factor, dataType, type, threshold, Double.MIN_VALUE, Double.MAX_VALUE, variable);
+    }
+
+    public VariableInformation(int factor, NibeDataType dataType, Type type, double threshold, double minValue,
+            double maxValue, String variable) {
         this.factor = factor;
         this.dataType = dataType;
         this.type = type;
+        this.threshold = threshold;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
         this.variable = variable;
     }
 
@@ -54,8 +69,6 @@ public class VariableInformation {
                 return F1X45.getVariableInfo(key);
             case F1X55:
                 return F1X55.getVariableInfo(key);
-            case SMO40:
-                return SMO40.getVariableInfo(key);
             case F750:
                 return F750.getVariableInfo(key);
             case F470:
@@ -72,6 +85,9 @@ public class VariableInformation {
         str += "Factor = " + factor;
         str += ", DataType = " + dataType;
         str += ", Type = " + type;
+        str += ", Threshold = " + threshold;
+        str += ", MinValue = " + minValue;
+        str += ", MaxValue = " + maxValue;
         str += ", VariableName = " + variable;
 
         return str;
