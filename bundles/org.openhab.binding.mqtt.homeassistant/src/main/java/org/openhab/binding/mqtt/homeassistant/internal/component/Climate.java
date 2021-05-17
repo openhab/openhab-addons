@@ -15,8 +15,8 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
@@ -26,9 +26,7 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.listener.ChannelStateUpdateListenerProxy;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
@@ -149,112 +147,94 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         float precision = channelConfiguration.precision != null ? channelConfiguration.precision
                 : (FAHRENHEIT.equals(channelConfiguration.temperature_unit) ? DEFAULT_FAHRENHEIT_PRECISION
                         : DEFAULT_CELSIUM_PRECISION);
+        final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
         @Nullable
         ComponentChannel actionChannel = buildOptionalChannel(ACTION_CH_ID,
-                new TextValue(ACTION_MODES.toArray(new String[0])), componentConfiguration.getUpdateListener(), null,
-                null, channelConfiguration.action_template, channelConfiguration.action_topic);
+                new TextValue(ACTION_MODES.toArray(new String[0])), updateListener, null, null,
+                channelConfiguration.action_template, channelConfiguration.action_topic, null);
 
-        ChannelStateUpdateListener updateListener = getListener(channelConfiguration.send_if_off, actionChannel,
-                componentConfiguration.getUpdateListener());
+        @Nullable
+        final Predicate<Command> commandFilter = channelConfiguration.send_if_off ? null
+                : getCommandFilter(actionChannel);
 
         buildOptionalChannel(AUX_CH_ID, new OnOffValue(), updateListener, null, channelConfiguration.aux_command_topic,
-                channelConfiguration.aux_state_template, channelConfiguration.aux_state_topic);
+                channelConfiguration.aux_state_template, channelConfiguration.aux_state_topic, commandFilter);
 
         buildOptionalChannel(AWAY_MODE_CH_ID, new OnOffValue(), updateListener, null,
                 channelConfiguration.away_mode_command_topic, channelConfiguration.away_mode_state_template,
-                channelConfiguration.away_mode_state_topic);
+                channelConfiguration.away_mode_state_topic, commandFilter);
 
         buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID,
                 new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(precision), channelConfiguration.temperature_unit),
                 updateListener, null, null, channelConfiguration.current_temperature_template,
-                channelConfiguration.current_temperature_topic);
+                channelConfiguration.current_temperature_topic, commandFilter);
 
         buildOptionalChannel(FAN_MODE_CH_ID, new TextValue(channelConfiguration.fan_modes.toArray(new String[0])),
                 updateListener, channelConfiguration.fan_mode_command_template,
                 channelConfiguration.fan_mode_command_topic, channelConfiguration.fan_mode_state_template,
-                channelConfiguration.fan_mode_state_topic);
+                channelConfiguration.fan_mode_state_topic, commandFilter);
 
         if (channelConfiguration.hold_modes != null && !channelConfiguration.hold_modes.isEmpty()) {
             buildOptionalChannel(HOLD_CH_ID, new TextValue(channelConfiguration.hold_modes.toArray(new String[0])),
                     updateListener, channelConfiguration.hold_command_template, channelConfiguration.hold_command_topic,
-                    channelConfiguration.hold_state_template, channelConfiguration.hold_state_topic);
+                    channelConfiguration.hold_state_template, channelConfiguration.hold_state_topic, commandFilter);
         }
 
         buildOptionalChannel(MODE_CH_ID, new TextValue(channelConfiguration.modes.toArray(new String[0])),
                 updateListener, channelConfiguration.mode_command_template, channelConfiguration.mode_command_topic,
-                channelConfiguration.mode_state_template, channelConfiguration.mode_state_topic);
+                channelConfiguration.mode_state_template, channelConfiguration.mode_state_topic, commandFilter);
 
         buildOptionalChannel(SWING_CH_ID, new TextValue(channelConfiguration.swing_modes.toArray(new String[0])),
                 updateListener, channelConfiguration.swing_command_template, channelConfiguration.swing_command_topic,
-                channelConfiguration.swing_state_template, channelConfiguration.swing_state_topic);
+                channelConfiguration.swing_state_template, channelConfiguration.swing_state_topic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_CH_ID,
                 new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.temp_step),
                         channelConfiguration.temperature_unit),
                 updateListener, channelConfiguration.temperature_command_template,
                 channelConfiguration.temperature_command_topic, channelConfiguration.temperature_state_template,
-                channelConfiguration.temperature_state_topic);
+                channelConfiguration.temperature_state_topic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_HIGH_CH_ID,
                 new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.temp_step),
                         channelConfiguration.temperature_unit),
                 updateListener, channelConfiguration.temperature_high_command_template,
                 channelConfiguration.temperature_high_command_topic,
-                channelConfiguration.temperature_high_state_template,
-                channelConfiguration.temperature_high_state_topic);
+                channelConfiguration.temperature_high_state_template, channelConfiguration.temperature_high_state_topic,
+                commandFilter);
 
         buildOptionalChannel(TEMPERATURE_LOW_CH_ID,
                 new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.temp_step),
                         channelConfiguration.temperature_unit),
                 updateListener, channelConfiguration.temperature_low_command_template,
                 channelConfiguration.temperature_low_command_topic, channelConfiguration.temperature_low_state_template,
-                channelConfiguration.temperature_low_state_topic);
+                channelConfiguration.temperature_low_state_topic, commandFilter);
 
         buildOptionalChannel(POWER_CH_ID, new OnOffValue(), updateListener, null,
-                channelConfiguration.power_command_topic, null, null);
+                channelConfiguration.power_command_topic, null, null, commandFilter);
     }
 
     @Nullable
     private ComponentChannel buildOptionalChannel(String channelId, Value valueState,
             ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
-            @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic) {
+            @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic,
+            @Nullable Predicate<Command> commandFilter) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
             return buildChannel(channelId, valueState, channelConfiguration.getName(), channelStateUpdateListener)
                     .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
                             commandTemplate)
-                    .build();
+                    .commandFilter(commandFilter).build();
         }
         return null;
     }
 
-    private ChannelStateUpdateListener getListener(boolean sendIfOff, @Nullable ComponentChannel actionChannel,
-            ChannelStateUpdateListener original) {
-        if (!sendIfOff && actionChannel != null) {
-            return new ChannelStateUpdateListenerProxy(original) {
-                @Override
-                public void postChannelCommand(@NonNull ChannelUID channelUID, @NonNull Command value) {
-                    if (isOff()) {
-                        return; // Do not send command if action is off
-                    }
-                    super.postChannelCommand(channelUID, value);
-                }
-
-                @Override
-                public void triggerChannel(@NonNull ChannelUID channelUID, @NonNull String eventPayload) {
-                    if (isOff()) {
-                        return; // Do not trigger if action is off
-                    }
-                    super.triggerChannel(channelUID, eventPayload);
-                }
-
-                private boolean isOff() {
-                    Value val = actionChannel.getState().getCache();
-                    return ACTION_OFF_STATE.equals(val.getChannelState());
-                }
-            };
+    private @Nullable Predicate<Command> getCommandFilter(@Nullable ComponentChannel actionChannel) {
+        if (actionChannel == null) {
+            return null;
         }
-        return original;
+        final var val = actionChannel.getState().getCache();
+        return command -> !ACTION_OFF_STATE.equals(val.getChannelState());
     }
 }

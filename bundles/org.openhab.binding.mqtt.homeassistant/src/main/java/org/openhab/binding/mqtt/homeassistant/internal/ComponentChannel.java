@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +38,7 @@ import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragment;
 
 /**
@@ -128,6 +130,7 @@ public class ComponentChannel {
         private boolean retain;
         private boolean trigger;
         private @Nullable Integer qos;
+        private @Nullable Predicate<Command> commandFilter;
 
         private @Nullable String templateIn;
         private @Nullable String templateOut;
@@ -193,6 +196,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder commandFilter(@Nullable Predicate<Command> commandFilter) {
+            this.commandFilter = commandFilter;
+            return this;
+        }
+
         public ComponentChannel build() {
             return build(true);
         }
@@ -207,10 +215,10 @@ public class ComponentChannel {
             channelUID = new ChannelUID(component.getGroupUID(), channelID);
             channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
                     channelUID.getGroupId() + "_" + channelID);
-            channelState = new ChannelState(
+            channelState = new HomeAssistantChannelState(
                     ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(state_topic)
                             .withCommandTopic(command_topic).makeTrigger(trigger).build(),
-                    channelUID, valueState, channelStateUpdateListener);
+                    channelUID, valueState, channelStateUpdateListener, commandFilter);
 
             @Nullable
             String localStateTopic = state_topic;
