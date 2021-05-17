@@ -15,19 +15,24 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.core.library.types.OnOffType;
 
 /**
  * Tests for {@link Switch}
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("ConstantConditions")
 public class SwitchTests extends AbstractComponentTests {
+    public static final String CONFIG_TOPIC = "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt";
 
     @Test
     public void testSwitchWithStateAndCommand() {
-        var component = discoverComponent("homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 "" + "{\n" + "  \"availability\": [\n" + "    {\n" + "      \"topic\": \"zigbee2mqtt/bridge/state\"\n"
                         + "    }\n" + "  ],\n" + "  \"command_topic\": \"zigbee2mqtt/th1/set/auto_lock\",\n"
                         + "  \"device\": {\n" + "    \"identifiers\": [\n"
@@ -47,11 +52,21 @@ public class SwitchTests extends AbstractComponentTests {
 
         assertChannel(component, Switch.switchChannelID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock", "state",
                 OnOffValue.class);
+
+        publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
+        assertState(component, Switch.switchChannelID, OnOffType.OFF);
+        publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"AUTO\"}");
+        assertState(component, Switch.switchChannelID, OnOffType.ON);
+
+        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.OFF);
+        assertPublished("zigbee2mqtt/th1/set/auto_lock", "MANUAL");
+        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.ON);
+        assertPublished("zigbee2mqtt/th1/set/auto_lock", "AUTO");
     }
 
     @Test
     public void testSwitchWithState() {
-        var component = discoverComponent("homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 "" + "{\n" + "  \"availability\": [\n" + "    {\n" + "      \"topic\": \"zigbee2mqtt/bridge/state\"\n"
                         + "    }\n" + "  ],\n" + "  \"device\": {\n" + "    \"identifiers\": [\n"
                         + "      \"zigbee2mqtt_0x847127fffe11dd6a\"\n" + "    ],\n"
@@ -68,11 +83,16 @@ public class SwitchTests extends AbstractComponentTests {
         assertThat(component.getName(), is("th1 auto lock"));
 
         assertChannel(component, Switch.switchChannelID, "zigbee2mqtt/th1", "", "state", OnOffValue.class);
+
+        publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
+        assertState(component, Switch.switchChannelID, OnOffType.OFF);
+        publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"AUTO\"}");
+        assertState(component, Switch.switchChannelID, OnOffType.ON);
     }
 
     @Test
     public void testSwitchWithCommand() {
-        var component = discoverComponent("homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 "" + "{\n" + "  \"availability\": [\n" + "    {\n" + "      \"topic\": \"zigbee2mqtt/bridge/state\"\n"
                         + "    }\n" + "  ],\n" + "  \"command_topic\": \"zigbee2mqtt/th1/set/auto_lock\",\n"
                         + "  \"device\": {\n" + "    \"identifiers\": [\n"
@@ -90,5 +110,14 @@ public class SwitchTests extends AbstractComponentTests {
 
         assertChannel(component, Switch.switchChannelID, "", "zigbee2mqtt/th1/set/auto_lock", "state",
                 OnOffValue.class);
+
+        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.OFF);
+        assertPublished("zigbee2mqtt/th1/set/auto_lock", "MANUAL");
+        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.ON);
+        assertPublished("zigbee2mqtt/th1/set/auto_lock", "AUTO");
+    }
+
+    protected Set<String> getConfigTopics() {
+        return Set.of(CONFIG_TOPIC);
     }
 }

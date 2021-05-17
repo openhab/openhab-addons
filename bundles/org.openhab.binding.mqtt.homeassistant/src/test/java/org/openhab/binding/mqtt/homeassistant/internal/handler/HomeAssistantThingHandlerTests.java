@@ -59,7 +59,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
             "light/0x2222222222222222_test_light_zigbee2mqtt", "lock/0x2222222222222222_test_lock_zigbee2mqtt");
 
     private static final List<String> MQTT_TOPICS = CONFIG_TOPICS.stream()
-            .map(s -> HandlerConfiguration.DEFAULT_BASETOPIC + "/" + s + "/config").collect(Collectors.toList());
+            .map(AbstractHomeAssistantTests::configTopicToMqtt).collect(Collectors.toList());
 
     private @Mock ThingHandlerCallback callback;
     private HomeAssistantThingHandler thingHandler;

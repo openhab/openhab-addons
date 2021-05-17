@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,6 +45,7 @@ import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -88,6 +94,7 @@ public abstract class AbstractHomeAssistantTests {
     protected final Bridge bridgeThing = BridgeBuilder.create(BRIDGE_TYPE_UID, BRIDGE_UID).build();
     protected final BrokerHandler bridgeHandler = spy(new BrokerHandler(bridgeThing));
     protected final Thing haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).build();
+    protected final Map<String, Set<MqttMessageSubscriber>> subscriptions = new HashMap<>();
 
     private final JinjaTransformationService jinjaTransformationService = new JinjaTransformationService();
 
@@ -103,11 +110,7 @@ public abstract class AbstractHomeAssistantTests {
 
         channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry));
 
-        doReturn(CompletableFuture.completedFuture(true)).when(bridgeConnection).subscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(bridgeConnection).unsubscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(bridgeConnection).unsubscribeAll();
-        doReturn(CompletableFuture.completedFuture(true)).when(bridgeConnection).publish(any(), any(), anyInt(),
-                anyBoolean());
+        setupConnection();
 
         // Return the mocked connection object if the bridge handler is asked for it
         when(bridgeHandler.getConnectionAsync()).thenReturn(CompletableFuture.completedFuture(bridgeConnection));
@@ -116,6 +119,37 @@ public abstract class AbstractHomeAssistantTests {
         bridgeThing.setHandler(bridgeHandler);
 
         haThing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.ONLINE.NONE, ""));
+    }
+
+    protected void setupConnection() {
+        doAnswer(invocation -> {
+            final var topic = (String) invocation.getArgument(0);
+            final var subscriber = (MqttMessageSubscriber) invocation.getArgument(1);
+            final var topicSubscriptions = subscriptions.getOrDefault(topic, new HashSet<>());
+
+            topicSubscriptions.add(subscriber);
+            subscriptions.put(topic, topicSubscriptions);
+            return CompletableFuture.completedFuture(true);
+        }).when(bridgeConnection).subscribe(any(), any());
+
+        doAnswer(invocation -> {
+            final var topic = (String) invocation.getArgument(0);
+            final var subscriber = (MqttMessageSubscriber) invocation.getArgument(1);
+            final var topicSubscriptions = subscriptions.get(topic);
+
+            if (topicSubscriptions != null) {
+                topicSubscriptions.remove(subscriber);
+            }
+            return CompletableFuture.completedFuture(true);
+        }).when(bridgeConnection).unsubscribe(any(), any());
+
+        doAnswer(invocation -> {
+            subscriptions.clear();
+            return CompletableFuture.completedFuture(true);
+        }).when(bridgeConnection).unsubscribeAll();
+
+        doReturn(CompletableFuture.completedFuture(true)).when(bridgeConnection).publish(any(), any(), anyInt(),
+                anyBoolean());
     }
 
     /**
@@ -142,5 +176,9 @@ public abstract class AbstractHomeAssistantTests {
 
     protected byte[] getResourceAsByteArray(String relativePath) {
         return getResourceAsString(relativePath).getBytes(StandardCharsets.UTF_8);
+    }
+
+    protected static String configTopicToMqtt(String configTopic) {
+        return HandlerConfiguration.DEFAULT_BASETOPIC + "/" + configTopic + "/config";
     }
 }
