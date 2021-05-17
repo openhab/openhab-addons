@@ -43,6 +43,10 @@
 				<label>Zone Tripped</label>
 				<description>Zone Tripped</description>
 			</channel>
+			<channel id="zone_tripped_last" typeId="zone_time">
+				<label>Zone Tripped Last</label>
+				<description>Zone Tripped Last</description>
+			</channel>
 		</channels>
 
 		<config-description>

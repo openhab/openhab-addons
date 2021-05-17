@@ -703,22 +703,43 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case PartitionArmControlWithUserCode: /* 033 */
             case PartitionDisarmControl: /* 040 */
-                if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
+                if (dscAlarmData[0] == null) {
+                    logger.error("sendCommand(): Data is invalid");
+
+                    break;
+                }
+
+                String[] dscAlarmDataSplit = dscAlarmData[0].split(";");
+                if (dscAlarmDataSplit.length == 0) {
+                    logger.error("sendCommand(): Data split is invalid");
+                    break;
+                }
+
+                if (!dscAlarmDataSplit[0].matches("[1-8]")) {
                     logger.error(
                             "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
-                            dscAlarmData[0]);
+                            dscAlarmDataSplit[0]);
                     break;
                 }
 
-                if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
-                    logger.error("sendCommand(): User Code is invalid, must be between 4 and 6 chars");
-                    break;
-                }
-
-                if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
-                    data = dscAlarmData[0] + String.format("%-6s", userCode).replace(' ', '0');
+                if (dscAlarmDataSplit.length > 1) {
+                    if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
+                        data = dscAlarmDataSplit[0] + String.format("%-6s", dscAlarmDataSplit[1]).replace(' ', '0');
+                    } else {
+                        data = dscAlarmDataSplit[0] + dscAlarmDataSplit[1];
+                    }
                 } else {
-                    data = dscAlarmData[0] + userCode;
+                    if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
+                        logger.error("sendCommand(): User Code is invalid, must be between 4 and 6 chars: {}",
+                                userCode);
+                        break;
+                    }
+
+                    if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
+                        data = dscAlarmData[0] + String.format("%-6s", userCode).replace(' ', '0');
+                    } else {
+                        data = dscAlarmData[0] + userCode;
+                    }
                 }
 
                 confidentialData = true;
@@ -741,7 +762,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case TriggerPanicAlarm: /* 060 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-3]")) {
-                    logger.error("sendCommand(): FAPcode must be a single character string from 1 to 3, it was: {}",
+                    logger.error("sendCommand(): FAP code must be a single character string from 1 to 3, it was: {}",
                             dscAlarmData[1]);
                     break;
                 }

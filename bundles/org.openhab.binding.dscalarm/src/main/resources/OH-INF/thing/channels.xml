@@ -84,6 +84,13 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="zone_time">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="bypass_mode">
 		<item-type>Switch</item-type>
 		<label>Bypass Mode</label>

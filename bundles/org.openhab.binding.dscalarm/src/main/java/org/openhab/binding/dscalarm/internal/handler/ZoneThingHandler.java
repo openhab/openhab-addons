@@ -20,6 +20,7 @@ import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -38,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ZoneThingHandler.class);
+
+    private int previousState = 0;
 
     /**
      * Constructor.
@@ -89,6 +92,14 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                     trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
+                    break;
+                case ZONE_TRIPPED_LAST:
+                    trigger = state != previousState;
+                    if (trigger) {
+                        DateTimeType newDate = new DateTimeType();
+                        updateState(channelUID, newDate);
+                    }
+                    previousState = state;
                     break;
                 default:
                     logger.debug("updateChannel(): Zone Channel not updated - {}.", channelUID);
@@ -171,6 +182,10 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
                         channelUID = new ChannelUID(getThing().getUID(), ZONE_STATUS);
                         updateChannel(channelUID, state, "");
+
+                        channelUID = new ChannelUID(getThing().getUID(), ZONE_TRIPPED_LAST);
+                        updateChannel(channelUID, state, "");
+
                         zoneMessage(status);
                         break;
                     default:
