@@ -103,7 +103,7 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         super.setLastStatusStored();
         // update item state only if it is different from previous
         if (t2nRawState != rawState) {
-            this.setState(getOhStateT22FromSoulissVal(rawState));
+            this.setState(this.getOhStateT22FromSoulissVal(rawState));
 
             if (rawState == SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD) {
                 this.setStateMessage(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL);

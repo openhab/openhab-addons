@@ -56,11 +56,7 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
     }
 
     private boolean getBitState(int value, int bit) {
-        if ((value & (1L << bit)) == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return !((value & (1L << bit)) == 0);
     }
 
     @Override
