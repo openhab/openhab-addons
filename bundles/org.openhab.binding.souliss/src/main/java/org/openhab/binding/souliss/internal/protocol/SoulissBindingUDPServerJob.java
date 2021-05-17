@@ -63,29 +63,32 @@ public class SoulissBindingUDPServerJob implements Runnable {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void run() {
-        if (soulissDatagramSocket != null) {
-            if (!soulissDatagramSocket.isClosed()) {
+        @Nullable
+        DatagramSocket localDatagramSocket = this.soulissDatagramSocket;
+        if (localDatagramSocket != null) {
+            if (!localDatagramSocket.isClosed()) {
                 try {
                     byte[] buf = new byte[256];
                     // receive request
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                    soulissDatagramSocket.receive(packet);
+                    localDatagramSocket.receive(packet);
                     buf = packet.getData();
 
                     // **************** DECODER ********************
-                    logger.debug("Packet received (port {}) {}", soulissDatagramSocket.getLocalPort(),
+                    logger.debug("Packet received (port {}) {}", localDatagramSocket.getLocalPort(),
                             macacoToString(buf));
-                    decoder.decodeVNetDatagram(packet);
+                    if (this.decoder != null) {
+                        decoder.decodeVNetDatagram(packet);
+                    }
 
                 } catch (IOException e) {
                     logger.warn("Error in Class SoulissBindingUDPServerThread: {}", e.getMessage());
                 }
             }
         } else {
-            logger.debug("Socket Closed (port {}) - Cannot receive data", soulissDatagramSocket.getLocalPort());
+            logger.warn("Socket Closed - Cannot receive data");
         }
     }
 
