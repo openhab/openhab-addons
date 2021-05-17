@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="habpanelfilter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- HabPanel Filter Bridge (Bridge Type) -->
+	<bridge-type id="bridge">
+		<label>HabPanel Filter Bridge</label>
+		<description>HabPanel Filter</description>
+		<config-description>
+			<parameter name="group_name" type="text" required="true">
+				<label>Group Name</label>
+				<context>network-address</context>
+				<description>Group name.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
