@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.habpanelfilter.internal.web;
 
-import static org.openhab.core.io.rest.sse.internal.SseSinkTopicInfo.matchesTopic;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,19 +29,29 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
+import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.habpanelfilter.internal.HabPanelFilterConfig;
 import org.openhab.binding.habpanelfilter.internal.sse.*;
 import org.openhab.core.auth.Role;
 import org.openhab.core.events.Event;
 import org.openhab.core.io.rest.RESTConstants;
 import org.openhab.core.io.rest.RESTResource;
 import org.openhab.core.io.rest.SseBroadcaster;
-import org.openhab.core.io.rest.sse.internal.SseSinkTopicInfo;
+import org.openhab.core.io.rest.core.item.EnrichedItemDTO;
+import org.openhab.core.io.rest.core.item.EnrichedItemDTOMapper;
+import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.events.GroupItemStateChangedEvent;
+import org.openhab.core.items.events.ItemStateChangedEvent;
+import org.openhab.core.items.events.ItemStateEvent;
+import org.openhab.core.items.events.ItemUpdatedEvent;
+import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -61,7 +72,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 /**
  * @author Pavel Cuchriajev
  */
-@Component(service = { RESTResource.class, SsePublisher.class })
+@Component(service = { RESTResource.class })
 @JaxrsResource
 @JaxrsName(FilteredEventsResource.PATH_EVENTS_FILTERED)
 @JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + RESTConstants.JAX_RS_NAME + ")")
@@ -71,7 +82,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = FilteredEventsResource.PATH_EVENTS_FILTERED)
 @Singleton
 @NonNullByDefault
-public class FilteredEventsResource implements RESTResource, SsePublisher {
+public class FilteredEventsResource implements RESTResource {
 
     public static final String PATH_EVENTS_FILTERED = "events-filtered";
 
@@ -79,38 +90,25 @@ public class FilteredEventsResource implements RESTResource, SsePublisher {
 
     private final Logger logger = LoggerFactory.getLogger(FilteredEventsResource.class);
 
+    private @NonNullByDefault({}) ItemRegistry itemRegistry;
+
     private @Context @NonNullByDefault({}) Sse sse;
 
-    private final SseBroadcaster<SseSinkItemInfo> itemStatesBroadcaster = new SseBroadcaster<>();
-    private final SseItemStatesEventBuilder itemStatesEventBuilder;
-    private final SseBroadcaster<SseSinkTopicInfo> topicBroadcaster = new SseBroadcaster<>();
+    private final SseBroadcaster<Object> topicBroadcaster = new SseBroadcaster<>();
 
     private ExecutorService executorService;
 
     @Activate
-    public FilteredEventsResource(@Reference SseItemStatesEventBuilder itemStatesEventBuilder) {
+    public FilteredEventsResource(@Reference ItemRegistry itemRegistry) {
         logger.info("FilteredEventsResource created ...");
         this.executorService = Executors.newSingleThreadExecutor();
-        this.itemStatesEventBuilder = itemStatesEventBuilder;
+        this.itemRegistry = itemRegistry;
     }
 
     @Deactivate
     public void deactivate() {
-        itemStatesBroadcaster.close();
         topicBroadcaster.close();
         executorService.shutdown();
-    }
-
-    @Override
-    public void broadcast(Event event) {
-        if (sse == null) {
-            logger.trace("broadcast skipped (no one listened since activation)");
-            return;
-        }
-
-        executorService.execute(() -> {
-            handleEventBroadcastTopic(event);
-        });
     }
 
     private void addCommonResponseHeaders(final HttpServletResponse response) {
@@ -136,20 +134,65 @@ public class FilteredEventsResource implements RESTResource, SsePublisher {
             @ApiResponse(responseCode = "400", description = "Topic is empty or contains invalid characters") })
     public void listen(@Context final SseEventSink sseEventSink, @Context final HttpServletResponse response,
             @QueryParam("topics") @Parameter(description = "topics") String eventFilter) {
-        if (!SseUtil.isValidTopicFilter(eventFilter)) {
-            response.setStatus(Status.BAD_REQUEST.getStatusCode());
-            return;
-        }
-
-        topicBroadcaster.add(sseEventSink, new SseSinkTopicInfo(eventFilter));
-
+        topicBroadcaster.add(sseEventSink, new Object());
         addCommonResponseHeaders(response);
     }
 
-    private void handleEventBroadcastTopic(Event event) {
-        final EventDTO eventDTO = SseUtil.buildDTO(event);
-        final OutboundSseEvent sseEvent = SseUtil.buildEvent(sse.newEventBuilder(), eventDTO);
+    private Map<String, State> itemStates = new HashMap<>();
 
-        topicBroadcaster.sendIf(sseEvent, matchesTopic(eventDTO.topic));
+    public void broadcastEvent(final Event event) {
+        executorService.execute(new Runnable() {
+            private @Nullable Item getItem(String itemname) {
+                return itemRegistry.get(itemname);
+            }
+
+            private OutboundSseEvent buildEvent(Event event) {
+                String type = event.getType();
+                if (type.equals(ItemStateChangedEvent.TYPE) || type.equals(ItemStateEvent.TYPE)
+                        || type.equals(ItemUpdatedEvent.TYPE) || type.equals(GroupItemStateChangedEvent.TYPE)) {
+
+                    EventDTO eventBean = new EventDTO();
+                    eventBean.type = event.getType();
+                    eventBean.topic = event.getTopic();
+                    eventBean.payload = event.getPayload();
+
+                    String[] topicSplits = eventBean.topic.split("/");
+                    if (topicSplits.length < 3) {
+                        return null;
+                    }
+                    String itemName = topicSplits[2];
+                    Item item = getItem(itemName);
+                    if (item == null) {
+                        return null;
+                    }
+                    if (!item.getGroupNames().contains(HabPanelFilterConfig.FILTER_GROUP_NAME)) {
+                        return null;
+                    }
+
+                    if (!itemStates.containsKey(item.getName()))
+                        itemStates.put(item.getName(), item.getState());
+
+                    if (!itemStates.get(item.getName()).equals(item.getState())) {
+                        itemStates.replace(item.getName(), item.getState());
+
+                        EnrichedItemDTO dto = EnrichedItemDTOMapper.map(item, true, null, null, Locale.US);
+                        eventBean.payload = (new Gson()).toJson(dto);
+
+                        OutboundSseEvent sseEvent = sse.newEventBuilder().name("message").mediaType(MediaType.APPLICATION_JSON_TYPE).data(event)
+                                .build();
+                        return sseEvent;
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            public void run() {
+                OutboundSseEvent outboundEvent = buildEvent(event);
+                if (outboundEvent == null)
+                    return;
+                topicBroadcaster.send(outboundEvent);
+            }
+        });
     }
 }
