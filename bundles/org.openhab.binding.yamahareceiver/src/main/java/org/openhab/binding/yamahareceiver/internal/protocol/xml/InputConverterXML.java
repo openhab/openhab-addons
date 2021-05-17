@@ -118,8 +118,20 @@ public class InputConverterXML implements InputConverter {
     @Override
     public String toCommandName(String name) {
         // Note: conversation of outgoing command might be needed in the future
-        logger.trace("Converting from {} to command name {}", name, name);
-        return name;
+        String convertedName = name;
+        String method = "original";
+
+        if (inputMap.containsKey(name)) {
+            // Step 1: Check if the user defined custom mapping for their AVR
+            convertedName = inputMap.get(name);
+            method = "user defined mapping";
+        } else if (inputsWithoutMapping.contains(name)) {
+            // Step 2: Check if input should not be mapped at all
+            convertedName = name;
+            method = "no conversion rule";
+        }
+        logger.trace("Converting from state name {} to {} - as per {}", name, convertedName, method);
+        return convertedName;
     }
 
     @Override

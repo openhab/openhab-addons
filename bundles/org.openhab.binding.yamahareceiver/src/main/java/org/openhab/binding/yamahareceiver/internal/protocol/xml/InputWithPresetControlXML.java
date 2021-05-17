@@ -95,6 +95,11 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
             return;
         }
 
+        if (inputElement != null && ((inputElement.equals("Bluetooth") || inputElement.equals("BLUETOOTH"))
+                || ((inputElement.equals("Spotify") || inputElement.equals("SPOTIFY"))))) {
+            return;
+        }
+
         AbstractConnection con = comReference.get();
         Node response = getResponse(con,
                 wrInput("<Play_Control><Preset><Preset_Sel_Item>GetParam</Preset_Sel_Item></Preset></Play_Control>"),
