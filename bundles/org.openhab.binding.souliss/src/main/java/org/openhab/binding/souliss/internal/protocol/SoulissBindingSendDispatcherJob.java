@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
  * This class provide to take packet, and send it to regular interval to Souliss
  * Network
  *
- * @author Tonino Fazio
- * @since 1.7.0
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
 public class SoulissBindingSendDispatcherJob implements Runnable {

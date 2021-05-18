@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Data Structure for class SendDispatcherThread
  *
- * @author Tonino Fazio
- * @since 1.7.0
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
 public class SoulissBindingSocketAndPacketStruct {

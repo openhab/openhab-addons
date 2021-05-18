@@ -27,8 +27,8 @@ import org.openhab.core.thing.Thing;
  * Those are loaded at startup from SoulissBinding.updated(), from file openhab.cfg
  * and used by SoulissBinding.execute(), SoulissCommGate.send(), UDPServerThread, decodeDBStructRequest.decodeMacaco
  *
- * @author Tonino Fazio
- * @since 1.7.0
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
 public class SoulissBindingNetworkParameters {
