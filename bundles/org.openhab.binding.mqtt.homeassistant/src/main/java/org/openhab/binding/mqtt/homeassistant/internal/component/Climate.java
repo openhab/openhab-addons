@@ -212,7 +212,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.temperature_low_state_topic, commandFilter);
 
         buildOptionalChannel(POWER_CH_ID, new OnOffValue(), updateListener, null,
-                channelConfiguration.power_command_topic, null, null, commandFilter);
+                channelConfiguration.power_command_topic, null, null, null);
     }
 
     @Nullable
