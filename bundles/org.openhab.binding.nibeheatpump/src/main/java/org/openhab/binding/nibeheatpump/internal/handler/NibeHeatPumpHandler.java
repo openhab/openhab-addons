@@ -571,6 +571,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                 }
             }
             return state;
+        } else {
+
         }
         return state;
     }
@@ -590,19 +592,19 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             CacheObject oldValue = stateMap.get(coilAddress);
 
             if (oldValue != null && (val == oldValue.value)) {
-                logger.trace("Value did not change, ignoring update");
+                logger.debug("{}: value did not change, ignoring update", variableInfo.variable);
             } else {
                 final String channelPrefix = (variableInfo.type == Type.SETTING ? "setting#" : "sensor#");
                 final String channelId = channelPrefix + String.valueOf(coilAddress);
                 final String acceptedItemType = thing.getChannel(channelId).getAcceptedItemType();
 
-                logger.trace("AcceptedItemType for channel {} = {}", channelId, acceptedItemType);
+                logger.debug("AcceptedItemType for channel {} = {}", channelId, acceptedItemType);
                 State tempState = convertNibeValueToState(variableInfo, val, acceptedItemType);
                 State state = normalizeValue(variableInfo, tempState, oldValue);
                 if (state == null) {
-                    logger.debug("Disregarded state {} = {}", coilAddress + ":" + variableInfo.variable, tempState);
+                    logger.debug("{}: disregarded state {}", variableInfo.variable, tempState);
                 } else {
-                    logger.debug("Setting state {} = {}", coilAddress + ":" + variableInfo.variable, state);
+                    logger.debug("{}: setting state {}", variableInfo.variable, state);
                     stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val, state));
                     updateState(new ChannelUID(getThing().getUID(), channelId), state);
                 }
