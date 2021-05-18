@@ -42,7 +42,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management   | `13`        | `bus_gateway`                            | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
 | Lighting             | `1`         | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                       | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`         | `bus_automation`                        | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
-| Temperature Control  | `4`          | `bus_thermostat` | Zones room thermostats (stand-alone thermostat) | Successfully tested: H/LN4691 |
+| Temperature Control  | `4`          | `bus_thermostat` | Zones room thermostats (stand-alone thermostat). Please note that central unit (4 or 99 zones) is not yet supported. See [Channels - Thermo](#Thermo) for more details. | Successfully tested: H/LN4691 |
 | Energy Management    | `18`         | `bus_energy_meter`           | Energy Management  | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
@@ -126,9 +126,7 @@ For any manually added device, you must configure:
 
 ## Channels 
 
-### Lighting & Automation...
-
-Devices support some of the following channels:
+### Lighting, Automation and Power meter
 
 | Channel Type ID (channel ID)                   | Applies to Thing Type IDs | Item Type     | Description                                             | Read/Write |
 |------------------------------------------------|----------------|---------------|---------------------------------------------------------|:----------:|
@@ -136,14 +134,21 @@ Devices support some of the following channels:
 | `brightness`                               | bus_dimmer, zb_dimmer | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
 | `shutter`                                   | bus_automation | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
 | `power`                  | bus_energy_meter, zb_automation | Number:Power        | The current active power usage from Energy Meter       |     R      |
-| `temperature`            | bus_thermostat | Number:Temperature        | The zone currently sensed temperature (°C)                              |     R      |
-| `setpointTemperature`    | bus_thermostat | Number:Temperature        | The zone setpoint temperature (°C) |     R/W    |
-| `function`         | bus_thermostat | String        | The zone set thermo function: `HEAT`, `COOL` or `GENERIC` (heating + cooling)     |      R/W     |
-| `mode`                | bus_thermostat | String        | The zone set mode: `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
-| `speedFanCoil`                | bus_thermostat | String        | The speed of the fancoil associated to the zone: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`    |     R/W    |
 
 ### Thermo
-dfgdfgf
+Currently only stand-alone thermostats are supported (like  [LN4691](https://catalogo.bticino.it/BTI-LN4691-IT)) and the specific thing `bus_thermostat` was created to manage them.
+
+| Channel Type ID (channel ID)                   | Applies to Thing Type IDs | Item Type     | Description                                             | Read/Write | Advanced |
+|------------------------------------------------|----------------|---------------|---------------------------------------------------------|:----------:|:----------:|
+| `temperature`            | bus_thermostat | Number:Temperature        | The zone currently sensed temperature (°C)                              |     R      | N |
+| `setpointTemperature`    | bus_thermostat | Number:Temperature        | The zone setpoint temperature (°C) |     R/W    | N |
+| `function`         | bus_thermostat | String        | The zone set thermo function: `COOLING`, `HEATING` or `GENERIC` (heating + cooling)     |      R/W     | N |
+| `mode`                | bus_thermostat | String        | The zone set mode: `MANUAL`, `PROTECTION`, `OFF`    |     R/W    | N |
+| `speedFanCoil`                | bus_thermostat | String        | The speed of the fancoil associated to the zone: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`    |     R/W    | N |
+| `actuator`                | bus_thermostat | String        | The status of the actuator(s) associated to the zone: `0` OFF, `1` ON, `2` Opened, `3` Closed, `4` Stop, `5` OFF Fan Coil, `6` ON speed 1, `7` ON speed 2, `8` ON speed 3, `14` Standby Fan Coil  |     R    | Y |
+| `heatingValve`                | bus_thermostat | String        | The status of the heating valve(s) associated to the zone: `0` OFF, `1` ON, `2` Opened, `3` Closed, `4` Stop, `5` OFF Fan Coil, `6` ON speed 1, `7` ON speed 2, `8` ON speed 3, `14` Standby Fan Coil  |     R    | Y |
+| `conditioningValve`                | bus_thermostat | String        | The status of the conditioning valve(s) associated to the zone: `0` OFF, `1` ON, `2` Opened, `3` Closed, `4` Stop, `5` OFF Fan Coil, `6` ON speed 1, `7` ON speed 2, `8` ON speed 3, `14` Standby Fan Coil  |     R    | Y |
+
 
 ### Notes on channels
 
