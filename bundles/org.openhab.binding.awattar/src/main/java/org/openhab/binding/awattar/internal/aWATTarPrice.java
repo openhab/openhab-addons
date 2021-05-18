@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Class to store hourly price data.
  */
@@ -44,7 +42,7 @@ public class aWATTarPrice implements Comparable<aWATTarPrice> {
     }
 
     @Override
-    public int compareTo(@NotNull aWATTarPrice o) {
+    public int compareTo(aWATTarPrice o) {
         return price.compareTo(o.price);
     }
 

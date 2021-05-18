@@ -7,7 +7,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.awattar.internal.aWATTarBestpriceConfiguration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.*;
@@ -48,7 +47,7 @@ public class aWATTarBestNextHandler extends aWATTarBestpriceHandler {
     }
 
     @Override
-    public void handleCommand(@NotNull ChannelUID channelUID, @NotNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command {} for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             refreshChannel(channelUID);

@@ -8,16 +8,12 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.awattar.internal.*;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -146,7 +142,7 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
             }
             result = res;
         } else {
-            SortedSet<aWATTarPrice> range = getPriceRange(timerange,
+            List<aWATTarPrice> range = getPriceRange(timerange,
                     (o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
             aWATTarNonConsecutiveBestPriceResult res = new aWATTarNonConsecutiveBestPriceResult(config.length,
                     bridgeHandler.getTimeZone());
@@ -160,7 +156,7 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
             }
             result = res;
         }
-        logger.trace("refreshChannel: result is: {}", result);
+        logger.trace("refreshChannel {}: result is: {}", channelUID, result);
         String channelId = channelUID.getIdWithoutGroup();
         long diff;
         switch (channelId) {
@@ -195,7 +191,7 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(@NotNull ChannelUID channelUID, @NotNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command {} for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             refreshChannel(channelUID);
@@ -204,12 +200,13 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
         }
     }
 
-    private SortedSet<aWATTarPrice> getPriceRange(Timerange range, Comparator<aWATTarPrice> comparator) {
+    private List<aWATTarPrice> getPriceRange(Timerange range, Comparator<aWATTarPrice> comparator) {
 
         aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) getBridge().getHandler();
-        TreeSet<aWATTarPrice> result = new TreeSet<>(comparator);
+        ArrayList<aWATTarPrice> result = new ArrayList<>();
         result.addAll(bridgeHandler.getPriceMap().values().stream().filter(x -> x.isBetween(range.start, range.end))
                 .collect(Collectors.toSet()));
+        result.sort(comparator);
         logger.trace("getPriceRange result: {}", result);
         return result;
     }
