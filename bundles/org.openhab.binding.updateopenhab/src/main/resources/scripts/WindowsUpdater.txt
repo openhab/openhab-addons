@@ -2,7 +2,7 @@
 
 :: OpenHAB Auto Update Script for Windows
 
-:: Execute command: [EXECUTE_COMMAND]
+:: Execute command: [EXEC_COMMAND]
 
 title [TITLE]
 
@@ -23,4 +23,4 @@ call "[RUNTIME_FOLDER]\bin\update.bat" [TARGET_VERSION]
 cls
 
 :: start OpenHAB
-"[EXECUTE_FOLDER]\start.bat" && exit
+"[EXEC_FOLDER]\start.bat" && exit

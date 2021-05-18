@@ -2,7 +2,10 @@
 
 # OpenHAB Auto Update Script for Mac OS
 
-# Execute command: [EXECUTE_COMMAND]
+# Execute command: [EXEC_COMMAND]
+
+# newline for clean log output
+echo
 
 # don't terminate when OpenHAB shuts down (i.e. ignore SIGTERM)
 trap "" 15
@@ -19,4 +22,4 @@ fi
 . "[RUNTIME_FOLDER]/bin/update" [TARGET_VERSION]
 
 # start OpenHAB
-exec "[EXECUTE_FOLDER]/start.sh"
+exec "[EXEC_FOLDER]/start.sh"

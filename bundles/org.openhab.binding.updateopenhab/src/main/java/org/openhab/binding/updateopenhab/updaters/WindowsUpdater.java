@@ -23,23 +23,22 @@ import org.openhab.core.OpenHAB;
 @NonNullByDefault
 public class WindowsUpdater extends BaseUpdater {
 
-    private static final String EXECUTE_FOLDER = OpenHAB.getUserDataFolder().replace("\\userdata", "");
-    private static final String EXECUTE_FILENAME = FILE_ID + ".cmd";
-    private static final String EXECUTE_COMMAND = "cmd.exe /C start \"" + PlaceHolder.TITLE.key + "\" /W "
-            + EXECUTE_FILENAME;
+    private static final String EXEC_FOLDER = OpenHAB.getUserDataFolder().replace("\\userdata", "");
+    private static final String EXEC_FILENAME = FILE_ID + ".cmd";
+    private static final String EXEC_COMMAND = "cmd.exe /C start \"" + PlaceHolder.TITLE.key + "\" /W " + EXEC_FILENAME;
     private static final String RUNTIME_FOLDER = OpenHAB.getUserDataFolder().replace("userdata", "runtime");
 
     @Override
     protected void initializeExtendedPlaceholders() {
-        placeHolders.put(PlaceHolder.EXECUTE_FOLDER, EXECUTE_FOLDER);
-        placeHolders.put(PlaceHolder.EXECUTE_FILENAME, EXECUTE_FILENAME);
-        placeHolders.put(PlaceHolder.EXECUTE_COMMAND, EXECUTE_COMMAND);
+        placeHolders.put(PlaceHolder.EXEC_FOLDER, EXEC_FOLDER);
+        placeHolders.put(PlaceHolder.EXEC_FILENAME, EXEC_FILENAME);
+        placeHolders.put(PlaceHolder.EXEC_COMMAND, EXEC_COMMAND);
         placeHolders.put(PlaceHolder.RUNTIME_FOLDER, RUNTIME_FOLDER);
     }
 
     @Override
     protected void loggerInfoUpdateStarted() {
         super.loggerInfoUpdateStarted();
-        logger.info("Note: this may cause Karaf to report a socket disconnected warning below. Don't worry!");
+        logger.info("Note: this may cause a 'Karaf shutdown socket' warning below. But don't worry!");
     }
 }

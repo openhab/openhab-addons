@@ -13,6 +13,7 @@
 package org.openhab.binding.updateopenhab.updaters;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 /**
  * The {@link BaseUpdater} is a base for extending classes that will update OpenHAB.
@@ -67,7 +73,9 @@ public abstract class BaseUpdater implements Runnable {
 
     private TargetVersionType targetVersionType = TargetVersionType.STABLE;
 
-    protected static final String FILE_ID = "oh-update";
+    protected static final String FILE_ID = "self-updater";
+    protected static final String VIA_PROCESS_BUILDER = "ProcessBuilder";
+    protected static final String VIA_SSH_CONNECTION = "SSH connection";
 
     /**
      * Place holders are keys in the script templates to be replaced by values at runtime
@@ -82,13 +90,14 @@ public abstract class BaseUpdater implements Runnable {
         TARGET_VERSION("[TARGET_VERSION]"),
         USERDATA_FOLDER("[USERDATA_FOLDER]"),
         LOGBACK_FILENAME("[LOGBACK_FILENAME]"),
+        EXEC_VIA("[EXEC_VIA]"),
         // EXTENDED place holders: values **MUST** be provided by classes that extend BaseUpdater
-        EXECUTE_COMMAND("[EXECUTE_COMMAND]"),
-        EXECUTE_FOLDER("[EXECUTE_FOLDER]"),
-        EXECUTE_FILENAME("[EXECUTE_FILENAME]"),
+        EXEC_COMMAND("[EXEC_COMMAND]"),
+        EXEC_FOLDER("[EXEC_FOLDER]"),
+        EXEC_FILENAME("[EXEC_FILENAME]"),
         RUNTIME_FOLDER("[RUNTIME_FOLDER]"),
         // EXTENDED place holders: values **MAY** be provided by classes that extend BaseUpdater
-        STD_OUT_FILENAME("[STD_OUT_FILENAME]");
+        OUT_FILENAME("[OUT_FILENAME]");
 
         protected final String key;
 
@@ -113,7 +122,8 @@ public abstract class BaseUpdater implements Runnable {
         placeHolders.put(PlaceHolder.TARGET_TYPE, targetVersionType.label);
         placeHolders.put(PlaceHolder.USERDATA_FOLDER, OpenHAB.getUserDataFolder());
         placeHolders.put(PlaceHolder.LOGBACK_FILENAME, FILE_ID + ".log");
-        placeHolders.put(PlaceHolder.STD_OUT_FILENAME, "");
+        placeHolders.put(PlaceHolder.OUT_FILENAME, "");
+        placeHolders.put(PlaceHolder.EXEC_VIA, VIA_PROCESS_BUILDER);
         // call the extending class method to initialise the EXTENDED place holders
         initializeExtendedPlaceholders();
         // log the prior log-back file entries
@@ -167,7 +177,7 @@ public abstract class BaseUpdater implements Runnable {
             }
 
             // execute the update script
-            if (!runScriptFile()) {
+            if (!runScript()) {
                 logger.debug("Failed to run OpenHAB update script");
                 deletePriorFiles();
                 return;
@@ -272,7 +282,7 @@ public abstract class BaseUpdater implements Runnable {
     // ================== Getters ==================
 
     /**
-     * Get the latest online available OH version for the target upgrade type.
+     * Get the latest online available OpenHAB version for the target upgrade type.
      *
      * @return version e.g. 3.0.2, 3.1.0.M4, 3.1.0-SNAPSHOT, or VERSION_NOT_DEFINED
      */
@@ -299,7 +309,7 @@ public abstract class BaseUpdater implements Runnable {
     }
 
     /**
-     * Get the actual running version of OpenHAB on this system.
+     * Get the actual version of OpenHAB running on this system.
      *
      * @return the version number, or VERSION_NOT_DEFINED
      */
@@ -324,8 +334,8 @@ public abstract class BaseUpdater implements Runnable {
     }
 
     /**
-     * This a helper method that converts the index'th element of a version String[] array to an integer value. If there
-     * is no index'th element or its value is not an integer, this is interpreted as 0.
+     * This is a helper method that converts the index'th element of a version String[] array to an integer value. If
+     * there is no index'th element or its value is not an integer, this is interpreted as 0.
      *
      * @param verStringArray set of parts of a version String[] array e.g. "3.2.1"
      * @param index the element of the String[] array to convert e.g. index 0 of "3.2.1" is "3"
@@ -387,11 +397,11 @@ public abstract class BaseUpdater implements Runnable {
     }
 
     /**
-     * Get the latest version on the artifactory. Download maven-metadata.xml from the given url and extract its latest
-     * OH version.
+     * Get the latest version available on the Artifactory web site. Download maven-metadata.xml from the given url and
+     * extract its latest OpenHAB version.
      *
      * @param url source of a maven-metadata.xml file
-     * @return latest available OH version or UNKNOWN_VERSION
+     * @return latest available OpenHAB version or UNKNOWN_VERSION
      */
     private String getArtifactoryLatestVersion(String url) {
         String result = VERSION_NOT_DEFINED;
@@ -453,12 +463,12 @@ public abstract class BaseUpdater implements Runnable {
      * @return success
      */
     private boolean fixupExecuteCommand() {
-        String executeCommand = placeHolders.get(PlaceHolder.EXECUTE_COMMAND);
+        String executeCommand = placeHolders.get(PlaceHolder.EXEC_COMMAND);
         if (executeCommand != null) {
             for (Map.Entry<PlaceHolder, String> placeHolder : placeHolders.entrySet()) {
                 executeCommand = executeCommand.replace(placeHolder.getKey().key, placeHolder.getValue());
             }
-            placeHolders.put(PlaceHolder.EXECUTE_COMMAND, executeCommand);
+            placeHolders.put(PlaceHolder.EXEC_COMMAND, executeCommand);
             return true;
         }
         return false;
@@ -482,8 +492,8 @@ public abstract class BaseUpdater implements Runnable {
      * @return success
      */
     protected boolean createScriptFile() {
-        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
-        String filename = placeHolders.get(PlaceHolder.EXECUTE_FILENAME);
+        String folder = placeHolders.get(PlaceHolder.EXEC_FOLDER);
+        String filename = placeHolders.get(PlaceHolder.EXEC_FILENAME);
 
         // create an input stream to access the resource
         String resourceId = "/scripts/" + getClass().getSimpleName() + ".txt";
@@ -503,7 +513,7 @@ public abstract class BaseUpdater implements Runnable {
         for (int i = 0; i < templateLines.size(); i++) {
             String line = templateLines.get(i);
             if ((!line.isBlank() && !line.startsWith("# ") && !line.startsWith("::"))
-                    || line.contains(PlaceHolder.EXECUTE_COMMAND.key)) {
+                    || line.contains(PlaceHolder.EXEC_COMMAND.key)) {
                 for (Map.Entry<PlaceHolder, String> placeHolder : placeHolders.entrySet()) {
                     line = line.replace(placeHolder.getKey().key, placeHolder.getValue());
                 }
@@ -527,12 +537,12 @@ public abstract class BaseUpdater implements Runnable {
      * @return success
      */
     private boolean createLogbackFile() {
-        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+        String folder = placeHolders.get(PlaceHolder.EXEC_FOLDER);
         String filename = placeHolders.get(PlaceHolder.LOGBACK_FILENAME);
         try {
             Files.write(Paths.get(folder + File.separator + filename),
-                    Arrays.asList(String.format("Update [%s => %s] start at %tc; Restarted OpenHAB", getActualVersion(),
-                            placeHolders.get(PlaceHolder.TARGET_VERSION), Calendar.getInstance())));
+                    Arrays.asList(String.format("Update [%s => %s] was started on %tc; OpenHAB was restarted now",
+                            getActualVersion(), placeHolders.get(PlaceHolder.TARGET_VERSION), Calendar.getInstance())));
             return true;
         } catch (IOException e) {
             logger.debug("Error creating log-back file: {}", e.getMessage());
@@ -541,36 +551,121 @@ public abstract class BaseUpdater implements Runnable {
     }
 
     /**
-     * Run the update script file.
+     * Execute the update script.
+     * <p>
+     * Calls either {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaProcessBuilder} or
+     * {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaSshConnection} as required.
      *
      * @return success
      */
-    private boolean runScriptFile() {
-        String command = placeHolders.getOrDefault(PlaceHolder.EXECUTE_COMMAND, "");
-        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+    private boolean runScript() {
+        String cmd = placeHolders.get(PlaceHolder.EXEC_COMMAND);
+        String dir = placeHolders.get(PlaceHolder.EXEC_FOLDER);
+        if (cmd != null && dir != null) {
+            String out = placeHolders.getOrDefault(PlaceHolder.OUT_FILENAME, "");
+            String via = placeHolders.get(PlaceHolder.EXEC_VIA);
+            logger.debug("Starting command: dir={}, cmd={}, out={}, via {}", dir, cmd, out, via);
+            if (VIA_SSH_CONNECTION.equals(via)) {
+                if (!runScriptViaSshConnection(dir, cmd, out)) {
+                    return false;
+                }
+            } else {
+                if (!runScriptViaProcessBuilder(dir, cmd, out)) {
+                    return false;
+                }
+            }
+            logger.debug("Started command: dir={}, cmd={}, out={}, via {}", dir, cmd, out, via);
+            return true;
+        }
+        return false;
+    }
 
+    /**
+     * Execute the update script file "internally" by means of a ProcessBuilder.
+     * <p>
+     * On systems where the OS supports this technique, then this is the preferred way to execute the script. Otherwise
+     * {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaSshConnection} must be used.
+     *
+     * @param dir the directory where the script file is located
+     * @param cmd the command used to execute the script file
+     * @param out redirection target for stdout and stderr (if defined)
+     * @return success
+     */
+    private boolean runScriptViaProcessBuilder(String dir, String cmd, String out) {
         ProcessBuilder builder = new ProcessBuilder();
-        builder.command(Arrays.asList(command.split(" ")));
-        builder.directory(new File(folder));
+        builder.command(Arrays.asList(cmd.split(" ")));
+        builder.directory(new File(dir));
 
-        String redirect = placeHolders.getOrDefault(PlaceHolder.STD_OUT_FILENAME, "");
-        if (!redirect.isEmpty()) {
-            File outFile = new File(folder + File.separator + redirect);
+        if (!out.isEmpty()) {
+            File outFile = new File(dir + File.separator + out);
             builder.redirectOutput(outFile);
             builder.redirectError(outFile);
-        } else {
-            redirect = "none";
         }
 
         try {
-            logger.debug("Starting process: directory={}, command={}, redirect={}", folder, command, redirect);
             builder.start();
-            logger.debug("Started process: directory={}, command={}, redirect={}", folder, command, redirect);
             return true;
         } catch (IOException e) {
-            logger.debug("Failed to start script: {}", e.getMessage());
+            logger.debug("Error starting command: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Execute the update script file "externally" by means of an SSH connection with its own host machine.
+     * <p>
+     * On Linux systems {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaProcessBuilder} may
+     * not be able to run at root level, so this alternate technique has to be used. The technique is that the OpenHAB
+     * Java application opens an SSH connection with its host machine, and injects the command via that connection.
+     *
+     * @param dir the directory where the script file is located
+     * @param cmd the command used to execute the script file
+     * @param out redirection target for stdout and stderr (if defined)
+     * @return success
+     */
+    public boolean runScriptViaSshConnection(String dir, String cmd, String out) {
+        String user = placeHolders.get(PlaceHolder.USER_NAME);
+        String password = placeHolders.get(PlaceHolder.PASSWORD);
+        String cmdLine = "cd " + dir + " && " + cmd;
+
+        if (!out.isEmpty()) {
+            cmdLine = cmdLine + " 1>" + out + " 2>&1";
         }
 
+        cmdLine = cmdLine + " &";
+
+        Session sshSession = null;
+        ChannelExec sshChannel = null;
+        try {
+            logger.debug("Sending SSH command: {}", cmdLine);
+            sshSession = new JSch().getSession(user, "127.0.0.1", 22);
+            sshSession.setPassword(password);
+            sshSession.setConfig("StrictHostKeyChecking", "no");
+            sshSession.connect();
+
+            sshChannel = (ChannelExec) sshSession.openChannel("exec");
+            sshChannel.setCommand(cmdLine);
+            ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+            sshChannel.setOutputStream(responseStream);
+            sshChannel.connect();
+
+            while (sshChannel.isConnected()) {
+                Thread.sleep(100);
+            }
+
+            String sshReply = new String(responseStream.toByteArray());
+            logger.debug("Received SSH reply: {}", sshReply);
+            return true;
+        } catch (JSchException | InterruptedException e) {
+            logger.debug("Error starting command: {}", e.getMessage());
+        } finally {
+            if (sshSession != null) {
+                sshSession.disconnect();
+            }
+            if (sshChannel != null) {
+                sshChannel.disconnect();
+            }
+        }
         return false;
     }
 
@@ -579,7 +674,7 @@ public abstract class BaseUpdater implements Runnable {
      */
     private void logggerInfoLogbackFile() {
         if (logger.isInfoEnabled()) {
-            String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+            String folder = placeHolders.get(PlaceHolder.EXEC_FOLDER);
             String filename = placeHolders.get(PlaceHolder.LOGBACK_FILENAME);
             try {
                 List<String> lines = Files.readAllLines(Paths.get(folder + File.separator + filename));
@@ -589,7 +684,7 @@ public abstract class BaseUpdater implements Runnable {
                     }
                 }
             } catch (IOException e) {
-                // do not log this as an error, as the file may simply not be there any more
+                // do not log this as an error, because the file may simply not be there any more
             }
         }
     }
@@ -600,7 +695,7 @@ public abstract class BaseUpdater implements Runnable {
      * @param fileId identifies the file to be deleted
      */
     private void deletePriorFile(PlaceHolder fileId) {
-        String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
+        String folder = placeHolders.get(PlaceHolder.EXEC_FOLDER);
         String filename = placeHolders.get(fileId);
         try {
             Files.deleteIfExists(Paths.get(folder + File.separator + filename));
@@ -615,8 +710,8 @@ public abstract class BaseUpdater implements Runnable {
     private void deletePriorFiles() {
         if (!logger.isDebugEnabled()) {
             deletePriorFile(PlaceHolder.LOGBACK_FILENAME);
-            deletePriorFile(PlaceHolder.STD_OUT_FILENAME);
-            deletePriorFile(PlaceHolder.EXECUTE_FILENAME);
+            deletePriorFile(PlaceHolder.OUT_FILENAME);
+            deletePriorFile(PlaceHolder.EXEC_FILENAME);
         }
     }
 

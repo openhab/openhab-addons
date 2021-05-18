@@ -23,17 +23,17 @@ import org.openhab.core.OpenHAB;
 @NonNullByDefault
 public class MacUpdater extends BaseUpdater {
 
-    private static final String EXECUTE_FOLDER = OpenHAB.getUserDataFolder().replace("/userdata", "");
-    private static final String EXECUTE_FILENAME = FILE_ID + ".sh";
-    private static final String EXECUTE_COMMAND = "echo " + PlaceHolder.PASSWORD.key + " | sudo -S -k nohup sh "
-            + EXECUTE_FILENAME + " >/dev/null 2>&1";
+    private static final String EXEC_FOLDER = OpenHAB.getUserDataFolder().replace("/userdata", "");
+    private static final String EXEC_FILENAME = FILE_ID + ".sh";
+    private static final String EXEC_COMMAND = "echo " + PlaceHolder.PASSWORD.key + " | sudo -S -k nohup sh "
+            + EXEC_FILENAME + " >/dev/null 2>&1";
     private static final String RUNTIME_FOLDER = OpenHAB.getUserDataFolder().replace("userdata", "runtime");
 
     @Override
     protected void initializeExtendedPlaceholders() {
-        placeHolders.put(PlaceHolder.EXECUTE_FOLDER, EXECUTE_FOLDER);
-        placeHolders.put(PlaceHolder.EXECUTE_FILENAME, EXECUTE_FILENAME);
-        placeHolders.put(PlaceHolder.EXECUTE_COMMAND, EXECUTE_COMMAND);
+        placeHolders.put(PlaceHolder.EXEC_FOLDER, EXEC_FOLDER);
+        placeHolders.put(PlaceHolder.EXEC_FILENAME, EXEC_FILENAME);
+        placeHolders.put(PlaceHolder.EXEC_COMMAND, EXEC_COMMAND);
         placeHolders.put(PlaceHolder.RUNTIME_FOLDER, RUNTIME_FOLDER);
     }
 }

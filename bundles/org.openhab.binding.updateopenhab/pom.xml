@@ -13,5 +13,19 @@
   <artifactId>org.openhab.binding.updateopenhab</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Update OpenHab Binding</name>
+  <dependencies>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.55</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jzlib</artifactId>
+      <version>1.1.3</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 
 </project>

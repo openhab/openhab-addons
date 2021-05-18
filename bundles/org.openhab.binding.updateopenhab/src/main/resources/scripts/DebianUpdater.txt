@@ -1,18 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
 # OpenHAB Auto Update Script for Linux / Debian
 
-# Execute command: [EXECUTE_COMMAND]
+# Execute command: [EXEC_COMMAND]
 
-# redirect outputs
-exec 1>>[STD_OUT_FILENAME]
-exec 2>&1
+# newline for clean log output
+echo
 
 # ignore SIGTERM so this script isn't killed when OpenHAB shuts down
 trap "" 15
 
 # stop OpenHAB
-systemctl stop openhab.service
+systemctl stop openhab.service <<<"[PASSWORD]"
 
 # set repository
 echo "deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg [TARGET_TYPE] main" > /etc/apt/sources.list.d/openhab.list
@@ -22,4 +21,4 @@ apt-get update
 apt-get install openhab
 
 # start OpenHAB
-systemctl start openhab.service
+systemctl start openhab.service <<<"[PASSWORD]"

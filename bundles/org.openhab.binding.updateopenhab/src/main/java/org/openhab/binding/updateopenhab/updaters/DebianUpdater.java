@@ -28,34 +28,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DebianUpdater extends BaseUpdater {
 
-    private static final String EXECUTE_FOLDER = "/usr/share/openhab";
-    private static final String EXECUTE_FILENAME = FILE_ID + ".sh";
-    private static final String RUNTIME_FOLDER = EXECUTE_FOLDER + "/runtime";
+    private static final String EXEC_FOLDER = "/usr/share/openhab";
+    private static final String EXEC_FILENAME = FILE_ID + ".sh";
+    private static final String RUNTIME_FOLDER = EXEC_FOLDER + "/runtime";
 
     /*
      * TESTING: plain shell (works for scripts that require no credentials)
-     * private static final String EXECUTE_COMMAND = "sh -c ./" + EXECUTE_FILENAME;
+     * private static final String EXECUTE_COMMAND = "/bin/bash -c ./" + EXECUTE_FILENAME;
      */
 
     /*
-     * TESTING: inject password and user name to sudo command
-     * private static final String EXECUTE_COMMAND = "printf \"" + PlaceHolder.PASSWORD.key + "\\n\" | sudo -k -S -u " +
-     * PlaceHolder.USER_NAME.key + " ./" + EXECUTE_FILENAME;
+     * TESTING: inject credentials into sudo command
      */
-
-    /*
-     * TESTING: inject password only to sudo command
-     */
-    private static final String EXECUTE_COMMAND = "printf \"" + PlaceHolder.PASSWORD.key + "\\n\" | sudo -k -S ./"
-            + EXECUTE_FILENAME;
+    private static final String EXEC_COMMAND = "sudo -k -S <<<\"" + PlaceHolder.PASSWORD.key + "\" /bin/bash -c ./"
+            + EXEC_FILENAME;
 
     @Override
     protected void initializeExtendedPlaceholders() {
-        placeHolders.put(PlaceHolder.EXECUTE_FOLDER, EXECUTE_FOLDER);
-        placeHolders.put(PlaceHolder.EXECUTE_FILENAME, EXECUTE_FILENAME);
-        placeHolders.put(PlaceHolder.EXECUTE_COMMAND, EXECUTE_COMMAND);
+        placeHolders.put(PlaceHolder.EXEC_FOLDER, EXEC_FOLDER);
+        placeHolders.put(PlaceHolder.EXEC_FILENAME, EXEC_FILENAME);
+        placeHolders.put(PlaceHolder.EXEC_COMMAND, EXEC_COMMAND);
+        placeHolders.put(PlaceHolder.EXEC_VIA, VIA_SSH_CONNECTION);
         placeHolders.put(PlaceHolder.RUNTIME_FOLDER, RUNTIME_FOLDER);
-        placeHolders.put(PlaceHolder.STD_OUT_FILENAME, FILE_ID + ".txt");
+        placeHolders.put(PlaceHolder.OUT_FILENAME, FILE_ID + ".txt");
     }
 
     /**
@@ -64,8 +59,8 @@ public class DebianUpdater extends BaseUpdater {
     @Override
     protected boolean createScriptFile() {
         if (super.createScriptFile()) {
-            String folder = placeHolders.get(PlaceHolder.EXECUTE_FOLDER);
-            String filename = placeHolders.get(PlaceHolder.EXECUTE_FILENAME);
+            String folder = placeHolders.get(PlaceHolder.EXEC_FOLDER);
+            String filename = placeHolders.get(PlaceHolder.EXEC_FILENAME);
             try {
                 Files.setPosixFilePermissions(Paths.get(folder + File.separator + filename),
                         PosixFilePermissions.fromString("rwxr-xr-x"));
