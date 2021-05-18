@@ -190,6 +190,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             return;
         }
         if (handleCommandsChannels(channelUID, command)) {
+            forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_VACUUM)) {
