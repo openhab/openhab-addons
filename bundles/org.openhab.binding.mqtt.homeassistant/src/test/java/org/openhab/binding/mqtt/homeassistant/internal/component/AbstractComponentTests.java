@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
@@ -77,6 +78,11 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         thingHandler = spy(thingHandler);
 
         thingHandler.initialize();
+    }
+
+    @AfterEach
+    public void disposeThingHandler() {
+        thingHandler.dispose();
     }
 
     /**
