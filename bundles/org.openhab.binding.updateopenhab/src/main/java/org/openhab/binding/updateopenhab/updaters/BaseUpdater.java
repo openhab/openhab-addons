@@ -554,7 +554,7 @@ public abstract class BaseUpdater implements Runnable {
      * Execute the update script.
      * <p>
      * Calls either {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaProcessBuilder} or
-     * {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaSshConnection} as required.
+     * {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaSshLoopback} as required.
      *
      * @return success
      */
@@ -566,7 +566,7 @@ public abstract class BaseUpdater implements Runnable {
             String via = placeHolders.get(PlaceHolder.EXEC_VIA);
             logger.debug("Starting command: dir={}, cmd={}, out={}, via {}", dir, cmd, out, via);
             if (VIA_SSH_CONNECTION.equals(via)) {
-                if (!runScriptViaSshConnection(dir, cmd, out)) {
+                if (!runScriptViaSshLoopback(dir, cmd, out)) {
                     return false;
                 }
             } else {
@@ -584,7 +584,7 @@ public abstract class BaseUpdater implements Runnable {
      * Execute the update script file "internally" by means of a ProcessBuilder.
      * <p>
      * On systems where the OS supports this technique, then this is the preferred way to execute the script. Otherwise
-     * {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaSshConnection} must be used.
+     * {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaSshLoopback} must be used.
      *
      * @param dir the directory where the script file is located
      * @param cmd the command used to execute the script file
@@ -612,18 +612,19 @@ public abstract class BaseUpdater implements Runnable {
     }
 
     /**
-     * Execute the update script file "externally" by means of an SSH connection with its own host machine.
+     * Execute the update script file "externally" by means of an SSH loop-back connection with its own host machine.
      * <p>
      * On Linux systems {@link org.openhab.binding.updateopenhab.updaters.BaseUpdater#runScriptViaProcessBuilder} may
      * not be able to run at root level, so this alternate technique has to be used. The technique is that the OpenHAB
-     * Java application opens an SSH connection with its host machine, and injects the command via that connection.
+     * Java application opens an SSH loop- back connection with its host machine, and injects the command via that
+     * connection.
      *
      * @param dir the directory where the script file is located
      * @param cmd the command used to execute the script file
      * @param out redirection target for stdout and stderr (if defined)
      * @return success
      */
-    public boolean runScriptViaSshConnection(String dir, String cmd, String out) {
+    public boolean runScriptViaSshLoopback(String dir, String cmd, String out) {
         String user = placeHolders.get(PlaceHolder.USER_NAME);
         String password = placeHolders.get(PlaceHolder.PASSWORD);
         String cmdLine = "cd " + dir + " && " + cmd;
