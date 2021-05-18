@@ -72,6 +72,8 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
             return new TouchWandAlarmSensorHandler(thing);
         } else if (THING_TYPE_BSENSOR.equals(thingTypeUID)) {
             return new TouchWandBSensorHandler(thing);
+        } else if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
+            return new TouchWandThermostatHandler(thing);
         }
 
         return null;
