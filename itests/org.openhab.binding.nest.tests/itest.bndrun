@@ -38,7 +38,6 @@ Fragment-Host: org.openhab.binding.nest
 	org.openhab.core.test;version='[3.1.0,3.1.1)',\
 	org.openhab.core.thing;version='[3.1.0,3.1.1)',\
 	org.openhab.core.thing.xml;version='[3.1.0,3.1.1)',\
-	xstream;version='[1.4.15,1.4.16)',\
 	junit-jupiter-api;version='[5.7.0,5.7.1)',\
 	junit-jupiter-engine;version='[5.7.0,5.7.1)',\
 	junit-platform-commons;version='[1.7.0,1.7.1)',\
@@ -103,4 +102,5 @@ Fragment-Host: org.openhab.binding.nest
 	org.ops4j.pax.logging.pax-logging-api;version='[2.0.9,2.0.10)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.3.16,7.3.17)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.3.16,7.3.17)',\
-	org.ops4j.pax.web.pax-web-spi;version='[7.3.16,7.3.17)'
+	org.ops4j.pax.web.pax-web-spi;version='[7.3.16,7.3.17)',\
+	xstream;version='[1.4.17,1.4.18)'
