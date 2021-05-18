@@ -18,10 +18,11 @@ import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +39,8 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleLis
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiAudi;
+import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiID;
+import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiNull;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiSkoda;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiVW;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandSeat;
@@ -67,13 +70,28 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
     private final CarNetCombinedConfig config = new CarNetCombinedConfig();
     private final CarNetTextResources messages;
     private final CarNetTokenManager tokenManager;
-    private final CarNetApiBase api;
-    private final CarNetHttpClient http;
 
-    private List<CarNetVehicleInformation> vehicleList = new ArrayList<>();
-    private List<CarNetDeviceListener> vehicleInformationListeners = Collections
-            .synchronizedList(new ArrayList<CarNetDeviceListener>());
+    private CarNetApiBase api = new CarNetBrandApiNull();
+    private List<CarNetVehicleInformation> vehicleList = new CopyOnWriteArrayList<>();
+    private List<CarNetDeviceListener> vehicleInformationListeners = new CopyOnWriteArrayList<>();
+    // Collections.synchronizedList(new ArrayList<CarNetDeviceListener>());
     private @Nullable ScheduledFuture<?> refreshJob;
+
+    private static SslContextFactory sslCipher = new SslContextFactory();
+    static {
+        String[] excludedCiphersWithoutTlsRsaExclusion = Arrays.stream(sslCipher.getExcludeCipherSuites())
+                .filter(cipher -> !"^TLS_RSA_.*$".equals(cipher)).toArray(String[]::new);
+        sslCipher.setExcludeCipherSuites(excludedCiphersWithoutTlsRsaExclusion);
+    }
+
+    private static Map<String, String> brandMap = new HashMap<>();
+    static {
+        brandMap.put(THING_MYAUDI, CNAPI_BRAND_AUDI);
+        brandMap.put(THING_VOLKSWAGEN, CNAPI_BRAND_VW);
+        brandMap.put(THING_VWID, CNAPI_BRAND_VWID);
+        brandMap.put(THING_SKODA, CNAPI_BRAND_SKODA);
+        brandMap.put(THING_SEAT, CNAPI_BRAND_SEAT);
+    }
 
     /**
      * Constructor
@@ -85,55 +103,21 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         this.messages = messages;
         this.tokenManager = tokenManager;
 
-        // Each instance has it's own http client. Audi requires weaked SSL attributes, other may not
-        HttpClient httpClient = new HttpClient();
-        try {
-            SslContextFactory ssl = new SslContextFactory();
-            String[] excludedCiphersWithoutTlsRsaExclusion = Arrays.stream(ssl.getExcludeCipherSuites())
-                    .filter(cipher -> !"^TLS_RSA_.*$".equals(cipher)).toArray(String[]::new);
-            ssl.setExcludeCipherSuites(excludedCiphersWithoutTlsRsaExclusion);
-            httpClient = new HttpClient(ssl);
-            httpClient.start();
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}", httpClient.dump());
-            }
-        } catch (Exception e) {
-            logger.warn("{}", messages.get("init-fialed", "Unable to start HttpClient!"), e);
-        }
-        http = new CarNetHttpClient(httpClient);
-
         // Generate a unique Id for all tokens of the new Account thing, but also of all depending Vehicle things. This
         // allows sharing the tokens across all things associated with the account.
         config.account = getConfigAs(CarNetAccountConfiguration.class);
-        config.tokenSetId = tokenManager.generateTokenSetId();
-        api = createApi(config);
-        tokenManager.setup(http, api);
-    }
-
-    public CarNetApiBase createApi(CarNetCombinedConfig config) {
-        String type = getThing().getUID().getAsString();
-        type = CarNetUtils.substringBetween(type, ":", ":");
-        switch (type) {
-            case THING_MYAUDI:
-            default:
-                config.account.brand = CNAPI_BRAND_AUDI;
-                return new CarNetBrandApiAudi(http, tokenManager);
-            case THING_VOLKSWAGEN:
-                config.account.brand = CNAPI_BRAND_VW;
-                return new CarNetBrandApiVW(http, tokenManager);
-            case THING_VWID:
-                config.account.brand = CNAPI_BRAND_VWID;
-                return new CarNetBrandApiVW(http, tokenManager);
-            case THING_VWGO:
-                config.account.brand = CNAPI_BRAND_VWGO;
-                return new CarNetBrandApiVW(http, tokenManager);
-            case THING_SKODA:
-                config.account.brand = CNAPI_BRAND_SKODA;
-                return new CarNetBrandApiSkoda(http, tokenManager);
-            case THING_SEAT:
-                config.account.brand = CNAPI_BRAND_SEAT;
-                return new CarNetBrandSeat(http, tokenManager);
+        String ttype = getThing().getUID().toString();
+        ttype = CarNetUtils.substringBetween(ttype, ":", ":");
+        String brand = brandMap.get(ttype);
+        if (brand != null) {
+            config.account.brand = brand;
         }
+        config.tokenSetId = tokenManager.generateTokenSetId();
+        config.api = api.getProperties();
+        api.setConfig(config);
+        api = createApi(config);
+        config.authenticator = api;
+        tokenManager.setup(config.tokenSetId, api.getHttp());
     }
 
     /**
@@ -187,6 +171,42 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         setupRefreshJob(5);
         stateChanged(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
         return true;
+    }
+
+    private CarNetHttpClient createHttpClient() {
+        // Each instance has it's own http client. Audi requires weaked SSL attributes, other may not
+        HttpClient httpClient = new HttpClient();
+        try {
+            httpClient = new HttpClient(sslCipher);
+            httpClient.start();
+            if (logger.isTraceEnabled()) {
+                logger.trace("CarNet: {}", httpClient.dump());
+            }
+        } catch (Exception e) {
+            logger.warn("{}", messages.get("init-fialed", "Unable to start HttpClient!"), e);
+        }
+        CarNetHttpClient client = new CarNetHttpClient(httpClient);
+        client.setConfig(config);
+        return client;
+    }
+
+    public CarNetApiBase createApi(CarNetCombinedConfig config) {
+        switch (config.account.brand) {
+            case CNAPI_BRAND_AUDI:
+                return new CarNetBrandApiAudi(createHttpClient(), tokenManager);
+            case CNAPI_BRAND_VW:
+                return new CarNetBrandApiVW(createHttpClient(), tokenManager);
+            case CNAPI_BRAND_VWID:
+                return new CarNetBrandApiID(createHttpClient(), tokenManager);
+            case CNAPI_BRAND_VWGO:
+                return new CarNetBrandApiVW(createHttpClient(), tokenManager);
+            case CNAPI_BRAND_SKODA:
+                return new CarNetBrandApiSkoda(createHttpClient(), tokenManager);
+            case CNAPI_BRAND_SEAT:
+                return new CarNetBrandSeat(createHttpClient(), tokenManager);
+            default:
+                return new CarNetBrandApiNull();
+        }
     }
 
     /**
@@ -273,11 +293,6 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         } catch (CarNetException e) {
             logger.debug("Unable to refresh tokens", e);
         }
-    }
-
-    public CarNetHttpClient getHttpClient() {
-        // Account and Vehicle Handlers are sharing the same httpClient
-        return http;
     }
 
     public CarNetCombinedConfig getCombinedConfig() {

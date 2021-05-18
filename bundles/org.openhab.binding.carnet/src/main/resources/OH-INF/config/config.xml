@@ -64,7 +64,7 @@
 		<parameter name="pollingInterval" type="integer" required="false" min="5">
 			<label>Polling Interval</label>
 			<description>Status update interval in minutes.</description>
-			<default>30</default>
+			<default>15</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

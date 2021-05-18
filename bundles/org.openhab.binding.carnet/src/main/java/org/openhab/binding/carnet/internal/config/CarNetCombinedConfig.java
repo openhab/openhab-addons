@@ -13,8 +13,10 @@
 package org.openhab.binding.carnet.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetOidcConfig;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
+import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 
 /**
  * {@link CarNetCombinedConfig} combines account and vehicle config on the api level
@@ -41,4 +43,5 @@ public class CarNetCombinedConfig {
     public CarNetUserInfo user = new CarNetUserInfo();
     public CarNetApiProperties api = new CarNetApiProperties();
     public CarNetOidcConfig oidcConfig = new CarNetOidcConfig();
+    public @Nullable CarNetBrandAuthenticator authenticator;
 }

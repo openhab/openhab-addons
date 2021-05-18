@@ -93,7 +93,6 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public void setConfig(CarNetCombinedConfig config) {
-        logger.debug("Setting up CarNet API for brand {}, user {}", config.account.brand, config.account.user);
         config.api = getProperties();
         this.config = config;
         http.setConfig(this.config);
@@ -102,6 +101,10 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     public void setConfig(CarNetVehicleConfiguration config) {
         this.config.vehicle = config;
         http.setConfig(this.config);
+    }
+
+    public CarNetHttpClient getHttp() {
+        return this.http;
     }
 
     public void initialize() throws CarNetException {
@@ -593,7 +596,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         // application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml,
         // application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteLockUnlock_v1_0_0+xml,*/*","
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0)");
+        headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
         headers.put(CNAPI_HEADER_APP, config.api.xappName);
         headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
         if (!contentType.isEmpty()) {

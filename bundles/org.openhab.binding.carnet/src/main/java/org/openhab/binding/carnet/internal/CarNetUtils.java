@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.carnet.internal;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.measure.Unit;
@@ -255,31 +258,27 @@ public class CarNetUtils {
         }
     }
 
+    public static String generateCodeVerifier() throws UnsupportedEncodingException {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] codeVerifier = new byte[32];
+        secureRandom.nextBytes(codeVerifier);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(codeVerifier);
+    }
+
+    public static String generateCodeChallange(String codeVerifier)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        byte[] bytes = codeVerifier.getBytes("US-ASCII");
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+        messageDigest.update(bytes, 0, bytes.length);
+        byte[] digest = messageDigest.digest();
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+    }
+
     public static String mkChannelId(String group, String channel) {
         return group + "#" + channel;
     }
 
     public static <T> Class<T> wrap(Class<T> type) {
-        /*
-         * if (type == int.class) {
-         * return (Class<T>) Integer.class;
-         * } else if (type == float.class) {
-         * return (Class<T>) Float.class;
-         * } else if (type == byte.class) {
-         * return (Class<T>) Byte.class;
-         * } else if (type == double.class) {
-         * return (Class<T>) Double.class;
-         * } else if (type == long.class) {
-         * return (Class<T>) Long.class;
-         * } else if (type == char.class) {
-         * return (Class<T>) Character.class;
-         * } else if (type == boolean.class) {
-         * return (Class<T>) Boolean.class;
-         * } else if (type == short.class) {
-         * return (Class<T>) Short.class;
-         * } else if (type == void.class) {
-         * return (Class<T>) Void.class;
-         * }
-         */ return type;
+        return type;
     }
 }

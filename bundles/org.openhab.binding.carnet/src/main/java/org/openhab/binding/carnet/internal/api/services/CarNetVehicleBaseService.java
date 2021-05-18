@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.services;
+package org.openhab.binding.carnet.internal.api.services;
 
 import java.util.Map;
 
@@ -22,11 +22,11 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.CarNetUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper;
+import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
-import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper;
-import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

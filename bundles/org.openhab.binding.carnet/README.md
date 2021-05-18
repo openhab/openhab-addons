@@ -23,13 +23,22 @@ The Account thing implements the online connect to the CarNet service.
 The binding supports myAudi (myaudi) and Skoda Connect (skoda).
 Depending on brand, car model and activated license a different set of channels and actions are supported,
 
-Some verified vehicles
-|Brand     |Model |Year|Type      |Market|Notes                                                        |Doorlock|Clima|Preheat|
-|----------|------|----|----------|------|-------------------------------------------------------------|--------|-----|-------|
-|Audi      |A6    |2020|Diesel    |DE    |TripData service doesn't work even with valid license        |yes     |no   |n/a    |
-|Skoda     |Superb|2020|Hybrid    |CH    |                                                             |        |     |       |
-|Volkswagen|eGolf |    |Electrical|DE    |                                                             |        |     |       |
-|Volkswagen|Tiguan|2021|Diesel    |DE    |                                                             |        |     |       |
+Some verified vehicles:
+
+|Brand     |Model       |Year|Type      |Market|Notes                                                        |Doorlock|Clima|Preheat|
+|----------|------------|----|----------|------|-------------------------------------------------------------|--------|-----|-------|
+|Audi      |A6          |2020|Diesel    |DE/DE |TripData service doesn't work even with valid license        |yes     |no   |n/a    |
+|Audi      |Q3 Sportback|2020|Gas       |DE/DE |                                                             |        |     |       |
+|Skoda     |Superb      |2020|Hybrid    |DE/CH |                                                             |        |     |       |
+|Volkswagen|Arteon      |2021|          |DE/   |                                                             |        |     |       |
+|Volkswagen|eGolf       |2020|Electrical|DE/DE |                                                             |no      |yes  |n/a    |
+|Volkswagen|eUp         |    |Electrical|DE/DE |                                                             |        |     |       |
+|Volkswagen|Passat GTE  |2016|Hybrid    |DE/NL |                                                             |n/a     |n/a  |n/a    |
+|Volkswagen|Tiguan      |2021|Diesel    |DE/DE |                                                             |n/a     |n/a  |n/a    |
+|Volkswagen|T-Roc Cabrio|2020|          |DE/   |                                                             |        |     |       |
+
+
+`yes=feature available and verified, no=feature available, but not supported/doesn't work; n/a=feature not available; blank=unknown/untested`
 
 
 An account is required to setup the connection (register on the manufacture's portal, e.g. myAudi.de).
@@ -98,53 +107,50 @@ The following channels are available depending on the vehicle type:
 
 |Group         |Channel                  |Type                  |read-only| Description                                                                           |
 |--------------|-------------------------|----------------------|---------|---------------------------------------------------------------------------------------|
-| general      | kilometerStatus         | Number:Length        | yes     | The kilometers from the odometer when status was captured.                            |
-|              | parkingLight            | Switch               | yes     | ON: Parking light is turned on                                                        |
-|              | tempOutside             | Number:Temperature   | yes     | The outside temperature in °C.                                                        |
-|              | parkingBrake            | Switch               | yes     | State of the parking brake                                                            |
-|              | monthlyMilage           | Number:Length        | yes     | Average milage per month.                                                             |
-|              | lastAction              | String               | yes     | Last action send to the vehicle, check last action status to see if the request has been processed |
+| general      | lastUpdate              | DateTime             | yes     | Last time data has been updated.                                                      |
+|              | lastAction              | String               | yes     | Last action sent to the vehicle (check lastActionStatus for status/result)            |
 |              | lastActionStatus        | String               | yes     | Result from last action sent to the vehicle                                           |
 |              | lastActionPending       | Switch               | yes     | ON: An action was send to the vehicle and is in status progressing                    |
-| control      | lock                    | Switch               | no      | Lock/Unlock doors                                                                     |
+| control      | update                  | Switch               | no      | Force status update of vehicle status                                                 |
+|              | lock                    | Switch               | no      | Lock/Unlock doors                                                                     |
+|              | charge                  | Switch               | no      | Turn charger on/off                                                                   |
 |              | climater                | Switch               | no      | Turn climater on/off                                                                  |
 |              | windowHeat              | Switch               | no      | Turn window heating on/off                                                            |
 |              | preHeater               | Switch               | no      | Turn pre-heating on/off                                                               |
-|              | ventilation             | Switch               | no      | Turn ventilation on/off                                                                  |
-| location     | position                | Location             | yes     | Last known Car location                                                               |
+|              | ventilation             | Switch               | no      | Turn ventilation on/off                                                               |
+| status       | kilometerStatus         | Number:Length        | yes     | The kilometers from the odometer when status was captured.                            |
+|              | tempOutside             | Number:Temperature   | yes     | The outside temperature in °C.                                                        |
+|              | vehicleLocked           | Switch               | yes     | ON: Vehicle is completely locked. This includes doors, windows, but also hood etc.    |
+|              | windowsClosed           | Switch               | yes     | ON: All Windows are closed.                                                           |
+|              | tiresOk                 | Switch               | yes     | ON: Pressure for all tires is ok, otherwhise check single tires.                      |
+|              | currentSpeed            | Number:Speed         | yes     | Current speed when data was last updated                                              |
+|              | monthlyMilage           | Number:Length        | yes     | Average milage per month.                                                             |
+|              | parkingBrake            | Switch               | yes     | State of the parking brake                                                            |
+|              | parkingLight            | Switch               | yes     | ON: Parking light is turned on                                                        |
+|              | maintenanceRequired     | Switch               | yes     | ON: Some type of maintenance is requied, check status group for details               |
+|              | spoilerState            | Contact              | yes     | State of the spoiler.                                                                 |
+|              | serviceFlapState        | Contact              | yes     | ON: Service flap is closed and locked, OFF: flap is open or closed, but not locked    |
+| location     | position                | Location             | yes     | Last known vehicle location                                                           |
 |              | positionLastUpdate      | DateTime             | yes     | Time of last update for the vehicle position.                                         |
 |              | parkingPosition         | Location             | yes     | Last position where the vehicle was parked.                                           |
 |              | parkingTime             | DateTime             | yes     | Time when the vehicle was parked                                                      |
-| maintenance  | distanceOilChange       | Number:Length        | yes     | Distance until the next oil change is required.                                       |
-|              | intervalOilChange       | Number:Time          | yes     | Milage until next oil change                                                          |
-|              | distanceToInspection    | Number:Length        | yes     | Distance before the next inspection / service is required.                            |
-|              | timeToInspection        | Number:Time          | yes     | Time until next inspection.                                                           |
-|              | oilWarningChange        | Switch               | yes     | True when Oil is low                                                                  |
-|              | alarmInspection         | Switch               | yes     | ON: Inspection alarm is on.                                                           |
-|              | oilWarningLevel         | Switch               | yes     | Minimum oil warning level                                                             |
-|              | oilPercentage           | Number:Dimensionless | yes     | Dipstick oil percentage                                                               |
-|              | distanceAdBlue          | Number:Length        | yes     | Distance before the next Ad Blue fill-up is required.                                 |
-| range        | totalRange              | Number:Length        | yes     | Total remaining range.                                                                |
-|              | primaryRange            | Number:Length        | yes     | Range or the primary battery engine system.                                           |
-|              | primaryFuelType         | Number               | yes     | Fuel type of the primary engine system (5=Diesel)                                     |
-|              | secondaryRange          | Number:Length        | yes     | ??? Range or the secondary battery?                                                   |
-|              | secondaryFuelType       | Number               | yes     | ???  Drive                                                                            |
-|              | fuelPercentage          | Number:Dimensionless | yes     | Percentage of fuel remaining.                                                         |
+| range        | fuelPercentage          | Number:Dimensionless | yes     | Percentage of fuel remaining.                                                         |
 |              | fuelMethod              | String               | yes     | Method: 0=measured, 1=calculated                                                      |
+|              | totalRange              | Number:Length        | yes     | Total remaining range.                                                                |
+|              | primaryRange            | Number:Length        | yes     | Range or the primary engine                                                           |
+|              | primaryFuelType         | Number               | yes     | Fuel type of the primary engine (3=Electrical, 5=Gas, 6=Diesel)                       |
+|              | secondaryRange          | Number:Length        | yes     | Range or the secondary engine                                                         |
+|              | secondaryFuelType       | Number               | yes     | Fuel type of the secondary engine (3=Electrical, 5=Gas, 6=Diesel)                     |
+|              | chargingLevel           | Number:Dimensionless | yes     | Current charging level in percent for an electrical car                               |
 |              | gasPercentage           | Number:Dimensionless | yes     | Percentage of natural gas remaining                                                   |
-| status       | currentSpeed            | Number:Speed         | yes     | Current speed when data was last updated                                              |
-|              | roofMotorCoverState     | Switch               | yes     | ON: Closed                                                                            |
-|              | roofRearMotorCoverState | Switch               | yes     | State of the rear sun root motor cover                                                |
-|              | serviceFlapState        | Switch               | yes     | ON: Service flap is closed and locked, OFF: flap is open or closed, but not locked    |
-|              | spoilerState            | Switch               | yes     | State of the spoiler.                                                                 |
-| charger      | chargingStatus          | String               | yes     | Charging status                                                                       |
+| charge       | chargingStatus          | String               | yes     | Charging status                                                                       |
 |              | powerState              | String               | yes     | Indicates availability of charging power                                              |
 |              | chargingState           | String               | yes     | Current status of the charging process                                                |
 |              | energyFlow              | String               | yes     | Energy is flowing / charging                                                          |
 |              | batteryState            | Number:Dimensionless | yes     | Battery level                                                                         |
 |              | remainingTime           | Number:Time          | yes     | Estimated remaining time to fully charge the battery                                  |
 |              | plugState               | String               | yes     | State of the charging plug, ON=connected                                              |
-|              | lockState               | String               | yes     | ON=plug is locked                                                                     |
+|              | lockState               | String               | yes     | ON:Plug is locked, OFF: Plug is unlocked and can be removed                           |
 |              | errorCode               | Number               | yes     | Error code when charging failed                                                       |
 | climater     | targetTemperature       | Number:Temperature   | no      | Target temperature for the A/C climator                                               |
 |              | heaterSource            | String               | yes     | Indicates the source for heating                                                      |
@@ -154,9 +160,15 @@ The following channels are available depending on the vehicle type:
 |              | rearLeft                | Switch               | yes     | ON: Climatisation for the front left zone is active                                   |
 |              | rearRight               | Switch               | yes     | ON: Climatisation for the front left zone is active                                   |
 |              | mirrorHeat              | Switch               | yes     | ON: Mirror heating is active                                                          |
-| rluHistory1  | rluOperation            | String               | yes     | Action type: lock/unlock                                                              |
-|              | rluTimestamp            | DateTime             | yes     | Timestamp when the action was initiated.                                              |
-|              | rluResult               | String               | yes     | Action result: 1=ok                                                                   |
+| maintenance  | alarmInspection         | Switch               | yes     | ON: Inspection alarm is on.                                                           |
+|              | distanceToInspection    | Number:Length        | yes     | Distance before the next inspection / service is required.                            |
+|              | timeToInspection        | Number:Time          | yes     | Time until next inspection.                                                           |
+|              | distanceAdBlue          | Number:Length        | yes     | Distance before the next Ad Blue fill-up is required.                                 |
+|              | oilWarningChange        | Switch               | yes     | True when Oil is low                                                                  |
+|              | oilWarningLevel         | Switch               | yes     | Minimum oil warning level                                                             |
+|              | oilPercentage           | Number:Dimensionless | yes     | Remaining oil percentage (dip stick)                                                  |
+|              | distanceOilChange       | Number:Length        | yes     | Distance until the next oil change is required.                                       |
+|              | intervalOilChange       | Number:Time          | yes     | Distance until next oil change                                                        |
 | tripShort1   | timestamp               | DateTime             | yes     | Trip time                                                                             |
 |              | avgElectricConsumption  | Number:Energy        | yes     | Electrical Consumptio during the trip                                                 |
 |              | avgFuelConsumption      | Number:Volume        | yes     | Average fuel consumption for this trip                                                |
@@ -171,41 +183,41 @@ The following channels are available depending on the vehicle type:
 |              | startMileage            | Number:Length        | yes     | Start Milage for the trip                                                             |
 |              | mileage                 | Number:Length        | yes     | Distance for this trip.                                                               |
 |              | overallMileage          | Number:Length        | yes     | Overall milage after this trip                                                        |
-| destination1 | destinationName         | String               | yes     | The textual description of this destination, might be empty/NaN.                      |
-|              | destinationPoi          | String               | yes     | Name of the Point-of-Interested (is this destination has one) or NaN                  |
-|              | destinationLocation     | Location             | yes     | Geo coordinates of this location (Location item type format)                          |
-|              | destinatinStreet        | String               | yes     | Street address of the destination address, might be empty (NaN).                      |
-|              | destinationCity         | String               | yes     | City of the destination address, might be empty (NaN).                                |
-|              | destinationZip          | String               | yes     | The zip code of the destination address, might be empty (NaN).                        |
-|              | destinationCountry      | String               | yes     | Country of the destination address, might be empty (NaN).                             |
-|              | destinationSource       | String               | yes     | Source of the destination, e.g. could be the mobile App, might be empty (NaN).        |
-| doors        | doorFrontLeftLocked     | Switch               | yes     | ON: The left front door is locked.                                                    |
-|              | doorFrontLeftState      | Switch               | yes     | ON: The left front door is open.                                                      |
+| rluHistory1  | rluOperation            | String               | yes     | Action type: lock/unlock                                                              |
+|              | rluTimestamp            | DateTime             | yes     | Timestamp when the action was initiated.                                              |
+|              | rluResult               | String               | yes     | Action result: 1=ok                                                                   |
+| doors        | doorFrontLeftState      | Contact              | yes     | State: OPEN or CLOSED                                                                 |
+|              | doorFrontLeftLocked     | Switch               | yes     | ON: The left front door is locked.                                                    |
 |              | doorFrontLeftSafety     | Switch               | yes     | ON: Safety lock for left front door is open.                                          |
-|              | doorRearLeftLocked      | Switch               | yes     | ON: The left rear door is locked.                                                     |
-|              | doorRearLeftState       | Switch               | yes     | ON: The left rear door is locked.                                                     |
-|              | doorRearLeftSafety      | Switch               | yes     | ON: Safety lock for left rear door is open.                                           |
+|              | doorFrontRightState     | Contact              | yes     | State: OPEN or CLOSED                                                                 |
 |              | doorFrontRightLocked    | Switch               | yes     | ON: The right front door locked.                                                      |
-|              | doorFrontRightState     | Switch               | yes     | ON: The right front door is open.                                                     |
 |              | doorFrontRightSafety    | Switch               | yes     | ON: Safety lock for right front door is open.                                         |
+|              | doorRearLeftState       | Contact              | yes     | State: OPEN or CLOSED                                                                 |
+|              | doorRearLeftLocked      | Switch               | yes     | ON: The left rear door is locked.                                                     |
+|              | doorRearLeftSafety      | Switch               | yes     | ON: Safety lock for left rear door is open.                                           |
+|              | doorRearRightState      | Contact              | yes     | State: OPEN or CLOSED                                                                 |
 |              | doorRearRightLocked     | Switch               | yes     | ON: The rear right door is locked.                                                    |
-|              | doorRearRightState      | Switch               | yes     | ON: The rear right door is open.                                                      |
 |              | doorRearRightSafety     | Switch               | yes     | ON: Safety lock for right rear door is open.                                          |
+| doors        | trunkLidState           | Contact              | yes     | State: OPEN or CLOSED                                                                 |
 |              | trunkLidLocked          | Switch               | yes     | ON: The trunk lid is locked.                                                          |
-|              | trunkLidState           | Switch               | yes     | State of the trunk lid.                                                               |
 |              | trunkLidSafety          | Switch               | yes     | ON: Trunk safety lock is open.                                                        |
+|              | hoodState               | Contact              | yes     | State: OPEN or CLOSED                                                                 |
 |              | hoodLocked              | Switch               | yes     | ON: The hood is locked.                                                               |
-|              | hoodState               | Switch               | yes     | ON: The hood is closed.                                                               |
 |              | hoodSafety              | Switch               | yes     | ON: Hood safety is activated.                                                         |
-|              | covertableTopState      | Number               | yes     | Status of the convertible top.                                                        |
-| windows      | windowFrontLeftState    | Switch               | yes     | Status of the left front window, ON=closed                                            |
+|              | convertibleTopState     | Contact              | yes     | Status of the convertible top (OPEN/CLOSED)                                           |
+|              | covertableTopPos        | Number:Dimensionless | yes     | The position of the convertible top (if any)                                          |
+| windows      | windowFrontLeftState    | Contact              | yes     | State: OPEN or CLOSED                                                                 |
 |              | windowFrontLeftPos      | Number:Dimensionless | yes     | Position of the left front window.                                                    |
-|              | windowRearLeftState     | Switch               | yes     | The status of the left rear window, ON=closed                                         |
+|              | windowRearLeftState     | Contact              | yes     | State: OPEN or CLOSED                                                                 |
 |              | windowRearLeftPos       | Number:Dimensionless | yes     | The position of the left rear window.                                                 |
-|              | windowFrontRightState   | Switch               | yes     | Status of the left rear window, ON=closed                                             |
-|              | windowFrontRightPos     | Number:Dimensionless | yes     | Position of the right front window.                                                   |
-|              | windowRearRightState    | Switch               | yes     | Status of the right rear window, ON=closed                                            |
+|              | windowFrontRightState   | Contact              | yes     | State: OPEN or CLOSED                                                                 |
+|              | windowFrontRightPos     | Number:Dimensionless | yes     | Position of the right rear window.                                                    |
+|              | windowRearRightState    | Contact              | yes     | State: OPEN or CLOSED                                                                 |
 |              | windowRearRightPos      | Number:Dimensionless | yes     | Position of the right rear window.                                                    |
+|              | roofFrontCoverState     | Contact              | yes     | Front sun roof state: OPEN or CLOSED                                                  |
+|              | roofFrontCoverPos       | Number               | yes     | Position of the front sun roof cover                                                  |
+|              | roofRearCoverState      | Contact              | yes     | Rear sun roof state: OPEN or CLOSED                                                   |
+|              | roofRearCoverPos        | Number               | yes     | Position of the rear sun roof cover                                                   |
 | tires        | tirePresFrontLeft       | Switch               | yes     | Pressure of the left front tire, ON=OK                                                |
 |              | tirePresRearLeft        | Switch               | yes     | Pressure of the left rear tire, ON=OK                                                 |
 |              | tirePresFrontRight      | Switch               | yes     | Pressure of the right front tire, ON=OK                                               |

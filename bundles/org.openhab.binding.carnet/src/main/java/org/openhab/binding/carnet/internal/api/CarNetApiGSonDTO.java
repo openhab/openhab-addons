@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
+import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
@@ -29,6 +31,7 @@ public class CarNetApiGSonDTO {
     }
 
     public static class CNApiToken {
+        // token API
         @SerializedName("token_type")
         public String authType;
         @SerializedName("access_token")
@@ -43,7 +46,19 @@ public class CarNetApiGSonDTO {
         @SerializedName("expires_in")
         public Integer validity;
 
+        // Login API
+        @SerializedName("accessToken")
+        public String accessToken2;
+        @SerializedName("refreshToken")
+        public String refreshToken2;
+
         public String scope;
+
+        public void normalize() {
+            // Map We Connect format to generic one
+            accessToken = getString(accessToken2);
+            refreshToken = getString(refreshToken2);
+        }
     }
 
     public static class CarNetSecurityPinAuthInfo {
@@ -138,7 +153,7 @@ public class CarNetApiGSonDTO {
             public String vin;
 
             public boolean isPairingCompleted() {
-                return "PAIRINGCOMPLETE".equalsIgnoreCase(pairingStatus);
+                return pairingStatus != null && "PAIRINGCOMPLETE".equalsIgnoreCase(pairingStatus);
             }
         }
 

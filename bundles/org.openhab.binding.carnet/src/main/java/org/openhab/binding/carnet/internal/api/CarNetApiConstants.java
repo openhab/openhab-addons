@@ -33,7 +33,7 @@ public class CarNetApiConstants {
     public static final String CNAPI_HEADER_APP = "X-App-Name";
     public static final String CNAPI_HEADER_VERS = "X-App-Version";
     public static final String CNAPI_HEADER_VERS_VALUE = "1.0.0";
-    public static final String CNAPI_HEADER_USER_AGENT = "okhttp/3.7.0";
+    public static final String CNAPI_HEADER_USER_AGENT = "okhttp/3.10.0";
     public static final String CNAPI_HEADER_AUTHORIZATION = "Authorization";
     public static final String CNAPI_HEADER_CLIENTID = "X-Client-Id";
     public static final String CNAPI_HEADER_HOST = "Host";
@@ -70,12 +70,14 @@ public class CarNetApiConstants {
     public static final String CNAPI_VWG_FAL_3A_CONNECT = "https://fal-3a.prd.eu.dp.vwg-connect.com";
     public static final String CNAPI_URL_GET_SEC_REGISTER = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/register";
     public static final String CNAPI_URL_GET_SEC_TOKEN = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
+    public static final String CNAPI_VW_TOKEN_URL = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
+    public static final String CNAPI_URL_LOGIN = "https://login.apps.emea.vwapps.io/login/v1";
+
     public static final String CNAPI_VWURL_OPERATIONS = "rolesrights/operationlist/v3/vehicles/{2}";
     public static final String CNAPI_VWURL_HOMEREGION = CNAPI_VWG_MAL_1A_CONNECT + "/cs/vds/v1/vehicles/{2}/homeRegion";
 
     public static final String CNAPI_OAUTH_BASE_URL = "https://identity.vwgroup.io";
     public static final String CNAPI_OAUTH_AUTHORIZE_URL = CNAPI_OAUTH_BASE_URL + "/oidc/v1/authorize";
-    public static final String CNAPI_VW_TOKEN_URL = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
 
     public static final String CNAPI_URL_DEF_GET_TOKEN = "https://tokenrefreshservice.apps.emea.vwapps.io/refreshTokens";
 

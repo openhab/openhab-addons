@@ -222,6 +222,11 @@ public class CarNetHttpClient {
         return value != null ? value : "";
     }
 
+    public String getReferrer() {
+        String value = responseHeaders.get("Referer");
+        return value != null ? value : "";
+    }
+
     /**
      * Get rresponse time from http response headers
      *
@@ -237,6 +242,9 @@ public class CarNetHttpClient {
      *
      */
     private String getBrandUrl(String uriTemplate, String args, String vin) throws CarNetException {
+        if (config.api.brand.isEmpty()) {
+            throw new CarNetException("Brand for API access not set");
+        }
         String path = MessageFormat.format(uriTemplate, config.api.brand, config.api.xcountry, vin, config.user.id);
         if (!uriTemplate.contains("://")) { // not a full URL
             return getUrl(path.isEmpty() ? path : path + (!args.isEmpty() ? "?" + args : ""));
@@ -249,14 +257,16 @@ public class CarNetHttpClient {
      * Fill standad http headers
      */
     public Map<String, String> fillAppHeaders(Map<String, String> headers, String token) throws CarNetException {
+        if (!config.api.xappName.isEmpty()) {
+            headers.put(CNAPI_HEADER_APP, config.api.xappName);
+            headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
+            headers.put("X-Country-Id", "DE");
+            headers.put("X-Language-Id", "de");
+        }
         headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-        headers.put(CNAPI_HEADER_APP, config.api.xappName);
-        headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
         headers.put(HttpHeader.ACCEPT.toString(), CNAPI_ACCEPTT_JSON);
         headers.put(HttpHeader.ACCEPT_CHARSET.toString(), StandardCharsets.UTF_8.toString());
         headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + token);
-        headers.put("X-Country-Id", "DE");
-        headers.put("X-Language-Id", "de");
         return headers;
     }
 
@@ -267,7 +277,7 @@ public class CarNetHttpClient {
      */
     public Map<String, String> fillRefreshHeaders() {
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
+        headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
         headers.put(CNAPI_HEADER_APP, config.api.xappName);
         headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
         headers.put(HttpHeader.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded");
@@ -289,8 +299,9 @@ public class CarNetHttpClient {
                 postData = new StringContentProvider(contentType, data, StandardCharsets.UTF_8);
             } else {
                 boolean json = data.startsWith("{");
-                postData = new StringContentProvider(json ? CNAPI_ACCEPTT_JSON : CNAPI_CONTENTT_FORM_URLENC, data,
-                        StandardCharsets.UTF_8);
+                String type = json ? CNAPI_ACCEPTT_JSON : CNAPI_CONTENTT_FORM_URLENC;
+                request.header(HttpHeader.CONTENT_TYPE, type);
+                postData = new StringContentProvider(type, data, StandardCharsets.UTF_8);
             }
             request.content(postData);
             request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
@@ -352,7 +363,11 @@ public class CarNetHttpClient {
      * @return Extracted value
      */
     public static String getUrlParm(String input, String parameter) {
-        String pattern = "&" + parameter + "=";
+        return getUrlParm(input, parameter, "&");
+    }
+
+    public static String getUrlParm(String input, String parameter, String seperator) {
+        String pattern = seperator + parameter + "=";
         if (input.contains(pattern)) {
             String res = substringAfter(input, pattern);
             return res.contains("&") ? substringBefore(res, "&") : res;

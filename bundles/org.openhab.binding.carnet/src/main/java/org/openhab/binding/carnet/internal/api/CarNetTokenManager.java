@@ -20,16 +20,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.CarNetSecurityException;
@@ -50,32 +51,23 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @Component(service = CarNetTokenManager.class)
-public class CarNetTokenManager implements CarNetBrandAuthenticator {
+public class CarNetTokenManager {
     private static final String UTF_8 = StandardCharsets.UTF_8.name();
     private final Logger logger = LoggerFactory.getLogger(CarNetTokenManager.class);
     private final Gson gson = new Gson();
-    private @Nullable CarNetBrandAuthenticator authenticator;
-    private Map<String, TokenSet> accountTokens = new HashMap<>();
-    private CarNetHttpClient http = new CarNetHttpClient();
+    private Map<String, TokenSet> accountTokens = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<CarNetToken> securityTokens = new CopyOnWriteArrayList<CarNetToken>();
 
     private class TokenSet {
         private CarNetToken idToken = new CarNetToken();
         private CarNetToken vwToken = new CarNetToken();
         private String csrf = "";
+        private CarNetHttpClient http = new CarNetHttpClient();
     }
 
-    public void setup(CarNetHttpClient httpClient, CarNetBrandAuthenticator authenticator) {
-        this.http = httpClient;
-        this.authenticator = authenticator;
-    }
-
-    @Override
-    public String updateAuthorizationUrl(String url) throws CarNetException {
-        if (authenticator != null) {
-            return authenticator.updateAuthorizationUrl(url);
-        }
-        throw new CarNetException("No authenticator active");
+    public void setup(String tokenSetId, CarNetHttpClient httpClient) {
+        TokenSet tokens = getTokenSet(tokenSetId);
+        tokens.http = httpClient;
     }
 
     /**
@@ -111,25 +103,44 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
          * refresh fails.
          */
         String url = "", html = "", csrf = "";
-        String userId = "", idToken = "", accessToken = "", expiresIn = "";
+        String userId = "", idToken = "", accessToken = "", expiresIn = "", code = "", codeVerifier = "",
+                codeChallenge = "";
+        String state = UUID.randomUUID().toString();
+        String nonce = generateNonce();
         Map<String, String> headers = new LinkedHashMap<>();
         Map<String, String> data = new LinkedHashMap<>();
+        CarNetHttpClient http = tokens.http;
         try {
             logger.debug("{}: Logging in, account={}", config.vehicle.vin, config.account.user);
-            headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
-            headers.put(HttpHeader.ACCEPT.toString(),
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-            headers.put(HttpHeader.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded");
-            headers.put("x-requested-with", config.api.xrequest);
-            headers.put("upgrade-insecure-requests", "1");
 
+            String authUrl = CNAPI_OAUTH_AUTHORIZE_URL;
+            if (CNAPI_BRAND_VWID.equals(config.api.brand)) {
+                authUrl = http.get(
+                        "https://login.apps.emea.vwapps.io/authorize?nonce=NZ2Q3T6jak0E5pDh&redirect_uri=weconnect://authenticated",
+                        headers, false);
+                url = http.getRedirect();
+            } else {
+                headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
+                headers.put(HttpHeader.ACCEPT.toString(),
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+                headers.put(HttpHeader.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded");
+                headers.put("x-requested-with", config.api.xrequest);
+                headers.put("upgrade-insecure-requests", "1");
+
+                url = authUrl + "?client_id=" + urlEncode(config.api.clientId) + "&scope="
+                        + urlEncode(config.api.authScope).replace("%20", "+") + "&response_type="
+                        + urlEncode(config.api.responseType).replace("%20", "+") + "&redirect_uri="
+                        + urlEncode(config.api.redirect_uri) + "&state=" + state + "&nonce=" + nonce;
+                if (config.authenticator != null) {
+                    url = config.authenticator.updateAuthorizationUrl(url);
+                }
+                if (url.contains("code_challenge")) {
+                    codeVerifier = generateCodeVerifier();
+                    codeChallenge = generateCodeChallange(codeVerifier);
+                    url = url + "&code_challenge=" + codeChallenge;
+                }
+            }
             logger.debug("{}: OAuth: Get signin form", config.vehicle.vin);
-            String state = UUID.randomUUID().toString();
-            String nonce = generateNonce();
-            url = CNAPI_OAUTH_AUTHORIZE_URL + "?response_type=" + urlEncode(config.api.responseType) + "&client_id="
-                    + urlEncode(config.api.clientId) + "&redirect_uri=" + urlEncode(config.api.redirect_uri) + "&scope="
-                    + urlEncode(config.api.authScope) + "&state=" + state + "&nonce=" + nonce;
-            url = updateAuthorizationUrl(url);
             http.get(url, headers, false);
             url = http.getRedirect(); // Signin URL
             if (url.isEmpty()) {
@@ -185,16 +196,15 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
             while (count-- > 0) {
                 html = http.get(url, headers, false);
                 url = http.getRedirect(); // Continue URL
+                if (url.isEmpty()) {
+                    break; // end of redirects
+                }
+                if (url.contains("&code=")) {
+                    code = getUrlParm(url, "code");
+                }
                 if (url.contains("&userId")) {
                     userId = getUrlParm(url, "userId");
-                    break;
                 }
-                /*
-                 * if (url.contains("&code=")) {
-                 * authCode = getUrlParm(url, "code");
-                 * break;
-                 * }
-                 */
                 if (url.contains("&id_token=")) {
                     idToken = getUrlParm(url, "id_token");
                 }
@@ -203,7 +213,9 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
                 }
                 if (url.contains("&access_token=")) {
                     accessToken = getUrlParm(url, "access_token");
-                    break; // that's what we are looking for
+                }
+                if (url.contains("#state=")) {
+                    state = getUrlParm(url, "state", "#");
                 }
 
                 if (url.contains(config.api.redirect_uri)) {
@@ -215,7 +227,7 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
             logger.trace("{}: OAuth successful, idToken/userId was retrieved", config.vehicle.vin);
             tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
             tokens.csrf = csrf;
-        } catch (CarNetException | UnsupportedEncodingException e) {
+        } catch (CarNetException | UnsupportedEncodingException | NoSuchAlgorithmException e) {
             logger.warn("Login failed: {}", e.toString());
             throw new CarNetSecurityException("Login failed", e);
         }
@@ -227,24 +239,49 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
             CNApiToken token;
             String json = "";
 
-            // Last step: Request the access token from the VW token management
-            // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
-            // tokens. The tokenSetId provides access to that set.
-
-            logger.debug("{}: Get VW Token", config.vehicle.vin);
-            headers.clear();
-            headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
-            headers.put(CNAPI_HEADER_CLIENTID, config.api.xClientId);
-            headers.put(CNAPI_HEADER_HOST, "mbboauth-1d.prd.ece.vwg-connect.com");
-            headers.put(CNAPI_HEADER_APP, config.api.xappName);
-            headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
-            headers.put(HttpHeader.ACCEPT.toString(), "*/*");
-            data.clear();
-            data.put("grant_type", "id_token");
-            data.put("token", tokens.idToken.idToken);
-            data.put("scope", "sc2:fal");
-            json = http.post(CNAPI_URL_GET_SEC_TOKEN, headers, data, false);
-            token = fromJson(gson, json, CNApiToken.class);
+            if (CNAPI_BRAND_VWID.equals(config.api.brand)) { // config.api.xClientId.isEmpty()) {
+                // We Connect
+                logger.debug("{}: Login to We Connect", config.vehicle.vin);
+                headers.clear();
+                headers.put(CNAPI_HEADER_HOST, "login.apps.emea.vwapps.io");
+                data.clear();
+                /*
+                 * state: jwtstate,
+                 * id_token: jwtid_token,
+                 * redirect_uri: redirerctUri,
+                 * region: "emea",
+                 * access_token: jwtaccess_token,
+                 * authorizationCode: jwtauth_code,
+                 * });
+                 */
+                data.put("state", state);
+                data.put("id_token", idToken);
+                data.put("redirect_uri", config.api.redirect_uri);
+                data.put("region", "emea");
+                data.put("access_token", accessToken);
+                data.put("authorizationCode", code);
+                json = http.post("https://login.apps.emea.vwapps.io/login/v1", headers, data, true, false);
+                token = fromJson(gson, json, CNApiToken.class);
+                token.normalize();
+            } else {
+                // Last step: Request the access token from the VW token management
+                // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
+                // tokens. The tokenSetId provides access to that set.
+                logger.debug("{}: Get VW Token", config.vehicle.vin);
+                headers.clear();
+                headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
+                headers.put(CNAPI_HEADER_CLIENTID, config.api.xClientId);
+                headers.put(CNAPI_HEADER_HOST, "mbboauth-1d.prd.ece.vwg-connect.com");
+                headers.put(CNAPI_HEADER_APP, config.api.xappName);
+                headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
+                headers.put(HttpHeader.ACCEPT.toString(), "*/*");
+                data.clear();
+                data.put("grant_type", "id_token");
+                data.put("token", tokens.idToken.idToken);
+                data.put("scope", "sc2:fal");
+                json = http.post(CNAPI_URL_GET_SEC_TOKEN, headers, data, false);
+                token = fromJson(gson, json, CNApiToken.class);
+            }
             if ((token.accessToken == null) || token.accessToken.isEmpty()) {
                 throw new CarNetSecurityException("Authentication failed: Unable to get access token!");
             }
@@ -285,6 +322,9 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
          * 2. Send a challenge to the token manager
          * 3. Send authentication and request token, save token to the cache
          */
+        TokenSet tokens = getTokenSet(config.tokenSetId);
+        CarNetHttpClient http = tokens.http;
+
         String accessToken = createVwToken(config);
 
         // "User-Agent": "okhttp/3.7.0",
@@ -293,7 +333,7 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
         // "Accept": "application/json",
         // "Authorization": "Bearer " + self.vwToken.get("access_token"),
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
+        headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
         headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
         headers.put(CNAPI_HEADER_APP, config.api.xappName);
         headers.put(HttpHeader.ACCEPT.toString(), CNAPI_ACCEPTT_JSON);
@@ -352,6 +392,7 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
     public boolean refreshTokens(CarNetCombinedConfig config) throws CarNetException {
         try {
             TokenSet tokens = getTokenSet(config.tokenSetId);
+            CarNetHttpClient http = tokens.http;
             refreshToken(config, tokens.vwToken);
 
             Iterator<CarNetToken> it = securityTokens.iterator();
@@ -386,6 +427,7 @@ public class CarNetTokenManager implements CarNetBrandAuthenticator {
         }
 
         TokenSet tokens = getTokenSet(config.tokenSetId);
+        CarNetHttpClient http = tokens.http;
         if (token.isExpired()) {
             logger.debug("{}: Refreshing Token {}", config.vehicle.vin, token);
             try {

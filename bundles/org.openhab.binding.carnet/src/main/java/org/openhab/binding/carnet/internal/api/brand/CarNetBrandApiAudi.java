@@ -33,7 +33,22 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
     public static final String CNAPI_URL_AUDI_GET_TOKEN = "https://id.audi.com/v1/token";
     public static final String CNAPI_AUDIURL_OPERATIONS = "https://msg.audi.de/myaudi/vehicle-management/v2/vehicles";
 
-    public CarNetBrandApiAudi() {
+    private static CarNetApiProperties properties = new CarNetApiProperties();
+    static {
+        properties.brand = CNAPI_BRAND_AUDI;
+        properties.xcountry = "DE";
+        properties.apiDefaultUrl = "https://msg.audi.de/fs-car";
+        properties.oidcConfigUrl = "https://app-api.live-my.audi.com/myaudiappidk/v1/openid-configuration";
+        properties.clientId = "09b6cbec-cd19-4589-82fd-363dfa8c24da@apps_vw-dilab_com";
+        properties.xClientId = "77869e21-e30a-4a92-b016-48ab7d3db1d8";
+        // properties.authScope = "address profile badge birthdate birthplace nationalIdentifier nationality profession
+        // email vin phone nickname name picture mbb gallery openid";
+        properties.authScope = "openid profile mbb";
+        properties.redirect_uri = "myaudi:///";
+        properties.responseType = "token id_token";
+        properties.xappVersion = "3.22.0\"";
+        properties.xappName = "myAudi";
+        properties.xrequest = "de.myaudi.mobile.assistant";
     }
 
     public CarNetBrandApiAudi(CarNetHttpClient httpClient, CarNetTokenManager tokenManager) {
@@ -42,19 +57,7 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
 
     @Override
     public CarNetApiProperties getProperties() {
-        CarNetApiProperties properties = new CarNetApiProperties();
-        properties.brand = CNAPI_BRAND_AUDI;
-        properties.xcountry = "DE";
-        properties.apiDefaultUrl = "https://msg.audi.de/fs-car";
-        properties.oidcConfigUrl = "https://app-api.live-my.audi.com/myaudiappidk/v1/openid-configuration";
-        properties.clientId = "09b6cbec-cd19-4589-82fd-363dfa8c24da@apps_vw-dilab_com";
-        properties.xClientId = "77869e21-e30a-4a92-b016-48ab7d3db1d8";
-        properties.authScope = "address profile badge birthdate birthplace nationalIdentifier nationality profession email vin phone nickname name picture mbb gallery openid";
-        properties.redirect_uri = "myaudi:///";
-        properties.responseType = "token id_token";
-        properties.xappVersion = "3.22.0\"";
-        properties.xappName = "myAudi";
-        properties.xrequest = "de.myaudi.mobile.assistant";
+
         return properties;
     }
 

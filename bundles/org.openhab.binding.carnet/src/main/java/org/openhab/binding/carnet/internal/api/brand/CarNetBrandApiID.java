@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
+import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_BRAND_VWID;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
@@ -32,12 +34,13 @@ public class CarNetBrandApiID extends CarNetApiBase {
     @Override
     public CarNetApiProperties getProperties() {
         CarNetApiProperties properties = new CarNetApiProperties();
-        properties.brand = "VW"; // CNAPI_BRAND_VWID;
+        properties.brand = CNAPI_BRAND_VWID;
         properties.xcountry = "DE";
-        properties.apiDefaultUrl = "";
+        properties.apiDefaultUrl = "https://mobileapi.apps.emea.vwapps.io";
+        properties.oidcConfigUrl = "https://identity.vwgroup.io/.well-known/openid-configuration";
         properties.clientId = "a24fba63-34b3-4d43-b181-942111e6bda8@apps_vw-dilab_com";
-        properties.xClientId = "";
-        properties.authScope = "openid profile badge cars dealers birthdate vin";
+        properties.xClientId = "1e63bd93-ce66-4aa3-b373-0ec56247e1d7";
+        properties.authScope = "openid profile badge cars dealers vin";
         properties.redirect_uri = "weconnect://authenticated";
         properties.xrequest = "com.volkswagen.weconnect";
         properties.responseType = "code id_token token";
@@ -45,4 +48,14 @@ public class CarNetBrandApiID extends CarNetApiBase {
         properties.xappVersion = "";
         return properties;
     }
+    /*
+     * @Override
+     * public String updateAuthorizationUrl(String url) throws CarNetException {
+     * String codeVerifier = generateCodeVerifier();
+     * String codeChallenge = generateCodeChallange(codeVerifier);
+     * return url + "&prompt=login&code_challenge_method=s256&code_challenge=" + codeChallenge;
+     * }
+     *
+     * }
+     */
 }

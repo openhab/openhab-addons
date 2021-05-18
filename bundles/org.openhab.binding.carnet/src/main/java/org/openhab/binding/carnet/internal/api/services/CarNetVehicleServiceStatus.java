@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.services;
+package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
@@ -30,10 +30,11 @@ import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
+import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
-import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -67,15 +68,27 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
                 try {
                     ChannelIdMapEntry definition = idMapper.find(field.id);
                     if (definition != null) {
+                        if (definition.channelName.isEmpty()) {
+                            logger.debug("{}: {}={}{}, no channel defined -> ignore", thingId, definition.symbolicName,
+                                    getString(field.value), getString(field.unit));
+                            continue;
+                        }
+
                         logger.info("{}: {}={}{} (channel {}#{})", thingId, definition.symbolicName,
                                 getString(field.value), getString(field.unit), definition.groupName,
                                 definition.channelName);
-                        if (!definition.channelName.isEmpty()) {
-                            if (!definition.channelName.startsWith(CHANNEL_GROUP_TIRES) || !field.value.contains("1")) {
-                                if (!channels.containsKey(definition.id)) {
-                                    channels.put(definition.id, definition);
-                                    updated = true;
-                                }
+                        if ((definition.symbolicName.startsWith("STATE") || definition.symbolicName.startsWith("LOCK"))
+                                && field.value.equals("0")) {
+                            // Data is reported, but equippment is not available, e.g. convertable top
+                            logger.debug("{}: Data point not available, removing channel {}", thingId,
+                                    definition.channelName);
+                            definition.disabled = true;
+                            continue;
+                        }
+                        if (!definition.channelName.startsWith(CHANNEL_GROUP_TIRES) || !field.value.contains("1")) {
+                            if (!channels.containsKey(definition.id)) {
+                                channels.put(definition.id, definition);
+                                updated = true;
                             }
                         }
                     } else {
@@ -120,6 +133,7 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
                             logger.debug("Updading channel {} with value {}", channel.getUID(), getString(field.value));
                             switch (definition.itemType) {
                                 case ITEMT_SWITCH:
+                                case ITEMT_CONTACT:
                                     updateSwitchChannel(channel, definition, field);
                                     break;
                                 case ITEMT_STRING:
@@ -241,25 +255,31 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
 
     private void updateSwitchChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
         int value = Integer.parseInt(getString(field.value));
-        boolean on;
-        if (definition.symbolicName.toUpperCase().contains("STATE1_")) {
-            on = value == 1; // 1=active, 0=not active
-        } else if (definition.symbolicName.toUpperCase().contains("STATE2_")) {
-            on = value == 2; // 3=open, 2=closed
-        } else if (definition.symbolicName.toUpperCase().contains("STATE3_")
-                || definition.symbolicName.toUpperCase().contains("SAFETY_")) {
-            on = value == 3; // 2=open, 3=closed
-        } else if (definition.symbolicName.toUpperCase().contains("LOCK2_")) {
-            // mark a closed lock ON
-            on = value == 2; // 2=open, 3=closed
-        } else if (definition.symbolicName.toUpperCase().contains("LOCK3_")) {
-            // mark a closed lock ON
-            on = value == 3; // 3=open, 2=closed
-        } else {
-            on = value == 1;
-        }
+        State state;
 
-        State state = on ? OnOffType.ON : OnOffType.OFF;
+        if (value == 0) {
+            state = UnDefType.UNDEF;
+        } else {
+            boolean on;
+            if (definition.symbolicName.toUpperCase().contains("STATE1_")) {
+                on = value == 1; // 1=active, 0=not active
+            } else if (definition.symbolicName.toUpperCase().contains("STATE2_")) {
+                on = value == 2; // 3=open, 2=closed
+            } else if (definition.symbolicName.toUpperCase().contains("STATE3_")
+                    || definition.symbolicName.toUpperCase().contains("SAFETY_")) {
+                on = value == 3; // 2=open, 3=closed
+            } else if (definition.symbolicName.toUpperCase().contains("LOCK2_")) {
+                // mark a closed lock ON
+                on = value == 2; // 2=open, 3=closed
+            } else if (definition.symbolicName.toUpperCase().contains("LOCK3_")) {
+                // mark a closed lock ON
+                on = value == 3; // 3=open, 2=closed
+            } else {
+                on = value == 1;
+            }
+            state = ITEMT_SWITCH.equals(definition.itemType) ? (on ? OnOffType.ON : OnOffType.OFF)
+                    : (on ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+        }
         logger.debug("{}: Map value {} to state {} for channe {}, symnolicName{}", thingId, value, state,
                 definition.channelName, definition.symbolicName);
         thingHandler.updateChannel(channel, state);
