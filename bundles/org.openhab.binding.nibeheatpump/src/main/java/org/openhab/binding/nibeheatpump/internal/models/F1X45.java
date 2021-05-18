@@ -32,7 +32,7 @@ public class F1X45 {
             .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
                 {
             // @formatter:off
-                    put(40004, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT1 Outdoor temp"));
+                    put(40004, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , 0.11, -100, 100, "BT1 Outdoor temp"));
                     put(40005, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP23-BT2 Supply temp S4"));
                     put(40006, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP22-BT2 Supply temp S3"));
                     put(40007, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP21-BT2 Supply temp S2"));
