@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.habpanelfilter.internal.sse;
+package org.openhab.binding.habpanelfilter.internal.sse.dto;
 
 import org.osgi.dto.DTO;
 

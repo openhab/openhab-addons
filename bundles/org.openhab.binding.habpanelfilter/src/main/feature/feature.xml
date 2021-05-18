@@ -4,9 +4,13 @@
 
 	<feature name="openhab-binding-habpanelfilter" description="HabPanelFilter Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle depndency="true">mvn:org.openhab.core.bundles/org.openhab.core.io.rest/${project.version}</bundle>
-		<bundle depndency="true">mvn:org.openhab.core.bundles/org.openhab.core.io.rest.core/${project.version}</bundle>
-		<bundle depndency="true">mvn:org.openhab.core.bundles/org.openhab.core.io.rest.sse/${project.version}</bundle>
+		<feature>openhab-core-model-item</feature>
+		<feature>openhab-core-base</feature>
+		<feature>openhab.tp-gson</feature>
+		<feature>openhab.tp-jaxb</feature>
+		<feature>openhab.tp-jaxws</feature>
+		<feature>openhab-core-io-transport-coap</feature>
+		<feature>openhab-core-io-rest-auth</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.habpanelfilter/${project.version}</bundle>
 	</feature>
 </features>

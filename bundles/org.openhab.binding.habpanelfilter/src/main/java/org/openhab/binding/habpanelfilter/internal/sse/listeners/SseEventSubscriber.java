@@ -10,14 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.habpanelfilter.internal.listeners;
+package org.openhab.binding.habpanelfilter.internal.sse.listeners;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.habpanelfilter.internal.web.FilteredEventsResource;
+import org.openhab.binding.habpanelfilter.internal.sse.SsePublisher;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventSubscriber;
@@ -30,15 +29,15 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component
 @NonNullByDefault
-public class ItemEventSubscriber implements EventSubscriber {
+public class SseEventSubscriber implements EventSubscriber {
 
-    private final Set<String> subscribedEventTypes = Collections.singleton(EventSubscriber.ALL_EVENT_TYPES);
+    private final Set<String> subscribedEventTypes = Set.of(EventSubscriber.ALL_EVENT_TYPES);
 
-    private final FilteredEventsResource filteredEventsResource;
+    private final SsePublisher ssePublisher;
 
     @Activate
-    public ItemEventSubscriber(final @Reference FilteredEventsResource filteredEventsResource) {
-        this.filteredEventsResource = filteredEventsResource;
+    public SseEventSubscriber(final @Reference SsePublisher ssePublisher) {
+        this.ssePublisher = ssePublisher;
     }
 
     @Override
@@ -53,6 +52,6 @@ public class ItemEventSubscriber implements EventSubscriber {
 
     @Override
     public void receive(Event event) {
-        filteredEventsResource.broadcastEvent(event);
+        ssePublisher.broadcast(event);
     }
 }

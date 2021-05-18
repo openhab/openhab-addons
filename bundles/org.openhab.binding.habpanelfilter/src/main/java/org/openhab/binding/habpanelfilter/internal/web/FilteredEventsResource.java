@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -28,6 +29,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
@@ -35,8 +37,12 @@ import javax.ws.rs.sse.SseEventSink;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.habpanelfilter.internal.HabPanelFilterConfig;
-import org.openhab.binding.habpanelfilter.internal.sse.*;
+import org.openhab.binding.habpanelfilter.internal.sse.SsePublisher;
+import org.openhab.binding.habpanelfilter.internal.sse.dto.EventDTO;
+import org.openhab.binding.habpanelfilter.internal.sse.util.SseUtil;
+import org.openhab.core.auth.Role;
 import org.openhab.core.events.Event;
+import org.openhab.core.io.rest.LocaleService;
 import org.openhab.core.io.rest.RESTConstants;
 import org.openhab.core.io.rest.RESTResource;
 import org.openhab.core.io.rest.SseBroadcaster;
@@ -71,42 +77,104 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 /**
  * @author Unspecified
  */
-@Component
+@Component(service = { RESTResource.class, SsePublisher.class })
 @JaxrsResource
-@JaxrsName(FilteredEventsResource.PATH_EVENTS_FILTERED)
+@JaxrsName(FilteredEventsResource.PATH_FILTERED_EVENTS)
 @JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + RESTConstants.JAX_RS_NAME + ")")
 @JSONRequired
-@Path(FilteredEventsResource.PATH_EVENTS_FILTERED)
-@Tag(name = FilteredEventsResource.PATH_EVENTS_FILTERED)
+@Path(FilteredEventsResource.PATH_FILTERED_EVENTS)
+@RolesAllowed({ Role.USER, Role.ADMIN })
+@Tag(name = FilteredEventsResource.PATH_FILTERED_EVENTS)
 @Singleton
 @NonNullByDefault
-public class FilteredEventsResource implements RESTResource {
+public class FilteredEventsResource implements RESTResource, SsePublisher {
 
-    public static final String PATH_EVENTS_FILTERED = "events-filtered";
+    // The URI path to this resource
+    public static final String PATH_FILTERED_EVENTS = "events-filtered";
 
     private static final String X_ACCEL_BUFFERING_HEADER = "X-Accel-Buffering";
 
     private final Logger logger = LoggerFactory.getLogger(FilteredEventsResource.class);
 
-    private @NonNullByDefault({}) ItemRegistry itemRegistry;
-
     private @Context @NonNullByDefault({}) Sse sse;
+
+    private final ItemRegistry itemRegistry;
+    private final LocaleService localeService;
 
     private final SseBroadcaster<Object> topicBroadcaster = new SseBroadcaster<>();
 
-    private ExecutorService executorService;
+    private Map<String, State> itemStates = new HashMap<>();
+
+    private final ExecutorService executorService;
 
     @Activate
-    public FilteredEventsResource(@Reference ItemRegistry itemRegistry) {
+    public FilteredEventsResource(final @Reference ItemRegistry itemRegistry,
+            final @Reference LocaleService localeService) {
         logger.info("FilteredEventsResource created ...");
         this.executorService = Executors.newSingleThreadExecutor();
         this.itemRegistry = itemRegistry;
+        this.localeService = localeService;
     }
 
     @Deactivate
     public void deactivate() {
         topicBroadcaster.close();
         executorService.shutdown();
+    }
+
+    @Override
+    public void broadcast(Event event) {
+        if (sse == null) {
+            logger.trace("broadcast skipped (no one listened since activation)");
+            return;
+        }
+
+        executorService.execute(() -> {
+            OutboundSseEvent outboundEvent = buildEvent(event);
+            if (outboundEvent == null)
+                return;
+            topicBroadcaster.send(outboundEvent);
+        });
+    }
+
+    private @Nullable Item getItem(String itemname) {
+        return itemRegistry.get(itemname);
+    }
+
+    private @Nullable OutboundSseEvent buildEvent(Event event) {
+        String type = event.getType();
+        if (type.equals(ItemStateChangedEvent.TYPE) || type.equals(ItemStateEvent.TYPE)
+                || type.equals(ItemUpdatedEvent.TYPE) || type.equals(GroupItemStateChangedEvent.TYPE)) {
+
+            final EventDTO eventDTO = SseUtil.buildDTO(event);
+
+            String[] topicSplits = eventDTO.topic.split("/");
+            if (topicSplits.length < 3) {
+                return null;
+            }
+            String itemName = topicSplits[2];
+            Item item = getItem(itemName);
+            if (item == null) {
+                return null;
+            }
+            if (!item.getGroupNames().contains(HabPanelFilterConfig.FILTER_GROUP_NAME)) {
+                return null;
+            }
+
+            if (!itemStates.containsKey(item.getName()))
+                itemStates.put(item.getName(), item.getState());
+
+            if (!itemStates.get(item.getName()).equals(item.getState())) {
+                itemStates.replace(item.getName(), item.getState());
+
+                EnrichedItemDTO dto = EnrichedItemDTOMapper.map(item, true, null, null, Locale.US);
+                eventDTO.payload = (new Gson()).toJson(dto);
+
+                final OutboundSseEvent sseEvent = SseUtil.buildEvent(sse.newEventBuilder(), eventDTO);
+                return sseEvent;
+            }
+        }
+        return null;
     }
 
     private void addCommonResponseHeaders(final HttpServletResponse response) {
@@ -132,65 +200,13 @@ public class FilteredEventsResource implements RESTResource {
             @ApiResponse(responseCode = "400", description = "Topic is empty or contains invalid characters") })
     public void listen(@Context final SseEventSink sseEventSink, @Context final HttpServletResponse response,
             @QueryParam("topics") @Parameter(description = "topics") String eventFilter) {
+        if (!SseUtil.isValidTopicFilter(eventFilter)) {
+            response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+            return;
+        }
+
         topicBroadcaster.add(sseEventSink, new Object());
+
         addCommonResponseHeaders(response);
-    }
-
-    private Map<String, State> itemStates = new HashMap<>();
-
-    public void broadcastEvent(final Event event) {
-        executorService.execute(new Runnable() {
-            private @Nullable Item getItem(String itemname) {
-                return itemRegistry.get(itemname);
-            }
-
-            private @Nullable OutboundSseEvent buildEvent(Event event) {
-                String type = event.getType();
-                if (type.equals(ItemStateChangedEvent.TYPE) || type.equals(ItemStateEvent.TYPE)
-                        || type.equals(ItemUpdatedEvent.TYPE) || type.equals(GroupItemStateChangedEvent.TYPE)) {
-
-                    EventDTO eventBean = new EventDTO();
-                    eventBean.type = event.getType();
-                    eventBean.topic = event.getTopic();
-                    eventBean.payload = event.getPayload();
-
-                    String[] topicSplits = eventBean.topic.split("/");
-                    if (topicSplits.length < 3) {
-                        return null;
-                    }
-                    String itemName = topicSplits[2];
-                    Item item = getItem(itemName);
-                    if (item == null) {
-                        return null;
-                    }
-                    if (!item.getGroupNames().contains(HabPanelFilterConfig.FILTER_GROUP_NAME)) {
-                        return null;
-                    }
-
-                    if (!itemStates.containsKey(item.getName()))
-                        itemStates.put(item.getName(), item.getState());
-
-                    if (!itemStates.get(item.getName()).equals(item.getState())) {
-                        itemStates.replace(item.getName(), item.getState());
-
-                        EnrichedItemDTO dto = EnrichedItemDTOMapper.map(item, true, null, null, Locale.US);
-                        eventBean.payload = (new Gson()).toJson(dto);
-
-                        OutboundSseEvent sseEvent = sse.newEventBuilder().name("message")
-                                .mediaType(MediaType.APPLICATION_JSON_TYPE).data(event).build();
-                        return sseEvent;
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            public void run() {
-                OutboundSseEvent outboundEvent = buildEvent(event);
-                if (outboundEvent == null)
-                    return;
-                topicBroadcaster.send(outboundEvent);
-            }
-        });
     }
 }
