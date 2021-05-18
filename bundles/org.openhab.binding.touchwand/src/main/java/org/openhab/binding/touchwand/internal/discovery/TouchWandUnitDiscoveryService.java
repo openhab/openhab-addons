@@ -31,7 +31,6 @@ import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitFromJson;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -52,7 +51,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+        implements ThingHandlerService {
 
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
