@@ -9,6 +9,8 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 ## Supported Things
 
 This binding supports switches, shutters dimmers alarm sensors and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
+it also supports AcWand™ - smart control for your air conditioner controller 
+[AcWand](http://www.touchwand.com/products/touchwand-acwand)
 
 ## Control and Status 
 
@@ -18,6 +20,7 @@ This binding supports switches, shutters dimmers alarm sensors and wall controll
 4. **wallcontroller** - control - LONG/SHORT
 5. **alarmsensor** - status channels depend on alarm sensor type
 5. **bsensor** - binary status channels depend on alarm sensor type (motion, door , smoke)
+6. **thermostat** - AcWand™ smart control for your air conditioner ()
 
 ## Discovery
 
@@ -46,12 +49,19 @@ No thing configuration is needed
 note **Touchwand Wanderfull™** supports various types of alarm sensors such as water leak, door/window sensor and motion sensor.
 Alarm Sensor thing represents a generic sensor, relevant sensor channels will be displayed once a sensor is added as a Thing.
 
+## Switch Shutters Channels 
 
 | Channel Type ID   | Item Type          | Description                                                                                                                             
 |-------------------|--------------------|-----------------------------------------------------------------------|
 | switch            | Switch             | This channel supports switching the device on and off.                |
 | shutter           | Rollershutter      | This channel controls the shutter position                            |
 | brightness        | Dimmer             | This channel supports adjusting the brightness value.                 |
+| wallaction        | String             | This channel indicate SHORT or LONG wallcontroller button pressed     |
+
+## Alarm Sensors Channels 
+
+| Channel Type ID   | Item Type          | Description                                                                                                                             
+|-------------------|--------------------|-----------------------------------------------------------------------|
 | illumination      | Number:Illuminance | This channel shows the current illuminance measured by the sensor.    |
 | temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.    |
 | leak              | Switch             | This channel alert when water leak is detected by the sensor          |
@@ -60,7 +70,7 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 | isOpen            | Contact            | This channel shows the status of Door/Window sensor.                  |
 | battery_level     | Number             | This channel shows the battery level.                                 |
 | battery_low       | Switch             | This channel indicates whether the battery is low or not.             |
-| wallaction        | String             | This channel indicate SHORT or LONG wallcontroller button pressed     |
+
 
 
 
