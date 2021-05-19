@@ -124,6 +124,15 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private boolean getBooleanConfig(String key, boolean defaultValue) {
+        Object value = getConfig().get(key);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        } else {
+            return defaultValue;
+        }
+    }
+
     @Override
     public void initialize() {
         logger.debug("initialize() for Bridge[{}].", getThing().getUID());
@@ -134,6 +143,8 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         Integer bridgePort = getIntConfig(NukiBindingConstants.CONFIG_PORT);
         @Nullable
         String token = getStringConfig(NukiBindingConstants.CONFIG_API_TOKEN);
+        boolean secureToken = getBooleanConfig(NukiBindingConstants.CONFIG_SECURE_TOKEN, true);
+
         manageCallbacks = (Boolean) config.get(NukiBindingConstants.CONFIG_MANAGECB);
         if (bridgeIpLocal == null || bridgePort == null) {
             logger.debug("NukiBridgeHandler[{}] is not initializable, IP setting is unset in the configuration!",
@@ -144,7 +155,8 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "apiToken setting is unset");
         } else {
-            nukiHttpClient = new NukiHttpClient(httpClient, bridgeIpLocal, bridgePort, token);
+            NukiLinkBuilder linkBuilder = new NukiLinkBuilder(bridgeIpLocal, bridgePort, token, secureToken);
+            nukiHttpClient = new NukiHttpClient(httpClient, linkBuilder);
             scheduler.execute(this::initializeHandler);
             checkBridgeOnlineJob = scheduler.scheduleWithFixedDelay(this::checkBridgeOnline, JOB_INTERVAL, JOB_INTERVAL,
                     TimeUnit.SECONDS);
@@ -198,7 +210,7 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void checkBridgeOnline() {
+    public void checkBridgeOnline() {
         logger.debug("checkBridgeOnline():bridgeIp[{}] status[{}]", bridgeIp, getThing().getStatus());
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
             logger.debug("Requesting BridgeInfo to ensure Bridge[{}] is online.", bridgeIp);

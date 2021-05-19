@@ -27,6 +27,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NukiLinkBuilder} class helps with constructing links to various Nuki APIs.
@@ -51,8 +53,10 @@ public class NukiLinkBuilder {
     private final String host;
     private final int port;
     private final String token;
+    private final boolean secureToken;
     private final SecureRandom random = new SecureRandom();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+    private final Logger logger = LoggerFactory.getLogger(NukiLinkBuilder.class);
 
     /**
      * Create new instance of link builder
@@ -61,10 +65,12 @@ public class NukiLinkBuilder {
      * @param port Port of Nuki bridge
      * @param token Token for authenticating API calls
      */
-    public NukiLinkBuilder(String host, int port, String token) {
+    public NukiLinkBuilder(String host, int port, String token, boolean secureToken) {
         this.host = host;
         this.port = port;
         this.token = token;
+        this.secureToken = secureToken;
+        logger.debug("Instantiating NukiLinkBuilder({}:{}, secured: {})", host, port, secureToken);
     }
 
     public static URI getAuthUri(String host, int port) {
@@ -114,11 +120,23 @@ public class NukiLinkBuilder {
     }
 
     private URI buildWithAuth(UriBuilder builder) {
+        if (secureToken) {
+            return buildWithHashedToken(builder);
+        } else {
+            return buildWithPlainToken(builder);
+        }
+    }
+
+    private URI buildWithHashedToken(UriBuilder builder) {
         String ts = formatter.format(OffsetDateTime.now(ZoneOffset.UTC));
         Integer rnr = random.nextInt(65536);
         String hashedToken = sha256(ts + "," + rnr + "," + token);
 
         return builder.queryParam("ts", ts).queryParam("rnr", rnr).queryParam("hash", hashedToken).build();
+    }
+
+    private URI buildWithPlainToken(UriBuilder builder) {
+        return builder.queryParam("token", token).build();
     }
 
     public static String sha256(String data) {

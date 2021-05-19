@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +41,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -210,21 +212,22 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Thing is not ONLINE; command[{}] for channelUID[{}] is ignored", command, channelUID);
-            return;
-        }
-        if (command instanceof RefreshType) {
-            BridgeLockStateResponse bridgeLockStateResponse = getNukiHttpClient().getBridgeLockState(nukiId,
-                    getDeviceType());
-            if (handleResponse(bridgeLockStateResponse, channelUID.getAsString(), command.toString())) {
-                if (!doHandleRefreshCommand(channelUID, command, bridgeLockStateResponse)) {
-                    logger.debug("Command[{}] for channelUID[{}] not implemented!", command, channelUID);
+        } else if (command instanceof RefreshType) {
+            scheduler.execute(() -> {
+                BridgeLockStateResponse bridgeLockStateResponse = getNukiHttpClient().getBridgeLockState(nukiId,
+                        getDeviceType());
+                if (handleResponse(bridgeLockStateResponse, channelUID.getAsString(), command.toString())) {
+                    if (!doHandleRefreshCommand(channelUID, command, bridgeLockStateResponse)) {
+                        logger.debug("Command[{}] for channelUID[{}] not implemented!", command, channelUID);
+                    }
                 }
-            }
-            return;
-        }
-
-        if (!doHandleCommand(channelUID, command)) {
-            logger.debug("Unexpected command[{}] for channelUID[{}]!", command, channelUID);
+            });
+        } else {
+            scheduler.execute(() -> {
+                if (!doHandleCommand(channelUID, command)) {
+                    logger.debug("Unexpected command[{}] for channelUID[{}]!", command, channelUID);
+                }
+            });
         }
     }
 
@@ -271,6 +274,7 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
                     nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage(), nukiBaseResponse.isSuccess());
         }
         logger.debug("Could not handle command[{}] for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
+
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, nukiBaseResponse.getMessage());
 
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK, OnOffType.OFF, Function.identity());
@@ -279,8 +283,21 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_DOOR_STATE, NukiBindingConstants.DOORSENSOR_STATES_UNKNOWN,
                 DecimalType::new);
 
-        startReInitJob();
+        withBridgeAsync(bridge -> {
+            bridge.checkBridgeOnline();
+            startReInitJob();
+        });
         return false;
+    }
+
+    private void withBridgeAsync(Consumer<NukiBridgeHandler> handler) {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof NukiBridgeHandler) {
+                scheduler.execute(() -> handler.accept((NukiBridgeHandler) bridgeHandler));
+            }
+        }
     }
 
     private void startReInitJob() {
