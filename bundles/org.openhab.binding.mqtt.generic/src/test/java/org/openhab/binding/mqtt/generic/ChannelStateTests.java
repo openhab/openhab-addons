@@ -156,7 +156,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalTest() {
-        NumberValue value = new NumberValue(null, null, new BigDecimal(10), null);
+        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10), null);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -174,7 +174,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalFractionalTest() {
-        NumberValue value = new NumberValue(null, null, new BigDecimal(10.5), null);
+        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10.5), null);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -183,6 +183,36 @@ public class ChannelStateTests {
 
         c.processMessage("state", "INCREASE".getBytes());
         assertThat(value.getChannelState().toString(), is("16.0"));
+    }
+
+    @Test
+    public void receiveDecimalUnitTest() {
+        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10), "W");
+        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
+        c.start(connection, mock(ScheduledExecutorService.class), 100);
+
+        c.processMessage("state", "15".getBytes());
+        assertThat(value.getChannelState().toString(), is("15 W"));
+
+        c.processMessage("state", "INCREASE".getBytes());
+        assertThat(value.getChannelState().toString(), is("25 W"));
+
+        c.processMessage("state", "DECREASE".getBytes());
+        assertThat(value.getChannelState().toString(), is("15 W"));
+
+        verify(channelStateUpdateListener, times(3)).updateChannelState(eq(channelUID), any());
+    }
+
+    @Test
+    public void receiveDecimalAsPercentageUnitTest() {
+        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10), "%");
+        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
+        c.start(connection, mock(ScheduledExecutorService.class), 100);
+
+        c.processMessage("state", "63.7".getBytes());
+        assertThat(value.getChannelState().toString(), is("63.7 %"));
+
+        verify(channelStateUpdateListener, times(1)).updateChannelState(eq(channelUID), any());
     }
 
     @Test
