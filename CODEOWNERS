@@ -250,6 +250,7 @@
 /bundles/org.openhab.binding.plugwiseha/ @lsiepel
 /bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.proteusecometer/ @2chilled
+/bundles/org.openhab.binding.prowl/ @octa22
 /bundles/org.openhab.binding.publictransportswitzerland/ @jeremystucki
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.pushbullet/ @hakan42
