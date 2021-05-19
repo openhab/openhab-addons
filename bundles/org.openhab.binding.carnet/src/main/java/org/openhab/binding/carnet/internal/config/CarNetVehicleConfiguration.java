@@ -29,5 +29,6 @@ public class CarNetVehicleConfiguration {
     public int numActionHistory = 1; // number of entries from action history
     public int numDestinations = 1; // number of entries from the destination history;
 
+    public boolean enableAddressLookup = false;
     public Integer pollingInterval = 15;
 }

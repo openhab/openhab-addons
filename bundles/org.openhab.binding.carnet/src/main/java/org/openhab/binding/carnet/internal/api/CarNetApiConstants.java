@@ -151,8 +151,8 @@ public class CarNetApiConstants {
     public static final String CNAPI_ACTION_VEHICLE_STATUS_REPORT_GET_STORED_VEHICLE_DATA = "G_SVDATA";
 
     public static final String CNAPI_HEATER_SOURCE_AUX = "auxiliary";
-    public static final String CNAPI_HEATER_SOURCE_AUTOMATIC = "automatic";
     public static final String CNAPI_HEATER_SOURCE_ELECTRIC = "electric";
+    public static final String CNAPI_HEATER_SOURCE_AUTOMATIC = "automatic";
 
     public static final String CNAPI_SERVICE_TRIPSTATS = "tripstatistics";
     public static final String CNAPI_TRIP_SHORT_TERM = "shortTerm";

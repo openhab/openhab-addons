@@ -60,6 +60,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehiclePos
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -319,27 +320,39 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 CNEluActionHistory.class).actionsResponse;
     }
 
-    public String controlClimater(boolean start) throws CarNetException {
-        String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + (start
-                ? "<action><type>startClimatisation</type>" + "<settings><heaterSource>" + CNAPI_HEATER_SOURCE_ELECTRIC
-                        + "</heaterSource></settings>" + "</action>"
-                : "<action><type>stopClimatisation</type></action>");
+    public String controlClimater(boolean start, String heaterSource) throws CarNetException {
+        String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8";
+        String body;
+        if (start) {
+            if ((config.api.apiLevelClimatisation == 1) || heaterSource.isEmpty()) {
+                // simplified format without header source
+                body = "<?xml version=\"1.0\" encoding= \"UTF-8\" ?>\n<action>\n<type>startClimatisation</type>\n</action>";
+            } else {
+                // standard format with header source
+                body = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+                        + "<action><type>startClimatisation</type>"
+                        + "<settings><heaterSource></heaterSource></settings>" + "</action>";
+            }
+        } else {
+            // stop climater
+            body = "<action><type>stopClimatisation</type></action>";
+        }
         return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions",
                 CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION,
                 start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP, false,
-                "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8", data);
+                contentType, body);
     }
 
-    public String controlClimaterTemp(double tempC) throws CarNetException {
+    public String controlClimaterTemp(double tempC, String heaterSource) throws CarNetException {
         try {
             int tempdK = (int) SIUnits.CELSIUS.getConverterToAny(DKELVIN).convert(tempC);
+            String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8";
             String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + "<action><type>setSettings</type><settings>"
                     + "<targetTemperature>" + tempdK + "</targetTemperature>"
                     + "<climatisationWithoutHVpower>false</climatisationWithoutHVpower>" + "<heaterSource>"
-                    + CNAPI_HEATER_SOURCE_ELECTRIC + "</heaterSource>" + "</settings></action>";
+                    + heaterSource + "</heaterSource>" + "</settings></action>";
             return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING,
-                    CNAPI_ACTION_REMOTE_HEATING_QUICK_START, false,
-                    "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8", data);
+                    CNAPI_ACTION_REMOTE_HEATING_QUICK_START, false, contentType, data);
         } catch (IncommensurableException e) {
             return CNAPI_REQUEST_ERROR;
         }
@@ -355,14 +368,26 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public String controlVentilation(boolean start, int duration) throws CarNetException {
+        String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
-        String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><performAction xmlns=\"http://audi.de/connect/rs\">"
-                + (start ? "<quickstart><active>true</active>" + "<climatisationDuration>" + duration
-                        + "</climatisationDuration>" + "<startMode>ventilation</startMode></quickstart>"
-                        : "<quickstop><active>false</active></quickstop>")
-                + "</performAction>";
+        if (config.api.apiLevelVentilation == 2) {
+            // Version 2.0.2 format
+            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
+            body = start
+                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"ventilation\",\"active\":true,\"climatisationDuration\";"
+                            + duration + "}}}"
+                    : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
+        } else {
+            // Version 2.0 format
+            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml";
+            body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><performAction xmlns=\"http://audi.de/connect/rs\">"
+                    + (start ? "<quickstart><active>true</active>" + "<climatisationDuration>" + duration
+                            + "</climatisationDuration>" + "<startMode>ventilation</startMode></quickstart>"
+                            : "<quickstop><active>false</active></quickstop>")
+                    + "</performAction>";
+        }
         return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action, true,
-                "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml", data);
+                contentType, body);
     }
 
     public String controlCharger(boolean start) throws CarNetException {
@@ -370,6 +395,15 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>" + action + "</type></action>";
         return sendAction("bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger/actions", "batterycharge_v1", action, false,
                 "application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml", data);
+    }
+
+    public String controlMaxCharge(int maxCurrent) throws CarNetException {
+        String contentType = "application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml";
+        String body = "<action xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:noNamespaceSchemaLocation=\"ChargerAction_v1_0_0.xsd\">\n"
+                + "<type>setSettings</type> \n  <settings> \n<maxChargeCurrent>" + maxCurrent
+                + "</maxChargeCurrent> \n  </settings>\n</action>";
+        return sendAction("/bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger/actions", "batterycharge_v1",
+                "setMaxCharge", false, contentType, body);
     }
 
     public CarNetClimaterStatus getClimaterStatus() throws CarNetException {
@@ -384,10 +418,20 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
 
     public String controlWindowHeating(boolean start) throws CarNetException {
         final String action = start ? "startWindowHeating" : "stopWindowHeating";
+        String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml";
         String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>" + action + "</type></action>";
         return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions",
-                CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, action, false,
-                "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml", data);
+                CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, action, false, contentType, data);
+    }
+
+    public String controlHonkFlash(boolean honk, PointType position) throws CarNetException {
+        String action = honk ? "HONK_AND_FLASH" : "FLASH_ONLY";
+        String body = "{\"honkAndFlashRequest\":{\"serviceOperationCode\":\"" + action
+                + "\",\"userPosition\":{\"latitude\":" + position.getLatitude() + ", \"longitude\":"
+                + position.getLongitude() + "}}}";
+        String contentType = "application/json; charset=UTF-8";
+        return sendAction("bs/rhf/v1/{0}/{1}/vehicles/{2}/honkAndFlash", CNAPI_SERVICE_REMOTE_HONK_AND_FLASH, "honk",
+                false, contentType, body);
     }
 
     private String sendAction(String uri, String service, String action, boolean reqSecToken, String contentType,

@@ -56,6 +56,7 @@ import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
 import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -143,6 +144,12 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             handler.registerListener(this);
             setupPollingJob();
+
+            if (config.vehicle.enableAddressLookup) {
+                logger.info(
+                        "{}: Reverse address lookup based on vehicle's geo position is enabled (using OpenStreetMap",
+                        thingId);
+            }
         }, 2, TimeUnit.SECONDS);
     }
 
@@ -272,12 +279,12 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             if (!channelsCreated) {
                 // General channels
                 Map<String, ChannelIdMapEntry> channels = new LinkedHashMap<>();
-                addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
                 addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED, ITEMT_SWITCH, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK, ITEMT_SWITCH, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, null, false, true);
+                addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
 
                 // Add channels based on service information
                 for (Map.Entry<String, CarNetVehicleBaseService> s : services.entrySet()) {
@@ -371,15 +378,20 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 case CHANNEL_CONTROL_CLIMATER:
                     sendOffOnError = true;
                     action = switchOn ? "startClimater" : "stopClimater";
-                    actionStatus = api.controlClimater(switchOn);
+                    actionStatus = api.controlClimater(switchOn, CNAPI_HEATER_SOURCE_ELECTRIC);
                     break;
                 case CHANNEL_CLIMATER_TARGET_TEMP:
-                    actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue());
+                    actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(),
+                            CNAPI_HEATER_SOURCE_ELECTRIC);
                     break;
                 case CHANNEL_CONTROL_CHARGER:
                     sendOffOnError = true;
                     action = switchOn ? "startCharging" : "stopCharging";
                     actionStatus = api.controlCharger(switchOn);
+                    break;
+                case CHANNEL_CHARGER_CURRENT:
+                    sendOffOnError = true;
+                    actionStatus = api.controlMaxCharge(((DecimalType) command).intValue());
                     break;
                 case CHANNEL_CONTROL_WINHEAT:
                     sendOffOnError = true;
@@ -396,6 +408,20 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                     action = switchOn ? "startVentilation" : "stopVentilation";
                     actionStatus = api.controlVentilation(switchOn, 15);
                     break;
+                case CHANNEL_CONTROL_FLASH:
+                case CHANNEL_CONTROL_HONK:
+                    sendOffOnError = true;
+                    if (config.account.enableHonkFlash) {
+                        State point = cache.getValue(mkChannelId(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO));
+                        if (point != UnDefType.NULL) {
+                            actionStatus = api.controlHonkFlash(CHANNEL_CONTROL_HONK.equals(channelId),
+                                    (PointType) point);
+                        } else {
+                            logger.warn("{}: Geo position is not available, can't execute command", thingId);
+                        }
+                    } else {
+                        logger.info("{}: API calls for honk/flash are not enabled, check documentation", thingId);
+                    }
                 default:
                     logger.info("{}: Channel {} is unknown, command {} ignored", thingId, channelId, command);
                     break;
@@ -704,14 +730,12 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         return false;
     }
 
-    public void publishState(String channelId, State value) {
-        if (!stopping && isLinked(channelId)) {
-            updateState(channelId, value);
-        }
+    public boolean updateChannel(String channelId, State value) {
+        return cache.updateChannel(channelId, value, false);
     }
 
     public boolean updateChannel(String group, String channel, State value) {
-        return !stopping && cache.updateChannel(mkChannelId(group, channel), value, false);
+        return updateChannel(mkChannelId(group, channel), value);
     }
 
     public boolean updateChannel(String group, String channel, State value, Unit<?> unit) {
@@ -720,13 +744,19 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     }
 
     public boolean updateChannel(String group, String channel, State value, int digits, Unit<?> unit) {
-        updateState(mkChannelId(group, channel), toQuantityType(((DecimalType) value).doubleValue(), digits, unit));
-        return true;
+        return updateChannel(group, channel, toQuantityType(((DecimalType) value).doubleValue(), digits, unit));
     }
 
     public boolean updateChannel(Channel channel, State value) {
-        updateState(channel.getUID(), value);
-        return true;
+        return updateChannel(channel.getUID().getId(), value);
+    }
+
+    public boolean publishState(String channelId, State value) {
+        if (!stopping && isLinked(channelId)) {
+            updateState(channelId, value);
+            return true;
+        }
+        return false;
     }
 
     /**

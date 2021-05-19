@@ -27,6 +27,7 @@ import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMa
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -45,9 +46,14 @@ public class CarNetVehicleServiceCharger extends CarNetVehicleBaseService {
     public boolean createChannels(Map<String, ChannelIdMapEntry> ch) {
         try {
             api.getChargerStatus();
-            addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, null, false, false);
 
+            // Control channels
+            addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, null, false, false);
+            addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CHARGER_CURRENT, ITEMT_NUMBER, null, false, false);
+
+            // Status channels
             addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_STATUS, ITEMT_STRING, null, false, true);
+            addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CHARGER_CURRENT, ITEMT_NUMBER, null, false, true);
             addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_PWR_STATE, ITEMT_STRING, null, false, true);
             addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, null, false, true);
             addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_FLOW, ITEMT_STRING, null, false, true);
@@ -72,9 +78,9 @@ public class CarNetVehicleServiceCharger extends CarNetVehicleBaseService {
             CarNetChargerStatusData sd = cs.status.chargingStatusData;
             if (sd != null) {
                 String group = CHANNEL_GROUP_CHARGER;
-                updateChannel(group, CHANNEL_CHARGER_CURRENT,
-                        cs.settings != null ? getDecimal(cs.settings.maxChargeCurrent.content) : UnDefType.UNDEF,
-                        Units.AMPERE);
+                State current = cs.settings != null ? getDecimal(cs.settings.maxChargeCurrent.content)
+                        : UnDefType.UNDEF;
+                updateChannel(group, CHANNEL_CHARGER_CURRENT, current, Units.AMPERE);
                 if (sd.chargingState != null) {
                     updateChannel(group, CHANNEL_CHARGER_CHG_STATE, getStringType(sd.chargingState.content));
                     updateChannel(group, CHANNEL_CHARGER_STATUS, getStringType(sd.chargingState.content));

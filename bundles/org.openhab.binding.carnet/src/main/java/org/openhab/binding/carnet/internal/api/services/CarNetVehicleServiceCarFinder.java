@@ -68,6 +68,12 @@ public class CarNetVehicleServiceCarFinder extends CarNetVehicleBaseService {
             addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_LOCATION, ITEMT_LOCATION, null, false, true);
             addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_ADDRESS, ITEMT_STRING, null, false, true);
             addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME, ITEMT_DATETIME, null, false, true);
+
+            if (getConfig().account.enableHonkFlash) {
+                logger.debug("{}: Honk/Flash API requests are enabled", thingId);
+                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);
+                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HONK, ITEMT_SWITCH, null, false, false);
+            }
         }
         return ok;
     }
@@ -107,11 +113,13 @@ public class CarNetVehicleServiceCarFinder extends CarNetVehicleBaseService {
     }
 
     private void updateAddress(CarNetVehiclePosition position, String channel) {
-        try {
-            String address = osmApi.getAddressFromPosition(api.getHttp(), position);
-            updateChannel(CHANNEL_GROUP_LOCATION, channel, new StringType(address));
-        } catch (CarNetException e) {
-            updateChannel(CHANNEL_GROUP_LOCATION, channel, UnDefType.UNDEF);
+        if (getConfig().vehicle.enableAddressLookup) {
+            try {
+                String address = osmApi.getAddressFromPosition(api.getHttp(), position);
+                updateChannel(CHANNEL_GROUP_LOCATION, channel, new StringType(address));
+            } catch (CarNetException e) {
+                updateChannel(CHANNEL_GROUP_LOCATION, channel, UnDefType.UNDEF);
+            }
         }
     }
 }
