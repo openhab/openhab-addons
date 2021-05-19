@@ -102,8 +102,8 @@ public class GenericThingHandlerTests {
     public void initializeWithUnknownThingUID() {
         ChannelConfig config = textConfiguration().as(ChannelConfig.class);
         assertThrows(IllegalArgumentException.class,
-                () -> thingHandler.createChannelState(config, new ChannelUID(testGenericThing, "test"),
-                        ValueFactory.createValueState(config, unknownChannel.getId())));
+                () -> thingHandler.createChannelState(config, new ChannelUID(testGenericThing, "test"), ValueFactory
+                        .createValueState(new ChannelUID(testGenericThing, "test"), config, unknownChannel.getId())));
     }
 
     @Test
