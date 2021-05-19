@@ -14,6 +14,7 @@ package org.openhab.binding.nuki.internal.discovery;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,6 +22,7 @@ import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeListResponse;
 import org.openhab.binding.nuki.internal.dto.BridgeApiListDeviceDto;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class NukiDeviceDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(NukiDeviceDiscoveryService.class);
+    private final ScheduledExecutorService threadPool = ThreadPoolManager.getScheduledPool("discovery");
     @Nullable
     private NukiBridgeHandler bridge;
 
@@ -53,11 +56,13 @@ public class NukiDeviceDiscoveryService extends AbstractDiscoveryService impleme
             return;
         }
 
-        BridgeListResponse list = bridge.getNukiHttpClient().getList();
+        threadPool.execute(() -> {
+            BridgeListResponse list = bridge.getNukiHttpClient().getList();
 
-        list.getDevices().stream()
-                .filter(device -> NukiBindingConstants.SUPPORTED_DEVICES.contains(device.getDeviceType()))
-                .map(this::createDiscoveryResult).forEach(this::thingDiscovered);
+            list.getDevices().stream()
+                    .filter(device -> NukiBindingConstants.SUPPORTED_DEVICES.contains(device.getDeviceType()))
+                    .map(this::createDiscoveryResult).forEach(this::thingDiscovered);
+        });
     }
 
     private DiscoveryResult createDiscoveryResult(BridgeApiListDeviceDto device) {

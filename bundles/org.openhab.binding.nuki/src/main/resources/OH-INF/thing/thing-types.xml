@@ -36,7 +36,24 @@
 			</parameter>
 			<parameter name="manageCallbacks" type="boolean" required="false">
 				<label>Manage Nuki Bridge Callbacks</label>
-				<description>Let the Nuki Binding manage the callback on the Nuki Bridge.</description>
+				<description>
+					Let the Nuki Binding manage the callback on the Nuki Bridge. Nuki bridge uses HTTP callback to notify
+					openHAB about changes in device properties (e.g. when doors are opened, unlocked, doorbell rings, battery level
+					changes etc.). If callback is not registered, binding will not work properly and channels will not be updated. If
+					this is enabled, binding will automatically register and unregister callback as necessary. If this is disabled,
+					user must register callback manually. It is recommended that this is turned on.
+				</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="secureToken" type="boolean" required="false">
+				<label>Secure Token</label>
+				<description>
+					Use hashed token when communicating with bridge. This increases security and prevents sniffing of
+					access token and replay attacks, since communication with bridge is not encrypted. For this feature to work, both
+					device running openHAB and Nuki Bridge must have synchronized time. When disabled, token is sent in plain text with
+					each bridge request. It is recommended that this is turned on unless there are problems with synchronizing time
+					between openHAB and Nuki Bridge.
+				</description>
 				<default>true</default>
 			</parameter>
 		</config-description>

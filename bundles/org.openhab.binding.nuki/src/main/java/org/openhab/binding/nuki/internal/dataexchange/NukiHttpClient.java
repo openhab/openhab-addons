@@ -55,11 +55,11 @@ public class NukiHttpClient {
     private final Gson gson;
     private final NukiLinkBuilder linkBuilder;
 
-    public NukiHttpClient(HttpClient httpClient, String ip, int port, String apiToken) {
-        logger.debug("Instantiating NukiHttpClient({}:{})", ip, port);
+    public NukiHttpClient(HttpClient httpClient, NukiLinkBuilder linkBuilder) {
+        logger.debug("Instantiating NukiHttpClient");
         this.httpClient = httpClient;
+        this.linkBuilder = linkBuilder;
         gson = new Gson();
-        linkBuilder = new NukiLinkBuilder(ip, port, apiToken);
     }
 
     private synchronized ContentResponse executeRequest(URI uri)

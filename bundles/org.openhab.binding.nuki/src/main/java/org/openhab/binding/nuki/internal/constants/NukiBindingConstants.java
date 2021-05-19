@@ -85,6 +85,7 @@ public class NukiBindingConstants {
     public static final String CONFIG_MANAGECB = "manageCallbacks";
     public static final String CONFIG_API_TOKEN = "apiToken";
     public static final String CONFIG_UNLATCH = "unlatch";
+    public static final String CONFIG_SECURE_TOKEN = "secureToken";
 
     // Nuki Bridge API Lock Actions
     public static final int LOCK_ACTIONS_UNLOCK = 1;

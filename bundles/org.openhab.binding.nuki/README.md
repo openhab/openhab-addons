@@ -34,15 +34,16 @@ The following configuration options are available:
 | port            | The Port which you configured during [Initial Bridge setup](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).                                                                 | Default 8080 |
 | apiToken        | The API Token which you configured during [Initial Bridge setup](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).                                                            | Required     |
 | manageCallbacks | Let the Nuki Binding manage the callbacks on the Nuki Bridge. It will add the required callback on the Nuki Bridge. If there are already 3 callbacks, it **will delete** the callback with ID `0`. | Default true |
+| secureToken     | Whether hashed token should be used when communicating with Nuki Bridge. If disabled, API token will be sent in plaintext with each request.                                                       | Default true |
 
 ### Bridge discovery
 
 Bridges on local network can be discovered automatically if both Nuki Bridge and openHAB have working internet connection. You can check whether discovery
 is working by checking [discovery API endpoint](https://api.nuki.io/discover/bridges). To discover bridges do the following:
 
-* In openHAB UI add new thing, select Nuki Binding and start scan
-* Within 30s press button on Nuki Bridge you want to discover
-* Bridge should appear in inbox
+* In openHAB UI add new thing, select Nuki Binding and start scan. LED on bridge should light up.
+* Within 30s press button on Nuki Bridge you want to discover.
+* Bridge should appear in inbox.
 
 Pressing bridge button is required for binding to obtain valid API token. If the button isn't pressed during discovery, bridge will
 be created but token must be set manually for binding to work.
@@ -165,6 +166,14 @@ Nuki Opener has no configuration properties.
 
 - **ringActionTimestamp** (DateTime)
   Use this channel to get timestamp of last time doorbell was rung.
+
+## Troubleshooting
+
+### Bridge and devices are offline with error 403
+
+If secureToken property is enabled, make sure that time on device running openHAB and Nuki Bridge are synchronized. When secureToken
+is enabled, all requests contain timestamp and bridge will only accept requests with small time difference. If it is not possible to 
+keep time synchronized, disable secureToken feature.
 
 ## Full Example
 
