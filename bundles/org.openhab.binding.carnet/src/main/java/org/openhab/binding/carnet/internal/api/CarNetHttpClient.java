@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
+import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
@@ -159,7 +160,7 @@ public class CarNetHttpClient {
             String vin = pvin.isEmpty() ? config.vehicle.vin : pvin;
             url = getBrandUrl(uri, parms, vin);
             CarNetApiResult apiResult = new CarNetApiResult(method.toString(), url);
-            request = httpClient.newRequest(url).method(method).timeout(CNAPI_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            request = httpClient.newRequest(url).method(method).timeout(API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             fillHttpHeaders(request, headers, token);
             fillPostData(request, data);
 
@@ -264,7 +265,7 @@ public class CarNetHttpClient {
             headers.put("X-Language-Id", "de");
         }
         headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-        headers.put(HttpHeader.ACCEPT.toString(), CNAPI_ACCEPTT_JSON);
+        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
         headers.put(HttpHeader.ACCEPT_CHARSET.toString(), StandardCharsets.UTF_8.toString());
         headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + token);
         return headers;
@@ -299,7 +300,7 @@ public class CarNetHttpClient {
                 postData = new StringContentProvider(contentType, data, StandardCharsets.UTF_8);
             } else {
                 boolean json = data.startsWith("{");
-                String type = json ? CNAPI_ACCEPTT_JSON : CNAPI_CONTENTT_FORM_URLENC;
+                String type = json ? CONTENT_TYPE_JSON : CONTENT_TYPE_FORM_URLENC;
                 request.header(HttpHeader.CONTENT_TYPE, type);
                 postData = new StringContentProvider(type, data, StandardCharsets.UTF_8);
             }

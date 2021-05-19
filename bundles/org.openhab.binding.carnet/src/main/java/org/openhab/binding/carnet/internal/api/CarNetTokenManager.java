@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
+import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 import static org.openhab.binding.carnet.internal.api.CarNetHttpClient.*;
@@ -336,7 +337,7 @@ public class CarNetTokenManager {
         headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
         headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
         headers.put(CNAPI_HEADER_APP, config.api.xappName);
-        headers.put(HttpHeader.ACCEPT.toString(), CNAPI_ACCEPTT_JSON);
+        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
         // Build Hash: SHA512(SPIN+Challenge)
         String url = "https://mal-1a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/vehicles/"
                 + config.vehicle.vin.toUpperCase() + "/services/" + service + "/operations/" + action

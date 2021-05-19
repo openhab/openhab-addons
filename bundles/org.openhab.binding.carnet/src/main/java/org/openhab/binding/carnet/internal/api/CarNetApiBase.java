@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.DKELVIN;
+import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
@@ -133,8 +133,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         String url = config.api.oidcConfigUrl;
         Map<String, String> headers = new LinkedHashMap<>();
         headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-        headers.put(HttpHeader.ACCEPT.toString(), CNAPI_ACCEPTT_JSON);
-        headers.put(HttpHeader.CONTENT_TYPE.toString(), CNAPI_CONTENTT_FORM_URLENC);
+        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
+        headers.put(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_FORM_URLENC);
         String json = http.get(url, headers);
         config.api.oidcDate = http.getResponseDate();
         return fromJson(gson, json, CarNetOidcConfig.class);
@@ -602,8 +602,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         if (!contentType.isEmpty()) {
             headers.put(HttpHeader.CONTENT_TYPE.toString(), contentType);
         }
-        headers.put(HttpHeader.ACCEPT.toString(),
-                "application/json, application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml,application/vnd.volkswagenag.com-error-v1+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteLockUnlock_v1_0_0+xml,application/vnd.vwg.mbb.operationList_v3_0_2+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,*/*");
+        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON
+                + ", application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml,application/vnd.volkswagenag.com-error-v1+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteLockUnlock_v1_0_0+xml,application/vnd.vwg.mbb.operationList_v3_0_2+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,*/*");
         headers.put(HttpHeader.ACCEPT_CHARSET.toString(), StandardCharsets.UTF_8.toString());
 
         headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + securityToken);

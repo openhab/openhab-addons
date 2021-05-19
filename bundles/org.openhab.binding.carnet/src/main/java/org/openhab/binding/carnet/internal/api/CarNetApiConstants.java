@@ -21,15 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class CarNetApiConstants {
-    public static final String CNAPI_BRAND_AUDI = "Audi";
-    public static final String CNAPI_BRAND_VW = "VW";
-    public static final String CNAPI_BRAND_VWID = "Id";
-    public static final String CNAPI_BRAND_VWGO = "Go";
-    public static final String CNAPI_BRAND_SKODA = "Skoda";
-    public static final String CNAPI_BRAND_SEAT = "Seat";
-
     // HTTP header attributes
-    public static final String CNAPI_HEADER_TYPE = "Accept: application/json";
     public static final String CNAPI_HEADER_APP = "X-App-Name";
     public static final String CNAPI_HEADER_VERS = "X-App-Version";
     public static final String CNAPI_HEADER_VERS_VALUE = "1.0.0";
@@ -37,11 +29,6 @@ public class CarNetApiConstants {
     public static final String CNAPI_HEADER_AUTHORIZATION = "Authorization";
     public static final String CNAPI_HEADER_CLIENTID = "X-Client-Id";
     public static final String CNAPI_HEADER_HOST = "Host";
-
-    public static final String CNAPI_CONTENTT_FORM_URLENC = "application/x-www-form-urlencoded";
-    public static final String CNAPI_ACCEPTT_JSON = "application/json";
-
-    public static int CNAPI_TIMEOUT_MS = 60 * 1000;
 
     public static final String API_STATUS_MSG_PREFIX = "api-status";
     public static final String API_STATUS_CLASS_SECURUTY = "VSR.security";

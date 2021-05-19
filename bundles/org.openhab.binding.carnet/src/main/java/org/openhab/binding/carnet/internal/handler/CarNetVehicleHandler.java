@@ -124,6 +124,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     @Override
     public void initialize() {
         logger.debug("Initializing!");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
         scheduler.schedule(() -> {
             // Register listener and wait for account being ONLINE
             CarNetAccountHandler handler = null;
@@ -142,9 +143,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             handler.registerListener(this);
             setupPollingJob();
-
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
-        }, 3, TimeUnit.SECONDS);
+        }, 2, TimeUnit.SECONDS);
     }
 
     /**

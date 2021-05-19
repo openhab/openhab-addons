@@ -82,9 +82,11 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_CONTROL_VENT = "ventilation";
 
     public static final String CHANNEL_GROUP_LOCATION = "location";
-    public static final String CHANNEL_LOCATTION_GEO = "position";
-    public static final String CHANNEL_LOCATTION_TIME = "positionLastUpdate";
+    public static final String CHANNEL_LOCATTION_GEO = "locationPosition";
+    public static final String CHANNEL_LOCATTION_ADDRESS = "locationAddress";
+    public static final String CHANNEL_LOCATTION_TIME = "locationLastUpdate";
     public static final String CHANNEL_PARK_LOCATION = "parkingPosition";
+    public static final String CHANNEL_PARK_ADDRESS = "parkingAddress";
     public static final String CHANNEL_PARK_TIME = "parkingTime";
 
     public static final String CHANNEL_GROUP_CLIMATER = "climater";
@@ -171,10 +173,21 @@ public class CarNetBindingConstants {
     public static final String ITEMT_VOLT = "Number:ElectricPotential";
     public static final String ITEMT_AMP = "Number:ElectricPotential";
 
-    public static int POLL_INTERVAL_SEC = 3; // poll cycle evey 3sec
+    public static final String CNAPI_BRAND_AUDI = "Audi";
+    public static final String CNAPI_BRAND_VW = "VW";
+    public static final String CNAPI_BRAND_VWID = "Id";
+    public static final String CNAPI_BRAND_VWGO = "Go";
+    public static final String CNAPI_BRAND_SKODA = "Skoda";
+    public static final String CNAPI_BRAND_SEAT = "Seat";
+
+    public static final String CONTENT_TYPE_FORM_URLENC = "application/x-www-form-urlencoded";
+    public static final String CONTENT_TYPE_JSON = "application/json";
+
+    public static final int POLL_INTERVAL_SEC = 3; // poll cycle evey 3sec
     public static final int API_TOKEN_REFRESH_INTERVAL_SEC = 5 * 60; // interval to check for valid token
     public static final int API_REQUEST_TIMEOUT_SEC = 60 + 5;
     public static final int API_REQUEST_CHECK_INT = 15 / POLL_INTERVAL_SEC; // interval for checking pending requests
+    public static final int API_TIMEOUT_MS = 60 * 1000;
 
     public static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
     public static final Unit<Power> KWATT = MetricPrefix.KILO(Units.WATT);

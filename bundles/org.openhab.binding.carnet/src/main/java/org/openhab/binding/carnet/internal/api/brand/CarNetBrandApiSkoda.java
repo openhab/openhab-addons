@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
-import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_BRAND_VW;
+import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_BRAND_VW;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
+import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthen
             headers.put(CNAPI_HEADER_APP, config.api.xappName);
             headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
             headers.put(HttpHeader.AUTHORIZATION.toString(), createVwToken());
-            headers.put(HttpHeader.ACCEPT.toString(), CNAPI_ACCEPTT_JSON);
+            headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
             headers.put(HttpHeader.HOST.toString(), "customer-profile.apps.emea.vwapps.io");
             json = http.get(url, headers, createVwToken());
             return json;
