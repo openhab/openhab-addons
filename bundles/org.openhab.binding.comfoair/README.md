@@ -29,7 +29,7 @@ sudo usermod -a -G dialout openhab
 
 The binding supports thing types for different device types.
 They only differ in the available channels, where the generic *comfoair* thing type supports all available channels.
-If there is no thyng type that matches your specific device you can safely choose the *comfoair* type.
+If there is no thing type that matches your specific device you can safely choose the *comfoair* type.
 
 |Thing Type ID |Description                                                                  |
 |--------------|-----------------------------------------------------------------------------|
