@@ -37,12 +37,12 @@ The attached devices and supported channels are discovered automatically.
 |timestamp | Number | Milliseconds since the epoch set to the last NTP time sync |
 |datetime | DateTime | Date and time of the last NTP time sync in the timezone of the energy manager |
 |idTimezone | String | Timezone the energy manager is running in. All  timestamps are milliseconds since the epoch within this timezone |
-|fractionCPULoadTotal | Number:Percent | Total CPU load |
-|fractionCPULoadUser | Number:Percent | Userspace CPU load |
-|fractionCPULoadKernel | Number:Percent | Kernelspace CPU load |
-|fractionCPULoadAverageLastMinute | Number:Percent | Average 1 minute CPU load |
-|fractionCPULoadAverageLastFiveMinutes | Number:Percent | Average 5 minute CPU load |
-|fractionCPULoadAverageLastFifteenMinutes | Number:Percent | Average 15 minute CPU load |
+|fractionCPULoadTotal | Number:Dimensionless | Total CPU load in % |
+|fractionCPULoadUser | Number:Dimensionless | Userspace CPU load in % |
+|fractionCPULoadKernel | Number:Dimensionless | Kernelspace CPU load in % |
+|fractionCPULoadAverageLastMinute | Number:Dimensionless | Average 1 minute CPU load in % |
+|fractionCPULoadAverageLastFiveMinutes | Number:Dimensionless | Average 5 minute CPU load in % |
+|fractionCPULoadAverageLastFifteenMinutes | Number:Dimensionless | Average 15 minute CPU load in % |
 
 ### PVPlant
 
@@ -130,3 +130,113 @@ All of *Inverter* plus
 | Channel Type ID | Item Type | Description |
 |-----------------|-----------|-------------|
 | feedInLimit | Number:Dimensionless | Current derating setting in percent
+
+## Example
+
+demo.things:
+
+```
+Bridge solarwatt:energymanager:56f4ac2fa2 [hostname="192.168.0.64", refresh=30, rescan=5]
+// the individual things should be autodiscovered
+Thing solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5 (solarwatt:energymanager:56f4ac2fa2)
+Thing solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007 (solarwatt:energymanager:56f4ac2fa2)
+Thing solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876 (solarwatt:energymanager:56f4ac2fa2)
+```
+
+demo.items:
+
+```
+// Location DeviceClass com.kiwigrid.devices.location.Location Guid b4e4978b96404e61977bfacd3eab299d
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerBuffered "PowerBuffered [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerBuffered"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerBufferedFromGrid "PowerBufferedFromGrid [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerBufferedFromGrid"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerBufferedFromProducers "PowerBufferedFromProducers [%.2f W]" <energy> ["Measurement", "Power"]  {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerBufferedFromProducers"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerConsumed "PowerConsumed [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerConsumed"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerConsumedUnmetered "PowerConsumedUnmetered [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:PowerConsumedUnmetered"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerDirectConsumed "PowerDirectConsumed [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerDirectConsumed"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerConsumedFromGrid "PowerConsumedFromGrid [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerConsumedFromGrid"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerConsumedFromStorage "PowerConsumedFromStorage [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerConsumedFromStorage"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerConsumedFromProducers "PowerConsumedFromProducers [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerConsumedFromProducers"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerIn "PowerIn [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerIn"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerProduced "PowerProduced [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerProduced"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerOut "PowerOut [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerOut"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerOutFromProducers "PowerOutFromProducers [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerOutFromProducers"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerOutFromStorage "PowerOutFromStorage [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerOutFromStorage"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerReleased "PowerReleased [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerReleased"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerSelfConsumed "PowerSelfConsumed [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerSelfConsumed"}
+Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerSelfSupplied "PowerSelfSupplied [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerSelfSupplied"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkBuffered "WorkBuffered [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workBuffered"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkBufferedFromGrid "WorkBufferedFromGrid [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workBufferedFromGrid"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkBufferedFromProducers "WorkBufferedFromProducers [%.2f Wh]" <energy> [""]  {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workBufferedFromProducers"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkConsumed "WorkConsumed [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workConsumed"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkConsumedUnmetered "WorkConsumedUnmetered [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:WorkConsumedUnmetered"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkDirectConsumed "WorkDirectConsumed [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workDirectConsumed"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkConsumedFromGrid "WorkConsumedFromGrid [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workConsumedFromGrid"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkConsumedFromStorage "WorkConsumedFromStorage [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workConsumedFromStorage"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkConsumedFromProducers "WorkConsumedFromProducers [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workConsumedFromProducers"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkIn "WorkIn [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workIn"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkProduced "WorkProduced [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workProduced"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkOut "WorkOut [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workOut"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkOutFromProducers "WorkOutFromProducers [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workOutFromProducers"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkOutFromStorage "WorkOutFromStorage [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workOutFromStorage"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkReleased "WorkReleased [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workReleased"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkSelfConsumed "WorkSelfConsumed [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workSelfConsumed"}
+Number:Energy Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_WorkSelfSupplied "WorkSelfSupplied [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:workSelfSupplied"}
+
+// Inverter Fronius com.kiwigrid.devices.inverter.Inverter
+Number:Power Solarwatt_Inverter_UrnSunspecFroniusInverter31414368_PowerACOut "PowerACOut [%.2f W]" <energy> ["Measurement", "Power"]  {channel="solarwatt:inverter:56f4ac2fa2:urn-sunspec-fronius-inverter-31414368:powerACOut"}
+Number:Power Solarwatt_Inverter_UrnSunspecFroniusInverter31414368_PowerACOutLimit "PowerACOutLimit [%.2f W]" <energy> ["Point", "Power"]  {channel="solarwatt:inverter:56f4ac2fa2:urn-sunspec-fronius-inverter-31414368:powerACOutLimit"}
+Number:Energy Solarwatt_Inverter_UrnSunspecFroniusInverter31414368_WorkACOut "WorkACOut [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:inverter:56f4ac2fa2:urn-sunspec-fronius-inverter-31414368:workACOut"}
+
+// MyReserve BatteryInverter com.kiwigrid.devices.bat…verter.BatteryConverter
+Switch Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_ModeConverter "ModeConverter [%s]" <switch> ["Switch"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:modeConverter"}
+Number Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_StateOfCharge "StateOfCharge [%.2f %%]" <status> ["Status"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:stateOfCharge"}
+Number Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_StateOfHealth "StateOfHealth [%.2f %%]" <status> ["Status"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:stateOfHealth"}
+Number:Temperature Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_TemperatureBattery "TemperatureBattery [%.1f °C]" <temperature> ["Measurement", "Temperature"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:temperatureBattery"}
+Number:Power Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_PowerACIn "PowerACIn [%.2f W]" <energy> ["Measurement", "Power"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:powerACIn"}
+Number:Power Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_PowerACOut "PowerACOut [%.2f W]" <energy> ["Measurement", "Power"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:powerACOut"}
+Number:Energy Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_WorkACIn "WorkACIn [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:workACIn"}
+Number:Energy Solarwatt_BatteryInverter_5c7d59298fa442c5873748bef77b61f5_WorkACOut "WorkACOut [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5:workACOut"}
+
+// S0Bus Meter com.kiwigrid.devices.powermeter.PowerMeter / com.kiwigrid.devices.s0counter.S0Counter
+String Solarwatt_Meter_46bb4ee8a9744ecea11ef43c68263ae9_DirectionMetering "DirectionMetering [%s]" <status> ["Status"]  {channel="solarwatt:powermeter:56f4ac2fa2:46bb4ee8-a974-4ece-a11e-f43c68263ae9:directionMetering"}
+Number:Power Solarwatt_Meter_46bb4ee8a9744ecea11ef43c68263ae9_PowerIn "PowerIn [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:powermeter:56f4ac2fa2:46bb4ee8-a974-4ece-a11e-f43c68263ae9:powerIn"}
+Number:Energy Solarwatt_Meter_46bb4ee8a9744ecea11ef43c68263ae9_WorkIn "WorkIn [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:powermeter:56f4ac2fa2:46bb4ee8-a974-4ece-a11e-f43c68263ae9:workIn"}
+Number:Energy Solarwatt_Meter_46bb4ee8a9744ecea11ef43c68263ae9_ConsumptionEnergySum "ConsumptionEnergySum [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:powermeter:56f4ac2fa2:46bb4ee8-a974-4ece-a11e-f43c68263ae9:consumptionEnergySum"}
+
+// MyReservePowermeter Meter com.kiwigrid.devices.powermeter.PowerMeter
+String Solarwatt_Meter_2c5d089b98854f40ba8a3303bfb53e36_DirectionMetering "DirectionMetering [%s]" <status> ["Status"]  {channel="solarwatt:powermeter:56f4ac2fa2:2c5d089b-9885-4f40-ba8a-3303bfb53e36:directionMetering"}
+Number:Power Solarwatt_Meter_2c5d089b98854f40ba8a3303bfb53e36_PowerIn "PowerIn [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:powermeter:56f4ac2fa2:2c5d089b-9885-4f40-ba8a-3303bfb53e36:powerIn"}
+Number:Power Solarwatt_Meter_2c5d089b98854f40ba8a3303bfb53e36_PowerOut "PowerOut [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:powermeter:56f4ac2fa2:2c5d089b-9885-4f40-ba8a-3303bfb53e36:powerOut"}
+Number:Energy Solarwatt_Meter_2c5d089b98854f40ba8a3303bfb53e36_WorkIn "WorkIn [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:powermeter:56f4ac2fa2:2c5d089b-9885-4f40-ba8a-3303bfb53e36:workIn"}
+Number:Energy Solarwatt_Meter_2c5d089b98854f40ba8a3303bfb53e36_WorkOut "WorkOut [%.2f Wh]" <energy> ["Measurement", "Energy"] {channel="solarwatt:powermeter:56f4ac2fa2:2c5d089b-9885-4f40-ba8a-3303bfb53e36:workOut"}
+
+// Inverter MyReserve com.kiwigrid.devices.inverter.Inverter
+Number:Power Solarwatt_Inverter_4af659938b1149408a77ff87556389f3_PowerACOut "PowerACOut [%.2f W]" <energy> ["Measurement", "Power"]  {channel="solarwatt:inverter:56f4ac2fa2:4af65993-8b11-4940-8a77-ff87556389f3:powerACOut"}
+Number:Energy Solarwatt_Inverter_4af659938b1149408a77ff87556389f3_WorkACOut "WorkACOut [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:inverter:56f4ac2fa2:4af65993-8b11-4940-8a77-ff87556389f3:workACOut"}
+
+// EVStation Keba com.kiwigrid.devices.evstation.EVStation
+String Solarwatt_EVStation_UrnKebaEvstation20652876_ModeStation "ModeStation [%s]" <status> ["Status"]  {channel="solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876:modeStation"}
+String Solarwatt_EVStation_UrnKebaEvstation20652876_ConnectivityStatus "ConnectivityStatus [%s]" <status> ["Status"]  {channel="solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876:connectivityStatus"}
+Number:Power Solarwatt_EVStation_UrnKebaEvstation20652876_PowerACIn "PowerACIn [%.2f W]" <energy> ["Measurement", "Power"]  {channel="solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876:powerACIn"}
+Number:Energy Solarwatt_EVStation_UrnKebaEvstation20652876_WorkACIn "WorkACIn [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876:workACIn"}
+Number:Energy Solarwatt_EVStation_UrnKebaEvstation20652876_WorkACInSession "WorkACInSession [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876:workACInSession"}
+
+// PVPlant com.kiwigrid.devices.pvplant.PVPlant
+Number:Power Solarwatt_PVPlant_4575c19cfa0a4f21839a5db2ae06b4d_PowerACOut "PowerACOut [%.2f W]" <energy> ["Measurement", "Power"]  {channel="solarwatt:pvplant:56f4ac2fa2:4575c19c-fa0a-4f21-839a-5db2ae06b4dc:powerACOut"}
+Number:Energy Solarwatt_PVPlant_4575c19cfa0a4f21839a5db2ae06b4d_WorkACOut "WorkACOut [%.2f Wh]" <energy> ["Measurement", "Energy"]  {channel="solarwatt:pvplant:56f4ac2fa2:4575c19c-fa0a-4f21-839a-5db2ae06b4dc:workACOut"}
+
+// Manager com.kiwigrid.devices.em.EnergyManager
+String Solarwatt_Manager_ERC05000008007_IdFirmware "IdFirmware [%s]" <status> ["Status"]  {channel="solarwatt:energymanager:56f4ac2fa2:idFirmware"}
+Number Solarwatt_Manager_ERC05000008007_Timestamp "Timestamp [%d]" <time> ["Status", "Timestamp"]  {channel="solarwatt:energymanager:56f4ac2fa2:timestamp"}
+DateTime Solarwatt_Manager_ERC05000008007_Datetime  "Update [%1$tH:%1$tM:%1$tS]" <time> ["Status", "Timestamp"] {channel="solarwatt:energymanager:56f4ac2fa2:datetime"}
+Number Solarwatt_Manager_ERC05000008007_FractionCPULoadTotal "FractionCPULoadUser [%.2f]" <status> ["Measurement"]  {channel="solarwatt:energymanager:56f4ac2fa2:fractionCPULoadTotal"}
+Number Solarwatt_Manager_ERC05000008007_FractionCPULoadUser "FractionCPULoadUser [%.2f]" <status> ["Measurement"]  {channel="solarwatt:energymanager:56f4ac2fa2:fractionCPULoadUser"}
+Number Solarwatt_Manager_ERC05000008007_FractionCPULoadKernel "FractionCPULoadKernel [%.2f]" <status> ["Measurement"]  {channel="solarwatt:energymanager:56f4ac2fa2:fractionCPULoadKernel"}
+Number Solarwatt_Manager_ERC05000008007_FractionCPULoadAverageLastMinute "FractionCPULoadAverageLastMinute [%.2f]" <status> ["Measurement"]  {channel="solarwatt:energymanager:56f4ac2fa2:fractionCPULoadAverageLastMinute"}
+Number Solarwatt_Manager_ERC05000008007_FractionCPULoadAverageLastFiveMinutes "FractionCPULoadAverageLastFiveMinutes [%.2f]" <status> ["Measurement"]  {channel="solarwatt:energymanager:56f4ac2fa2:fractionCPULoadAverageLastFiveMinutes"}
+Number Solarwatt_Manager_ERC05000008007_FractionCPULoadAverageLastFifteenMinutes "FractionCPULoadAverageLastFifteenMinutes [%.2f]" <status> ["Measurement"]  {channel="solarwatt:energymanager:56f4ac2fa2:fractionCPULoadAverageLastFifteenMinutes"}
+
+// Gridflow com.kiwigrid.kiwiapp.gridflow.GridFlow
+Number Solarwatt_Gridflow_UrnKiwigridGridflowERC05000008007_CurrentLimit "CurrentLimit [%d A]" <energy> ["Point"]  {channel="solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007:currentLimit"}
+Number Solarwatt_Gridflow_UrnKiwigridGridflowERC05000008007_FeedInLimit "FeedInLimit [%d %%]" <status> ["Point"]  {channel="solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007:feedInLimit"}
+```
