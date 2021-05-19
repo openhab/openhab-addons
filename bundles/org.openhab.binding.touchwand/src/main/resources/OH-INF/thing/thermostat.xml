@@ -24,13 +24,15 @@
 	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
+		<description>The set point temperature</description>
 		<category>Temperature</category>
-		<state min="16" max="30" step="1" pattern="%.1f %unit%" readOnly="false">
+		<state min="16" max="30" step="1" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="roomTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature</label>
+		<description>Current room temperature</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -38,9 +40,7 @@
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
-		<description>
-			This channel describes the thermostat mode (Cool, Heat, Fan, Dry, Auto)
-		</description>
+		<description>Thermostat mode (Cool, Heat, Fan, Dry, Auto)</description>
 		<state readOnly="false">
 			<options>
 				<option value="cool">Cool</option>
@@ -54,6 +54,7 @@
 	<channel-type id="fanLevel">
 		<item-type>String</item-type>
 		<label>Fan Level</label>
+		<description>Fan level (Low, Medium, High, Auto)</description>
 		<state readOnly="false">
 			<options>
 				<option value="low">Low</option>
