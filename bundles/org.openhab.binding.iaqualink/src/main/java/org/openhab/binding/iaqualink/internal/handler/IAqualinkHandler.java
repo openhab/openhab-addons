@@ -457,7 +457,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                 default:
                     return StringType.valueOf(value);
             }
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             return UnDefType.UNDEF;
         }
     }
