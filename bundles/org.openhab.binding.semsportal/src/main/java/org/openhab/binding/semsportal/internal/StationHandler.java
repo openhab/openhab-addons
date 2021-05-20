@@ -137,7 +137,8 @@ public class StationHandler extends BaseThingHandler {
         if (portal != null) {
             try {
                 currentStatus = portal.getStationStatus(getStationUUID());
-                if (currentStatus != null && currentStatus.isOperational()) {
+                StationStatus localCurrentStatus = currentStatus;
+                if (localCurrentStatus != null && localCurrentStatus.isOperational()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, "Station not operational");

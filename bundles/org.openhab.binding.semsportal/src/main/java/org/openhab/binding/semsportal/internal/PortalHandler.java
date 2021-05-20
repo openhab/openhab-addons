@@ -111,8 +111,9 @@ public class PortalHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> localPollingJob = pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
         }
         super.dispose();
     }
