@@ -33,6 +33,9 @@ import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindLevelCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback.BlindCommand;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
@@ -49,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @NonNullByDefault
 public class FritzAhaWebInterface {
@@ -242,8 +246,12 @@ public class FritzAhaWebInterface {
             String content = contentResponse.getContentAsString();
             logger.debug("GET response complete: {}", content);
             return content;
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.debug("response failed: {}", e.getLocalizedMessage(), e);
+            return null;
+        } catch (InterruptedException e) {
+            logger.debug("response interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             return null;
         }
     }
@@ -313,6 +321,16 @@ public class FritzAhaWebInterface {
 
     private FritzAhaContentExchange setHeatingMode(String ain, String command, long endTime) {
         FritzAhaSetHeatingModeCallback callback = new FritzAhaSetHeatingModeCallback(this, ain, command, endTime);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setLevelpercentage(String ain, BigDecimal levelpercentage) {
+        FritzAhaSetBlindLevelCallback callback = new FritzAhaSetBlindLevelCallback(this, ain, levelpercentage);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setBlind(String ain, BlindCommand command) {
+        FritzAhaSetBlindTargetCallback callback = new FritzAhaSetBlindTargetCallback(this, ain, command);
         return asyncGet(callback);
     }
 }

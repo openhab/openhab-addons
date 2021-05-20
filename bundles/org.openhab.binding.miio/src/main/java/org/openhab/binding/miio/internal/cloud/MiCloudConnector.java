@@ -74,7 +74,6 @@ public class MiCloudConnector {
     private static final TimeZone TZ = TimeZone.getDefault();
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("OOOO");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
-    private static final JsonParser PARSER = new JsonParser();
 
     private final String clientId;
 
@@ -156,7 +155,7 @@ public class MiCloudConnector {
         logger.trace("response: {}", mapResponse);
         String errorMsg = "";
         try {
-            JsonElement response = PARSER.parse(mapResponse);
+            JsonElement response = JsonParser.parseString(mapResponse);
             if (response.isJsonObject()) {
                 logger.debug("Received  JSON message {}", response);
                 if (response.getAsJsonObject().has("result")
@@ -210,7 +209,7 @@ public class MiCloudConnector {
         final String response = getDeviceString(country);
         List<CloudDeviceDTO> devicesList = new ArrayList<>();
         try {
-            final JsonElement resp = PARSER.parse(response);
+            final JsonElement resp = JsonParser.parseString(response);
             if (resp.isJsonObject()) {
                 final JsonObject jor = resp.getAsJsonObject();
                 if (jor.has("result")) {
@@ -413,7 +412,7 @@ public class MiCloudConnector {
         logger.trace("Xiaomi Login step 1 content response= {}", content);
         logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
         try {
-            JsonElement resp = new JsonParser().parse(parseJson(content));
+            JsonElement resp = JsonParser.parseString(parseJson(content));
             if (resp.isJsonObject() && resp.getAsJsonObject().has("_sign")) {
                 String sign = resp.getAsJsonObject().get("_sign").getAsString();
                 logger.trace("Xiaomi Login step 1 sign = {}", sign);
@@ -457,7 +456,7 @@ public class MiCloudConnector {
         logger.trace("Xiaomi login step 2 response = {}", responseStep2);
         logger.trace("Xiaomi login step 2 content = {}", content2);
 
-        JsonElement resp2 = new JsonParser().parse(parseJson(content2));
+        JsonElement resp2 = JsonParser.parseString(parseJson(content2));
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
         if (jsonResp == null) {
             throw new MiCloudException("Error getting logon details from step 2: " + content2);

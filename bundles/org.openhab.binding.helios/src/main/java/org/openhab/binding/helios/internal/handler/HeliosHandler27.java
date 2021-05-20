@@ -49,7 +49,6 @@ import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.oasis_open.docs.wsn.b_2.SubscribeResponse;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
-import org.oasis_open.docs.wsn.b_2.UnsubscribeResponse;
 import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
 import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.InvalidProducerPropertiesExpressionFault;
@@ -347,7 +346,7 @@ public class HeliosHandler27 extends BaseThingHandler implements NotificationCon
     public void unsubscribe() {
         if (subscription != null) {
             try {
-                UnsubscribeResponse response = subscription.unsubscribe(new Unsubscribe());
+                subscription.unsubscribe(new Unsubscribe());
                 logger.debug("Unsubscribing the subscription with ID '{}' for '{}' ", getSubscriptionID(),
                         getThing().getUID());
             } catch (UnableToDestroySubscriptionFault | ResourceUnknownFault e) {

@@ -27,8 +27,6 @@ import com.google.gson.JsonParser;
  * @author Chris Graham - Initial contribution
  */
 public class Parse {
-    private static JsonParser jsonParser = new JsonParser();
-
     /**
      * Parses an integer from a JSON string given its key name.
      *
@@ -37,7 +35,7 @@ public class Parse {
      * @return int value of the objects data.
      */
     public static int jsonInt(String jsonData, String keyName) {
-        JsonElement jelement = jsonParser.parse(jsonData);
+        JsonElement jelement = JsonParser.parseString(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
         return jobject.get(keyName).getAsInt();
     }
@@ -50,7 +48,7 @@ public class Parse {
      * @return String value of the objects data.
      */
     public static String jsonString(String jsonData, String keyName) {
-        JsonElement jelement = jsonParser.parse(jsonData);
+        JsonElement jelement = JsonParser.parseString(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
         return jobject.get(keyName).getAsString();
     }
@@ -64,7 +62,7 @@ public class Parse {
      * @return int value of the objects data.
      */
     public static int jsonIntAtArrayIndex(String jsonData, String keyName, int index) {
-        JsonElement jelement = jsonParser.parse(jsonData);
+        JsonElement jelement = JsonParser.parseString(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
         JsonArray jarray = jobject.get(keyName).getAsJsonArray();
         return jarray.get(index).getAsInt();
@@ -79,7 +77,7 @@ public class Parse {
      * @return String value of the objects data.
      */
     public static String jsonStringAtArrayIndex(String jsonData, String keyName, int index) {
-        JsonElement jelement = jsonParser.parse(jsonData);
+        JsonElement jelement = JsonParser.parseString(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
         JsonArray jarray = jobject.get(keyName).getAsJsonArray();
         return jarray.get(index).getAsString();
@@ -95,7 +93,7 @@ public class Parse {
     public static List<Integer> jsonIntArray(String jsonData, String keyName) {
         List<Integer> returnList = new ArrayList<>();
 
-        JsonElement jelement = jsonParser.parse(jsonData);
+        JsonElement jelement = JsonParser.parseString(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
         JsonArray jarray = jobject.get(keyName).getAsJsonArray();
 
@@ -116,7 +114,7 @@ public class Parse {
     public static List<String> jsonStringArray(String jsonData, String keyName) {
         List<String> returnList = new ArrayList<>();
 
-        JsonElement jelement = jsonParser.parse(jsonData);
+        JsonElement jelement = JsonParser.parseString(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
         JsonArray jarray = jobject.get(keyName).getAsJsonArray();
 

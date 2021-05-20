@@ -488,13 +488,6 @@
 		<event/>
 	</channel-type>
 
-	<channel-type id="sendCommand">
-		<item-type>Switch</item-type>
-		<label>Send Command</label>
-		<description>You can send telegrams to the device by switching this channel on</description>
-		<category>thermostat</category>
-	</channel-type>
-
 	<channel-type id="smokeDetection">
 		<item-type>Switch</item-type>
 		<label>Smoke Detected</label>

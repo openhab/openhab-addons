@@ -14,6 +14,8 @@ package org.openhab.binding.http.internal.converter;
 
 import java.util.function.Consumer;
 
+import javax.measure.format.MeasurementParseException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
@@ -60,7 +62,7 @@ public class NumberItemConverter extends AbstractTransformingItemConverter {
                         return new QuantityType<>(trimmedValue);
                     }
                 }
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | MeasurementParseException e) {
                 // finally failed
             }
         }

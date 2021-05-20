@@ -115,8 +115,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             Map<String, Object> properties = new TreeMap<>();
 
             name = service.getName().toLowerCase();
-            address = service.getHostAddress();
-            if ((address == null) || address.isEmpty()) {
+            String[] hostAddresses = service.getHostAddresses();
+            if ((hostAddresses != null) && (hostAddresses.length > 0)) {
+                address = hostAddresses[0];
+            }
+            if (address.isEmpty()) {
                 logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", name, service);
                 return null;
             }
@@ -159,7 +162,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     // create shellyunknown thing - will be changed during thing initialization with valid credentials
                     thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
                 } else {
-                    logger.info("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
+                    logger.debug("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
                 }
             } catch (IllegalArgumentException e) { // maybe some format description was buggy
                 logger.debug("{}: Discovery failed!", name, e);

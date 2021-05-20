@@ -34,9 +34,6 @@ public class F6_01_01 extends _RPSMessage {
     @Override
     protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
-        if (!isValid()) {
-            return null;
-        }
 
         return getBit(bytes[0], 4) ? CommonTriggerEvents.PRESSED : CommonTriggerEvents.RELEASED;
     }
@@ -44,5 +41,11 @@ public class F6_01_01 extends _RPSMessage {
     @Override
     protected boolean validateData(byte[] bytes) {
         return super.validateData(bytes) && !getBit(bytes[0], 7);
+    }
+
+    @Override
+    public boolean isValidForTeachIn() {
+        // just treat press as teach in, ignore release
+        return t21 && !nu && bytes[0] == 0x10;
     }
 }

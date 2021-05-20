@@ -6,7 +6,7 @@ If you are not familiar with adb I suggest you to search "How to enable adb over
 
 ## Supported Things
 
-This binding was tested on the Fire TV Stick (android version 7.1.2, volume control not working) and Nexus5x (android version 8.1.0, everything works nice), please update this document if you tested it with other android versions to reflect the compatibility of the biding. 
+This binding was tested on the Fire TV Stick (android version 7.1.2, volume control not working) and Nexus5x (android version 8.1.0, everything works nice), please update this document if you tested it with other android versions to reflect the compatibility of the binding. 
 
 ## Discovery
 
@@ -58,11 +58,13 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 |----------|--------|------------------------------|
 | key-event  | String | Send key event to android device. Possible values listed below |
 | text  | String | Send text to android device |
+| tap  | String | Send tap event to android device (format x,y) |
 | media-volume  | Dimmer | Set or get media volume level on android device |
 | media-control  | Player | Control media on android device |
 | start-package  | String | Run application by package name |
 | stop-package  | String | Stop application by package name |
 | current-package  | String | Package name of the top application in screen |
+| shutdown  | String | Power off/reboot device (allowed values POWER_OFF, REBOOT) |
 | wake-lock  | Number | Power wake lock value |
 | screen-state  | Switch | Screen power state |
 

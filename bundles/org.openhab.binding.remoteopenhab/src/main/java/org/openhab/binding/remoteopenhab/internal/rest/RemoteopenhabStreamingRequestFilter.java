@@ -30,18 +30,18 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class RemoteopenhabStreamingRequestFilter implements ClientRequestFilter {
 
-    private final String accessToken;
+    private final String credentialToken;
 
-    public RemoteopenhabStreamingRequestFilter(String accessToken) {
-        this.accessToken = accessToken;
+    public RemoteopenhabStreamingRequestFilter(String credentialToken) {
+        this.credentialToken = credentialToken;
     }
 
     @Override
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-            if (!accessToken.isEmpty()) {
-                headers.putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            if (!credentialToken.isEmpty()) {
+                headers.putSingle(HttpHeaders.AUTHORIZATION, "Basic " + credentialToken);
             }
             headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-cache");
         }

@@ -1,0 +1,159 @@
+{
+	"deviceMapping": {
+		"id": [
+			"deerma.humidifier.jsq1"
+		],
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "OnOff_State",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_OnOff",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "Humidifier_Gear",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						},
+						{
+							"value": "4",
+							"label": "Humidity "
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_HumidifierGears",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\",\"4\"\u003d\"Humidity \"]`"
+			},
+			{
+				"property": "Humidity_Value",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "HumiSet_Value",
+				"friendlyName": "Humidity Setting",
+				"channel": "humidity_set",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": false
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_HumiValue",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "humidity",
+				"tags": [
+					"SetPoint",
+					"Humidity"
+				]
+			},
+			{
+				"property": "Led_State",
+				"friendlyName": "LED indicator Light",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "SetLedState",
+						"parameterType": "ONOFFNUMBER"
+					}
+				]
+			},
+			{
+				"property": "TipSound_State",
+				"friendlyName": "Notification Sounds",
+				"channel": "sound",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "SetTipSound_Status",
+						"parameterType": "ONOFFNUMBER"
+					}
+				]
+			},
+			{
+				"property": "watertankstatus",
+				"friendlyName": "Watertank Status",
+				"channel": "watertankstatus",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "wet_and_protect",
+				"friendlyName": "Wet and Protect",
+				"channel": "wet_and_protect",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_wet_and_protect",
+						"parameterType": "ONOFFNUMBER"
+					}
+				]
+			}
+		]
+	}
+}

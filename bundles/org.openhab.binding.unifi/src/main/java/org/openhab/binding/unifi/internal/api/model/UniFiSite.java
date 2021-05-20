@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.unifi.internal.api.model;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -49,8 +47,7 @@ public class UniFiSite {
     }
 
     public boolean matchesName(String siteName) {
-        return StringUtils.equalsIgnoreCase(desc, siteName) || StringUtils.equalsIgnoreCase(name, siteName)
-                || StringUtils.equalsIgnoreCase(id, siteName);
+        return siteName.equalsIgnoreCase(desc) || siteName.equalsIgnoreCase(name) || siteName.equalsIgnoreCase(id);
     }
 
     @Override

@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
@@ -76,7 +77,7 @@ public class ShellyChannelCache {
                 current = channelData.get(channelId);
             }
             if (!enabled || forceUpdate || (current == null) || !current.equals(newValue)) {
-                if ((current != null) && current.getClass().isEnum() && (current == newValue)) {
+                if ((current != null) && current.getClass().isEnum() && (current.equals(newValue))) {
                     return false; // special case for OnOffType
                 }
                 // For channels that support multiple types (like brightness) a suffix is added

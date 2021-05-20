@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haassohnpelletstove"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Haas Sohn Thing Type -->
+	<thing-type id="oven">
+		<label>Haas+Sohn Oven</label>
+		<description>The binding for Haas and Sohn Pelletstove communicates with a Haas and Sohn Pelletstove through the
+			optional
+			WLAN-Modul. More information can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion. It allows
+			to power on/off the stove as well as receiving different operation information about the stove.</description>
+
+
+		<channels>
+			<channel id="channelIsTemp" typeId="isTemp"/>
+			<channel id="channelMode" typeId="mode"/>
+			<channel id="channelSpTemp" typeId="spTemp"/>
+			<channel id="power" typeId="power"/>
+			<channel id="channelEcoMode" typeId="ecoMode"/>
+			<channel id="channelIgnitions" typeId="ignitions"/>
+			<channel id="channelMaintenanceIn" typeId="maintenanceIn"/>
+			<channel id="channelCleaningIn" typeId="cleaningIn"/>
+			<channel id="channelConsumption" typeId="consumption"/>
+			<channel id="channelOnTime" typeId="onTime"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostIP" type="text" required="true">
+				<label>IP Address</label>
+				<description>Please add the IP Address of the WIFI Module of the Haas and Sohn oven here</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="hostPIN" type="text" required="true" pattern="[0-9]{4}">
+				<label>PIN</label>
+				<description>Please add the PIN of your oven here. You can find it in the Menu directly in your oven.</description>
+			</parameter>
+			<parameter name="refreshRate" type="integer" unit="s" min="0" max="1000">
+				<label>Refresh Rate</label>
+				<description>How often the Pellet Stove should schedule a refresh after a channel is linked to an item. Temperature
+					data will be refreshed according this set time in seconds. Valid input is 0 - 999.
+				</description>
+				<advanced>true</advanced>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+	<channel-type id="isTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Is Temperature Stove</label>
+		<description>Receives the is temperature of the stove as number:temperature</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode Stove</label>
+		<description>Receives the actual mode of the stove as string</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="spTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Temperature Stove</label>
+		<description>Set the target temperature of the stove as number:temperature</description>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>On/Off Stove</label>
+		<description>To turn the stove on/off as switch</description>
+	</channel-type>
+
+	<channel-type id="ecoMode">
+		<item-type>Switch</item-type>
+		<label>On/Off Eco Mode</label>
+		<description>To turn the Eco Mode on/off for the stove as switch</description>
+	</channel-type>
+
+	<channel-type id="ignitions">
+		<item-type>Number</item-type>
+		<label>Ignitions Stove</label>
+		<description>Receives the total amount of ignitions of the stove as string</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="maintenanceIn">
+		<item-type>Number:Mass</item-type>
+		<label>Next Maintenance</label>
+		<description>Provides a pellet forecast when the stove need to be maintained next in kilogram as number:mass</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cleaningIn">
+		<item-type>String</item-type>
+		<label>Next Cleaning Window</label>
+		<description>Provides a time forecast in hours:minutes when the stove need to be cleaned next as String</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="consumption">
+		<item-type>Number:Mass</item-type>
+		<label>Total Consumption Stove</label>
+		<description>Provides the information about the total consumption of pellets of the stove as number:mass</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="onTime">
+		<item-type>Number</item-type>
+		<label>Operation Hours Stove</label>
+		<description>Provides the information of the operating hours of stove as number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

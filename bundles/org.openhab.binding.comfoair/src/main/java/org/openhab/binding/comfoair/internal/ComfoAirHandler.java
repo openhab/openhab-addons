@@ -87,7 +87,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                         Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
                                 .getAffectedReadCommands(channelId, keysToUpdate);
 
-                        if (affectedReadCommands.size() > 0) {
+                        if (!affectedReadCommands.isEmpty()) {
                             Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
                             affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
                         }

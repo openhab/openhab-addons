@@ -13,8 +13,10 @@
 package org.openhab.binding.enocean.internal.messages;
 
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
+import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
 import org.openhab.binding.enocean.internal.messages.CCMessage.CCMessageType;
+import org.openhab.binding.enocean.internal.messages.SAMessage.SAMessageType;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -42,6 +44,28 @@ public class ESP3PacketFactory {
         }
     }
 
+    public static BasePacket SA_WR_LEARNMODE(boolean activate) {
+        return new SAMessage(SAMessageType.SA_WR_LEARNMODE,
+                new byte[] { SAMessageType.SA_WR_LEARNMODE.getValue(), (byte) (activate ? 1 : 0), 0, 0, 0, 0, 0 });
+    }
+
+    public final static BasePacket SA_RD_LEARNEDCLIENTS = new SAMessage(SAMessageType.SA_RD_LEARNEDCLIENTS);
+
+    public static BasePacket SA_RD_MAILBOX_STATUS(byte[] clientId, byte[] controllerId) {
+        return new SAMessage(SAMessageType.SA_RD_MAILBOX_STATUS,
+                Helper.concatAll(new byte[] { SAMessageType.SA_RD_MAILBOX_STATUS.getValue() }, clientId, controllerId));
+    }
+
+    public static BasePacket SA_WR_POSTMASTER(byte mailboxes) {
+        return new SAMessage(SAMessageType.SA_WR_POSTMASTER,
+                new byte[] { SAMessageType.SA_WR_POSTMASTER.getValue(), mailboxes });
+    }
+
+    public static BasePacket SA_WR_CLIENTLEARNRQ(byte manu1, byte manu2, byte rorg, byte func, byte type) {
+        return new SAMessage(SAMessageType.SA_WR_CLIENTLEARNRQ,
+                new byte[] { SAMessageType.SA_WR_CLIENTLEARNRQ.getValue(), manu1, manu2, rorg, func, type });
+    }
+
     public static BasePacket BuildPacket(int dataLength, int optionalDataLength, byte packetType, byte[] payload) {
         ESPPacketType type = ESPPacketType.getPacketType(packetType);
 
@@ -50,6 +74,8 @@ public class ESP3PacketFactory {
                 return new Response(dataLength, optionalDataLength, payload);
             case RADIO_ERP1:
                 return new ERP1Message(dataLength, optionalDataLength, payload);
+            case EVENT:
+                return new EventMessage(dataLength, optionalDataLength, payload);
             default:
                 return null;
         }

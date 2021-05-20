@@ -54,7 +54,7 @@
 				"piid": 7,
 				"friendlyName": "Working Time",
 				"channel": "working-time",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
 					"minimum": 0,
@@ -184,7 +184,7 @@
 				"piid": 1,
 				"friendlyName": "Imilab Timer - On Duration",
 				"channel": "on-duration",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
@@ -207,7 +207,7 @@
 				"piid": 2,
 				"friendlyName": "Imilab Timer - Off Duration",
 				"channel": "off-duration",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,

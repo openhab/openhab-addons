@@ -25,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntry;
@@ -375,7 +375,7 @@ public class UpnpXMLParser {
                 entries.add(new UpnpEntry(id, refId, parentId, upnpClass.toString()).withTitle(title.toString())
                         .withAlbum(album.toString()).withAlbumArtUri(albumArtUri.toString())
                         .withCreator(creator.toString())
-                        .withArtist(artistList.size() > 0 ? artistList.get(0) : artist.toString())
+                        .withArtist(!artistList.isEmpty() ? artistList.get(0) : artist.toString())
                         .withPublisher(publisher.toString()).withGenre(genre.toString()).withTrackNumber(trackNumberVal)
                         .withResList(resList));
 

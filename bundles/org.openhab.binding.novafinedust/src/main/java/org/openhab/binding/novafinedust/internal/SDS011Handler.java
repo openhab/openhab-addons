@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.TooManyListenersException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +63,7 @@ public class SDS011Handler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> dataReadJob;
     private @Nullable ScheduledFuture<?> connectionMonitor;
+    private @Nullable Future<?> initJob;
     private @Nullable ScheduledFuture<?> retryInitJob;
 
     private ZonedDateTime lastCommunication = ZonedDateTime.now();
@@ -115,10 +117,10 @@ public class SDS011Handler extends BaseThingHandler {
 
         if (config.reporting) {
             timeBetweenDataShouldArrive = Duration.ofMinutes(config.reportingInterval);
-            scheduler.submit(() -> initializeCommunicator(WorkMode.REPORTING, timeBetweenDataShouldArrive));
+            initJob = scheduler.submit(() -> initializeCommunicator(WorkMode.REPORTING, timeBetweenDataShouldArrive));
         } else {
             timeBetweenDataShouldArrive = Duration.ofSeconds(config.pollingInterval);
-            scheduler.submit(() -> initializeCommunicator(WorkMode.POLLING, timeBetweenDataShouldArrive));
+            initJob = scheduler.submit(() -> initializeCommunicator(WorkMode.POLLING, timeBetweenDataShouldArrive));
         }
     }
 
@@ -130,66 +132,45 @@ public class SDS011Handler extends BaseThingHandler {
             return;
         }
 
-        boolean initSuccessful = false;
-        int retryInit = 3;
-        int retryCount = 0;
-        // sometimes the device is a little difficult and needs multiple configuration attempts
-        while (!initSuccessful && retryCount < retryInit) {
-            logger.trace("Trying to initialize device attempt={}", retryCount);
-            initSuccessful = doInit(localCommunicator, mode, interval);
-            retryCount++;
-        }
+        logger.trace("Trying to initialize device");
+        doInit(localCommunicator, mode, interval);
 
-        if (initSuccessful) {
-            lastCommunication = ZonedDateTime.now();
-            updateStatus(ThingStatus.ONLINE);
+        lastCommunication = ZonedDateTime.now();
 
-            if (mode == WorkMode.POLLING) {
-                dataReadJob = scheduler.scheduleWithFixedDelay(() -> {
-                    try {
-                        localCommunicator.requestSensorData();
-                    } catch (IOException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Cannot query data from device");
-                    }
-                }, 2, config.pollingInterval, TimeUnit.SECONDS);
-            } else {
-                // start a job that reads the port until data arrives
-                int reportingReadStartDelay = 10;
-                int startReadBeforeDataArrives = 5;
-                long readReportedDataInterval = (config.reportingInterval * 60) - reportingReadStartDelay
-                        - startReadBeforeDataArrives;
-                logger.trace("Scheduling job to receive reported values");
-                dataReadJob = scheduler.scheduleWithFixedDelay(() -> {
-                    try {
-                        localCommunicator.readSensorData();
-                    } catch (IOException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Cannot query data from device, because: " + e.getMessage());
-                    }
-                }, reportingReadStartDelay, readReportedDataInterval, TimeUnit.SECONDS);
-            }
-
-            Duration connectionMonitorStartDelay = timeBetweenDataShouldArrive
-                    .plus(CONNECTION_MONITOR_START_DELAY_OFFSET);
-            connectionMonitor = scheduler.scheduleWithFixedDelay(this::verifyIfStillConnected,
-                    connectionMonitorStartDelay.getSeconds(), timeBetweenDataShouldArrive.getSeconds(),
-                    TimeUnit.SECONDS);
+        if (mode == WorkMode.POLLING) {
+            dataReadJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    localCommunicator.requestSensorData();
+                } catch (IOException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "Cannot query data from device");
+                }
+            }, 2, config.pollingInterval, TimeUnit.SECONDS);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Commands and replies from the device don't seem to match");
-            logger.debug(
-                    "Could not configure sensor -> setting Thing to OFFLINE, disposing the handler and reschedule initialize in {} seconds",
-                    RETRY_INIT_DELAY);
-            doDispose(false);
-            retryInitJob = scheduler.schedule(this::initialize, RETRY_INIT_DELAY.getSeconds(), TimeUnit.SECONDS);
+            // start a job that reads the port until data arrives
+            int reportingReadStartDelay = 10;
+            int startReadBeforeDataArrives = 5;
+            long readReportedDataInterval = (config.reportingInterval * 60) - reportingReadStartDelay
+                    - startReadBeforeDataArrives;
+            logger.trace("Scheduling job to receive reported values");
+            dataReadJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    localCommunicator.readSensorData();
+                } catch (IOException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "Cannot query data from device, because: " + e.getMessage());
+                }
+            }, reportingReadStartDelay, readReportedDataInterval, TimeUnit.SECONDS);
         }
+
+        Duration connectionMonitorStartDelay = timeBetweenDataShouldArrive.plus(CONNECTION_MONITOR_START_DELAY_OFFSET);
+        connectionMonitor = scheduler.scheduleWithFixedDelay(this::verifyIfStillConnected,
+                connectionMonitorStartDelay.getSeconds(), timeBetweenDataShouldArrive.getSeconds(), TimeUnit.SECONDS);
     }
 
-    private boolean doInit(SDS011Communicator localCommunicator, WorkMode mode, Duration interval) {
-        boolean initSuccessful = false;
+    private void doInit(SDS011Communicator localCommunicator, WorkMode mode, Duration interval) {
         try {
-            initSuccessful = localCommunicator.initialize(mode, interval);
+            localCommunicator.initialize(mode, interval);
         } catch (final IOException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
         } catch (PortInUseException e) {
@@ -201,7 +182,6 @@ public class SDS011Handler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot set serial port parameters");
         }
-        return initSuccessful;
     }
 
     private boolean validateConfiguration() {
@@ -241,6 +221,12 @@ public class SDS011Handler extends BaseThingHandler {
         if (localConnectionMonitor != null) {
             localConnectionMonitor.cancel(true);
             this.connectionMonitor = null;
+        }
+
+        Future<?> localInitJob = this.initJob;
+        if (localInitJob != null) {
+            localInitJob.cancel(true);
+            this.initJob = null;
         }
 
         ScheduledFuture<?> localRetryOpenPortJob = this.retryInitJob;

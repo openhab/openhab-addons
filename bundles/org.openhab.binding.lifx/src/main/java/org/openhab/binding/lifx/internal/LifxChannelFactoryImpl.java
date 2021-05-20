@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * The {@link LifxChannelFactoryImpl} creates dynamic LIFX channels.
  *
- * @author Wouter Born - Add i18n support
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 @Component(service = LifxChannelFactory.class)

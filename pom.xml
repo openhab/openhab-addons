@@ -51,8 +51,8 @@
 
   <distributionManagement>
     <repository>
-      <id>bintray</id>
-      <url>${oh.repo.distBaseUrl}/openhab-addons/;publish=1</url>
+      <id>jfrog-release</id>
+      <url>${oh.repo.distBaseUrl}/libs-release-local</url>
     </repository>
     <snapshotRepository>
       <id>jfrog</id>
@@ -69,12 +69,13 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <ohc.version>3.1.0-SNAPSHOT</ohc.version>
-    <bnd.version>5.2.0</bnd.version>
+    <bnd.version>5.3.0</bnd.version>
     <commons.net.version>3.7.2</commons.net.version>
     <eea.version>2.2.1</eea.version>
-    <karaf.version>4.2.7</karaf.version>
-    <sat.version>0.10.0</sat.version>
-    <slf4j.version>1.7.21</slf4j.version>
+    <jackson.version>2.12.3</jackson.version>
+    <karaf.version>4.3.2</karaf.version>
+    <netty.version>4.1.63.Final</netty.version>
+    <sat.version>0.11.1</sat.version>
     <spotless.version>2.0.3</spotless.version>
 
     <bnd.importpackage/>

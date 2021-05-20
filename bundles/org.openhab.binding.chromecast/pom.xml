@@ -16,7 +16,6 @@
 
   <properties>
     <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
-    <jackson.version>2.9.10</jackson.version>
   </properties>
 
   <dependencies>
@@ -25,6 +24,12 @@
       <artifactId>api-v2</artifactId>
       <version>0.11.3</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>

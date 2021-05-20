@@ -112,7 +112,7 @@ parameters for **baud rate**, **flow control**, and **parity** to match the conf
 
 ### Manual Thing Creation
 
-Devices can be created in the *Paper UI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
+Devices can be created in the *UI*, or by placing a *.things* file in the *conf/things* directory.
 See example below.
 
 ### Binding Dependencies
@@ -132,7 +132,7 @@ discovery.globalcache:background=false
 ```
 
 Note that automatic device discovery **will not work** with GC-100's running firmware earlier than v3.0 as those versions do not emit announcement beacons on the multicast address.
-GC-100's running firmware earlier than v3.0 must be configured manually, either through *Paper UI* or using a *.things* file.
+GC-100's running firmware earlier than v3.0 must be configured manually, either through the *UI* or using a *.things* file.
 See below.
 
 ## Channels and Channel Types
@@ -197,7 +197,7 @@ Other settings, such as *Sensor In*, *Sensor Notify*, and *LED Lighting*, may be
 
 ## Contact Closure (CC) Channel
 
-A *Contact Closure channel* activates the contact closure (relay) on the iTach or GC-100 device.  
+A *Contact Closure channel* activates the contact closure (relay) on the iTach or GC-100 device.
 For example, the following item links to the module 1, connector 1 channel on an iTach CC device.
 
 ```
@@ -212,7 +212,7 @@ String MyRelay     "My Relay [%s]"  (gRelays)   { channel="globalcache:itachFlex
 
 ## Serial (SL) Channel
 
-An *SL channel* sends serial command strings out the serial connector on the device.  
+An *SL channel* sends serial command strings out the serial connector on the device.
 For example, the following item links to the module 1 connector 1 channel on a GC-100-6 device.
 
 ```

@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 enum ZoneUserDevice {
-    None,
-    Zone,
-    User,
-    Device
+    NONE,
+    ZONE,
+    USER,
+    DEVICE
 }

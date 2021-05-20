@@ -77,7 +77,6 @@
 			<parameter name="poll_frequency" type="integer" required="false" min="1">
 				<label>Polling Frequency</label>
 				<description>How often (in seconds) to poll the Hyperion server for value changes.</description>
-				<required>true</required>
 				<default>3</default>
 			</parameter>
 			<parameter name="origin" type="text" required="false">

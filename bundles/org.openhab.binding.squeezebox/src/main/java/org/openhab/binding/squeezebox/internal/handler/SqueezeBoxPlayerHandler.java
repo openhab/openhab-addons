@@ -16,6 +16,7 @@ import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +26,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
@@ -275,7 +275,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 squeezeBoxServerHandler.playUrl(mac, command.toString());
                 break;
             case CHANNEL_SYNC:
-                if (StringUtils.isBlank(command.toString())) {
+                if (command.toString().isBlank()) {
                     squeezeBoxServerHandler.unSyncPlayer(mac);
                 } else {
                     squeezeBoxServerHandler.syncPlayer(mac, command.toString());
@@ -306,6 +306,16 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                     squeezeBoxServerHandler.rate(mac, likeCommand);
                 } else if (command.equals(OnOffType.OFF)) {
                     squeezeBoxServerHandler.rate(mac, unlikeCommand);
+                }
+                break;
+            case CHANNEL_SLEEP:
+                if (command instanceof DecimalType) {
+                    Duration sleepDuration = Duration.ofMinutes(((DecimalType) command).longValue());
+                    if (sleepDuration.isNegative() || sleepDuration.compareTo(Duration.ofDays(1)) > 0) {
+                        logger.debug("Sleep timer of {} minutes must be >= 0 and <= 1 day", sleepDuration.toMinutes());
+                        return;
+                    }
+                    squeezeBoxServerHandler.sleep(mac, sleepDuration);
                 }
                 break;
             default:
@@ -433,7 +443,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     private RawType downloadImage(String mac, String url) {
         // Only get the image if this is my PlayerHandler instance
         if (isMe(mac)) {
-            if (StringUtils.isNotEmpty(url)) {
+            if (url != null && !url.isEmpty()) {
                 String sanitizedUrl = sanitizeUrl(url);
                 RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
                     logger.debug("Trying to download the content of URL {}", sanitizedUrl);

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -180,7 +181,17 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                 List<JsonSmartHomeDeviceAlias> aliases = shd.aliases;
                 if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "SonarCloudService".equals(driverIdentity.identifier)) {
-                    deviceName = "Alexa Guard on " + shd.friendlyName;
+                    List<@Nullable String> interfaces = shd.getCapabilities().stream().map(c -> c.interfaceName)
+                            .collect(Collectors.toList());
+                    if (interfaces.contains("Alexa.AcousticEventSensor")) {
+                        deviceName = "Alexa Guard on " + shd.friendlyName;
+                    } else if (interfaces.contains("Alexa.ColorController")) {
+                        deviceName = "Alexa Color Controller on " + shd.friendlyName;
+                    } else if (interfaces.contains("Alexa.PowerController")) {
+                        deviceName = "Alexa Plug on " + shd.friendlyName;
+                    } else {
+                        deviceName = "Unknown Device on " + shd.friendlyName;
+                    }
                 } else if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "OnGuardSmartHomeBridgeService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard";
@@ -201,7 +212,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                 }
                 Set<SmartHomeDevice> supportedChildren = SmartHomeDeviceHandler.getSupportedSmartHomeDevices(shg,
                         deviceList);
-                if (supportedChildren.size() == 0) {
+                if (supportedChildren.isEmpty()) {
                     // No children with an supported interface
                     continue;
                 }

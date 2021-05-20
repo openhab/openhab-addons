@@ -16,9 +16,16 @@ import static org.openhab.io.homekit.internal.HomekitAccessoryType.*;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -124,7 +131,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * creates HomeKit accessory for a openhab item.
-     * 
+     *
      * @param taggedItem openhab item tagged as HomeKit item
      * @param metadataRegistry openhab metadata registry required to get item meta information
      * @param updater OH HomeKit update class that ensure the status sync between OH item and corresponding HomeKit
@@ -171,7 +178,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * return HomeKit accessory types for a OH item based on meta data
-     * 
+     *
      * @param item OH item
      * @param metadataRegistry meta data registry
      * @return list of HomeKit accessory types and characteristics.
@@ -210,7 +217,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * return list of HomeKit relevant groups linked to an accessory
-     * 
+     *
      * @param item OH item
      * @param itemRegistry item registry
      * @param metadataRegistry metadata registry
@@ -231,7 +238,7 @@ public class HomekitAccessoryFactory {
     /**
      * collect all mandatory characteristics for a given tagged item, e.g. collect all mandatory HomeKit items from a
      * GroupItem
-     * 
+     *
      * @param taggedItem HomeKit tagged item
      * @param metadataRegistry meta data registry
      * @return list of mandatory
@@ -341,7 +348,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * collect optional HomeKit characteristics for a OH item.
-     * 
+     *
      * @param taggedItem main OH item
      * @param metadataRegistry OH metadata registry
      * @return a map with characteristics and corresponding OH items
@@ -368,7 +375,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * return true is characteristic is a mandatory characteristic for the accessory.
-     * 
+     *
      * @param accessory accessory
      * @param characteristic characteristic
      * @return true if characteristic is mandatory, false if not mandatory
@@ -381,7 +388,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * check whether accessory is root accessory, i.e. without characteristic tag.
-     * 
+     *
      * @param accessory accessory
      * @return true if accessory has not characteristic.
      */

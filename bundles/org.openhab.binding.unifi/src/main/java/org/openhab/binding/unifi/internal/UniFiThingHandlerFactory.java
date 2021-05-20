@@ -46,7 +46,7 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
     public UniFiThingHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
         // [wip] mgb: disabled due to missing common name attributes with certs
         // this.httpClient = httpClientFactory.getCommonHttpClient();
-        httpClient = new HttpClient(new SslContextFactory(true));
+        httpClient = new HttpClient(new SslContextFactory.Client(true));
         try {
             httpClient.start();
         } catch (Exception e) {

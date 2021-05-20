@@ -15,101 +15,290 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: DynamoDB</name>
 
   <properties>
-    <bnd.importpackage>!com.amazonaws.*,!org.joda.convert.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.apache.avalon.*</bnd.importpackage>
+    <!-- Avoid declaring OSGI-imports for packages that are part of embedded/compiled dependencies, declared below under
+      <dependencies> -->
+    <bnd.importpackage>!com.amazonaws.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.joda.convert.*,!scala.util.*,!software.amazon.*,!org.reactivestreams,!com.typesafe.netty</bnd.importpackage>
+    <!-- We do not want to embed/compile in dependencies that are declared as OSGi imports (feature.xml). This includes e.g.
+      netty & jackson. Let's ensure by listing relevant packages with dep.noembedding -->
+    <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler,jackson-core,jackson-annotations,jackson-dataformat-cbor,jackson-databind</dep.noembedding>
+    <!-- netty version matching the openhab.tp-netty feature version -->
+    <slf4j.version>1.7.21</slf4j.version>
   </properties>
 
+  <!--Custom repository for DynamoDBLocal -->
+  <repositories>
+    <repository>
+      <id>dynamodb-local-repo</id>
+      <name>DynamoDB Local Release Repository</name>
+      <url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <!-- Copy sqlite native libraries for tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>test</includeScope>
+              <includeTypes>so,dll,dylib</includeTypes>
+              <outputDirectory>${project.basedir}/src/test/resources/native-libs</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- Let's ensure the correct versions with dependencyManagement.
+
+    We want to run our tests and compilations using netty and jackson version used in the runtime (provided as OSGi features).
+    slf4j-api version is locked to core-version. Also: slf4j comes via openHAB logging, so setting it here as provided to
+    have the right OSGi imports.
+  -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-buffer</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http2</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-common</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-handler</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-epoll</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-epoll</artifactId>
+        <classifier>linux-x86_64</classifier>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-unix-common</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core -->
+    <!-- Test dependencies -->
     <dependency>
       <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-core</artifactId>
-      <version>1.11.213</version>
+      <artifactId>DynamoDBLocal</artifactId>
+      <version>1.15.0</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-dynamodb</artifactId>
-      <version>1.11.213</version>
+      <groupId>com.almworks.sqlite4java</groupId>
+      <artifactId>sqlite4java</artifactId>
+      <version>[1.0, 2.0)</version>
+      <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-kms -->
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-kms</artifactId>
-      <version>1.11.213</version>
+      <groupId>com.almworks.sqlite4java</groupId>
+      <artifactId>sqlite4java-win32-x86</artifactId>
+      <type>dll</type>
+      <version>[1.0, 2.0)</version>
+      <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-s3</artifactId>
-      <version>1.11.213</version>
+      <groupId>com.almworks.sqlite4java</groupId>
+      <artifactId>sqlite4java-win32-x64</artifactId>
+      <type>dll</type>
+      <version>[1.0, 2.0)</version>
+      <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.amazonaws/jmespath-java -->
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>jmespath-java</artifactId>
-      <version>1.11.213</version>
+      <groupId>com.almworks.sqlite4java</groupId>
+      <artifactId>libsqlite4java-osx</artifactId>
+      <type>dylib</type>
+      <version>[1.0, 2.0)</version>
+      <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.2</version>
+      <groupId>com.almworks.sqlite4java</groupId>
+      <artifactId>libsqlite4java-linux-i386</artifactId>
+      <type>so</type>
+      <version>[1.0, 2.0)</version>
+      <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/software.amazon.ion/ion-java -->
     <dependency>
-      <groupId>software.amazon.ion</groupId>
-      <artifactId>ion-java</artifactId>
+      <groupId>com.almworks.sqlite4java</groupId>
+      <artifactId>libsqlite4java-linux-amd64</artifactId>
+      <type>so</type>
+      <version>[1.0, 2.0)</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- -->
+    <!-- -->
+    <!-- SDK (runtime) dependencies -->
+    <!-- -->
+    <!-- -->
+    <!-- -->
+    <!-- -->
+    <!-- NOTE: this list is generated automatically using scripts/fetch_sdk.sh to
+      facilitate easier SDK updates. Do not edit the below manually -->
+    <!-- NOTE 2: all transitive dependencies of AWS SDK are included as direct dependencies of this bundle,
+      since we want to embed them to the bundle. The ones specified in dep.noembedded are not embedded though and not even
+      listed here.
+    -->
+    <dependency>
+      <groupId>com.typesafe.netty</groupId>
+      <artifactId>netty-reactive-streams-http</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.netty</groupId>
+      <artifactId>netty-reactive-streams</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
       <version>1.0.2</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <version>4.4.4</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>annotations</artifactId>
+      <version>2.15.56</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.3</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>auth</artifactId>
+      <version>2.15.56</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
     <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.9</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>aws-core</artifactId>
+      <version>2.15.56</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.8.1</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>aws-json-protocol</artifactId>
+      <version>2.15.56</version>
     </dependency>
-
-    <!-- The following dependencies are required for test resolution -->
-
-    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.6.0</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>dynamodb-enhanced</artifactId>
+      <version>2.15.56</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.6.7</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>dynamodb</artifactId>
+      <version>2.15.56</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.6.7.1</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>http-client-spi</artifactId>
+      <version>2.15.56</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-cbor -->
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-cbor</artifactId>
-      <version>2.6.7</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>metrics-spi</artifactId>
+      <version>2.15.77</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>netty-nio-client</artifactId>
+      <version>2.15.77</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>profiles</artifactId>
+      <version>2.15.56</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>protocol-core</artifactId>
+      <version>2.15.56</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>regions</artifactId>
+      <version>2.15.56</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sdk-core</artifactId>
+      <version>2.15.56</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>utils</artifactId>
+      <version>2.15.56</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.eventstream</groupId>
+      <artifactId>eventstream</artifactId>
+      <version>1.0.1</version>
     </dependency>
   </dependencies>
 </project>

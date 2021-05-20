@@ -14,7 +14,7 @@ package org.openhab.binding.lifx.internal.listener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lifx.internal.LifxLightCommunicationHandler;
-import org.openhab.binding.lifx.internal.protocol.Packet;
+import org.openhab.binding.lifx.internal.dto.Packet;
 
 /**
  * The {@link LifxResponsePacketListener} is notified when the {@link LifxLightCommunicationHandler} receives a response

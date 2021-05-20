@@ -6,15 +6,17 @@ If your hardware is on the list but still does not work, please fill a bug repor
 
 ## Supported Things
 
-Thing | Type | Description
---------|------|------
-yamahaAV | Bridge | Yamaha Receiver hardware
-zone | Thing | Zones of your receiver
+| Thing    | Type   | Description              |
+|----------|--------|--------------------------|
+| yamahaAV | Bridge | Yamaha Receiver hardware |
+| zone     | Thing  | Zones of your receiver   |
 
 
 ## Discovery
 
-Just use the auto discovery feature to detect your hardware. Initially a thing for the main zone will be created. This will trigger a zone detection internally and all available additional zones will appear as new things.
+Just use the auto discovery feature to detect your hardware.
+Initially a thing for the main zone will be created.
+This will trigger a zone detection internally and all available additional zones will appear as new things.
 
 
 ## Thing Configuration
@@ -32,22 +34,22 @@ Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a
 
 Configuration parameters for Bridge `yamahaAV`:
 
-Parameter | Required | Default | Description
---------|------|------|------
-`host` | yes | N/A | The IP address of the AVR to control
-`port` | no | 80 | The API port of the AVR to control
-`refreshInterval` | no | 60 | Refresh interval in seconds
-`albumUrl` | no | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply
-`inputMapping` | no | "" (empty string) | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details
+| Parameter         | Required | Default            | Description                                                                                                                                          |
+|-------------------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `host`            | yes      | N/A                | The IP address of the AVR to control                                                                                                                 |
+| `port`            | no       | 80                 | The API port of the AVR to control                                                                                                                   |
+| `refreshInterval` | no       | 60                 | Refresh interval in seconds                                                                                                                          |
+| `albumUrl`        | no       | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply                                      |
+| `inputMapping`    | no       | "" (empty string)  | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details |
 
 Configruation parameters for Thing `zone`:
 
-Parameter | Required | Default | Description
---------|------|------|------
-`zone` | yes | / | The zone can be Main_Zone, Zone_2, Zone_3, Zone_4 depending on your device
-`volumeRelativeChangeFactor` | no | 2 | Relative volume change in percent
-`volumeDbMin` | no | -80 | Lowest volume in dB
-`volumeDbMax` | no | 12 | Highest volume in dB
+| Parameter                    | Required | Default | Description                                                                |
+|------------------------------|----------|---------|----------------------------------------------------------------------------|
+| `zone`                       | yes      | /       | The zone can be Main_Zone, Zone_2, Zone_3, Zone_4 depending on your device |
+| `volumeRelativeChangeFactor` | no       | 2       | Relative volume change in percent                                          |
+| `volumeDbMin`                | no       | -80     | Lowest volume in dB                                                        |
+| `volumeDbMax`                | no       | 12      | Highest volume in dB                                                       |
 
 
 ## Channels
@@ -101,9 +103,9 @@ Navigation is not supported by Spotify input.
 
 ### Basic Setup
 
-##### For auto linking with Paper UI
+##### Auto Linking
 
-Link the items to the channels of your preferred zone (here `Main_Zone`) in Paper UI after you have saved your items file.
+Link the items to the channels of your preferred zone (here `Main_Zone`) in the UI after you have saved your items file.
 
 Items:
 
@@ -117,7 +119,7 @@ String      Yamaha_Scene           "Scene []"                  <video>
 Number      Yamaha_Dialogue_Level  "Dialogue Level [%d]"       <soundvolume>
 ```
 
-##### For manually linking
+##### Manual Linking
 
 Replace the UPnP UDN (here: `96a40ba9`) with the real UDN provided by your UPnP discovery.
 Also replace the zone name with your preferred zone (here `Main_Zone`).
@@ -256,7 +258,7 @@ On top of that some AVR models during status updates report different value than
 To account for all variations a Yamaha thing setting got introduced: `Input mapping`. 
 This allows to map the input value reported by the AVR after status update to the desired canonical value. 
 
-Use the Paper UI to customize the setting for your particular AVR: `Paper UI > Configuration > Things > Edit > Yamaha Receiver XXX > Input mapping`.
+Use the UI to customize the setting for your particular AVR: `Things > Edit > Yamaha Receiver XXX > Input mapping`.
 For example, if your AVR returns `HDMI_1` for command `HDMI1` you can create such mapping list:
 
 `HDMI_1=HDMI1,HDMI 1=HDMI1,HDMI_2=HDMI2,HDMI 2=HDMI2`

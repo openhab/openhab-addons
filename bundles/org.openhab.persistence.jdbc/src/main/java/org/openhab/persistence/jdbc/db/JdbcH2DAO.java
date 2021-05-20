@@ -14,7 +14,7 @@ package org.openhab.persistence.jdbc.db;
 
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
-import org.openhab.persistence.jdbc.model.ItemVO;
+import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
