@@ -21,13 +21,13 @@ import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link DeviceListModel}.
@@ -38,12 +38,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AVMFritzDeviceListModelTest {
 
-    private final Logger logger = LoggerFactory.getLogger(AVMFritzDeviceListModelTest.class);
-
     private @NonNullByDefault({}) DeviceListModel devices;
 
+    @SuppressWarnings("null")
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws JAXBException, XMLStreamException {
         //@formatter:off
         final String xml =
                 "<devicelist version=\"1\">" +
@@ -62,13 +61,10 @@ public class AVMFritzDeviceListModelTest {
                     "<device identifier=\"13096 0007308\" id=\"30\" functionbitmask=\"1048864\" fwversion=\"05.10\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 440\"><present>1</present><name>FRITZ!DECT 440 #15</name><temperature><celsius>230</celsius><offset>0</offset></temperature><humidity><rel_humidity>43</rel_humidity></humidity><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007308-1\" id=\"5000\"><name>FRITZ!DECT 440 #15: Oben rechts</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-3\" id=\"5001\"><name>FRITZ!DECT 440 #15: Unten rechts</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button><button identifier=\"13096 0007308-5\" id=\"5002\"><name>FRITZ!DECT 440 #15: Unten links</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-7\" id=\"5003\"><name>FRITZ!DECT 440 #15: Oben links</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>" +
                     "<device identifier=\"14276 0503450-1\" id=\"2000\" functionbitmask=\"335888\" fwversion=\"0.0\" manufacturer=\"0x37c4\" productname=\"Rollotron 1213\"><present>1</present><txbusy>0</txbusy><name>Rollotron 1213 #1</name><blind><endpositionsset>1</endpositionsset><mode>manuell</mode></blind><levelcontrol><level>26</level><levelpercentage>10</levelpercentage></levelcontrol><etsiunitinfo><etsideviceid>406</etsideviceid><unittype>281</unittype><interfaces>256,513,516,517</interfaces></etsiunitinfo><alert><state>0</state><lastalertchgtimestamp></lastalertchgtimestamp></alert></device>" +
                 "</devicelist>";
-        //@formatter:off
-        try {
-            Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
-            devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
-        } catch (JAXBException e) {
-            logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
-        }
+        //@formatter:on
+        XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        devices = u.unmarshal(xsr, DeviceListModel.class).getValue();
     }
 
     @Test
