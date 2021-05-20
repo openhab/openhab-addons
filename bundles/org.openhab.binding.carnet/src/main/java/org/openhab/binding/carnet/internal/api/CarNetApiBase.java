@@ -438,8 +438,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             String body) throws CarNetException {
         logger.debug("{}: Sending action request for {}.{}, reqSecToken={}, contentType={}", config.vehicle.vin,
                 service, action, reqSecToken, contentType);
-        Map<String, String> headers = fillActionHeaders(contentType,
-                reqSecToken ? createSecurityToken(service, action) : createVwToken());
+        Map<String, String> headers = fillActionHeaders(contentType, createVwToken(),
+                reqSecToken ? createSecurityToken(service, action) : "");
         String json = http.post(uri, headers, body);
         logger.debug("{}: Action response={}", config.vehicle.vin, json);
         return queuePendingAction(json, service, action);
@@ -627,7 +627,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return status;
     }
 
-    protected Map<String, String> fillActionHeaders(String contentType, String securityToken) throws CarNetException {
+    protected Map<String, String> fillActionHeaders(String contentType, String accessToken, String securityToken)
+            throws CarNetException {
         // "User-Agent": "okhttp/3.7.0",
         // "Host": "msg.volkswagen.de",
         // "X-App-Version": "3.14.0",
@@ -650,8 +651,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 + ", application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml,application/vnd.volkswagenag.com-error-v1+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteLockUnlock_v1_0_0+xml,application/vnd.vwg.mbb.operationList_v3_0_2+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,*/*");
         headers.put(HttpHeader.ACCEPT_CHARSET.toString(), StandardCharsets.UTF_8.toString());
 
-        headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + securityToken);
-        headers.put(HttpHeader.HOST.toString(), "msg.volkswagen.de");
+        headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + accessToken);
+        String host = substringBetween(config.api.apiDefaultUrl, "//", "/");
+        headers.put(HttpHeader.HOST.toString(), host);
         if (!securityToken.isEmpty()) {
             headers.put("x-mbbSecToken", securityToken);
         }

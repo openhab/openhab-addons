@@ -41,12 +41,11 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
         properties.oidcConfigUrl = "https://app-api.live-my.audi.com/myaudiappidk/v1/openid-configuration";
         properties.clientId = "09b6cbec-cd19-4589-82fd-363dfa8c24da@apps_vw-dilab_com";
         properties.xClientId = "77869e21-e30a-4a92-b016-48ab7d3db1d8";
-        // properties.authScope = "address profile badge birthdate birthplace nationalIdentifier nationality profession
-        // email vin phone nickname name picture mbb gallery openid";
-        properties.authScope = "openid profile mbb";
+        properties.authScope = "address profile badge birthdate birthplace nationalIdentifier nationality profession email vin phone nickname name picture mbb gallery openid";
+        // properties.authScope = "openid profile mbb vin";
         properties.redirect_uri = "myaudi:///";
         properties.responseType = "token id_token";
-        properties.xappVersion = "3.22.0\"";
+        properties.xappVersion = "3.22.0";
         properties.xappName = "myAudi";
         properties.xrequest = "de.myaudi.mobile.assistant";
     }

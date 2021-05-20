@@ -35,6 +35,7 @@ Some verified vehicles:
 |Volkswagen|eUp         |    |Electrical|DE/DE |                                                             |        |     |       |
 |Volkswagen|Passat GTE  |2016|Hybrid    |DE/NL |                                                             |n/a     |n/a  |n/a    |
 |Volkswagen|Tiguan      |2021|Diesel    |DE/DE |                                                             |n/a     |n/a  |n/a    |
+|Volkswagen|Tiguan      |2021|Gas       |DE/SE |                                                             |n/a     |n/a  |n/a    |
 |Volkswagen|T-Roc Cabrio|2020|          |DE/   |                                                             |        |     |       |
 
 

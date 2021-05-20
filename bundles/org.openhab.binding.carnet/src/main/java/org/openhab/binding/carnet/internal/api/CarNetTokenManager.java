@@ -244,7 +244,7 @@ public class CarNetTokenManager {
                 // We Connect
                 logger.debug("{}: Login to We Connect", config.vehicle.vin);
                 headers.clear();
-                headers.put(CNAPI_HEADER_HOST, "login.apps.emea.vwapps.io");
+                headers.put(HttpHeader.HOST.toString(), "login.apps.emea.vwapps.io");
                 data.clear();
                 /*
                  * state: jwtstate,
@@ -272,7 +272,7 @@ public class CarNetTokenManager {
                 headers.clear();
                 headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
                 headers.put(CNAPI_HEADER_CLIENTID, config.api.xClientId);
-                headers.put(CNAPI_HEADER_HOST, "mbboauth-1d.prd.ece.vwg-connect.com");
+                headers.put(HttpHeader.HOST.toString(), "mbboauth-1d.prd.ece.vwg-connect.com");
                 headers.put(CNAPI_HEADER_APP, config.api.xappName);
                 headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
                 headers.put(HttpHeader.ACCEPT.toString(), "*/*");
@@ -393,7 +393,6 @@ public class CarNetTokenManager {
     public boolean refreshTokens(CarNetCombinedConfig config) throws CarNetException {
         try {
             TokenSet tokens = getTokenSet(config.tokenSetId);
-            CarNetHttpClient http = tokens.http;
             refreshToken(config, tokens.vwToken);
 
             Iterator<CarNetToken> it = securityTokens.iterator();
