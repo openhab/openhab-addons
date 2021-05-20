@@ -27,6 +27,7 @@ import org.openhab.core.common.registry.ProviderChangeListener;
 import org.osgi.service.component.annotations.Component;
 
 /**
+ * Provides the module types for the rules engine.
  *
  * @author Fabian Wolter - Initial Contribution
  */

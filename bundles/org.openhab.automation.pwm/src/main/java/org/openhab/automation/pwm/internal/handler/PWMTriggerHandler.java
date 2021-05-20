@@ -44,6 +44,7 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Represents a Trigger module in the rules engine.
  *
  * @author Fabian Wolter - Initial Contribution
  */
@@ -203,7 +205,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
         ModuleHandlerCallback localCallback = callback;
         if (localCallback != null && localCallback instanceof TriggerHandlerCallback) {
             ((TriggerHandlerCallback) localCallback).triggered(module,
-                    Collections.singletonMap(OUTPUT, BigDecimal.valueOf(enable ? 1 : 0)));
+                    Collections.singletonMap(OUTPUT, OnOffType.from(enable)));
         }
     }
 
@@ -217,7 +219,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
                 // nothing
             }
         } else if (state instanceof UnDefType) {
-            throw new PWMException("Duty cycle Item '" + dutyCycleItem.getName() + "' has no valid value");
+            throw new PWMException("Duty cycle item '" + dutyCycleItem.getName() + "' has no valid value");
         }
         throw new PWMException("Duty cycle item not of type DecimalType: " + state.getClass().getSimpleName());
     }

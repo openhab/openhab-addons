@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- *
  * Active when, the PWM period ended with a duty cycle set to 0%.
  *
  * @author Fabian Wolter - Initial Contribution

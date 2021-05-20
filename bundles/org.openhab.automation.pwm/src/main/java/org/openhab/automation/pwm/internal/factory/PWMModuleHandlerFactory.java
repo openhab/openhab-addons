@@ -33,6 +33,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
+ * Factory for the PWM automation module.
  *
  * @author Fabian Wolter - Initial Contribution
  */

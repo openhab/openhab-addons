@@ -26,6 +26,7 @@ import org.openhab.core.common.registry.ProviderChangeListener;
 import org.osgi.service.component.annotations.Component;
 
 /**
+ * Rule template provider for the PWM automation module.
  *
  * @author Fabian Wolter - Initial Contribution
  */

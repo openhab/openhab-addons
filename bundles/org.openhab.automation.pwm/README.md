@@ -14,7 +14,8 @@ This module is **unsuitable** for controlling LED lights as the high PWM frequen
 
 ## Modules
 
-The PWM module can be used in openHAB's [rule engine](https://www.openhab.org/docs/configuration/rules-dsl.html). This automation provides a trigger and an action module.
+The PWM module can be used in openHAB's [rule engine](https://www.openhab.org/docs/configuration/rules-dsl.html).
+This automation provides a trigger and an action module.
 
 The trigger module has an input Item `dutycycleItem` (0-100%).
 It calculates the ON/OFF state and writes it to the action module, which sends the ON/OFF command the output Item `outputItem`.
@@ -30,8 +31,10 @@ It calculates the ON/OFF state and writes it to the action module, which sends t
 | `command`       | Item    | An Item (String) to send commands to, to control the module during runtime                   | No       |
 | `deadManSwitch` | Decimal | The output will be switched off, when the duty cycle is not updated within this time (in ms) | No       |
 
-The duty cycle can be limited via the parameters `minDutycycle` and `maxDutyCycle`. This is helpful if you need to maintain a minimum time between the switching of the output.
-This is necessary for example for heating burners, which may not be switched on for very short times. The ON time is than increased to `minDutycycle`.
+The duty cycle can be limited via the parameters `minDutycycle` and `maxDutyCycle`.
+This is helpful if you need to maintain a minimum time between the switching of the output.
+This is necessary for example for heating burners, which may not be switched on for very short times.
+The ON time is than increased to `minDutycycle`.
 In this case one should also set a max duty cycle to prevent short OFF times.
 It makes sense to apply these symmetrically e.g. 10%/90% or 20%/80%.
 

@@ -15,7 +15,6 @@ package org.openhab.automation.pwm.internal.handler.state;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- *
  * Active when, the duty cycle is 100% for at least a whole period.
  *
  * @author Fabian Wolter - Initial Contribution

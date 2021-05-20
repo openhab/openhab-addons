@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * Active when, the PWM period ended with a duty cycle set to 100%.
  *
  * @author Fabian Wolter - Initial Contribution

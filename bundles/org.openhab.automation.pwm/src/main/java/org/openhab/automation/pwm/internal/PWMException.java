@@ -15,6 +15,7 @@ package org.openhab.automation.pwm.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Common exception for the PWM automation module.
  *
  * @author Fabian Wolter - Initial Contribution
  */

@@ -15,6 +15,7 @@ package org.openhab.automation.pwm.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Constants for the PWM automation module.
  *
  * @author Fabian Wolter - Initial Contribution
  */
@@ -30,5 +31,5 @@ public class PWMConstants {
     public static final String CONFIG_DEAD_MAN_SWITCH = "deadManSwitch";
     public static final String CONFIG_OUTPUT_ITEM = "outputItem";
     public static final String INPUT = "input";
-    public static final String OUTPUT = "output";
+    public static final String OUTPUT = "command";
 }

@@ -33,6 +33,7 @@ import org.openhab.core.automation.util.ModuleBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 
 /**
+ * Rule template for the PWM automation module.
  *
  * @author Fabian Wolter - Initial Contribution
  */

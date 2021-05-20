@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- *
  * Active when, the output is currently ON and the duty cycle is between 0% and 100% (exclusively).
  *
  * @author Fabian Wolter - Initial Contribution

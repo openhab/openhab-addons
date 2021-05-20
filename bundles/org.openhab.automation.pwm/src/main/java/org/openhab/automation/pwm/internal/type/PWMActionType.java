@@ -26,6 +26,7 @@ import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
 import org.openhab.core.library.types.OnOffType;
 
 /**
+ * Creates the configuration for the Action module in the rules engine.
  *
  * @author Fabian Wolter - Initial Contribution
  */

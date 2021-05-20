@@ -12,7 +12,7 @@
  */
 package org.openhab.automation.pwm.internal.handler;
 
-import static org.openhab.automation.pwm.internal.PWMConstants.*;
+import static org.openhab.automation.pwm.internal.PWMConstants.AUTOMATION_NAME;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Represents an Action module in the rules engine.
  *
  * @author Fabian Wolter - Initial Contribution
  */

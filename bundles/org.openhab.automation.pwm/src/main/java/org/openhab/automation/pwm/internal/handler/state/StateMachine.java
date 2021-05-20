@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- *
  * The context of all states.
  *
  * @author Fabian Wolter - Initial Contribution

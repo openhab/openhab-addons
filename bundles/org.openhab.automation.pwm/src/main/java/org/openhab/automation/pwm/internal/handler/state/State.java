@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * The base class of all states.
  *
  * @author Fabian Wolter - Initial Contribution
