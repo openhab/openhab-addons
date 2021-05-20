@@ -42,7 +42,6 @@
 		<description>A Power Station is the GoodWe converter that is connected through the internet with the SEMSPortal.</description>
 
 		<channels>
-			<channel id="operational" typeId="operational"/>
 			<channel id="lastUpdate" typeId="lastUpdate"/>
 			<channel id="currentOutput" typeId="currentOutput"/>
 			<channel id="todayTotal" typeId="todayTotal"/>
@@ -55,11 +54,6 @@
 	</thing-type>
 
 
-	<channel-type id="operational">
-		<item-type>Switch</item-type>
-		<label>Operational</label>
-		<description>If the device is currently operational</description>
-	</channel-type>
 	<channel-type id="lastUpdate">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>

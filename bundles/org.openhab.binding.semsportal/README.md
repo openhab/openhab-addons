@@ -36,7 +36,6 @@ The Power Station Thing has the following channels:
 
 | channel       | type             | description                                                                                                |
 | ------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| operational   | Switch           | If the powerStation is currently on and reporting to the portal                                            |
 | lastUpdate    | DateTime         | Last time the powerStation sent information to the portal                                                  |
 | currentOutput | Number:Power     | The current output of the powerStation in Watt                                                             |
 | todayTotal    | Number:Energy    | Todays total generation of the station in kWh                                                              |

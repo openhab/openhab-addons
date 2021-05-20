@@ -45,7 +45,6 @@ public class SEMSPortalBindingConstants {
     public static final String STATION_LABEL_FORMAT = "Power Station %s";
 
     // List of all Channel ids
-    public static final String CHANNEL_OPERATIONAL = "operational";
     public static final String CHANNEL_CURRENT_OUTPUT = "currentOutput";
     public static final String CHANNEL_LASTUPDATE = "lastUpdate";
     public static final String CHANNEL_TODAY_TOTAL = "todayTotal";
@@ -54,7 +53,7 @@ public class SEMSPortalBindingConstants {
     public static final String CHANNEL_TODAY_INCOME = "todayIncome";
     public static final String CHANNEL_TOTAL_INCOME = "totalIncome";
 
-    protected static final List<String> ALL_CHANNELS = Arrays.asList(CHANNEL_OPERATIONAL, CHANNEL_LASTUPDATE,
-            CHANNEL_CURRENT_OUTPUT, CHANNEL_TODAY_TOTAL, CHANNEL_MONTH_TOTAL, CHANNEL_OVERALL_TOTAL,
-            CHANNEL_TODAY_INCOME, CHANNEL_TOTAL_INCOME);
+    protected static final List<String> ALL_CHANNELS = Arrays.asList(CHANNEL_LASTUPDATE, CHANNEL_CURRENT_OUTPUT,
+            CHANNEL_TODAY_TOTAL, CHANNEL_MONTH_TOTAL, CHANNEL_OVERALL_TOTAL, CHANNEL_TODAY_INCOME,
+            CHANNEL_TOTAL_INCOME);
 }

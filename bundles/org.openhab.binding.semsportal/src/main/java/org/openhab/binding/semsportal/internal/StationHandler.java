@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.semsportal.internal.dto.StationStatus;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -44,7 +43,6 @@ public class StationHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(StationHandler.class);
     private static final long MAX_STATUS_AGE_MINUTES = 1;
 
-    private boolean stationOperational = false;
     private @Nullable StationStatus currentStatus;
     private LocalDateTime lastUpdate = LocalDateTime.MIN;
 
@@ -87,13 +85,6 @@ public class StationHandler extends BaseThingHandler {
                 break;
             case CHANNEL_OVERALL_TOTAL:
                 updateState(channelUID.getId(), StateHelper.getOverallTotal(currentStatus));
-                break;
-            case CHANNEL_OPERATIONAL:
-                updateState(channelUID.getId(), StateHelper.getOperational(currentStatus));
-                if (currentStatus != null && currentStatus.isOperational() != stationOperational) {
-                    stationOperational = !stationOperational;
-                    triggerChannel(channelUID, OnOffType.from(stationOperational).name());
-                }
                 break;
             case CHANNEL_TODAY_INCOME:
                 updateState(channelUID.getId(), StateHelper.getDayIncome(currentStatus));
