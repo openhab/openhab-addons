@@ -159,8 +159,8 @@ public class WLedHandler extends BaseThingHandler {
                 updateState(CHANNEL_SECONDARY_WHITE,
                         new PercentType(secondaryWhite.divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
             }
-        } catch (NumberFormatException e) {
-            logger.warn("NumberFormatException when parsing the WLED colour and white fields:{}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.warn("IllegalArgumentException when parsing the WLED colour and white fields:{}", e.getMessage());
         }
     }
 
