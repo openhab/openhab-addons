@@ -118,7 +118,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             public void run() {
                 // Register the sink as an audio sink in openhab
                 logger.trace("Registering an audio sink for pulse audio sink thing {}", thing.getUID());
-                PulseAudioAudioSink audioSink = new PulseAudioAudioSink(thisHandler);
+                PulseAudioAudioSink audioSink = new PulseAudioAudioSink(thisHandler, scheduler);
                 setAudioSink(audioSink);
                 try {
                     audioSink.connectIfNeeded();
@@ -128,6 +128,8 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                 } catch (InterruptedException i) {
                     logger.info("Interrupted during sink audio connection: {}", i.getMessage());
                     return;
+                } finally {
+                    audioSink.scheduleDisconnect();
                 }
                 @SuppressWarnings("unchecked")
                 ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
@@ -365,6 +367,11 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         AbstractAudioDeviceConfig device = bridgeHandler.getDevice(name);
         return getPulseaudioBridgeHandler().getClient().loadModuleSimpleProtocolTcpIfNeeded(device, simpleTcpPortPref)
                 .orElse(simpleTcpPortPref);
+    }
+
+    public int getIdleTimeout() {
+        return ((BigDecimal) getThing().getConfiguration()
+                .get(PulseaudioBindingConstants.DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT)).intValue();
     }
 
     @Override
