@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mielecloud.internal.config.ThingsTemplateGenerator;
+import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -38,12 +39,14 @@ public class SuccessServlet extends AbstractShowPageServlet {
     private static final long serialVersionUID = 7013060161686096950L;
 
     public static final String BRIDGE_UID_PARAMETER_NAME = "bridgeUid";
+    public static final String EMAIL_PARAMETER_NAME = "email";
 
     public static final String BRIDGE_CREATION_FAILED_PARAMETER_NAME = "bridgeCreationFailed";
     public static final String BRIDGE_RECONFIGURATION_FAILED_PARAMETER_NAME = "bridgeReconfigurationFailed";
 
     private static final String ERROR_MESSAGE_TEXT_PLACEHOLDER = "<!-- ERROR MESSAGE TEXT -->";
     private static final String BRIDGE_UID_PLACEHOLDER = "<!-- BRIDGE UID -->";
+    private static final String EMAIL_PLACEHOLDER = "<!-- EMAIL -->";
     private static final String THINGS_TEMPLATE_CODE_PLACEHOLDER = "<!-- THINGS TEMPLATE CODE -->";
 
     private static final String LOCALE_OPTIONS_PLACEHOLDER = "<!-- LOCALE OPTIONS -->";
@@ -78,6 +81,13 @@ public class SuccessServlet extends AbstractShowPageServlet {
                     "Missing bridge UID.");
         }
 
+        String email = request.getParameter(EMAIL_PARAMETER_NAME);
+        if (email == null || email.isEmpty()) {
+            logger.warn("Success page is missing e-mail address.");
+            return getResourceLoader().loadResourceAsString("failure.html").replace(ERROR_MESSAGE_TEXT_PLACEHOLDER,
+                    "Missing e-mail address.");
+        }
+
         ThingUID bridgeUid = null;
         try {
             bridgeUid = new ThingUID(bridgeUidString);
@@ -87,11 +97,18 @@ public class SuccessServlet extends AbstractShowPageServlet {
                     "Malformed bridge UID.");
         }
 
+        if (!EmailValidator.isValid(email)) {
+            logger.warn("Success page received malformed e-mail address '{}'.", email);
+            return getResourceLoader().loadResourceAsString("failure.html").replace(ERROR_MESSAGE_TEXT_PLACEHOLDER,
+                    "Malformed e-mail address.");
+        }
+
         String skeleton = getResourceLoader().loadResourceAsString("success.html");
         skeleton = renderErrorMessage(request, skeleton);
         skeleton = renderBridgeUid(skeleton, bridgeUid);
+        skeleton = renderEmail(skeleton, email);
         skeleton = renderLocaleSelection(skeleton);
-        skeleton = renderBridgeConfigurationTemplate(skeleton, bridgeUid);
+        skeleton = renderBridgeConfigurationTemplate(skeleton, bridgeUid, email);
         return skeleton;
     }
 
@@ -109,6 +126,10 @@ public class SuccessServlet extends AbstractShowPageServlet {
 
     private String renderBridgeUid(String skeleton, ThingUID bridgeUid) {
         return skeleton.replace(BRIDGE_UID_PLACEHOLDER, bridgeUid.getAsString());
+    }
+
+    private String renderEmail(String skeleton, String email) {
+        return skeleton.replace(EMAIL_PLACEHOLDER, email);
     }
 
     private String renderLocaleSelection(String skeleton) {
@@ -132,8 +153,8 @@ public class SuccessServlet extends AbstractShowPageServlet {
         }
     }
 
-    private String renderBridgeConfigurationTemplate(String skeleton, ThingUID bridgeUid) {
-        String bridgeTemplate = templateGenerator.createBridgeConfigurationTemplate(bridgeUid.getId(),
+    private String renderBridgeConfigurationTemplate(String skeleton, ThingUID bridgeUid, String email) {
+        String bridgeTemplate = templateGenerator.createBridgeConfigurationTemplate(bridgeUid.getId(), email,
                 languageProvider.getLanguage().orElse("en"));
         return skeleton.replace(THINGS_TEMPLATE_CODE_PLACEHOLDER, bridgeTemplate);
     }

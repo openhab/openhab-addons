@@ -24,15 +24,16 @@ import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
 import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
 import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthorizationException;
+import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Servlet gathers and processes required information to perform an authorization with the Miele cloud service
- * and create a bridge afterwards. Required parameters are the client ID, client secret and an ID for the bridge. If the
- * given parameters are valid, the browser is redirected to the Miele service login. Otherwise, the browser is
- * redirected to the previous page with an according error message.
+ * and create a bridge afterwards. Required parameters are the client ID, client secret, an ID for the bridge and an
+ * e-mail address. If the given parameters are valid, the browser is redirected to the Miele service login. Otherwise,
+ * the browser is redirected to the previous page with an according error message.
  *
  * @author Björn Lange - Initial Contribution
  */
@@ -43,6 +44,7 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
     public static final String CLIENT_ID_PARAMETER_NAME = "clientId";
     public static final String CLIENT_SECRET_PARAMETER_NAME = "clientSecret";
     public static final String BRIDGE_ID_PARAMETER_NAME = "bridgeId";
+    public static final String EMAIL_PARAMETER_NAME = "email";
 
     private final Logger logger = LoggerFactory.getLogger(ForwardToLoginServlet.class);
 
@@ -62,6 +64,7 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
         String clientId = request.getParameter(CLIENT_ID_PARAMETER_NAME);
         String clientSecret = request.getParameter(CLIENT_SECRET_PARAMETER_NAME);
         String bridgeId = request.getParameter(BRIDGE_ID_PARAMETER_NAME);
+        String email = request.getParameter(EMAIL_PARAMETER_NAME);
 
         if (clientId == null || clientId.isEmpty()) {
             logger.warn("Request is missing client ID.");
@@ -75,6 +78,10 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
             logger.warn("Request is missing bridge ID.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_BRIDGE_ID_PARAMETER_NAME);
         }
+        if (email == null || email.isEmpty()) {
+            logger.warn("Request is missing e-mail address.");
+            return getErrorRedirectionUrl(PairAccountServlet.MISSING_EMAIL_PARAMETER_NAME);
+        }
 
         ThingUID bridgeUid = null;
         try {
@@ -84,8 +91,13 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
             return getErrorRedirectionUrl(PairAccountServlet.MALFORMED_BRIDGE_ID_PARAMETER_NAME);
         }
 
+        if (!EmailValidator.isValid(email)) {
+            logger.warn("Passed e-mail address '{}' is invalid.", email);
+            return getErrorRedirectionUrl(PairAccountServlet.MALFORMED_EMAIL_PARAMETER_NAME);
+        }
+
         try {
-            authorizationHandler.beginAuthorization(clientId, clientSecret, bridgeUid);
+            authorizationHandler.beginAuthorization(clientId, clientSecret, bridgeUid, email);
         } catch (OngoingAuthorizationException e) {
             logger.warn("Cannot begin new authorization process while another one is still running.");
             return getErrorRedirectUrlWithExpiryTime(e.getOngoingAuthorizationExpiryTimestamp());

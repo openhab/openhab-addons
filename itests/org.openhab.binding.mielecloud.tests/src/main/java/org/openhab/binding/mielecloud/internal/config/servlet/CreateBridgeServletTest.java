@@ -53,9 +53,10 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
 
         // when:
-        Website website = getCrawler()
-                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
+                + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing successful!"));
@@ -81,9 +82,10 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         setPrivate(Objects.requireNonNull(createBridgeServlet), "thingRegistry", thingRegistry);
 
         // when:
-        Website website = getCrawler()
-                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
+                + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing successful!"));
@@ -113,9 +115,10 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         setPrivate(Objects.requireNonNull(createBridgeServlet), "thingRegistry", thingRegistry);
 
         // when:
-        Website website = getCrawler()
-                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
+                + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing successful!"));
@@ -124,7 +127,7 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
     }
 
     @Test
-    public void whenBridgeReconfiguresABridgeThenTheConfigurationParametersAreUpdatedAndTheOverviewPageIsDisplayed()
+    public void whenBridgeIsReconfiguredThenTheConfigurationParametersAreUpdatedAndTheOverviewPageIsDisplayed()
             throws Exception {
         // given:
         setUpBridge();
@@ -146,9 +149,10 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         setPrivate(Objects.requireNonNull(bridgeHandler), "tokenRefresher", tokenRefresher);
 
         // when:
-        Website website = getCrawler()
-                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
+                + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("<li class=\"active\">Overview</li>"));
@@ -161,7 +165,8 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
     public void whenNoBridgeUidIsPassedToBridgeCreationThenTheBrowserIsRedirectedToTheFailurePageAndAnErrorIsShown()
             throws Exception {
         // when:
-        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing");
+        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
+                + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing failed!"));
@@ -172,8 +177,9 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
     public void whenAnEmptyBridgeUidIsPassedToBridgeCreationThenTheBrowserIsRedirectedToTheFailurePageAndAnErrorIsShown()
             throws Exception {
         // when:
-        Website website = getCrawler()
-                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "=");
+        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
+                + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "=&" + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing failed!"));
@@ -184,11 +190,53 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
     public void whenAMalformedBridgeUidIsPassedToBridgeCreationThenTheBrowserIsRedirectedToTheFailurePageAndAnErrorIsShown()
             throws Exception {
         // when:
-        Website website = getCrawler().doGetRelative(
-                "/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "=gen!e!sis");
+        Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
+                + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "=gen!e!sis&"
+                + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing failed!"));
         assertTrue(website.contains("Malformed bridge UID."));
+    }
+
+    @Test
+    public void whenNoEmailIsPassedToBridgeCreationThenTheBrowserIsRedirectedToTheFailurePageAndAnErrorIsShown()
+            throws Exception {
+        // when:
+        Website website = getCrawler()
+                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+
+        // then:
+        assertTrue(website.contains("Pairing failed!"));
+        assertTrue(website.contains("Missing e-mail address."));
+    }
+
+    @Test
+    public void whenAnEmptyEmailIsPassedToBridgeCreationThenTheBrowserIsRedirectedToTheFailurePageAndAnErrorIsShown()
+            throws Exception {
+        // when:
+        Website website = getCrawler()
+                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                        + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=");
+
+        // then:
+        assertTrue(website.contains("Pairing failed!"));
+        assertTrue(website.contains("Missing e-mail address."));
+    }
+
+    @Test
+    public void whenAMalformedEmailIsPassedToBridgeCreationThenTheBrowserIsRedirectedToTheFailurePageAndAnErrorIsShown()
+            throws Exception {
+        // when:
+        Website website = getCrawler()
+                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                        + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=openhab.openhab.org");
+
+        // then:
+        assertTrue(website.contains("Pairing failed!"));
+        assertTrue(website.contains("Malformed e-mail address."));
     }
 }

@@ -48,6 +48,7 @@ public final class OAuthAuthorizationHandlerImplTest {
     private static final String AUTH_CODE = "abcdef";
     private static final ThingUID BRIDGE_UID = new ThingUID(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
             MieleCloudBindingTestConstants.BRIDGE_ID);
+    private static final String EMAIL = "openhab@openhab.org";
 
     @Nullable
     private OAuthClientService clientService;
@@ -111,7 +112,7 @@ public final class OAuthAuthorizationHandlerImplTest {
     public void whenTheAuthorizationIsCompletedInTimeThenTheTimerIsCancelledAndAllResourcesAreCleanedUp()
             throws Exception {
         // given:
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         getAuthorizationHandler().getAuthorizationUrl(REDIRECT_URL);
 
         // when:
@@ -124,6 +125,7 @@ public final class OAuthAuthorizationHandlerImplTest {
         assertNull(getPrivate(getAuthorizationHandler(), "oauthClientService"));
         assertNull(getPrivate(getAuthorizationHandler(), "bridgeUid"));
         assertNull(getPrivate(getAuthorizationHandler(), "redirectUri"));
+        assertNull(getPrivate(getAuthorizationHandler(), "email"));
 
         verify(getClientService()).extractAuthCodeFromAuthResponse(anyString());
         verify(getClientService()).getAccessTokenResponseByAuthorizationCode(isNull(), anyString());
@@ -132,7 +134,7 @@ public final class OAuthAuthorizationHandlerImplTest {
     @Test
     public void whenTheAuthorizationTimesOutThenTheOngoingAuthorizationIsCancelled() throws Exception {
         // given:
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         getAuthorizationHandler().getAuthorizationUrl(REDIRECT_URL);
 
         // when:
@@ -142,15 +144,16 @@ public final class OAuthAuthorizationHandlerImplTest {
         assertNull(getPrivate(getAuthorizationHandler(), "oauthClientService"));
         assertNull(getPrivate(getAuthorizationHandler(), "bridgeUid"));
         assertNull(getPrivate(getAuthorizationHandler(), "redirectUri"));
+        assertNull(getPrivate(getAuthorizationHandler(), "email"));
         assertNull(getPrivate(getAuthorizationHandler(), "timer"));
         verify(getTimer()).cancel(false);
     }
 
     @Test
-    public void whenTheAuthorizationCompletesAfterItTimeoutThenAnNoOngoingAuthorizationExceptionIsThrown()
+    public void whenTheAuthorizationCompletesAfterItTimedOutThenAnNoOngoingAuthorizationExceptionIsThrown()
             throws Exception {
         // given:
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         getAuthorizationHandler().getAuthorizationUrl(REDIRECT_URL);
 
         getScheduledRunnable().run();
@@ -165,11 +168,11 @@ public final class OAuthAuthorizationHandlerImplTest {
     @Test
     public void whenASecondAuthorizationIsBegunWhileAnotherIsStillOngoingThenAnOngoingAuthorizationExceptionIsThrown() {
         // given:
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
 
         // when:
         assertThrows(OngoingAuthorizationException.class, () -> {
-            getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+            getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         });
     }
 
@@ -189,7 +192,7 @@ public final class OAuthAuthorizationHandlerImplTest {
         when(getClientService().getAuthorizationUrl(anyString(), isNull(), isNull()))
                 .thenThrow(new org.openhab.core.auth.client.oauth2.OAuthException());
 
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
 
         // when:
         assertThrows(OAuthException.class, () -> {
@@ -200,6 +203,7 @@ public final class OAuthAuthorizationHandlerImplTest {
                 assertNull(getPrivate(getAuthorizationHandler(), "oauthClientService"));
                 assertNull(getPrivate(getAuthorizationHandler(), "bridgeUid"));
                 assertNull(getPrivate(getAuthorizationHandler(), "redirectUri"));
+                assertNull(getPrivate(getAuthorizationHandler(), "email"));
                 throw e;
             }
         });
@@ -212,7 +216,7 @@ public final class OAuthAuthorizationHandlerImplTest {
         when(getClientService().extractAuthCodeFromAuthResponse(anyString()))
                 .thenThrow(new org.openhab.core.auth.client.oauth2.OAuthException());
 
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         getAuthorizationHandler().getAuthorizationUrl(REDIRECT_URL);
 
         // when:
@@ -224,6 +228,7 @@ public final class OAuthAuthorizationHandlerImplTest {
                 assertNull(getPrivate(getAuthorizationHandler(), "timer"));
                 assertNull(getPrivate(getAuthorizationHandler(), "oauthClientService"));
                 assertNull(getPrivate(getAuthorizationHandler(), "bridgeUid"));
+                assertNull(getPrivate(getAuthorizationHandler(), "email"));
                 assertNull(getPrivate(getAuthorizationHandler(), "redirectUri"));
                 throw e;
             }
@@ -238,7 +243,7 @@ public final class OAuthAuthorizationHandlerImplTest {
         when(getClientService().getAccessTokenResponseByAuthorizationCode(anyString(), anyString()))
                 .thenThrow(new IOException());
 
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         getAuthorizationHandler().getAuthorizationUrl(REDIRECT_URL);
 
         // when:
@@ -250,6 +255,7 @@ public final class OAuthAuthorizationHandlerImplTest {
                 assertNull(getPrivate(getAuthorizationHandler(), "timer"));
                 assertNull(getPrivate(getAuthorizationHandler(), "oauthClientService"));
                 assertNull(getPrivate(getAuthorizationHandler(), "bridgeUid"));
+                assertNull(getPrivate(getAuthorizationHandler(), "email"));
                 assertNull(getPrivate(getAuthorizationHandler(), "redirectUri"));
                 throw e;
             }
@@ -264,7 +270,7 @@ public final class OAuthAuthorizationHandlerImplTest {
         when(getClientService().getAccessTokenResponseByAuthorizationCode(anyString(), anyString()))
                 .thenThrow(new OAuthResponseException());
 
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         getAuthorizationHandler().getAuthorizationUrl(REDIRECT_URL);
 
         // when:
@@ -276,6 +282,7 @@ public final class OAuthAuthorizationHandlerImplTest {
                 assertNull(getPrivate(getAuthorizationHandler(), "timer"));
                 assertNull(getPrivate(getAuthorizationHandler(), "oauthClientService"));
                 assertNull(getPrivate(getAuthorizationHandler(), "bridgeUid"));
+                assertNull(getPrivate(getAuthorizationHandler(), "email"));
                 assertNull(getPrivate(getAuthorizationHandler(), "redirectUri"));
                 throw e;
             }
@@ -290,7 +297,7 @@ public final class OAuthAuthorizationHandlerImplTest {
         when(getClientService().getAccessTokenResponseByAuthorizationCode(anyString(), anyString()))
                 .thenThrow(new org.openhab.core.auth.client.oauth2.OAuthException());
 
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
         getAuthorizationHandler().getAuthorizationUrl(REDIRECT_URL);
 
         // when:
@@ -302,6 +309,7 @@ public final class OAuthAuthorizationHandlerImplTest {
                 assertNull(getPrivate(getAuthorizationHandler(), "timer"));
                 assertNull(getPrivate(getAuthorizationHandler(), "oauthClientService"));
                 assertNull(getPrivate(getAuthorizationHandler(), "bridgeUid"));
+                assertNull(getPrivate(getAuthorizationHandler(), "email"));
                 assertNull(getPrivate(getAuthorizationHandler(), "redirectUri"));
                 throw e;
             }
@@ -317,14 +325,34 @@ public final class OAuthAuthorizationHandlerImplTest {
     }
 
     @Test
+    public void whenNoAuthorizationIsOngoingThenGetEmailThrowsNoOngoingAuthorizationException() {
+        // when:
+        assertThrows(NoOngoingAuthorizationException.class, () -> {
+            getAuthorizationHandler().getEmail();
+        });
+    }
+
+    @Test
     public void whenAnAuthorizationIsOngoingThenGetBridgeUidReturnsTheUidOfTheBridgeBeingAuthorized() {
         // given:
-        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID);
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
 
         // when:
         ThingUID bridgeUid = getAuthorizationHandler().getBridgeUid();
 
         // then:
         assertEquals(BRIDGE_UID, bridgeUid);
+    }
+
+    @Test
+    public void whenAnAuthorizationIsOngoingThenGetEmailReturnsTheEmailBeingAuthorized() {
+        // given:
+        getAuthorizationHandler().beginAuthorization(CLIENT_ID, CLIENT_SECRET, BRIDGE_UID, EMAIL);
+
+        // when:
+        String email = getAuthorizationHandler().getEmail();
+
+        // then:
+        assertEquals(EMAIL, email);
     }
 }

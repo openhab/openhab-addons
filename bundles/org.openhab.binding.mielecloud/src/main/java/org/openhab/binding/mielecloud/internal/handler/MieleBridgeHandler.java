@@ -14,8 +14,6 @@ package org.openhab.binding.mielecloud.internal.handler;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +30,7 @@ import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefreshListener;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.discovery.ThingDiscoveryService;
+import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
 import org.openhab.binding.mielecloud.internal.webservice.ConnectionError;
 import org.openhab.binding.mielecloud.internal.webservice.ConnectionStatusListener;
@@ -43,15 +42,12 @@ import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.exception.MieleWebserviceInitializationException;
 import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -114,13 +110,21 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     }
 
     private String getOAuthServiceHandle() {
-        return getThing().getUID().getAsString();
+        return getConfig().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL).toString();
     }
 
     @Override
     public void initialize() {
         // It is required to set a status in this method as stated in the Javadoc of ThingHandler.initialize
         updateStatus(ThingStatus.UNKNOWN);
+
+        if (!EmailValidator.isValid(getConfig().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL).toString())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    I18NKeys.BRIDGE_STATUS_DESCRIPTION_INVALID_EMAIL);
+            // When the e-mail configuration is changed a new initialization will be triggered. Therefore, we can leave
+            // the bridge in this state.
+            return;
+        }
 
         try {
             webService = webserviceFactory.get();
@@ -156,39 +160,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         performLogout();
         tokenRefresher.removeTokensFromStorage(getOAuthServiceHandle());
         super.handleRemoval();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Note: This is the same implementation as in {@link BaseThingHandler} except that it is not checked whether the
-     * configuration changed. Thus a call to this method always performs a re-initialization.
-     */
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        validateConfigurationParameters(configurationParameters);
-
-        Configuration configuration = editConfiguration();
-        for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
-        }
-
-        if (isInitialized()) {
-            // persist new configuration and reinitialize handler
-            dispose();
-            updateConfiguration(configuration);
-            initialize();
-        } else {
-            // persist new configuration and notify Thing Manager
-            updateConfiguration(configuration);
-            ThingHandlerCallback callback = getCallback();
-            if (callback != null) {
-                callback.configurationUpdated(getThing());
-            } else {
-                logger.warn("Handler {} tried updating its configuration although the handler was already disposed.",
-                        getClass().getSimpleName());
-            }
-        }
     }
 
     @Override

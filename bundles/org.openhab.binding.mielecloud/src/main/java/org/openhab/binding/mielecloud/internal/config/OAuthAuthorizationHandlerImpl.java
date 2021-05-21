@@ -50,6 +50,8 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
     @Nullable
     private ThingUID bridgeUid;
     @Nullable
+    private String email;
+    @Nullable
     private String redirectUri;
     @Nullable
     private ScheduledFuture<?> timer;
@@ -68,14 +70,16 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
     }
 
     @Override
-    public synchronized void beginAuthorization(String clientId, String clientSecret, ThingUID bridgeUid) {
+    public synchronized void beginAuthorization(String clientId, String clientSecret, ThingUID bridgeUid,
+            String email) {
         if (this.oauthClientService != null) {
             throw new OngoingAuthorizationException("There is already an ongoing authorization!", timerExpiryTimestamp);
         }
 
-        this.oauthClientService = oauthFactory.createOAuthClientService(bridgeUid.getAsString(), TOKEN_URL,
-                AUTHORIZATION_URL, clientId, clientSecret, null, false);
+        this.oauthClientService = oauthFactory.createOAuthClientService(email, TOKEN_URL, AUTHORIZATION_URL, clientId,
+                clientSecret, null, false);
         this.bridgeUid = bridgeUid;
+        this.email = email;
         redirectUri = null;
         timer = null;
         timerExpiryTimestamp = null;
@@ -110,6 +114,15 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
     }
 
     @Override
+    public String getEmail() {
+        final String email = this.email;
+        if (email == null) {
+            throw new NoOngoingAuthorizationException("There is no ongoing authorization.");
+        }
+        return email;
+    }
+
+    @Override
     public synchronized void completeAuthorization(String redirectUrlWithParameters) {
         abortTimer();
 
@@ -132,6 +145,7 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
         } finally {
             this.oauthClientService = null;
             this.bridgeUid = null;
+            this.email = null;
             this.redirectUri = null;
         }
     }
@@ -160,6 +174,7 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
     private synchronized void cancelAuthorization() {
         oauthClientService = null;
         bridgeUid = null;
+        email = null;
         redirectUri = null;
         final ScheduledFuture<?> timer = this.timer;
         if (timer != null) {
@@ -170,10 +185,10 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
     }
 
     @Override
-    public String getAccessToken(ThingUID bridgeUid) {
-        OAuthClientService clientService = oauthFactory.getOAuthClientService(bridgeUid.getAsString());
+    public String getAccessToken(String email) {
+        OAuthClientService clientService = oauthFactory.getOAuthClientService(email);
         if (clientService == null) {
-            throw new OAuthException("There is no access token registered for '" + bridgeUid.getAsString() + "'");
+            throw new OAuthException("There is no access token registered for '" + email + "'");
         }
 
         try {

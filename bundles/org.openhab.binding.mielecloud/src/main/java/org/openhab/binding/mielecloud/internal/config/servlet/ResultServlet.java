@@ -71,6 +71,7 @@ public final class ResultServlet extends AbstractRedirectionServlet {
 
         try {
             ThingUID bridgeId = authorizationHandler.getBridgeUid();
+            String email = authorizationHandler.getEmail();
 
             StringBuffer requestUrl = request.getRequestURL();
             if (requestUrl == null) {
@@ -85,7 +86,8 @@ public final class ResultServlet extends AbstractRedirectionServlet {
                         + "=true";
             }
 
-            return "/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeId.getAsString();
+            return "/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeId.getAsString()
+                    + "&" + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + email;
         } catch (NoOngoingAuthorizationException e) {
             logger.warn("Failed to complete authorization: There is no ongoing authorization or it timed out");
             return "/mielecloud/failure?" + FailureServlet.NO_ONGOING_AUTHORIZATION_PARAMETER_NAME + "=true";

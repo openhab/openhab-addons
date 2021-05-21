@@ -109,6 +109,8 @@ public final class AccountOverviewServlet extends AbstractShowPageServlet {
         builder.append(thingUid.substring(0, thingUid.length() - thingId.length()));
         builder.append(" ");
         builder.append(thingId);
+        builder.append(" ");
+        builder.append(bridge.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL).toString());
         builder.append("\n");
 
         builder.append("                        <span class=\"status ");

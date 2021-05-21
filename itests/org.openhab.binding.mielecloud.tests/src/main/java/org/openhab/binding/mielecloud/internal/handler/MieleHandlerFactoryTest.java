@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants.*;
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.*;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
@@ -100,9 +102,8 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         when(oAuthClientService.getAccessTokenResponse()).thenReturn(accessTokenResponse);
 
         OAuthFactory oAuthFactory = mock(OAuthFactory.class);
-        when(oAuthFactory
-                .getOAuthClientService(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString()))
-                        .thenReturn(oAuthClientService);
+        when(oAuthFactory.getOAuthClientService(MieleCloudBindingIntegrationTestConstants.EMAIL))
+                .thenReturn(oAuthClientService);
 
         OpenHabOAuthTokenRefresher tokenRefresher = getService(OAuthTokenRefresher.class,
                 OpenHabOAuthTokenRefresher.class);
@@ -116,6 +117,9 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         Bridge bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
+                .withConfiguration(
+                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 
@@ -137,6 +141,9 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         Bridge bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
+                .withConfiguration(
+                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 
@@ -198,6 +205,9 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         Bridge bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
+                .withConfiguration(
+                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 

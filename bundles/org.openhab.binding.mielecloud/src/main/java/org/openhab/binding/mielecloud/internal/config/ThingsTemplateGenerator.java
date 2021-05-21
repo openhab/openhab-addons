@@ -34,9 +34,18 @@ public class ThingsTemplateGenerator {
      * @param locale Locale for accessing the Miele cloud service.
      * @return The template.
      */
-    public String createBridgeConfigurationTemplate(String bridgeId, String locale) {
-        return "Bridge " + MieleCloudBindingConstants.THING_TYPE_BRIDGE.getAsString() + ":" + bridgeId + " [ locale=\""
-                + locale + "\" ]";
+    public String createBridgeConfigurationTemplate(String bridgeId, String email, String locale) {
+        var builder = new StringBuilder();
+        builder.append("Bridge ");
+        builder.append(MieleCloudBindingConstants.THING_TYPE_BRIDGE.getAsString());
+        builder.append(":");
+        builder.append(bridgeId);
+        builder.append(" [ email=\"");
+        builder.append(email);
+        builder.append("\", locale=\"");
+        builder.append(locale);
+        builder.append("\" ]");
+        return builder.toString();
     }
 
     /**
@@ -51,7 +60,8 @@ public class ThingsTemplateGenerator {
             List<DiscoveryResult> discoveryResults) {
         StringBuilder result = new StringBuilder();
         result.append(createBridgeConfigurationTemplate(bridge.getUID().getId(),
-                bridge.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE).toString()));
+                bridge.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL).toString(),
+                getLocale(bridge)));
         result.append(" {\n");
 
         for (Thing thing : pairedThings) {
@@ -64,6 +74,15 @@ public class ThingsTemplateGenerator {
 
         result.append("}");
         return result.toString();
+    }
+
+    private String getLocale(Bridge bridge) {
+        var locale = bridge.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE);
+        if (locale instanceof String) {
+            return (String) locale;
+        } else {
+            return "en";
+        }
     }
 
     private String createThingConfigurationTemplate(Thing thing) {

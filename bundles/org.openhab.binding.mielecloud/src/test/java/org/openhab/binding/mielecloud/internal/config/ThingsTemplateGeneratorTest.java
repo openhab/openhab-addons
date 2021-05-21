@@ -42,16 +42,19 @@ public class ThingsTemplateGeneratorTest {
     private static final String LOCALE = "en";
     private static final String ALTERNATIVE_LOCALE = "de";
 
+    private static final String EMAIL = "openhab@openhab.org";
+    private static final String ALTERNATIVE_EMAIL = "everyone@openhab.org";
+
     @Test
     public void whenBridgeIdAndAccessTokenAndLocaleAreProvidedThenAValidBridgeConfigurationTemplateIsGenerated() {
         // given:
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
         // when:
-        String template = templateGenerator.createBridgeConfigurationTemplate(BRIDGE_ID, LOCALE);
+        String template = templateGenerator.createBridgeConfigurationTemplate(BRIDGE_ID, EMAIL, LOCALE);
 
         // then:
-        assertEquals("Bridge mielecloud:account:genesis [ locale=\"en\" ]", template);
+        assertEquals("Bridge mielecloud:account:genesis [ email=\"openhab@openhab.org\", locale=\"en\" ]", template);
     }
 
     @Test
@@ -60,10 +63,11 @@ public class ThingsTemplateGeneratorTest {
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
         // when:
-        String template = templateGenerator.createBridgeConfigurationTemplate(ALTERNATIVE_BRIDGE_ID, LOCALE);
+        String template = templateGenerator.createBridgeConfigurationTemplate(ALTERNATIVE_BRIDGE_ID, EMAIL, LOCALE);
 
         // then:
-        assertEquals("Bridge mielecloud:account:mielebridge [ locale=\"en\" ]", template);
+        assertEquals("Bridge mielecloud:account:mielebridge [ email=\"openhab@openhab.org\", locale=\"en\" ]",
+                template);
     }
 
     @Test
@@ -72,10 +76,10 @@ public class ThingsTemplateGeneratorTest {
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
         // when:
-        String template = templateGenerator.createBridgeConfigurationTemplate(BRIDGE_ID, LOCALE);
+        String template = templateGenerator.createBridgeConfigurationTemplate(BRIDGE_ID, EMAIL, LOCALE);
 
         // then:
-        assertEquals("Bridge mielecloud:account:genesis [ locale=\"en\" ]", template);
+        assertEquals("Bridge mielecloud:account:genesis [ email=\"openhab@openhab.org\", locale=\"en\" ]", template);
     }
 
     @Test
@@ -84,15 +88,28 @@ public class ThingsTemplateGeneratorTest {
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
         // when:
-        String template = templateGenerator.createBridgeConfigurationTemplate(BRIDGE_ID, ALTERNATIVE_LOCALE);
+        String template = templateGenerator.createBridgeConfigurationTemplate(BRIDGE_ID, EMAIL, ALTERNATIVE_LOCALE);
 
         // then:
-        assertEquals("Bridge mielecloud:account:genesis [ locale=\"de\" ]", template);
+        assertEquals("Bridge mielecloud:account:genesis [ email=\"openhab@openhab.org\", locale=\"de\" ]", template);
     }
 
-    private Bridge createBridgeMock(String id, String locale) {
+    @Test
+    public void whenAnAlternativeEmailIsProvidedThenAValidBridgeConfigurationTemplateWithThatEmailIsGenerated() {
+        // given:
+        ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
+
+        // when:
+        String template = templateGenerator.createBridgeConfigurationTemplate(BRIDGE_ID, ALTERNATIVE_EMAIL, LOCALE);
+
+        // then:
+        assertEquals("Bridge mielecloud:account:genesis [ email=\"everyone@openhab.org\", locale=\"en\" ]", template);
+    }
+
+    private Bridge createBridgeMock(String id, String locale, String email) {
         Configuration configuration = mock(Configuration.class);
         when(configuration.get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE)).thenReturn(locale);
+        when(configuration.get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL)).thenReturn(email);
 
         Bridge bridge = mock(Bridge.class);
         when(bridge.getUID()).thenReturn(new ThingUID(MieleCloudBindingConstants.THING_TYPE_BRIDGE, id));
@@ -124,14 +141,15 @@ public class ThingsTemplateGeneratorTest {
         // given:
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
-        Bridge bridge = createBridgeMock(MieleCloudBindingTestConstants.BRIDGE_ID, LOCALE);
+        Bridge bridge = createBridgeMock(MieleCloudBindingTestConstants.BRIDGE_ID, LOCALE, EMAIL);
 
         // when:
         String template = templateGenerator.createBridgeAndThingConfigurationTemplate(bridge, Collections.emptyList(),
                 Collections.emptyList());
 
         // then:
-        assertEquals("Bridge mielecloud:account:genesis [ locale=\"en\" ] {\n}", template);
+        assertEquals("Bridge mielecloud:account:genesis [ email=\"openhab@openhab.org\", locale=\"en\" ] {\n}",
+                template);
     }
 
     @Test
@@ -139,7 +157,7 @@ public class ThingsTemplateGeneratorTest {
         // given:
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
-        Bridge bridge = createBridgeMock(ALTERNATIVE_BRIDGE_ID, ALTERNATIVE_LOCALE);
+        Bridge bridge = createBridgeMock(ALTERNATIVE_BRIDGE_ID, ALTERNATIVE_LOCALE, ALTERNATIVE_EMAIL);
 
         Thing thing1 = createThingMock(MieleCloudBindingConstants.THING_TYPE_OVEN, "000137439123", "Oven H7860XY",
                 ALTERNATIVE_BRIDGE_ID);
@@ -154,7 +172,7 @@ public class ThingsTemplateGeneratorTest {
 
         // then:
         assertEquals(
-                "Bridge mielecloud:account:mielebridge [ locale=\"de\" ] {\n"
+                "Bridge mielecloud:account:mielebridge [ email=\"everyone@openhab.org\", locale=\"de\" ] {\n"
                         + "    Thing oven 000137439123 \"Oven H7860XY\" [ ]\n" + "    Thing hob 000160106123 [ ]\n}",
                 template);
     }
@@ -164,7 +182,7 @@ public class ThingsTemplateGeneratorTest {
         // given:
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
-        Bridge bridge = createBridgeMock(ALTERNATIVE_BRIDGE_ID, ALTERNATIVE_LOCALE);
+        Bridge bridge = createBridgeMock(ALTERNATIVE_BRIDGE_ID, ALTERNATIVE_LOCALE, ALTERNATIVE_EMAIL);
 
         DiscoveryResult discoveryResult1 = createDiscoveryResultMock(
                 MieleCloudBindingConstants.THING_TYPE_FRIDGE_FREEZER, "000154106123", "Fridge-Freezer Kitchen",
@@ -180,7 +198,7 @@ public class ThingsTemplateGeneratorTest {
                 discoveredThings);
 
         // then:
-        assertEquals("Bridge mielecloud:account:mielebridge [ locale=\"de\" ] {\n"
+        assertEquals("Bridge mielecloud:account:mielebridge [ email=\"everyone@openhab.org\", locale=\"de\" ] {\n"
                 + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ ]\n"
                 + "    Thing washing_machine 000189106123 \"Washing Machine\" [ ]\n}", template);
     }
@@ -190,7 +208,7 @@ public class ThingsTemplateGeneratorTest {
         // given:
         ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
 
-        Bridge bridge = createBridgeMock(ALTERNATIVE_BRIDGE_ID, ALTERNATIVE_LOCALE);
+        Bridge bridge = createBridgeMock(ALTERNATIVE_BRIDGE_ID, ALTERNATIVE_LOCALE, EMAIL);
 
         Thing thing1 = createThingMock(MieleCloudBindingConstants.THING_TYPE_OVEN, "000137439123", "Oven H7860XY",
                 ALTERNATIVE_BRIDGE_ID);
@@ -213,9 +231,32 @@ public class ThingsTemplateGeneratorTest {
                 discoveredThings);
 
         // then:
-        assertEquals("Bridge mielecloud:account:mielebridge [ locale=\"de\" ] {\n"
+        assertEquals("Bridge mielecloud:account:mielebridge [ email=\"openhab@openhab.org\", locale=\"de\" ] {\n"
                 + "    Thing oven 000137439123 \"Oven H7860XY\" [ ]\n" + "    Thing hob 000160106123 [ ]\n"
                 + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ ]\n"
                 + "    Thing washing_machine 000189106123 \"Washing Machine\" [ ]\n}", template);
+    }
+
+    @Test
+    public void whenNoLocaleIsConfiguredThenTheDefaultIsUsed() {
+        // given:
+        ThingsTemplateGenerator templateGenerator = new ThingsTemplateGenerator();
+
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE)).thenReturn(null);
+        when(configuration.get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL)).thenReturn(EMAIL);
+
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(
+                new ThingUID(MieleCloudBindingConstants.THING_TYPE_BRIDGE, MieleCloudBindingTestConstants.BRIDGE_ID));
+        when(bridge.getConfiguration()).thenReturn(configuration);
+
+        // when:
+        String template = templateGenerator.createBridgeAndThingConfigurationTemplate(bridge, Collections.emptyList(),
+                Collections.emptyList());
+
+        // then:
+        assertEquals("Bridge mielecloud:account:genesis [ email=\"openhab@openhab.org\", locale=\"en\" ] {\n}",
+                template);
     }
 }

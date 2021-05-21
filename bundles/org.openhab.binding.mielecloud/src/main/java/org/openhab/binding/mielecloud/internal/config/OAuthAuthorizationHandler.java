@@ -30,9 +30,10 @@ public interface OAuthAuthorizationHandler {
      * @param clientId Client ID.
      * @param clientSecret Client secret.
      * @param bridgeUid The UID of the bridge to authorize.
+     * @param email E-mail address identifying the account to authorize.
      * @throws OngoingAuthorizationException if there already is an ongoing authorization.
      */
-    void beginAuthorization(String clientId, String clientSecret, ThingUID bridgeUid);
+    void beginAuthorization(String clientId, String clientSecret, ThingUID bridgeUid, String email);
 
     /**
      * Creates the authorization URL for the ongoing authorization.
@@ -52,6 +53,11 @@ public interface OAuthAuthorizationHandler {
     ThingUID getBridgeUid();
 
     /**
+     * Gets the e-mail address associated with the account that is currently being authorized.
+     */
+    String getEmail();
+
+    /**
      * Completes the authorization by extracting the authorization code from the given redirection URL, fetching the
      * access token response and persisting it. After this method succeeded the access token can be read from the
      * persistent storage.
@@ -66,9 +72,9 @@ public interface OAuthAuthorizationHandler {
     /**
      * Gets the access token from persistent storage.
      *
-     * @param bridgeUid UID of the bridge for which the access token is requested.
+     * @param email E-mail address for which the access token is requested.
      * @return The access token.
      * @throws OAuthException if the access token cannot be obtained.
      */
-    String getAccessToken(ThingUID bridgeUid);
+    String getAccessToken(String email);
 }

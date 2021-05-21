@@ -34,10 +34,11 @@ public class SuccessServletTest extends AbstractConfigFlowTest {
     public void whenTheSuccessPageIsShownThenAThingsFileTemplateIsPresent() throws Exception {
         // when:
         Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
-                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
-        assertTrue(website.contains("Bridge mielecloud:account:genesis"));
+        assertTrue(website.contains("Bridge mielecloud:account:genesis [ email=\"openhab@openhab.org\""));
     }
 
     @Test
@@ -49,7 +50,8 @@ public class SuccessServletTest extends AbstractConfigFlowTest {
 
         // when:
         Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
-                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("<option value=\"de\" selected=\"selected\">Deutsch - de</option>"));
@@ -65,7 +67,8 @@ public class SuccessServletTest extends AbstractConfigFlowTest {
 
         // when:
         Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
-                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("<option value=\"en\" selected=\"selected\">English - en</option>"));
@@ -85,8 +88,8 @@ public class SuccessServletTest extends AbstractConfigFlowTest {
     @Test
     public void whenTheSuccessPageIsRequestedAndAnEmptyBridgeUidIsPassedThenTheFailurePageIsShown() throws Exception {
         // when:
-        Website website = getCrawler()
-                .doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=");
+        Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
+                + "=&" + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing failed!"));
@@ -98,10 +101,46 @@ public class SuccessServletTest extends AbstractConfigFlowTest {
             throws Exception {
         // when:
         Website website = getCrawler()
-                .doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=!genesis");
+                .doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=!genesis&"
+                        + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         // then:
         assertTrue(website.contains("Pairing failed!"));
         assertTrue(website.contains("Malformed bridge UID."));
+    }
+
+    @Test
+    public void whenTheSuccessPageIsRequestedAndNoEmailIsPassedThenTheFailurePageIsShown() throws Exception {
+        // when:
+        Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
+                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
+
+        // then:
+        assertTrue(website.contains("Pairing failed!"));
+        assertTrue(website.contains("Missing e-mail address."));
+    }
+
+    @Test
+    public void whenTheSuccessPageIsRequestedAndAnEmptyEmailIsPassedThenTheFailurePageIsShown() throws Exception {
+        // when:
+        Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
+                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + SuccessServlet.EMAIL_PARAMETER_NAME + "=");
+
+        // then:
+        assertTrue(website.contains("Pairing failed!"));
+        assertTrue(website.contains("Missing e-mail address."));
+    }
+
+    @Test
+    public void whenTheSuccessPageIsRequestedAndAMalformedEmailIsPassedThenTheFailurePageIsShown() throws Exception {
+        // when:
+        Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
+                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
+                + SuccessServlet.EMAIL_PARAMETER_NAME + "=not:an!email");
+
+        // then:
+        assertTrue(website.contains("Pairing failed!"));
+        assertTrue(website.contains("Malformed e-mail address."));
     }
 }

@@ -18,6 +18,11 @@
 		</properties>
 
 		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>@text/thing-type.config.mielecloud.account.email.label</label>
+				<description>@text/thing-type.config.mielecloud.account.email.description</description>
+			</parameter>
 			<parameter name="locale" type="text">
 				<label>@text/thing-type.config.mielecloud.account.locale.label</label>
 				<description>@text/thing-type.config.mielecloud.account.locale.description</description>

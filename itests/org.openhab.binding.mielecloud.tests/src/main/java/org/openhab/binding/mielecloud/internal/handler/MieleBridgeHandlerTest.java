@@ -40,6 +40,7 @@ import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLang
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -51,8 +52,7 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
  */
 @NonNullByDefault
 public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
-    private static final String SERVICE_HANDLE = MieleCloudBindingConstants.THING_TYPE_BRIDGE.getAsString() + ":"
-            + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID;
+    private static final String SERVICE_HANDLE = MieleCloudBindingIntegrationTestConstants.EMAIL;
     private static final String CONFIG_PARAM_LOCALE = "locale";
 
     @Nullable
@@ -126,6 +126,9 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
         bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
+                .withConfiguration(
+                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 

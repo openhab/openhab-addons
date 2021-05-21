@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
-import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.config.exception.BridgeCreationFailedException;
 import org.openhab.binding.mielecloud.internal.config.exception.BridgeReconfigurationFailedException;
+import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -47,6 +48,7 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
     private static final String LOCALE_PARAMETER_NAME = "locale";
     public static final String BRIDGE_UID_PARAMETER_NAME = "bridgeUid";
+    public static final String EMAIL_PARAMETER_NAME = "email";
 
     private static final long serialVersionUID = -2912042079128722887L;
 
@@ -80,6 +82,12 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
             return "/mielecloud/failure?" + FailureServlet.MISSING_BRIDGE_UID_PARAMETER_NAME + "=true";
         }
 
+        String email = request.getParameter(EMAIL_PARAMETER_NAME);
+        if (email == null || email.isEmpty()) {
+            logger.warn("Cannot create bridge: E-mail address is missing.");
+            return "/mielecloud/failure?" + FailureServlet.MISSING_EMAIL_PARAMETER_NAME + "=true";
+        }
+
         ThingUID bridgeUid = null;
         try {
             bridgeUid = new ThingUID(bridgeUidString);
@@ -88,34 +96,42 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
             return "/mielecloud/failure?" + FailureServlet.MALFORMED_BRIDGE_UID_PARAMETER_NAME + "=true";
         }
 
+        if (!EmailValidator.isValid(email)) {
+            logger.warn("Cannot create bridge: E-mail address '{}' is malformed.", email);
+            return "/mielecloud/failure?" + FailureServlet.MALFORMED_EMAIL_PARAMETER_NAME + "=true";
+        }
+
         String locale = getValidLocale(request.getParameter(LOCALE_PARAMETER_NAME));
 
         logger.debug("Auto configuring Miele account using locale '{}' (requested locale was '{}')", locale,
                 request.getParameter(LOCALE_PARAMETER_NAME));
         try {
-            Thing bridge = pairOrReconfigureBridge(locale, bridgeUid);
+            Thing bridge = pairOrReconfigureBridge(locale, bridgeUid, email);
             waitForBridgeToComeOnline(bridge);
             return "/mielecloud";
         } catch (BridgeReconfigurationFailedException e) {
             logger.warn("{}", e.getMessage());
             return "/mielecloud/success?" + SuccessServlet.BRIDGE_RECONFIGURATION_FAILED_PARAMETER_NAME + "=true&"
-                    + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString;
+                    + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString + "&"
+                    + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + email;
         } catch (BridgeCreationFailedException e) {
             logger.warn("Thing creation failed because there was no binding available that supports the thing.");
             return "/mielecloud/success?" + SuccessServlet.BRIDGE_CREATION_FAILED_PARAMETER_NAME + "=true&"
-                    + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString;
+                    + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString + "&"
+                    + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + email;
         }
     }
 
-    private Thing pairOrReconfigureBridge(String locale, ThingUID bridgeUid) {
+    private Thing pairOrReconfigureBridge(String locale, ThingUID bridgeUid, String email) {
         DiscoveryResult result = DiscoveryResultBuilder.create(bridgeUid)
                 .withRepresentationProperty(Thing.PROPERTY_MODEL_ID).withLabel(MIELE_CLOUD_BRIDGE_LABEL)
                 .withProperty(Thing.PROPERTY_MODEL_ID, MIELE_CLOUD_BRIDGE_NAME)
-                .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale).build();
+                .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale)
+                .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, email).build();
         if (inbox.add(result)) {
             return pairBridge(bridgeUid);
         } else {
-            return reconfigureBridge(bridgeUid, locale);
+            return reconfigureBridge(bridgeUid, locale, email);
         }
     }
 
@@ -129,7 +145,7 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
         return thing;
     }
 
-    private Thing reconfigureBridge(ThingUID thingUid, String locale) {
+    private Thing reconfigureBridge(ThingUID thingUid, String locale, String email) {
         logger.debug("Thing already exists. Modifying configuration.");
         Thing thing = thingRegistry.get(thingUid);
         if (thing == null) {
@@ -144,7 +160,8 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
         // calling handleConfigurationUpdate on MieleBridgeHandler always re-initializes the thing
         handler.handleConfigurationUpdate(
-                Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale));
+                Map.ofEntries(Map.entry(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale),
+                        Map.entry(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, email)));
 
         return thing;
     }

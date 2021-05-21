@@ -20,6 +20,7 @@ import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingInte
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPrivate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -171,7 +172,11 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withLabel("Miele@home Account").build();
+                .withLabel("Miele@home Account")
+                .withConfiguration(
+                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .build();
         assertNotNull(bridge);
 
         getThingRegistry().add(getBridge());

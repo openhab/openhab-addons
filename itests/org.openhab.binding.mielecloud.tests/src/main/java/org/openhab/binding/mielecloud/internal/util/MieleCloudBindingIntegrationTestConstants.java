@@ -67,4 +67,6 @@ public final class MieleCloudBindingIntegrationTestConstants {
     public static final String CLIENT_SECRET = "0123456789abcdefghijklmnopqrstiu";
 
     public static final String AUTHORIZATION_CODE = "0123456789";
+
+    public static final String EMAIL = "openhab@openhab.org";
 }

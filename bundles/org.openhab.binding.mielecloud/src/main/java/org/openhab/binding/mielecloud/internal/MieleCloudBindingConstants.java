@@ -123,6 +123,11 @@ public final class MieleCloudBindingConstants {
     public static final String PROPERTY_ACCESS_TOKEN = "accessToken";
 
     /**
+     * Name of the configuration parameter for the e-mail address.
+     */
+    public static final String CONFIG_PARAM_EMAIL = "email";
+
+    /**
      * Name of the configuration parameter for the locale. The locale is stored as a 2-letter language code.
      */
     public static final String CONFIG_PARAM_LOCALE = "locale";
@@ -217,6 +222,7 @@ public final class MieleCloudBindingConstants {
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED = "@text/mielecloud.bridge.status.access.token.not.configured";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED = "@text/mielecloud.bridge.status.account.not.authorized";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_REFRESH_FAILED = "@text/mielecloud.bridge.status.access.token.refresh.failed";
+        public static final String BRIDGE_STATUS_DESCRIPTION_INVALID_EMAIL = "@text/mielecloud.bridge.status.invalid.email";
         public static final String BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR = "@text/mielecloud.bridge.status.transient.http.error";
 
         public static final String THING_STATUS_DESCRIPTION_WEBSERVICE_MISSING = "@text/mielecloud.thing.status.webservice.missing";

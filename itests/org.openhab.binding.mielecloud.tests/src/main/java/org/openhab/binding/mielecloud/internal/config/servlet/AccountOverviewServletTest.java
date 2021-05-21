@@ -65,6 +65,7 @@ public class AccountOverviewServletTest extends AbstractConfigFlowTest {
         // given:
         Configuration configuration1 = mock(Configuration.class);
         when(configuration1.get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE)).thenReturn("de");
+        when(configuration1.get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL)).thenReturn("openhab@openhab.org");
 
         Bridge bridge1 = mock(Bridge.class);
         when(bridge1.getThingTypeUID()).thenReturn(MieleCloudBindingConstants.THING_TYPE_BRIDGE);
@@ -75,6 +76,7 @@ public class AccountOverviewServletTest extends AbstractConfigFlowTest {
 
         Configuration configuration2 = mock(Configuration.class);
         when(configuration2.get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE)).thenReturn("en");
+        when(configuration2.get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL)).thenReturn("everyone@openhab.org");
 
         Bridge bridge2 = mock(Bridge.class);
         when(bridge2.getThingTypeUID()).thenReturn(MieleCloudBindingConstants.THING_TYPE_BRIDGE);
@@ -93,8 +95,10 @@ public class AccountOverviewServletTest extends AbstractConfigFlowTest {
 
         // then:
         assertTrue(accountOverviewSite.contains("The following bridges are paired"));
+        assertTrue(accountOverviewSite.contains("openhab@openhab.org"));
         assertTrue(accountOverviewSite.contains("mielecloud:account:genesis"));
         assertTrue(accountOverviewSite.contains("<span class=\"status online\">"));
+        assertTrue(accountOverviewSite.contains("everyone@openhab.org"));
         assertTrue(accountOverviewSite.contains("mielecloud:account:test"));
         assertTrue(accountOverviewSite.contains("<span class=\"status offline\">"));
     }

@@ -43,10 +43,11 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 public class ConfigFlowTest extends AbstractConfigFlowTest {
     private void setUpAuthorizationHandler() throws NoSuchFieldException, IllegalAccessException {
         OAuthAuthorizationHandler authorizationHandler = mock(OAuthAuthorizationHandler.class);
-        when(authorizationHandler.getAccessToken(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID))
+        when(authorizationHandler.getAccessToken(MieleCloudBindingIntegrationTestConstants.EMAIL))
                 .thenReturn(MieleCloudBindingIntegrationTestConstants.ACCESS_TOKEN);
         when(authorizationHandler.getBridgeUid())
                 .thenReturn(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID);
+        when(authorizationHandler.getEmail()).thenReturn(MieleCloudBindingIntegrationTestConstants.EMAIL);
 
         setPrivate(getResultServlet(), "authorizationHandler", authorizationHandler);
     }
@@ -78,13 +79,14 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
         Website pairAccountSite = getCrawler().doGetRelative(pairAccountUrl);
         String forwardToLoginUrl = pairAccountSite.getFormAction();
 
-        Website mieleLoginSite = getCrawler()
-                .doGetRelative(forwardToLoginUrl + "?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+        Website mieleLoginSite = getCrawler().doGetRelative(forwardToLoginUrl + "?"
+                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID + "&" + ForwardToLoginServlet.EMAIL_PARAMETER_NAME
+                + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
         String redirectionUrl = mieleLoginSite.getValueOfInput("redirect_uri").replace("http://127.0.0.1:8080", "");
         String state = mieleLoginSite.getValueOfInput("state");
 
@@ -92,9 +94,10 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
                 + MieleCloudBindingIntegrationTestConstants.AUTHORIZATION_CODE + "&state=" + state);
         String createBridgeUrl = resultSite.getFormAction();
 
-        Website finalOverview = getCrawler()
-                .doGetRelative(createBridgeUrl + "?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.toString());
+        Website finalOverview = getCrawler().doGetRelative(createBridgeUrl + "?"
+                + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
+                + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.toString() + "&"
+                + CreateBridgeServlet.EMAIL_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
         return finalOverview;
     }
 
