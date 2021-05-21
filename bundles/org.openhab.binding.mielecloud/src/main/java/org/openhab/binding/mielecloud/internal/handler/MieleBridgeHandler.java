@@ -341,9 +341,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     }
 
     private void invokeOnThingHandlers(String deviceIdentifier, Consumer<AbstractMieleThingHandler> action) {
-        getThing().getThings().stream().filter(thing -> deviceIdentifier.equals(thing.getUID().getId()))
-                .map(Thing::getHandler).filter(handler -> handler instanceof AbstractMieleThingHandler)
-                .map(handler -> (AbstractMieleThingHandler) handler).forEach(action);
+        getThing().getThings().stream().map(Thing::getHandler)
+                .filter(handler -> handler instanceof AbstractMieleThingHandler)
+                .map(handler -> (AbstractMieleThingHandler) handler)
+                .filter(handler -> deviceIdentifier.equals(handler.getDeviceId())).forEach(action);
     }
 
     @Override

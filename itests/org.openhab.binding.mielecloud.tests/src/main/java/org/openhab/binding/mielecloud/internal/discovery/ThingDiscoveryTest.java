@@ -115,7 +115,7 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
     }
 
     private void assertValidDiscoveryResult(ThingUID expectedThingUID, String expectedSerialNumber,
-            String expectedLabel, String expectedModelId) {
+            String expectedDeviceIdentifier, String expectedLabel, String expectedModelId) {
         List<DiscoveryResult> results = getInbox().stream().filter(InboxPredicates.forThingUID(expectedThingUID))
                 .collect(Collectors.toList());
         assertEquals(1, results.size(), "Amount of things in inbox does not match expected number");
@@ -130,6 +130,9 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
         assertEquals(expectedLabel, result.getLabel(), "Invalid label");
         assertEquals(expectedSerialNumber, result.getProperties().get(Thing.PROPERTY_SERIAL_NUMBER),
                 "Invalid serial number");
+        assertEquals(expectedDeviceIdentifier,
+                result.getProperties().get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER),
+                "Invalid serial number");
     }
 
     private void testMieleDeviceInboxDiscoveryResult(DeviceType deviceType, ThingUID expectedThingUid,
@@ -141,7 +144,8 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
         getDiscoveryService().onDeviceStateUpdated(deviceState);
 
         // then:
-        assertValidDiscoveryResult(expectedThingUid, SERIAL_NUMBER, DEVICE_NAME, deviceTypeName + " " + TECH_TYPE);
+        assertValidDiscoveryResult(expectedThingUid, SERIAL_NUMBER, SERIAL_NUMBER, DEVICE_NAME,
+                deviceTypeName + " " + TECH_TYPE);
     }
 
     @Test
@@ -256,9 +260,10 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
             List<DiscoveryResult> results = getInbox().stream().collect(Collectors.toList());
             assertEquals(2, results.size(), "Amount of things in inbox does not match expected number");
 
-            assertValidDiscoveryResult(HOOD_DEVICE_THING_UID, SERIAL_NUMBER, DEVICE_NAME, "Hood " + TECH_TYPE);
-            assertValidDiscoveryResult(DISHWASHER_DEVICE_THING_UID_WITH_SERIAL_NUMBER_2, SERIAL_NUMBER_2, DEVICE_NAME_2,
-                    DEVICE_TYPE_NAME_DISHWASHER + " " + TECH_TYPE_2);
+            assertValidDiscoveryResult(HOOD_DEVICE_THING_UID, SERIAL_NUMBER, SERIAL_NUMBER, DEVICE_NAME,
+                    "Hood " + TECH_TYPE);
+            assertValidDiscoveryResult(DISHWASHER_DEVICE_THING_UID_WITH_SERIAL_NUMBER_2, SERIAL_NUMBER_2,
+                    SERIAL_NUMBER_2, DEVICE_NAME_2, DEVICE_TYPE_NAME_DISHWASHER + " " + TECH_TYPE_2);
         });
     }
 
@@ -285,7 +290,7 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
             List<DiscoveryResult> results = getInbox().stream().collect(Collectors.toList());
             assertEquals(1, results.size(), "Amount of things in inbox does not match expected number");
 
-            assertValidDiscoveryResult(HOOD_DEVICE_THING_UID, SERIAL_NUMBER, DEVICE_NAME,
+            assertValidDiscoveryResult(HOOD_DEVICE_THING_UID, SERIAL_NUMBER, SERIAL_NUMBER, DEVICE_NAME,
                     DEVICE_TYPE_NAME_HOOD + " " + TECH_TYPE);
         });
     }
@@ -304,8 +309,8 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
             List<DiscoveryResult> results = getInbox().stream().collect(Collectors.toList());
             assertEquals(1, results.size(), "Amount of things in inbox does not match expected number");
 
-            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, "Fridge Freezer " + TECH_TYPE,
-                    DEVICE_TYPE_NAME_FRIDGE_FREEZER + " " + TECH_TYPE);
+            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, SERIAL_NUMBER,
+                    "Fridge Freezer " + TECH_TYPE, DEVICE_TYPE_NAME_FRIDGE_FREEZER + " " + TECH_TYPE);
         });
     }
 
@@ -323,7 +328,8 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
             List<DiscoveryResult> results = getInbox().stream().collect(Collectors.toList());
             assertEquals(1, results.size(), "Amount of things in inbox does not match expected number");
 
-            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, TECH_TYPE, TECH_TYPE);
+            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, SERIAL_NUMBER, TECH_TYPE,
+                    TECH_TYPE);
         });
     }
 
@@ -341,8 +347,8 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
             List<DiscoveryResult> results = getInbox().stream().collect(Collectors.toList());
             assertEquals(1, results.size(), "Amount of things in inbox does not match expected number");
 
-            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, DEVICE_TYPE_NAME_FRIDGE_FREEZER,
-                    DEVICE_TYPE_NAME_FRIDGE_FREEZER);
+            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, SERIAL_NUMBER,
+                    DEVICE_TYPE_NAME_FRIDGE_FREEZER, DEVICE_TYPE_NAME_FRIDGE_FREEZER);
         });
     }
 
@@ -359,7 +365,8 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
             List<DiscoveryResult> results = getInbox().stream().collect(Collectors.toList());
             assertEquals(1, results.size(), "Amount of things in inbox does not match expected number");
 
-            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, "Miele Device", "Unknown");
+            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, SERIAL_NUMBER, "Miele Device",
+                    "Unknown");
         });
     }
 
@@ -391,7 +398,7 @@ public class ThingDiscoveryTest extends OpenHabOsgiTest {
             List<DiscoveryResult> results = getInbox().stream().collect(Collectors.toList());
             assertEquals(1, results.size(), "Amount of things in inbox does not match expected number");
 
-            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER,
+            assertValidDiscoveryResult(FRIDGE_FREEZER_DEVICE_THING_UID, SERIAL_NUMBER, SERIAL_NUMBER,
                     DEVICE_TYPE_NAME_FRIDGE_FREEZER + " " + TECH_TYPE,
                     DEVICE_TYPE_NAME_FRIDGE_FREEZER + " " + TECH_TYPE);
         });

@@ -47,6 +47,7 @@ public final class ThingInformationExtractor {
         var propertyMap = new HashMap<String, String>();
         propertyMap.put(Thing.PROPERTY_SERIAL_NUMBER, getSerialNumber(deviceState));
         propertyMap.put(Thing.PROPERTY_MODEL_ID, getModelId(deviceState));
+        propertyMap.put(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceState.getDeviceIdentifier());
 
         if (MieleCloudBindingConstants.THING_TYPE_HOB.equals(thingTypeUid)) {
             deviceState.getPlateStepCount().ifPresent(plateCount -> propertyMap

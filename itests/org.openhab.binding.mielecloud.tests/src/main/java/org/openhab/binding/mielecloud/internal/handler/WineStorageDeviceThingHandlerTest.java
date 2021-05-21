@@ -22,6 +22,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.ActionsState;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus;
@@ -42,7 +43,7 @@ public class WineStorageDeviceThingHandlerTest extends AbstractMieleThingHandler
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_WINE_STORAGE, WINE_STORAGE_DEVICE_THING_UID,
-                WineStorageDeviceThingHandler.class);
+                WineStorageDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
     }
 
     @Test

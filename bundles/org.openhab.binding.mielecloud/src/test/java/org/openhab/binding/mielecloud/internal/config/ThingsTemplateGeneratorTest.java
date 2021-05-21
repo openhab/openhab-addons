@@ -120,10 +120,14 @@ public class ThingsTemplateGeneratorTest {
 
     private Thing createThingMock(ThingTypeUID thingTypeUid, String deviceIdentifier, @Nullable String label,
             String bridgeId) {
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER)).thenReturn(deviceIdentifier);
+
         Thing thing = mock(Thing.class);
         when(thing.getThingTypeUID()).thenReturn(thingTypeUid);
         when(thing.getUID()).thenReturn(new ThingUID(thingTypeUid, deviceIdentifier, bridgeId));
         when(thing.getLabel()).thenReturn(label);
+        when(thing.getConfiguration()).thenReturn(configuration);
         return thing;
     }
 
@@ -133,6 +137,8 @@ public class ThingsTemplateGeneratorTest {
         when(discoveryResult.getLabel()).thenReturn(label);
         when(discoveryResult.getThingTypeUID()).thenReturn(thingTypeUid);
         when(discoveryResult.getThingUID()).thenReturn(new ThingUID(thingTypeUid, id, bridgeId));
+        when(discoveryResult.getProperties())
+                .thenReturn(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, id));
         return discoveryResult;
     }
 
@@ -171,10 +177,9 @@ public class ThingsTemplateGeneratorTest {
                 Collections.emptyList());
 
         // then:
-        assertEquals(
-                "Bridge mielecloud:account:mielebridge [ email=\"everyone@openhab.org\", locale=\"de\" ] {\n"
-                        + "    Thing oven 000137439123 \"Oven H7860XY\" [ ]\n" + "    Thing hob 000160106123 [ ]\n}",
-                template);
+        assertEquals("Bridge mielecloud:account:mielebridge [ email=\"everyone@openhab.org\", locale=\"de\" ] {\n"
+                + "    Thing oven 000137439123 \"Oven H7860XY\" [ deviceIdentifier=\"000137439123\" ]\n"
+                + "    Thing hob 000160106123 [ deviceIdentifier=\"000160106123\" ]\n}", template);
     }
 
     @Test
@@ -199,8 +204,9 @@ public class ThingsTemplateGeneratorTest {
 
         // then:
         assertEquals("Bridge mielecloud:account:mielebridge [ email=\"everyone@openhab.org\", locale=\"de\" ] {\n"
-                + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ ]\n"
-                + "    Thing washing_machine 000189106123 \"Washing Machine\" [ ]\n}", template);
+                + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ deviceIdentifier=\"000154106123\" ]\n"
+                + "    Thing washing_machine 000189106123 \"Washing Machine\" [ deviceIdentifier=\"000189106123\" ]\n}",
+                template);
     }
 
     @Test
@@ -232,9 +238,11 @@ public class ThingsTemplateGeneratorTest {
 
         // then:
         assertEquals("Bridge mielecloud:account:mielebridge [ email=\"openhab@openhab.org\", locale=\"de\" ] {\n"
-                + "    Thing oven 000137439123 \"Oven H7860XY\" [ ]\n" + "    Thing hob 000160106123 [ ]\n"
-                + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ ]\n"
-                + "    Thing washing_machine 000189106123 \"Washing Machine\" [ ]\n}", template);
+                + "    Thing oven 000137439123 \"Oven H7860XY\" [ deviceIdentifier=\"000137439123\" ]\n"
+                + "    Thing hob 000160106123 [ deviceIdentifier=\"000160106123\" ]\n"
+                + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ deviceIdentifier=\"000154106123\" ]\n"
+                + "    Thing washing_machine 000189106123 \"Washing Machine\" [ deviceIdentifier=\"000189106123\" ]\n}",
+                template);
     }
 
     @Test

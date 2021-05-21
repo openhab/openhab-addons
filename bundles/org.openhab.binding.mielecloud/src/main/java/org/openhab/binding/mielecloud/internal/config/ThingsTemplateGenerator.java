@@ -95,12 +95,27 @@ public class ThingsTemplateGenerator {
             result.append("\"").append(label).append("\" ");
         }
 
-        result.append("[ ]");
+        result.append("[ ");
+        result.append("deviceIdentifier=\"");
+        result.append(
+                thing.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER).toString());
+        result.append("\"");
+        result.append(" ]");
         return result.toString();
     }
 
     private String createThingConfigurationTemplate(DiscoveryResult discoveryResult) {
         return "Thing " + discoveryResult.getThingTypeUID().getId() + " " + discoveryResult.getThingUID().getId()
-                + " \"" + discoveryResult.getLabel() + "\" [ ]";
+                + " \"" + discoveryResult.getLabel() + "\" [ deviceIdentifier=\""
+                + getProperty(discoveryResult, MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER) + "\" ]";
+    }
+
+    private String getProperty(DiscoveryResult discoveryResult, String propertyName) {
+        var value = discoveryResult.getProperties().get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER);
+        if (value == null) {
+            return "";
+        } else {
+            return value.toString();
+        }
     }
 }

@@ -193,7 +193,10 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         assertNotNull(factory);
 
         // when:
-        Thing device = ThingBuilder.create(thingTypeUid, thingUid).withLabel(label).build();
+        Thing device = ThingBuilder.create(thingTypeUid, thingUid)
+                .withConfiguration(new Configuration(Collections
+                        .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, DEVICE_IDENTIFIER)))
+                .withLabel(label).build();
 
         assertNotNull(device);
         verifyHandlerCreation(webservice, device, expectedHandlerClass);

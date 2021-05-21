@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
 import org.openhab.core.library.types.DecimalType;
@@ -39,7 +40,7 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_HOB, HOB_DEVICE_THING_UID,
-                HobDeviceThingHandler.class);
+                HobDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
     }
 
     @Test

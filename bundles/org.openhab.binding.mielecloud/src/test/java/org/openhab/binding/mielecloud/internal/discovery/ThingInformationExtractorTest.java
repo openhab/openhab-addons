@@ -38,27 +38,29 @@ public class ThingInformationExtractorTest {
         return Stream.of(
                 Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOOD, DeviceType.HOOD, "000124430018",
                         Optional.of("000124430017"), Optional.of("Ventilation Hood"), Optional.of("DA-6996"),
-                        "000124430017", "Ventilation Hood DA-6996"),
+                        "000124430017", "Ventilation Hood DA-6996", "000124430018"),
                 Arguments.of(MieleCloudBindingConstants.THING_TYPE_COFFEE_SYSTEM, DeviceType.COFFEE_SYSTEM,
                         "000124431235", Optional.of("000124431234"), Optional.of("Coffee Machine"),
-                        Optional.of("CM-1234"), "000124431234", "Coffee Machine CM-1234"),
+                        Optional.of("CM-1234"), "000124431234", "Coffee Machine CM-1234", "000124431235"),
                 Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOOD, DeviceType.HOOD, "000124430018",
                         Optional.empty(), Optional.of("Ventilation Hood"), Optional.of("DA-6996"), "000124430018",
-                        "Ventilation Hood DA-6996"),
+                        "Ventilation Hood DA-6996", "000124430018"),
                 Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOOD, DeviceType.HOOD, "000124430018",
-                        Optional.empty(), Optional.empty(), Optional.of("DA-6996"), "000124430018", "DA-6996"),
+                        Optional.empty(), Optional.empty(), Optional.of("DA-6996"), "000124430018", "DA-6996",
+                        "000124430018"),
                 Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOOD, DeviceType.HOOD, "000124430018",
                         Optional.empty(), Optional.of("Ventilation Hood"), Optional.empty(), "000124430018",
-                        "Ventilation Hood"),
+                        "Ventilation Hood", "000124430018"),
                 Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOOD, DeviceType.HOOD, "000124430018",
-                        Optional.empty(), Optional.empty(), Optional.empty(), "000124430018", "Unknown"));
+                        Optional.empty(), Optional.empty(), Optional.empty(), "000124430018", "Unknown",
+                        "000124430018"));
     }
 
     @ParameterizedTest
     @MethodSource("extractedPropertiesContainSerialNumberAndModelIdParameterSource")
     void extractedPropertiesContainSerialNumberAndModelId(ThingTypeUID thingTypeUid, DeviceType deviceType,
             String deviceIdentifier, Optional<String> fabNumber, Optional<String> type, Optional<String> techType,
-            String expectedSerialNumber, String expectedModelId) {
+            String expectedSerialNumber, String expectedModelId, String expectedDeviceIdentifier) {
         // given:
         var deviceState = mock(DeviceState.class);
         when(deviceState.getRawType()).thenReturn(deviceType);
@@ -71,9 +73,11 @@ public class ThingInformationExtractorTest {
         var properties = ThingInformationExtractor.extractProperties(thingTypeUid, deviceState);
 
         // then:
-        assertEquals(2, properties.size());
+        assertEquals(3, properties.size());
         assertEquals(expectedSerialNumber, properties.get(Thing.PROPERTY_SERIAL_NUMBER));
         assertEquals(expectedModelId, properties.get(Thing.PROPERTY_MODEL_ID));
+        assertEquals(expectedDeviceIdentifier,
+                properties.get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER));
     }
 
     @ParameterizedTest
@@ -93,9 +97,10 @@ public class ThingInformationExtractorTest {
                 deviceState);
 
         // then:
-        assertEquals(3, properties.size());
+        assertEquals(4, properties.size());
         assertEquals("000124430019", properties.get(Thing.PROPERTY_SERIAL_NUMBER));
         assertEquals("Induction Hob IH-7890", properties.get(Thing.PROPERTY_MODEL_ID));
+        assertEquals("000124430019", properties.get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER));
         assertEquals(expectedPlateCountPropertyValue, properties.get(MieleCloudBindingConstants.PROPERTY_PLATE_COUNT));
     }
 }

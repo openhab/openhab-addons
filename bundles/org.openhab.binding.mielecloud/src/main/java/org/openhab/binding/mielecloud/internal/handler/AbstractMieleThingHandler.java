@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.I18NKeys;
 import org.openhab.binding.mielecloud.internal.discovery.ThingInformationExtractor;
 import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
@@ -215,7 +216,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
     }
 
     protected final String getDeviceId() {
-        return getThing().getUID().getId();
+        return getConfig().get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER).toString();
     }
 
     /**

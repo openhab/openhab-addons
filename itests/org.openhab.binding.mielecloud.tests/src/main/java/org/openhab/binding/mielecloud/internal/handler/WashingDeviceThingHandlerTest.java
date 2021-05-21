@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.ActionsState;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus;
@@ -45,7 +46,7 @@ public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_WASHING_MACHINE, WASHING_MACHINE_THING_UID,
-                WashingDeviceThingHandler.class);
+                WashingDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
     }
 
     @Test

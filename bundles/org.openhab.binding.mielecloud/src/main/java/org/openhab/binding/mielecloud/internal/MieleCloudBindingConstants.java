@@ -128,6 +128,11 @@ public final class MieleCloudBindingConstants {
     public static final String CONFIG_PARAM_EMAIL = "email";
 
     /**
+     * Name of the configuration parameter for the device identifier uniquely identifying a Miele device.
+     */
+    public static final String CONFIG_PARAM_DEVICE_IDENTIFIER = "deviceIdentifier";
+
+    /**
      * Name of the configuration parameter for the locale. The locale is stored as a 2-letter language code.
      */
     public static final String CONFIG_PARAM_LOCALE = "locale";
