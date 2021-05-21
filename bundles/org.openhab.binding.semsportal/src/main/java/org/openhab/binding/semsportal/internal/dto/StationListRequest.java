@@ -25,6 +25,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class StationListRequest {
+    // Properties are private but used by Gson to construct the request
     @SerializedName("page_size")
     private int pageSize = 5;
     @SerializedName("page_index")
