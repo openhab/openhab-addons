@@ -118,6 +118,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         // It is required to set a status in this method as stated in the Javadoc of ThingHandler.initialize
         updateStatus(ThingStatus.UNKNOWN);
 
+        initializeWebservice();
+    }
+
+    public void initializeWebservice() {
         if (!EmailValidator.isValid(getConfig().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL).toString())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     I18NKeys.BRIDGE_STATUS_DESCRIPTION_INVALID_EMAIL);
@@ -165,6 +169,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         logger.debug("Disposing {}", this.getClass().getName());
+        disposeWebservice();
+    }
+
+    public void disposeWebservice() {
         getWebservice().removeConnectionStatusListener(this);
         getWebservice().removeDeviceStateListener(this);
         getWebservice().disconnectSse();

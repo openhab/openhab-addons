@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -23,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.config.exception.BridgeCreationFailedException;
 import org.openhab.binding.mielecloud.internal.config.exception.BridgeReconfigurationFailedException;
+import org.openhab.binding.mielecloud.internal.handler.MieleBridgeHandler;
 import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -157,11 +157,14 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
         if (handler == null) {
             throw new BridgeReconfigurationFailedException("Bridge exists but has no handler.");
         }
+        if (!(handler instanceof MieleBridgeHandler)) {
+            throw new BridgeReconfigurationFailedException("Bridge handler is of wrong type, expected '"
+                    + MieleBridgeHandler.class.getSimpleName() + "' but got '" + handler.getClass().getName() + "'.");
+        }
 
-        // calling handleConfigurationUpdate on MieleBridgeHandler always re-initializes the thing
-        handler.handleConfigurationUpdate(
-                Map.ofEntries(Map.entry(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale),
-                        Map.entry(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, email)));
+        MieleBridgeHandler bridgeHandler = (MieleBridgeHandler) handler;
+        bridgeHandler.disposeWebservice();
+        bridgeHandler.initializeWebservice();
 
         return thing;
     }
