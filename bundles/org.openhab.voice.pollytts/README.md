@@ -51,10 +51,10 @@ Create a new file in `$OPENHAB_ROOT/conf/services` named `pollytts.cfg`
 It's contents should look similar to:
 
 ```
-org.openhab.pollytts:accessKey=ACCESS_KEY_ID
-org.openhab.pollytts:secretKey=SECRET_KEY
-org.openhab.pollytts:serviceRegion=SERVICE_REGION
-org.openhab.pollytts:cacheExpiration=EXPIRATION_IN_DAYS
+org.openhab.voice.pollytts:accessKey=ACCESS_KEY_ID
+org.openhab.voice.pollytts:secretKey=SECRET_KEY
+org.openhab.voice.pollytts:serviceRegion=SERVICE_REGION
+org.openhab.voice.pollytts:cacheExpiration=EXPIRATION_IN_DAYS
 ```
 
 These have the same meanings as described in the **Service Configuration** block above.
