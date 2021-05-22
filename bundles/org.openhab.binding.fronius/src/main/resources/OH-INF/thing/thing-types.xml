@@ -27,6 +27,9 @@
 			<channel id="powerflowchannelpgrid" typeId="pGrid"/>
 			<channel id="powerflowchannelpload" typeId="pLoad"/>
 			<channel id="powerflowchannelpakku" typeId="pAkku"/>
+			<channel id="powerflowchannelppv" typeId="pPv"/>
+			<channel id="powerflowinverter1power" typeId="inverter1Power"/>
+			<channel id="powerflowinverter1soc" typeId="inverter1Soc"/>
 		</channels>
 
 		<config-description>
@@ -195,6 +198,30 @@
 		<label>Battery Power</label>
 		<description>Battery Power ( + charge, - discharge )</description>
 		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pPv">
+		<item-type>Number</item-type>
+		<label>Solar plant power</label>
+		<description>Current solar plant power</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="akku1Power">
+		<item-type>Number</item-type>
+		<label>Battery Power</label>
+		<description>Battery Power ( + charge, - discharge )</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inverter1Power">
+		<item-type>Number</item-type>
+		<label>Inverter 1 Power</label>
+		<description>Inverter 1 Power ( + charge, - discharge )</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inverter1Soc">
+		<item-type>Number</item-type>
+		<label>Inverter 1 State of Charge</label>
+		<description>Inverter 1 State of Charge</description>
+		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 
 

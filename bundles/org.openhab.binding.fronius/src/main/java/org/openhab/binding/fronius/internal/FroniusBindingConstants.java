@@ -21,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Thomas Rokohl - Initial contribution
  * @author Peter Schraffl - Added device status and error status channels
+ * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  */
 @NonNullByDefault
 public class FroniusBindingConstants {
@@ -47,6 +48,7 @@ public class FroniusBindingConstants {
     public static final String PowerFlowpGrid = "powerflowchannelpgrid";
     public static final String PowerFlowpLoad = "powerflowchannelpload";
     public static final String PowerFlowpAkku = "powerflowchannelpakku";
+    public static final String PowerFlowpPv = "powerflowchannelppv";
     public static final String MeterModel = "model";
     public static final String MeterSerial = "serial";
     public static final String MeterEnable = "enable";
@@ -65,6 +67,20 @@ public class FroniusBindingConstants {
     public static final String MeterPowerFactorPhase3 = "powerfactorphase3";
     public static final String MeterEnergyRealSumConsumed = "energyrealsumconsumed";
     public static final String MeterEnergyRealSumProduced = "energyrealsumproduced";
+
+    /*
+     * part of POWERFLOW_REALTIME_DATA using Symo Gen24
+     * "Inverters" : {
+     * "1" : {
+     * "Battery_Mode" : "normal",
+     * "DT" : 1,
+     * "P" : 356,
+     * "SOC" : 95.199996948242188
+     * }
+     * },
+     */
+    public static final String PowerFlowInverter1Power = "powerflowinverter1power";
+    public static final String PowerFlowInverter1Soc = "powerflowinverter1soc";
 
     // List of all Urls
     public static final String INVERTER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
