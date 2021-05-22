@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="plugwiseha"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge -->
+	<bridge-type id="gateway">
+		<label>Plugwise Home Automation Bridge</label>
+		<description>The Plugwise Home Automation Bridge is needed to connect to the Adam boiler gateway</description>
+
+		<config-description-ref uri="bridge-type:plugwiseha:gateway"/>
+	</bridge-type>
+
+	<!-- Zone thing -->
+	<thing-type id="appliance_boiler" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Boiler</label>
+		<description>A Plugwise Home Automation controlled boiler</description>
+
+		<channels>
+			<channel id="chState" typeId="chState"/>
+			<channel id="dhwState" typeId="dhwState"/>
+			<channel id="waterPressure" typeId="waterPressure"/>
+			<channel id="coolingState" typeId="coolingState"/>
+			<channel id="flameState" typeId="flameState"/>
+			<channel id="intendedHeatingState" typeId="intendedHeatingState"/>
+			<channel id="dhwComfortMode" typeId="dhwComfortMode"/>
+			<channel id="intendedBoilerTemp" typeId="intendedBoilerTemp"/>
+			<channel id="modulationLevel" typeId="modulationLevel"/>
+			<channel id="otAppFaultCode" typeId="otAppFaultCode"/>
+			<channel id="dhwTemperature" typeId="dhwTemperature"/>
+			<channel id="otOEMFaultCode" typeId="otOEMFaultCode"/>
+			<channel id="boilerTemperature" typeId="boilerTemperature"/>
+			<channel id="dhwSetpoint" typeId="dhwSetpoint"/>
+			<channel id="maxBoilerTemperature" typeId="maxBoilerTemperature"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:plugwiseha:appliance_boiler"/>
+	</thing-type>
+
+	<!-- Zone thing -->
+	<thing-type id="zone" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Plugwise Zone</label>
+		<description>A Plugwise Home Automation heating zone</description>
+
+		<channels>
+			<channel id="setpointTemperature" typeId="setpointTemperature"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="presetScene" typeId="presetScene"/>
+			<channel id="preHeat" typeId="preHeat"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:plugwiseha:zone"/>
+	</thing-type>
+
+	<!-- Appliance: Radiator valve (Tom) -->
+	<thing-type id="appliance_valve" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Plugwise Radiator Valve</label>
+		<description>A Plugwise Home Automation radiator valve</description>
+
+		<channels>
+			<channel id="setpointTemperature" typeId="setpointTemperature"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="valvePosition" typeId="valvePosition"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:plugwiseha:appliance_valve"/>
+	</thing-type>
+
+	<!-- Appliance: Pump switch (Circle) -->
+	<thing-type id="appliance_pump" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Central Heating Pump</label>
+		<description>A Plugwise Home Automation smart plug switch connected to a central heating pump</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="lock" typeId="lock"/>
+			<channel id="powerUsage" typeId="powerUsage"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:plugwiseha:appliance_pump"/>
+	</thing-type>
+
+	<!-- Appliance: Zone thermostat (Lisa) -->
+	<thing-type id="appliance_thermostat" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Plugwise Room Thermostat</label>
+		<description>A Plugwise Home Automation room thermostat</description>
+
+		<channels>
+			<channel id="setpointTemperature" typeId="setpointTemperature"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="offsetTemperature" typeId="offsetTemperature"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:plugwiseha:appliance_thermostat"/>
+	</thing-type>
+
+</thing:thing-descriptions>

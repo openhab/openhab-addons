@@ -134,8 +134,9 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     public @Nullable Boolean refreshState() {
+        SenecHomeResponse response = null;
         try {
-            SenecHomeResponse response = senecHomeApi.getStatistics();
+            response = senecHomeApi.getStatistics();
             logger.trace("received {}", response);
 
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.power.powerLimitation))
@@ -278,6 +279,11 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (JsonParseException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            if (response == null) {
+                logger.trace("Faulty response: is null");
+            } else {
+                logger.trace("Faulty response: {}", response.toString());
+            }
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to Senec web interface:" + e.getMessage());
