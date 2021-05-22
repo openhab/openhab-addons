@@ -19,8 +19,8 @@ package org.openhab.binding.venstarthermostat.internal.model;
  */
 public class VenstarSensor {
     String name;
-    float temp;
-    float hum;
+    double temp;
+    double hum;
 
     public String getName() {
         return name;
@@ -30,19 +30,19 @@ public class VenstarSensor {
         this.name = name;
     }
 
-    public float getTemp() {
+    public double getTemp() {
         return temp;
     }
 
-    public void setTemp(float temp) {
+    public void setTemp(double temp) {
         this.temp = temp;
     }
 
-    public float getHum() {
+    public double getHum() {
         return hum;
     }
 
-    public void setHum(float hum) {
+    public void setHum(double hum) {
         this.hum = hum;
     }
 }
