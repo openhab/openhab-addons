@@ -129,8 +129,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
         }
 
         Integer bri = newGroupAction.bri;
-        if (bri != null && bri > 0) {
-            newGroupAction.on = true;
+        if (bri != null) {
+            newGroupAction.on = (bri > 0);
         }
 
         sendCommand(newGroupAction, command, channelUID, null);
