@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.binding.homeconnect.internal.client.HttpHelper.*;
@@ -630,7 +629,7 @@ public class HomeConnectApiClient {
         Request request = createRequest(HttpMethod.GET, BASE_PATH + haId + "/programs/available/" + programKey);
         try {
             ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
-            checkResponseCode(asList(HttpStatus.OK_200, HttpStatus.NOT_FOUND_404), request, response, haId, null);
+            checkResponseCode(List.of(HttpStatus.OK_200, HttpStatus.NOT_FOUND_404), request, response, haId, null);
 
             String responseBody = response.getContentAsString();
             trackAndLogApiRequest(haId, request, null, response, responseBody);
@@ -644,7 +643,7 @@ public class HomeConnectApiClient {
 
             List<AvailableProgramOption> availableProgramOptions = response.getStatus() == HttpStatus.OK_200
                     ? mapToAvailableProgramOption(responseBody, haId)
-                    : new ArrayList<>();
+                    : List.of();
             availableProgramOptionsCache.put(programKey, availableProgramOptions);
             return availableProgramOptions;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -734,7 +733,7 @@ public class HomeConnectApiClient {
         Request request = createRequest(HttpMethod.GET, path);
         try {
             ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
-            checkResponseCode(asList(HttpStatus.OK_200, HttpStatus.NOT_FOUND_404), request, response, haId, null);
+            checkResponseCode(List.of(HttpStatus.OK_200, HttpStatus.NOT_FOUND_404), request, response, haId, null);
 
             String responseBody = response.getContentAsString();
             trackAndLogApiRequest(haId, request, null, response, responseBody);
