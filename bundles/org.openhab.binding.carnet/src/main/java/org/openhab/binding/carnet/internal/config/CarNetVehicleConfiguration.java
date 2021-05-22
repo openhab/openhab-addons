@@ -31,4 +31,8 @@ public class CarNetVehicleConfiguration {
 
     public boolean enableAddressLookup = false;
     public Integer pollingInterval = 15;
+
+    public String rolesRightsUrl = "";
+    public String homeRegionUrl = "";
+    public String apiUrlPrefix = "";
 }

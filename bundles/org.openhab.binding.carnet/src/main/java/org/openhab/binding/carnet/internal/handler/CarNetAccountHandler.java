@@ -163,7 +163,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         for (String vin : vehices.userVehicles.vehicle) {
             config.vehicle.vin = vin;
             api.setConfig(config);
-            config.apiUrlPrefix = api.getApiUrl();
+            config.vehicle.apiUrlPrefix = api.getApiUrl();
             api.setConfig(config);
             CarNetVehicleDetails details = api.getVehicleDetails(vin);
             vehicleList.add(new CarNetVehicleInformation(details));

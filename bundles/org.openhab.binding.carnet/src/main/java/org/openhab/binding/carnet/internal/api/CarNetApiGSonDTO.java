@@ -66,10 +66,10 @@ public class CarNetApiGSonDTO {
             public class CNSecurityPinTransmission {
                 public Integer hashProcedureVersion;
                 public String challenge;
-                public Integer remainingTries;
             }
 
             public String securityToken;
+            public Integer remainingTries;
             public CNSecurityPinTransmission securityPinTransmission;
         }
 

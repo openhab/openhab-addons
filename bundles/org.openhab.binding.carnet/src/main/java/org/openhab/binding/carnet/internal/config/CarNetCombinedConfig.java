@@ -35,8 +35,6 @@ public class CarNetCombinedConfig {
         public String securityLevel = "";
     }
 
-    public String homeRegionUrl = "";
-    public String apiUrlPrefix = "";
     public String tokenSetId = "";
     public CarNetAccountConfiguration account = new CarNetAccountConfiguration();
     public CarNetVehicleConfiguration vehicle = new CarNetVehicleConfiguration();

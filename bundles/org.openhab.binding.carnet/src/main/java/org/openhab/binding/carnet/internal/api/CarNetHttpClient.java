@@ -348,8 +348,8 @@ public class CarNetHttpClient {
      * @throws CarNetException
      */
     public String getBaseUrl() throws CarNetException {
-        if (!config.apiUrlPrefix.isEmpty()) {
-            return config.apiUrlPrefix;
+        if (!config.vehicle.apiUrlPrefix.isEmpty()) {
+            return config.vehicle.apiUrlPrefix;
         }
         if (!config.api.apiDefaultUrl.isEmpty()) {
             return config.api.apiDefaultUrl;

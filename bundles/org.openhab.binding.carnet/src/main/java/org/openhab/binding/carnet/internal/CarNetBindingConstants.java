@@ -187,7 +187,7 @@ public class CarNetBindingConstants {
 
     public static final int POLL_INTERVAL_SEC = 3; // poll cycle evey 3sec
     public static final int API_TOKEN_REFRESH_INTERVAL_SEC = 5 * 60; // interval to check for valid token
-    public static final int API_REQUEST_TIMEOUT_SEC = 60 + 5;
+    public static final int API_REQUEST_TIMEOUT_SEC = 120 + 5;
     public static final int API_REQUEST_CHECK_INT = 15 / POLL_INTERVAL_SEC; // interval for checking pending requests
     public static final int API_TIMEOUT_MS = 60 * 1000;
 

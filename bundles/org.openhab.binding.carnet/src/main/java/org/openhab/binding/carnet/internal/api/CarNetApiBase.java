@@ -180,8 +180,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public String getHomeReguionUrl() {
-        if (!config.homeRegionUrl.isEmpty()) {
-            return config.homeRegionUrl;
+        if (!config.vehicle.homeRegionUrl.isEmpty()) {
+            return config.vehicle.homeRegionUrl;
         }
         String url = "";
         try {
@@ -190,16 +190,17 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         } catch (CarNetException e) {
             url = CNAPI_VWG_MAL_1A_CONNECT;
         }
-        config.homeRegionUrl = url;
+        config.vehicle.homeRegionUrl = url;
         return url;
     }
 
     public String getApiUrl() throws CarNetException {
         String url = getHomeReguionUrl();
+        config.vehicle.rolesRightsUrl = url;
         if (!CNAPI_VWG_MAL_1A_CONNECT.equalsIgnoreCase(url)) {
             // Change base url depending on country selector
             url = url.replace("https://mal-", "https://fal-").replace("/api", "/fs-car");
-            config.apiUrlPrefix = url;
+            config.vehicle.apiUrlPrefix = url;
             return url;
         }
         return http.getBaseUrl();
@@ -298,7 +299,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public CarNetOperationList getOperationList() throws CarNetException {
-        return callApi(getHomeReguionUrl() + "/" + CNAPI_VWURL_OPERATIONS, "getOperationList",
+        return callApi(config.vehicle.rolesRightsUrl + "/rolesrights/operationlist/v3/vehicles/{2}", "getOperationList",
                 CNOperationList.class).operationList;
     }
 
@@ -339,7 +340,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         }
         return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions",
                 CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION,
-                start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP, false,
+                start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP, true,
                 contentType, body);
     }
 
@@ -567,6 +568,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         if (request.isExpired()) {
             logger.debug("{}: Request {} for action {}.{} has been expired, remove", config.vehicle.vin,
                     request.requestId, request.service, request.action);
+            status = CNAPI_REQUEST_TIMEOUT;
             remove = true;
         } else {
             try {

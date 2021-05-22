@@ -339,24 +339,26 @@ public class CarNetTokenManager {
         headers.put(CNAPI_HEADER_APP, config.api.xappName);
         headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
         // Build Hash: SHA512(SPIN+Challenge)
-        String url = "https://mal-1a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/vehicles/"
+        // https://mal-3a.prd.eu.dp.vwg-connect.com/api/rolesrights/operationlist/v3/vehicles/WAUZZZGE0MB027113
+
+        // "https://mal-3a.prd.eu.dp.vwg-connect.com/api/rolesrights/authorization/v2/vehicles/"
+        String url = config.vehicle.rolesRightsUrl + "/rolesrights/authorization/v2/vehicles/"
                 + config.vehicle.vin.toUpperCase() + "/services/" + service + "/operations/" + action
                 + "/security-pin-auth-requested";
         String json = http.get(url, headers, accessToken);
         CarNetSecurityPinAuthInfo authInfo = fromJson(gson, json, CarNetSecurityPinAuthInfo.class);
         String pinHash = sha512(config.vehicle.pin, authInfo.securityPinAuthInfo.securityPinTransmission.challenge)
                 .toUpperCase();
-        logger.debug("Authenticating SPIN, retires={}",
-                authInfo.securityPinAuthInfo.securityPinTransmission.remainingTries);
+        logger.debug("Authenticating SPIN, retires={}", authInfo.securityPinAuthInfo.remainingTries);
 
         // Request authentication
         CarNetSecurityPinAuthentication pinAuth = new CarNetSecurityPinAuthentication();
         pinAuth.securityPinAuthentication.securityToken = authInfo.securityPinAuthInfo.securityToken;
         pinAuth.securityPinAuthentication.securityPin.challenge = authInfo.securityPinAuthInfo.securityPinTransmission.challenge;
         pinAuth.securityPinAuthentication.securityPin.securityPinHash = pinHash;
+        // "https://mal-3a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/security-pin-auth-completed",
         String data = gson.toJson(pinAuth);
-        json = http.post(
-                "https://mal-1a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/security-pin-auth-completed",
+        json = http.post(config.vehicle.rolesRightsUrl + "/rolesrights/authorization/v2/security-pin-auth-completed",
                 headers, data);
         CNApiToken t = fromJson(gson, json, CNApiToken.class);
         CarNetToken securityToken = new CarNetToken(t);

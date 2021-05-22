@@ -23,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class CarNetApiProperties {
     public String oidcDate = ""; // Date in getOIDC http response header
     public String oidcConfigUrl = "";
-    public String apiDefaultUrl = "";
+
     public String brand = "";
+    public String apiDefaultUrl = "";
     public String xcountry = "";
     public String baseUrl = "";
-    public String homeRegionUrl = "";
     public String clientId = "";
     public String xClientId = "";
     public String authScope = "";

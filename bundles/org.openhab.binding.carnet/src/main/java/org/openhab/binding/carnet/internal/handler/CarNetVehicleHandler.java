@@ -189,8 +189,8 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             }
             config.vehicle.vin = vin.toUpperCase();
             api.setConfig(config); // required to pass VIN to CarNetApi
-            config.homeRegionUrl = api.getHomeReguionUrl();
-            config.apiUrlPrefix = api.getApiUrl();
+            config.vehicle.homeRegionUrl = api.getHomeReguionUrl();
+            config.vehicle.apiUrlPrefix = api.getApiUrl();
             api.setConfig(config);
 
             serviceAvailability = new CarNetServiceAvailability(); // init all to true
@@ -460,6 +460,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             }
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, getStringType(actionStatus));
             boolean inProgress = CNAPI_REQUEST_IN_PROGRESS.equalsIgnoreCase(actionStatus)
+                    || CNAPI_REQUEST_FETCHED.equalsIgnoreCase(actionStatus)
                     || CNAPI_REQUEST_QUEUED.equalsIgnoreCase(actionStatus);
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING,
                     inProgress ? OnOffType.ON : OnOffType.OFF);
