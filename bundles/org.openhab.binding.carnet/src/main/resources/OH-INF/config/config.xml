@@ -19,18 +19,7 @@
 			<context>password</context>
 			<description>Password to access the CarNet Account.</description>
 		</parameter>
-		<parameter name="enableAddressLookup" type="boolean" required="false">
-			<label>Enable Address Lookups</label>
-			<description>Use OpenStreetMap to reverse lookup address from vehicle's Geo position</description>
-			<default>false</default>
-		</parameter>
 
-		<parameter name="apiLevelLockUnlock" type="integer" min="1" max="2" required="false">
-			<label>API Level Ventilation</label>
-			<description>Specifies API format variant to control the lock, change only if not working with default</description>
-			<default>1</default>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="apiLevelVentilation" type="integer" min="1" max="2" required="false">
 			<label>API Level Ventilation</label>
 			<description>Specifies API format variant to control ventilation, change only if not working with default</description>
@@ -38,7 +27,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="apiLevelClimatisation" type="integer" min="1" max="2" required="false">
-			<label>API Level Ventilation</label>
+			<label>API Level Climatisation</label>
 			<description>Specifies API format variant to control climatisation, change only if not working with default</description>
 			<default>2</default>
 			<advanced>true</advanced>
@@ -51,9 +40,14 @@
 		</parameter-group>
 
 		<parameter name="pin" type="text" required="false">
-			<label>PIN</label>
+			<label>Security PIN</label>
 			<context>password</context>
 			<description>Security PIN to access control functions.</description>
+		</parameter>
+		<parameter name="enableAddressLookup" type="boolean" required="false">
+			<label>Enable Address Lookups</label>
+			<description>Use OpenStreetMap to reverse lookup address from vehicle's Geo position</description>
+			<default>false</default>
 		</parameter>
 
 		<parameter name="numShortTrip" type="integer" required="false" min="0" max="5">

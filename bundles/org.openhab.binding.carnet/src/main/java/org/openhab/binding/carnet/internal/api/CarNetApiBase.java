@@ -153,6 +153,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     break;
                 case CNAPI_SERVICE_REMOTE_LOCK_UNLOCK:
                     serviceStatus.rlu = enabled;
+                    break;
                 case CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION:
                     serviceStatus.clima = enabled;
                     break;
@@ -324,14 +325,13 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8";
         String body;
         if (start) {
-            if ((config.api.apiLevelClimatisation == 1) || heaterSource.isEmpty()) {
+            if ((config.account.apiLevelClimatisation == 1) || heaterSource.isEmpty()) {
                 // simplified format without header source
-                body = "<?xml version=\"1.0\" encoding= \"UTF-8\" ?>\n<action>\n<type>startClimatisation</type>\n</action>";
+                body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>startClimatisation</type></action>";
             } else {
                 // standard format with header source
-                body = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                        + "<action><type>startClimatisation</type>"
-                        + "<settings><heaterSource></heaterSource></settings>" + "</action>";
+                body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><action><type>startClimatisation</type>"
+                        + "<settings><heaterSource>" + heaterSource + "</heaterSource></settings></action>";
             }
         } else {
             // stop climater
@@ -370,7 +370,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     public String controlVentilation(boolean start, int duration) throws CarNetException {
         String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
-        if (config.api.apiLevelVentilation == 2) {
+        if (config.account.apiLevelVentilation == 2) {
             // Version 2.0.2 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
             body = start

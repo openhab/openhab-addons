@@ -39,8 +39,4 @@ public class CarNetApiProperties {
     public String xappVersion = "";
     public String clientName = "";
     public String clientPlatform = "";
-
-    public int apiLevelLockUnlock = -1;
-    public int apiLevelVentilation = -1;
-    public int apiLevelClimatisation = -1;
 }

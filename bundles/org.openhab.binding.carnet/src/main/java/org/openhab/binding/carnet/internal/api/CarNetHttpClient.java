@@ -165,7 +165,7 @@ public class CarNetHttpClient {
             fillPostData(request, data);
 
             // Do request and get response
-            logger.debug("HTTP {} {}, data={}", request.getMethod(), request.getURI(), data);
+            logger.debug("HTTP {} {}\nBody/Data={}", request.getMethod(), request.getURI(), data);
             logger.trace("  Headers: \n{}", request.getHeaders().toString());
             // request.followRedirects(followRedirect);
             request.followRedirects(false);
@@ -181,6 +181,7 @@ public class CarNetHttpClient {
             String loc = getRedirect();
             switch (code) {
                 case HttpStatus.FORBIDDEN_403:
+                case HttpStatus.METHOD_NOT_ALLOWED_405:
                     throw new CarNetSecurityException("Forbidden", apiResult);
                 case HttpStatus.OK_200:
                 case HttpStatus.ACCEPTED_202:

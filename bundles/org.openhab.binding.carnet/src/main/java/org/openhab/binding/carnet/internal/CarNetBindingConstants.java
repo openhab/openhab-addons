@@ -102,7 +102,7 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_CLIMATER_MIRROR_HEAT = "mirrorHeat";
 
     public static final String CHANNEL_GROUP_CHARGER = "charger";
-    public static final String CHANNEL_CHARGER_CURRENT = "maxCurrent";
+    public static final String CHANNEL_CHARGER_CURRENT = "setMaxCurrent";
     public static final String CHANNEL_CHARGER_STATUS = "chargingStatus";
     public static final String CHANNEL_CHARGER_ERROR = "errorCode";
     public static final String CHANNEL_CHARGER_PWR_STATE = "powerState";

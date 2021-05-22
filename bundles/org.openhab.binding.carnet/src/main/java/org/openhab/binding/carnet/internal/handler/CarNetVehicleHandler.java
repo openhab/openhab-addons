@@ -95,7 +95,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private final int cacheCount = 20;
     private final ZoneId zoneId;
 
-    public String thingId = "";
+    public final String thingId;
     private CarNetApiBase api = new CarNetBrandApiNull();
     private @Nullable CarNetAccountHandler accountHandler;
     private @Nullable ScheduledFuture<?> pollingJob;

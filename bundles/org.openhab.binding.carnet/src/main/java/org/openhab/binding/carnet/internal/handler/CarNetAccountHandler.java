@@ -14,7 +14,6 @@ package org.openhab.binding.carnet.internal.handler;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
-import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +66,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CarNetAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(CarNetAccountHandler.class);
+
+    public final String thingId;
     private final CarNetCombinedConfig config = new CarNetCombinedConfig();
     private final CarNetTextResources messages;
     private final CarNetTokenManager tokenManager;
@@ -102,6 +103,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         super(bridge);
         this.messages = messages;
         this.tokenManager = tokenManager;
+        this.thingId = getThing().getUID().getId();
 
         // Generate a unique Id for all tokens of the new Account thing, but also of all depending Vehicle things. This
         // allows sharing the tokens across all things associated with the account.
@@ -173,6 +175,35 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         return true;
     }
 
+    /**
+     * This routine is called every time the Thing configuration has been changed
+     */
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        try {
+            stateChanged(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Thing config updated, re-initialize");
+            config.account = getConfigAs(CarNetAccountConfiguration.class);
+            api.setConfig(config);
+            initializeThing();
+        } catch (CarNetException e) {
+            logger.warn("{}: {}", messages.get("init-fialed", "Re-initialization failed!"), thingId, e);
+        }
+    }
+
+    /**
+     * Empty handleCommand for Account Thing
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            return;
+        }
+        String channelId = channelUID.getIdWithoutGroup();
+        logger.debug("{}: Undefined command '{}' for channel {}", thingId, command, channelId);
+    }
+
     private CarNetHttpClient createHttpClient() {
         // Each instance has it's own http client. Audi requires weaked SSL attributes, other may not
         HttpClient httpClient = new HttpClient();
@@ -180,10 +211,10 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
             httpClient = new HttpClient(sslCipher);
             httpClient.start();
             if (logger.isTraceEnabled()) {
-                logger.trace("CarNet: {}", httpClient.dump());
+                logger.trace("{}: HttpClient setup: {}", thingId, httpClient.dump());
             }
         } catch (Exception e) {
-            logger.warn("{}", messages.get("init-fialed", "Unable to start HttpClient!"), e);
+            logger.warn("{}: {}", messages.get("init-fialed", "Unable to start HttpClient!"), thingId, e);
         }
         CarNetHttpClient client = new CarNetHttpClient(httpClient);
         client.setConfig(config);
@@ -249,18 +280,6 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Empty handleCommand for Account Thing
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        String channelId = channelUID.getIdWithoutGroup();
-        logger.debug("Handle command '{}' for channel {}", command, channelId);
-        if (command == RefreshType.REFRESH) {
-            return;
-        }
-    }
-
-    /**
      * Sets up a polling job (using the scheduler) with the given interval.
      *
      * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
@@ -285,7 +304,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
     private void refreshStatus() {
         try {
             if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                logger.debug("CarNet: Re-initialize with account {}", config.account.user);
+                logger.debug("{}: Re-initialize with account {}", thingId, config.account.user);
                 initializeThing();
             } else {
                 api.refreshTokens();
@@ -328,7 +347,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
      */
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
+        logger.debug("{}: Handler disposed.", thingId);
         cancelRefreshJob();
     }
 }

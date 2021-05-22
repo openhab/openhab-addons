@@ -21,6 +21,8 @@ import java.util.Map;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehiclePosition;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -31,6 +33,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Markus Michels - Initial contribution
  */
 public class OpenStreetMapApiDTO {
+    private final Logger logger = LoggerFactory.getLogger(OpenStreetMapApiDTO.class);
     protected final Gson gson = new Gson();
 
     public static class OSMPointResponse {
@@ -60,17 +63,22 @@ public class OpenStreetMapApiDTO {
     }
 
     public String getAddressFromPosition(CarNetHttpClient http, CarNetVehiclePosition position) throws CarNetException {
-        String url = "https://nominatim.openstreetmap.org/reverse?lat=" + position.getLattitude() + "&lon="
-                + position.getLongitude() + "&format=json";
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeader.USER_AGENT.toString(), "openHAB/" + BINDING_ID);
-        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
-        String json = http.get(url, headers);
-        OSMPointResponse r = fromJson(gson, json, OSMPointResponse.class);
-        String address = getString(r.address.road) + ";" + getString(r.address.house_number) + ";"
-                + getString(r.address.postcode) + ";" + getString(r.address.postcode) + ";" + getString(r.address.town)
-                + ";" + getString(r.address.village) + ";"
-                + getString(r.address.country + ";" + getString(r.address.countryCocde));
-        return address;
+        try {
+            String url = "https://nominatim.openstreetmap.org/reverse?lat=" + position.getLattitude() + "&lon="
+                    + position.getLongitude() + "&format=json";
+            Map<String, String> headers = new HashMap<>();
+            headers.put(HttpHeader.USER_AGENT.toString(), "openHAB/" + BINDING_ID);
+            headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
+            String json = http.get(url, headers);
+            OSMPointResponse r = fromJson(gson, json, OSMPointResponse.class);
+            String address = getString(r.address.road) + ";" + getString(r.address.house_number) + ";"
+                    + getString(r.address.postcode) + ";" + getString(r.address.postcode) + ";"
+                    + getString(r.address.town) + ";" + getString(r.address.village) + ";"
+                    + getString(r.address.country + ";" + getString(r.address.countryCocde));
+            return address;
+        } catch (CarNetException e) {
+            logger.debug("OSM: Unable to lookup address for Geo position: {}", e.toString());
+            return "";
+        }
     }
 }
