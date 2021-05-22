@@ -121,10 +121,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-
         if (deviceWhere != null) {
             String w = deviceWhere.value();
-
             try {
                 // for bus_thermostat request single channels updates
                 send(Thermoregulation.requestTemperature(w));
@@ -152,19 +150,22 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private void handleSetFanSpeedCommand(Command command) {
         logger.debug("handleSetFanSpeedCommand() (command={})", command);
-        Where w = deviceWhere;
-        if (w != null) {
-            if (command instanceof StringType) {
-                FAN_COIL_SPEED speed = FAN_COIL_SPEED.valueOf(command.toString());
+        if (command instanceof StringType) {
+            Where w = deviceWhere;
+            if (w != null) {
                 try {
+                    FAN_COIL_SPEED speed = FAN_COIL_SPEED.valueOf(command.toString());
                     send(Thermoregulation.requestWriteFanCoilSpeed(w.value(), speed));
                 } catch (OWNException e) {
                     logger.warn("handleSetFanSpeedCommand() {}", e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("handleSetFanSpeedCommand() Unsupported command {} for thing {}", command,
+                            getThing().getUID());
+                    return;
                 }
-            } else {
-                logger.warn("handleSetFanSpeedCommand() Cannot handle command {} for thing {}", command,
-                        getThing().getUID());
             }
+        } else {
+            logger.warn("handleSetFanSpeedCommand() Unsupported command {} for thing {}", command, getThing().getUID());
         }
     }
 
@@ -189,7 +190,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 }
             }
         } else {
-            logger.warn("handleSetpointCommand() Cannot handle command {} for thing {}", command, getThing().getUID());
+            logger.warn("handleSetpointCommand() Unsupported command {} for thing {}", command, getThing().getUID());
         }
     }
 
@@ -198,7 +199,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             Where w = deviceWhere;
             if (w != null) {
                 try {
-
                     OPERATION_MODE mode = OPERATION_MODE.valueOf(((StringType) command).toString());
                     if (mode == OPERATION_MODE.MANUAL) {
                         logger.debug("handleMode() mode={} function={} setPointTemp={}°", mode.toString(),
@@ -206,15 +206,17 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     } else {
                         logger.debug("handleMode() mode={} function={}", mode.toString(), currentFunction.toString());
                     }
-
                     send(Thermoregulation.requestWriteMode(w.value(), mode, currentFunction, currentSetPointTemp));
                 } catch (OWNException e) {
                     logger.warn("handleMode() {}", e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("handleMode() Unsupported command {} for thing {}", command, getThing().getUID());
+                    return;
                 }
             }
 
         } else {
-            logger.warn("Cannot handle command {} for thing {}", command, getThing().getUID());
+            logger.warn("handleMode() Unsupported command {} for thing {}", command, getThing().getUID());
         }
     }
 
@@ -229,10 +231,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     send(Thermoregulation.requestWriteFunction(w.value(), function));
                 } catch (OWNException e) {
                     logger.warn("handleFunction() {}", e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("handleFunction() Unsupported command {} for thing {}", command, getThing().getUID());
+                    return;
                 }
             }
         } else {
-            logger.warn("Cannot handle command {} for thing {}", command, getThing().getUID());
+            logger.warn("handleFunction() Unsupported command {} for thing {}", command, getThing().getUID());
         }
     }
 
@@ -249,7 +254,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             if (msg.getDim() == null) {
                 return;
             }
-
             if (msg.getDim() == Thermoregulation.DIM.TEMPERATURE
                     || msg.getDim() == Thermoregulation.DIM.PROBE_TEMPERATURE) {
                 updateTemperature((Thermoregulation) msg);
