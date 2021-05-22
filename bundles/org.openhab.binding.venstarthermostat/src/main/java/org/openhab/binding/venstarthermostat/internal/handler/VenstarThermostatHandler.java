@@ -47,6 +47,8 @@ import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.venstarthermostat.internal.VenstarThermostatConfiguration;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarAwayMode;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarAwayModeSerializer;
 import org.openhab.binding.venstarthermostat.internal.model.VenstarInfoData;
 import org.openhab.binding.venstarthermostat.internal.model.VenstarResponse;
 import org.openhab.binding.venstarthermostat.internal.model.VenstarSensor;
@@ -110,8 +112,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         httpClient = new HttpClient(new SslContextFactory.Client(true));
         gson = new GsonBuilder().registerTypeAdapter(VenstarSystemState.class, new VenstarSystemStateSerializer())
                 .registerTypeAdapter(VenstarSystemMode.class, new VenstarSystemModeSerializer())
-                .registerTypeAdapter(VenstarAwayMode.class,new VenstarAwayModeSerializer())
-                .create();
+                .registerTypeAdapter(VenstarAwayMode.class, new VenstarAwayModeSerializer()).create();
 
         log.trace("VenstarThermostatHandler for thing {}", getThing().getUID());
     }
@@ -314,6 +315,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         VenstarSystemMode mode = getSystemMode();
         updateThermostat(heat, cool, mode);
     }
+
     private void setAwayMode(VenstarAwayMode away) {
         updateThermostatAway(away);
     }
@@ -333,6 +335,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     private VenstarSystemMode getSystemMode() {
         return infoData.getMode();
     }
+
     private VenstarAwayMode getAwayMode() {
         return infoData.getAway();
     }
@@ -366,12 +369,13 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }
     }
+
     private void updateThermostatAway(VenstarAwayMode away) {
         Map<String, String> params = new HashMap<>();
         log.debug("Updating thermostat {}  away: {}", getThing().getLabel(), away);
         params.put("away", "" + away.mode());
         try {
-            String result = postData("/control", params);
+            String result = postData("/settings", params);
             VenstarResponse res = gson.fromJson(result, VenstarResponse.class);
             if (res.isSuccess()) {
                 log.debug("Updated thermostat");
@@ -389,6 +393,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }
     }
+
     private void updateData() {
         try {
             Future<?> localUpdatesTask = updatesTask;
@@ -414,9 +419,9 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             updateIfChanged(CHANNEL_SYSTEM_MODE, new StringType(getSystemMode().modeName()));
             updateIfChanged(CHANNEL_SYSTEM_STATE_RAW, new DecimalType(getSystemState().state()));
             updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new DecimalType(getSystemMode().mode()));
-            updateIfChanged(CHANNEL_AWAY_MODE,new StringType(getAwayMode().modeName()));
+            updateIfChanged(CHANNEL_AWAY_MODE, new StringType(getAwayMode().modeName()));
             updateIfChanged(CHANNEL_AWAY_MODE_RAW, new DecimalType(getAwayMode().mode()));
-            
+
             goOnline();
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
