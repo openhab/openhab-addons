@@ -23,6 +23,7 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
+import org.openhab.core.thing.ChannelUID;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -71,7 +72,8 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         String uom = channelConfiguration.unitOfMeasurement;
 
         if (uom != null && !uom.isBlank()) {
-            value = new NumberValue(null, null, null, uom);
+            value = new NumberValue(new ChannelUID(componentConfiguration.getThingUID(), sensorChannelID), null, null,
+                    null, uom);
         } else {
             value = new TextValue();
         }
