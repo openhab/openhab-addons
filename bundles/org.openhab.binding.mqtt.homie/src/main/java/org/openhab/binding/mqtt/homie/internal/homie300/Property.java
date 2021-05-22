@@ -215,7 +215,7 @@ public class Property implements AttributeChanged {
                 if (attributes.unit.contains("%") && attributes.settable) {
                     value = new PercentageValue(min, max, step, null, null);
                 } else {
-                    value = new NumberValue(min, max, step, attributes.unit);
+                    value = new NumberValue(channelUID, min, max, step, attributes.unit);
                 }
                 break;
             case string_:
