@@ -131,13 +131,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.AUTOMATION;
                 break;
             }
-
-            // TODO: support for bus_temp_sensor
             case SCS_TEMP_SENSOR: {
-                logger.warn("newDiscoveryResult() Unsupported channel! WHERE={}, deviceType={}", where, deviceType);
-                // thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_TEMP_SENSOR;
-                // thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_TEMP_SENSOR;
-                // deviceWho = Who.THERMOREGULATION;
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_TEMP_SENSOR;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_TEMP_SENSOR;
+                deviceWho = Who.THERMOREGULATION;
                 break;
             }
             case SCS_THERMOSTAT: {
@@ -146,13 +143,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.THERMOREGULATION;
                 break;
             }
-
-            // TODO: support for bus_cu_thermostat
             case SCS_THERMO_CENTRAL_UNIT: {
-                logger.warn("newDiscoveryResult() Unsupported channel! WHERE={}, deviceType={}", where, deviceType);
-                // thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CENTRAL_UNIT;
-                // thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMO_CENTRAL_UNIT;
-                // deviceWho = Who.THERMOREGULATION;
+                logger.warn("newDiscoveryResult() deviceType={} is not supported yet (WHERE={})", deviceType, where);
                 break;
             }
             case SCS_ENERGY_METER: {

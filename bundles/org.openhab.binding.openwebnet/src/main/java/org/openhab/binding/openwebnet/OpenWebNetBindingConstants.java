@@ -56,15 +56,10 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
     public static final String THING_LABEL_BUS_ENERGY_METER = "Energy Meter";
-    // TODO support for bus_temp_sensor
-    // public static final ThingTypeUID THING_TYPE_BUS_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "bus_temp_sensor");
-    // public static final String THING_LABEL_BUS_TEMP_SENSOR = "Temperature Sensor";
+    public static final ThingTypeUID THING_TYPE_BUS_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "bus_temp_sensor");
+    public static final String THING_LABEL_BUS_TEMP_SENSOR = "Temperature Sensor";
     public static final ThingTypeUID THING_TYPE_BUS_THERMOSTAT = new ThingTypeUID(BINDING_ID, "bus_thermostat");
     public static final String THING_LABEL_BUS_THERMOSTAT = "Thermostat (stand-alone)";
-    // TODO support for bus_cu_thermostat
-    // public static final ThingTypeUID THING_TYPE_BUS_THERMO_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
-    // "bus_cu_thermostat");
-    // public static final String THING_LABEL_BUS_THERMO_CENTRAL_UNIT = "Thermo Central Unit";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -91,8 +86,7 @@ public class OpenWebNetBindingConstants {
 
     // ## Thermoregulation
     public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_BUS_THERMOSTAT)); // TODO , THING_TYPE_BUS_TEMP_SENSOR,
-                                                       // THING_TYPE_BUS_THERMO_CENTRAL_UNIT));
+            Arrays.asList(THING_TYPE_BUS_THERMOSTAT, THING_TYPE_BUS_TEMP_SENSOR));
 
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = new HashSet<>(
@@ -125,7 +119,7 @@ public class OpenWebNetBindingConstants {
     // thermo
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_FUNCTION = "function";
-    public static final String CHANNEL_HEATING_COOLING_MODE = "thermostatMode";
+    // TODO REMOVE public static final String CHANNEL_HEATING_COOLING_MODE = "thermostatMode";
     public static final String CHANNEL_TEMP_SETPOINT = "setpointTemperature";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_FAN_SPEED = "speedFanCoil";

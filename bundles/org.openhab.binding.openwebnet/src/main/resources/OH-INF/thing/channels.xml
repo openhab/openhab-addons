@@ -55,8 +55,8 @@
 		<description>Thermo function of the thermostat (read/write)</description>
 		<state>
 			<options>
+                <option value="HEATING">Heating</option>
 				<option value="COOLING">Cooling</option>
-				<option value="HEATING">Heating</option>
 				<option value="GENERIC">Generic</option>
 			</options>
 		</state>
@@ -106,16 +106,16 @@
 		<description>Conditioning Valve status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">OFF</option>
-				<option value="1">ON</option>
-				<option value="2">Opened</option>
-				<option value="3">Closed</option>
-				<option value="4">Stop</option>
-				<option value="5">OFF Fan Coil</option>
-				<option value="6">ON speed 1</option>
-				<option value="7">ON speed 2</option>
-				<option value="8">ON speed 3</option>
-				<option value="14">Standby Fan Coil</option>
+				<option value="OFF">OFF</option>
+				<option value="ON">ON</option>
+				<option value="OPENED">Opened</option>
+				<option value="CLOSED">Closed</option>
+				<option value="STOP">Stop</option>
+				<option value="OFF_FAN_COIL">OFF Fan Coil</option>
+				<option value="ON_SPEED_1">ON speed 1</option>
+				<option value="ON_SPEED_2">ON speed 2</option>
+				<option value="ON_SPEED_3">ON speed 3</option>
+				<option value="STANDBY_FAN_COIL">Standby Fan Coil</option>
 			</options>
 		</state>
 	</channel-type>
@@ -126,16 +126,16 @@
 		<description>Heating Valve status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">OFF</option>
-				<option value="1">ON</option>
-				<option value="2">Opened</option>
-				<option value="3">Closed</option>
-				<option value="4">Stop</option>
-				<option value="5">OFF Fan Coil</option>
-				<option value="6">ON speed 1</option>
-				<option value="7">ON speed 2</option>
-				<option value="8">ON speed 3</option>
-				<option value="14">Standby Fan Coil</option>
+                <option value="OFF">OFF</option>
+                <option value="ON">ON</option>
+                <option value="OPENED">Opened</option>
+                <option value="CLOSED">Closed</option>
+                <option value="STOP">Stop</option>
+                <option value="OFF_FAN_COIL">OFF Fan Coil</option>
+                <option value="ON_SPEED_1">ON speed 1</option>
+                <option value="ON_SPEED_2">ON speed 2</option>
+                <option value="ON_SPEED_3">ON speed 3</option>
+                <option value="STANDBY_FAN_COIL">Standby Fan Coil</option>
 			</options>
 		</state>
 	</channel-type>
@@ -146,16 +146,16 @@
 		<description>Actuator status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">OFF</option>
-				<option value="1">ON</option>
-				<option value="2">Opened</option>
-				<option value="3">Closed</option>
-				<option value="4">Stop</option>
-				<option value="5">OFF Fan Coil</option>
-				<option value="6">ON speed 1</option>
-				<option value="7">ON speed 2</option>
-				<option value="8">ON speed 3</option>
-				<option value="14">Standby Fan Coil</option>
+                <option value="OFF">OFF</option>
+                <option value="ON">ON</option>
+                <option value="OPENED">Opened</option>
+                <option value="CLOSED">Closed</option>
+                <option value="STOP">Stop</option>
+                <option value="OFF_FAN_COIL">OFF Fan Coil</option>
+                <option value="ON_SPEED_1">ON speed 1</option>
+                <option value="ON_SPEED_2">ON speed 2</option>
+                <option value="ON_SPEED_3">ON speed 3</option>
+                <option value="STANDBY_FAN_COIL">Standby Fan Coil</option>
 			</options>
 		</state>
 	</channel-type>

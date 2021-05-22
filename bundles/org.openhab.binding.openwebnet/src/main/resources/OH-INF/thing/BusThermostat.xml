@@ -37,8 +37,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Device Address (where)</label>
-				<description>Example: Zone 2 --> WHERE=2.</description>
-				<required>true</required>
+				<description>Example: Zone 2 --> where=2.</description>
 			</parameter>
 		</config-description>
 
