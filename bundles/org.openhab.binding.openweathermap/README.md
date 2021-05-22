@@ -45,7 +45,7 @@ It requires coordinates of the location of your interest.
 Air pollution forecast is available for 5 days with hourly granularity.
 You can add as much `air-pollution` things for different locations to your setup as you like to observe.
 
-### One Call API Weather and Forecast 
+### One Call API Weather and Forecast
 
 The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-api#how) for a specific location using the One Call API.
 It requires coordinates of the location of your interest.
@@ -78,7 +78,7 @@ Once the system location will be changed, the background discovery updates the c
 | Parameter      | Description                                                                                                                    |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------|
 | location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
-| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="120", step="3").                         |
+| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 12 (min="0", max="120", step="3").                         |
 | forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="16", step="1"). |
 
 Once the parameters `forecastHours` or `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
@@ -110,13 +110,13 @@ Once the parameter `forecastHours` will be changed, the available channel groups
 | forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="48").                                                                           |
 | forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="8").                                                   |
 | numberOfAlerts | Number of alerts to be shown. Optional, the default value is 0 (min="0", max="5").                                                                                    |
-    
+
 ### One Call API History Data
 
 | Parameter      | Description                                                                                                                    |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------|
 | location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
-| historyDay     | Number of days back in history. The API supports going back up to 5 days at the moment. **Mandatory**                          | 
+| historyDay     | Number of days back in history. The API supports going back up to 5 days at the moment. **Mandatory**                          |
 
 ## Channels
 
