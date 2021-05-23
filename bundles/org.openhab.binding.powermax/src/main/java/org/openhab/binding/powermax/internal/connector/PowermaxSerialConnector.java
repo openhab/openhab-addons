@@ -116,6 +116,7 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
             logger.trace("RXTX library CPU load workaround, sleep forever");
             Thread.sleep(Long.MAX_VALUE);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }

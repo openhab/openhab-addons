@@ -25,27 +25,22 @@
 			<parameter name="protocol" type="text" required="false">
 				<label>Protocol</label>
 				<description>The protocol used by a specific device.</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="name" type="text">
+			<parameter name="name" type="text" required="false">
 				<label>Name</label>
 				<description>The name of the device</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="deviceId" type="text">
+			<parameter name="deviceId" type="text" required="true">
 				<label>DeviceID</label>
 				<description>This is the unique id of a device.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="model" type="text">
+			<parameter name="model" type="text" required="false">
 				<label>Model</label>
 				<description>The model used by a specific device.</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="repeat" type="integer">
+			<parameter name="repeat" type="integer" required="false">
 				<label>Repeat</label>
 				<description>The number of times to resend.</description>
-				<required>false</required>
 				<default>2</default>
 			</parameter>
 		</config-description>
@@ -65,33 +60,27 @@
 		</channels>
 
 		<config-description>
-			<parameter name="protocol" type="text">
+			<parameter name="protocol" type="text" required="false">
 				<label>Protocol</label>
 				<description>The protocol used by a specific device.</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="name" type="text">
+			<parameter name="name" type="text" required="false">
 				<label>Name</label>
 				<description>The name of the device</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="deviceId" type="text">
+			<parameter name="deviceId" type="text" required="true">
 				<label>DeviceID</label>
 				<description>This is the unique id of a device.</description>
-				<required>true</required>
 			</parameter>
-
-			<parameter name="repeat" type="integer">
+			<parameter name="repeat" type="integer" required="false">
 				<label>Repeat</label>
 				<description>The number of times to resend.</description>
-				<required>false</required>
 				<default>2</default>
 			</parameter>
-			<parameter name="dimmer" type="boolean">
+			<parameter name="dimmer" type="boolean" required="false">
 				<label>Dimmer</label>
 				<description>Is this a dimmer without absolute setting (e.g. you press on to start dim and then on again to stop
 					it).</description>
-				<required>false</required>
 				<default>false</default>
 			</parameter>
 		</config-description>

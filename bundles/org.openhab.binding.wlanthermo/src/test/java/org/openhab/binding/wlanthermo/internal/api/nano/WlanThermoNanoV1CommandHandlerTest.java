@@ -14,7 +14,7 @@ package org.openhab.binding.wlanthermo.internal.api.nano;
 
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +34,11 @@ import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException
 import org.openhab.binding.wlanthermo.internal.WlanThermoUtil;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.settings.Settings;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;

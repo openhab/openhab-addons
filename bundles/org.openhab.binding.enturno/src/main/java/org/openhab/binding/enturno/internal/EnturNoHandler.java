@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -95,14 +94,15 @@ public class EnturNoHandler extends BaseThingHandler {
 
         logger.debug("Stop place id: {}", stopId);
         boolean configValid = true;
-        if (StringUtils.trimToNull(stopId) == null) {
+        if (stopId == null || stopId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-stopId");
             configValid = false;
         }
 
-        logger.debug("Line code: {}", config.getLineCode());
-        if (StringUtils.trimToNull(config.getLineCode()) == null) {
+        String lineCode = config.getLineCode();
+        logger.debug("Line code: {}", lineCode);
+        if (lineCode == null || lineCode.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-lineCode");
             configValid = false;
@@ -213,37 +213,39 @@ public class EnturNoHandler extends BaseThingHandler {
         if (processedData.size() > i) {
             State state = UnDefType.UNDEF;
             List<String> departures = processedData.get(i).departures;
+            int departuresCount = departures.size();
             List<String> estimatedFlags = processedData.get(i).estimatedFlags;
+            int esitmatedFlagsCount = estimatedFlags.size();
             switch (channelId) {
                 case EnturNoBindingConstants.CHANNEL_DEPARTURE_01:
-                    state = departures.size() > 0 ? getDateTimeTypeState(departures.get(0)) : state;
+                    state = departuresCount > 0 ? getDateTimeTypeState(departures.get(0)) : state;
                     break;
                 case EnturNoBindingConstants.CHANNEL_DEPARTURE_02:
-                    state = departures.size() > 1 ? getDateTimeTypeState(departures.get(1)) : state;
+                    state = departuresCount > 1 ? getDateTimeTypeState(departures.get(1)) : state;
                     break;
                 case EnturNoBindingConstants.CHANNEL_DEPARTURE_03:
-                    state = departures.size() > 2 ? getDateTimeTypeState(departures.get(2)) : state;
+                    state = departuresCount > 2 ? getDateTimeTypeState(departures.get(2)) : state;
                     break;
                 case EnturNoBindingConstants.CHANNEL_DEPARTURE_04:
-                    state = departures.size() > 3 ? getDateTimeTypeState(departures.get(3)) : state;
+                    state = departuresCount > 3 ? getDateTimeTypeState(departures.get(3)) : state;
                     break;
                 case EnturNoBindingConstants.CHANNEL_DEPARTURE_05:
-                    state = departures.size() > 4 ? getDateTimeTypeState(departures.get(4)) : state;
+                    state = departuresCount > 4 ? getDateTimeTypeState(departures.get(4)) : state;
                     break;
                 case EnturNoBindingConstants.ESTIMATED_FLAG_01:
-                    state = estimatedFlags.size() > 0 ? getStringTypeState(estimatedFlags.get(0)) : state;
+                    state = esitmatedFlagsCount > 0 ? getStringTypeState(estimatedFlags.get(0)) : state;
                     break;
                 case EnturNoBindingConstants.ESTIMATED_FLAG_02:
-                    state = estimatedFlags.size() > 1 ? getStringTypeState(estimatedFlags.get(1)) : state;
+                    state = esitmatedFlagsCount > 1 ? getStringTypeState(estimatedFlags.get(1)) : state;
                     break;
                 case EnturNoBindingConstants.ESTIMATED_FLAG_03:
-                    state = estimatedFlags.size() > 2 ? getStringTypeState(estimatedFlags.get(2)) : state;
+                    state = esitmatedFlagsCount > 2 ? getStringTypeState(estimatedFlags.get(2)) : state;
                     break;
                 case EnturNoBindingConstants.ESTIMATED_FLAG_04:
-                    state = estimatedFlags.size() > 3 ? getStringTypeState(estimatedFlags.get(3)) : state;
+                    state = esitmatedFlagsCount > 3 ? getStringTypeState(estimatedFlags.get(3)) : state;
                     break;
                 case EnturNoBindingConstants.ESTIMATED_FLAG_05:
-                    state = estimatedFlags.size() > 4 ? getStringTypeState(estimatedFlags.get(4)) : state;
+                    state = esitmatedFlagsCount > 4 ? getStringTypeState(estimatedFlags.get(4)) : state;
                     break;
                 case EnturNoBindingConstants.CHANNEL_LINE_CODE:
                     state = getStringTypeState(processedData.get(i).lineCode);

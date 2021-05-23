@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.logreader.internal.filereader.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for file reader errors.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class FileReaderException extends Exception {
     private static final long serialVersionUID = 1272957002073978608L;
 

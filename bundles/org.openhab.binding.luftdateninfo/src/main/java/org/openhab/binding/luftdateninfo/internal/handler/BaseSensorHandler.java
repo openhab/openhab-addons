@@ -13,12 +13,14 @@
 package org.openhab.binding.luftdateninfo.internal.handler;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luftdateninfo.internal.LuftdatenInfoConfiguration;
+import org.openhab.binding.luftdateninfo.internal.utils.Constants;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -48,9 +50,12 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
     protected UpdateStatus lastUpdateStatus = UpdateStatus.UNKNOWN;
     protected @Nullable ScheduledFuture<?> refreshJob;
+    private Optional<String> sensorUrl = Optional.empty();
+    private boolean firstUpdate = true;
 
     public enum ConfigStatus {
-        OK,
+        INTERNAL_SENSOR_OK,
+        EXTERNAL_SENSOR_OK,
         IS_NULL,
         SENSOR_IS_NULL,
         SENSOR_ID_NEGATIVE,
@@ -88,6 +93,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        firstUpdate = true;
         lifecycleStatus = LifecycleStatus.INITIALIZING;
         scheduler.execute(this::startUp);
     }
@@ -95,7 +101,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     private void startUp() {
         config = getConfigAs(LuftdatenInfoConfiguration.class);
         configStatus = checkConfig(config);
-        if (configStatus == ConfigStatus.OK) {
+        if (configStatus == ConfigStatus.INTERNAL_SENSOR_OK || configStatus == ConfigStatus.EXTERNAL_SENSOR_OK) {
             // start getting values
             dataUpdate();
         } else {
@@ -135,10 +141,16 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
      */
     private ConfigStatus checkConfig(@Nullable LuftdatenInfoConfiguration c) {
         if (c != null) {
-            if (c.sensorid >= 0) {
-                return ConfigStatus.OK;
+            if (c.ipAddress != null && !Constants.EMPTY.equals(c.ipAddress)) {
+                sensorUrl = Optional.of("http://" + c.ipAddress + "/data.json");
+                return ConfigStatus.INTERNAL_SENSOR_OK;
             } else {
-                return ConfigStatus.SENSOR_ID_NEGATIVE;
+                if (c.sensorid >= 0) {
+                    sensorUrl = Optional.of("http://data.sensor.community/airrohr/v1/sensor/" + c.sensorid + "/");
+                    return ConfigStatus.EXTERNAL_SENSOR_OK;
+                } else {
+                    return ConfigStatus.SENSOR_ID_NEGATIVE;
+                }
             }
         } else {
             return ConfigStatus.IS_NULL;
@@ -150,11 +162,21 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     }
 
     protected void dataUpdate() {
-        HTTPHandler.getHandler().request(config.sensorid, this);
+        if (sensorUrl.isPresent()) {
+            HTTPHandler.getHandler().request(sensorUrl.get(), this);
+        }
     }
 
     public void onResponse(String data) {
-        lastUpdateStatus = updateChannels(data);
+        if (firstUpdate) {
+            logger.debug("{} delivers {}", sensorUrl.get(), data);
+            firstUpdate = false;
+        }
+        if (configStatus == ConfigStatus.INTERNAL_SENSOR_OK) {
+            lastUpdateStatus = updateChannels("[" + data + "]");
+        } else {
+            lastUpdateStatus = updateChannels(data);
+        }
         statusUpdate(lastUpdateStatus, EMPTY);
     }
 

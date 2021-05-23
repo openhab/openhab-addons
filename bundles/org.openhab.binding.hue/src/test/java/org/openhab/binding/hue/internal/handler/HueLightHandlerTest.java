@@ -38,6 +38,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.types.Command;
 
@@ -411,6 +412,7 @@ public class HueLightHandlerTest {
                 return mockBridge;
             }
         };
+        hueLightHandler.setCallback(mock(ThingHandlerCallback.class));
         hueLightHandler.initialize();
 
         verify(mockThing).setProperty(eq(Thing.PROPERTY_MODEL_ID), eq(expectedModel));
@@ -425,9 +427,8 @@ public class HueLightHandlerTest {
     }
 
     private void assertJson(String expected, String actual) {
-        JsonParser parser = new JsonParser();
-        JsonElement jsonExpected = parser.parse(expected);
-        JsonElement jsonActual = parser.parse(actual);
+        JsonElement jsonExpected = JsonParser.parseString(expected);
+        JsonElement jsonActual = JsonParser.parseString(actual);
         assertEquals(jsonExpected, jsonActual);
     }
 }

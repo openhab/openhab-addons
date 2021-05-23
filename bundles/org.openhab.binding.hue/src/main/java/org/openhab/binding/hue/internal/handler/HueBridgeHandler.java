@@ -164,14 +164,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             } catch (IOException e) {
                 return false;
             } catch (ApiException e) {
-                if (e.getMessage().contains("SocketTimeout") || e.getMessage().contains("ConnectException")
-                        || e.getMessage().contains("SocketException")
-                        || e.getMessage().contains("NoRouteToHostException")) {
-                    return false;
-                } else {
-                    // this seems to be only an authentication issue
-                    return true;
-                }
+                String message = e.getMessage();
+                return message != null && //
+                        !message.contains("SocketTimeout") && //
+                        !message.contains("ConnectException") && //
+                        !message.contains("SocketException") && //
+                        !message.contains("NoRouteToHostException");
             }
             return true;
         }

@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TouchWandShutterSwitchUnitData extends TouchWandUnitData {
 
-    private Integer currStatus = 0;
+    private int currStatus = 0;
 
     @Override
     public Integer getCurrStatus() {

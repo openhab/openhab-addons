@@ -45,6 +45,9 @@ public class MiIoInfoDTO {
     @SerializedName("model")
     @Expose
     public String model;
+    @SerializedName("ap")
+    @Expose
+    public MiIoInfoApDTO ap;
     @SerializedName("wifi_fw_ver")
     @Expose
     public String wifiFwVer;

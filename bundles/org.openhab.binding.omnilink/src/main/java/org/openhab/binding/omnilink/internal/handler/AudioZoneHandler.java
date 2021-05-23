@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.AudioPlayer;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequest;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequests;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedAudioZoneStatus;
@@ -97,7 +99,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
         switch (channelUID.getId()) {
             case CHANNEL_AUDIO_ZONE_POWER:
                 if (command instanceof OnOffType) {
-                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_ON_MUTE.getNumber(),
+                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_ON_AND_MUTE,
                             OnOffType.OFF.equals(command) ? 0 : 1, thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be OnOffType", command);
@@ -105,7 +107,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
                 break;
             case CHANNEL_AUDIO_ZONE_MUTE:
                 if (command instanceof OnOffType) {
-                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_ON_MUTE.getNumber(),
+                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_ON_AND_MUTE,
                             OnOffType.OFF.equals(command) ? 2 : 3, thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be OnOffType", command);
@@ -113,16 +115,16 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
                 break;
             case CHANNEL_AUDIO_ZONE_VOLUME:
                 if (command instanceof PercentType) {
-                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_VOLUME.getNumber(),
-                            ((PercentType) command).intValue(), thingID);
+                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_VOLUME, ((PercentType) command).intValue(),
+                            thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be PercentType", command);
                 }
                 break;
             case CHANNEL_AUDIO_ZONE_SOURCE:
                 if (command instanceof DecimalType) {
-                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_SOURCE.getNumber(),
-                            ((DecimalType) command).intValue(), thingID);
+                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_SOURCE, ((DecimalType) command).intValue(),
+                            thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be DecimalType", command);
                 }
@@ -149,7 +151,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
             Optional<AudioPlayer> audioPlayer = bridgeHandler.getAudioPlayer();
             if (audioPlayer.isPresent()) {
                 AudioPlayer player = audioPlayer.get();
-                sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_SOURCE.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_SOURCE,
                         PlayPauseType.PLAY.equals(command) ? player.getPlayCommand() : player.getPauseCommand(),
                         thingID);
             } else {
@@ -168,7 +170,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
             Optional<AudioPlayer> audioPlayer = bridgeHandler.getAudioPlayer();
             if (audioPlayer.isPresent()) {
                 AudioPlayer player = audioPlayer.get();
-                sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_SOURCE.getNumber(),
+                sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_SOURCE,
                         NextPreviousType.NEXT.equals(command) ? player.getNextCommand() : player.getPreviousCommand(),
                         thingID);
             } else {

@@ -84,6 +84,8 @@ The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!B
 - [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor (thing type `HAN_FUN_CONTACT`)
 - [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector (thing type `HAN_FUN_CONTACT`)
 - [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons (thing type `HAN_FUN_SWITCH`)
+- [Rollotron DECT 1213](https://www.rademacher.de/shop/rollladen-sonnenschutz/elektrischer-gurtwickler/rollotron-dect-1213) - an electronic belt winder (thing type `HAN_FUN_BLINDS`)
+- [Becker BoxCTRL](https://becker-antriebe.shop/) - a radio controlled roller shutter drive (thing type `HAN_FUN_BLINDS`)
 
 The use of other Sensors should be possible, if these are compatible with DECT-ULE / HAN-FUN standards.
 
@@ -185,6 +187,7 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440                                          |
 | contact_state   | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7                       |
 | last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, FRITZ!DECT 440, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                             |
+| rollershutter   | Rollershutter            | Rollershutter control and status. Accepts UP/DOWN/STOP commands and the opening level in percent. States the opening level in percent.                                                                                                        | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                             |
 
 ### Triggers
 

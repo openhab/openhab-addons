@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class {@link NhcMessageListMap1} used as output from gson for cmd or event feedback from Niko Home Control where the
  * data part is enclosed by [] and contains a list of json strings. Extends {@link NhcMessageBase1}.
@@ -25,6 +27,7 @@ import java.util.Map;
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 class NhcMessageListMap1 extends NhcMessageBase1 {
 
     private List<Map<String, String>> data = new ArrayList<>();

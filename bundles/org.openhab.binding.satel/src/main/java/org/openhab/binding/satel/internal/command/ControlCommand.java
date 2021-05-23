@@ -14,7 +14,6 @@ package org.openhab.binding.satel.internal.command;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
-import org.openhab.binding.satel.internal.util.StringUtils;
 
 /**
  * Base class for all commands that return result code in the response.
@@ -59,7 +58,7 @@ public abstract class ControlCommand extends SatelCommandBase {
     }
 
     protected static byte[] userCodeToBytes(String userCode) {
-        if (StringUtils.isEmpty(userCode)) {
+        if (userCode.isEmpty()) {
             throw new IllegalArgumentException("User code is empty");
         }
         if (userCode.length() > 8) {

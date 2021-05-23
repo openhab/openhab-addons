@@ -7,11 +7,13 @@
 	<config-description uri="channel-type:http:channel-config">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -44,11 +46,13 @@
 	<config-description uri="channel-type:http:channel-config-color">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -113,11 +117,13 @@
 	<config-description uri="channel-type:http:channel-config-contact">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -158,11 +164,13 @@
 	<config-description uri="channel-type:http:channel-config-dimmer">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -230,11 +238,13 @@
 	<config-description uri="channel-type:http:channel-config-number">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -272,11 +282,13 @@
 	<config-description uri="channel-type:http:channel-config-player">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -333,11 +345,13 @@
 	<config-description uri="channel-type:http:channel-config-rollershutter">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values Chain multiple transformations with the mathematical
+				intersection character "∩"..</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -386,11 +400,13 @@
 	<config-description uri="channel-type:http:channel-config-switch">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
+				intersection character "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>

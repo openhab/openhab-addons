@@ -122,7 +122,7 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
             try {
                 final QuantityType<?> quantity = new QuantityType<>(source);
                 return formatResult(data, source, quantity.toBigDecimal());
-            } catch (NumberFormatException e2) {
+            } catch (IllegalArgumentException e2) {
                 String nonNumeric = data.get(null);
                 if (nonNumeric != null) {
                     return nonNumeric;

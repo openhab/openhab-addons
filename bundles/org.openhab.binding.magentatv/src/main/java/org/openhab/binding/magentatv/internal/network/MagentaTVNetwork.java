@@ -20,7 +20,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
@@ -74,34 +73,6 @@ public class MagentaTVNetwork {
 
         throw new MagentaTVException(
                 "Unable to get local IP / MAC address, check network settings in openHAB system configuration!");
-    }
-
-    /**
-     * Checks if client ip equals or is in range of ip networks provided by
-     * semicolon separated list
-     *
-     * @param clientIp in numeric form like "192.168.0.10"
-     * @param ipList like "127.0.0.1;192.168.0.0/24;10.0.0.0/8"
-     * @return true if client ip from the list os ips and networks
-     */
-    public static boolean isIpInSubnet(String clientIp, String ipList) {
-        if (ipList.isEmpty()) {
-            // No ip address provided
-            return true;
-        }
-        String[] subnetMasks = ipList.split(";");
-        for (String subnetMask : subnetMasks) {
-            subnetMask = subnetMask.trim();
-            if (clientIp.equals(subnetMask)) {
-                return true;
-            }
-            if (subnetMask.contains("/")) {
-                if (new SubnetUtils(subnetMask).getInfo().isInRange(clientIp)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Nullable

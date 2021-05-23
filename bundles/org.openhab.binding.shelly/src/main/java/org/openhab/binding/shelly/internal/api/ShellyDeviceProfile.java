@@ -18,14 +18,18 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +45,13 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
+    private static final Pattern VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
 
     public boolean initialized = false; // true when initialized
 
     public String thingName = "";
     public String deviceType = "";
+    public boolean extFeatures = false;
 
     public String settingsJson = "";
     public ShellySettingsGlobal settings = new ShellySettingsGlobal();
@@ -54,11 +60,12 @@ public class ShellyDeviceProfile {
     public String hostname = "";
     public String mode = "";
     public boolean discoverable = true;
+    public boolean auth = false;
+    public boolean alwaysOn = true;
 
     public String hwRev = "";
     public String hwBatchId = "";
     public String mac = "";
-    public String fwId = "";
     public String fwVersion = "";
     public String fwDate = "";
 
@@ -115,22 +122,22 @@ public class ShellyDeviceProfile {
         hostname = settings.device.hostname != null && !settings.device.hostname.isEmpty()
                 ? settings.device.hostname.toLowerCase()
                 : "shelly-" + mac.toUpperCase().substring(6, 11);
-        mode = !getString(settings.mode).isEmpty() ? getString(settings.mode).toLowerCase() : "";
+        mode = getString(settings.mode).toLowerCase();
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(settings.fw, "/");
-        fwVersion = substringBetween(settings.fw, "/", "@");
-        fwId = substringAfter(settings.fw, "@");
+        fwVersion = extractFwVersion(settings.fw);
+        ShellyVersionDTO version = new ShellyVersionDTO();
+        extFeatures = version.compare(fwVersion, SHELLY_API_FW_110) >= 0;
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
+        isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
 
         numRelays = !isLight ? getInteger(settings.device.numOutputs) : 0;
         if ((numRelays > 0) && (settings.relays == null)) {
             numRelays = 0;
         }
-        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2);
-        isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(settings.device.numRollers);
         numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
@@ -177,6 +184,7 @@ public class ShellyDeviceProfile {
             return;
         }
 
+        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2);
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
                 || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
@@ -198,14 +206,14 @@ public class ShellyDeviceProfile {
         isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR);
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion; // we assume that Sense is connected to
-                                                                                 // the charger
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion;
+
+        alwaysOn = !hasBattery || isMotion || isSense; // true means: device is reachable all the time (no sleep mode)
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
         if (hasRelays) {
-            // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after
-            // initialization
+            // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after init
             if (status.inputs != null) {
                 numInputs = status.inputs.size();
             }
@@ -307,7 +315,8 @@ public class ShellyDeviceProfile {
 
         logger.trace("{}: Checking for trigger, button-type[{}] is {}", thingName, idx, btnType);
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
-                || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON);
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);
     }
 
     public int getRollerFav(int id) {
@@ -316,5 +325,28 @@ public class ShellyDeviceProfile {
             return settings.favorites.get(id).pos;
         }
         return -1;
+    }
+
+    public static String extractFwVersion(@Nullable String version) {
+        if (version != null) {
+            // fix version e.g. 20210319-122304/v.1.10-Dimmer1-gfd4cc10 (with v.1. instead of v1.)
+            String vers = version.replace("/v.1.10-", "/v1.10.0-");
+
+            // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
+            Matcher matcher = VERSION_PATTERN.matcher(vers);
+            if (matcher.find()) {
+                return matcher.group(0);
+            }
+        }
+        return "";
+    }
+
+    public boolean coiotEnabled() {
+        if ((settings.coiot != null) && (settings.coiot.enabled != null)) {
+            return settings.coiot.enabled;
+        }
+
+        // If device is not yet intialized or the enabled property is missing we assume that CoIoT is enabled
+        return true;
     }
 }

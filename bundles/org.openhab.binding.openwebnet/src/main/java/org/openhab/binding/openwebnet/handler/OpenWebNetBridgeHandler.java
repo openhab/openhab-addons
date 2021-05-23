@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,12 +31,14 @@ import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscove
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openwebnet4j.BUSGateway;
 import org.openwebnet4j.GatewayListener;
 import org.openwebnet4j.OpenDeviceType;
@@ -45,6 +48,7 @@ import org.openwebnet4j.communication.OWNAuthException;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.Automation;
 import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.EnergyManagement;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.GatewayMgmt;
 import org.openwebnet4j.message.Lighting;
@@ -60,6 +64,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OpenWebNetBridgeHandler} is responsible for handling communication with gateways and handling events.
  *
  * @author Massimo Valla - Initial contribution
+ * @author Andrea Conte - Energy management
  */
 @NonNullByDefault
 public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implements GatewayListener {
@@ -67,6 +72,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
 
     private static final int GATEWAY_ONLINE_TIMEOUT_SEC = 20; // Time to wait for the gateway to become connected
+
+    private static final int REFRESH_ALL_DEVICES_DELAY_MSEC = 500; // Delay to wait before sending all devices refresh
+                                                                   // request after a connect/reconnect
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
@@ -82,6 +90,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     public @Nullable OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
     private boolean reconnecting = false; // we are trying to reconnect to gateway
+    private @Nullable ScheduledFuture<?> refreshSchedule;
+
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
     private boolean discoveryByActivation;
 
@@ -119,7 +129,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                         if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                             logger.info("status still UNKNOWN. Setting device={} to OFFLINE", thing.getUID());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                    "Could not connect to gateway before " + GATEWAY_ONLINE_TIMEOUT_SEC + "s");
+                                    "@text/offline.comm-error-timeout");
                         }
                     }, GATEWAY_ONLINE_TIMEOUT_SEC, TimeUnit.SECONDS);
                     logger.debug("bridge {} initialization completed", thing.getUID());
@@ -180,11 +190,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand (command={} - channel={})", command, channelUID);
         OpenGateway gw = gateway;
-        if (gw != null && !gw.isConnected()) {
+        if (gw == null || !gw.isConnected()) {
             logger.warn("Gateway is NOT connected, skipping command");
             return;
         } else {
-            logger.warn("Channel not supported: channel={}", channelUID);
+            if (command instanceof RefreshType) {
+                refreshAllDevices();
+            } else {
+                logger.warn("Command or channel not supported: channel={} command={}", channelUID, command);
+            }
         }
     }
 
@@ -201,6 +215,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> rSc = refreshSchedule;
+        if (rSc != null) {
+            rSc.cancel(true);
+        }
         disconnectGateway();
         super.dispose();
     }
@@ -286,7 +304,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.warn("discoverByActivation: null OpenWebNetDeviceDiscoveryService, ignoring msg={}", baseMsg);
             return;
         }
-        if (baseMsg instanceof Lighting || baseMsg instanceof Automation) { // we support these types only
+        if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement) { // we
+                                                                                                                   // support
+                                                                                                                   // these
+                                                                                                                   // types
+                                                                                                                   // only
             BaseOpenMessage bmsg = baseMsg;
             if (baseMsg instanceof Lighting) {
                 What what = baseMsg.getWhat();
@@ -368,6 +390,16 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         return registeredDevices.get(ownId);
     }
 
+    private void refreshAllDevices() {
+        logger.debug("Refreshing all devices for bridge {}", thing.getUID());
+        for (Thing ownThing : getThing().getThings()) {
+            OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
+            if (hndlr != null) {
+                hndlr.refreshDevice(true);
+            }
+        }
+    }
+
     @Override
     public void onEventMessage(@Nullable OpenMessage msg) {
         logger.trace("RECEIVED <<<<< {}", msg);
@@ -386,7 +418,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
-        if (baseMsg instanceof Lighting || baseMsg instanceof Automation) {
+        if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("ownIdFromMessage({}) --> {}", baseMsg, ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);
@@ -440,6 +472,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.info("properties updated for bridge '{}'", thing.getUID());
         }
         updateStatus(ThingStatus.ONLINE);
+        // schedule a refresh for all devices
+        refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -452,7 +487,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         logger.info("---- ON CONNECTION ERROR for gateway {}: {}", gateway, errMsg);
         isGatewayConnected = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errMsg);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                "@text/offline.comm-error-connection" + " (onConnectionError - " + errMsg + ")");
         tryReconnectGateway();
     }
 
@@ -474,7 +510,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         logger.info("---- DISCONNECTED from gateway {}. OWNException: {}", gateway, errMsg);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Disconnected from gateway (onDisconnected - " + errMsg + ")");
+                "@text/offline.comm-error-disconnected" + " (onDisconnected - " + errMsg + ")");
         tryReconnectGateway();
     }
 
@@ -490,11 +526,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     logger.info("---- AUTH error from gateway. Stopping re-connect");
                     reconnecting = false;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                            "Authentication error. Check gateway password in Thing Configuration Parameters (" + e
-                                    + ")");
+                            "@text/offline.conf-error-auth" + " (" + e + ")");
                 }
             } else {
-                logger.debug("---- reconnecting=true, do nothing");
+                logger.debug("---- reconnecting=true");
             }
         } else {
             logger.warn("---- cannot start RECONNECT, gateway is null");
@@ -512,6 +547,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 this.updateProperty(PROPERTY_FIRMWARE_VERSION, gw.getFirmwareVersion());
                 logger.debug("gw firmware version: {}", gw.getFirmwareVersion());
             }
+
+            // schedule a refresh for all devices
+            refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
+                    TimeUnit.MILLISECONDS);
         }
     }
 

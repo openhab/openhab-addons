@@ -211,7 +211,8 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         }
 
         Calendar lastUpdateOfDevice = Calendar.getInstance();
-        lastUpdateOfDevice.setTimeInMillis(new Long(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
+        lastUpdateOfDevice
+                .setTimeInMillis(Long.valueOf(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
 
         if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
             lastUpdate = lastUpdateOfDevice;

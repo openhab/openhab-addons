@@ -1,9 +1,9 @@
 # Alarm Decoder Binding
 
-The [Alarm Decoder](http://www.alarmdecoder.com) from Nu Tech Software Solutions is a hardware adapter that interfaces with Ademco/Honeywell and DSC alarm panels.
+The [Alarm Decoder](https://www.alarmdecoder.com) from Nu Tech Software Solutions is a hardware adapter that interfaces with Ademco/Honeywell and DSC alarm panels.
 It acts essentially like a keypad, reading and writing messages on the serial bus that connects keypads with the main panel.
 
-There are several versions of the adapter available: 
+There are several versions of the adapter available:
 
 * *AD2PI* or *AD2PHAT* - A board that plugs into a Raspberry Pi and offers network-based TCP connectivity
 * *AD2SERIAL* - Attaches to a host via a serial port
@@ -11,8 +11,6 @@ There are several versions of the adapter available:
 
 This binding allows openHAB to access the state of wired or wireless contacts and motion detectors connected to supported alarm panels, as well as the state of attached keypads and the messages send to attached LRR devices.
 Support is also available for sending keypad commands, including special/programmable keys supported by your panel.
-
-For those upgrading from the OH1 version of the binding, the [original OH1 README](https://www.openhab.org/v2.5/addons/bindings/alarmdecoder1/) file is available for reference.
 
 ## Supported Things
 
@@ -176,8 +174,8 @@ Thing config file example:
 ### lrr
 
 The `lrr` thing reports messages sent to a Long Range Radio (LRR) or emulated LRR device.
-These are normally specifically formatted messages as described in the [SIA DC-05-1999.09](http://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
-They can also, depending on configuration, be other types of messages as described [here](http://www.alarmdecoder.com/wiki/index.php/LRR_Support).
+These are normally specifically formatted messages as described in the [SIA DC-05-1999.09](https://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
+They can also, depending on configuration, be other types of messages as described [here](https://www.alarmdecoder.com/wiki/index.php/LRR_Support).
 For panels that support multiple partitions, the partition for which a given lrr thing will receive messages can be defined.
 
 * `partition` (default = 0) Partition for which to receive LRR events (0 = All)
@@ -311,3 +309,7 @@ The alarmdecoder device cannot query the panel for the state of individual zones
 For this reason, the binding puts contacts into the "unknown" state (UNDEF), *until the panel goes into the READY state*.
 At that point, all contacts for which no update messages have arrived are presumed to be in the CLOSED state.
 In other words: to get to a clean slate after an openHAB restart, close all doors/windows such that the panel is READY.
+
+## Reference Information
+
+The protocol used to communicate with the Alarm Decoder is described [here](https://www.alarmdecoder.com/wiki/index.php/Protocol).

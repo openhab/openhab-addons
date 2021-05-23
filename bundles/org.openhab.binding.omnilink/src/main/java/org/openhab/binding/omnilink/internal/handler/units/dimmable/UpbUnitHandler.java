@@ -16,7 +16,6 @@ import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.CHA
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.omnilink.internal.handler.OmniLinkCmd;
 import org.openhab.binding.omnilink.internal.handler.units.DimmableUnitHandler;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -26,6 +25,8 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 
 /**
  * The {@link UpbUnitHandler} defines some methods that are used to
@@ -57,7 +58,7 @@ public class UpbUnitHandler extends DimmableUnitHandler {
         switch (channelUID.getId()) {
             case CHANNEL_UPB_STATUS:
                 if (command instanceof StringType) {
-                    sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_UPB_REQ_STATUS.getNumber(), 0, thingID);
+                    sendOmnilinkCommand(CommandMessage.CMD_UNIT_UPB_REQ_STATUS, 0, thingID);
                     updateState(CHANNEL_UPB_STATUS, UnDefType.UNDEF);
                 } else {
                     logger.debug("Invalid command: {}, must be StringType", command);

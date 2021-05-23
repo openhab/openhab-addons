@@ -71,7 +71,7 @@ public class NestRedirectUrlSupplier {
      * @see https://developers.nest.com/documentation/cloud/how-to-handle-redirects
      */
     private String resolveRedirectUrl() throws FailedResolvingNestUrlException {
-        HttpClient httpClient = new HttpClient(new SslContextFactory());
+        HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
         httpClient.setFollowRedirects(false);
 
         Request request = httpClient.newRequest(NestBindingConstants.NEST_URL).method(HttpMethod.GET).timeout(30,

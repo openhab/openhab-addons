@@ -133,6 +133,13 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         for (BluetoothAdapter adapter : adapters) {
             adapter.scanStop();
         }
+
+        // The method `removeOlderResults()` removes the Things from listeners like `Inbox`.
+        // We therefore need to reset `latestSnapshot` so that the Things are notified again next time.
+        // Results newer than `getTimestampOfLastScan()` will also be notified again but do not lead to duplicates.
+        discoveryCaches.values().forEach(discoveryCache -> {
+            discoveryCache.latestSnapshot.putValue(null);
+        });
         removeOlderResults(getTimestampOfLastScan());
     }
 
@@ -155,10 +162,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private static DiscoveryResult copyWithNewBridge(DiscoveryResult result, BluetoothAdapter adapter) {
         String label = result.getLabel();
-        String adapterLabel = adapter.getLabel();
-        if (adapterLabel != null) {
-            label = adapterLabel + " - " + label;
-        }
 
         return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter))//
                 .withBridge(adapter.getUID())//
@@ -294,6 +297,12 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             discoveryResults.put(adapter, results);
         }
 
+        /**
+         * Called when a new discovery is published and thus requires the old discovery to be removed first.
+         *
+         * @param adapter to get the results to be removed
+         * @param result unused
+         */
         private void retractDiscoveryResult(BluetoothAdapter adapter, DiscoveryResult result) {
             Set<DiscoveryResult> results = discoveryResults.remove(adapter);
             if (results != null) {

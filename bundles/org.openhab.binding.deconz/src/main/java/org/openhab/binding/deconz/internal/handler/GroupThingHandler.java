@@ -26,7 +26,11 @@ import org.openhab.binding.deconz.internal.dto.GroupAction;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.GroupState;
 import org.openhab.binding.deconz.internal.types.ResourceType;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -125,8 +129,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
         }
 
         Integer bri = newGroupAction.bri;
-        if (bri != null && bri > 0) {
-            newGroupAction.on = true;
+        if (bri != null) {
+            newGroupAction.on = (bri > 0);
         }
 
         sendCommand(newGroupAction, command, channelUID, null);

@@ -347,10 +347,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                     "Bridge is missing or offline, you need to setup a working MQTT broker first.");
             return;
         }
-        ThingUID thingUID = localBridge.getBridgeUID();
-        if (thingUID == null) {
-            return;
-        }
+        ThingUID thingUID = localBridge.getUID();
         Thing thing = thingRegistry.get(thingUID);
         if (thing == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,

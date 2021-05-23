@@ -177,8 +177,15 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                                 toQuantityType(s.value, DIGITS_NONE, Units.DEGREE_ANGLE));
                         break;
                     case "vibration": // DW with FW1.6.5+
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                        if (profile.isMotion) {
+                            // handle as status
+                            updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                                    s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                        } else if (s.value == 1) {
+                            // handle as event
+                            thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,
+                                    EVENT_TYPE_VIBRATION);
+                        }
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo

@@ -51,6 +51,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link SenecHomeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -119,8 +121,9 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     public @Nullable Boolean refreshState() {
+        SenecHomeResponse response = null;
         try {
-            SenecHomeResponse response = senecHomeApi.getStatistics();
+            response = senecHomeApi.getStatistics();
             logger.trace("received {}", response);
 
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.limitation.powerLimitation))
@@ -276,7 +279,12 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateGridPowerValues(getSenecValue(response.grid.currentGridValue));
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (JsonSyntaxException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            if (response == null) {
+                logger.trace("Faulty response: is null");
+            } else {
+                logger.trace("Faulty response: {}", response.toString());
+            }
             logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to Senec web interface:" + e.getMessage());

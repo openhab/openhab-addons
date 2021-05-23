@@ -19,10 +19,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.magentatv.internal.MagentaTVDeviceManager.MagentaTVDevice;
 import org.openhab.binding.magentatv.internal.handler.MagentaTVHandler;
 import org.openhab.binding.magentatv.internal.network.MagentaTVNetwork;
 import org.openhab.binding.magentatv.internal.network.MagentaTVPoweroffListener;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
@@ -51,6 +53,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     private final MagentaTVNetwork network = new MagentaTVNetwork();
     private final MagentaTVDeviceManager manager;
+    private final HttpClient httpClient;
     private @Nullable MagentaTVPoweroffListener upnpListener;
     private boolean servletInitialized = false;
 
@@ -64,11 +67,11 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MagentaTVHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            @Reference MagentaTVDeviceManager manager, ComponentContext componentContext,
-            Map<String, String> configProperties) throws IOException {
+            @Reference HttpClientFactory httpClientFactory, @Reference MagentaTVDeviceManager manager,
+            ComponentContext componentContext, Map<String, String> configProperties) throws IOException {
         super.activate(componentContext);
         this.manager = manager;
-
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         try {
             logger.debug("Initialize network access");
             System.setProperty("java.net.preferIPv4Stack", "true");
@@ -99,7 +102,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
         logger.debug("Create thing type {}", thing.getThingTypeUID().getAsString());
         if (THING_TYPE_RECEIVER.equals(thingTypeUID)) {
-            return new MagentaTVHandler(manager, thing, network);
+            return new MagentaTVHandler(manager, thing, network, httpClient);
         }
 
         return null;

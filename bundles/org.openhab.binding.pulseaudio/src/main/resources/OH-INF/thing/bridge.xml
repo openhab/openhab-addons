@@ -9,23 +9,20 @@
 		<description>This bridge represents a pulseaudio server.</description>
 
 		<config-description>
-			<parameter name="host" type="text">
+			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
 				<description>Hostname or IP address of the pulseaudio server</description>
 				<default>localhost</default>
-				<required>true</required>
 			</parameter>
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
 				<description>Port of the pulseaudio server</description>
 				<default>4712</default>
-				<required>false</required>
 			</parameter>
-			<parameter name="refreshInterval" type="integer">
+			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in ms which is used to poll given pulseaudio server.</description>
 				<default>30000</default>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</bridge-type>

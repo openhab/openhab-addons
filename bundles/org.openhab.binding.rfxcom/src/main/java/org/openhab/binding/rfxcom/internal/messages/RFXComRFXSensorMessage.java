@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.HALF_DOWN;
+import static java.math.RoundingMode.*;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
@@ -257,12 +256,12 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
         BigDecimal supplyVoltage = ((DecimalType) referenceVoltageState).toBigDecimal();
 
         // RH = (((A/D voltage / supply voltage) - 0.16) / 0.0062) / (1.0546 - 0.00216 * temperature)
-        BigDecimal belowTheDivider = adVoltage.divide(supplyVoltage, 4, ROUND_HALF_DOWN)
-                .subtract(HUMIDITY_VOLTAGE_SUBTRACTION).divide(HUMIDITY_VOLTAGE_DIVIDER, 4, ROUND_HALF_DOWN);
+        BigDecimal belowTheDivider = adVoltage.divide(supplyVoltage, 4, HALF_DOWN)
+                .subtract(HUMIDITY_VOLTAGE_SUBTRACTION).divide(HUMIDITY_VOLTAGE_DIVIDER, 4, HALF_DOWN);
         BigDecimal underTheDivider = HUMIDITY_TEMPERATURE_CORRECTION
                 .subtract(HUMIDITY_TEMPERATURE_MULTIPLIER.multiply(temperature));
 
-        return new DecimalType(belowTheDivider.divide(underTheDivider, 4, ROUND_HALF_DOWN));
+        return new DecimalType(belowTheDivider.divide(underTheDivider, 4, HALF_DOWN));
     }
 
     private State handlePressure(DeviceState deviceState) {
@@ -277,14 +276,14 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
 
         // hPa = ((A/D voltage / supply voltage) + 0.095) / 0.0009
         return new DecimalType((adVoltage.divide(supplyVoltage, 4, HALF_DOWN).add(PRESSURE_ADDITION))
-                .divide(PRESSURE_DIVIDER, 4, ROUND_HALF_DOWN));
+                .divide(PRESSURE_DIVIDER, 4, HALF_DOWN));
     }
 
     private BigDecimal getVoltage() {
         if (miliVoltageTimesTen == null) {
             return null;
         }
-        return miliVoltageTimesTen.divide(ONE_HUNDRED, 100, ROUND_CEILING);
+        return miliVoltageTimesTen.divide(ONE_HUNDRED, 100, CEILING);
     }
 
     @Override

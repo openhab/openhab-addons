@@ -11,6 +11,7 @@ author=$2
 githubUser=$3
 
 mvn -s archetype-settings.xml archetype:generate -N \
+  -Dspotless.check.skip=true \
   -DarchetypeGroupId=org.openhab.core.tools.archetypes \
   -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding \
   -DarchetypeVersion=$openHABVersion \

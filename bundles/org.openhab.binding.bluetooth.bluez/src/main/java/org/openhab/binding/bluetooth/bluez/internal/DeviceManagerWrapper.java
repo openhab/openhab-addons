@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.bluez.internal;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,25 +33,32 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 @NonNullByDefault
 public class DeviceManagerWrapper {
 
-    private DeviceManager deviceManager;
+    private @Nullable DeviceManager deviceManager;
 
-    public DeviceManagerWrapper(DeviceManager deviceManager) {
+    public DeviceManagerWrapper(@Nullable DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
     }
 
     public synchronized Collection<BluetoothAdapter> scanForBluetoothAdapters() {
-        return deviceManager.scanForBluetoothAdapters();
+        if (deviceManager != null) {
+            return deviceManager.scanForBluetoothAdapters();
+        } else {
+            return Set.of();
+        }
     }
 
     public synchronized @Nullable BluetoothAdapter getAdapter(BluetoothAddress address) {
-        // we don't use `deviceManager.getAdapter` here since it might perform a scan if the adapter is missing.
-        String addr = address.toString();
-        List<BluetoothAdapter> adapters = deviceManager.getAdapters();
-        if (adapters != null) {
-            for (BluetoothAdapter btAdapter : adapters) {
-                String btAddr = btAdapter.getAddress();
-                if (addr.equalsIgnoreCase(btAddr)) {
-                    return btAdapter;
+        DeviceManager devMgr = deviceManager;
+        if (devMgr != null) {
+            // we don't use `deviceManager.getAdapter` here since it might perform a scan if the adapter is missing.
+            String addr = address.toString();
+            List<BluetoothAdapter> adapters = devMgr.getAdapters();
+            if (adapters != null) {
+                for (BluetoothAdapter btAdapter : adapters) {
+                    String btAddr = btAdapter.getAddress();
+                    if (addr.equalsIgnoreCase(btAddr)) {
+                        return btAdapter;
+                    }
                 }
             }
         }
@@ -58,6 +66,10 @@ public class DeviceManagerWrapper {
     }
 
     public synchronized List<BluetoothDevice> getDevices(BluetoothAdapter adapter) {
-        return deviceManager.getDevices(adapter.getAddress(), true);
+        if (deviceManager != null) {
+            return deviceManager.getDevices(adapter.getAddress(), true);
+        } else {
+            return List.of();
+        }
     }
 }

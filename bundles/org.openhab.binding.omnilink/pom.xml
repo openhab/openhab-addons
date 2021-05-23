@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.github.digitaldan</groupId>
       <artifactId>jomnilink</artifactId>
-      <version>1.4.1</version>
+      <version>1.4.2</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

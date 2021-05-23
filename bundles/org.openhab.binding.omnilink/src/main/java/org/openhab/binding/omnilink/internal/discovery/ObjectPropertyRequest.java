@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.omnilink.internal.handler.BridgeOfflineException;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.binding.omnilink.internal.handler.OmnilinkBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

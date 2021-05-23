@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
@@ -164,9 +164,8 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
                 channelStateByChannelUID.put(channel.getUID(), channelState);
-                StateDescription description = value
-                        .createStateDescription(StringUtils.isBlank(channelConfig.commandTopic)).build()
-                        .toStateDescription();
+                StateDescription description = value.createStateDescription(channelConfig.commandTopic.isBlank())
+                        .build().toStateDescription();
                 if (description != null) {
                     stateDescProvider.setDescription(channel.getUID(), description);
                 }

@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * The {@link LifxChannelFactory} creates dynamic LIFX channels.
  *
- * @author Wouter Born - Add i18n support
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public interface LifxChannelFactory {

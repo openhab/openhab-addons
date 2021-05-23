@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.GeneralLibConstance;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
@@ -34,10 +33,10 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceConstants;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceSceneSpec;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceStateUpdate;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ChangeableDeviceConfigEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
@@ -47,6 +46,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.JSONDeviceSceneSpecImpl;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalScene;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneEnum;
+import org.openhab.binding.digitalstrom.internal.lib.util.DSJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,10 +68,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     private DSID meterDSID;
     private int zoneId = 0;
-    private List<Short> groupList = new LinkedList<>();
+    private List<ApplicationGroup> groupList = new LinkedList<>();
 
-    private FunctionalColorGroupEnum functionalGroup;
-    private FuncNameAndColorGroupEnum functionalName;
     private String hwInfo;
 
     private OutputModeEnum outputMode;
@@ -94,6 +92,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private final List<DeviceBinaryInput> deviceBinaryInputs = Collections.synchronizedList(new ArrayList<>());
     private final List<SensorEnum> devicePowerSensorTypes = new ArrayList<>();
     private final List<SensorEnum> deviceClimateSensorTypes = new ArrayList<>();
+    private final List<OutputChannelEnum> outputChannels = Collections.synchronizedList(new ArrayList<>());
 
     // for scenes
     private short activeSceneNumber = -1;
@@ -110,11 +109,11 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private final List<DeviceStateUpdate> deviceStateUpdates = Collections.synchronizedList(new LinkedList<>());
 
     /*
-     * Saves the refresh priorities and reading initialized flag of power sensors as an matrix.
-     * The first array fields are 0 = active power, 1 = output current, 2 = electric meter, 3 = power consumption and in
-     * each field is a
-     * string array with the fields 0 = refresh priority 1 = reading initial flag (true = reading is initialized,
-     * otherwise false)
+     * Saves the refresh priorities and reading initialized flag of power sensors as
+     * an matrix. The first array fields are 0 = active power, 1 = output current, 2
+     * = electric meter, 3 = power consumption and in each field is a string array
+     * with the fields 0 = refresh priority 1 = reading initial flag (true = reading
+     * is initialized, otherwise false)
      */
     private final Object[] powerSensorRefresh = new Object[] { new String[] { Config.REFRESH_PRIORITY_NEVER, "false" },
             new String[] { Config.REFRESH_PRIORITY_NEVER, "false" },
@@ -129,9 +128,10 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     public static final int REFRESH_ELECTRIC_METER_ARRAY_FIELD = 2;
     public static final int REFRESH_POWER_CONSUMPTION_ARRAY_FIELD = 3;
     /*
-     * Cache the last power sensor value to get power sensor value directly
-     * the key is the output value and the value is an Integer array for the sensor values (0 = active power, 1 =
-     * output current, 2 = power consumption, 3 = output current high)
+     * Cache the last power sensor value to get power sensor value directly the key
+     * is the output value and the value is an Integer array for the sensor values
+     * (0 = active power, 1 = output current, 2 = power consumption, 3 = output
+     * current high)
      */
     private final Map<Short, Integer[]> cachedSensorPowerValues = Collections.synchronizedMap(new HashMap<>());
 
@@ -140,14 +140,18 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     public static final int POWER_CONSUMPTION_ARRAY_FIELD = 2;
     public static final int OUTPUT_CURRENT_HIGH_ARRAY_FIELD = 3;
 
-    // Preparing for the advance device property setting "Turn 'switched' output off if value below:", but the
-    // configuration currently not work in digitalSTROM, because of that the value is fix 1.
+    // Preparing for the advance device property setting "Turn 'switched' output off
+    // if value below:", but the
+    // configuration currently not work in digitalSTROM, because of that the value
+    // is fix 1.
     private final int switchPercentOff = 1;
 
     /**
-     * Creates a new {@link DeviceImpl} from the given DigitalSTROM-Device {@link JsonObject}.
+     * Creates a new {@link DeviceImpl} from the given DigitalSTROM-Device
+     * {@link JsonObject}.
      *
-     * @param deviceJsonObject json response of the digitalSTROM-Server, must not be null
+     * @param deviceJsonObject json response of the digitalSTROM-Server, must not be
+     *            null
      */
     public DeviceImpl(JsonObject deviceJsonObject) {
         super(deviceJsonObject);
@@ -179,13 +183,14 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
             JsonArray array = deviceJsonObject.get(JSONApiResponseKeysEnum.GROUPS.getKey()).getAsJsonArray();
             for (int i = 0; i < array.size(); i++) {
                 if (array.get(i) != null) {
-                    initAddGroup(array.get(i).getAsShort());
+                    addGroupToList(array.get(i).getAsShort());
                 }
             }
         } else if (groups != null && groups.isJsonObject()) {
             for (Entry<String, JsonElement> entry : deviceJsonObject.get(JSONApiResponseKeysEnum.GROUPS.getKey())
                     .getAsJsonObject().entrySet()) {
-                initAddGroup(entry.getValue().getAsJsonObject().get(JSONApiResponseKeysEnum.ID.getKey()).getAsShort());
+                addGroupToList(
+                        entry.getValue().getAsJsonObject().get(JSONApiResponseKeysEnum.ID.getKey()).getAsShort());
             }
         }
         if (deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_MODE.getKey()) != null) {
@@ -221,24 +226,14 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
                 }
             }
         }
+
+        outputChannels.addAll(DSJsonParser.getOutputChannels(deviceJsonObject));
+
         init();
     }
 
-    private void initAddGroup(Short groupID) {
-        if (groupID != -1) {
-            this.groupList.add(groupID);
-            if (FuncNameAndColorGroupEnum.containsColorGroup(groupID)) {
-                if (this.functionalName == null
-                        || !FuncNameAndColorGroupEnum.getMode(groupID).equals(FuncNameAndColorGroupEnum.JOKER)) {
-                    this.functionalName = FuncNameAndColorGroupEnum.getMode(groupID);
-                    this.functionalGroup = functionalName.getFunctionalColor();
-                }
-            }
-        }
-    }
-
     private void init() {
-        if (groupList.contains((short) 1)) {
+        if (groupList.contains(ApplicationGroup.LIGHTS)) {
             maxOutputValue = DeviceConstants.MAX_OUTPUT_VALUE_LIGHT;
             if (this.isDimmable()) {
                 minOutputValue = DeviceConstants.MIN_DIM_VALUE;
@@ -270,21 +265,41 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public List<Short> getGroups() {
-        return new LinkedList<>(groupList);
+        LinkedList<Short> linkedList = new LinkedList<>();
+        groupList.forEach(group -> linkedList.add(group.getId()));
+        return linkedList;
+    }
+
+    /**
+     * Adds the ApplicationGroup of the given groupId to the internal list
+     * 
+     * @param groupID
+     * @return true if the groupId is a valid ApplicationGroup id, false otherwise
+     */
+    private boolean addGroupToList(Short groupID) {
+        ApplicationGroup group = ApplicationGroup.getGroup(groupID);
+        if (ApplicationGroup.UNDEFINED.equals(group)) {
+            logger.warn("Unknown application group with ID '{}' found! Ignoring group", groupID);
+        } else {
+            if (!this.groupList.contains(group)) {
+                this.groupList.add(group);
+            }
+        }
+
+        return group != null;
     }
 
     @Override
     public void addGroup(Short groupID) {
-        if (!this.groupList.contains(groupID)) {
-            this.groupList.add(groupID);
-        }
+        addGroupToList(groupID);
         informListenerAboutConfigChange(ChangeableDeviceConfigEnum.GROUPS);
     }
 
     @Override
     public void setGroups(List<Short> newGroupList) {
         if (newGroupList != null) {
-            this.groupList = newGroupList;
+            groupList.clear();
+            newGroupList.forEach(groupId -> groupList.add(ApplicationGroup.getGroup(groupId)));
         }
         informListenerAboutConfigChange(ChangeableDeviceConfigEnum.GROUPS);
     }
@@ -370,12 +385,12 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public boolean isHeatingDevice() {
-        return functionalName.equals(FuncNameAndColorGroupEnum.HEATING);
+        return groupList.contains(ApplicationGroup.HEATING);
     }
 
     @Override
     public boolean isTemperatureControlledDevice() {
-        return functionalName.equals(FuncNameAndColorGroupEnum.TEMPERATION_CONTROL);
+        return groupList.contains(ApplicationGroup.TEMPERATURE_CONTROL);
     }
 
     @Override
@@ -385,23 +400,30 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public boolean isBlind() {
-        return outputMode.equals(OutputModeEnum.POSITION_CON_US);
+        return (outputMode == OutputModeEnum.POSITION_CON || outputMode == OutputModeEnum.POSITION_CON_US)
+                && (outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_INDOOR)
+                        || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE));
     }
 
     @Override
-    public synchronized FunctionalColorGroupEnum getFunctionalColorGroup() {
-        return this.functionalGroup;
+    public synchronized ApplicationGroup getFunctionalColorGroup() {
+        return groupList.stream().findFirst().get();
     }
 
     @Override
-    public synchronized void setFunctionalColorGroup(FunctionalColorGroupEnum fuctionalColorGroup) {
-        this.functionalGroup = fuctionalColorGroup;
+    public synchronized void setFunctionalColorGroup(ApplicationGroup functionalColorGroup) {
+        groupList.add(functionalColorGroup);
         informListenerAboutConfigChange(ChangeableDeviceConfigEnum.FUNCTIONAL_GROUP);
     }
 
     @Override
     public OutputModeEnum getOutputMode() {
         return outputMode;
+    }
+
+    @Override
+    public List<OutputChannelEnum> getOutputChannels() {
+        return outputChannels;
     }
 
     @Override
@@ -1424,7 +1446,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     }
 
     /**
-     * Checks output current sensor to return automatically high output current sensor, if the sensor exists.
+     * Checks output current sensor to return automatically high output current
+     * sensor, if the sensor exists.
      *
      * @param devSenVal
      * @return output current high DeviceSensorValue or the given DeviceSensorValue
@@ -1656,7 +1679,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     }
 
     /**
-     * if an {@link DeviceStatusListener} is registered inform him about the new state otherwise do nothing.
+     * if an {@link DeviceStatusListener} is registered inform him about the new
+     * state otherwise do nothing.
      *
      * @param deviceStateUpdate
      */
@@ -1695,7 +1719,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
                         short sceneID = Short.parseShort((String) key
                                 .subSequence(DigitalSTROMBindingConstants.DEVICE_SCENE.length(), key.length()));
                         sceneSave = propertries.get(key);
-                        if (StringUtils.isNotBlank(sceneSave)) {
+                        if (sceneSave != null && !sceneSave.isBlank()) {
                             logger.debug("Find saved scene configuration for device with dSID {} and sceneID {}", dsid,
                                     key);
                             String[] sceneParm = sceneSave.replace(" ", "").split(",");
@@ -1869,9 +1893,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public String toString() {
-        return "DeviceImpl [meterDSID=" + meterDSID + ", zoneId=" + zoneId + ", groupList=" + groupList
-                + ", functionalGroup=" + functionalGroup + ", functionalName=" + functionalName + ", hwInfo=" + hwInfo
-                + ", getName()=" + getName() + ", getDSID()=" + getDSID() + ", getDSUID()=" + getDSUID()
+        return "DeviceImpl [meterDSID=" + meterDSID + ", zoneId=" + zoneId + ", groupList=" + groupList + ", hwInfo="
+                + hwInfo + ", getName()=" + getName() + ", getDSID()=" + getDSID() + ", getDSUID()=" + getDSUID()
                 + ", isPresent()=" + isPresent() + ", isValide()=" + isValid() + ", getDisplayID()=" + getDisplayID()
                 + ", outputMode=" + outputMode + ", getSensorTypes()=" + getSensorTypes() + ", getDeviceSensorValues()="
                 + getDeviceSensorValues() + ", powerSensorRefresh=" + powerSensorRefreshToString() + "]";
