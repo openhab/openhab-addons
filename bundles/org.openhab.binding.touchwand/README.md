@@ -9,9 +9,10 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 ## Supported Things
 
 This binding supports switches, shutters dimmers alarm sensors and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
-it also supports AcWand™ - smart control for your air conditioner controller 
-![AcWand](http://www.touchwand.com/wp-content/uploads/2019/04/AcWand-300x350.png)
+The binding also supports [AcWand™](http://www.touchwand.com/products/touchwand-acwand/) - smart control for your air conditioner controller.
 
+
+![AcWand](http://www.touchwand.com/wp-content/uploads/2019/04/AcWand-300x350.png)
 
 
 ## Control and Status 
