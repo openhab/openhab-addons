@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Matchers;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
@@ -123,7 +123,7 @@ class QueryResultJSONEncoderTest {
         return QueryResult.of(new ResultRow(givenRowValues()), new ResultRow(givenRowValues()));
     }
 
-    @NotNull
+    @NonNull
     private Map<String, @Nullable Object> givenRowValues() {
         Map<String, @Nullable Object> values = new HashMap<>();
         values.put("strValue", "an string");

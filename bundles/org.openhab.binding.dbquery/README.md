@@ -1,32 +1,32 @@
 # DBQuery Binding
 
 This binding allows creating items from the result of native database queries.
-It currently supports InfluxDB 2.0 and will support major relational databases through JDBC.
+It currently only supports InfluxDB 2.0.
 
-You can use the addon in any situation where you want to create an item from a native SQL query, the source of the query can
-be any supported database, and don't need to be the one you use as persistence service in InfluxDB.
+You can use the addon in any situation where you want to create an item from a native query, the source of the query can
+be any supported database, and don't need to be the one you use as persistence service in openHAB.
 Some use cases can be:
 
-- Integrate a device that stores it's data in a database
-- Query derived data from you OpenHAB persistence, for example with Influx2 tasks you can process your data to create a new one   
-- Bypass limitations of current OpenHAb persistence queries
+- Integrate a device that stores its data in a database
+- Query derived data from you openHAB persistence, for example with Influx2 tasks you can process your data to create a new one   
+- Bypass limitations of current openHAB persistence queries
 
 
 ## Supported Things
 
-There are two types of supported things: `DatabaseBridge` and a `Query`.
+There are two types of supported things: `influxdb2` and a `query`.
 For each different database, you want to connect you must define a `Bridge` thing for that database.
 Then each `Bridge` can define as much as wanted `Query` things you want to execute.
 
 Current supported `Bridge` is:
 
-- `Influx2Bridge`
+- `influxdb2`
 
 ## Thing Configuration
 
 ### Bridges
 
-#### Influx2Bridge
+#### influxdb2
 
 Defines a connection to an Influx2 database and allows creating queries on it.
 
@@ -38,7 +38,7 @@ Defines a connection to an Influx2 database and allows creating queries on it.
 | organization | Yes      | database organization name               |
 | bucket       | Yes      | database bucket name                      |
 
-### Query
+### query
 
 The `Query` thing defines a native query that provides several channels that you can bind to items. 
 
@@ -61,8 +61,7 @@ that are described further in the following subsections
 
 The query the items represents in the native language of your database:
 
- - Flux for `Influx2Bridge`
- - SQL for `JDBCBridge`
+ - Flux for `influxdb2`
  
 #### hasParameters
 
@@ -73,7 +72,7 @@ If `hasParameters=true` you can use parameters in the query string that can be d
  
 #### timeout
 
-A time-out in seconds to wait for the query result, if it's exceeded, result will be discarded and the addon will do it's best effort to cancel the query.
+A time-out in seconds to wait for the query result, if it's exceeded, result will be discarded and the addon will do its best effort to cancel the query.
 Currently it's ignored and it will be implemented in a future version.
 
 #### scalarResult 
@@ -99,7 +98,7 @@ Query items offer the following channels to be able to query / bind them to item
 | resultContact   | Contact   | Result of last executed query as Contact, query must have `scalarResult=true` |
 | resultSwitch    | Switch    | Result of last executed query as Switch, query must have `scalarResult=true` |
 | parameters      | String    | Contains parameters of last executed query as JSON|
-| correct         | Switch    | True if the result of last executed query was correct |
+| correct         | Switch    | `ON` if the result of last executed query was correct |
 
 All the channels, except `execute`, are updated when the query execution finishes, and while there is a query in execution they have the values from
 last previous executed query.

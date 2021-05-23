@@ -23,9 +23,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.dbquery.action.DBQueryActions;
 import org.openhab.binding.dbquery.internal.config.QueryConfiguration;
 import org.openhab.binding.dbquery.internal.domain.DBQueryJSONEncoder;
@@ -102,7 +102,7 @@ public class QueryHandler extends BaseThingHandler {
         }
     }
 
-    @NotNull
+    @NonNull
     private ThingUID getQueryIdentifier() {
         return getThing().getUID();
     }
