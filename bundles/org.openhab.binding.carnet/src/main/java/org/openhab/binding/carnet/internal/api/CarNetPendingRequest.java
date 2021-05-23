@@ -60,7 +60,12 @@ public class CarNetPendingRequest {
                 checkUrl = "bs/rlu/v1/{0}/{1}/vehicles/{2}/requests/" + requestId + "/status";
                 break;
             case CNAPI_SERVICE_REMOTE_HEATING:
-                checkUrl = "bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions/" + requestId;
+                if (rsp.performActionResponse != null) {
+                    this.requestId = rsp.performActionResponse.requestId;
+                    checkUrl = "bs/rs/v1/{0}/{1}/vehicles/{2}/requests/" + requestId + "/status";
+                } else {
+                    checkUrl = "bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions/" + requestId;
+                }
                 break;
             case CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION:
                 if (rsp.action != null) {

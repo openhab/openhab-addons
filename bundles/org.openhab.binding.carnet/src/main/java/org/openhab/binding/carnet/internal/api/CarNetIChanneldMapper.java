@@ -237,7 +237,7 @@ public class CarNetIChanneldMapper {
         add("STATE1_PARKING_BRAKE", "0x0301030001", "parkingBrake", ITEMT_SWITCH);
         add("STATE3_SPOILER", "0x0301050011", "spoilerState", ITEMT_CONTACT, CHANNEL_GROUP_STATUS, null, true, true);
         add("POS_SPOILER", "0x0301050012");
-        add("STATE3_SERVICE_FLAP", "0x030105000F", "serviceFlapState", ITEMT_CONTACT);
+        add("STATE1_SERVICE_FLAP", "0x030105000F", "serviceFlapState", ITEMT_CONTACT);
         add("POS_SERVICE_FLAP", "0x0301050010");
         add("CURRENT_SPEED", "0x0301030004", "currentSpeed", ITEMT_SPEED, CHANNEL_GROUP_STATUS,
                 SIUnits.KILOMETRE_PER_HOUR);

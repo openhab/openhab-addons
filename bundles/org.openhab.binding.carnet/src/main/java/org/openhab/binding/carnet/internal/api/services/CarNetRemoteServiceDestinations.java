@@ -33,28 +33,26 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.types.UnDefType;
 
 /**
- * {@link CarNetVehicleServiceDestinations} implements the destination hostory
+ * {@link CarNetRemoteServiceDestinations} implements the destination hostory
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetVehicleServiceDestinations extends CarNetVehicleBaseService {
-    public CarNetVehicleServiceDestinations(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
-        super(thingHandler, api);
-        serviceId = CNAPI_SERVICE_DESTINATIONS;
+public class CarNetRemoteServiceDestinations extends CarNetRemoteBaseService {
+    public CarNetRemoteServiceDestinations(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        super(CNAPI_SERVICE_DESTINATIONS, thingHandler, api);
     }
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
-        if (getConfig().vehicle.numDestinations == 0) {
-            return false;
+        if (getConfig().vehicle.numDestinations > 0) {
+            try {
+                update(channels);
+                return true;
+            } catch (CarNetException e) {
+            }
         }
-        try {
-            update(channels);
-        } catch (CarNetException e) {
-
-        }
-        return true;
+        return false;
     }
 
     private boolean createChannels(Map<String, ChannelIdMapEntry> ch, int index) {

@@ -13,6 +13,8 @@
 package org.openhab.binding.carnet.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 
 /**
  * The {@link CarNetVehicleConfiguration} class contains fields mapping thing configuration parameters.
@@ -32,6 +34,7 @@ public class CarNetVehicleConfiguration {
     public boolean enableAddressLookup = false;
     public Integer pollingInterval = 15;
 
+    public @Nullable CarNetOperationList operationList;
     public String rolesRightsUrl = "";
     public String homeRegionUrl = "";
     public String apiUrlPrefix = "";

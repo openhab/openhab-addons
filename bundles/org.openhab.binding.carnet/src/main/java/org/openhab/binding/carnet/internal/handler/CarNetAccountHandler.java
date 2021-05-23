@@ -153,8 +153,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         Map<String, String> properties = new TreeMap<String, String>();
 
         if (!api.isInitialized()) {
-            api.setConfig(config);
-            api.initialize();
+            api.initialize(config);
             refreshProperties(properties);
         }
 

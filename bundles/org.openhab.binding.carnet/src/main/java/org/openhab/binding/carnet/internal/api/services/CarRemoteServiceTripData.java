@@ -34,15 +34,14 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
 /**
- * {@link CarNetVehicleServiceTripData} implements the drip data service (short-term + long-term).
+ * {@link CarRemoteServiceTripData} implements the drip data service (short-term + long-term).
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetVehicleServiceTripData extends CarNetVehicleBaseService {
-    public CarNetVehicleServiceTripData(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
-        super(thingHandler, api);
-        serviceId = CNAPI_SERVICE_REMOTE_TRIP_STATISTICS;
+public class CarRemoteServiceTripData extends CarNetRemoteBaseService {
+    public CarRemoteServiceTripData(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        super(CNAPI_SERVICE_REMOTE_TRIP_STATISTICS, thingHandler, api);
     }
 
     @Override

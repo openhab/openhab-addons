@@ -35,22 +35,21 @@ import org.openhab.binding.carnet.internal.CarNetTextResources;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO;
 import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO.CNErrorMessage2Details;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNPairingInfo.CarNetPairingInfo;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetServiceAvailability;
 import org.openhab.binding.carnet.internal.api.CarNetApiResult;
 import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper;
 import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.api.CarNetPendingRequest;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiNull;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleBaseService;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleServiceCarFinder;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleServiceCharger;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleServiceClimater;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleServiceDestinations;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleServiceRLU;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleServiceStatus;
-import org.openhab.binding.carnet.internal.api.services.CarNetVehicleServiceTripData;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteBaseService;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceCarFinder;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceCharger;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceClimater;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceDestinations;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceHonkFlash;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceRLU;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceStatus;
+import org.openhab.binding.carnet.internal.api.services.CarRemoteServiceTripData;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
 import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
@@ -106,8 +105,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private boolean testData = false;
     private boolean stopping = false;
 
-    private Map<String, CarNetVehicleBaseService> services = new LinkedHashMap<>();
-    private CarNetServiceAvailability serviceAvailability = new CarNetServiceAvailability();
+    private Map<String, CarNetRemoteBaseService> services = new LinkedHashMap<>();
     private CarNetCombinedConfig config = new CarNetCombinedConfig();
 
     public CarNetVehicleHandler(Thing thing, CarNetTextResources resources, ZoneId zoneId,
@@ -187,28 +185,9 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                         "VIN not set (Thing properties)");
                 return false;
             }
-            config.vehicle.vin = vin.toUpperCase();
-            api.setConfig(config); // required to pass VIN to CarNetApi
-            config.vehicle.homeRegionUrl = api.getHomeReguionUrl();
-            config.vehicle.apiUrlPrefix = api.getApiUrl();
-            api.setConfig(config);
 
-            serviceAvailability = new CarNetServiceAvailability(); // init all to true
             try {
-                CarNetOperationList ol = api.getOperationList();
-                config.user.id = ol.userId;
-                config.user.role = ol.role;
-                config.user.status = ol.status;
-                config.user.securityLevel = ol.securityLevel;
-
-                serviceAvailability = api.getServiceAvailability(ol);
-                CarNetServiceAvailability sa = serviceAvailability;
-                logger.debug(
-                        "{}: Service availability: statusData: {}, tripData: {}, destinations: {}, carFinder: {}, climater: {}, charger: {}, remoteLock: {}",
-                        thingId, sa.statusData, sa.tripData, sa.destinations, sa.carFinder, sa.clima, sa.charger,
-                        sa.rlu);
-                logger.debug("{}: Active userId = {}, role = {} (securityLevel {}), status = {}, Pairing Code {}",
-                        thingId, config.user.id, ol.role, ol.securityLevel, ol.status, config.user.pairingCode);
+                config = api.initialize(vin, config);
             } catch (CarNetException e) {
                 logger.warn("{}: Available services coould not be determined, continue with default profile", thingId);
             }
@@ -216,6 +195,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             try {
                 CarNetPairingInfo pi = api.getPairingStatus();
                 config.user.pairingCode = pi.pairingCode;
+                api.setConfig(config);
                 if (!pi.isPairingCompleted()) {
                     logger.warn("{}: Unable to verify pairing or pairing not completed (status {}, userId {}, code {})",
                             thingId, getString(pi.pairingStatus), getString(pi.userId), getString(pi.pairingCode));
@@ -223,8 +203,9 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             } catch (CarNetException e) {
                 logger.debug("{}: Unable to verify pairing status: {}", thingId, e.toString());
             }
-
-            api.setConfig(config);
+            logger.debug("{}: Active userId = {}, role = {} (securityLevel {}), status = {}, Pairing Code {}", thingId,
+                    config.user.id, config.user.role, config.user.securityLevel, config.user.status,
+                    config.user.pairingCode);
 
             /*
              * if (logger.isDebugEnabled() && testData) {
@@ -261,20 +242,14 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             // Create services
             services.clear();
-            addService(serviceAvailability.statusData, CNAPI_SERVICE_VEHICLE_STATUS_REPORT,
-                    new CarNetVehicleServiceStatus(this, api));
-            addService(serviceAvailability.carFinder, CNAPI_SERVICE_CAR_FINDER,
-                    new CarNetVehicleServiceCarFinder(this, api));
-            addService(serviceAvailability.rlu, CNAPI_SERVICE_REMOTE_LOCK_UNLOCK,
-                    new CarNetVehicleServiceRLU(this, api));
-            addService(serviceAvailability.charger, CNAPI_SERVICE_REMOTE_BATTERY_CHARGE,
-                    new CarNetVehicleServiceCharger(this, api));
-            addService(serviceAvailability.clima, CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION,
-                    new CarNetVehicleServiceClimater(this, api));
-            addService(serviceAvailability.tripData, CNAPI_SERVICE_REMOTE_TRIP_STATISTICS,
-                    new CarNetVehicleServiceTripData(this, api));
-            addService(serviceAvailability.destinations, CNAPI_SERVICE_DESTINATIONS,
-                    new CarNetVehicleServiceDestinations(this, api));
+            addService(new CarNetRemoteServiceStatus(this, api));
+            addService(new CarNetRemoteServiceCarFinder(this, api));
+            addService(new CarNetRemoteServiceRLU(this, api));
+            addService(new CarNetRemoteServiceClimater(this, api));
+            addService(new CarNetRemoteServiceCharger(this, api));
+            addService(new CarNetRemoteServiceHonkFlash(this, api));
+            addService(new CarRemoteServiceTripData(this, api));
+            addService(new CarNetRemoteServiceDestinations(this, api));
 
             if (!channelsCreated) {
                 // General channels
@@ -287,8 +262,8 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
 
                 // Add channels based on service information
-                for (Map.Entry<String, CarNetVehicleBaseService> s : services.entrySet()) {
-                    CarNetVehicleBaseService service = s.getValue();
+                for (Map.Entry<String, CarNetRemoteBaseService> s : services.entrySet()) {
+                    CarNetRemoteBaseService service = s.getValue();
                     if (!service.createChannels(channels)) {
                         logger.debug("{}: Service {} is not available, disable", thingId, service.getServiceId());
                         service.disable();
@@ -406,15 +381,15 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 case CHANNEL_CONTROL_VENT:
                     sendOffOnError = true;
                     action = switchOn ? "startVentilation" : "stopVentilation";
-                    actionStatus = api.controlVentilation(switchOn, 15);
+                    actionStatus = api.controlVentilation(switchOn, 30);
                     break;
                 case CHANNEL_CONTROL_FLASH:
-                case CHANNEL_CONTROL_HONK:
+                case CHANNEL_CONTROL_HONKFLASH:
                     sendOffOnError = true;
                     if (config.account.enableHonkFlash) {
                         State point = cache.getValue(mkChannelId(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO));
                         if (point != UnDefType.NULL) {
-                            actionStatus = api.controlHonkFlash(CHANNEL_CONTROL_HONK.equals(channelId),
+                            actionStatus = api.controlHonkFlash(CHANNEL_CONTROL_HONKFLASH.equals(channelId),
                                     (PointType) point);
                         } else {
                             logger.warn("{}: Geo position is not available, can't execute command", thingId);
@@ -497,7 +472,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         }
 
         boolean updated = false;
-        for (Map.Entry<String, CarNetVehicleBaseService> s : services.entrySet()) {
+        for (Map.Entry<String, CarNetRemoteBaseService> s : services.entrySet()) {
             updated |= s.getValue().update();
         }
 
@@ -713,12 +688,15 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         return !value.equals(key) ? value : "";
     }
 
-    private boolean addService(boolean add, String serviceId, CarNetVehicleBaseService service) {
-        if (add && !services.containsKey(serviceId)) {
+    private boolean addService(CarNetRemoteBaseService service) {
+        String serviceId = service.getServiceId();
+        boolean available = false;
+        if (!services.containsKey(serviceId) && service.isEnabled()) {
             services.put(serviceId, service);
-            return true;
+            available = true;
         }
-        return false;
+        logger.debug("{}: Remote Control Service {} {} available", thingId, serviceId, available ? "is" : "is NOT");
+        return available;
     }
 
     public boolean addChannel(Map<String, ChannelIdMapEntry> channels, String group, String channel, String itemType,

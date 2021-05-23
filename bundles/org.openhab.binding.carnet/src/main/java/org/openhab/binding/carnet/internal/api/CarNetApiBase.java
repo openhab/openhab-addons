@@ -43,6 +43,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNEluActionHisto
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList.CarNetServiceInfo;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList.CarNetServiceInfo.CNServiceOperation;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNPairingInfo;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNPairingInfo.CarNetPairingInfo;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNRequestStatus;
@@ -53,7 +54,6 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNVehicleDetails
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetActionResponse.CNActionResponse;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetHomeRegion;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetOidcConfig;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetServiceAvailability;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetTripData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehiclePosition;
@@ -108,12 +108,33 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return this.http;
     }
 
-    public void initialize() throws CarNetException {
+    public void initialize(CarNetCombinedConfig configIn) throws CarNetException {
+        config = configIn;
+        setConfig(config); // derive from account config
         if (!config.api.oidcConfigUrl.isEmpty()) {
             config.oidcConfig = getOidcConfig();
         }
         tokenManager.refreshTokens(config);
         initialzed = true;
+    }
+
+    public CarNetCombinedConfig initialize(String vin, CarNetCombinedConfig configIn) throws CarNetException {
+        initialize(configIn);
+
+        // update based von VIN specific settings
+        config.vehicle.vin = vin.toUpperCase();
+        config.vehicle.homeRegionUrl = getHomeReguionUrl();
+        config.vehicle.apiUrlPrefix = getApiUrl();
+
+        CarNetOperationList ol = getOperationList();
+        config.vehicle.operationList = ol;
+        config.user.id = ol.userId;
+        config.user.role = ol.role;
+        config.user.status = ol.status;
+        config.user.securityLevel = ol.securityLevel;
+
+        setConfig(config);
+        return config;
     }
 
     public boolean isInitialized() {
@@ -141,37 +162,37 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return fromJson(gson, json, CarNetOidcConfig.class);
     }
 
-    public CarNetServiceAvailability getServiceAvailability(CarNetOperationList operation) {
-        CarNetServiceAvailability serviceStatus = new CarNetServiceAvailability();
-        for (CarNetServiceInfo si : operation.serviceInfo) {
-            // Check service enabled status, maybe we need also to check serviceEol
-            boolean enabled = "Enabled".equalsIgnoreCase(si.serviceStatus.status)
-                    && (!si.licenseRequired || si.cumulatedLicense.status.equalsIgnoreCase("ACTIVATED"));
-            switch (si.serviceId) {
-                case CNAPI_SERVICE_VEHICLE_STATUS_REPORT:
-                    serviceStatus.statusData = enabled;
-                    break;
-                case CNAPI_SERVICE_REMOTE_LOCK_UNLOCK:
-                    serviceStatus.rlu = enabled;
-                    break;
-                case CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION:
-                    serviceStatus.clima = enabled;
-                    break;
-                case CNAPI_SERVICE_REMOTE_BATTERY_CHARGE:
-                    serviceStatus.charger = enabled;
-                    break;
-                case CNAPI_SERVICE_CAR_FINDER:
-                    serviceStatus.carFinder = enabled;
-                    break;
-                case CNAPI_SERVICE_DESTINATIONS:
-                    serviceStatus.destinations = enabled;
-                    break;
-                case CNAPI_SERVICE_REMOTE_TRIP_STATISTICS:
-                    serviceStatus.tripData = enabled;
-                    break;
+    public boolean isRemoteServiceAvailable(String serviceId) {
+        return getServiceDescriptor(serviceId) != null;
+    }
+
+    public boolean isRemoteActionAvailable(String serviceId, String actionId) {
+        CarNetServiceInfo si = getServiceDescriptor(serviceId);
+        // Check service enabled status, maybe we need also to check serviceEol
+        if (si != null && "Enabled".equalsIgnoreCase(si.serviceStatus.status)
+                && (!si.licenseRequired || "ACTIVATED".equalsIgnoreCase(si.cumulatedLicense.status))) {
+            for (CNServiceOperation oi : si.operation) {
+                if (oi.id.equalsIgnoreCase(actionId)) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
+    private @Nullable CarNetServiceInfo getServiceDescriptor(String serviceId) {
+        CarNetOperationList ol = config.vehicle.operationList;
+        if (ol != null) {
+            for (CarNetServiceInfo si : ol.serviceInfo) {
+                // Check service enabled status, maybe we need also to check serviceEol
+                if (si.serviceId.equalsIgnoreCase(serviceId)) {
+                    return si;
+                }
             }
         }
-        return serviceStatus;
+        return null;
+
     }
 
     public CarNetUserRoleRights getRoleRights() throws CarNetException {
@@ -299,8 +320,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public CarNetOperationList getOperationList() throws CarNetException {
-        return callApi(config.vehicle.rolesRightsUrl + "/rolesrights/operationlist/v3/vehicles/{2}", "getOperationList",
-                CNOperationList.class).operationList;
+        return config.vehicle.operationList != null ? config.vehicle.operationList
+                : callApi(config.vehicle.rolesRightsUrl + "/rolesrights/operationlist/v3/vehicles/{2}?scope=ALL",
+                        "getOperationList", CNOperationList.class).operationList;
     }
 
     public @Nullable String getVehicleUsers() throws CarNetException {
@@ -324,24 +346,28 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
 
     public String controlClimater(boolean start, String heaterSource) throws CarNetException {
         String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8";
-        String body;
+        String body = "", action = "";
         if (start) {
             if ((config.account.apiLevelClimatisation == 1) || heaterSource.isEmpty()) {
                 // simplified format without header source
                 body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>startClimatisation</type></action>";
             } else {
                 // standard format with header source
-                body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><action><type>startClimatisation</type>"
-                        + "<settings><heaterSource>" + heaterSource + "</heaterSource></settings></action>";
+                // body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><action><type>startClimatisation</type>"
+                // + "<settings><heaterSource>" + heaterSource + "</heaterSource></settings></action>";
+                body = "{\"action\": {\"settings\": {\"climatisationWithoutHVpower\": \"without_hv_power\", \"heaterSource\": \""
+                        + heaterSource + "\"}, \"type\": \"startClimatisation\"}}";
             }
+            action = CNAPI_HEATER_SOURCE_ELECTRIC.equalsIgnoreCase(heaterSource)
+                    ? CNAPI_ACTION_REMOTE_PRETRIP_CLIMATISATION_START_ELECTRIC
+                    : CNAPI_ACTION_REMOTE_PRETRIP_CLIMATISATION_START_AUX_OR_AUTO;
         } else {
             // stop climater
             body = "<action><type>stopClimatisation</type></action>";
         }
         return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions",
-                CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION,
-                start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP, true,
-                contentType, body);
+                CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, start ? action : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP,
+                true, contentType, body);
     }
 
     public String controlClimaterTemp(double tempC, String heaterSource) throws CarNetException {
@@ -352,6 +378,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     + "<targetTemperature>" + tempdK + "</targetTemperature>"
                     + "<climatisationWithoutHVpower>false</climatisationWithoutHVpower>" + "<heaterSource>"
                     + heaterSource + "</heaterSource>" + "</settings></action>";
+
             return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING,
                     CNAPI_ACTION_REMOTE_HEATING_QUICK_START, false, contentType, data);
         } catch (IncommensurableException e) {
@@ -360,12 +387,28 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public String controlPreHeating(boolean start) throws CarNetException {
+        String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
-        String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-                + "<performAction xmlns=\"http://audi.de/connect/rs\"><quickstart>" + "<active>"
-                + (start ? "true" : "false") + "</active>" + "</quickstart></performAction>";
-        return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action, true,
-                "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml", data);
+        if (config.account.apiLevelVentilation == 2) {
+            // Version 2.0.2 format
+            String hardCodedDuration = "30";
+            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
+            body = start
+                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"heating\",\"active\":true,\"climatisationDuration\":"
+                            + hardCodedDuration + "}}}"
+                    : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
+                    contentType, body);
+        } else {
+            // Version 2.0 format
+            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml";
+            body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+                    + "<performAction xmlns=\"http://audi.de/connect/rs\"><quickstart>" + "<active>"
+                    + (start ? "true" : "false") + "</active>" + "</quickstart></performAction>";
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
+                    true, contentType, body);
+        }
+
     }
 
     public String controlVentilation(boolean start, int duration) throws CarNetException {
@@ -375,9 +418,11 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             // Version 2.0.2 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
             body = start
-                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"ventilation\",\"active\":true,\"climatisationDuration\";"
+                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"ventilation\",\"active\":true,\"climatisationDuration\":"
                             + duration + "}}}"
                     : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
+                    contentType, body);
         } else {
             // Version 2.0 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml";
@@ -386,9 +431,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                             + "</climatisationDuration>" + "<startMode>ventilation</startMode></quickstart>"
                             : "<quickstop><active>false</active></quickstop>")
                     + "</performAction>";
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
+                    true, contentType, body);
         }
-        return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action, true,
-                contentType, body);
     }
 
     public String controlCharger(boolean start) throws CarNetException {

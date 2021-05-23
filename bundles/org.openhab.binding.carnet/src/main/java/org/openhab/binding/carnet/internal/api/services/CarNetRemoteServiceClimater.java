@@ -36,17 +36,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarNetVehicleServiceClimater} implements climater service.
+ * {@link CarNetRemoteServiceClimater} implements climater & preheat service.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetVehicleServiceClimater extends CarNetVehicleBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetVehicleServiceClimater.class);
+public class CarNetRemoteServiceClimater extends CarNetRemoteBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetRemoteServiceClimater.class);
 
-    public CarNetVehicleServiceClimater(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
-        super(thingHandler, api);
-        serviceId = CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION;
+    public CarNetRemoteServiceClimater(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        super(CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, thingHandler, api);
     }
 
     @Override
@@ -56,17 +55,16 @@ public class CarNetVehicleServiceClimater extends CarNetVehicleBaseService {
             if (cs.status.climatisationStatusData != null) {
                 addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, null, false, false);
                 addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, null, false, false);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PREHEAT, ITEMT_SWITCH, null, false, false);
                 addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, SIUnits.CELSIUS, false,
-                        false);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_HEAT_SOURCE, ITEMT_STRING, null, true, true);
                 addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_GEN_STATE, ITEMT_STRING, null, false, true);
                 addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FL_STATE, ITEMT_SWITCH, null, true, true);
                 addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FR_STATE, ITEMT_SWITCH, null, true, true);
                 addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RL_STATE, ITEMT_SWITCH, null, true, true);
                 addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RR_STATE, ITEMT_SWITCH, null, true, true);
                 addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, null, false, true);
+                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEAT_SOURCE, ITEMT_STRING, null, true, false);
+                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, SIUnits.CELSIUS, false,
+                        false);
                 return true;
             }
         } catch (CarNetException e) {
@@ -90,7 +88,7 @@ public class CarNetVehicleServiceClimater extends CarNetVehicleBaseService {
                     updated |= updateChannel(group, CHANNEL_CLIMATER_TARGET_TEMP,
                             toQuantityType(bd.doubleValue(), 1, SIUnits.CELSIUS));
                     if (cs.settings.heaterSource != null) {
-                        updated |= updateChannel(group, CHANNEL_CLIMATER_HEAT_SOURCE,
+                        updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEAT_SOURCE,
                                 getStringType(cs.settings.heaterSource.content));
                     }
                 }

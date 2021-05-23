@@ -44,17 +44,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarNetVehicleServiceStatus} implements fetching the basic vehicle status data.
+ * {@link CarNetRemoteServiceStatus} implements fetching the basic vehicle status data.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetVehicleServiceStatus.class);
+public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetRemoteServiceStatus.class);
 
-    public CarNetVehicleServiceStatus(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
-        super(thingHandler, api);
-        serviceId = CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
+    public CarNetRemoteServiceStatus(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
     }
 
     @Override
@@ -77,8 +76,9 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
                         logger.info("{}: {}={}{} (channel {}#{})", thingId, definition.symbolicName,
                                 getString(field.value), getString(field.unit), definition.groupName,
                                 definition.channelName);
-                        if ((definition.symbolicName.startsWith("STATE") || definition.symbolicName.startsWith("LOCK"))
-                                && field.value.equals("0")) {
+                        if ((definition.symbolicName.startsWith("STATE2_")
+                                || definition.symbolicName.startsWith("STATE3_")
+                                || definition.symbolicName.startsWith("LOCK_")) && field.value.equals("0")) {
                             // Data is reported, but equippment is not available, e.g. convertable top
                             logger.debug("{}: Data point not available, removing channel {}", thingId,
                                     definition.channelName);

@@ -29,15 +29,14 @@ import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * {@link CarNetVehicleServiceRLU} implements remote vehicle lock/unlock and history.
+ * {@link CarNetRemoteServiceRLU} implements remote vehicle lock/unlock and history.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetVehicleServiceRLU extends CarNetVehicleBaseService {
-    public CarNetVehicleServiceRLU(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
-        super(thingHandler, api);
-        serviceId = CNAPI_SERVICE_REMOTE_LOCK_UNLOCK;
+public class CarNetRemoteServiceRLU extends CarNetRemoteBaseService {
+    public CarNetRemoteServiceRLU(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        super(CNAPI_SERVICE_REMOTE_LOCK_UNLOCK, thingHandler, api);
     }
 
     @Override

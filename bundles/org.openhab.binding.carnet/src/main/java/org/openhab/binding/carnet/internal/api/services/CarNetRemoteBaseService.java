@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class CarNetVehicleBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetVehicleBaseService.class);
+public class CarNetRemoteBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetRemoteBaseService.class);
     protected final CarNetApiBase api;
     protected final CarNetVehicleHandler thingHandler;
     protected final CarNetIChanneldMapper idMapper;
@@ -47,15 +47,21 @@ public class CarNetVehicleBaseService {
     protected String serviceId = "";
     protected boolean enabled = true;
 
-    public CarNetVehicleBaseService(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetRemoteBaseService(String serviceId, CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        this.serviceId = serviceId;
         this.thingHandler = thingHandler;
         this.thingId = thingHandler.thingId;
         this.idMapper = thingHandler.getIdMapper();
         this.api = api;
+        this.enabled = api.isRemoteServiceAvailable(serviceId);
     }
 
     public String getServiceId() {
         return serviceId;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     // will be overload by service

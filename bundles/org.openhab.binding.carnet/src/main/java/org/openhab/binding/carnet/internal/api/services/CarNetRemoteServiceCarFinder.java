@@ -14,7 +14,7 @@ package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
-import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_CAR_FINDER;
+import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
 import java.util.Map;
 
@@ -35,18 +35,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarNetVehicleServiceCarFinder} implements the carFinder service.
+ * {@link CarNetRemoteServiceCarFinder} implements the carFinder service.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetVehicleServiceCarFinder extends CarNetVehicleBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetVehicleServiceCarFinder.class);
+public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetRemoteServiceCarFinder.class);
     private final OpenStreetMapApiDTO osmApi = new OpenStreetMapApiDTO();
 
-    public CarNetVehicleServiceCarFinder(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
-        super(thingHandler, api);
-        serviceId = CNAPI_SERVICE_CAR_FINDER;
+    public CarNetRemoteServiceCarFinder(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        super(CNAPI_SERVICE_CAR_FINDER, thingHandler, api);
     }
 
     @Override
@@ -69,10 +68,10 @@ public class CarNetVehicleServiceCarFinder extends CarNetVehicleBaseService {
             addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_ADDRESS, ITEMT_STRING, null, false, true);
             addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME, ITEMT_DATETIME, null, false, true);
 
-            if (getConfig().account.enableHonkFlash) {
+            if (api.isRemoteServiceAvailable(CNAPI_SERVICE_REMOTE_HONK_AND_FLASH)) {
                 logger.debug("{}: Honk/Flash API requests are enabled", thingId);
                 addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HONK, ITEMT_SWITCH, null, false, false);
+                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HONKFLASH, ITEMT_SWITCH, null, false, false);
             }
         }
         return ok;

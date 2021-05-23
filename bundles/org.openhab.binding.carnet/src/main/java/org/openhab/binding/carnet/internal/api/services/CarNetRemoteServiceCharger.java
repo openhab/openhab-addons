@@ -31,15 +31,14 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * {@link CarNetVehicleServiceCharger} implements the charger service.
+ * {@link CarNetRemoteServiceCharger} implements the charger service.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetVehicleServiceCharger extends CarNetVehicleBaseService {
-    public CarNetVehicleServiceCharger(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
-        super(thingHandler, api);
-        serviceId = CNAPI_SERVICE_REMOTE_BATTERY_CHARGE;
+public class CarNetRemoteServiceCharger extends CarNetRemoteBaseService {
+    public CarNetRemoteServiceCharger(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+        super(CNAPI_SERVICE_REMOTE_BATTERY_CHARGE, thingHandler, api);
     }
 
     @Override

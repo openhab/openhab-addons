@@ -343,6 +343,11 @@ public class CarNetApiGSonDTO {
                 CNRclimaSettings settings;
             }
 
+            public class CNRheatActionResponse {
+                public String requestId;
+                public String vin;
+            }
+
             public class CarNetCurrentVehicleData {
                 public String requestId;
                 public String vin;
@@ -353,6 +358,8 @@ public class CarNetApiGSonDTO {
 
             CNRluActionResponse rluActionResponse;
             CNRclimaActionResponse action;
+            CNRheatActionResponse performActionResponse;
+
         }
 
         public String requestId;

@@ -81,7 +81,7 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_CONTROL_PREHEAT = "preHeater";
     public static final String CHANNEL_CONTROL_VENT = "ventilation";
     public static final String CHANNEL_CONTROL_FLASH = "flash";
-    public static final String CHANNEL_CONTROL_HONK = "honk";
+    public static final String CHANNEL_CONTROL_HONKFLASH = "honkFlash";
 
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_LOCATTION_GEO = "locationPosition";
