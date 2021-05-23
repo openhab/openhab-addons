@@ -10,7 +10,9 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 
 This binding supports switches, shutters dimmers alarm sensors and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
 it also supports AcWand™ - smart control for your air conditioner controller 
-[AcWand](http://www.touchwand.com/products/touchwand-acwand)
+![AcWand](http://www.touchwand.com/wp-content/uploads/2019/04/AcWand-300x350.png)
+
+
 
 ## Control and Status 
 
@@ -71,9 +73,15 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 | battery_level     | Number             | This channel shows the battery level.                                 |
 | battery_low       | Switch             | This channel indicates whether the battery is low or not.             |
 
+## Thermostat Channels 
 
-
-
+| Channel Type ID   | Item Type          | Description                                                                                                                             
+|-------------------|--------------------|-----------------------------------------------------------------------|
+| State             | Switch             | Set and read the device state ON or OFF.                              |
+| targetTemperature | Number:Temperature | Shows the current set point of the thrermostat.                       |
+| roomTemperature   | Number:Temperature | Shows the current termprature measured by the thermostat.             |
+| mode              | String             | Set/Read Thermostat mode - Cool, Heat, Fan, Dry, Auto                 |
+| fanLevel          | String             | Set/Read fan leval - Low, Medium, High, Auto                          |
 
 ## Full Example
 
