@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Thermostat (stand-alone)</label>
-		<description>A BUS/SCS zone stand-alone thermostat. BTicino models: LN4691.</description>
+		<description>A OpenWebNet BUS/SCS zone stand-alone thermostat. BTicino models: LN4691.</description>
 
 		<channels>
 			<!-- read only -->
