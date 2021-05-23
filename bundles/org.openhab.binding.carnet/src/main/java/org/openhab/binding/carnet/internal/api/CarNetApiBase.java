@@ -192,7 +192,6 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             }
         }
         return null;
-
     }
 
     public CarNetUserRoleRights getRoleRights() throws CarNetException {
@@ -408,7 +407,6 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
                     true, contentType, body);
         }
-
     }
 
     public String controlVentilation(boolean start, int duration) throws CarNetException {
@@ -476,7 +474,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 + "\",\"userPosition\":{\"latitude\":" + position.getLatitude() + ", \"longitude\":"
                 + position.getLongitude() + "}}}";
         String contentType = "application/json; charset=UTF-8";
-        return sendAction("bs/rhf/v1/{0}/{1}/vehicles/{2}/honkAndFlash", CNAPI_SERVICE_REMOTE_HONK_AND_FLASH, "honk",
+        return sendAction("bs/rhf/v1/{0}/{1}/vehicles/{2}/honkAndFlash", CNAPI_SERVICE_REMOTE_HONK_AND_FLASH, action,
                 false, contentType, body);
     }
 

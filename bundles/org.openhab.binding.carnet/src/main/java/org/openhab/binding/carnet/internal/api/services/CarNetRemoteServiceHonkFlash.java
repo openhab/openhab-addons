@@ -42,5 +42,4 @@ public class CarNetRemoteServiceHonkFlash extends CarNetRemoteBaseService {
         }
         return false;
     }
-
 }

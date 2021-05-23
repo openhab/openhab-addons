@@ -39,9 +39,9 @@ public class CarNetRemoteServicePreHeat extends CarNetRemoteBaseService {
         // Honk&Flash requires CarFinder service to get geo position
         if (api.isRemoteServiceAvailable(CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION)) {
             addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PREHEAT, ITEMT_SWITCH, null, false, false);
+            addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
             return true;
         }
         return false;
     }
-
 }

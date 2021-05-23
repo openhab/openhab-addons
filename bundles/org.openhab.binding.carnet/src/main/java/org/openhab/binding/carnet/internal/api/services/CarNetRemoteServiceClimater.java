@@ -52,7 +52,6 @@ public class CarNetRemoteServiceClimater extends CarNetRemoteBaseService {
     public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarNetException {
         addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, null, false, false);
         addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, null, false, false);
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
         addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_GEN_STATE, ITEMT_STRING, null, false, true);
         addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FL_STATE, ITEMT_SWITCH, null, true, true);
         addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FR_STATE, ITEMT_SWITCH, null, true, true);

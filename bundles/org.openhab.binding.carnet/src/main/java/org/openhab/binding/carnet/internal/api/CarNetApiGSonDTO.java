@@ -359,7 +359,6 @@ public class CarNetApiGSonDTO {
             CNRluActionResponse rluActionResponse;
             CNRclimaActionResponse action;
             CNRheatActionResponse performActionResponse;
-
         }
 
         public String requestId;
