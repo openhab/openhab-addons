@@ -47,6 +47,7 @@ import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceCharg
 import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceClimater;
 import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceDestinations;
 import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceHonkFlash;
+import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServicePreHeat;
 import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceRLU;
 import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceStatus;
 import org.openhab.binding.carnet.internal.api.services.CarRemoteServiceTripData;
@@ -246,10 +247,11 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             addService(new CarNetRemoteServiceCarFinder(this, api));
             addService(new CarNetRemoteServiceRLU(this, api));
             addService(new CarNetRemoteServiceClimater(this, api));
+            addService(new CarNetRemoteServicePreHeat(this, api));
             addService(new CarNetRemoteServiceCharger(this, api));
-            addService(new CarNetRemoteServiceHonkFlash(this, api));
             addService(new CarRemoteServiceTripData(this, api));
             addService(new CarNetRemoteServiceDestinations(this, api));
+            addService(new CarNetRemoteServiceHonkFlash(this, api));
 
             if (!channelsCreated) {
                 // General channels
