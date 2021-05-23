@@ -64,6 +64,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.THERMOREGULATION_SUPPORTED_THING_TYPES;
 
+    private boolean isTempSensor = false; // is the device a sensor or thermostat?
+
     private Double currentSetPointTemp = 11.5d; // 11.5 is the default setTemp used in MyHomeUP mobile app
 
     private Thermoregulation.FUNCTION currentFunction = Thermoregulation.FUNCTION.GENERIC;
@@ -75,25 +77,10 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
-
         // when the bridge is ONLINE request for thing states (temp, setTemp, fanSpeed...)
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             logger.debug("bridgeStatusChanged() thing={}", thing.getUID());
-
-            if (deviceWhere != null) {
-                String w = deviceWhere.value();
-                try {
-                    // request single channels updates
-                    send(Thermoregulation.requestTemperature(w));
-                    send(Thermoregulation.requestSetPointTemperature(w));
-                    send(Thermoregulation.requestFanCoilSpeed(w));
-                    send(Thermoregulation.requestMode(w));
-                    send(Thermoregulation.requestValveStatus(w));
-                    send(Thermoregulation.requestActuatorStatus(w));
-                } catch (OWNException e) {
-                    logger.error("bridgeStatusChanged() OWNException thingUID={}: {}", thing.getUID(), e.getMessage());
-                }
-            }
+            refreshDevice(false);
         }
     }
 
@@ -121,26 +108,16 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-        if (deviceWhere != null) {
-            String w = deviceWhere.value();
-            try {
-                // for bus_thermostat request single channels updates
-                send(Thermoregulation.requestTemperature(w));
-                send(Thermoregulation.requestSetPointTemperature(w));
-                send(Thermoregulation.requestFanCoilSpeed(w));
-                send(Thermoregulation.requestMode(w));
-                send(Thermoregulation.requestValveStatus(w));
-                send(Thermoregulation.requestActuatorStatus(w));
-            } catch (OWNException e) {
-                logger.error("requestChannelState() OWNException thingUID={} channel={}: {}", thing.getUID(),
-                        channel.getId(), e.getMessage());
-            }
-        }
+        refreshDevice(false);
     }
 
     @Override
     protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
-        return new WhereThermo(wStr);
+        WhereThermo wt = new WhereThermo(wStr);
+        if (wt.isProbe()) {
+            isTempSensor = true;
+        }
+        return wt;
     }
 
     @Override
@@ -277,7 +254,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         logger.debug("updateModeAndFunction() for thing: {} msg={}", thing.getUID(), tmsg);
 
         if (tmsg.getWhat() == null) {
-            logger.warn("updateModeAndFunction() Could not parse Mode from: {}", tmsg.getFrameValue());
+            logger.debug("updateModeAndFunction() Could not parse Mode from: {}", tmsg.getFrameValue());
             return;
         }
 
@@ -381,13 +358,15 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         if (deviceWhere != null) {
             String w = deviceWhere.value();
             try {
-                // for bus_thermostat request single channels updates
                 send(Thermoregulation.requestTemperature(w));
-                send(Thermoregulation.requestSetPointTemperature(w));
-                send(Thermoregulation.requestFanCoilSpeed(w));
-                send(Thermoregulation.requestMode(w));
-                send(Thermoregulation.requestValveStatus(w));
-                send(Thermoregulation.requestActuatorStatus(w));
+                if (!this.isTempSensor) {
+                    // for bus_thermostat request also other single channels updates
+                    send(Thermoregulation.requestSetPointTemperature(w));
+                    send(Thermoregulation.requestFanCoilSpeed(w));
+                    send(Thermoregulation.requestMode(w));
+                    send(Thermoregulation.requestValveStatus(w));
+                    send(Thermoregulation.requestActuatorStatus(w));
+                }
             } catch (OWNException e) {
                 logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
             }
