@@ -23,11 +23,12 @@ The binding also supports [AcWand™](http://www.touchwand.com/products/touchwan
 4. **wallcontroller** - control - LONG/SHORT
 5. **alarmsensor** - status channels depend on alarm sensor type
 5. **bsensor** - binary status channels depend on alarm sensor type (motion, door , smoke)
-6. **thermostat** - AcWand™ smart control for your air conditioner ()
+6. **thermostat** - AcWand™ smart control for your air conditioner 
 
 ## Discovery
 
-After adding TouchWand Hub the auto discovery will add all switches dimmers alarm sensors and shutters to the inbox.
+After adding TouchWand Hub the auto discovery will add all suppored devuces to inbox.
+Auto discovery scans priodically and add to the Inbox new devices added to the Touchwand Wanderfull™ Hub
 
 ## Bridge Configuration
 
