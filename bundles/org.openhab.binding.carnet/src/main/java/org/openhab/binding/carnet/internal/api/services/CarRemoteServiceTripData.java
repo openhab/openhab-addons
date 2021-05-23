@@ -49,7 +49,7 @@ public class CarRemoteServiceTripData extends CarNetRemoteBaseService {
         try {
             boolean updated = false;
             if (getConfig().vehicle.numShortTrip > 0) {
-                update("shortTerm", channels);
+                updated |= update("shortTerm", channels);
             }
             if (getConfig().vehicle.numLongTrip > 0) {
                 updated |= update("longTerm", channels);

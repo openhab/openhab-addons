@@ -35,16 +35,16 @@ public class CarNetChannelCache {
 
     private final CarNetVehicleHandler thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
-    private String thingName = "";
+    private String thingId = "";
     private boolean enabled = false;
 
-    public CarNetChannelCache(CarNetVehicleHandler thingHandler, String thingName) {
+    public CarNetChannelCache(CarNetVehicleHandler thingHandler, String thingId) {
         this.thingHandler = thingHandler;
-        setThingName(thingName);
+        setthingId(thingId);
     }
 
-    public void setThingName(String thingName) {
-        this.thingName = thingName;
+    public void setthingId(String thingId) {
+        this.thingId = thingId;
     }
 
     public boolean isEnabled() {
@@ -87,12 +87,12 @@ public class CarNetChannelCache {
                 } else {
                     channelData.replace(channelId, newValue);
                 }
-                logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, newValue,
+                logger.debug("{}: Channel {} updated with {} (type {}).", thingId, channelId, newValue,
                         newValue.getClass());
                 return true;
             }
         } catch (IllegalArgumentException e) {
-            logger.debug("{}: Unable to update channel {} with {} (type {}): {} ({})", thingName, channelId, newValue,
+            logger.debug("{}: Unable to update channel {} with {} (type {}): {} ({})", thingId, channelId, newValue,
                     newValue.getClass(), CarNetUtils.getMessage(e), e.getClass(), e);
         }
         return false;

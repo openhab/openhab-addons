@@ -50,27 +50,18 @@ public class CarNetRemoteServiceClimater extends CarNetRemoteBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarNetException {
-        try {
-            CarNetClimaterStatus cs = api.getClimaterStatus();
-            if (cs.status.climatisationStatusData != null) {
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, null, false, false);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, null, false, false);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_GEN_STATE, ITEMT_STRING, null, false, true);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FL_STATE, ITEMT_SWITCH, null, true, true);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FR_STATE, ITEMT_SWITCH, null, true, true);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RL_STATE, ITEMT_SWITCH, null, true, true);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RR_STATE, ITEMT_SWITCH, null, true, true);
-                addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, null, false, true);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEAT_SOURCE, ITEMT_STRING, null, true, false);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, SIUnits.CELSIUS, false,
-                        false);
-                return true;
-            }
-        } catch (CarNetException e) {
-            // Service not available
-        }
-        return false;
+        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, null, false, false);
+        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, null, false, false);
+        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
+        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_GEN_STATE, ITEMT_STRING, null, false, true);
+        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FL_STATE, ITEMT_SWITCH, null, true, true);
+        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FR_STATE, ITEMT_SWITCH, null, true, true);
+        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RL_STATE, ITEMT_SWITCH, null, true, true);
+        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RR_STATE, ITEMT_SWITCH, null, true, true);
+        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, null, false, true);
+        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEAT_SOURCE, ITEMT_STRING, null, true, false);
+        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, SIUnits.CELSIUS, false, false);
+        return true;
     }
 
     @Override

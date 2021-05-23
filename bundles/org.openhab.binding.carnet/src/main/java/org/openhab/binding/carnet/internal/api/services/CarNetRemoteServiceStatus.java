@@ -116,6 +116,7 @@ public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
         boolean vehicleLocked = true; // aggregates all lock states
         boolean windowsClosed = true; // true if all Windows are closed
         boolean tiresOk = true; // tire if all tire pressures are ok
+        boolean updated = false;
 
         CarNetVehicleStatus status = api.getVehicleStatus();
         logger.debug("{}: Vehicle Status:\n{}", thingId, status);
@@ -134,15 +135,17 @@ public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
                             switch (definition.itemType) {
                                 case ITEMT_SWITCH:
                                 case ITEMT_CONTACT:
-                                    updateSwitchChannel(channel, definition, field);
+                                    updated |= updateSwitchChannel(channel, definition, field);
                                     break;
                                 case ITEMT_STRING:
-                                    thingHandler.updateChannel(channel, new StringType(getString(field.value)));
+                                    updated |= thingHandler.updateChannel(channel,
+                                            new StringType(getString(field.value)));
                                     break;
                                 case ITEMT_NUMBER:
                                 case ITEMT_PERCENT:
                                 default:
-                                    updateNumberChannel(channel, definition, field);
+                                    updated |= updateNumberChannel(channel, definition, field);
+                                    break;
                             }
                         } else {
                             logger.debug("Channel {}#{} not found", definition.groupName, definition.channelName);
@@ -163,15 +166,15 @@ public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
         }
 
         // Update aggregated status
-        thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED,
+        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED,
                 vehicleLocked ? OnOffType.ON : OnOffType.OFF);
-        thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK,
+        updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK,
                 vehicleLocked ? OnOffType.ON : OnOffType.OFF);
-        thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ,
+        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ,
                 maintenanceRequired ? OnOffType.ON : OnOffType.OFF);
-        thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK,
+        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK,
                 tiresOk ? OnOffType.ON : OnOffType.OFF);
-        thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED,
+        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED,
                 windowsClosed ? OnOffType.ON : OnOffType.OFF);
 
         return true;
@@ -219,7 +222,7 @@ public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
         return true;
     }
 
-    private void updateNumberChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
+    private boolean updateNumberChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
         State state = UnDefType.UNDEF;
         String val = getString(field.value);
         if (!val.isEmpty()) {
@@ -250,10 +253,10 @@ public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
             }
         }
         logger.debug("{}: Updating channel {} with {}", thingId, channel.getUID().getId(), state);
-        thingHandler.updateChannel(channel, state);
+        return thingHandler.updateChannel(channel, state);
     }
 
-    private void updateSwitchChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
+    private boolean updateSwitchChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
         int value = Integer.parseInt(getString(field.value));
         State state;
 
@@ -282,6 +285,6 @@ public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
         }
         logger.debug("{}: Map value {} to state {} for channe {}, symnolicName{}", thingId, value, state,
                 definition.channelName, definition.symbolicName);
-        thingHandler.updateChannel(channel, state);
+        return thingHandler.updateChannel(channel, state);
     }
 }

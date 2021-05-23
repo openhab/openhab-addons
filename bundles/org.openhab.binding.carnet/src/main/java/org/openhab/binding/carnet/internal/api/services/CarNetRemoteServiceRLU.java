@@ -41,11 +41,11 @@ public class CarNetRemoteServiceRLU extends CarNetRemoteBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+        addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, null, false, false);
         if (getConfig().vehicle.numActionHistory == 0) {
             return false;
         }
 
-        addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, null, false, false);
         return update(channels);
     }
 

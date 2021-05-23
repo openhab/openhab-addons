@@ -14,7 +14,7 @@ package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
-import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
+import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_CAR_FINDER;
 
 import java.util.Map;
 
@@ -50,51 +50,32 @@ public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarNetException {
-        boolean ok = false;
-        try {
-            api.getVehiclePosition();
-            ok = true;
-        } catch (CarNetException e) {
-            if (e.getApiResult().httpCode == HttpStatus.NO_CONTENT_204) {
-                ok = true; // Ignore No Content = Info not available, but valid API result
-            }
-        }
-
-        if (ok) {
-            addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, null, false, true);
-            addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, null, false, true);
-            addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, null, false, true);
-            addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_LOCATION, ITEMT_LOCATION, null, false, true);
-            addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_ADDRESS, ITEMT_STRING, null, false, true);
-            addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME, ITEMT_DATETIME, null, false, true);
-
-            if (api.isRemoteServiceAvailable(CNAPI_SERVICE_REMOTE_HONK_AND_FLASH)) {
-                logger.debug("{}: Honk/Flash API requests are enabled", thingId);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);
-                addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HONKFLASH, ITEMT_SWITCH, null, false, false);
-            }
-        }
-        return ok;
+        addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, null, false, true);
+        addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, null, false, true);
+        addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, null, false, true);
+        addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_LOCATION, ITEMT_LOCATION, null, false, true);
+        addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_ADDRESS, ITEMT_STRING, null, false, true);
+        addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME, ITEMT_DATETIME, null, false, true);
+        return true;
     }
 
     @Override
     public boolean serviceUpdate() throws CarNetException {
+        boolean updated = false;
         try {
             logger.debug("{}: Get Vehicle Position", thingId);
             CarNetVehiclePosition position = api.getVehiclePosition();
-            if (position != null) {
-                updateLocation(position, CHANNEL_LOCATTION_GEO);
-                String time = position.getCarSentTime();
-                updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, new DateTimeType(time));
-                updateAddress(position, CHANNEL_LOCATTION_ADDRESS);
+            updated |= updateLocation(position, CHANNEL_LOCATTION_GEO);
+            String time = position.getCarSentTime();
+            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, new DateTimeType(time));
+            updated |= updateAddress(position, CHANNEL_LOCATTION_ADDRESS);
 
-                updateLocation(api.getStoredPosition(), CHANNEL_PARK_LOCATION);
-                updateAddress(position, CHANNEL_PARK_ADDRESS);
-                String parkingTime = getString(position.getParkingTime());
-                updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
-                        !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.NULL);
-                return true;
-            }
+            updated |= updateLocation(api.getStoredPosition(), CHANNEL_PARK_LOCATION);
+            updated |= updateAddress(position, CHANNEL_PARK_ADDRESS);
+            String parkingTime = getString(position.getParkingTime());
+            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
+                    !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.UNDEF);
+            return true;
         } catch (CarNetException e) {
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, UnDefType.UNDEF);
@@ -105,20 +86,21 @@ public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
         return false;
     }
 
-    private void updateLocation(CarNetVehiclePosition position, String channel) {
+    private boolean updateLocation(CarNetVehiclePosition position, String channel) {
         PointType location = new PointType(new DecimalType(position.getLattitude()),
                 new DecimalType(position.getLongitude()));
-        updateChannel(CHANNEL_GROUP_LOCATION, channel, location);
+        return updateChannel(CHANNEL_GROUP_LOCATION, channel, location);
     }
 
-    private void updateAddress(CarNetVehiclePosition position, String channel) {
+    private boolean updateAddress(CarNetVehiclePosition position, String channel) {
         if (getConfig().vehicle.enableAddressLookup) {
             try {
                 String address = osmApi.getAddressFromPosition(api.getHttp(), position);
-                updateChannel(CHANNEL_GROUP_LOCATION, channel, new StringType(address));
+                return updateChannel(CHANNEL_GROUP_LOCATION, channel, new StringType(address));
             } catch (CarNetException e) {
                 updateChannel(CHANNEL_GROUP_LOCATION, channel, UnDefType.UNDEF);
             }
         }
+        return false;
     }
 }
