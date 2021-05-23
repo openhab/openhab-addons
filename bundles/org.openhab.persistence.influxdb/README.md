@@ -38,7 +38,7 @@ This service can be configured in the file `services/influxdb.cfg`.
 
 | Property        | Default               | Required | Description                                                                                                                                               |
 | --------------- | --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| version         | V1                    | No       | InfluxDB database version V1 for 1.X and V2 for 2.x                                                                                                       |
+| version         | V2                    | No       | InfluxDB database version V1 for 1.X and V2 for 2.x                                                                                                       |
 | url             | http://127.0.0.1:8086 | No       | database URL                                                                                                                                              |
 | user            | openhab               | No       | name of the database user, e.g. `openhab`                                                                                                                 |
 | password        |                       | No(\*)   | password of the database user you choose                                                                                                                  |
