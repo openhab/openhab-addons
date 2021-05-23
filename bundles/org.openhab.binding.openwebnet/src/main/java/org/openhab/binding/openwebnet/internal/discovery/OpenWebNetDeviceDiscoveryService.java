@@ -177,7 +177,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
         DiscoveryResult discoveryResult = null;
 
-        String whereConfig = where.value();
+        String whereConfig = bridgeHandler.normalizeWhere(where);
         if (where instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
             logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
             thingRemoved(thingUID); // remove previously discovered thing
