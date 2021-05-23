@@ -62,6 +62,7 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
         handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE));
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));
+        handlers.put(EVENT_FINISH_IN_RELATIVE, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_REMAINING_PROGRAM_TIME, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_SELECTED_PROGRAM, defaultSelectedProgramStateEventHandler());
@@ -97,8 +98,8 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));

@@ -76,6 +76,7 @@ public class HomeConnectBindingConstants {
     public static final String EVENT_REMOTE_CONTROL_START_ALLOWED = STATUS_REMOTE_CONTROL_START_ALLOWED;
     public static final String EVENT_REMOTE_CONTROL_ACTIVE = STATUS_REMOTE_CONTROL_ACTIVE;
     public static final String EVENT_LOCAL_CONTROL_ACTIVE = STATUS_LOCAL_CONTROL_ACTIVE;
+    public static final String EVENT_FINISH_IN_RELATIVE = "BSH.Common.Option.FinishInRelative";
     public static final String EVENT_REMAINING_PROGRAM_TIME = "BSH.Common.Option.RemainingProgramTime";
     public static final String EVENT_PROGRAM_PROGRESS = "BSH.Common.Option.ProgramProgress";
     public static final String EVENT_SETPOINT_TEMPERATURE = "Cooking.Oven.Option.SetpointTemperature";
@@ -162,6 +163,7 @@ public class HomeConnectBindingConstants {
     public static final String STATE_EVENT_PRESENT_STATE_OFF = "BSH.Common.EnumType.EventPresentState.Off";
 
     // List of program options
+    public static final String OPTION_FINISH_IN_RELATIVE = "BSH.Common.Option.FinishInRelative";
     public static final String OPTION_REMAINING_PROGRAM_TIME = "BSH.Common.Option.RemainingProgramTime";
     public static final String OPTION_PROGRAM_PROGRESS = "BSH.Common.Option.ProgramProgress";
     public static final String OPTION_ELAPSED_PROGRAM_TIME = "BSH.Common.Option.ElapsedProgramTime";

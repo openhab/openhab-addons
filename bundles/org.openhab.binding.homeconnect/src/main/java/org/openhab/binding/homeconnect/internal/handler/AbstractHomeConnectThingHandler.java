@@ -221,7 +221,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
                 updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 resetChannelsOnOfflineEvent();
-                resetProgramStateChannels();
+                resetProgramStateChannels(true);
             } catch (CommunicationException e) {
                 logger.debug("Could not handle command {}. API communication problem! error={}, haId={}",
                         command.toFullString(), e.getMessage(), getThingHaId());
@@ -241,7 +241,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     getThingHaId());
             updateStatus(OFFLINE);
             resetChannelsOnOfflineEvent();
-            resetProgramStateChannels();
+            resetProgramStateChannels(true);
         } else if (isThingOnline() && CONNECTED.equals(event.getType())) {
             logger.debug("Received CONNECTED event. Update power state channel. haId={}", getThingHaId());
             getThingChannel(CHANNEL_POWER_STATE).ifPresent(c -> updateChannel(c.getUID()));
@@ -528,7 +528,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         getThingLabel(), getThingHaId(), e.getMessage());
                 updateStatus(OFFLINE);
                 resetChannelsOnOfflineEvent();
-                resetProgramStateChannels();
+                resetProgramStateChannels(true);
             } catch (CommunicationException e) {
                 logger.debug("API communication problem while trying to update! thing={}, haId={}, error={}",
                         getThingLabel(), getThingHaId(), e.getMessage());
@@ -542,8 +542,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     /**
      * Reset program related channels.
+     *
+     * @param offline true if the device is considered as OFFLINE
      */
-    protected void resetProgramStateChannels() {
+    protected void resetProgramStateChannels(boolean offline) {
         logger.debug("Resetting active program channel states. thing={}, haId={}", getThingLabel(), getThingHaId());
     }
 
@@ -770,7 +772,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             if (STATE_POWER_ON.equals(event.getValue())) {
                 getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
             } else {
-                resetProgramStateChannels();
+                resetProgramStateChannels(true);
                 getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                         .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             }
@@ -798,7 +800,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, PERCENT)));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
             } else if (STATE_OPERATION_READY.equals(event.getValue())) {
-                resetProgramStateChannels();
+                resetProgramStateChannels(false);
             }
         };
     }
@@ -809,7 +811,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
             if (event.getValue() == null) {
-                resetProgramStateChannels();
+                resetProgramStateChannels(false);
             }
         };
     }
@@ -1050,7 +1052,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     processProgramOptions(program.getOptions());
                     return new StringType(mapStringType(program.getKey()));
                 } else {
-                    resetProgramStateChannels();
+                    resetProgramStateChannels(false);
                     return UnDefType.UNDEF;
                 }
             }
@@ -1263,6 +1265,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         getThingChannel(CHANNEL_DURATION).ifPresent(channel -> updateState(channel.getUID(),
                                 new QuantityType<>(option.getValueAsInt(), SECOND)));
                         break;
+                    case OPTION_FINISH_IN_RELATIVE:
                     case OPTION_REMAINING_PROGRAM_TIME:
                         getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                                 .ifPresent(channel -> updateState(channel.getUID(),

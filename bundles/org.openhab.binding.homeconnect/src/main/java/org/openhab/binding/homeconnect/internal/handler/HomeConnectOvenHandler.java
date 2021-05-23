@@ -111,6 +111,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));
         handlers.put(EVENT_SELECTED_PROGRAM, defaultSelectedProgramStateEventHandler());
+        handlers.put(EVENT_FINISH_IN_RELATIVE, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_REMAINING_PROGRAM_TIME, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_ELAPSED_PROGRAM_TIME, defaultElapsedProgramTimeEventHandler());
@@ -130,7 +131,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
             if (STATE_POWER_ON.equals(event.getValue())) {
                 updateChannels();
             } else {
-                resetProgramStateChannels();
+                resetProgramStateChannels(true);
                 getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                         .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
@@ -226,8 +227,8 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ELAPSED_PROGRAM_TIME).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
