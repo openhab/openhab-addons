@@ -158,6 +158,8 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
         if (offline) {
             getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_IDOS1).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_IDOS2).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
 }
