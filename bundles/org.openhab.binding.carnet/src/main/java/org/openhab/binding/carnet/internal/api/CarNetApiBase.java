@@ -346,6 +346,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     public String controlClimater(boolean start, String heaterSource) throws CarNetException {
         String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8";
         String body = "", action = "";
+        boolean secToken = !CNAPI_HEATER_SOURCE_ELECTRIC.equals(heaterSource);
         if (start) {
             if ((config.account.apiLevelClimatisation == 1) || heaterSource.isEmpty()) {
                 // simplified format without header source
@@ -366,7 +367,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         }
         return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions",
                 CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, start ? action : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP,
-                true, contentType, body);
+                secToken, contentType, body);
     }
 
     public String controlClimaterTemp(double tempC, String heaterSource) throws CarNetException {
@@ -394,8 +395,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
                     + "<performAction xmlns=\"http://audi.de/connect/rs\"><quickstart>" + "<active>"
                     + (start ? "true" : "false") + "</active>" + "</quickstart></performAction>";
-            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
-                    true, contentType, body);
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
+                    contentType, body);
         } else {
             // Version 2.0.2 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
@@ -411,7 +412,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     public String controlVentilation(boolean start, int duration) throws CarNetException {
         String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
-        if (config.account.apiLevelVentilation == 1) {
+        if (config.account.apiLevelVentilation == 2) {
             // Version 2.0 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml";
             body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><performAction xmlns=\"http://audi.de/connect/rs\">"

@@ -751,7 +751,7 @@ public class CarNetApiGSonDTO {
                 }
 
                 public class CNParkingClockStatusData {
-                    CNContentString vehicleParkingClock;
+                    public CNContentString vehicleParkingClock;
                 }
 
                 public CarNetClimaterStatusData climatisationStatusData;

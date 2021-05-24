@@ -103,6 +103,10 @@ public class CarNetRemoteServiceClimater extends CarNetRemoteBaseService {
                         }
                     }
                 }
+                if (cs.status.vehicleParkingClockStatusData != null) {
+                    logger.debug("{}: vehicleParkingClock = {}", thingId,
+                            getString(cs.status.vehicleParkingClockStatusData.vehicleParkingClock.content));
+                }
             }
         } catch (IncommensurableException e) {
             logger.debug("IncommensurableException ignored");
