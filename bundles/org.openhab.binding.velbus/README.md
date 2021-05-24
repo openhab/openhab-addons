@@ -152,7 +152,7 @@ OnOff command types are supported.
 For thing type `vmb4ry` 4 channels are available `CH1` ... `CH4`.
 OnOff command types are supported.
 
-For thing types `vmb1ryno`, `vmb1rynos`, `vmb1rys`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
+For thing types `vmb1ryno`, `vmb1rynos`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
 OnOff command types are supported.
 
 For thing types `vmb1rys` 6 channels are available `CH1` ... `CH6`.
