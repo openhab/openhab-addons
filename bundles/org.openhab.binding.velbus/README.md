@@ -218,7 +218,7 @@ Additionally, these modules have a number of channels to set the module's alarms
 The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED`or `LONG_PRESSED`.
 
 To remove the state of the Item in the Sitemap for a `button` channel.
-Go to the the Items list, select the Item, add a State Description Mettadata, and set the Pattern value to a blank space.
+Go to the Items list, select the Item, add a State Description Metadata, and set the Pattern value to a blank space.
 
 ## Full Example
 
