@@ -172,7 +172,7 @@ For thing type `vmb7in` 8 channels are available `CH1` ... `CH8`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
 8 trigger channels on channels `input#CH1` ... `input#CH8`.
 
-For thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` 
+For thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1`  8 channels are available `CH1` ... `CH8`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
 8 trigger channels on channels `input:CH1` ... `input:CH8`.
 
