@@ -75,7 +75,6 @@ public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
             String parkingTime = getString(position.getParkingTime());
             updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
                     !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.UNDEF);
-            return true;
         } catch (CarNetException e) {
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, UnDefType.UNDEF);
@@ -83,7 +82,7 @@ public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
                 throw e;
             }
         }
-        return false;
+        return updated;
     }
 
     private boolean updateLocation(CarNetVehiclePosition position, String channel) {

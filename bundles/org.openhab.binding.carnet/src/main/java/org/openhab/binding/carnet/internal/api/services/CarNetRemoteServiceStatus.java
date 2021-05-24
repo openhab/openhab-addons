@@ -177,7 +177,7 @@ public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
         updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED,
                 windowsClosed ? OnOffType.ON : OnOffType.OFF);
 
-        return true;
+        return updated;
     }
 
     private boolean checkMaintenance(CNStatusField field, ChannelIdMapEntry definition) {

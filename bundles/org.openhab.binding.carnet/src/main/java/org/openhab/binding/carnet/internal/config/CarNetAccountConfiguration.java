@@ -27,8 +27,6 @@ public class CarNetAccountConfiguration {
     public String user = "";
     public String password = "";
 
-    public int apiLevelLockUnlock = 2;
-    public int apiLevelVentilation = 1;
+    public int apiLevelVentilation = 2;
     public int apiLevelClimatisation = 2;
-    public boolean enableHonkFlash = false;
 }

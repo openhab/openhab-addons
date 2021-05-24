@@ -23,7 +23,7 @@
 		<parameter name="apiLevelVentilation" type="integer" min="1" max="2" required="false">
 			<label>API Level Ventilation</label>
 			<description>Specifies API format variant to control ventilation, change only if not working with default</description>
-			<default>1</default>
+			<default>2</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="apiLevelClimatisation" type="integer" min="1" max="2" required="false">

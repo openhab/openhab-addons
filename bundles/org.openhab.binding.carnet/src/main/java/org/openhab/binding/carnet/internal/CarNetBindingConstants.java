@@ -77,8 +77,10 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_CONTROL_LOCK = "lock";
     public static final String CHANNEL_CONTROL_CHARGER = "charge";
     public static final String CHANNEL_CONTROL_CLIMATER = "climater";
+    public static final String CHANNEL_CONTROL_HEATSOURCE = "heaterSource";
     public static final String CHANNEL_CONTROL_WINHEAT = "windowHeat";
     public static final String CHANNEL_CONTROL_PREHEAT = "preHeater";
+    public static final String CHANNEL_CONTROL_DURATION = "duration";
     public static final String CHANNEL_CONTROL_VENT = "ventilation";
     public static final String CHANNEL_CONTROL_FLASH = "flash";
     public static final String CHANNEL_CONTROL_HONKFLASH = "honkFlash";

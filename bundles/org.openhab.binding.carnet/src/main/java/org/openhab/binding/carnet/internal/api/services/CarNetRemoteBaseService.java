@@ -65,7 +65,7 @@ public class CarNetRemoteBaseService {
     }
 
     // will be overload by service
-    public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         return false;
     }
 

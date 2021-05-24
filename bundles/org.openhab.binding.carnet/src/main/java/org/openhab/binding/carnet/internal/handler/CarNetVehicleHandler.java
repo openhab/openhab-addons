@@ -57,6 +57,7 @@ import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -341,6 +342,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         String action = "";
         String actionStatus = "";
         boolean switchOn = (command instanceof OnOffType) && (OnOffType) command == OnOffType.ON;
+        logger.debug("{}: Channel {} received command {}", thingId, channelId, command);
         try {
             switch (channelId) {
                 case CHANNEL_CONTROL_UPDATE:
@@ -355,11 +357,15 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 case CHANNEL_CONTROL_CLIMATER:
                     sendOffOnError = true;
                     action = switchOn ? "startClimater" : "stopClimater";
-                    actionStatus = api.controlClimater(switchOn, CNAPI_HEATER_SOURCE_ELECTRIC);
+                    actionStatus = api.controlClimater(switchOn, getHeaterSource());
                     break;
                 case CHANNEL_CLIMATER_TARGET_TEMP:
-                    actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(),
-                            CNAPI_HEATER_SOURCE_ELECTRIC);
+                    actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(), getHeaterSource());
+                    break;
+                case CHANNEL_CONTROL_HEATSOURCE:
+                    String heaterSource = command.toString().toLowerCase();
+                    logger.debug("{}: Set heater source for climatisation to {}", thingId, heaterSource);
+                    cache.setValue(channelId, channelUID.getId(), new StringType(heaterSource));
                     break;
                 case CHANNEL_CONTROL_CHARGER:
                     sendOffOnError = true;
@@ -378,26 +384,27 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 case CHANNEL_CONTROL_PREHEAT:
                     sendOffOnError = true;
                     action = switchOn ? "startPreHeat" : "stopPreHeat";
-                    actionStatus = api.controlPreHeating(switchOn);
+                    actionStatus = api.controlPreHeating(switchOn, 30);
                     break;
                 case CHANNEL_CONTROL_VENT:
                     sendOffOnError = true;
                     action = switchOn ? "startVentilation" : "stopVentilation";
-                    actionStatus = api.controlVentilation(switchOn, 30);
+                    actionStatus = api.controlVentilation(switchOn, getDuration());
+                    break;
+                case CHANNEL_CONTROL_DURATION:
+                    DecimalType value = new DecimalType(((DecimalType) command).intValue());
+                    logger.debug("{}: Set ventilation/pre-heat duration to {}", thingId, value);
+                    cache.setValue(channelUID.getId(), value);
                     break;
                 case CHANNEL_CONTROL_FLASH:
                 case CHANNEL_CONTROL_HONKFLASH:
                     sendOffOnError = true;
-                    if (config.account.enableHonkFlash) {
-                        State point = cache.getValue(mkChannelId(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO));
-                        if (point != UnDefType.NULL) {
-                            actionStatus = api.controlHonkFlash(CHANNEL_CONTROL_HONKFLASH.equals(channelId),
-                                    (PointType) point);
-                        } else {
-                            logger.warn("{}: Geo position is not available, can't execute command", thingId);
-                        }
+                    State point = cache.getValue(mkChannelId(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO));
+                    if (point != UnDefType.NULL) {
+                        actionStatus = api.controlHonkFlash(CHANNEL_CONTROL_HONKFLASH.equals(channelId),
+                                (PointType) point);
                     } else {
-                        logger.info("{}: API calls for honk/flash are not enabled, check documentation", thingId);
+                        logger.warn("{}: Geo position is not available, can't execute command", thingId);
                     }
                 default:
                     logger.info("{}: Channel {} is unknown, command {} ignored", thingId, channelId, command);
@@ -405,7 +412,6 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             }
 
             updateActionStatus(action, actionStatus);
-            forceUpdate = true; // update on successful command
         } catch (CarNetException e) {
             CarNetApiErrorDTO res = e.getApiResult().getApiError();
             if (res.isOpAlreadyInProgress()) {
@@ -509,6 +515,16 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 }
             }
         }
+    }
+
+    private String getHeaterSource() {
+        State value = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HEATSOURCE);
+        return value != UnDefType.NULL ? ((StringType) value).toString().toLowerCase() : CNAPI_HEATER_SOURCE_ELECTRIC;
+    }
+
+    private int getDuration() {
+        State state = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_DURATION);
+        return state != UnDefType.NULL ? ((DecimalType) state).intValue() : 30;
     }
 
     /**

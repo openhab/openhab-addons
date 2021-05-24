@@ -318,7 +318,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return fromJson(gson, json, CarNetTripData.class);
     }
 
-    public CarNetOperationList getOperationList() throws CarNetException {
+    public @Nullable CarNetOperationList getOperationList() throws CarNetException {
         return config.vehicle.operationList != null ? config.vehicle.operationList
                 : callApi(config.vehicle.rolesRightsUrl + "/rolesrights/operationlist/v3/vehicles/{2}?scope=ALL",
                         "getOperationList", CNOperationList.class).operationList;
@@ -385,20 +385,10 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         }
     }
 
-    public String controlPreHeating(boolean start) throws CarNetException {
+    public String controlPreHeating(boolean start, int duration) throws CarNetException {
         String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
-        if (config.account.apiLevelVentilation == 2) {
-            // Version 2.0.2 format
-            String hardCodedDuration = "30";
-            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
-            body = start
-                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"heating\",\"active\":true,\"climatisationDuration\":"
-                            + hardCodedDuration + "}}}"
-                    : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
-            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
-                    contentType, body);
-        } else {
+        if (config.account.apiLevelVentilation == 1) {
             // Version 2.0 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml";
             body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
@@ -406,22 +396,22 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     + (start ? "true" : "false") + "</active>" + "</quickstart></performAction>";
             return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
                     true, contentType, body);
+        } else {
+            // Version 2.0.2 format
+            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
+            body = start
+                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"heating\",\"active\":true,\"climatisationDuration\":"
+                            + duration + "}}}"
+                    : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
+                    contentType, body);
         }
     }
 
     public String controlVentilation(boolean start, int duration) throws CarNetException {
         String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
-        if (config.account.apiLevelVentilation == 2) {
-            // Version 2.0.2 format
-            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
-            body = start
-                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"ventilation\",\"active\":true,\"climatisationDuration\":"
-                            + duration + "}}}"
-                    : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
-            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
-                    contentType, body);
-        } else {
+        if (config.account.apiLevelVentilation == 1) {
             // Version 2.0 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml";
             body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><performAction xmlns=\"http://audi.de/connect/rs\">"
@@ -431,6 +421,15 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     + "</performAction>";
             return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
                     true, contentType, body);
+        } else {
+            // Version 2.0.2 format
+            contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
+            body = start
+                    ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"ventilation\",\"active\":true,\"climatisationDuration\":"
+                            + duration + "}}}"
+                    : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
+                    contentType, body);
         }
     }
 

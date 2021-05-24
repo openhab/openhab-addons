@@ -63,6 +63,7 @@ public class CarNetRemoteServiceCharger extends CarNetRemoteBaseService {
 
     @Override
     public boolean serviceUpdate() throws CarNetException {
+        boolean updated = false;
         try {
             CarNetChargerStatus cs = api.getChargerStatus();
             if ((cs.status == null) || (cs.status.chargingStatusData == null)) {
@@ -73,28 +74,30 @@ public class CarNetRemoteServiceCharger extends CarNetRemoteBaseService {
                 String group = CHANNEL_GROUP_CHARGER;
                 State current = cs.settings != null ? getDecimal(cs.settings.maxChargeCurrent.content)
                         : UnDefType.UNDEF;
-                updateChannel(group, CHANNEL_CHARGER_CURRENT, current, Units.AMPERE);
+                updated |= updateChannel(group, CHANNEL_CHARGER_CURRENT, current, Units.AMPERE);
                 if (sd.chargingState != null) {
-                    updateChannel(group, CHANNEL_CHARGER_CHG_STATE, getStringType(sd.chargingState.content));
-                    updateChannel(group, CHANNEL_CHARGER_STATUS, getStringType(sd.chargingState.content));
-                    updateChannel(group, CHANNEL_CONTROL_CHARGER, getOnOff(sd.chargingState.content));
+                    updated |= updateChannel(group, CHANNEL_CHARGER_CHG_STATE, getStringType(sd.chargingState.content));
+                    updated |= updateChannel(group, CHANNEL_CHARGER_STATUS, getStringType(sd.chargingState.content));
+                    updated |= updateChannel(group, CHANNEL_CONTROL_CHARGER, getOnOff(sd.chargingState.content));
                 }
                 if (sd.chargingStateErrorCode != null) {
-                    updateChannel(group, CHANNEL_CHARGER_ERROR, getDecimal(sd.chargingStateErrorCode.content));
+                    updated |= updateChannel(group, CHANNEL_CHARGER_ERROR,
+                            getDecimal(sd.chargingStateErrorCode.content));
                 }
                 if (sd.externalPowerSupplyState != null) {
-                    updateChannel(group, CHANNEL_CHARGER_PWR_STATE, getStringType(sd.externalPowerSupplyState.content));
+                    updated |= updateChannel(group, CHANNEL_CHARGER_PWR_STATE,
+                            getStringType(sd.externalPowerSupplyState.content));
                 }
                 if (sd.energyFlow != null) {
-                    updateChannel(group, CHANNEL_CHARGER_FLOW, getStringType(sd.energyFlow.content));
+                    updated |= updateChannel(group, CHANNEL_CHARGER_FLOW, getStringType(sd.energyFlow.content));
                 }
                 if (cs.status.batteryStatusData != null) {
-                    updateChannel(group, CHANNEL_CHARGER_BAT_STATE,
+                    updated |= updateChannel(group, CHANNEL_CHARGER_BAT_STATE,
                             new QuantityType<>(getInteger(cs.status.batteryStatusData.stateOfCharge.content), PERCENT));
                     if (cs.status.batteryStatusData.remainingChargingTime != null) {
                         int remaining = getDecimal(cs.status.batteryStatusData.remainingChargingTime.content)
                                 .intValue();
-                        updateChannel(group, CHANNEL_CHARGER_REMAINING,
+                        updated |= updateChannel(group, CHANNEL_CHARGER_REMAINING,
                                 remaining == 65535 ? UnDefType.UNDEF
                                         : new QuantityType<>(
                                                 getDecimal(cs.status.batteryStatusData.remainingChargingTime.content),
@@ -102,16 +105,15 @@ public class CarNetRemoteServiceCharger extends CarNetRemoteBaseService {
                     }
                 }
                 if (cs.status.plugStatusData != null) {
-                    updateChannel(group, CHANNEL_CHARGER_PLUG_STATE,
+                    updated |= updateChannel(group, CHANNEL_CHARGER_PLUG_STATE,
                             getStringType(cs.status.plugStatusData.plugState.content));
-                    updateChannel(group, CHANNEL_CHARGER_LOCK_STATE,
+                    updated |= updateChannel(group, CHANNEL_CHARGER_LOCK_STATE,
                             getStringType(cs.status.plugStatusData.lockState.content));
                 }
-                return true;
             }
         } catch (CarNetException e) {
 
         }
-        return false;
+        return updated;
     }
 }

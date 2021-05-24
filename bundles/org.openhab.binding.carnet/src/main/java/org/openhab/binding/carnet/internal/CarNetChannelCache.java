@@ -123,6 +123,14 @@ public class CarNetChannelCache {
         return st != null ? st : UnDefType.NULL;
     }
 
+    public void setValue(String channelId, State value) {
+        channelData.put(channelId, value);
+    }
+
+    public void setValue(String group, String channel, State value) {
+        setValue(mkChannelId(group, channel), value);
+    }
+
     public void resetChannel(String channelId) {
         channelData.remove(channelId);
     }

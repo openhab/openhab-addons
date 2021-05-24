@@ -26,7 +26,6 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNEluActionHisto
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNEluActionHistory.CarNetRluHistory.CarNetRluLockActionList.CarNetRluLockAction;
 import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
-import org.openhab.core.library.types.OnOffType;
 
 /**
  * {@link CarNetRemoteServiceRLU} implements remote vehicle lock/unlock and history.
@@ -67,6 +66,7 @@ public class CarNetRemoteServiceRLU extends CarNetRemoteBaseService {
     }
 
     private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+        boolean updated = false;
         try {
             CarNetRluHistory hist = api.getRluActionHistory();
             int num = getConfig().vehicle.numActionHistory;
@@ -78,21 +78,16 @@ public class CarNetRemoteServiceRLU extends CarNetRemoteBaseService {
                 } else {
                     CarNetRluLockAction entry = hist.actions.action.get(i);
                     String group = CHANNEL_GROUP_RLUHIST + l;
-                    updateChannel(group, CHANNEL_RLUHIST_TS, getDateTime(getString(entry.timestamp)));
-                    updateChannel(group, CHANNEL_RLUHIST_OP, getStringType(entry.operation));
-                    updateChannel(group, CHANNEL_RLUHIST_RES, getStringType(entry.rluResult));
+                    updated |= updateChannel(group, CHANNEL_RLUHIST_TS, getDateTime(getString(entry.timestamp)));
+                    updated |= updateChannel(group, CHANNEL_RLUHIST_OP, getStringType(entry.operation));
+                    updated |= updateChannel(group, CHANNEL_RLUHIST_RES, getStringType(entry.rluResult));
                 }
                 i--;
                 l++;
-                return true;
             }
         } catch (CarNetException e) {
 
         }
-        return false;
-    }
-
-    public String lockDoors(OnOffType onOff) throws CarNetException {
-        return api.controlLock(onOff == OnOffType.ON);
+        return updated;
     }
 }
