@@ -50,8 +50,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Roie Geron - Initial contribution
  */
 @NonNullByDefault
-public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService {
+public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;

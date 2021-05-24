@@ -115,5 +115,4 @@ public class TouchWandThermostatCurrentStatus {
     public void setCommunicationStatus(String communication_status) {
         this.communication_status = communication_status;
     }
-
 }

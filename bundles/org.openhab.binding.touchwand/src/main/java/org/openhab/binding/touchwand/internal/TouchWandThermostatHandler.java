@@ -15,9 +15,10 @@ package org.openhab.binding.touchwand.internal;
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
 import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.dto.TouchWandThermostatUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -92,13 +93,13 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
 
     void updateTargetTemperature(TouchWandThermostatUnitData unitData) {
         int targetTemperature = unitData.getCurrStatus().getTargetTemperature();
-        QuantityType<Temperature> temperatureValue  = new QuantityType<Temperature>(targetTemperature, SIUnits.CELSIUS);
+        QuantityType<Temperature> temperatureValue = new QuantityType<Temperature>(targetTemperature, SIUnits.CELSIUS);
         updateState(CHANNEL_THERMOSTAT_TARGET_TEMPERATURE, temperatureValue);
     }
 
     void updateRoomTemperature(TouchWandThermostatUnitData unitData) {
         int roomTemperature = unitData.getCurrStatus().getRoomTemperature();
-        QuantityType<Temperature> temperatureValue  = new QuantityType<Temperature>(roomTemperature, SIUnits.CELSIUS);
+        QuantityType<Temperature> temperatureValue = new QuantityType<Temperature>(roomTemperature, SIUnits.CELSIUS);
         updateState(CHANNEL_THERMOSTAT_ROOM_TEMPERATURE, temperatureValue);
     }
 
@@ -113,5 +114,4 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
         StringType newVal = StringType.valueOf(fanLevel);
         updateState(CHANNEL_THERMOSTAT_FAN_LEVEL, newVal);
     }
-
 }

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<thing-type id="bsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"></bridge-type-ref>
@@ -12,7 +12,7 @@
 		<channels>
 			<channel id="isOpen" typeId="isOpen"/>
 			<channel id="motion" typeId="motion"/>
-			<channel id="smoke"	 typeId="smoke"/>
+			<channel id="smoke" typeId="smoke"/>
 		</channels>
 	</thing-type>
 	<channel-type id="isOpen">
@@ -26,7 +26,7 @@
 		<label>Motion Detected</label>
 		<category>Motion</category>
 		<state readOnly="true"></state>
-	</channel-type> 
+	</channel-type>
 	<channel-type id="smoke">
 		<item-type>Switch</item-type>
 		<label>Smoke Detected</label>

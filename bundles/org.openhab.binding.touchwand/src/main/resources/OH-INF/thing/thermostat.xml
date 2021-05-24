@@ -3,18 +3,18 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Thermostat Unit</label>
 		<channels>
-			<channel id="state"             typeId="state"/>
+			<channel id="state" typeId="state"/>
 			<channel id="targetTemperature" typeId="targetTemperature"/>
-			<channel id="roomTemperature"   typeId="roomTemperature"/>
-			<channel id="mode"              typeId="mode"/>
-			<channel id="fanLevel"          typeId="fanLevel"/>
+			<channel id="roomTemperature" typeId="roomTemperature"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="fanLevel" typeId="fanLevel"/>
 		</channels>
 	</thing-type>
 	<channel-type id="state">
