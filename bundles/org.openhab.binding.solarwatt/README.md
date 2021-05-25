@@ -24,9 +24,16 @@ The attached devices and supported channels are discovered automatically.
 
 ## Thing Configuration
 
+### EnergyManager
+
 | Property | Default | Required | Description |
 |----------|---------|----------|-------------|
 | hostname | None | Yes | hostname or ip-address of the energy manager. |
+
+### Child Things
+| Property | Default | Required | Description |
+|----------|---------|----------|-------------|
+| guid | None | Yes | Guid of the device as used by the solarwatt energymanager. |
 
 ## Channels
 
