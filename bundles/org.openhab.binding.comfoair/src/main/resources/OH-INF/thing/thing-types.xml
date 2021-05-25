@@ -66,18 +66,7 @@
 			<channel-group id="resets" typeId="resets"/>
 		</channel-groups>
 
-		<config-description>
-			<parameter name="serialPort" type="text" required="true">
-				<label>Serial Port</label>
-				<context>serial-port</context>
-				<description>Serial port that the WHR930 is connected to</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" max="65535" min="10" unit="s" required="false">
-				<label>Refresh Interval</label>
-				<description>Refresh interval in seconds</description>
-				<default>60</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:comfoair:serial"/>
 
 	</thing-type>
 
