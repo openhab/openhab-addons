@@ -35,7 +35,6 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -48,18 +47,12 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class CarNetStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
-    private final CarNetTextResources resources;
     private final CarNetIChanneldMapper channelIdMapper;
 
     @Activate
     public CarNetStateDescriptionProvider(@Reference CarNetTextResources resources,
             @Reference CarNetIChanneldMapper channelIdMapper) {
-        this.resources = resources;
         this.channelIdMapper = channelIdMapper;
-    }
-
-    public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {
-        channelOptionsMap.put(channelUID, options);
     }
 
     @Override
@@ -84,11 +77,6 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         }
     }
 
-    @Deactivate
-    public void deactivate() {
-        channelOptionsMap.clear();
-    }
-
     private @Nullable StateDescriptionFragmentBuilder buildStateDescriptor(String channelId) {
         ChannelIdMapEntry channelDef = channelIdMapper.find(channelId);
         if (channelDef == null) {
@@ -98,10 +86,11 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         StateDescriptionFragmentBuilder state = StateDescriptionFragmentBuilder.create()
                 .withReadOnly(channelDef.readOnly);
         String itemType = channelDef.itemType;
-        String min = getChannelAttribute(channelId, "min");
-        String max = getChannelAttribute(channelId, "max");
-        String step = getChannelAttribute(channelId, "step");
-        String pattern = getChannelAttribute(channelId, "pattern");
+        int min = channelDef.getMin();
+        int max = channelDef.getMax();
+        int step = channelDef.getStep();
+        String pattern = channelDef.getPattern();
+
         if (pattern.isEmpty()) {
             switch (channelDef.itemType) {
                 case ITEMT_SWITCH:
@@ -118,24 +107,25 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
                     }
             }
         }
-        if (!min.isEmpty()) {
-            state = state.withMinimum(new BigDecimal(Double.parseDouble(min)));
-        }
-        if (!max.isEmpty()) {
-            state = state.withMaximum(new BigDecimal(Double.parseDouble(max)));
-        }
-        if (!step.isEmpty()) {
-            state = state.withStep(new BigDecimal(Double.parseDouble(step)));
-        }
         if (!pattern.isEmpty()) {
-            state = state.withPattern(pattern);
+            state = state.withPattern(channelDef.pattern);
+        }
+
+        if (min != -1) {
+            state = state.withMinimum(new BigDecimal(min));
+        }
+        if (max != -1) {
+            state = state.withMaximum(new BigDecimal(max));
+        }
+        if (step != -1) {
+            state = state.withStep(new BigDecimal(step));
+        }
+        if (!channelDef.options.isEmpty()) {
+            for (String opt : channelDef.options.split(",")) {
+                String option = channelDef.getChannelAttribute("state.option." + opt);
+                state.withOption(new StateOption(opt, option));
+            }
         }
         return state;
-    }
-
-    private String getChannelAttribute(String channelId, String attribute) {
-        String key = "channel-type.carnet." + channelId + "." + attribute;
-        String value = resources.getText(key);
-        return !value.equals(key) ? value : "";
     }
 }

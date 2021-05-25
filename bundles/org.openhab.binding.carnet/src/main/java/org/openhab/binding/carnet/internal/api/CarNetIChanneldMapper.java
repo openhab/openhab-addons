@@ -19,7 +19,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.measure.Unit;
 
@@ -62,12 +61,13 @@ public class CarNetIChanneldMapper {
         public boolean disabled = false;
         public boolean advanced = false;
         public boolean readOnly = true;
+        public String options = "";
         public @Nullable Unit<?> fromUnit;
         public @Nullable Unit<?> unit;
-        public Optional<Integer> min = Optional.empty();
-        public Optional<Integer> max = Optional.empty();
-        public Optional<Integer> step = Optional.empty();
-        public Optional<String> pattern = Optional.empty();
+        public int min = -1;
+        public int max = -1;
+        public int step = -1;
+        public String pattern = "";
 
         public ChannelIdMapEntry(CarNetTextResources resources) {
             this.resources = resources;
@@ -91,6 +91,29 @@ public class CarNetIChanneldMapper {
 
         public String getReadOnly() {
             return getChannelAttribute("readonly");
+        }
+
+        public Integer getMin() {
+            String value = getChannelAttribute("min");
+            return !value.isEmpty() ? Integer.parseInt(value) : -1;
+        }
+
+        public Integer getMax() {
+            String value = getChannelAttribute("maxm" + "");
+            return !value.isEmpty() ? Integer.parseInt(value) : -1;
+        }
+
+        public Integer getStep() {
+            String value = getChannelAttribute("step");
+            return !value.isEmpty() ? Integer.parseInt(value) : -1;
+        }
+
+        public String getOptions() {
+            return getChannelAttribute("options");
+        }
+
+        public String getPattern() {
+            return getChannelAttribute("pattern");
         }
 
         /**
@@ -222,6 +245,12 @@ public class CarNetIChanneldMapper {
         }
         entry.advanced = advanced;
         entry.readOnly = readOnly;
+
+        entry.min = entry.getMin();
+        entry.max = entry.getMax();
+        entry.pattern = entry.getPattern();
+        entry.options = entry.getOptions();
+
         return entry;
     }
 
@@ -335,23 +364,6 @@ public class CarNetIChanneldMapper {
         add("UTC_TIME_STATUS", "0x0101010001");
     }
 
-    public void dumpChannelDefinitions() {
-        try (FileWriter myWriter = new FileWriter("carnetChannels.MD")) {
-            String lastGroup = "";
-            for (Map.Entry<String, ChannelIdMapEntry> m : map.entrySet()) {
-                ChannelIdMapEntry e = m.getValue();
-                if (!e.channelName.isEmpty()) {
-                    String group = lastGroup.equals(e.groupName) ? "" : e.groupName;
-                    String s = String.format("| %-12.12s | %-23.23s | %-20.20s | %-7s | %-90s |\n", group,
-                            e.channelName, e.itemType, e.readOnly ? "yes" : "no", e.getDescription());
-                    myWriter.write(s);
-                    lastGroup = e.groupName;
-                }
-            }
-        } catch (IOException e) {
-        }
-    }
-
     private ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,
             @Nullable Unit<?> unit) {
         boolean advanced = CHANNEL_GROUP_STATUS.equals(group) || CHANNEL_GROUP_WINDOWS.equals(group)
@@ -374,5 +386,22 @@ public class CarNetIChanneldMapper {
     public ChannelIdMapEntry add(String group, String channel, String itemType, @Nullable Unit<?> unit,
             boolean advanced, boolean readOnly) {
         return add(mkChannelId(group, channel), channel, channel, itemType, group, unit, advanced, readOnly);
+    }
+
+    public void dumpChannelDefinitions() {
+        try (FileWriter myWriter = new FileWriter("carnetChannels.MD")) {
+            String lastGroup = "";
+            for (Map.Entry<String, ChannelIdMapEntry> m : map.entrySet()) {
+                ChannelIdMapEntry e = m.getValue();
+                if (!e.channelName.isEmpty()) {
+                    String group = lastGroup.equals(e.groupName) ? "" : e.groupName;
+                    String s = String.format("| %-12.12s | %-23.23s | %-20.20s | %-7s | %-90s |\n", group,
+                            e.channelName, e.itemType, e.readOnly ? "yes" : "no", e.getDescription());
+                    myWriter.write(s);
+                    lastGroup = e.groupName;
+                }
+            }
+        } catch (IOException e) {
+        }
     }
 }
