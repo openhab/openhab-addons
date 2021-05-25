@@ -71,16 +71,23 @@ As an alternative, it provides a things-file template.
 
 The account has the following parameters:
 
-| Name        | Type      | Description                                                                                                                                                |
-| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| locale      | optional  | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`. |
+| Name        | Type      | Description                                                                                                                                                                     |
+| ----------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email       | required  | E-mail address identifying this account. This exists only to distinguish accounts. If the address is changed after authorization then the account needs to be authorized again. |
+| locale      | optional  | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`.                      |
 
 
 ### Appliance Configuration
 
 The binding configuration UI will show a things-file template containing things for all supported appliances from the paired account.
 This can be used as a starting point for a custom things-file.
-All Miele cloud appliance things have no configuration parameters.
+
+All Miele cloud appliance things have the following parameters:
+
+| Name             | Type      | Description                                                                                                                              |
+| ---------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| deviceIdentifier | required  | Technical device identifier uniquely identifying the Miele appliance. Use the discovery result or the things-file template to obtain it. |
+
 
 ## Channels
 
@@ -431,14 +438,16 @@ Channel ID and channel type ID match unless noted.
 - bottom_temperature_target
 - bottom_temperature_current
 
-### Note on plate_is_present and plate_power_step channels
+### Note on plate_power_step channels
 
-The `plate_x_is_present` channels show whether a plate is present on an appliance.
-The plate numbers do not represent the physical layout of the plates on the appliance, but always start with the `plate_1_is_present` channel.
-This means that a hob with two plates will have `plate_1_is_present` and `plate_2_is_present` active and all other `plate_x_is_present` channels inactive.
+Hob things have an additional property `plateCount` that indicates the number of plates present on the appliance.
+Only the channels `plate_1_power_step` to `plate_x_power_step` will be populated by the binding where `x` is the value of the `plateCount` property.
+
+The plate numbers do not represent the physical layout of the plates on the appliance, but always start with the `plate_1_power_step` channel.
+This means that a hob with two plates will have `plate_1_power_step` and `plate_2_power_step` populated and all other `plate_x_power_step` channels empty.
 
 The `plate_x_power_step` channels show the current power step of the according plate.
-**Please note that different hobs may use dynamic numbering for plates.**
+**Please note that some hobs may use dynamic numbering for plates.**
 Hobs that use dynamic numbering will use the first power step channel that is currently at a power step of zero when the plate is turned on.
 Additionally, when a plate is turned off all other plates with higher numbers will decrease their number by one.
 For example if plate 1, 2 and 3 are active and plate 1 is turned off then plate 2 will become plate 1, plate 3 will become plate 2 and plate 3 will have a power step of zero.
@@ -485,9 +494,9 @@ The following chapters list the properties offered by appliances.
 ### demo.things:
 
 ```
-Bridge mielecloud:account:home [ locale="en" ] {
-    Thing coffee_system 000703261234 "Coffee machine CVA7440" [ ]
-    Thing hob 000160102345 "Cooktop KM7677" [ ]
+Bridge mielecloud:account:home [ email="me@openhab.org", locale="en" ] {
+    Thing coffee_system 000703261234 "Coffee machine CVA7440" [ deviceIdentifier="000703261234" ]
+    Thing hob 000160102345 "Cooktop KM7677" [ deviceIdentifier="000160102345" ]
 }
 ```
 
@@ -574,10 +583,10 @@ We strongly recommend to use a secure connection for pairing, details on this to
 Click `Pair Account` to start the pairing process.
 If not already done, go to the [Miele Developer Portal](https://www.miele.com/f/com/en/register_api.aspx), register there and wait for the confirmation e-mail.
 Obtain your client ID and client secret according to the instructions presented there.
-Once you obtained your client ID and client secret continue pairing by filling in your client ID, client secret and bridge ID.
+Once you obtained your client ID and client secret continue pairing by filling in your client ID, client secret, bridge ID and an e-mail address that you wish to use for identifying the account.
 You may choose any bridge ID you like as long as you only use letters, numbers, underscores and dashes.
-The bridge ID entered here will become part of the thing UID of the paired account and cannot be changed later.
-If you want to change the bridge ID you will need to remove the bridge and pair it again with the new bridge ID.
+The e-mail address does not need to match the e-mail address used for your Miele Cloud Account.
+If you need to change the e-mail address later then you will need to authorize the account again.
 
 ![Pair Account](doc/pair-account.png)
 
@@ -590,7 +599,7 @@ When this is the first time you pair an account, you will need to allow openHAB 
 When everything worked, you are presented with a page stating that pairing was successful.
 Select the locale which should be used to display localized texts in openHAB channels.
 From here, you have two options:
-Either let the binding automatically configure a bridge instance or copy the presented things-file template to a things file and return to the overview page.
+Either let the binding automatically configure a bridge instance or copy the presented things-file template to a things-file and return to the overview page.
 
 ![Pairing Successful](doc/pairing-success.png)
 
