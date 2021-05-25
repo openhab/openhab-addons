@@ -137,10 +137,10 @@ demo.things:
 
 ```
 Bridge solarwatt:energymanager:56f4ac2fa2 [hostname="192.168.0.64", refresh=30, rescan=5]
-// the individual things should be autodiscovered
-Thing solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5 (solarwatt:energymanager:56f4ac2fa2)
-Thing solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007 (solarwatt:energymanager:56f4ac2fa2)
-Thing solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876 (solarwatt:energymanager:56f4ac2fa2)
+// the individual things configured with their energy manager guid
+Thing solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5 [guid="5c7d5929-8fa4-42c5-8737-48bef77b61f5"] (solarwatt:energymanager:56f4ac2fa2)
+Thing solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007 [guid="urn:kiwigrid:gridflow:ERC05-000008007"] (solarwatt:energymanager:56f4ac2fa2)
+Thing solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876 [guid="urn:keba:evstation:2065287"] (solarwatt:energymanager:56f4ac2fa2)
 ```
 
 demo.items:

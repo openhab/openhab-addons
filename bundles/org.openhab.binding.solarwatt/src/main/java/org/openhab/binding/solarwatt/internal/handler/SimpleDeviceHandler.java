@@ -22,6 +22,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.channel.SolarwattChannelTypeProvider;
+import org.openhab.binding.solarwatt.internal.configuration.SolarwattThingConfiguration;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.model.Device;
 import org.openhab.core.library.CoreItemFactory;
@@ -234,11 +235,12 @@ public class SimpleDeviceHandler extends BaseThingHandler {
         if (bridgeHandler != null) {
             Map<String, Device> bridgeDevices = bridgeHandler.getDevices();
             if (bridgeDevices != null) {
-                return bridgeDevices.get(this.editProperties().get(THING_PROPERTIES_GUID));
+                return bridgeDevices.get(this.getConfigAs(SolarwattThingConfiguration.class).guid);
             }
         }
 
-        this.logger.warn("Device not found for thing with guid {}", this.editProperties().get(THING_PROPERTIES_GUID));
+        this.logger.warn("Device not found for thing with guid {}",
+                this.getConfigAs(SolarwattThingConfiguration.class).guid);
 
         return null;
     }

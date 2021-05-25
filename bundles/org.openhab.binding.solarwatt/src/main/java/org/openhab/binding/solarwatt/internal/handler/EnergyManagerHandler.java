@@ -27,8 +27,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.solarwatt.internal.SolarwattConfiguration;
 import org.openhab.binding.solarwatt.internal.channel.SolarwattChannelTypeProvider;
+import org.openhab.binding.solarwatt.internal.configuration.SolarwattBridgeConfiguration;
+import org.openhab.binding.solarwatt.internal.configuration.SolarwattThingConfiguration;
 import org.openhab.binding.solarwatt.internal.discovery.SolarwattDevicesDiscoveryService;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.model.Device;
@@ -147,9 +148,11 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             if (energyManager != null) {
                 this.calculateUpdates(energyManager);
 
-                Map<String, String> properties = this.editProperties();
-                properties.put(THING_PROPERTIES_GUID, energyManager.getGuid());
-                this.updateProperties(properties);
+                /*
+                 * Map<String, String> properties = this.editProperties();
+                 * properties.put(THING_PROPERTIES_GUID, energyManager.getGuid());
+                 * this.updateProperties(properties);
+                 */
                 energyManager.getStateValues().forEach((stateName, stateValue) -> {
                     this.updateState(stateName, stateValue);
                 });
@@ -234,12 +237,12 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         this.logger.debug("{} initialize", this);
-        SolarwattConfiguration localConfig = this.getConfigAs(SolarwattConfiguration.class);
+        SolarwattBridgeConfiguration localConfig = this.getConfigAs(SolarwattBridgeConfiguration.class);
         this.initRefresh(localConfig);
         this.initDeviceCache(localConfig);
     }
 
-    private void initDeviceCache(SolarwattConfiguration localConfig) {
+    private void initDeviceCache(SolarwattBridgeConfiguration localConfig) {
         if (localConfig.hostname.isEmpty()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname is not set");
         } else {
@@ -272,7 +275,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
         this.devicesCache = null;
     }
 
-    private synchronized void initRefresh(SolarwattConfiguration localConfig) {
+    private synchronized void initRefresh(SolarwattBridgeConfiguration localConfig) {
         ScheduledFuture<?> localRefreshJob = this.refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
             this.logger.trace("Setting Energymanager refreshInterval to '{}' seconds", localConfig.refresh);
@@ -386,11 +389,10 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             try {
                 ThingHandler childHandler = childThing.getHandler();
                 if (childHandler != null) {
-                    childHandler.handleCommand(new ChannelUID(childThing.getUID(), THING_PROPERTIES_GUID),
-                            RefreshType.REFRESH);
+                    childHandler.handleCommand(new ChannelUID(childThing.getUID(), "guid"), RefreshType.REFRESH);
                 } else {
                     this.logger.warn("no handler found for thing/device {}",
-                            childThing.getProperties().get(THING_PROPERTIES_GUID));
+                            childThing.getConfiguration().as(SolarwattThingConfiguration.class).guid);
                 }
             } catch (Exception ex) {
                 this.logger.warn("Error processing child with uid {}", childThing.getUID(), ex);

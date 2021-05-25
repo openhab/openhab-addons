@@ -23,7 +23,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.solarwatt.internal.SolarwattConfiguration;
+import org.openhab.binding.solarwatt.internal.configuration.SolarwattBridgeConfiguration;
 import org.openhab.binding.solarwatt.internal.domain.EnergyManagerCollection;
 import org.openhab.binding.solarwatt.internal.domain.dto.EnergyManagerDTO;
 import org.openhab.binding.solarwatt.internal.exception.SolarwattConnectionException;
@@ -60,7 +60,7 @@ public class EnergyManagerConnector {
      *
      * @param configuration containing the hostname.
      */
-    public void setConfiguration(final @Nullable SolarwattConfiguration configuration) {
+    public void setConfiguration(final @Nullable SolarwattBridgeConfiguration configuration) {
         if (configuration != null) {
             String hostname = configuration.hostname;
 

@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarwatt.internal;
+package org.openhab.binding.solarwatt.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SolarwattConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link SolarwattBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Sven Carstens - Initial contribution
  */
 @NonNullByDefault
-public class SolarwattConfiguration {
+public class SolarwattBridgeConfiguration {
     private static final int DEFAULT_RESCAN_MINUTES = 5;
     private static final int DEFAULT_REFRESH_SECONDS = 30;
 
