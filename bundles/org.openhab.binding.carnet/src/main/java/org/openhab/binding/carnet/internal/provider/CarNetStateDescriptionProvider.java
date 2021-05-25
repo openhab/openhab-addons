@@ -63,7 +63,7 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
             return null;
         }
         String channelId = ctu.getId();
-        StateDescriptionFragmentBuilder builder = buildStateDescriptor(channelId);
+        StateDescriptionFragmentBuilder builder = buildStateDescriptor(channelIdMapper, channelId);
         if (builder == null) {
             builder = original == null ? StateDescriptionFragmentBuilder.create()
                     : StateDescriptionFragmentBuilder.create(original);
@@ -77,7 +77,8 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         }
     }
 
-    private @Nullable StateDescriptionFragmentBuilder buildStateDescriptor(String channelId) {
+    public @Nullable static StateDescriptionFragmentBuilder buildStateDescriptor(CarNetIChanneldMapper channelIdMapper,
+            String channelId) {
         ChannelIdMapEntry channelDef = channelIdMapper.find(channelId);
         if (channelDef == null) {
             return null;

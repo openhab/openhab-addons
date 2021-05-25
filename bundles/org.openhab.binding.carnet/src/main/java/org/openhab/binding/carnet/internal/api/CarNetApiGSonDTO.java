@@ -766,6 +766,21 @@ public class CarNetApiGSonDTO {
         CarNetClimaterStatus climater;
     }
 
+    public static class CNHeaterVentilation {
+        public class CarNetHeaterVentilationStatus {
+            public class ClimatisationStateReport {
+                public String climatisationState;
+                public Integer climatisationDuration;
+                public Integer remainingClimateTime;
+                public Integer climateStatusCode;
+            }
+
+            public ClimatisationStateReport climatisationStateReport;
+        }
+
+        CarNetHeaterVentilationStatus statusResponse;
+    }
+
     public static class CNVehicleSpec {
         public class CarNetVehicleSpec {
             public class CarNetUserVehicles {

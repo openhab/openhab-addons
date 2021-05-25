@@ -40,6 +40,8 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNDestinations;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNDestinations.CarNetDestinationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNEluActionHistory;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNEluActionHistory.CarNetRluHistory;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNHeaterVentilation;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNHeaterVentilation.CarNetHeaterVentilationStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList.CarNetServiceInfo;
@@ -396,8 +398,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
                     + "<performAction xmlns=\"http://audi.de/connect/rs\"><quickstart>" + "<active>"
                     + (start ? "true" : "false") + "</active>" + "</quickstart></performAction>";
-            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
-                    contentType, body);
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
+                    true, contentType, body);
         } else {
             // Version 2.0.2 format
             contentType = "application/vnd.vwg.mbb.RemoteStandheizung_v2_0_2+json";
@@ -405,8 +407,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     ? "{\"performAction\":{\"quickstart\":{\"startMode\":\"heating\",\"active\":true,\"climatisationDuration\":"
                             + duration + "}}}"
                     : "{\"performAction\":{\"quickstop\":{\"active\":false}}}";
-            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/action", CNAPI_SERVICE_REMOTE_HEATING, action, true,
-                    contentType, body);
+            return sendAction("bs/rs/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING, action,
+                    true, contentType, body);
         }
     }
 
@@ -454,6 +456,11 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     public CarNetClimaterStatus getClimaterStatus() throws CarNetException {
         return callApi("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater", "climaterStatus",
                 CNClimater.class).climater;
+    }
+
+    public CarNetHeaterVentilationStatus getHeaterVentilationStatus() throws CarNetException {
+        return callApi("bs/rs/v1/{0}/{1}/vehicles/{2}/status", "heaterVentilationStatus",
+                CNHeaterVentilation.class).statusResponse;
     }
 
     public String getClimaterTimer() throws CarNetException {

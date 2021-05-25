@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.carnet.internal.provider;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,9 +30,7 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -77,11 +72,15 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
             return null;
         }
 
-        StateDescriptionFragment desc = buildStateDescriptor(channelId);
-        ChannelType ct = ChannelTypeBuilder.state(channelTypeUID, channelDef.getLabel(), channelDef.itemType)
-                .withDescription(channelDef.getDescription()).isAdvanced(channelDef.advanced)
-                .withStateDescriptionFragment(desc).build();
-        channelTypes.add(ct);
+        StateDescriptionFragmentBuilder desc = CarNetStateDescriptionProvider.buildStateDescriptor(channelIdMapper,
+                channelId);
+        ChannelType ct = null;
+        if (desc != null) {
+            ct = ChannelTypeBuilder.state(channelTypeUID, channelDef.getLabel(), channelDef.itemType)
+                    .withDescription(channelDef.getDescription()).isAdvanced(channelDef.advanced)
+                    .withStateDescriptionFragment(desc.build()).build();
+            channelTypes.add(ct);
+        }
         return ct;
     }
 
@@ -126,57 +125,5 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
             }
         }
         return false;
-    }
-
-    private @Nullable StateDescriptionFragment buildStateDescriptor(String channelId) {
-        ChannelIdMapEntry channelDef = channelIdMapper.find(channelId);
-        if (channelDef == null) {
-            return null;
-        }
-
-        StateDescriptionFragmentBuilder state = StateDescriptionFragmentBuilder.create()
-                .withReadOnly(channelDef.readOnly);
-
-        String itemType = channelDef.itemType;
-        int min = channelDef.getMin();
-        int max = channelDef.getMax();
-        int step = channelDef.getStep();
-        String pattern = channelDef.getPattern();
-
-        if (pattern.isEmpty()) {
-            switch (channelDef.itemType) {
-                case ITEMT_SWITCH:
-                case ITEMT_CONTACT:
-                    break;
-                case ITEMT_STRING:
-                    pattern = "%s";
-                    break;
-                case ITEMT_NUMBER:
-                case ITEMT_PERCENT:
-                default:
-                    if ((channelDef.unit != null) && itemType.contains("Number")) {
-                        pattern = "%.1f %unit%";
-                    }
-            }
-        }
-        if (!pattern.isEmpty()) {
-            state = state.withPattern(channelDef.pattern);
-        }
-        if (min != -1) {
-            state = state.withMinimum(new BigDecimal(min));
-        }
-        if (max != -1) {
-            state = state.withMaximum(new BigDecimal(max));
-        }
-        if (step != -1) {
-            state = state.withStep(new BigDecimal(step));
-        }
-        if (!channelDef.options.isEmpty()) {
-            for (String opt : channelDef.options.split(",")) {
-                String option = channelDef.getChannelAttribute("state.option." + opt);
-                state.withOption(new StateOption(opt, option));
-            }
-        }
-        return state.build();
     }
 }
