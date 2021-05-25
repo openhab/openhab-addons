@@ -196,6 +196,21 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
     }
 
     @Test
+    public void testThingStatusIsSetToOfflineWithDetailConfigurationErrorAndDescriptionWhenTheEmailAddressIsInvalid()
+            throws Exception {
+        // given:
+        getBridge().getConfiguration().setProperties(
+                Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, "not!a!mail$address"));
+
+        // when:
+        getHandler().initialize();
+
+        // then:
+        assertThingStatusIs(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                MieleCloudBindingConstants.I18NKeys.BRIDGE_STATUS_DESCRIPTION_INVALID_EMAIL);
+    }
+
+    @Test
     public void testThingStatusIsSetToOfflineWithDetailConfigurationErrorAndDescriptionWhenTheMieleAccountHasNotBeenAuthorized()
             throws Exception {
         // given:
