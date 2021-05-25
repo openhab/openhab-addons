@@ -209,18 +209,18 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             return;
         }
 
-        int zone_offset = Integer.parseInt(message.getPropertyById("zone_offset"));
+        int zoneOffset = Integer.parseInt(message.getPropertyById("zone_offset"));
 
         for (int i = 1; i <= 16; i++) {
-            int zoneNumber = zone_offset * 16 + i;
+            int zoneNumber = zoneOffset * 16 + i;
 
-            String zone_faulted = message.getPropertyById("zone_" + i + "_faulted");
-            String zone_bypassed = message.getPropertyById("zone_" + i + "_bypassed");
-            String zone_trouble = message.getPropertyById("zone_" + i + "_trouble");
-            String zone_alarm_memory = message.getPropertyById("zone_" + i + "_alarm_memory");
+            String zoneFaulted = message.getPropertyById("zone_" + i + "_faulted");
+            String zoneBypassed = message.getPropertyById("zone_" + i + "_bypassed");
+            String zoneTrouble = message.getPropertyById("zone_" + i + "_trouble");
+            String zoneAlarmMemory = message.getPropertyById("zone_" + i + "_alarm_memory");
 
             logger.debug("Flags for zone {}. faulted:{}, bypassed:{}, trouble:{}, alarm_memory:{}", zoneNumber,
-                    zone_faulted, zone_bypassed, zone_trouble, zone_alarm_memory);
+                    zoneFaulted, zoneBypassed, zoneTrouble, zoneAlarmMemory);
 
             // Get thing
             Thing thing = bridgeHandler.findThing(CaddxThingType.ZONE, null, zoneNumber, null);
@@ -230,13 +230,13 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
                 logger.debug("Thing found for zone {}.", zoneNumber);
 
                 channelUID = new ChannelUID(thing.getUID(), "zone_faulted");
-                updateChannel(channelUID, zone_faulted);
+                updateChannel(channelUID, zoneFaulted);
                 channelUID = new ChannelUID(thing.getUID(), "zone_bypassed");
-                updateChannel(channelUID, zone_bypassed);
+                updateChannel(channelUID, zoneBypassed);
                 channelUID = new ChannelUID(thing.getUID(), "zone_trouble");
-                updateChannel(channelUID, zone_trouble);
+                updateChannel(channelUID, zoneTrouble);
                 channelUID = new ChannelUID(thing.getUID(), "zone_alarm_memory");
-                updateChannel(channelUID, zone_alarm_memory);
+                updateChannel(channelUID, zoneAlarmMemory);
             }
         }
     }
