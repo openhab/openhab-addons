@@ -115,7 +115,9 @@
 				<option value="ON_SPEED_1">ON speed 1</option>
 				<option value="ON_SPEED_2">ON speed 2</option>
 				<option value="ON_SPEED_3">ON speed 3</option>
-				<option value="STANDBY_FAN_COIL">Standby Fan Coil</option>
+				<option value="OFF_SPEED_1">OFF speed 1</option>
+				<option value="OFF_SPEED_2">OFF speed 2</option>
+				<option value="OFF_SPEED_3">OFF speed 3</option>
 			</options>
 		</state>
 	</channel-type>
@@ -135,7 +137,9 @@
 				<option value="ON_SPEED_1">ON speed 1</option>
 				<option value="ON_SPEED_2">ON speed 2</option>
 				<option value="ON_SPEED_3">ON speed 3</option>
-				<option value="STANDBY_FAN_COIL">Standby Fan Coil</option>
+				<option value="OFF_SPEED_1">OFF speed 1</option>
+				<option value="OFF_SPEED_2">OFF speed 2</option>
+				<option value="OFF_SPEED_3">OFF speed 3</option>
 			</options>
 		</state>
 	</channel-type>
@@ -155,7 +159,9 @@
 				<option value="ON_SPEED_1">ON speed 1</option>
 				<option value="ON_SPEED_2">ON speed 2</option>
 				<option value="ON_SPEED_3">ON speed 3</option>
-				<option value="STANDBY_FAN_COIL">Standby Fan Coil</option>
+				<option value="OFF_SPEED_1">OFF speed 1</option>
+				<option value="OFF_SPEED_2">OFF speed 2</option>
+				<option value="OFF_SPEED_3">OFF speed 3</option>
 			</options>
 		</state>
 	</channel-type>
