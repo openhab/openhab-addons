@@ -88,7 +88,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                                 .getAffectedReadCommands(channelId, keysToUpdate);
 
                         if (!affectedReadCommands.isEmpty()) {
-                            Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
+                            Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands, keysToUpdate);
                             affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
                         }
                     } else {
@@ -273,7 +273,8 @@ public class ComfoAirHandler extends BaseThingHandler {
                     }
                     if (value instanceof UnDefType) {
                         if (logger.isWarnEnabled()) {
-                            logger.warn("unexpected value for DATA: {}", ComfoAirSerialConnector.dumpData(response));
+                            logger.warn("unexpected value for key '{}'. DATA: {}", commandKey,
+                                    ComfoAirSerialConnector.dumpData(response));
                         }
                     }
                     return value;
@@ -320,9 +321,11 @@ public class ComfoAirHandler extends BaseThingHandler {
     private class AffectedItemsUpdateThread implements Runnable {
 
         private Collection<ComfoAirCommand> affectedReadCommands;
+        private Set<String> linkedChannels;
 
-        public AffectedItemsUpdateThread(Collection<ComfoAirCommand> affectedReadCommands) {
+        public AffectedItemsUpdateThread(Collection<ComfoAirCommand> affectedReadCommands, Set<String> linkedChannels) {
             this.affectedReadCommands = affectedReadCommands;
+            this.linkedChannels = linkedChannels;
         }
 
         @Override
@@ -334,8 +337,10 @@ public class ComfoAirHandler extends BaseThingHandler {
 
                     for (ComfoAirCommandType commandType : commandTypes) {
                         String commandKey = commandType.getKey();
-                        State state = sendCommand(readCommand, commandKey);
-                        updateState(commandKey, state);
+                        if (linkedChannels.contains(commandKey)) {
+                            State state = sendCommand(readCommand, commandKey);
+                            updateState(commandKey, state);
+                        }
                     }
                 }
             }
