@@ -64,22 +64,19 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
             if (stringTypeCommand.equals(PRESSED) || stringTypeCommand.equals(LONG_PRESSED)) {
                 VelbusButtonPacket packet = new VelbusButtonPacket(getModuleAddress().getChannelIdentifier(channelUID));
 
-                try {
-                    packet.Pressed();
-                    velbusBridgeHandler.sendPacket(packet.getBytes());
-                    Thread.sleep(20);
+                packet.Pressed();
+                velbusBridgeHandler.sendPacket(packet.getBytes());
+                triggerChannel("CH6t", CommonTriggerEvents.PRESSED);
 
-                    if (stringTypeCommand.equals(LONG_PRESSED)) {
-                        packet.LongPressed();
-                        velbusBridgeHandler.sendPacket(packet.getBytes());
-                        Thread.sleep(20);
-                    }
-
-                    packet.Released();
+                if (stringTypeCommand.equals(LONG_PRESSED)) {
+                    packet.LongPressed();
                     velbusBridgeHandler.sendPacket(packet.getBytes());
-                } catch (InterruptedException e) {
-                    // do nothing
+                    triggerChannel("CH6t", CommonTriggerEvents.LONG_PRESSED);
                 }
+
+                packet.Released();
+                velbusBridgeHandler.sendPacket(packet.getBytes());
+                triggerChannel("CH6t", CommonTriggerEvents.RELEASED);
             } else {
                 throw new UnsupportedOperationException(
                         "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
