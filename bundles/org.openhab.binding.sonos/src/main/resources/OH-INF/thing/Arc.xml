@@ -67,6 +67,7 @@
 			<channel id="surroundmusicmode" typeId="surroundmusicmode"/>
 			<channel id="surroundmusiclevel" typeId="surroundmusiclevel"/>
 			<channel id="surroundtvlevel" typeId="surroundtvlevel"/>
+			<channel id="heightlevel" typeId="heightlevel"/>
 		</channels>
 
 		<properties>
