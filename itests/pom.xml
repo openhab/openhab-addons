@@ -22,6 +22,7 @@
     <module>org.openhab.binding.feed.tests</module>
     <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
+    <module>org.openhab.binding.mielecloud.tests</module>
     <module>org.openhab.binding.modbus.tests</module>
     <!-- MQTT tests need to be refactored to not use the embedded broker bundle anymore
       <module>org.openhab.binding.mqtt.homeassistant.tests</module>

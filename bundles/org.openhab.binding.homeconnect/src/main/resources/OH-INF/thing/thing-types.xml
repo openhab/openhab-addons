@@ -366,6 +366,7 @@
 		<item-type>String</item-type>
 		<label>Selected Program</label>
 		<description>This state describes the selected program of the home appliance.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="remaining_program_time_state">
 		<item-type>Number:Time</item-type>
@@ -425,6 +426,7 @@
 				<option value="LaundryCare.Washer.EnumType.Temperature.UlExtraHot">Extra hot (US/CA)</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="laundry_care_washer_spin_speed">
 		<item-type>String</item-type>
@@ -447,6 +449,7 @@
 				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlHigh">High (US/CA)</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos1">
 		<item-type>String</item-type>
@@ -461,6 +464,7 @@
 				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Strong">Strong</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos2">
 		<item-type>String</item-type>
@@ -475,6 +479,7 @@
 				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Strong">Strong</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="setpoint_temperature_refrigerator">
 		<item-type>Number:Temperature</item-type>
@@ -508,6 +513,7 @@
 		<label>Drying Target</label>
 		<description>Specifies the desired dryness setting.</description>
 		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="hood_venting_level">
 		<item-type>String</item-type>
