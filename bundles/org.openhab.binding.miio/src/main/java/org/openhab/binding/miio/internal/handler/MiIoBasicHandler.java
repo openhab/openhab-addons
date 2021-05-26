@@ -130,8 +130,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), command.toString());
+        if (handleCommandsChannels(channelUID, command)) {
+            forceStatusUpdate();
             return;
         }
         logger.debug("Locating action for {} channel '{}': '{}'", getThing().getUID(), channelUID.getId(), command);
@@ -263,13 +263,17 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                 }
             }
-            updateDataCache.invalidateValue();
-            miIoScheduler.schedule(() -> {
-                updateData();
-            }, 3000, TimeUnit.MILLISECONDS);
+            forceStatusUpdate();
         } else {
             logger.debug("Actions not loaded yet, or none available");
         }
+    }
+
+    private void forceStatusUpdate() {
+        updateDataCache.invalidateValue();
+        miIoScheduler.schedule(() -> {
+            updateData();
+        }, 3000, TimeUnit.MILLISECONDS);
     }
 
     private @Nullable JsonElement miotTransform(MiIoBasicChannel miIoBasicChannel, @Nullable JsonElement value) {
