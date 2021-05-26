@@ -143,16 +143,17 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
                     BridgeApiAuthDto authResult = gson.fromJson(responseData, BridgeApiAuthDto.class);
                     if (authResult != null && authResult.isSuccess()) {
                         discoverBridge(bridge, authResult.getToken());
-                        return;
                     } else {
                         logger.warn(
                                 "Failed to get API token for bridge {}({}) - bridge did not return success response, make sure button on bridge was pressed during discovery",
                                 bridge.getIp(), bridge.getBridgeId());
+                        discoverBridge(bridge, "");
                     }
                 } else if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
                     logger.error(
                             "Failed to get API token for bridge {}({}) - bridge authentication is disabled, check settings",
                             bridge.getIp(), bridge.getBridgeId());
+                    discoverBridge(bridge, "");
                 } else {
                     logger.error("Failed to get API token for bridge {}({}) - invalid status {}: {}", bridge.getIp(),
                             bridge.getBridgeId(), response.getStatus(), responseData);
@@ -162,7 +163,6 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
                         e.getMessage());
                 logger.debug("Failed to get API token for bridge {}({})", bridge.getIp(), bridge.getBridgeId(), e);
             }
-            discoverBridge(bridge, "");
         }
     }
 }
