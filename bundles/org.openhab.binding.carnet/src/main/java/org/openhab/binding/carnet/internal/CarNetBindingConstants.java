@@ -84,6 +84,7 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_CONTROL_VENT = "ventilation";
     public static final String CHANNEL_CONTROL_FLASH = "flash";
     public static final String CHANNEL_CONTROL_HONKFLASH = "honkFlash";
+    public static final String CHANNEL_CONTROL_HFDURATION = "hfDuration";
 
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_LOCATTION_GEO = "locationPosition";
@@ -195,6 +196,7 @@ public class CarNetBindingConstants {
     public static final String CNAPI_BRAND_VWGO = "Go";
     public static final String CNAPI_BRAND_SKODA = "Skoda";
     public static final String CNAPI_BRAND_SEAT = "Seat";
+    public static final String CNAPI_BRAND_NULL = "NULL";
 
     public static final String CONTENT_TYPE_FORM_URLENC = "application/x-www-form-urlencoded";
     public static final String CONTENT_TYPE_JSON = "application/json";
@@ -204,6 +206,9 @@ public class CarNetBindingConstants {
     public static final int API_REQUEST_TIMEOUT_SEC = 120 + 5;
     public static final int API_REQUEST_CHECK_INT = 15 / POLL_INTERVAL_SEC; // interval for checking pending requests
     public static final int API_TIMEOUT_MS = 60 * 1000;
+
+    public static int VENT_DEFAULT_DURATION_MIN = 30;
+    public static int HF_DEFAULT_DURATION_SEC = 10;
 
     public static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
     public static final Unit<Power> KWATT = MetricPrefix.KILO(Units.WATT);

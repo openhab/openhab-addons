@@ -310,7 +310,7 @@ public class CarNetApiGSonDTO {
         }
 
         public double getLongitude() {
-            return coordinate.latitude / 1000000.0;
+            return coordinate.longitude / 1000000.0;
         }
 
         public String getCarSentTime() {
@@ -379,7 +379,7 @@ public class CarNetApiGSonDTO {
     }
 
     public static class CarNetActionResponse {
-        public class CNActionResponse {
+        public static class CNActionResponse {
             public class CNRluActionResponse {
                 public String requestId;
                 public String vin;
@@ -408,15 +408,38 @@ public class CarNetApiGSonDTO {
             }
 
             @SerializedName("CurrentVehicleDataResponse")
-            CarNetCurrentVehicleData currentVehicleDataResponse;
-
-            CNRluActionResponse rluActionResponse;
-            CNRclimaActionResponse action;
-            CNRheatActionResponse performActionResponse;
+            public CarNetCurrentVehicleData currentVehicleDataResponse;
+            public CNRluActionResponse rluActionResponse;
+            public CNRclimaActionResponse action;
+            public CNRheatActionResponse performActionResponse;
+            public CNHonkFlashResponse.CarNetHonkFlashResponse honkAndFlashRequest;
         }
 
         public String requestId;
         public String vin;
+    }
+
+    public static class CNHonkFlashResponse {
+        /*
+         * {"honkAndFlashRequest":{"lastUpdated":"2021-05-26T20:11:37Z","serviceDuration":15,"userPosition":{"latitude":
+         * 59222078,"longitude":18001326},"id":4937451,"serviceOperationCode":"FLASH_ONLY","status":{"statusCode":
+         * "REQUEST_IN_PROGRESS"}}}
+         */
+        public static class CarNetHonkFlashResponse {
+            public static class CNFonkFlashStatusCode {
+                // {'status': {'statusCode': 'REQUEST_IN_PROGRESS'}}
+                public String statusCode;
+            }
+
+            public String id;
+            public String lastUpdated;
+            public Integer serviceDuration;
+            public String serviceOperationCode;
+            public CarNetCoordinate userPosition;
+            public CNFonkFlashStatusCode status;
+        }
+
+        public CarNetHonkFlashResponse honkAndFlashRequest;
     }
 
     public static class CNEluActionHistory {
@@ -872,7 +895,7 @@ public class CarNetApiGSonDTO {
                 public String speedLimit;
             }
 
-            public ArrayList<CarNetpeedAlertEntry> speedAlert;
+            public ArrayList<CarNetpeedAlertEntry> speedAlert = new ArrayList<>();
         }
 
         public CarNetSpeedAlerts speedAlerts;
@@ -924,7 +947,7 @@ public class CarNetApiGSonDTO {
                 public String occurenceDateTime;
             }
 
-            public ArrayList<CarNetGeoFenceAlertEntry> geofencingAlert;
+            public ArrayList<CarNetGeoFenceAlertEntry> geofencingAlert = new ArrayList<>();
         }
 
         public CarNetGeoFenceAlerts geofencingAlerts;
@@ -1076,5 +1099,6 @@ public class CarNetApiGSonDTO {
 
         public CarNetRequestStatus requestStatusResponse;
         public CarNetActionStatus action;
+        public CNHonkFlashResponse.CarNetHonkFlashResponse.CNFonkFlashStatusCode status;
     }
 }

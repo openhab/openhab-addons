@@ -142,6 +142,9 @@ public class CarNetApiConstants {
     public static final String CNAPI_ACTION_VEHICLE_STATUS_REPORT_GET_REQUEST_STATUS = "G_RQSTAT";
     public static final String CNAPI_ACTION_VEHICLE_STATUS_REPORT_GET_STORED_VEHICLE_DATA = "G_SVDATA";
 
+    public static final String CNAPI_CMD_FLASH = "FLASH_ONLY";
+    public static final String CNAPI_CMD_HONK_FLASH = "HONK_AND_FLASH";
+
     public static final String CNAPI_HEATER_SOURCE_AUX = "auxiliary";
     public static final String CNAPI_HEATER_SOURCE_ELECTRIC = "electric";
     public static final String CNAPI_HEATER_SOURCE_AUTOMATIC = "automatic";
@@ -156,6 +159,7 @@ public class CarNetApiConstants {
     public static final String CNAPI_REQUEST_FAIL = "request_fail";
     public static final String CNAPI_REQUEST_QUEUED = "queued"; // rclima
     public static final String CNAPI_REQUEST_FETCHED = "fetched"; // rclima
+    public static final String CNAPI_REQUEST_STARTED = "request_started"; // rhonk
     public static final String CNAPI_REQUEST_FAILED = "failed";
     public static final String CNAPI_REQUEST_ERROR = "api_error";
     public static final String CNAPI_REQUEST_TIMEOUT = "timoute";

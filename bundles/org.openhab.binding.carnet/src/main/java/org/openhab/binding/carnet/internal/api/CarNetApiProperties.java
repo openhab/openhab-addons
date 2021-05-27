@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class CarNetApiProperties {
-    public boolean weakSsl = true;
+    public boolean weakSsl = false;
     public String oidcDate = ""; // Date in getOIDC http response header
     public String oidcConfigUrl = "";
 

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
+import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_BRAND_NULL;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
@@ -30,7 +32,7 @@ public class CarNetBrandApiNull extends CarNetApiBase {
     @Override
     public CarNetApiProperties getProperties() {
         CarNetApiProperties properties = new CarNetApiProperties();
-        properties.brand = "NULL";
+        properties.brand = CNAPI_BRAND_NULL;
         return properties;
     }
 }

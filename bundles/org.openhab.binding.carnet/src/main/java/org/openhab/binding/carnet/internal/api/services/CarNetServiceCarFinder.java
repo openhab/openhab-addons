@@ -90,8 +90,9 @@ public class CarNetServiceCarFinder extends CarNetBaseService {
     }
 
     private boolean updateLocation(CarNetPosition position, String channel) {
-        PointType location = new PointType(new DecimalType(position.getLattitude()),
-                new DecimalType(position.getLongitude()));
+        double latitude = position.getLattitude();
+        double longitude = position.getLongitude();
+        PointType location = new PointType(new DecimalType(latitude), new DecimalType(longitude));
         return updateChannel(CHANNEL_GROUP_LOCATION, channel, location);
     }
 

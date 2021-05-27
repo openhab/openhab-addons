@@ -38,6 +38,7 @@ public class CarNetServiceHonkFlash extends CarNetBaseService {
         if (api.isRemoteServiceAvailable(CNAPI_SERVICE_CAR_FINDER)) {
             addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);
             addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HONKFLASH, ITEMT_SWITCH, null, false, false);
+            addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HFDURATION, ITEMT_NUMBER, null, true, false);
             return true;
         }
         return false;

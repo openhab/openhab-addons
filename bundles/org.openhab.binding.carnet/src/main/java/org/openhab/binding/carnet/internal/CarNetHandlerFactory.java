@@ -29,6 +29,7 @@ import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(CarNetHandlerFactory.class);
 
+    private final HttpClientFactory httpFactory;
     private final CarNetTextResources resources;
     private final CarNetIChanneldMapper channelIdMapper;
     private final CarNetTokenManager tokenManager;
@@ -64,8 +66,9 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public CarNetHandlerFactory(@Reference TimeZoneProvider tzProvider, @Reference CarNetTextResources resources,
             @Reference CarNetIChanneldMapper channelIdMapper, @Reference CarNetTokenManager tokenManager,
-            @Reference CarNetChannelTypeProvider channelTypeProvider) {
+            @Reference CarNetChannelTypeProvider channelTypeProvider, @Reference HttpClientFactory httpFactory) {
         this.resources = resources;
+        this.httpFactory = httpFactory;
         this.channelIdMapper = channelIdMapper;
         this.tokenManager = tokenManager;
         this.channelTypeProvider = channelTypeProvider;
@@ -85,11 +88,13 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
             if (THING_TYPE_MYAUDI.equals(thingTypeUID) || THING_TYPE_VW.equals(thingTypeUID)
                     || THING_TYPE_VWID.equals(thingTypeUID) || THING_TYPE_VWGO.equals(thingTypeUID)
                     || THING_TYPE_SKODA.equals(thingTypeUID) || THING_TYPE_SEAT.equals(thingTypeUID)) {
-                CarNetAccountHandler handler = new CarNetAccountHandler((Bridge) thing, resources, tokenManager);
+                CarNetAccountHandler handler = new CarNetAccountHandler((Bridge) thing, resources, tokenManager,
+                        httpFactory);
                 registerDeviceDiscoveryService(handler);
                 return handler;
             } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-                return new CarNetVehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+                return new CarNetVehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider,
+                        httpFactory);
             }
         } catch (CarNetException e) {
             logger.warn("Unable to create thing of type {}", thingTypeUID);

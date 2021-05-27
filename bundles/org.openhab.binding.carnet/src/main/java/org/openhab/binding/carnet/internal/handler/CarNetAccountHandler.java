@@ -45,6 +45,7 @@ import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiVW;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandSeat;
 import org.openhab.binding.carnet.internal.config.CarNetAccountConfiguration;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -78,11 +79,12 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
     // Collections.synchronizedList(new ArrayList<CarNetDeviceListener>());
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private static SslContextFactory sslCipher = new SslContextFactory();
+    private static SslContextFactory sslStrongCipher = new SslContextFactory();
+    private static SslContextFactory sslWeakCipher = new SslContextFactory();
     static {
-        String[] excludedCiphersWithoutTlsRsaExclusion = Arrays.stream(sslCipher.getExcludeCipherSuites())
+        String[] excludedCiphersWithoutTlsRsaExclusion = Arrays.stream(sslWeakCipher.getExcludeCipherSuites())
                 .filter(cipher -> !"^TLS_RSA_.*$".equals(cipher)).toArray(String[]::new);
-        sslCipher.setExcludeCipherSuites(excludedCiphersWithoutTlsRsaExclusion);
+        sslWeakCipher.setExcludeCipherSuites(excludedCiphersWithoutTlsRsaExclusion);
     }
 
     private static Map<String, String> brandMap = new HashMap<>();
@@ -99,7 +101,8 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public CarNetAccountHandler(Bridge bridge, CarNetTextResources messages, CarNetTokenManager tokenManager) {
+    public CarNetAccountHandler(Bridge bridge, CarNetTextResources messages, CarNetTokenManager tokenManager,
+            HttpClientFactory httpFactory) {
         super(bridge);
         this.messages = messages;
         this.tokenManager = tokenManager;
@@ -117,7 +120,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         config.tokenSetId = tokenManager.generateTokenSetId();
         config.api = api.getProperties();
         api.setConfig(config);
-        api = createApi(config);
+        api = createApi(config, httpFactory);
         config.authenticator = api;
         tokenManager.setup(config.tokenSetId, api.getHttp());
     }
@@ -203,11 +206,33 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         logger.debug("{}: Undefined command '{}' for channel {}", thingId, command, channelId);
     }
 
-    private CarNetHttpClient createHttpClient() {
+    public CarNetApiBase createApi(CarNetCombinedConfig config, HttpClientFactory httpFactory) {
+        CarNetHttpClient httpClient = createHttpClient(httpFactory);
+        switch (config.account.brand) {
+            case CNAPI_BRAND_AUDI:
+                return new CarNetBrandApiAudi(httpClient, tokenManager);
+            case CNAPI_BRAND_VW:
+                return new CarNetBrandApiVW(httpClient, tokenManager);
+            case CNAPI_BRAND_VWID:
+                return new CarNetBrandApiID(httpClient, tokenManager);
+            case CNAPI_BRAND_VWGO:
+                return new CarNetBrandApiVW(httpClient, tokenManager);
+            case CNAPI_BRAND_SKODA:
+                return new CarNetBrandApiSkoda(httpClient, tokenManager);
+            case CNAPI_BRAND_SEAT:
+                return new CarNetBrandSeat(httpClient, tokenManager);
+            case CNAPI_BRAND_NULL:
+            default:
+                return api;
+
+        }
+    }
+
+    private CarNetHttpClient createHttpClient(HttpClientFactory httpFactory) {
         // Each instance has it's own http client. Audi requires weaked SSL attributes, other may not
-        HttpClient httpClient = new HttpClient();
+        HttpClient httpClient = new HttpClient(); // httpFactory.getCommonHttpClient();
         try {
-            httpClient = new HttpClient(sslCipher);
+            httpClient = new HttpClient(config.api.weakSsl ? sslWeakCipher : sslStrongCipher);
             httpClient.start();
             if (logger.isTraceEnabled()) {
                 logger.trace("{}: HttpClient setup: {}", thingId, httpClient.dump());
@@ -218,25 +243,6 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         CarNetHttpClient client = new CarNetHttpClient(httpClient);
         client.setConfig(config);
         return client;
-    }
-
-    public CarNetApiBase createApi(CarNetCombinedConfig config) {
-        switch (config.account.brand) {
-            case CNAPI_BRAND_AUDI:
-                return new CarNetBrandApiAudi(createHttpClient(), tokenManager);
-            case CNAPI_BRAND_VW:
-                return new CarNetBrandApiVW(createHttpClient(), tokenManager);
-            case CNAPI_BRAND_VWID:
-                return new CarNetBrandApiID(createHttpClient(), tokenManager);
-            case CNAPI_BRAND_VWGO:
-                return new CarNetBrandApiVW(createHttpClient(), tokenManager);
-            case CNAPI_BRAND_SKODA:
-                return new CarNetBrandApiSkoda(createHttpClient(), tokenManager);
-            case CNAPI_BRAND_SEAT:
-                return new CarNetBrandSeat(createHttpClient(), tokenManager);
-            default:
-                return new CarNetBrandApiNull();
-        }
     }
 
     /**

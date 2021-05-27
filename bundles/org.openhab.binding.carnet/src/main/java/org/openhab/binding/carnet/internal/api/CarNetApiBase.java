@@ -47,6 +47,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNGeoFenceAlerts
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNHeaterVentilation;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNHeaterVentilation.CarNetHeaterVentilationStatus;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNHonkFlashResponse;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList.CarNetServiceInfo;
@@ -518,8 +519,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public CarNetSpeedAlerts getSpeedAlerts() throws CarNetException {
-        return callApi("bs/speedalert/v1/{0}/{1}/vehicles/{2}/speedAlerts", "getSpeedAlerts",
-                CNSpeedAlerts.class).speedAlerts;
+        CNSpeedAlerts sa = callApi("bs/speedalert/v1/{0}/{1}/vehicles/{2}/speedAlerts", "getSpeedAlerts",
+                CNSpeedAlerts.class);
+        return sa.speedAlerts != null ? sa.speedAlerts : new CarNetSpeedAlerts();
     }
 
     public CarNetGeoFenceConfig getGeoFenceConfig() throws CarNetException {
@@ -528,8 +530,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public CarNetGeoFenceAlerts getGeoFenceAlerts() throws CarNetException {
-        return callApi("bs/geofencing/v1/{0}/{1}/vehicles/{2}/geofencingAlerts", "getGeoFenceAlerts",
-                CNGeoFenceAlerts.class).geofencingAlerts;
+        CNGeoFenceAlerts gfa = callApi("bs/geofencing/v1/{0}/{1}/vehicles/{2}/geofencingAlerts", "getGeoFenceAlerts",
+                CNGeoFenceAlerts.class);
+        return gfa.geofencingAlerts != null ? gfa.geofencingAlerts : new CarNetGeoFenceAlerts();
     }
 
     public String getClimaterTimer() throws CarNetException {
@@ -553,7 +556,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
      * @return
      * @throws CarNetException
      */
-    public String controlHonkFlash(boolean honk, PointType position) throws CarNetException {
+    public String controlHonkFlash(boolean honk, PointType position, int duration) throws CarNetException {
         /*
          * data = {
          * 'honkAndFlashRequest': {
@@ -566,10 +569,15 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
          * }
          * }
          */
-        String action = honk ? "HONK_AND_FLASH" : "FLASH_ONLY";
-        String body = "{\"honkAndFlashRequest\":{\"serviceOperationCode\":\"" + action + "\","
-                + "\"serviceDuration\": 15," + "\"userPosition\":{\"latitude\":" + position.getLatitude()
-                + ", \"longitude\":" + position.getLongitude() + "}}}";
+        double latd = position.getLatitude().doubleValue() * 1000000.0;
+        double longd = position.getLongitude().doubleValue() * 1000000.0;
+        String latitude = String.format("%08d", (int) latd);
+        String longitude = String.format("%08d", (int) longd);
+
+        String action = honk ? CNAPI_CMD_HONK_FLASH : CNAPI_CMD_FLASH;
+        String body = "{\"honkAndFlashRequest\":{\"serviceOperationCode\":\"" + action + "\"," + "\"serviceDuration\": "
+                + duration + "," + "\"userPosition\":{\"latitude\":" + latitude + ", \"longitude\":" + longitude
+                + "}}}";
         String contentType = "application/json; charset=UTF-8";
         return sendAction("bs/rhf/v1/{0}/{1}/vehicles/{2}/honkAndFlash", CNAPI_SERVICE_REMOTE_HONK_AND_FLASH, action,
                 false, contentType, body);
@@ -664,7 +672,14 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     private String queuePendingAction(String json, String service, String action) throws CarNetException {
-        CNActionResponse in = fromJson(gson, json, CNActionResponse.class);
+        CNActionResponse in;
+        if (CNAPI_SERVICE_REMOTE_HONK_AND_FLASH.equals(service)) {
+            // Honk&Flash has special format
+            in = new CNActionResponse();
+            in.honkAndFlashRequest = fromJson(gson, json, CNHonkFlashResponse.class).honkAndFlashRequest;
+        } else {
+            in = fromJson(gson, json, CNActionResponse.class);
+        }
         CarNetPendingRequest rsp = new CarNetPendingRequest(service, action, in);
         logger.debug("{}: Request for {}.{} accepted, requestId={}", config.vehicle.vin, service, action,
                 rsp.requestId);
@@ -715,12 +730,15 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                         } else if (rs.action != null) {
                             status = getString(rs.action.actionState);
                             error = getInteger(rs.action.errorCode);
+                        } else if (rs.status != null) {
+                            status = getString(rs.status.statusCode);
                         }
                     }
                 }
 
                 logger.debug("{}: Request {} for action {}.{} is in status {}", config.vehicle.vin, request.requestId,
                         request.service, request.action, status);
+                status = status.toLowerCase(); // Hon&Flash returns in upper case
                 switch (status) {
                     case CNAPI_REQUEST_SUCCESSFUL:
                         remove = true;
@@ -728,6 +746,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     case CNAPI_REQUEST_IN_PROGRESS:
                     case CNAPI_REQUEST_QUEUED:
                     case CNAPI_REQUEST_FETCHED:
+                    case CNAPI_REQUEST_STARTED:
                         break;
                     case CNAPI_REQUEST_NOT_FOUND:
                     case CNAPI_REQUEST_FAIL:
