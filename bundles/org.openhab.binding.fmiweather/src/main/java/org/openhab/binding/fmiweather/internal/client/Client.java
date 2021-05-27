@@ -71,7 +71,7 @@ public class Client {
 
     private static final Map<String, String> NAMESPACES = new HashMap<>();
     static {
-        NAMESPACES.put("target", "http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.0");
+        NAMESPACES.put("target", "http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1");
         NAMESPACES.put("gml", "http://www.opengis.net/gml/3.2");
         NAMESPACES.put("xlink", "http://www.w3.org/1999/xlink");
         NAMESPACES.put("ows", "http://www.opengis.net/ows/1.1");
