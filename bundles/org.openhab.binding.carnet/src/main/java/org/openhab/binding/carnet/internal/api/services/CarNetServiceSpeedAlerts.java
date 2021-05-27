@@ -45,6 +45,11 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
     }
 
     @Override
+    public boolean isEnabled() {
+        return (getConfig().vehicle.numSpeedAlerts > 0) && super.isEnabled();
+    }
+
+    @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         try {
             return update(channels);
@@ -60,7 +65,7 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
         a |= addChannel(ch, group, CHANNEL_SPEEDALERT_TYPE, ITEMT_STRING, null, false, true);
         a |= addChannel(ch, group, CHANNEL_SPEEDALERT_TIME, ITEMT_DATETIME, null, false, true);
         a |= addChannel(ch, group, CHANNEL_SPEEDALERT_DESCR, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_SPEEDALERT_LIMIT, ITEMT_NUMBER, null, false, true);
+        a |= addChannel(ch, group, CHANNEL_SPEEDALERT_LIMIT, ITEMT_SPEED, null, false, true);
         return a;
     }
 

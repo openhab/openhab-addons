@@ -26,6 +26,8 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNEluActionHisto
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNEluActionHistory.CarNetRluHistory.CarNetRluLockActionList.CarNetRluLockAction;
 import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link CarNetServiceRLU} implements remote vehicle lock/unlock and history.
@@ -34,30 +36,31 @@ import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
  */
 @NonNullByDefault
 public class CarNetServiceRLU extends CarNetBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetServiceRLU.class);
+
     public CarNetServiceRLU(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_LOCK_UNLOCK, thingHandler, api);
     }
 
     @Override
+    public boolean isEnabled() {
+        return getConfig().vehicle.numRluHistory > 0 && super.isEnabled();
+    }
+
+    @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, null, false, false);
-        if (getConfig().vehicle.numActionHistory == 0) {
-            return false;
-        }
 
         return update(channels);
     }
 
     private boolean createChannels(Map<String, ChannelIdMapEntry> ch, int index) {
-        boolean a = false;
-        if (getConfig().vehicle.numActionHistory == 0) {
-            return false;
-        }
         String group = CHANNEL_GROUP_RLUHIST + index;
-        a |= addChannel(ch, group, CHANNEL_RLUHIST_OP, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_RLUHIST_TS, ITEMT_DATETIME, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_RLUHIST_RES, ITEMT_STRING, null, false, true);
-        return a;
+        boolean updated = false;
+        updated |= addChannel(ch, group, CHANNEL_RLUHIST_OP, ITEMT_STRING, null, false, true);
+        updated |= addChannel(ch, group, CHANNEL_RLUHIST_TS, ITEMT_DATETIME, null, false, true);
+        updated |= addChannel(ch, group, CHANNEL_RLUHIST_RES, ITEMT_STRING, null, false, true);
+        return updated;
     }
 
     @Override
@@ -66,10 +69,15 @@ public class CarNetServiceRLU extends CarNetBaseService {
     }
 
     private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+        if (!isEnabled()) {
+            logger.debug("{}: RLU History is disabled", thingId);
+            return false;
+        }
+
         boolean updated = false;
         try {
             CarNetRluHistory hist = api.getRluActionHistory();
-            int num = getConfig().vehicle.numActionHistory;
+            int num = getConfig().vehicle.numRluHistory;
             int i = hist.actions.action.size() - 1; // latest first
             int l = 1;
             while ((i > 0) && (l <= num)) {

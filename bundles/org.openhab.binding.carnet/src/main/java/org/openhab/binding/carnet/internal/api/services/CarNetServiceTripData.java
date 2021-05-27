@@ -49,6 +49,11 @@ public class CarNetServiceTripData extends CarNetBaseService {
     }
 
     @Override
+    public boolean isEnabled() {
+        return (getConfig().vehicle.numShortTrip > 0 || getConfig().vehicle.numLongTrip > 0) && super.isEnabled();
+    }
+
+    @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         try {
             boolean updated = false;

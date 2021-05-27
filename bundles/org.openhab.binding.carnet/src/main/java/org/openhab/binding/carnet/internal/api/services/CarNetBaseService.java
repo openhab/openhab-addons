@@ -57,7 +57,7 @@ public class CarNetBaseService {
     }
 
     public String getServiceId() {
-        return serviceId;
+        return api.getServiceIdEx(serviceId);
     }
 
     public boolean isEnabled() {

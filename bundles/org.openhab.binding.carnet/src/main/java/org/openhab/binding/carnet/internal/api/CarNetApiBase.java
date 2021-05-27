@@ -122,6 +122,12 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return this.http;
     }
 
+    /**
+     * Simple initialization, in fact used by Account Handler
+     *
+     * @param configIn
+     * @throws CarNetException
+     */
     public void initialize(CarNetCombinedConfig configIn) throws CarNetException {
         config = configIn;
         setConfig(config); // derive from account config
@@ -133,6 +139,14 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         thingId = config.account.brand;
     }
 
+    /**
+     * VIN-based initialization. Initialized the API itself then does the VIN-related initialization
+     *
+     * @param vin Vehicle ID (VIN)
+     * @param configIn Combined config, which gets updated and will be returned
+     * @return Updated config
+     * @throws CarNetException
+     */
     public CarNetCombinedConfig initialize(String vin, CarNetCombinedConfig configIn) throws CarNetException {
         initialize(configIn);
 
@@ -175,82 +189,6 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return url; // default: no modification
     }
 
-    private CarNetOidcConfig getOidcConfig() throws CarNetException {
-        // get OIDC confug
-        String url = config.api.oidcConfigUrl;
-        Map<String, String> headers = new LinkedHashMap<>();
-        headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
-        headers.put(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_FORM_URLENC);
-        String json = http.get(url, headers);
-        config.api.oidcDate = http.getResponseDate();
-        return fromJson(gson, json, CarNetOidcConfig.class);
-    }
-
-    public boolean isRemoteServiceAvailable(String serviceId) {
-        return getServiceDescriptor(serviceId) != null;
-    }
-
-    public boolean isRemoteActionAvailable(String serviceId, String actionId) {
-        CarNetServiceInfo si = getServiceDescriptor(serviceId);
-        // Check service enabled status, maybe we need also to check serviceEol
-        if (si != null && "Enabled".equalsIgnoreCase(si.serviceStatus.status)
-                && (!si.licenseRequired || "ACTIVATED".equalsIgnoreCase(si.cumulatedLicense.status))) {
-            for (CNServiceOperation oi : si.operation) {
-                if (oi.id.equalsIgnoreCase(actionId)) {
-                    return true;
-                }
-            }
-
-        }
-        return false;
-    }
-
-    private @Nullable CarNetServiceInfo getServiceDescriptor(String serviceId) {
-        CarNetOperationList ol = config.vehicle.operationList;
-        if (ol != null) {
-            for (CarNetServiceInfo si : ol.serviceInfo) {
-                // Check service enabled status, maybe we need also to check serviceEol
-                if (si.serviceId.equalsIgnoreCase(serviceId)) {
-                    return si;
-                }
-            }
-        }
-        return null;
-    }
-
-    public CarNetUserRoleRights getRoleRights() throws CarNetException {
-        return callApi("rolesrights/permissions/v1/{0}/{1}/vehicles/{2}/fetched-role", "getRoleRights",
-                CNRoleRights.class).role;
-    }
-
-    public String getHomeReguionUrl() {
-        if (!config.vehicle.homeRegionUrl.isEmpty()) {
-            return config.vehicle.homeRegionUrl;
-        }
-        String url = "";
-        try {
-            CarNetHomeRegion region = callApi(CNAPI_VWURL_HOMEREGION, "getHomeRegion", CarNetHomeRegion.class);
-            url = getString(region.homeRegion.baseUri.content);
-        } catch (CarNetException e) {
-            url = CNAPI_VWG_MAL_1A_CONNECT;
-        }
-        config.vehicle.homeRegionUrl = url;
-        return url;
-    }
-
-    public String getApiUrl() throws CarNetException {
-        String url = getHomeReguionUrl();
-        config.vehicle.rolesRightsUrl = url;
-        if (!CNAPI_VWG_MAL_1A_CONNECT.equalsIgnoreCase(url)) {
-            // Change base url depending on country selector
-            url = url.replace("https://mal-", "https://fal-").replace("/api", "/fs-car");
-            config.vehicle.apiUrlPrefix = url;
-            return url;
-        }
-        return http.getBaseUrl();
-    }
-
     public String getUserInfo() throws CarNetException {
         return callApi("core/auth/v1/{0}/{1}/userInfo", "", String.class);
     }
@@ -269,7 +207,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public CarNetPairingInfo getPairingStatus() throws CarNetException {
-        return callApi("usermanagement/users/v1/{0}/{1}/vehicles/{2}/pairing", "", CNPairingInfo.class).pairingInfo;
+        return callApi("https://msg.volkswagen.de/usermanagement/users/v1/{0}/{1}/vehicles/{2}/pairing", "",
+                CNPairingInfo.class).pairingInfo;
     }
 
     public String getMyDestinationsFeed() throws CarNetException {
@@ -596,15 +535,6 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return queuePendingAction(json, service, action);
     }
 
-    public String getPois() throws CarNetException {
-        return callApi("b2c/poinav/v1/{2}/pois", "getPois", String.class);
-    }
-
-    public String getUserNews() throws CarNetException {
-        // for now not working
-        return callApi("https://msg.volkswagen.de/api/news/myfeeds/v1/vehicles/{2}/users/{3}/", "", String.class);
-    }
-
     public String getTripStats(String tripType) throws CarNetException {
         String json = callApi("bs/tripstatistics/v1/{0}/{1}/vehicles/{2}/tripdata/" + tripType + "?newest", "",
                 String.class);
@@ -771,6 +701,119 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             pendingRequests.remove(request.requestId);
         }
         return status;
+    }
+
+    /**
+     * Get OpenID Connect configuration
+     *
+     * @return OIDC config
+     * @throws CarNetException
+     */
+    private CarNetOidcConfig getOidcConfig() throws CarNetException {
+        // get OIDC confug
+        String url = config.api.oidcConfigUrl;
+        Map<String, String> headers = new LinkedHashMap<>();
+        headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
+        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
+        headers.put(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_FORM_URLENC);
+        String json = http.get(url, headers);
+        config.api.oidcDate = http.getResponseDate();
+        return fromJson(gson, json, CarNetOidcConfig.class);
+    }
+
+    /**
+     * Return serviceId with available version (e.g. xxx_v4)
+     *
+     * @param serviceId Base serviceId (usually with suffix _v1)
+     * @return id from Operation List
+     */
+    public String getServiceIdEx(String serviceId) {
+        CarNetServiceInfo si = getServiceDescriptor(serviceId);
+        return si != null ? si.serviceId : serviceId;
+    }
+
+    /**
+     * Check if service is available (listed in Operation List)
+     *
+     * @param serviceId Service to look up
+     * @return true=service available
+     */
+    public boolean isRemoteServiceAvailable(String serviceId) {
+        return getServiceDescriptor(serviceId) != null;
+    }
+
+    /**
+     * Check if service is available AND the requested operation id
+     *
+     * @param serviceId Service Id
+     * @param actionId Action Id
+     * @return true: Service is with requested action available
+     */
+    public boolean isRemoteActionAvailable(String serviceId, String actionId) {
+        CarNetServiceInfo si = getServiceDescriptor(serviceId);
+        // Check service enabled status, maybe we need also to check serviceEol
+        if (si != null && "Enabled".equalsIgnoreCase(si.serviceStatus.status)
+                && (!si.licenseRequired || "ACTIVATED".equalsIgnoreCase(si.cumulatedLicense.status))) {
+            for (CNServiceOperation oi : si.operation) {
+                if (oi.id.equalsIgnoreCase(actionId)) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Lookup service description from Operation List
+     *
+     * @param serviceId Service id to check
+     * @return Service Descriptor from Operations List
+     */
+    private @Nullable CarNetServiceInfo getServiceDescriptor(String serviceId) {
+        CarNetOperationList ol = config.vehicle.operationList;
+        if (ol != null) {
+            for (CarNetServiceInfo si : ol.serviceInfo) {
+                // Check service enabled status, maybe we need also to check serviceEol
+                String id = substringBefore(serviceId, "_v");
+                if (si.serviceId.equalsIgnoreCase(serviceId) || si.serviceId.startsWith(id)) {
+                    return si;
+                }
+            }
+        }
+        return null;
+    }
+
+    public CarNetUserRoleRights getRoleRights() throws CarNetException {
+        return callApi("rolesrights/permissions/v1/{0}/{1}/vehicles/{2}/fetched-role", "getRoleRights",
+                CNRoleRights.class).role;
+    }
+
+    public String getHomeReguionUrl() {
+        if (!config.vehicle.homeRegionUrl.isEmpty()) {
+            return config.vehicle.homeRegionUrl;
+        }
+        String url = "";
+        try {
+            CarNetHomeRegion region = callApi(CNAPI_VWURL_HOMEREGION, "getHomeRegion", CarNetHomeRegion.class);
+            url = getString(region.homeRegion.baseUri.content);
+        } catch (CarNetException e) {
+            url = CNAPI_VWG_MAL_1A_CONNECT;
+        }
+        config.vehicle.homeRegionUrl = url;
+        return url;
+    }
+
+    public String getApiUrl() throws CarNetException {
+        String url = getHomeReguionUrl();
+        config.vehicle.rolesRightsUrl = url;
+        if (!CNAPI_VWG_MAL_1A_CONNECT.equalsIgnoreCase(url)) {
+            // Change base url depending on country selector
+            url = url.replace("https://mal-", "https://fal-").replace("/api", "/fs-car");
+            config.vehicle.apiUrlPrefix = url;
+            return url;
+        }
+        return http.getBaseUrl();
     }
 
     protected Map<String, String> fillActionHeaders(String contentType, String accessToken, String secTokenHeader,

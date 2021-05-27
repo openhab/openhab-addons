@@ -108,7 +108,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private boolean forceUpdate = false; // true: update status on next polling cycle
     private boolean requestStatus = false; // true: request update from vehicle
     private boolean channelsCreated = false;
-    private boolean testData = true;
+    private boolean testData = false;
     private boolean stopping = false;
 
     private Map<String, CarNetBaseService> services = new LinkedHashMap<>();
@@ -229,10 +229,6 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 }
                 try {
                     df = api.getMyDestinationsFeed();
-                } catch (Exception e) {
-                }
-                try {
-                    poi = api.getPois();
                 } catch (Exception e) {
                 }
 
@@ -631,7 +627,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             boolean cte = this.channelTypeProvider.channelTypeExists(channelTypeUID, null);
             if (!cte) {
                 logger.debug("{}: Channel type {} doesn't exist, creating", thingId, channelTypeUID.getAsString());
-                ChannelType ct = ChannelTypeBuilder.state(channelTypeUID, channelTypeUID.getId(), itemType)
+                ChannelType ct = ChannelTypeBuilder.state(channelTypeUID, channelDef.getLabel(), itemType)
                         .withDescription("Auto-created for " + channelTypeUID.getId()).build();
                 this.channelTypeProvider.addChannelType(ct);
             }

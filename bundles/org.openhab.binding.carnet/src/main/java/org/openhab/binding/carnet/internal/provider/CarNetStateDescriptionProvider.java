@@ -111,7 +111,6 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         if (!pattern.isEmpty()) {
             state = state.withPattern(channelDef.pattern);
         }
-
         if (min != -1) {
             state = state.withMinimum(new BigDecimal(min));
         }

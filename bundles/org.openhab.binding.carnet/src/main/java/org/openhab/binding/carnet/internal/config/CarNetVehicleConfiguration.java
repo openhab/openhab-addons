@@ -28,7 +28,7 @@ public class CarNetVehicleConfiguration {
 
     public int numShortTrip = 1; // number of entries from short trip data history
     public int numLongTrip = 1; // number of entries from long trip data history
-    public int numActionHistory = 1; // number of entries from action history
+    public int numRluHistory = 3; // number of entries from RLU action history
     public int numDestinations = 1; // number of entries from the destination history;
     public int numSpeedAlerts = 1;
     public int numGeoFenceAlerts = 1;

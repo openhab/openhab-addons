@@ -44,6 +44,11 @@ public class CarNetServiceDestinations extends CarNetBaseService {
     }
 
     @Override
+    public boolean isEnabled() {
+        return getConfig().vehicle.numDestinations > 0 && super.isEnabled();
+    }
+
+    @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         if (getConfig().vehicle.numDestinations > 0) {
             try {

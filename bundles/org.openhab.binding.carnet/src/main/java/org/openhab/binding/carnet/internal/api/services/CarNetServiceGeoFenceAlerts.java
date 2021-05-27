@@ -46,6 +46,11 @@ public class CarNetServiceGeoFenceAlerts extends CarNetBaseService {
     }
 
     @Override
+    public boolean isEnabled() {
+        return (getConfig().vehicle.numGeoFenceAlerts > 0) && super.isEnabled();
+    }
+
+    @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         try {
             return update(channels);
