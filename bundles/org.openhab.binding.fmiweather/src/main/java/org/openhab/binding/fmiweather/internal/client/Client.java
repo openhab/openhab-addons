@@ -374,7 +374,8 @@ public class Client {
      */
     private String takeFirstOrError(String errorDescription, String[] values) throws FMIUnexpectedResponseException {
         if (values.length != 1) {
-            throw new FMIUnexpectedResponseException(String.format("No unique match found: %s", errorDescription));
+            throw new FMIUnexpectedResponseException(
+                    String.format("No unique match found: %s (found %d)", errorDescription, values.length));
         }
         return values[0];
     }
