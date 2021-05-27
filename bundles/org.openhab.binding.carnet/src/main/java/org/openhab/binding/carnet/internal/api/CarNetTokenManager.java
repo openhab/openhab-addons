@@ -227,6 +227,7 @@ public class CarNetTokenManager {
             if (idToken.isEmpty() || accessToken.isEmpty()) {
                 if (html.contains("Allow access")) // additional consent required
                 {
+                    logger.debug("Consent missing, returned HTML: {}", html);
                     throw new CarNetSecurityException(
                             "Consent missing. Login to the Web App and give consent: " + config.api.authScope);
                 }
@@ -237,9 +238,12 @@ public class CarNetTokenManager {
             logger.trace("{}: OAuth successful, idToken/userId was retrieved", config.vehicle.vin);
             tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
             tokens.csrf = csrf;
-        } catch (CarNetException | UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (CarNetException e) {
             logger.warn("Login failed: {}", e.toString());
-            throw new CarNetSecurityException("Login failed", e);
+            throw e;
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            logger.warn("Technical problem with algorithms", e);
+            throw new CarNetException("Technical problem with algorithms", e);
         }
         if (userId.isEmpty() && idToken.isEmpty()) {
             throw new CarNetException("OAuth failed, check credentials!");

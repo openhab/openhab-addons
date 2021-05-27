@@ -135,10 +135,8 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
             try {
                 initializeThing();
             } catch (CarNetException e) {
-                String detail = e.toString();
-                if (e.isSecurityException()) {
-                    detail = messages.get("login-failed", getString(e.getMessage()));
-                }
+                String detail = e.isSecurityException() ? messages.get("login-failed", getString(e.getMessage()))
+                        : getString(e.getMessage());
                 stateChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
             }
         });

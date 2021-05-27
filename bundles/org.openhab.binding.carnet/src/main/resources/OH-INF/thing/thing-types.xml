@@ -93,7 +93,7 @@
 		<label>@text/thing-type.carnet.vehicle.group.rluHistory.label</label>
 		<description>@text/thing-type.carnet.vehicle.group.rluHistory.description</description>
 	</channel-group-type>
-	<channel-group-type id="speedAlaerts">
+	<channel-group-type id="speedAlerts">
 		<label>@text/thing-type.carnet.vehicle.group.speedAlerts.label</label>
 		<description>@text/thing-type.carnet.vehicle.group.speedAlerts.description</description>
 	</channel-group-type>

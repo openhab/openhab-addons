@@ -45,7 +45,8 @@ public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthen
         properties.apiDefaultUrl = "https://msg.volkswagen.de/fs-car";
         properties.clientId = "9496332b-ea03-4091-a224-8c746b885068@apps_vw-dilab_com";
         properties.xClientId = "38761134-34d0-41f3-9a73-c4be88d7d337";
-        properties.authScope = "openid profile mbb email cars birthdate address vin";
+        // properties.authScope = "openid profile mbb email cars address";
+        properties.authScope = "openid mbb cars";
         properties.redirect_uri = "carnet://identity-kit/login";
         properties.xrequest = "de.volkswagen.carnet.eu.eremote";
         properties.responseType = "id_token token";
