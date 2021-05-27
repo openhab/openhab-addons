@@ -306,6 +306,7 @@ public enum MiIoDevices {
     YEELINK_LIGHT_LAMP15("yeelink.light.lamp15", "Yeelight Screen Light Bar", THING_TYPE_BASIC),
     YEELINK_LIGHT_MONO1("yeelink.light.mono1", "Yeelight Bulb", THING_TYPE_BASIC),
     YEELINK_LIGHT_MONO2("yeelink.light.mono2", "Yeelight White Bulb v2", THING_TYPE_BASIC),
+    YEELINK_LIGHT_MONO4("yeelink.light.mono4", "Yeelight LED Bulb 1S（Dimmable）", THING_TYPE_BASIC),
     YEELINK_LIGHT_MONO5("yeelink.light.mono5", "Yeelight LED Filament Bulb", THING_TYPE_BASIC),
     YEELINK_LIGHT_PANEL1("yeelink.light.panel1", "Yeelight Whiteglow Panel Light", THING_TYPE_BASIC),
     YEELINK_LIGHT_STRIP1("yeelink.light.strip1", "Yeelight Lightstrip", THING_TYPE_BASIC),
