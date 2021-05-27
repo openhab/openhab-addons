@@ -13,13 +13,13 @@
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="status" typeId="status"/>
 			<channel-group id="location" typeId="location"/>
-			<channel-group id="maintenance" typeId="maintenance"/>
 			<channel-group id="charger" typeId="charger"/>
 			<channel-group id="range" typeId="range"/>
-			<channel-group id="rluHistory1" typeId="rluHistory"/>
-			<channel-group id="rluHistory2" typeId="rluHistory"/>
-			<channel-group id="rluHistory3" typeId="rluHistory"/>
 			<channel-group id="climater" typeId="climater"/>
+			<channel-group id="maintenance" typeId="maintenance"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="tires" typeId="tires"/>
 			<channel-group id="tripShort1" typeId="tripShort"/>
 			<channel-group id="tripShort2" typeId="tripShort"/>
 			<channel-group id="tripShort3" typeId="tripShort"/>
@@ -30,14 +30,26 @@
 			<channel-group id="tripLong3" typeId="tripLong"/>
 			<channel-group id="tripLong4" typeId="tripLong"/>
 			<channel-group id="tripLong5" typeId="tripLong"/>
+			<channel-group id="rluHistory1" typeId="rluHistory"/>
+			<channel-group id="rluHistory2" typeId="rluHistory"/>
+			<channel-group id="rluHistory3" typeId="rluHistory"/>
+			<channel-group id="rluHistory4" typeId="rluHistory"/>
+			<channel-group id="rluHistory5" typeId="rluHistory"/>
+			<channel-group id="speedAlerts1" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts2" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts3" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts4" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts5" typeId="speedAlerts"/>
+			<channel-group id="geoFenceAlerts1" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts2" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts3" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts4" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts5" typeId="geoFenceAlerts"/>
 			<channel-group id="destination1" typeId="destination"/>
 			<channel-group id="destination2" typeId="destination"/>
 			<channel-group id="destination3" typeId="destination"/>
 			<channel-group id="destination4" typeId="destination"/>
 			<channel-group id="destination5" typeId="destination"/>
-			<channel-group id="doors" typeId="doors"/>
-			<channel-group id="windows" typeId="windows"/>
-			<channel-group id="tires" typeId="tires"/>
 		</channel-groups>
 
 		<representation-property>vin</representation-property>
@@ -80,6 +92,14 @@
 	<channel-group-type id="rluHistory">
 		<label>@text/thing-type.carnet.vehicle.group.rluHistory.label</label>
 		<description>@text/thing-type.carnet.vehicle.group.rluHistory.description</description>
+	</channel-group-type>
+	<channel-group-type id="speedAlaerts">
+		<label>@text/thing-type.carnet.vehicle.group.speedAlerts.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.speedAlerts.description</description>
+	</channel-group-type>
+	<channel-group-type id="geoFenceAlerts">
+		<label>@text/thing-type.carnet.vehicle.group.geoFenceAlerts.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.geoFenceAlerts.description</description>
 	</channel-group-type>
 	<channel-group-type id="tripShort">
 		<label>@text/thing-type.carnet.vehicle.group.tripShort.label</label>

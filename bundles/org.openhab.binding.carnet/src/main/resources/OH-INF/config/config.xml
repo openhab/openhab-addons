@@ -64,7 +64,7 @@
 			<default>1</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="numActionHistory" type="integer" required="false" min="0" max="5">
+		<parameter name="numRluHistory" type="integer" required="false" min="0" max="5">
 			<label>Entries in Action History</label>
 			<description>Number of entries to fetch from the action history (if supported for the vehicle model). Newest one will
 				be first, for each entry a group is created (1..5). 0 means disable fetching this history</description>
