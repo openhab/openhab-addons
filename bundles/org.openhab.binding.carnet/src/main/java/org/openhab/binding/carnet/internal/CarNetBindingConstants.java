@@ -92,6 +92,7 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_PARK_LOCATION = "parkingPosition";
     public static final String CHANNEL_PARK_ADDRESS = "parkingAddress";
     public static final String CHANNEL_PARK_TIME = "parkingTime";
+    public static final String CHANNEL_CAR_MOVING = "carMoving";
 
     public static final String CHANNEL_GROUP_CLIMATER = "climater";
     public static final String CHANNEL_CLIMATER_TARGET_TEMP = "targetTemperature";
@@ -138,6 +139,17 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_DEST_ZIP = "destinationZip";
     public static final String CHANNEL_DEST_COUNTY = "destinationCountry";
     public static final String CHANNEL_DEST_SOURCE = "destinationSource";
+
+    public static final String CHANNEL_GROUP_SPEEDALERT = "speedAlerts";
+    public static final String CHANNEL_SPEEDALERT_TYPE = "speedAlertType";
+    public static final String CHANNEL_SPEEDALERT_DESCR = "speedAlertDescr";
+    public static final String CHANNEL_SPEEDALERT_TIME = "speedAlertTime";
+    public static final String CHANNEL_SPEEDALERT_LIMIT = "speedAlertLimit";
+
+    public static final String CHANNEL_GROUP_GEOFENCE = "geoFenceAlerts";
+    public static final String CHANNEL_GEOFENCE_TYPE = "geoFenceAlertType";
+    public static final String CHANNEL_GEOFENCE_DESCR = "geoFenceAlertDescr";
+    public static final String CHANNEL_GEOFENCE_TIME = "geoFenceAlertTime";
 
     // Other channels group in here
     public static final String CHANNEL_GROUP_STATUS = "status";

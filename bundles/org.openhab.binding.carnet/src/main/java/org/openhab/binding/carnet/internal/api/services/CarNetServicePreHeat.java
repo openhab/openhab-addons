@@ -26,13 +26,13 @@ import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMa
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 
 /**
- * {@link CarNetRemoteServicePreHeat} implements the remote heater service
+ * {@link CarNetServicePreHeat} implements the remote heater service
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetRemoteServicePreHeat extends CarNetRemoteBaseService {
-    public CarNetRemoteServicePreHeat(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+public class CarNetServicePreHeat extends CarNetBaseService {
+    public CarNetServicePreHeat(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_HEATING, thingHandler, api);
     }
 
@@ -53,9 +53,9 @@ public class CarNetRemoteServicePreHeat extends CarNetRemoteBaseService {
         if (hvs.climatisationStateReport != null) {
             if (hvs.climatisationStateReport.climatisationState != null) {
                 String sd = hvs.climatisationStateReport.climatisationState;
-                if (sd.equals("heating")) {
+                if ("heating".equalsIgnoreCase(sd)) {
                     updated |= updateChannel(group, CHANNEL_CONTROL_PREHEAT, CarNetUtils.getOnOff(1));
-                } else if (sd.equals("ventilation")) {
+                } else if ("ventilation".equalsIgnoreCase(sd)) {
                     updated |= updateChannel(group, CHANNEL_CONTROL_VENT, CarNetUtils.getOnOff(1));
                 } else {
                     updated |= updateChannel(group, CHANNEL_CONTROL_PREHEAT, CarNetUtils.getOnOff(0));

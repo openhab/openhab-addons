@@ -177,6 +177,10 @@ public class CarNetUtils {
         return new DecimalType((value != null ? value : 0));
     }
 
+    public static DecimalType getDecimal(@Nullable String value) {
+        return new DecimalType((value != null && !value.isEmpty() ? Integer.parseInt(value) : 0));
+    }
+
     public static OnOffType getOnOff(@Nullable Boolean value) {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }

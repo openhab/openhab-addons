@@ -34,20 +34,15 @@ public class CarNetApiConstants {
     public static final String API_STATUS_GW_ERROR = "gw.error";
 
     // URIs: {0}=brand, {1} = country, {2} = VIN, {3} = userId
+    public static final String CNAPI_URI_PROFILE = "https://customer-profile.apps.emea.vwapps.io/v1/customers/";
     public static final String CNAPI_URI_GET_TOKEN = "core/auth/v1/{0}/{1}/token";
-    public static final String CNAPI_URI_GET_USERINFO = "usermanagement/users/v1/{0}/{1}/vehicles/{2}/pairing";
     public static final String CNAPI_URI_VEHICLE_MANAGEMENT = "vehicleMgmt/vehicledata/v2/{0}/{1}/vehicles/{2}";
     public static final String CNAPI_URI_VEHICLE_LIST = "usermanagement/users/v1/{0}/{1}/vehicles";
     public static final String CNAPI_URI_VEHICLE_DETAILS = "vehicleMgmt/vehicledata/v2/{0}/{1}/vehicles/{2}";
     public static final String CNAPI_URI_VEHICLE_DATA = "bs/vsr/v1/{0}/{1}/vehicles/{2}/requests";
-    public static final String CNAPI_URI_VEHICLE_STATUS = "bs/vsr/v1/{0}/{1}/vehicles/{2}/status";
-    public static final String CNAPI_URI_VEHICLE_POSITION = "bs/cf/v1/{0}/{1}/vehicles/{2}/position";
     public static final String CNAPI_URI_CLIMATER_TIMER = "bs/departuretimer/v1/{0}/{1}/vehicles/{2}/timer";
     public static final String CNAPI_URI_CHARGER_STATUS = "bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger";
-    public static final String CNAPI_URI_STORED_POS = "bs/cf/v1/{0}/{1}/vehicles/{2}/position";
     public static final String CNAPI_URI_DESTINATIONS = "destinationfeedservice/mydestinations/v1/{0}/{1}/vehicles/{2}/destinations";
-    public static final String CNAPI_URI_HISTORY = "bs/dwap/v1/{0}/{1}/vehicles/{2}/history";
-    public static final String CNAPI_URI_CMD_HONK = "bs/rhf/v1/{0}/{1}/vehicles/{2}/honkAndFlash";
     public static final String CNAPI_URI_GETTRIP = "bs/tripstatistics/v1/{0}/{1}/vehicles/{2}/tripdata/{3}?type={4}";
 
     public static final String CNAPI_VWG_MAL_1A_CONNECT = "https://mal-1a.prd.ece.vwg-connect.com/api";

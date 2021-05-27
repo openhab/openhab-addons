@@ -147,7 +147,7 @@ public class CarNetTokenManager {
             if (url.isEmpty()) {
                 throw new CarNetException("Unable to get signin URL");
             }
-            if (url.contains("error=consent_require")) {
+            if (url.contains("error=consent_required")) {
                 String message = URLDecoder.decode(url, UTF_8);
                 message = substringBefore(substringAfter(message, "&error_description="), "&");
                 throw new CarNetSecurityException(
@@ -224,6 +224,15 @@ public class CarNetTokenManager {
                 }
             }
 
+            if (idToken.isEmpty() || accessToken.isEmpty()) {
+                if (html.contains("Allow access")) // additional consent required
+                {
+                    throw new CarNetSecurityException(
+                            "Consent missing. Login to the Web App and give consent: " + config.api.authScope);
+                }
+                throw new CarNetSecurityException("Login/OAuth failed, didn't got accessToken/idToken");
+            }
+
             // In this case the id and access token were returned by the login process
             logger.trace("{}: OAuth successful, idToken/userId was retrieved", config.vehicle.vin);
             tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
@@ -292,6 +301,15 @@ public class CarNetTokenManager {
         } catch (CarNetException e) {
             throw new CarNetSecurityException("Unable to create API access token", e);
         }
+    }
+
+    public String createIdToken(CarNetCombinedConfig config) throws CarNetException {
+        TokenSet tokens = getTokenSet(config.tokenSetId);
+        if (!tokens.idToken.isExpired()) {
+            // Token is still valid
+            createVwToken(config);
+        }
+        return tokens.idToken.idToken;
     }
 
     /**

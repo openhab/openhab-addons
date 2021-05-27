@@ -36,15 +36,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarNetRemoteServiceClimater} implements climater & preheat service.
+ * {@link CarNetServiceClimater} implements climater & preheat service.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetRemoteServiceClimater extends CarNetRemoteBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetRemoteServiceClimater.class);
+public class CarNetServiceClimater extends CarNetBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetServiceClimater.class);
 
-    public CarNetRemoteServiceClimater(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceClimater(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, thingHandler, api);
     }
 
@@ -108,6 +108,9 @@ public class CarNetRemoteServiceClimater extends CarNetRemoteBaseService {
                             getString(cs.status.vehicleParkingClockStatusData.vehicleParkingClock.content));
                 }
             }
+
+            String timer = api.getClimaterTimer();
+
         } catch (IncommensurableException e) {
             logger.debug("IncommensurableException ignored");
         }

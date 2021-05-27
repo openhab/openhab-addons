@@ -14,6 +14,7 @@ package org.openhab.binding.carnet.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNPairingInfo.CarNetPairingInfo;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetOidcConfig;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
@@ -31,15 +32,16 @@ public class CarNetCombinedConfig {
         public String oauthId = "";
         public String role = "";
         public String status = "";
-        public String pairingCode = "";
         public String securityLevel = "";
+        public String profileUrl = "";
     }
 
     public String tokenSetId = "";
+    public CarNetApiProperties api = new CarNetApiProperties();
+    public CarNetOidcConfig oidcConfig = new CarNetOidcConfig();
     public CarNetAccountConfiguration account = new CarNetAccountConfiguration();
     public CarNetVehicleConfiguration vehicle = new CarNetVehicleConfiguration();
     public CarNetUserInfo user = new CarNetUserInfo();
-    public CarNetApiProperties api = new CarNetApiProperties();
-    public CarNetOidcConfig oidcConfig = new CarNetOidcConfig();
+    public CarNetPairingInfo pairingInfo = new CarNetPairingInfo();
     public @Nullable CarNetBrandAuthenticator authenticator;
 }

@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehiclePosition;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetPosition;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class OpenStreetMapApiDTO {
         public String[] boundingbox;
     }
 
-    public String getAddressFromPosition(CarNetHttpClient http, CarNetVehiclePosition position) throws CarNetException {
+    public String getAddressFromPosition(CarNetHttpClient http, CarNetPosition position) throws CarNetException {
         try {
             String url = "https://nominatim.openstreetmap.org/reverse?lat=" + position.getLattitude() + "&lon="
                     + position.getLongitude() + "&format=json";

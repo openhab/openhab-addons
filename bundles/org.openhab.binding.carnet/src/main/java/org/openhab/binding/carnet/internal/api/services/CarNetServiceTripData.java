@@ -36,15 +36,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarRemoteServiceTripData} implements the drip data service (short-term + long-term).
+ * {@link CarNetServiceTripData} implements the drip data service (short-term + long-term).
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarRemoteServiceTripData extends CarNetRemoteBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarRemoteServiceTripData.class);
+public class CarNetServiceTripData extends CarNetBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetServiceTripData.class);
 
-    public CarRemoteServiceTripData(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceTripData(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_TRIP_STATISTICS, thingHandler, api);
     }
 

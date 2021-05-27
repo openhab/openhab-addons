@@ -78,7 +78,9 @@ public class CarNetIChanneldMapper {
         }
 
         public String getLabel() {
-            return getChannelAttribute("label");
+            String label = getChannelAttribute("label");
+            char index = groupName.charAt(groupName.length() - 1);
+            return Character.isDigit(index) ? label : label + " " + index;
         }
 
         public String getDescription() {
@@ -263,7 +265,7 @@ public class CarNetIChanneldMapper {
         add("KILOMETER_STATUS", "0x0101010002", "kilometerStatus", ITEMT_DISTANCE, CHANNEL_GROUP_STATUS, KILOMETRE);
         add("TEMPERATURE_OUTSIDE", "0x0301020001", "tempOutside", ITEMT_TEMP, CHANNEL_GROUP_STATUS, SIUnits.CELSIUS);
         add("STATE1_PARKING_LIGHT", "0x0301010001", "parkingLight", ITEMT_SWITCH);
-        add("STATE1_PARKING_BRAKE", "0x0301030001", "parkingBrake", ITEMT_SWITCH);
+        add("STATE30_PARKING_BRAKE", "0x0301030001", "parkingBrake", ITEMT_SWITCH);
         add("STATE3_SPOILER", "0x0301050011", "spoilerState", ITEMT_CONTACT, CHANNEL_GROUP_STATUS, null, true, true);
         add("POS_SPOILER", "0x0301050012");
         add("STATE1_SERVICE_FLAP", "0x030105000F", "serviceFlapState", ITEMT_CONTACT);

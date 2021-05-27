@@ -23,12 +23,12 @@ import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMa
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 
 /**
- * {@link CarNetRemoteServiceHonkFlash} implements honk&flash service.
+ * {@link CarNetServiceHonkFlash} implements honk&flash service.
  *
  * @author Markus Michels - Initial contribution
  */
-public class CarNetRemoteServiceHonkFlash extends CarNetRemoteBaseService {
-    public CarNetRemoteServiceHonkFlash(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+public class CarNetServiceHonkFlash extends CarNetBaseService {
+    public CarNetServiceHonkFlash(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_HONK_AND_FLASH, thingHandler, api);
     }
 

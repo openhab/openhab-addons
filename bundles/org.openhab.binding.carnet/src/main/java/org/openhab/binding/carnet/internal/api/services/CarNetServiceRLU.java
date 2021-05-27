@@ -28,13 +28,13 @@ import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMa
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 
 /**
- * {@link CarNetRemoteServiceRLU} implements remote vehicle lock/unlock and history.
+ * {@link CarNetServiceRLU} implements remote vehicle lock/unlock and history.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetRemoteServiceRLU extends CarNetRemoteBaseService {
-    public CarNetRemoteServiceRLU(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+public class CarNetServiceRLU extends CarNetBaseService {
+    public CarNetServiceRLU(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_LOCK_UNLOCK, thingHandler, api);
     }
 

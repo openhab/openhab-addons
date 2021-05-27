@@ -35,22 +35,23 @@ import org.openhab.binding.carnet.internal.CarNetTextResources;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO;
 import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO.CNErrorMessage2Details;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNPairingInfo.CarNetPairingInfo;
 import org.openhab.binding.carnet.internal.api.CarNetApiResult;
 import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper;
 import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.api.CarNetPendingRequest;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiNull;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteBaseService;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceCarFinder;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceCharger;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceClimater;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceDestinations;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceHonkFlash;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServicePreHeat;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceRLU;
-import org.openhab.binding.carnet.internal.api.services.CarNetRemoteServiceStatus;
-import org.openhab.binding.carnet.internal.api.services.CarRemoteServiceTripData;
+import org.openhab.binding.carnet.internal.api.services.CarNetBaseService;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceCarFinder;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceCharger;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceClimater;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceDestinations;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceGeoFenceAlerts;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceHonkFlash;
+import org.openhab.binding.carnet.internal.api.services.CarNetServicePreHeat;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceRLU;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceSpeedAlerts;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceStatus;
+import org.openhab.binding.carnet.internal.api.services.CarNetServiceTripData;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
 import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
@@ -104,10 +105,10 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private int skipCount = 1;
     private boolean forceUpdate;
     private boolean channelsCreated = false;
-    private boolean testData = false;
+    private boolean testData = true;
     private boolean stopping = false;
 
-    private Map<String, CarNetRemoteBaseService> services = new LinkedHashMap<>();
+    private Map<String, CarNetBaseService> services = new LinkedHashMap<>();
     private CarNetCombinedConfig config = new CarNetCombinedConfig();
 
     public CarNetVehicleHandler(Thing thing, CarNetTextResources resources, ZoneId zoneId,
@@ -147,7 +148,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             if (config.vehicle.enableAddressLookup) {
                 logger.info(
-                        "{}: Reverse address lookup based on vehicle's geo position is enabled (using OpenStreetMap",
+                        "{}: Reverse address lookup based on vehicle's geo position is enabled (using OpenStreetMap)",
                         thingId);
             }
         }, 2, TimeUnit.SECONDS);
@@ -190,69 +191,63 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             try {
                 config = api.initialize(vin, config);
+                if (!config.pairingInfo.isPairingCompleted()) {
+                    logger.warn("{}: Unable to verify pairing or pairing not completed (status {}, userId {}, code {})",
+                            thingId, getString(config.pairingInfo.pairingStatus), getString(config.user.id),
+                            getString(config.pairingInfo.pairingCode));
+                }
             } catch (CarNetException e) {
                 logger.warn("{}: Available services coould not be determined, continue with default profile", thingId);
             }
 
-            try {
-                CarNetPairingInfo pi = api.getPairingStatus();
-                config.user.pairingCode = pi.pairingCode;
-                api.setConfig(config);
-                if (!pi.isPairingCompleted()) {
-                    logger.warn("{}: Unable to verify pairing or pairing not completed (status {}, userId {}, code {})",
-                            thingId, getString(pi.pairingStatus), getString(pi.userId), getString(pi.pairingCode));
-                }
-            } catch (CarNetException e) {
-                logger.debug("{}: Unable to verify pairing status: {}", thingId, e.toString());
-            }
             logger.debug("{}: Active userId = {}, role = {} (securityLevel {}), status = {}, Pairing Code {}", thingId,
                     config.user.id, config.user.role, config.user.securityLevel, config.user.status,
-                    config.user.pairingCode);
+                    config.pairingInfo.pairingCode);
 
-            /*
-             * if (logger.isDebugEnabled() && testData) {
-             * // Get available services
-             * String h = null, ts = null, df = null, poi = null, hr = null;
-             * try {
-             * h = api.getHistory();
-             * } catch (Exception e) {
-             * }
-             * try {
-             * ts = api.getTripStats("shortTerm");
-             * } catch (Exception e) {
-             * }
-             * try {
-             * df = api.getMyDestinationsFeed(config.user.id);
-             * } catch (Exception e) {
-             * }
-             * try {
-             * poi = api.getPois();
-             * } catch (Exception e) {
-             * }
-             * try {
-             * hr = api.getVehicleHealthReport();
-             * } catch (Exception e) {
-             * }
-             *
-             * logger.debug(
-             * "{}: Additional Data\nHistory:{}\nTrip stats short: {}\nMyDestinationsFeed: {}\nPOIs: {}\nHealth Report: {}\n"
-             * ,
-             * thingId, h, ts, df, poi, hr);
-             * testData = false;
-             * }
-             */
+            if (testData) {
+                // Get available services
+                String h = null, mbb = null, df = null, poi = null, pd = null;
+                try {
+                    pd = api.getPersonalData();
+                } catch (Exception e) {
+                }
+                try {
+                    mbb = api.getMbbStatus();
+                } catch (Exception e) {
+                }
+
+                try {
+                    h = api.getHistory();
+                } catch (Exception e) {
+                }
+                try {
+                    df = api.getMyDestinationsFeed();
+                } catch (Exception e) {
+                }
+                try {
+                    poi = api.getPois();
+                } catch (Exception e) {
+                }
+
+                logger.debug(
+                        "{}: Additional Data\nPersonal Data: {}\nMBB Status: {}\nHistory:{}\nMyDestinationsFeed: {}\nPOIs: {}",
+                        thingId, pd, mbb, h, df, poi);
+                testData = false;
+            }
 
             // Create services
             services.clear();
-            addService(new CarNetRemoteServiceStatus(this, api));
-            addService(new CarNetRemoteServiceCarFinder(this, api));
-            addService(new CarNetRemoteServiceRLU(this, api));
-            addService(new CarNetRemoteServiceClimater(this, api));
-            addService(new CarNetRemoteServicePreHeat(this, api));
-            addService(new CarNetRemoteServiceCharger(this, api));
-            addService(new CarRemoteServiceTripData(this, api));
-            addService(new CarNetRemoteServiceDestinations(this, api));
-            addService(new CarNetRemoteServiceHonkFlash(this, api));
+            addService(new CarNetServiceStatus(this, api));
+            addService(new CarNetServiceCarFinder(this, api));
+            addService(new CarNetServiceRLU(this, api));
+            addService(new CarNetServiceClimater(this, api));
+            addService(new CarNetServicePreHeat(this, api));
+            addService(new CarNetServiceCharger(this, api));
+            addService(new CarNetServiceTripData(this, api));
+            addService(new CarNetServiceDestinations(this, api));
+            addService(new CarNetServiceHonkFlash(this, api));
+            addService(new CarNetServiceGeoFenceAlerts(this, api));
+            addService(new CarNetServiceSpeedAlerts(this, api));
 
             if (!channelsCreated) {
                 // General channels
@@ -265,8 +260,8 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
 
                 // Add channels based on service information
-                for (Map.Entry<String, CarNetRemoteBaseService> s : services.entrySet()) {
-                    CarNetRemoteBaseService service = s.getValue();
+                for (Map.Entry<String, CarNetBaseService> s : services.entrySet()) {
+                    CarNetBaseService service = s.getValue();
                     if (!service.createChannels(channels)) {
                         logger.debug("{}: Service {} is not available, disable", thingId, service.getServiceId());
                         service.disable();
@@ -480,7 +475,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         }
 
         boolean updated = false;
-        for (Map.Entry<String, CarNetRemoteBaseService> s : services.entrySet()) {
+        for (Map.Entry<String, CarNetBaseService> s : services.entrySet()) {
             updated |= s.getValue().update();
         }
 
@@ -706,7 +701,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         return !value.equals(key) ? value : "";
     }
 
-    private boolean addService(CarNetRemoteBaseService service) {
+    private boolean addService(CarNetBaseService service) {
         String serviceId = service.getServiceId();
         boolean available = false;
         if (!services.containsKey(serviceId) && service.isEnabled()) {

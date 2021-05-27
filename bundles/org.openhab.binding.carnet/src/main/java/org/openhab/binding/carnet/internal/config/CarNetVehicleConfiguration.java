@@ -30,6 +30,8 @@ public class CarNetVehicleConfiguration {
     public int numLongTrip = 1; // number of entries from long trip data history
     public int numActionHistory = 1; // number of entries from action history
     public int numDestinations = 1; // number of entries from the destination history;
+    public int numSpeedAlerts = 1;
+    public int numGeoFenceAlerts = 1;
 
     public boolean enableAddressLookup = false;
     public Integer pollingInterval = 15;

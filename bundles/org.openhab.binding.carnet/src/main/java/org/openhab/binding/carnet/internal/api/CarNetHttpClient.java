@@ -266,7 +266,8 @@ public class CarNetHttpClient {
             headers.put("X-Language-Id", "de");
         }
         headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
+        headers.put(HttpHeader.ACCEPT.toString(),
+                "application/json, application/vnd.volkswagenag.com-error-v1+json, */*");
         headers.put(HttpHeader.ACCEPT_CHARSET.toString(), StandardCharsets.UTF_8.toString());
         headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + token);
         return headers;

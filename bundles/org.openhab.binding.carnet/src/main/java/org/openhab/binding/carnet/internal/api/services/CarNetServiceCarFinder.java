@@ -23,11 +23,12 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.OpenStreetMapApiDTO;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehiclePosition;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetPosition;
 import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.UnDefType;
@@ -35,16 +36,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarNetRemoteServiceCarFinder} implements the carFinder service.
+ * {@link CarNetServiceCarFinder} implements the carFinder service.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetRemoteServiceCarFinder.class);
+public class CarNetServiceCarFinder extends CarNetBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetServiceCarFinder.class);
     private final OpenStreetMapApiDTO osmApi = new OpenStreetMapApiDTO();
 
-    public CarNetRemoteServiceCarFinder(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceCarFinder(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_CAR_FINDER, thingHandler, api);
     }
 
@@ -64,7 +65,7 @@ public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
         boolean updated = false;
         try {
             logger.debug("{}: Get Vehicle Position", thingId);
-            CarNetVehiclePosition position = api.getVehiclePosition();
+            CarNetPosition position = api.getVehiclePosition();
             updated |= updateLocation(position, CHANNEL_LOCATTION_GEO);
             String time = position.getCarSentTime();
             updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, new DateTimeType(time));
@@ -75,23 +76,26 @@ public class CarNetRemoteServiceCarFinder extends CarNetRemoteBaseService {
             String parkingTime = getString(position.getParkingTime());
             updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
                     !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.UNDEF);
+            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_CAR_MOVING, OnOffType.OFF);
         } catch (CarNetException e) {
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, UnDefType.UNDEF);
-            if (e.getApiResult().httpCode != HttpStatus.NO_CONTENT_204) { // Ignore No Content = Info not available
+            if (e.getApiResult().httpCode == HttpStatus.NO_CONTENT_204) {
+                updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_CAR_MOVING, OnOffType.ON);
+            } else {
                 throw e;
             }
         }
         return updated;
     }
 
-    private boolean updateLocation(CarNetVehiclePosition position, String channel) {
+    private boolean updateLocation(CarNetPosition position, String channel) {
         PointType location = new PointType(new DecimalType(position.getLattitude()),
                 new DecimalType(position.getLongitude()));
         return updateChannel(CHANNEL_GROUP_LOCATION, channel, location);
     }
 
-    private boolean updateAddress(CarNetVehiclePosition position, String channel) {
+    private boolean updateAddress(CarNetPosition position, String channel) {
         if (getConfig().vehicle.enableAddressLookup) {
             try {
                 String address = osmApi.getAddressFromPosition(api.getHttp(), position);

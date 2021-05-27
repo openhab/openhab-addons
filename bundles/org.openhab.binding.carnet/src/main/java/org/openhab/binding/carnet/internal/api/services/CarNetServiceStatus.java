@@ -44,15 +44,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarNetRemoteServiceStatus} implements fetching the basic vehicle status data.
+ * {@link CarNetServiceStatus} implements fetching the basic vehicle status data.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetRemoteServiceStatus extends CarNetRemoteBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetRemoteServiceStatus.class);
+public class CarNetServiceStatus extends CarNetBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetServiceStatus.class);
 
-    public CarNetRemoteServiceStatus(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceStatus(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
     }
 

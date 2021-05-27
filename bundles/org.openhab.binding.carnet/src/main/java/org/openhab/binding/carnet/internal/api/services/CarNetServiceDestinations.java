@@ -33,13 +33,13 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.types.UnDefType;
 
 /**
- * {@link CarNetRemoteServiceDestinations} implements the destination hostory
+ * {@link CarNetServiceDestinations} implements the destination hostory
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetRemoteServiceDestinations extends CarNetRemoteBaseService {
-    public CarNetRemoteServiceDestinations(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
+public class CarNetServiceDestinations extends CarNetBaseService {
+    public CarNetServiceDestinations(CarNetVehicleHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_DESTINATIONS, thingHandler, api);
     }
 

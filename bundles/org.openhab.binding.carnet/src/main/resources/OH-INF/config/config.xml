@@ -47,7 +47,7 @@
 		<parameter name="enableAddressLookup" type="boolean" required="false">
 			<label>Enable Address Lookups</label>
 			<description>Use OpenStreetMap to reverse lookup address from vehicle's Geo position</description>
-			<default>false</default>
+			<default>true</default>
 		</parameter>
 
 		<parameter name="numShortTrip" type="integer" required="false" min="0" max="5">
@@ -74,6 +74,21 @@
 		<parameter name="numDestinations" type="integer" required="false" min="0" max="5">
 			<label>Entries in Destination History</label>
 			<description>Number of entries to fetch from the destination history (if supported for the vehicle model). Newest one
+				will be first,for each entry a group is created (1..5). 0 means disable fetching this history.</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="numSpeedAlerts" type="integer" required="false" min="0" max="10">
+			<label>Entries in Speed Alert History</label>
+			<description>Number of entries to fetch from the speed alert history (if supported for the vehicle model). Newest one
+				will be first,for each entry a group is created (1..10). 0 means disable fetching this history.</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="numGeoFenceAlerts" type="integer" required="false" min="0" max="10">
+			<label>Entries in Geo Fence Alert History</label>
+			<description>Number of entries to fetch from the geo fence alert history (if supported for the vehicle model). Newest
+				one
 				will be first,for each entry a group is created (1..5). 0 means disable fetching this history.</description>
 			<default>1</default>
 			<advanced>true</advanced>
