@@ -303,6 +303,8 @@ public enum MiIoDevices {
     YEELINK_LIGHT_LAMP6("yeelink.light.lamp6", "Yeelight", THING_TYPE_BASIC),
     YEELINK_LIGHT_LAMP7("yeelink.light.lamp7", "Yeelight LED Light Sensor Desk Lamp V1", THING_TYPE_BASIC),
     YEELINK_LIGHT_LAMP8("yeelink.light.lamp8", "Yeelight", THING_TYPE_BASIC),
+    YEELINK_LIGHT_LAMP9("yeelink.light.lamp9", "Yeelight Star LED Table Lamp", THING_TYPE_BASIC),
+    YEELINK_LIGHT_LAMP10("yeelink.light.lamp10", "Yeelight Star Floor Lamp", THING_TYPE_BASIC),
     YEELINK_LIGHT_LAMP15("yeelink.light.lamp15", "Yeelight Screen Light Bar", THING_TYPE_BASIC),
     YEELINK_LIGHT_MONO1("yeelink.light.mono1", "Yeelight Bulb", THING_TYPE_BASIC),
     YEELINK_LIGHT_MONO2("yeelink.light.mono2", "Yeelight White Bulb v2", THING_TYPE_BASIC),
