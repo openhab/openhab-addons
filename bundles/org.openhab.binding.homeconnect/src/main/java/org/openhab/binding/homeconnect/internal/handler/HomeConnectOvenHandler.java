@@ -159,11 +159,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
 
-        // turn coffee maker on and standby
-        if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-            apiClient.setPowerState(getThingHaId(),
-                    OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_STANDBY);
-        }
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_STANDBY);
 
         String operationState = getOperationState();
         if (operationState != null && INACTIVE_STATE.contains(operationState) && command instanceof QuantityType) {
