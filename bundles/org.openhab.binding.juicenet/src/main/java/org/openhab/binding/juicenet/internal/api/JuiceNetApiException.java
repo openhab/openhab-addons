@@ -24,6 +24,11 @@ import org.openhab.binding.juicenet.internal.handler.JuiceNetBridgeHandler;
 @NonNullByDefault
 public class JuiceNetApiException extends Exception {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public JuiceNetApiException(String message) {
         super(message);
     }

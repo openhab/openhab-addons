@@ -90,7 +90,6 @@ public class JuiceNetApi {
 
     public JuiceNetApiDeviceStatus queryDeviceStatus(String token)
             throws JuiceNetApiException, IOException, InterruptedException {
-
         Map<String, Object> params = new HashMap<>();
         HttpResponse<String> response;
 
@@ -231,6 +230,7 @@ public class JuiceNetApi {
         public Long plug_unplug_time = (long) 0;
         public Long target_time = (long) 0;
         public Long unit_time = (long) 0;
+        public long default_target_time = 0;
         public int car_id;
         public int temperature;
     }

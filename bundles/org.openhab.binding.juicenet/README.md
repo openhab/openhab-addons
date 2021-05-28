@@ -28,7 +28,7 @@ Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers asso
 | override          | Switch            | Y         | Smart charging is overridden. |
 | charging_time_left | Number:Time      | Y         | Charging time left (seconds). |
 | plug_unplug_time  | DateTime          | Y         | Last time of either plug-in or plug-out. |
-| target_time       | DateTime          | Y         | “Start charging” start time, or time to start when overriding smart charging. |
+| target_time       | DateTime          | N         | “Start charging” start time, or time to start when overriding smart charging. |
 | unit_time         | DateTime          | Y         | Current time on the unit. |
 | temperature       | Number:Temperature | Y        | Current temperature at the unit. |
 | amps_limit        | Number:ElectricCurrent | N    | Max charging current allowed. (A) |
@@ -50,3 +50,167 @@ Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers asso
 | car_battery_size_wh   | Number:Energy | Y         | Car battery pack size. (Wh) |
 | car_battery_range_m   | Number:Length | Y         | Car mileage range. (miles) |
 | car_charging_rate_w   | Number:Power  | Y         | Car charging rate. (W) |
+
+## Using the binding
+
+<TODO>
+
+## Widget
+
+The following custom widget can be used with this binding.
+
+![JuiceBox Widget](images/widget.png)
+
+```
+uid: widget_JuiceBox
+tags: []
+props:
+  parameters:
+    - description: Prefix for the items with the data
+      label: Item prefix
+      name: prefix
+      required: false
+      type: TEXT
+  parameterGroups: []
+timestamp: May 10, 2021, 2:38:55 PM
+component: f7-card
+config:
+  title: =items[props.prefix + "_Name"].state
+  style:
+    border-radius: var(--f7-card-expandable-border-radius)
+    --f7-card-header-border-color: none
+slots:
+  default:
+    - component: f7-card-content
+      slots:
+        default:
+          - component: f7-row
+            config:
+              class:
+                - display-flex
+                - align-content-stretch
+                - align-items-center
+            slots:
+              default:
+                - component: f7-gauge
+                  config:
+                    type: semicircle
+                    size: 270
+                    value: =Number.parseFloat(items[props.prefix + "_CurrentEnergy"].state) / Number.parseFloat(items[props.prefix + "_CarBatteryPackSize"].state)
+                    bg-color: transparent
+                    border-bg-color: '=(items[props.prefix + "_DeviceState"].state === "charging") ? "#577543" : (items[props.prefix + "_DeviceState"].state === "plugged") ? "#8f6c2f" : "#595959"'
+                    border-color: '=(items[props.prefix + "_DeviceState"].state === "charging") ? "#90d164" : (items[props.prefix + "_DeviceState"].state === "plugged") ? "#ed9c11" : "#adadad"'
+                    borderWidth: 40
+                    value-text: =items[props.prefix + "_CurrentEnergy"].displayState
+                    value-text-color: '=(items[props.prefix + "_DeviceState"].state === "charging") ? "#90d164" : (items[props.prefix + "_DeviceState"].state === "plugged") ? "#ed9c11" : "#adadad"'
+                    value-font-size: 20
+                    value-font-weight: 500
+                    label-text: =items[props.prefix + "_DeviceState"].displayState
+                    label-text-color: white
+                    label-font-size: 18
+                    label-font-weight: 400
+                    noBorder: true
+                    outline: true
+          - component: f7-row
+            config:
+              class:
+                - display-flex
+                - justify-content-center
+                - align-content-stretch
+                - align-items-center
+                - margin-left
+            slots:
+              default:
+                - component: f7-segmented
+                  config:
+                    strong: true
+                    style:
+                      width: 80%
+                  slots:
+                    default:
+                      - component: oh-button
+                        config:
+                          text: Start
+                          color: blue
+                          size: 24
+                          active: =(items[props.prefix + "_ChargingState"].state === "start")
+                          action: command
+                          actionItem: =props.prefix + "_ChargingState"
+                          actionCommand: start
+                      - component: oh-button
+                        config:
+                          text: Smart
+                          color: blue
+                          size: 24
+                          active: =(items[props.prefix + "_ChargingState"].state === 'smart')
+                          action: command
+                          actionItem: =props.prefix + "_ChargingState"
+                          actionCommand: smart
+                      - component: oh-button
+                        config:
+                          text: Stop
+                          color: blue
+                          size: 24
+                          active: =(items[props.prefix + "_ChargingState"].state === "stop")
+                          action: command
+                          actionItem: =props.prefix + "_ChargingState"
+                          actionCommand: stop
+          - component: f7-row
+            config:
+              class:
+                - display-flex
+                - justify-content-space-evenly
+                - align-content-stretch
+                - align-items-center
+                - height: 40px
+              style:
+                --f7-chip-font-size: 14px
+                --f7-chip-height: 28px
+                padding-top: 12px
+            slots:
+              default:
+                - component: f7-chip
+                  config:
+                    visible: =(items[props.prefix + "_DeviceState"].state === "charging")
+                    text: '="Power: " + items[props.prefix + "_Power"].state'
+                    iconF7: bolt_fill
+                    media-bg-color: blue
+                    bg-color: gray
+                    label: hello
+                    style:
+                      padding-rightc: 12px
+                - component: f7-chip
+                  config:
+                    visible: =(items[props.prefix + "_DeviceState"].state === "charging")
+                    text: '="Current: " + items[props.prefix + "_Current"].state'
+                    iconF7: arrow_up_circl
+                    media-bg-color: blue
+                    bg-color: gray
+                - component: f7-chip
+                  config:
+                    text: '="Voltage: " + items[props.prefix + "_Voltage"].state'
+                    iconF7: plusminus
+                    media-bg-color: blue
+                    bg-color: gray
+                - component: f7-chip
+                  config:
+                    visible: =(items[props.prefix + "_ChargingState"].state === 'smart')
+                    text: '="Charge at: " + items[props.prefix + "_TargetTime"].displayState'
+                    iconF7: clock
+                    media-bg-color: blue
+                    bg-color: gray
+                - component: f7-chip
+                  config:
+                    visible: =(items[props.prefix + "_DeviceState"].state === 'charging')
+                    text: '="Charge Time Left: " + items[props.prefix + "_ChargingTimeLeft"].displayState'
+                    iconF7: timer
+                    media-bg-color: blue
+                    bg-color: gray
+    - component: f7-card-footer
+      slots:
+        default:
+          - component: Label
+            config:
+              text: =items[props.prefix + "_CarDescription"].state
+```
+

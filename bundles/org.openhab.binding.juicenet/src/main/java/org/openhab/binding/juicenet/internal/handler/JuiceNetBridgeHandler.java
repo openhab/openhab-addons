@@ -75,7 +75,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         logger.trace("JuiceNetBridgeHandler:initialize");
 
         try {
-            api.initialize(config.api_token, this.getThing().getUID());
+            api.initialize(config.apiToken, this.getThing().getUID());
         } catch (JuiceNetApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
             return;
@@ -85,7 +85,6 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
 
         scheduler.execute(() -> {
             try {
-
                 listDevices = api.queryDeviceList();
             } catch (JuiceNetApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());

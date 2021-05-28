@@ -19,17 +19,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Power;
-import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
@@ -75,6 +68,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     JuiceNetApi.JuiceNetApiDeviceStatus deviceStatus = new JuiceNetApi.JuiceNetApiDeviceStatus();
     JuiceNetApi.JuiceNetApiInfo deviceInfo = new JuiceNetApi.JuiceNetApiInfo();
     JuiceNetApi.JuiceNetApiTouSchedule deviceTouSchedule = new JuiceNetApi.JuiceNetApiTouSchedule();
+    JuiceNetApi.JuiceNetApiCar deviceCar = new JuiceNetApi.JuiceNetApiCar();
 
     // This holds the last time the info was updated and is compared everytime we get device status to determine
     // if the deviceInfo should be updated. Set the time in the past to ensure info is updated on initial call.
@@ -123,11 +117,11 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("handleCommand");
+
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case DEVICE_NAME:
-                    updateState(DEVICE_NAME, new StringType(name));
-                    break;
                 case DEVICE_STATE:
                 case DEVICE_OVERRIDE:
                 case DEVICE_CHARGING_TIME_LEFT:
@@ -156,7 +150,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                 case DEVICE_MPG:
                 case DEVICE_ECOST:
                 case DEVICE_WHPERMILE:
-
                     refreshInfoChannels();
                     break;
             }
@@ -165,40 +158,57 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         }
 
         try {
-
             switch (channelUID.getId()) {
                 case DEVICE_AMPS_LIMIT:
                     int limit = ((QuantityType<?>) command).intValue();
 
                     getApi().setCurrentLimit(token, limit);
                     break;
-                case DEVICE_CHARGING_STATE:
+                case DEVICE_TARGET_TIME: {
+                    int energyAtPlugin = 0;
+                    int energyToAdd = deviceCar.battery_size_wh;
+
+                    if (!(command instanceof DateTimeType)) {
+                        logger.info("Target Time is not an instance of DateTimeType");
+                        return;
+                    }
+
+                    ZonedDateTime datetime = ((DateTimeType) command).getZonedDateTime();
+                    Long targetTime = datetime.toEpochSecond() + datetime.get(ChronoField.OFFSET_SECONDS);
+                    logger.debug("DateTime: {} - {}", datetime.toString(), targetTime);
+
+                    getApi().setOverride(token, energyAtPlugin, targetTime, energyToAdd);
+
+                    break;
+                }
+                case DEVICE_CHARGING_STATE: {
                     String state = ((StringType) command).toString();
-                    Long override_time = deviceStatus.unit_time;
-                    int energy_at_plugin = 0;
-                    int energy_to_add = 7600;
+                    Long overrideTime = deviceStatus.unit_time;
+                    int energyAtPlugin = 0;
+                    int energyToAdd = deviceCar.battery_size_wh;
 
                     switch (state) {
                         case "stop":
                             if (targetTimeTou == 0) {
                                 targetTimeTou = deviceStatus.target_time;
                             }
-                            override_time = deviceStatus.unit_time + 31556926;
+                            overrideTime = deviceStatus.unit_time + 31556926;
                             break;
                         case "start":
                             if (targetTimeTou == 0) {
                                 targetTimeTou = deviceStatus.target_time;
                             }
-                            override_time = deviceStatus.unit_time;
+                            overrideTime = deviceStatus.unit_time;
                             break;
                         case "smart":
-                            override_time = targetTimeTou;
-                            targetTimeTou = 0;
+                            overrideTime = deviceStatus.default_target_time;
                             break;
                     }
 
-                    getApi().setOverride(token, energy_at_plugin, override_time, energy_to_add);
+                    getApi().setOverride(token, energyAtPlugin, overrideTime, energyToAdd);
+
                     break;
+                }
             }
         } catch (IOException e) {
             logger.debug("Unable to open connection to api host: {}", e.getMessage());
@@ -210,8 +220,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     }
 
     public void queryDeviceStatusAndInfo() throws JuiceNetApiException, IOException, InterruptedException {
-        // deviceStatus = Objects.requireNonNull(getBridgeHandler().getApi().queryDeviceStatus(token));
-
         deviceStatus = getApi().queryDeviceStatus(token);
 
         if (deviceStatus.info_timestamp > lastInfoTimestamp) {
@@ -219,6 +227,14 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
             deviceInfo = getApi().queryInfo(token);
             deviceTouSchedule = getApi().queryTOUSchedule(token);
             refreshInfoChannels();
+        }
+
+        int carId = deviceStatus.car_id;
+        for (JuiceNetApi.JuiceNetApiCar car : deviceInfo.cars) {
+            if (car.car_id == carId) {
+                this.deviceCar = car;
+                break;
+            }
         }
 
         refreshStatusChannels();
@@ -243,41 +259,33 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         }
 
         updateState(DEVICE_OVERRIDE, OnOffType.from(deviceStatus.show_override));
-        updateState(DEVICE_CHARGING_TIME_LEFT, new QuantityType<Time>(deviceStatus.charging_time_left, Units.SECOND));
+        updateState(DEVICE_CHARGING_TIME_LEFT, new QuantityType<>(deviceStatus.charging_time_left, Units.SECOND));
         updateState(DEVICE_PLUG_UNPLUG_TIME, new DateTimeType(toZonedDateTime(deviceStatus.plug_unplug_time)));
         updateState(DEVICE_TARGET_TIME, new DateTimeType(toZonedDateTime(deviceStatus.target_time)));
         updateState(DEVICE_UNIT_TIME, new DateTimeType(toZonedDateTime(deviceStatus.unit_time)));
-        updateState(DEVICE_TEMPERATURE, new QuantityType<Temperature>(deviceStatus.temperature, SIUnits.CELSIUS));
-        updateState(DEVICE_AMPS_LIMIT,
-                new QuantityType<ElectricCurrent>(deviceStatus.charging.amps_limit, Units.AMPERE));
-        updateState(DEVICE_AMPS_CURRENT,
-                new QuantityType<ElectricCurrent>(deviceStatus.charging.amps_current, Units.AMPERE));
-        updateState(DEVICE_VOLTAGE, new QuantityType<ElectricPotential>(deviceStatus.charging.voltage, Units.VOLT));
-        updateState(DEVICE_ENERGY, new QuantityType<Energy>(deviceStatus.charging.wh_energy, Units.WATT_HOUR));
+        updateState(DEVICE_TEMPERATURE, new QuantityType<>(deviceStatus.temperature, SIUnits.CELSIUS));
+        updateState(DEVICE_AMPS_LIMIT, new QuantityType<>(deviceStatus.charging.amps_limit, Units.AMPERE));
+        updateState(DEVICE_AMPS_CURRENT, new QuantityType<>(deviceStatus.charging.amps_current, Units.AMPERE));
+        updateState(DEVICE_VOLTAGE, new QuantityType<>(deviceStatus.charging.voltage, Units.VOLT));
+        updateState(DEVICE_ENERGY, new QuantityType<>(deviceStatus.charging.wh_energy, Units.WATT_HOUR));
         updateState(DEVICE_SAVINGS, new DecimalType(deviceStatus.charging.savings / 100.0));
-        updateState(DEVICE_POWER, new QuantityType<Power>(deviceStatus.charging.watt_power, Units.WATT));
-        updateState(DEVICE_CHARGING_TIME, new QuantityType<Time>(deviceStatus.charging.seconds_charging, Units.SECOND));
+        updateState(DEVICE_POWER, new QuantityType<>(deviceStatus.charging.watt_power, Units.WATT));
+        updateState(DEVICE_CHARGING_TIME, new QuantityType<>(deviceStatus.charging.seconds_charging, Units.SECOND));
         updateState(DEVICE_PLUGINENERGY,
-                new QuantityType<Energy>(deviceStatus.charging.wh_energy_at_plugin, Units.WATT_HOUR));
-        updateState(DEVICE_ENERGYTOADD,
-                new QuantityType<Energy>(deviceStatus.charging.wh_energy_to_add, Units.WATT_HOUR));
-        updateState(DEVICE_LIFETIME_ENERGY, new QuantityType<Energy>(deviceStatus.lifetime.wh_energy, Units.WATT_HOUR));
+                new QuantityType<>(deviceStatus.charging.wh_energy_at_plugin, Units.WATT_HOUR));
+        updateState(DEVICE_ENERGYTOADD, new QuantityType<>(deviceStatus.charging.wh_energy_to_add, Units.WATT_HOUR));
+        updateState(DEVICE_LIFETIME_ENERGY, new QuantityType<>(deviceStatus.lifetime.wh_energy, Units.WATT_HOUR));
         updateState(DEVICE_LIFETIME_SAVINGS, new DecimalType(deviceStatus.lifetime.savings / 100.0));
 
-        int carId = deviceStatus.car_id;
-        for (JuiceNetApi.JuiceNetApiCar car : deviceInfo.cars) {
-            if (car.car_id == carId) {
-                updateState(DEVICE_CAR_DESCRIPTION, new StringType(car.description));
-                updateState(DEVICE_CAR_BATTERY_SIZE, new QuantityType<Energy>(car.battery_size_wh, Units.WATT_HOUR));
-                updateState(DEVICE_CAR_BATTERY_RANGE,
-                        new QuantityType<Length>(car.battery_range_m, ImperialUnits.MILE));
-                updateState(DEVICE_CAR_CHARGING_RATE, new QuantityType<Power>(car.charging_rate_w, Units.WATT));
-                break;
-            }
-        }
+        // update Car items
+        updateState(DEVICE_CAR_DESCRIPTION, new StringType(deviceCar.description));
+        updateState(DEVICE_CAR_BATTERY_SIZE, new QuantityType<>(deviceCar.battery_size_wh, Units.WATT_HOUR));
+        updateState(DEVICE_CAR_BATTERY_RANGE, new QuantityType<>(deviceCar.battery_range_m, ImperialUnits.MILE));
+        updateState(DEVICE_CAR_CHARGING_RATE, new QuantityType<>(deviceCar.charging_rate_w, Units.WATT));
     }
 
     protected void refreshInfoChannels() {
+        updateState(DEVICE_NAME, new StringType(name));
         updateState(DEVICE_GASCOST, new DecimalType(deviceInfo.gascost / 100.0));
         updateState(DEVICE_MPG, new DecimalType(deviceInfo.mpg));
         updateState(DEVICE_ECOST, new DecimalType(deviceInfo.ecost / 100.0));

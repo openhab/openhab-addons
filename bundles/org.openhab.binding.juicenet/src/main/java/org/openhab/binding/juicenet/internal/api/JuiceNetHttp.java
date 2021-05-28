@@ -56,7 +56,6 @@ public class JuiceNetHttp {
 
     public HttpResponse<String> httpGet(String url, @Nullable String paramString)
             throws IOException, InterruptedException {
-
         HttpRequest request = HttpRequest.newBuilder(URI.create(url + paramString)).GET().build();
 
         return httpClient.send(request, BodyHandlers.ofString());

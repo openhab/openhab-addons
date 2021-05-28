@@ -118,7 +118,7 @@
 		<item-type>DateTime</item-type>
 		<label>Target Time</label>
 		<description>“Start charging” start time, or time to start when overriding smart charging.</description>
-		<state readOnly="true" pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
+		<state pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
 	<channel-type id="unit_time_type">
