@@ -162,6 +162,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final int MAX_SUBWOOFER_GAIN = 15;
     private static final int MIN_SURROUND_LEVEL = -15;
     private static final int MAX_SURROUND_LEVEL = 15;
+    private static final int MIN_HEIGHT_LEVEL = -10;
+    private static final int MAX_HEIGHT_LEVEL = 10;
 
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
 
@@ -337,6 +339,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     break;
                 case SURROUNDTVLEVEL:
                     setSurroundTvLevel(command);
+                    break;
+                case HEIGHTLEVEL:
+                    setHeightLevel(command);
                     break;
                 case ADD:
                     addMember(command);
@@ -595,6 +600,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     break;
                 case "MusicSurroundLevel":
                     updateChannel(SURROUNDMUSICLEVEL);
+                    break;
+                case "HeightChannelLevel":
+                    updateChannel(HEIGHTLEVEL);
                     break;
                 case "NightMode":
                     updateChannel(NIGHTMODE);
@@ -869,6 +877,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 break;
             case SURROUNDTVLEVEL:
                 value = getSurroundTvLevel();
+                if (value != null) {
+                    newState = new DecimalType(value);
+                }
+                break;
+            case HEIGHTLEVEL:
+                value = getHeightLevel();
                 if (value != null) {
                     newState = new DecimalType(value);
                 }
@@ -1460,6 +1474,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getSubwooferGain() {
         return stateMap.get("SubGain");
+    }
+
+    public @Nullable String getHeightLevel() {
+        return stateMap.get("HeightChannelLevel");
     }
 
     public @Nullable String getTransportState() {
@@ -2077,6 +2095,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void setSurroundTvLevel(Command command) {
         setEqualizerNumericSetting(command, "SurroundLevel", getSurroundTvLevel(), MIN_SURROUND_LEVEL,
                 MAX_SURROUND_LEVEL);
+    }
+
+    public void setHeightLevel(Command command) {
+        setEqualizerNumericSetting(command, "HeightChannelLevel", getHeightLevel(), MIN_HEIGHT_LEVEL, MAX_HEIGHT_LEVEL);
     }
 
     public void setNightMode(Command command) {
