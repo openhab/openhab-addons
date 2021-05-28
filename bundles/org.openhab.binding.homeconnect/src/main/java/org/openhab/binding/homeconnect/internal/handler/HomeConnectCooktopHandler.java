@@ -78,7 +78,7 @@ public class HomeConnectCooktopHandler extends AbstractHomeConnectThingHandler {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
 
-        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_STANDBY);
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_OFF);
     }
 
     @Override
