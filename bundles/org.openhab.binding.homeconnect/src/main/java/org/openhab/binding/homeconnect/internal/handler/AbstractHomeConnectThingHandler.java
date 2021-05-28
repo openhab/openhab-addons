@@ -1172,6 +1172,14 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         }
     }
 
+    protected void handlePowerCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient, String stateNotOn)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())) {
+            apiClient.setPowerState(getThingHaId(), OnOffType.ON.equals(command) ? STATE_POWER_ON : stateNotOn);
+        }
+    }
+
     private int getCurrentBrightness(final ChannelUID channelUID, final HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         String id = channelUID.getId();
