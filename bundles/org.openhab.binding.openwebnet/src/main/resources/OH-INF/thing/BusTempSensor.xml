@@ -26,7 +26,7 @@
 
 		<config-description>
 			<parameter name="where" type="text" required="true">
-				<label>OpenWebNet Device Address (where)</label>
+				<label>OpenWebNet Device Address</label>
 				<description>Example: Zone 2 --> where=2. For external sensors: sensor 5 --> where=500</description>
 			</parameter>
 		</config-description>

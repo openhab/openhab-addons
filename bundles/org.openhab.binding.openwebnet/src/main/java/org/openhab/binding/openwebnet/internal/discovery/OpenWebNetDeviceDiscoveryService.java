@@ -153,7 +153,6 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.ENERGY_MANAGEMENT;
                 break;
             }
-
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
                 if (where instanceof WhereZigBee) {

@@ -142,8 +142,8 @@ Currently only stand-alone thermostats are supported (like  [LN4691](https://cat
 
 | Channel Type ID (channel ID) | Applies to Thing Type IDs           | Item Type          | Description                                       | Read/Write | Advanced |
 | ---------------------------- | ----------------------------------- | ------------------ | ------------------------------------------------- | :--------: | :------: |
-| `temperature`                | `bus_thermostat`, `bus_temp_sensor` | Number:Temperature | The zone currently sensed temperature (°C)        | R          | N        |
-| `setpointTemperature`        | `bus_thermostat`                    | Number:Temperature | The zone setpoint temperature (°C)                | R/W        | N        |
+| `temperature`                | `bus_thermostat`, `bus_temp_sensor` | Number:Temperature | The zone currently sensed temperature       | R          | N        |
+| `setpointTemperature`        | `bus_thermostat`                    | Number:Temperature | The zone setpoint temperature           | R/W        | N        |
 | `function`                   | `bus_thermostat`                    | String             | The zone set thermo function: `COOLING`, `HEATING` or `GENERIC` (heating + cooling)  | R/W | N |
 | `mode`                       | `bus_thermostat`                    | String             | The zone set mode: `MANUAL`, `PROTECTION`, `OFF`  | R/W        | N        |
 | `speedFanCoil`               | `bus_thermostat`                    | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`    | R/W | N |

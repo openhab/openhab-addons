@@ -29,7 +29,7 @@
 	<!-- Shutter Channel -->
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>
-		<label>Roller shutter</label>
+		<label>Roller Shutter</label>
 		<description>Control the roller shutter position</description>
 		<category>Blinds</category>
 		<tags>
@@ -88,7 +88,7 @@
 
 	<channel-type id="speedFanCoil">
 		<item-type>String</item-type>
-		<label>Set fan speed</label>
+		<label>Set Fan Speed</label>
 		<description>Set speed of the Fan Coil (read/write)</description>
 		<state>
 			<options>
@@ -146,7 +146,7 @@
 
 	<channel-type id="actuator" advanced="true">
 		<item-type>String</item-type>
-		<label>Actuator status</label>
+		<label>Actuator Status</label>
 		<description>Actuator status (read only)</description>
 		<state readOnly="true">
 			<options>
