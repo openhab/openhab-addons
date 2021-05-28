@@ -95,8 +95,8 @@ public class HomeConnectCoffeeMakerHandler extends AbstractHomeConnectThingHandl
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
