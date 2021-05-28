@@ -15,8 +15,10 @@ package org.openhab.binding.carnet.internal.api.brand;
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_BRAND_VW;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.CarNetApiListener;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
@@ -33,8 +35,9 @@ import org.slf4j.LoggerFactory;
 public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(CarNetBrandApiVW.class);
 
-    public CarNetBrandApiVW(CarNetHttpClient httpClient, CarNetTokenManager tokenManager) {
-        super(httpClient, tokenManager);
+    public CarNetBrandApiVW(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+            @Nullable CarNetApiListener eventListener) {
+        super(httpClient, tokenManager, eventListener);
     }
 
     @Override
@@ -45,8 +48,7 @@ public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthen
         properties.apiDefaultUrl = "https://msg.volkswagen.de/fs-car";
         properties.clientId = "9496332b-ea03-4091-a224-8c746b885068@apps_vw-dilab_com";
         properties.xClientId = "38761134-34d0-41f3-9a73-c4be88d7d337";
-        // properties.authScope = "openid profile mbb email cars address";
-        properties.authScope = "openid mbb cars";
+        properties.authScope = "openid profile mbb cars address";
         properties.redirect_uri = "carnet://identity-kit/login";
         properties.xrequest = "de.volkswagen.carnet.eu.eremote";
         properties.responseType = "id_token token";

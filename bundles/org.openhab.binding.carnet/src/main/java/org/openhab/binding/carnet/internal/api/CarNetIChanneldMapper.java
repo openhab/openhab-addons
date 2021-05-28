@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = CarNetIChanneldMapper.class)
 public class CarNetIChanneldMapper {
     private final Logger logger = LoggerFactory.getLogger(CarNetIChanneldMapper.class);
-    private static final Map<String, ChannelIdMapEntry> map = new LinkedHashMap<>();
+    private static final Map<String, ChannelIdMapEntry> channelDefinitions = new LinkedHashMap<>();
     private final CarNetTextResources resources;
 
     public class ChannelIdMapEntry {
@@ -144,7 +144,7 @@ public class CarNetIChanneldMapper {
      * @return Returns channel definition
      */
     public @Nullable ChannelIdMapEntry find(String id) {
-        for (Map.Entry<String, ChannelIdMapEntry> e : map.entrySet()) {
+        for (Map.Entry<String, ChannelIdMapEntry> e : channelDefinitions.entrySet()) {
             if (e.getKey().equalsIgnoreCase(id)) {
                 return e.getValue();
             }
@@ -242,9 +242,6 @@ public class CarNetIChanneldMapper {
         } else {
             entry.unit = unit;
         }
-        if (!map.containsKey(id)) {
-            map.put(id, entry);
-        }
         entry.advanced = advanced;
         entry.readOnly = readOnly;
 
@@ -252,6 +249,10 @@ public class CarNetIChanneldMapper {
         entry.max = entry.getMax();
         entry.pattern = entry.getPattern();
         entry.options = entry.getOptions();
+
+        if (!channelDefinitions.containsKey(id)) {
+            channelDefinitions.put(id, entry);
+        }
 
         return entry;
     }
@@ -393,11 +394,11 @@ public class CarNetIChanneldMapper {
     public void dumpChannelDefinitions() {
         try (FileWriter myWriter = new FileWriter("carnetChannels.MD")) {
             String lastGroup = "";
-            for (Map.Entry<String, ChannelIdMapEntry> m : map.entrySet()) {
+            for (Map.Entry<String, ChannelIdMapEntry> m : channelDefinitions.entrySet()) {
                 ChannelIdMapEntry e = m.getValue();
                 if (!e.channelName.isEmpty()) {
                     String group = lastGroup.equals(e.groupName) ? "" : e.groupName;
-                    String s = String.format("| %-12.12s | %-23.23s | %-20.20s | %-7s | %-90s |\n", group,
+                    String s = String.format("| %-12.12s | %-27.27s | %-20.20s | %-7s | %-95s |\n", group,
                             e.channelName, e.itemType, e.readOnly ? "yes" : "no", e.getDescription());
                     myWriter.write(s);
                     lastGroup = e.groupName;

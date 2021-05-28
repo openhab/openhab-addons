@@ -50,7 +50,6 @@ public class CarNetServiceRLU extends CarNetBaseService {
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, null, false, false);
-
         return update(channels);
     }
 
@@ -69,11 +68,6 @@ public class CarNetServiceRLU extends CarNetBaseService {
     }
 
     private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarNetException {
-        if (!isEnabled()) {
-            logger.debug("{}: RLU History is disabled", thingId);
-            return false;
-        }
-
         boolean updated = false;
         try {
             CarNetRluHistory hist = api.getRluActionHistory();

@@ -15,7 +15,9 @@ package org.openhab.binding.carnet.internal.api.brand;
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_BRAND_VWID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.CarNetApiListener;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
@@ -27,8 +29,9 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
  */
 @NonNullByDefault
 public class CarNetBrandApiID extends CarNetApiBase {
-    public CarNetBrandApiID(CarNetHttpClient httpClient, CarNetTokenManager tokenManager) {
-        super(httpClient, tokenManager);
+    public CarNetBrandApiID(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+            @Nullable CarNetApiListener eventListener) {
+        super(httpClient, tokenManager, eventListener);
     }
 
     @Override

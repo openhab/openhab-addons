@@ -28,13 +28,14 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.CarNetTextResources;
 import org.openhab.binding.carnet.internal.CarNetUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleList;
+import org.openhab.binding.carnet.internal.api.CarNetApiListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiAudi;
@@ -45,7 +46,6 @@ import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiVW;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandSeat;
 import org.openhab.binding.carnet.internal.config.CarNetAccountConfiguration;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -76,11 +76,10 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
     private CarNetApiBase api = new CarNetBrandApiNull();
     private List<CarNetVehicleInformation> vehicleList = new CopyOnWriteArrayList<>();
     private List<CarNetDeviceListener> vehicleInformationListeners = new CopyOnWriteArrayList<>();
-    // Collections.synchronizedList(new ArrayList<CarNetDeviceListener>());
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private static SslContextFactory sslStrongCipher = new SslContextFactory();
-    private static SslContextFactory sslWeakCipher = new SslContextFactory();
+    private static Client sslStrongCipher = new Client();
+    private static Client sslWeakCipher = new Client();
     static {
         String[] excludedCiphersWithoutTlsRsaExclusion = Arrays.stream(sslWeakCipher.getExcludeCipherSuites())
                 .filter(cipher -> !"^TLS_RSA_.*$".equals(cipher)).toArray(String[]::new);
@@ -101,8 +100,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public CarNetAccountHandler(Bridge bridge, CarNetTextResources messages, CarNetTokenManager tokenManager,
-            HttpClientFactory httpFactory) {
+    public CarNetAccountHandler(Bridge bridge, CarNetTextResources messages, CarNetTokenManager tokenManager) {
         super(bridge);
         this.messages = messages;
         this.tokenManager = tokenManager;
@@ -120,7 +118,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         config.tokenSetId = tokenManager.generateTokenSetId();
         config.api = api.getProperties();
         api.setConfig(config);
-        api = createApi(config, httpFactory);
+        api = createApi(config, null);
         config.authenticator = api;
         tokenManager.setup(config.tokenSetId, api.getHttp());
     }
@@ -204,21 +202,21 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         logger.debug("{}: Undefined command '{}' for channel {}", thingId, command, channelId);
     }
 
-    public CarNetApiBase createApi(CarNetCombinedConfig config, HttpClientFactory httpFactory) {
-        CarNetHttpClient httpClient = createHttpClient(httpFactory);
+    public CarNetApiBase createApi(CarNetCombinedConfig config, @Nullable CarNetApiListener apiListener) {
+        CarNetHttpClient httpClient = createHttpClient();
         switch (config.account.brand) {
             case CNAPI_BRAND_AUDI:
-                return new CarNetBrandApiAudi(httpClient, tokenManager);
+                return new CarNetBrandApiAudi(httpClient, tokenManager, apiListener);
             case CNAPI_BRAND_VW:
-                return new CarNetBrandApiVW(httpClient, tokenManager);
+                return new CarNetBrandApiVW(httpClient, tokenManager, apiListener);
             case CNAPI_BRAND_VWID:
-                return new CarNetBrandApiID(httpClient, tokenManager);
+                return new CarNetBrandApiID(httpClient, tokenManager, apiListener);
             case CNAPI_BRAND_VWGO:
-                return new CarNetBrandApiVW(httpClient, tokenManager);
+                return new CarNetBrandApiVW(httpClient, tokenManager, apiListener);
             case CNAPI_BRAND_SKODA:
-                return new CarNetBrandApiSkoda(httpClient, tokenManager);
+                return new CarNetBrandApiSkoda(httpClient, tokenManager, apiListener);
             case CNAPI_BRAND_SEAT:
-                return new CarNetBrandSeat(httpClient, tokenManager);
+                return new CarNetBrandSeat(httpClient, tokenManager, apiListener);
             case CNAPI_BRAND_NULL:
             default:
                 return api;
@@ -226,14 +224,14 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private CarNetHttpClient createHttpClient(HttpClientFactory httpFactory) {
+    private CarNetHttpClient createHttpClient() {
         // Each instance has it's own http client. Audi requires weaked SSL attributes, other may not
-        HttpClient httpClient = new HttpClient(); // httpFactory.getCommonHttpClient();
+        HttpClient httpClient = new HttpClient();
         try {
             httpClient = new HttpClient(config.api.weakSsl ? sslWeakCipher : sslStrongCipher);
             httpClient.start();
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}: HttpClient setup: {}", thingId, httpClient.dump());
+            if (config.api.weakSsl && logger.isTraceEnabled()) {
+                logger.trace("{}: WeakSSL enabled, HttpClient setup: {}", thingId, httpClient.dump());
             }
         } catch (Exception e) {
             logger.warn("{}: {}", messages.get("init-fialed", "Unable to start HttpClient!"), thingId, e);

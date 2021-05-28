@@ -142,12 +142,13 @@ public class CarNetTokenManager {
                 }
             }
             logger.debug("{}: OAuth: Get signin form", config.vehicle.vin);
-            http.get(url, headers, false);
+            html = http.get(url, headers, false);
             url = http.getRedirect(); // Signin URL
             if (url.isEmpty()) {
                 throw new CarNetException("Unable to get signin URL");
             }
             if (url.contains("error=consent_required")) {
+                logger.debug("Missing consent: {}", url);
                 String message = URLDecoder.decode(url, UTF_8);
                 message = substringBefore(substringAfter(message, "&error_description="), "&");
                 throw new CarNetSecurityException(
@@ -194,12 +195,15 @@ public class CarNetTokenManager {
             // Now we need to follow multiple redirects, required data is fetched from the redirect URLs
             // String userId = "";
             int count = 10;
+            String lastUrl = "";
             while (count-- > 0) {
                 html = http.get(url, headers, false);
                 url = http.getRedirect(); // Continue URL
                 if (url.isEmpty()) {
                     break; // end of redirects
                 }
+                lastUrl = url;
+
                 if (url.contains("&code=")) {
                     code = getUrlParm(url, "code");
                 }
@@ -227,7 +231,10 @@ public class CarNetTokenManager {
             if (idToken.isEmpty() || accessToken.isEmpty()) {
                 if (html.contains("Allow access")) // additional consent required
                 {
-                    logger.debug("Consent missing, returned HTML: {}", html);
+                    String pdata = "&internalAndAlreadyConsentedScopes=openid&internalAndAlreadyConsentedScopes?mbb&internalAndAlreadyConsentedScopes=cars&internalAndAlreadyConsentedScopes=de09395d98992d354a470291296eda97050e9adf76c77f8518753857cc0293ec&checkbox-vehicleLights=vehicleLights&consentedScopes=vehicleLights";
+                    html = http.post(lastUrl, headers, pdata);
+                    url = http.getRedirect(); // Continue URL
+                    logger.debug("Consent missing, URL={}\n   HTML: {}", lastUrl, html);
                     throw new CarNetSecurityException(
                             "Consent missing. Login to the Web App and give consent: " + config.api.authScope);
                 }

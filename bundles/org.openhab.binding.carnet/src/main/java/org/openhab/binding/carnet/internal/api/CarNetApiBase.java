@@ -94,6 +94,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     protected CarNetCombinedConfig config = new CarNetCombinedConfig();
     protected CarNetHttpClient http = new CarNetHttpClient();
     protected CarNetTokenManager tokenManager = new CarNetTokenManager();
+    protected @Nullable CarNetApiListener eventListener;
 
     private boolean initialzed = false;
     private Map<String, CarNetPendingRequest> pendingRequests = new ConcurrentHashMap<>();
@@ -101,10 +102,12 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     public CarNetApiBase() {
     }
 
-    public CarNetApiBase(CarNetHttpClient httpClient, CarNetTokenManager tokenManager) {
+    public CarNetApiBase(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+            @Nullable CarNetApiListener eventListener) {
         logger.debug("Initializing CarNet API");
         this.http = httpClient;
         this.tokenManager = tokenManager;
+        this.eventListener = eventListener;
     }
 
     public void setConfig(CarNetCombinedConfig config) {
@@ -611,10 +614,11 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             in = fromJson(gson, json, CNActionResponse.class);
         }
         CarNetPendingRequest rsp = new CarNetPendingRequest(service, action, in);
-        logger.debug("{}: Request for {}.{} accepted, requestId={}", config.vehicle.vin, service, action,
-                rsp.requestId);
         logger.debug("{}: Request {} queued for status updates", config.vehicle.vin, rsp.requestId);
         pendingRequests.put(rsp.requestId, rsp);
+        if (eventListener != null) {
+            eventListener.onActionSent(service, action, rsp.requestId);
+        }
 
         // Check if action was accepted
         return getRequestStatus(rsp.requestId, rsp.status);
@@ -636,10 +640,11 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             return "";
         }
         if (request.isExpired()) {
-            logger.debug("{}: Request {} for action {}.{} has been expired, remove", config.vehicle.vin,
-                    request.requestId, request.service, request.action);
             status = CNAPI_REQUEST_TIMEOUT;
             remove = true;
+            if (eventListener != null) {
+                eventListener.onActionTimeout(request.service, request.action, request.requestId);
+            }
         } else {
             try {
                 int error = -1;
@@ -666,9 +671,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     }
                 }
 
-                logger.debug("{}: Request {} for action {}.{} is in status {}", config.vehicle.vin, request.requestId,
-                        request.service, request.action, status);
                 status = status.toLowerCase(); // Hon&Flash returns in upper case
+                String actionStatus = status;
                 switch (status) {
                     case CNAPI_REQUEST_SUCCESSFUL:
                         remove = true;
@@ -677,6 +681,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     case CNAPI_REQUEST_QUEUED:
                     case CNAPI_REQUEST_FETCHED:
                     case CNAPI_REQUEST_STARTED:
+                        actionStatus = CNAPI_REQUEST_IN_PROGRESS; // normalize status
                         break;
                     case CNAPI_REQUEST_NOT_FOUND:
                     case CNAPI_REQUEST_FAIL:
@@ -684,9 +689,15 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                         logger.warn("{}: Action {}.{} failed with status {}, error={} (requestId={})",
                                 config.vehicle.vin, request.service, request.action, status, error, request.requestId);
                         remove = true;
+                        actionStatus = CNAPI_REQUEST_FAILED; // normalize status
                         break;
                     default:
                         logger.debug("{}: Request {} has unknown status: {}", config.vehicle.vin, requestId, status);
+                }
+
+                if (eventListener != null) {
+                    eventListener.onActionResult(request.service, request.action, request.requestId,
+                            actionStatus.toUpperCase(), status);
                 }
             } catch (CarNetException e) {
                 logger.debug("{}: Unable to validate request {}, {}", config.vehicle.vin, requestId, e.toString());
@@ -759,7 +770,6 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     return true;
                 }
             }
-
         }
         return false;
     }

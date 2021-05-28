@@ -39,6 +39,10 @@
 			<label>Advanced Options</label>
 		</parameter-group>
 
+        <parameter name="vin" type="text" required="false">
+            <label>Vehicle Identification Number (VIN)</label>
+            <description>This is the unique ID to identify the vehicle</description>
+        </parameter>
 		<parameter name="pin" type="text" required="false">
 			<label>Security PIN</label>
 			<context>password</context>
