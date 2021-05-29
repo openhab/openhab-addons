@@ -65,7 +65,6 @@ public class SenecHomeApi {
      *
      * To receive new values, just modify the Json objects and add them to the thing channels
      *
-     * @param hostname Hostname or ip address of senec battery
      * @return Instance of SenecHomeResponse
      * @throws MalformedURLException Configuration/URL is wrong
      * @throws IOException Communication failed
