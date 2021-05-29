@@ -136,16 +136,18 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB1RYS</label>
-		<description>1-channel relay module</description>
+		<description>1-channel relay module with input</description>
 		<channels>
 			<channel id="CH1" typeId="switch"/>
 			<channel id="CH2" typeId="switch"/>
 			<channel id="CH3" typeId="switch"/>
 			<channel id="CH4" typeId="switch"/>
 			<channel id="CH5" typeId="switch"/>
+			<channel id="CH6" typeId="button-channel"/>
+			<channel id="CH6t" typeId="trigger-channel"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+		<config-description-ref uri="thing-type:velbus:6channelDevice"/>
 	</thing-type>
 
 	<thing-type id="vmb1ts">
@@ -206,6 +208,7 @@
 		<description>Push-button interface for Niko 1- or 2-fold push-buttons</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
@@ -313,6 +316,7 @@
 		<description>6-channel input module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="6channelInputModule"/>
+			<channel-group id="button" typeId="6channelButtonModule"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:velbus:6channelDevice"/>
@@ -328,6 +332,7 @@
 		<description>Push-button interface module for Niko 4- or 6-fold push-button</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="6channelFeedbackModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
@@ -345,6 +350,7 @@
 		<description>7-channel input module (potentialfree + pulse)</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="counter" typeId="4channelCounterModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
@@ -362,6 +368,7 @@
 		<description>Infrared remote control receiver module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
@@ -377,6 +384,7 @@
 		<description>8-Channel Push Button module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
 		</channel-groups>
 
@@ -393,6 +401,7 @@
 		<description>Push-button interface with 8 channels for universal mounting</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
@@ -455,6 +464,7 @@
 		<description>Edge-lit one touch button module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -473,6 +483,7 @@
 		<description>Edge-lit two touch buttons module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -491,6 +502,7 @@
 		<description>Edge-lit four touch buttons module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -509,6 +521,7 @@
 		<description>Edge-lit touch panel with Oled display</description>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
 			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -528,6 +541,7 @@
 		<description>Glass control module with 1 touch key</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -546,6 +560,7 @@
 		<description>Glass control module with 1 touch key (Edition 2)</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -564,6 +579,7 @@
 		<description>Glass control module with 2 touch keys</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -582,6 +598,7 @@
 		<description>Glass control module with 2 touch keys (Edition 2)</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -600,6 +617,7 @@
 		<description>Glass control module with 4 touch keys</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -618,6 +636,7 @@
 		<description>Glass control module with 4 touch keys (Edition 2)</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -636,6 +655,7 @@
 		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -654,6 +674,7 @@
 		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2)</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -672,6 +693,7 @@
 		<description>Glass control module with oled display</description>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
 			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -691,6 +713,7 @@
 		<description>Glass control module with oled display and temperature controller</description>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
 			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -710,6 +733,7 @@
 		<description>Glass control module with oled display and temperature controller (Edition 2)</description>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
 			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -876,6 +900,17 @@
 		<label>Switch</label>
 		<description>Switch control for action in Velbus</description>
 		<category>Switch</category>
+	</channel-type>
+	<channel-type id="button-channel">
+		<item-type>String</item-type>
+		<label>Button Channel</label>
+		<category>Switch</category>
+		<command>
+			<options>
+				<option value="PRESSED">pressed</option>
+				<option value="LONG_PRESSED">long pressed</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
@@ -1255,6 +1290,76 @@
 			<channel id="CH30" typeId="ledFeedback"/>
 			<channel id="CH31" typeId="ledFeedback"/>
 			<channel id="CH32" typeId="ledFeedback"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="6channelButtonModule">
+		<label>Button</label>
+		<description>
+			This is a generic module with 6 button channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="button-channel"/>
+			<channel id="CH2" typeId="button-channel"/>
+			<channel id="CH3" typeId="button-channel"/>
+			<channel id="CH4" typeId="button-channel"/>
+			<channel id="CH5" typeId="button-channel"/>
+			<channel id="CH6" typeId="button-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="8channelButtonModule">
+		<label>Button</label>
+		<description>
+			This is a generic module with 8 button channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="button-channel"/>
+			<channel id="CH2" typeId="button-channel"/>
+			<channel id="CH3" typeId="button-channel"/>
+			<channel id="CH4" typeId="button-channel"/>
+			<channel id="CH5" typeId="button-channel"/>
+			<channel id="CH6" typeId="button-channel"/>
+			<channel id="CH7" typeId="button-channel"/>
+			<channel id="CH8" typeId="button-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="32channelButtonModule">
+		<label>Button</label>
+		<description>
+			This is a generic module with 32 button channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="button-channel"/>
+			<channel id="CH2" typeId="button-channel"/>
+			<channel id="CH3" typeId="button-channel"/>
+			<channel id="CH4" typeId="button-channel"/>
+			<channel id="CH5" typeId="button-channel"/>
+			<channel id="CH6" typeId="button-channel"/>
+			<channel id="CH7" typeId="button-channel"/>
+			<channel id="CH8" typeId="button-channel"/>
+			<channel id="CH9" typeId="button-channel"/>
+			<channel id="CH10" typeId="button-channel"/>
+			<channel id="CH11" typeId="button-channel"/>
+			<channel id="CH12" typeId="button-channel"/>
+			<channel id="CH13" typeId="button-channel"/>
+			<channel id="CH14" typeId="button-channel"/>
+			<channel id="CH15" typeId="button-channel"/>
+			<channel id="CH16" typeId="button-channel"/>
+			<channel id="CH17" typeId="button-channel"/>
+			<channel id="CH18" typeId="button-channel"/>
+			<channel id="CH19" typeId="button-channel"/>
+			<channel id="CH20" typeId="button-channel"/>
+			<channel id="CH21" typeId="button-channel"/>
+			<channel id="CH22" typeId="button-channel"/>
+			<channel id="CH23" typeId="button-channel"/>
+			<channel id="CH24" typeId="button-channel"/>
+			<channel id="CH25" typeId="button-channel"/>
+			<channel id="CH26" typeId="button-channel"/>
+			<channel id="CH27" typeId="button-channel"/>
+			<channel id="CH28" typeId="button-channel"/>
+			<channel id="CH29" typeId="button-channel"/>
+			<channel id="CH30" typeId="button-channel"/>
+			<channel id="CH31" typeId="button-channel"/>
+			<channel id="CH32" typeId="button-channel"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="oledDisplay">
