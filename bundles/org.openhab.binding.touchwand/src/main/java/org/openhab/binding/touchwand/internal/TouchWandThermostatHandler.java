@@ -29,9 +29,7 @@ import org.openhab.core.types.Command;
 /**
  * The {@link TouchWandAlarmSensorHandler} is responsible for handling command for Alarm Sensor unit
  *
- *
  * @author Roie Geron - Initial contribution
- *
  */
 @NonNullByDefault
 public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {

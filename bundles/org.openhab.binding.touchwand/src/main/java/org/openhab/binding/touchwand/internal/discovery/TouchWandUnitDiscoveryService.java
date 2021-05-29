@@ -95,7 +95,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
                         }
                         String type = touchWandUnit.getType();
                         if (!Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(type)) {
-                            logger.info("Unit discovery skipping unsupported unit type : {} ", type);
+                            logger.debug("Unit discovery skipping unsupported unit type : {} ", type);
                             continue;
                         }
                         switch (type) {
