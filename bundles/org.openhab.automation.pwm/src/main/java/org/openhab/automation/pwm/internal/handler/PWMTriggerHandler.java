@@ -19,8 +19,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +30,6 @@ import org.openhab.core.automation.ModuleHandlerCallback;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseTriggerModuleHandler;
 import org.openhab.core.automation.handler.TriggerHandlerCallback;
-import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
@@ -63,9 +60,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     public static final String MODULE_TYPE_ID = AUTOMATION_NAME + ".trigger";
     private static final Set<String> SUBSCRIBED_EVENT_TYPES = Set.of(ItemStateEvent.TYPE);
     private final Logger logger = LoggerFactory.getLogger(PWMTriggerHandler.class);
-    private final ScheduledExecutorService scheduler = Executors
-            .newSingleThreadScheduledExecutor(new NamedThreadFactory("automation-" + AUTOMATION_NAME, true));
-    private final ServiceRegistration<?> eventSubscriberRegistration;
+    private final BundleContext bundleContext;
     private final EventPublisher eventPublisher;
     private final EventFilter eventFilter;
     private final Optional<String> commandTopic;
@@ -73,13 +68,15 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     private final Optional<Double> maxDutyCycle;
     private final Optional<Double> deadManSwitchTimeoutMs;
     private final Item dutyCycleItem;
+    private @Nullable ServiceRegistration<?> eventSubscriberRegistration;
     private @Nullable ScheduledFuture<?> deadMeanSwitchTimer;
-    private StateMachine stateMachine;
+    private @Nullable StateMachine stateMachine;
 
     public PWMTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
         super(module);
         this.eventPublisher = eventPublisher;
+        this.bundleContext = bundleContext;
 
         Configuration config = module.getConfiguration();
 
@@ -93,7 +90,6 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
             commandTopic = Optional.empty();
         }
 
-        double periodSec = getDoubleFromConfig(config, CONFIG_PERIOD);
         minDutyCycle = getOptionalDoubleFromConfig(config, CONFIG_MIN_DUTYCYCLE);
         maxDutyCycle = getOptionalDoubleFromConfig(config, CONFIG_MAX_DUTYCYCLE);
         deadManSwitchTimeoutMs = getOptionalDoubleFromConfig(config, CONFIG_DEAD_MAN_SWITCH);
@@ -104,10 +100,14 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
             throw new IllegalArgumentException("Dutycycle item not found: " + dutycycleItemName, e);
         }
 
-        stateMachine = new StateMachine(scheduler, this::setOutput, (long) (periodSec * 1000));
-
         eventFilter = event -> event.getTopic().equals("openhab/items/" + dutycycleItemName + "/state")
                 || commandTopic.map(t -> event.getTopic().equals(t)).orElse(false);
+    }
+
+    @Override
+    public void initialize() {
+        double periodSec = getDoubleFromConfig(module.getConfiguration(), CONFIG_PERIOD);
+        stateMachine = new StateMachine(getCallback().getScheduler(), this::setOutput, (long) (periodSec * 1000));
 
         eventSubscriberRegistration = bundleContext.registerService(EventSubscriber.class.getName(), this, null);
     }
@@ -175,7 +175,12 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
                     logger.debug("Received new duty cycle: {} {}", newDutycycleBeforeLimit,
                             newDutycycle != newDutycycleBeforeLimit ? "Limited to: " + newDutycycle : "");
 
-                    stateMachine.setDutycycle(newDutycycle);
+                    StateMachine localStateMachine = stateMachine;
+                    if (localStateMachine != null) {
+                        localStateMachine.setDutycycle(newDutycycle);
+                    } else {
+                        logger.debug("Initialization not finished");
+                    }
                 } catch (PWMException e) {
                     logger.warn("{}", e.getMessage());
                 }
@@ -190,23 +195,31 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
         }
 
         deadManSwitchTimeoutMs.ifPresent(timeout -> {
-            deadMeanSwitchTimer = scheduler.schedule(this::activateDeadManSwitch, timeout.longValue(),
-                    TimeUnit.MILLISECONDS);
+            deadMeanSwitchTimer = getCallback().getScheduler().schedule(this::activateDeadManSwitch,
+                    timeout.longValue(), TimeUnit.MILLISECONDS);
         });
     }
 
     private void activateDeadManSwitch() {
         logger.warn("Dead-man switch activated. Disabling output");
 
-        stateMachine.stop();
+        StateMachine localStateMachine = stateMachine;
+        if (localStateMachine != null) {
+            localStateMachine.stop();
+        }
     }
 
     private void setOutput(boolean enable) {
+        getCallback().triggered(module, Collections.singletonMap(OUTPUT, OnOffType.from(enable)));
+    }
+
+    private TriggerHandlerCallback getCallback() {
         ModuleHandlerCallback localCallback = callback;
         if (localCallback != null && localCallback instanceof TriggerHandlerCallback) {
-            ((TriggerHandlerCallback) localCallback).triggered(module,
-                    Collections.singletonMap(OUTPUT, OnOffType.from(enable)));
+            return (TriggerHandlerCallback) localCallback;
         }
+
+        throw new IllegalStateException();
     }
 
     private double getDutyCycleValueInPercent(State state) throws PWMException {
@@ -236,16 +249,20 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
 
     @Override
     public void dispose() {
-        eventSubscriberRegistration.unregister();
+        ServiceRegistration<?> localEventSubscriberRegistration = eventSubscriberRegistration;
+        if (localEventSubscriberRegistration != null) {
+            localEventSubscriberRegistration.unregister();
+        }
 
         ScheduledFuture<?> timer = deadMeanSwitchTimer;
         if (timer != null) {
             timer.cancel(true);
         }
 
-        stateMachine.stop();
-
-        scheduler.shutdown();
+        StateMachine localStateMachine = stateMachine;
+        if (localStateMachine != null) {
+            localStateMachine.stop();
+        }
 
         super.dispose();
     }
