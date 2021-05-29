@@ -12,25 +12,16 @@
  */
 package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_ACTUATOR;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_CONDITIONING_VALVE;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_FAN_SPEED;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_FUNCTION;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_HEATING_VALVE;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_TEMP_SETPOINT;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Set;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -87,7 +78,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     protected void handleChannelCommand(ChannelUID channel, Command command) {
         switch (channel.getId()) {
             case CHANNEL_TEMP_SETPOINT:
-                handleSetpointCommand(command);
+                handleSetpoint(command);
                 break;
             case CHANNEL_FUNCTION:
                 handleFunction(command);
@@ -96,7 +87,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 handleMode(command);
                 break;
             case CHANNEL_FAN_SPEED:
-                handleSetFanSpeedCommand(command);
+                handleSetFanSpeed(command);
                 break;
             default: {
                 logger.warn("handleChannelCommand() Unsupported ChannelUID {}", channel.getId());
@@ -123,7 +114,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         return Who.THERMOREGULATION.value().toString();
     }
 
-    private void handleSetFanSpeedCommand(Command command) {
+    private void handleSetFanSpeed(Command command) {
         if (command instanceof StringType) {
             Where w = deviceWhere;
             if (w != null) {
@@ -131,37 +122,39 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     Thermoregulation.FanCoilSpeed speed = Thermoregulation.FanCoilSpeed.valueOf(command.toString());
                     send(Thermoregulation.requestWriteFanCoilSpeed(w.value(), speed));
                 } catch (OWNException e) {
-                    logger.warn("handleSetFanSpeedCommand() {}", e.getMessage());
+                    logger.warn("handleSetFanSpeed() {}", e.getMessage());
                 } catch (IllegalArgumentException e) {
-                    logger.warn("handleSetFanSpeedCommand() Unsupported command {} for thing {}", command,
+                    logger.warn("handleSetFanSpeed() Unsupported command {} for thing {}", command,
                             getThing().getUID());
                     return;
                 }
             }
         } else {
-            logger.warn("handleSetFanSpeedCommand() Unsupported command {} for thing {}", command, getThing().getUID());
+            logger.warn("handleSetFanSpeed() Unsupported command {} for thing {}", command, getThing().getUID());
         }
     }
 
-    private void handleSetpointCommand(Command command) {
+    private void handleSetpoint(Command command) {
         if (command instanceof QuantityType || command instanceof DecimalType) {
             Where w = deviceWhere;
             if (w != null) {
-                BigDecimal value = BigDecimal.ZERO;
+                double newTemp = 0;
                 if (command instanceof QuantityType) {
-                    value = new QuantityType<Temperature>(command.toFullString()).toBigDecimal();
+                    QuantityType<?> tempCelsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                    if (tempCelsius != null) {
+                        newTemp = tempCelsius.doubleValue();
+                    }
                 } else {
-                    value = ((DecimalType) command).toBigDecimal();
+                    newTemp = ((DecimalType) command).doubleValue();
                 }
                 try {
-                    send(Thermoregulation.requestWriteSetpointTemperature(w.value(), value.floatValue(),
-                            currentFunction));
+                    send(Thermoregulation.requestWriteSetpointTemperature(w.value(), newTemp, currentFunction));
                 } catch (MalformedFrameException | OWNException e) {
-                    logger.warn("handleSetpointCommand() {}", e.getMessage());
+                    logger.warn("handleSetpoint() {}", e.getMessage());
                 }
             }
         } else {
-            logger.warn("handleSetpointCommand() Unsupported command {} for thing {}", command, getThing().getUID());
+            logger.warn("handleSetpoint() Unsupported command {} for thing {}", command, getThing().getUID());
         }
     }
 
@@ -268,7 +261,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private void updateTemperature(Thermoregulation tmsg) {
         try {
             double temp = Thermoregulation.parseTemperature(tmsg);
-            updateState(CHANNEL_TEMPERATURE, new DecimalType(temp));
+            updateState(CHANNEL_TEMPERATURE, getAsQuantityTypeOrNull(temp, SIUnits.CELSIUS));
         } catch (FrameException e) {
             logger.warn("updateTemperature() FrameException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
@@ -276,15 +269,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     }
 
     private void updateSetpoint(Thermoregulation tmsg) {
-        String channelID = CHANNEL_TEMP_SETPOINT;
         try {
             double temp = Thermoregulation.parseTemperature(tmsg);
-            updateState(channelID, new DecimalType(temp));
-            // store current setPoint T
+            updateState(CHANNEL_TEMP_SETPOINT, getAsQuantityTypeOrNull(temp, SIUnits.CELSIUS));
             currentSetPointTemp = temp;
         } catch (FrameException e) {
             logger.warn("updateSetpoint() FrameException on frame {}: {}", tmsg, e.getMessage());
-            updateState(channelID, UnDefType.UNDEF);
+            updateState(CHANNEL_TEMP_SETPOINT, UnDefType.UNDEF);
         }
     }
 
