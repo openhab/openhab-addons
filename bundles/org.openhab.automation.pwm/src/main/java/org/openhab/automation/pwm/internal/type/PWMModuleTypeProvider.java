@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pwm.internal.handler.PWMActionHandler;
 import org.openhab.automation.pwm.internal.handler.PWMTriggerHandler;
 import org.openhab.core.automation.type.ModuleType;
 import org.openhab.core.automation.type.ModuleTypeProvider;
@@ -34,8 +33,8 @@ import org.osgi.service.component.annotations.Component;
 @Component
 @NonNullByDefault
 public class PWMModuleTypeProvider implements ModuleTypeProvider {
-    private static final Map<String, ModuleType> PROVIDED_MODULE_TYPES = Map.of(PWMActionHandler.MODULE_TYPE_ID,
-            PWMActionType.initialize(), PWMTriggerHandler.MODULE_TYPE_ID, PWMTriggerType.initialize());
+    private static final Map<String, ModuleType> PROVIDED_MODULE_TYPES = Map.of(PWMTriggerHandler.MODULE_TYPE_ID,
+            PWMTriggerType.initialize());
 
     @SuppressWarnings("unchecked")
     @Override

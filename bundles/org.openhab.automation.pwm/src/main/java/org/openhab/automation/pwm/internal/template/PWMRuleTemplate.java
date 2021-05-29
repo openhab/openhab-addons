@@ -22,7 +22,6 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.pwm.internal.PWMConstants;
-import org.openhab.automation.pwm.internal.handler.PWMActionHandler;
 import org.openhab.automation.pwm.internal.type.PWMTriggerType;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.Condition;
@@ -50,14 +49,11 @@ public class PWMRuleTemplate extends RuleTemplate {
         final Map<String, String> actionInputs = new HashMap<String, String>();
         actionInputs.put(PWMConstants.INPUT, triggerId + "." + PWMConstants.OUTPUT);
 
-        final List<Action> actions = Collections.singletonList(ModuleBuilder.createAction()
-                .withId(UUID.randomUUID().toString()).withTypeUID(PWMActionHandler.MODULE_TYPE_ID)
-                .withLabel("PWM Action").withInputs(actionInputs).build());
-
         Set<String> tags = new HashSet<String>();
         tags.add("PWM");
 
-        return new PWMRuleTemplate(tags, triggers, Collections.emptyList(), actions, Collections.emptyList());
+        return new PWMRuleTemplate(tags, triggers, Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList());
     }
 
     public PWMRuleTemplate(Set<String> tags, List<Trigger> triggers, List<Condition> conditions, List<Action> actions,

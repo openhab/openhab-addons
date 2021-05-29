@@ -254,11 +254,6 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
             localEventSubscriberRegistration.unregister();
         }
 
-        ScheduledFuture<?> timer = deadMeanSwitchTimer;
-        if (timer != null) {
-            timer.cancel(true);
-        }
-
         StateMachine localStateMachine = stateMachine;
         if (localStateMachine != null) {
             localStateMachine.stop();

@@ -17,9 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pwm.internal.handler.PWMActionHandler;
 import org.openhab.automation.pwm.internal.handler.PWMTriggerHandler;
-import org.openhab.core.automation.Action;
 import org.openhab.core.automation.Module;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseModuleHandlerFactory;
@@ -40,8 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ModuleHandlerFactory.class, configurationPid = "automation.pwm")
 public class PWMModuleHandlerFactory extends BaseModuleHandlerFactory {
-    private static final Collection<String> TYPES = Set.of(PWMTriggerHandler.MODULE_TYPE_ID,
-            PWMActionHandler.MODULE_TYPE_ID);
+    private static final Collection<String> TYPES = Set.of(PWMTriggerHandler.MODULE_TYPE_ID);
     private ItemRegistry itemRegistry;
     private EventPublisher eventPublisher;
     private BundleContext bundleContext;
@@ -64,8 +61,6 @@ public class PWMModuleHandlerFactory extends BaseModuleHandlerFactory {
         switch (module.getTypeUID()) {
             case PWMTriggerHandler.MODULE_TYPE_ID:
                 return new PWMTriggerHandler((Trigger) module, itemRegistry, eventPublisher, bundleContext);
-            case PWMActionHandler.MODULE_TYPE_ID:
-                return new PWMActionHandler((Action) module, itemRegistry, eventPublisher);
         }
 
         return null;

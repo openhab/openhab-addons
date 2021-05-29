@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.pwm.internal.handler.PWMTriggerHandler;
@@ -90,7 +91,7 @@ public class PWMTriggerType extends TriggerType {
                 .build());
 
         List<Output> outputs = Collections.singletonList(new Output(OUTPUT, OnOffType.class.getName(), "Output",
-                "Output value of the PWM module", null, null, null));
+                "Output value of the PWM module", Set.of("command"), null, null));
 
         return new PWMTriggerType(configDescriptions, outputs);
     }

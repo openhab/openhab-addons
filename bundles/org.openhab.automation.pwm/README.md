@@ -2,11 +2,12 @@
 
 This automation module implements [Pulse Width Modulation (PWM)](https://en.wikipedia.org/wiki/Pulse-width_modulation).
 
-PWM can be used to control actuators continuously from 0 to 100% that only support ON/OFF commands. E.g. valves or heating burners.
+PWM can be used to control actuators continuously from 0 to 100% that only support ON/OFF commands.
+E.g. valves or heating burners.
 It accomplishes that by switching the actuator on and off with a fixed interval.
 The higher the control percentage (duty cycle), the longer the ON phase.
 
-Example: If the fixed interval is 10 sec and the duty cycle is 30%, the output is ON for 3 sec and OFF for 7 sec.
+Example: If you have an interval of 10 sec and the duty cycle is 30%, the output is ON for 3 sec and OFF for 7 sec.
 
 This module is **unsuitable** for controlling LED lights as the high PWM frequency can't be met.
 
@@ -15,10 +16,13 @@ This module is **unsuitable** for controlling LED lights as the high PWM frequen
 ## Modules
 
 The PWM module can be used in openHAB's [rule engine](https://www.openhab.org/docs/configuration/rules-dsl.html).
-This automation provides a trigger and an action module.
 
-The trigger module has an input Item `dutycycleItem` (0-100%).
-It calculates the ON/OFF state and writes it to the action module, which sends the ON/OFF command the output Item `outputItem`.
+This automation provides a trigger module ("PWM triggers") with one input Item: `dutycycleItem` (0-100%).
+The module calculates the ON/OFF state and returns it.
+The return value is used to feed the Action module "Item Action" aka "send a command", which controls the actuator.
+
+To configure a rule, you need to add a Trigger ("PWM triggers") and an Action ("Item Action").
+Select the Item you like to control in the "Item Action" and leave the command empty.
 
 ### Trigger
 
@@ -34,28 +38,22 @@ It calculates the ON/OFF state and writes it to the action module, which sends t
 The duty cycle can be limited via the parameters `minDutycycle` and `maxDutyCycle`.
 This is helpful if you need to maintain a minimum time between the switching of the output.
 This is necessary for example for heating burners, which may not be switched on for very short times.
-The ON time is than increased to `minDutycycle`.
-In this case one should also set a max duty cycle to prevent short OFF times.
+The on time is than increased to `minDutycycle`.
+In this case one should also set a max duty cycle to prevent short off times.
 It makes sense to apply these symmetrically e.g. 10%/90% or 20%/80%.
 
 If the duty cycle is 0% or 100%, the min/max parameters are ignored and the output is switched ON or OFF continuously.
 
-If the duty cycle Item is not updated within the dead-man switch timeout, the output is switched OFF, regardless of the current duty cycle.
+If the duty cycle Item is not updated within the dead-man switch timeout, the output is switched off, regardless of the current duty cycle.
 The function can be used to save energy if the source of the duty cycle died for whatever reason and doesn't update the value anymore.
 When the duty cycle is updated again, the module returns to normal operation.
 
 > Note: The min/max ON/OFF times set via `minDutycycle` and `maxDutycycle` are not met if the dead-man switch triggers and recovers fast.
 
-### Action
-
-| Name         | Type | Description                                      | Required |
-|--------------|------|--------------------------------------------------|----------|
-| `outputItem` | Item | The Item (Switch) to send the ON/OFF commands to | Yes      |
-
 ## Control Algorithm
 
-This module is designed to respond fast to duty cycle changes, but at the same time maintains a constant interval and the min/max ON/OFF parameters.
-For that reason, the module might seem to act peculiarly in rare cases:
+This module is designed to respond fast to duty cycle changes, but at the same time maintain a constant interval and also the min/max ON/OFF parameters.
+For that reason, the module might seem to act peculiarly in some cases:
 
 - When the output is ON and the duty cycle is decreased, the output might switch off immediately, if applicable.
 Example: The interval is 10 sec and the current duty cycle is 80%.
