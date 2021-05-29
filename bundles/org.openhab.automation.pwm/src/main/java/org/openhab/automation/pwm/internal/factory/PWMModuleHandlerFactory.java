@@ -23,7 +23,6 @@ import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseModuleHandlerFactory;
 import org.openhab.core.automation.handler.ModuleHandler;
 import org.openhab.core.automation.handler.ModuleHandlerFactory;
-import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.ItemRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -40,14 +39,11 @@ import org.osgi.service.component.annotations.Reference;
 public class PWMModuleHandlerFactory extends BaseModuleHandlerFactory {
     private static final Collection<String> TYPES = Set.of(PWMTriggerHandler.MODULE_TYPE_ID);
     private ItemRegistry itemRegistry;
-    private EventPublisher eventPublisher;
     private BundleContext bundleContext;
 
     @Activate
-    public PWMModuleHandlerFactory(@Reference ItemRegistry itemRegistry, @Reference EventPublisher eventPublisher,
-            BundleContext bundleContext) {
+    public PWMModuleHandlerFactory(@Reference ItemRegistry itemRegistry, BundleContext bundleContext) {
         this.itemRegistry = itemRegistry;
-        this.eventPublisher = eventPublisher;
         this.bundleContext = bundleContext;
     }
 
@@ -60,7 +56,7 @@ public class PWMModuleHandlerFactory extends BaseModuleHandlerFactory {
     protected @Nullable ModuleHandler internalCreate(Module module, String ruleUID) {
         switch (module.getTypeUID()) {
             case PWMTriggerHandler.MODULE_TYPE_ID:
-                return new PWMTriggerHandler((Trigger) module, itemRegistry, eventPublisher, bundleContext);
+                return new PWMTriggerHandler((Trigger) module, itemRegistry, bundleContext);
         }
 
         return null;

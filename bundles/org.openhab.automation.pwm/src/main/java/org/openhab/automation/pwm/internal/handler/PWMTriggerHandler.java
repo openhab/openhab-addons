@@ -33,12 +33,10 @@ import org.openhab.core.automation.handler.TriggerHandlerCallback;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
-import org.openhab.core.events.EventPublisher;
 import org.openhab.core.events.EventSubscriber;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -61,9 +59,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     private static final Set<String> SUBSCRIBED_EVENT_TYPES = Set.of(ItemStateEvent.TYPE);
     private final Logger logger = LoggerFactory.getLogger(PWMTriggerHandler.class);
     private final BundleContext bundleContext;
-    private final EventPublisher eventPublisher;
     private final EventFilter eventFilter;
-    private final Optional<String> commandTopic;
     private final Optional<Double> minDutyCycle;
     private final Optional<Double> maxDutyCycle;
     private final Optional<Double> deadManSwitchTimeoutMs;
@@ -72,23 +68,14 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     private @Nullable ScheduledFuture<?> deadMeanSwitchTimer;
     private @Nullable StateMachine stateMachine;
 
-    public PWMTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
-            BundleContext bundleContext) {
+    public PWMTriggerHandler(Trigger module, ItemRegistry itemRegistry, BundleContext bundleContext) {
         super(module);
-        this.eventPublisher = eventPublisher;
         this.bundleContext = bundleContext;
 
         Configuration config = module.getConfiguration();
 
         String dutycycleItemName = (String) Objects.requireNonNull(config.get(CONFIG_DUTY_CYCLE_ITEM),
                 "DutyCycle item is not set");
-
-        String commandItemName = (String) config.get(CONFIG_COMMAND_ITEM);
-        if (commandItemName != null) {
-            commandTopic = Optional.of("openhab/items/" + commandItemName + "/state");
-        } else {
-            commandTopic = Optional.empty();
-        }
 
         minDutyCycle = getOptionalDoubleFromConfig(config, CONFIG_MIN_DUTYCYCLE);
         maxDutyCycle = getOptionalDoubleFromConfig(config, CONFIG_MAX_DUTYCYCLE);
@@ -100,8 +87,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
             throw new IllegalArgumentException("Dutycycle item not found: " + dutycycleItemName, e);
         }
 
-        eventFilter = event -> event.getTopic().equals("openhab/items/" + dutycycleItemName + "/state")
-                || commandTopic.map(t -> event.getTopic().equals(t)).orElse(false);
+        eventFilter = event -> event.getTopic().equals("openhab/items/" + dutycycleItemName + "/state");
     }
 
     @Override
@@ -133,57 +119,45 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
         }
 
         ItemStateEvent changedEvent = (ItemStateEvent) event;
-        if (commandTopic.isPresent() && changedEvent.getTopic().equals(commandTopic.get())) {
-            if ("RESET".equals(changedEvent.getItemState().toString())) {
-                logger.debug("Restarting PWM period");
+        synchronized (this) {
+            try {
+                double newDutycycle = getDutyCycleValueInPercent(changedEvent.getItemState());
+                double newDutycycleBeforeLimit = newDutycycle;
 
-                stateMachine.reset();
+                restartDeadManSwitchTimer();
 
-                eventPublisher.post(ItemEventFactory.createStateEvent(changedEvent.getItemName(), UnDefType.NULL));
-            } else if (changedEvent.getItemState() != UnDefType.NULL) {
-                logger.warn("Unknown command: {}", changedEvent.getItemState());
-            }
-        } else {
-            synchronized (this) {
-                try {
-                    double newDutycycle = getDutyCycleValueInPercent(changedEvent.getItemState());
-                    double newDutycycleBeforeLimit = newDutycycle;
-
-                    restartDeadManSwitchTimer();
-
-                    // set duty cycle to min duty cycle if it is smaller than min duty cycle
-                    // set duty cycle to 0% if it is 0%, regardless of the min duty cycle
-                    final double newDutyCycleFinal1 = newDutycycle;
-                    newDutycycle = minDutyCycle.map(minDutycycle -> {
-                        if (Math.round(newDutyCycleFinal1) <= 0) {
-                            return 0d;
-                        } else {
-                            return Math.max(minDutycycle, newDutyCycleFinal1);
-                        }
-                    }).orElse(newDutycycle);
-
-                    // set duty cycle to 100% if the current duty cycle is larger than the max duty cycle
-                    final double newDutyCycleFinal2 = newDutycycle;
-                    newDutycycle = maxDutyCycle.map(maxDutycycle -> {
-                        if (Math.round(newDutyCycleFinal2) >= maxDutycycle) {
-                            return 100d;
-                        } else {
-                            return newDutyCycleFinal2;
-                        }
-                    }).orElse(newDutycycle);
-
-                    logger.debug("Received new duty cycle: {} {}", newDutycycleBeforeLimit,
-                            newDutycycle != newDutycycleBeforeLimit ? "Limited to: " + newDutycycle : "");
-
-                    StateMachine localStateMachine = stateMachine;
-                    if (localStateMachine != null) {
-                        localStateMachine.setDutycycle(newDutycycle);
+                // set duty cycle to min duty cycle if it is smaller than min duty cycle
+                // set duty cycle to 0% if it is 0%, regardless of the min duty cycle
+                final double newDutyCycleFinal1 = newDutycycle;
+                newDutycycle = minDutyCycle.map(minDutycycle -> {
+                    if (Math.round(newDutyCycleFinal1) <= 0) {
+                        return 0d;
                     } else {
-                        logger.debug("Initialization not finished");
+                        return Math.max(minDutycycle, newDutyCycleFinal1);
                     }
-                } catch (PWMException e) {
-                    logger.warn("{}", e.getMessage());
+                }).orElse(newDutycycle);
+
+                // set duty cycle to 100% if the current duty cycle is larger than the max duty cycle
+                final double newDutyCycleFinal2 = newDutycycle;
+                newDutycycle = maxDutyCycle.map(maxDutycycle -> {
+                    if (Math.round(newDutyCycleFinal2) >= maxDutycycle) {
+                        return 100d;
+                    } else {
+                        return newDutyCycleFinal2;
+                    }
+                }).orElse(newDutycycle);
+
+                logger.debug("Received new duty cycle: {} {}", newDutycycleBeforeLimit,
+                        newDutycycle != newDutycycleBeforeLimit ? "Limited to: " + newDutycycle : "");
+
+                StateMachine localStateMachine = stateMachine;
+                if (localStateMachine != null) {
+                    localStateMachine.setDutycycle(newDutycycle);
+                } else {
+                    logger.debug("Initialization not finished");
                 }
+            } catch (PWMException e) {
+                logger.warn("{}", e.getMessage());
             }
         }
     }
