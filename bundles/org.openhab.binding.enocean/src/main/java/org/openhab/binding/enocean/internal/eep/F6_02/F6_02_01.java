@@ -40,6 +40,7 @@ public class F6_02_01 extends _RPSMessage {
     final byte BI = 2;
     final byte B0 = 3;
     final byte PRESSED = 16;
+    final byte PRESSED_SEC = 1;
 
     int secondByte = -1;
     int secondStatus = -1;
@@ -65,6 +66,12 @@ public class F6_02_01 extends _RPSMessage {
                         : CommonTriggerEvents.DIR1_RELEASED;
             } else if ((bytes[0] >>> 5) == dir2) {
                 return ((bytes[0] & PRESSED) != 0) ? CommonTriggerEvents.DIR2_PRESSED
+                        : CommonTriggerEvents.DIR2_RELEASED;
+            } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
+                return ((bytes[0] & PRESSED_SEC) != 0) ? CommonTriggerEvents.DIR1_PRESSED
+                        : CommonTriggerEvents.DIR1_RELEASED;
+            } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
+                return ((bytes[0] & PRESSED_SEC) != 0) ? CommonTriggerEvents.DIR2_PRESSED
                         : CommonTriggerEvents.DIR2_RELEASED;
             }
         } else if (t21 && !nu) {
@@ -127,6 +134,16 @@ public class F6_02_01 extends _RPSMessage {
                             return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
                                     : UpDownType.DOWN;
                         }
+                    } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
+                        if (((bytes[0] & PRESSED_SEC) != 0)) {
+                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
+                                    : UpDownType.UP;
+                        }
+                    } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
+                        if (((bytes[0] & PRESSED_SEC) != 0)) {
+                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
+                                    : UpDownType.DOWN;
+                        }
                     }
                     break;
                 case ToggleDir1:
@@ -138,11 +155,27 @@ public class F6_02_01 extends _RPSMessage {
                                     : (currentState == UnDefType.UNDEF ? UpDownType.UP
                                             : inverse((UpDownType) currentState));
                         }
+                    } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
+                        if (((bytes[0] & PRESSED_SEC) != 0)) {
+                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                            : inverse((OnOffType) currentState))
+                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                            : inverse((UpDownType) currentState));
+                        }
                     }
                     break;
                 case ToggleDir2:
                     if ((bytes[0] >>> 5) == dir2) {
                         if (((bytes[0] & PRESSED) != 0)) {
+                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                            : inverse((OnOffType) currentState))
+                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                            : inverse((UpDownType) currentState));
+                        }
+                    } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
+                        if (((bytes[0] & PRESSED_SEC) != 0)) {
                             return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
                                     ? (currentState == UnDefType.UNDEF ? OnOffType.ON
                                             : inverse((OnOffType) currentState))
