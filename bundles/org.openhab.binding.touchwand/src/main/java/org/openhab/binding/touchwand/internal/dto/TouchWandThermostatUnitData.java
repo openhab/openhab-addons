@@ -10,21 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.touchwand.internal.config;
+
+package org.openhab.binding.touchwand.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration class for {@link TouchwandBridgeHandler}.
+ * The {@link TouchWandUnitDataAlarmSensor} implements Alarm Sensor unit
+ * data property.
  *
  * @author Roie Geron - Initial contribution
  */
-
 @NonNullByDefault
-public class TouchwandBridgeConfiguration {
-    public String username = "";
-    public String password = "";
-    public String ipAddress = "";
-    public int port;
-    public boolean addSecondaryUnits;
+public class TouchWandThermostatUnitData extends TouchWandUnitData {
+
+    private TouchWandThermostatCurrentStatus currStatus = new TouchWandThermostatCurrentStatus();
+
+    @Override
+    public TouchWandThermostatCurrentStatus getCurrStatus() {
+        return this.currStatus;
+    }
 }

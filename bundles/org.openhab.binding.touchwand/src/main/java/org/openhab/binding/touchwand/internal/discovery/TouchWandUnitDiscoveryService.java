@@ -31,7 +31,6 @@ import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitFromJson;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -51,13 +50,13 @@ import com.google.gson.JsonSyntaxException;
  * @author Roie Geron - Initial contribution
  */
 @NonNullByDefault
-public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
-    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE };
+    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE, CONNECTIVITY_RISCO,
+            CONNECTIVITY_PIMA, CONNECTIVITY_ACWAND };
     private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
@@ -115,6 +114,12 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                             case TYPE_ALARMSENSOR:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_ALARMSENSOR);
                                 break;
+                            case TYPE_BSENSOR:
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_BSENSOR);
+                                break;
+                            case TYPE_THERMOSTAT:
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_THERMOSTAT);
+                                break;
                             default:
                                 continue;
                         }
@@ -125,7 +130,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                 }
             }
         } catch (JsonSyntaxException msg) {
-            logger.warn("Could not parse list units response {}", msg.getMessage());
+            logger.warn("Could not parse list units response error:{} ", msg.getMessage());
         }
     }
 
