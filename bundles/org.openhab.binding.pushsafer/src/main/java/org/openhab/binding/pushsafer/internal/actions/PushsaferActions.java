@@ -66,7 +66,7 @@ public class PushsaferActions implements ThingActions {
                 "ThingAction 'sendPushsaferURLMessage' called with value(s): message='{}', url='{}', title='{}', urlTitle='{}'",
                 message, url, title, urlTitle);
         if (url == null) {
-            return false;
+            throw new IllegalArgumentException("Skip sending message as 'url' is null.");
         }
 
         PushsaferMessageBuilder builder = getDefaultPushsaferMessageBuilder(message).withUrl(url);
@@ -113,28 +113,28 @@ public class PushsaferActions implements ThingActions {
             @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "attachment", label = "@text/sendPushsaferMessageActionInputAttachmentLabel", description = "@text/sendPushsaferMessageActionInputAttachmentDescription", type = "java.lang.String", required = true) String attachment,
             @ActionInput(name = "contentType", label = "@text/sendPushsaferMessageActionInputContentTypeLabel", description = "@text/sendPushsaferMessageActionInputContentTypeDescription", type = "java.lang.String", defaultValue = DEFAULT_CONTENT_TYPE) @Nullable String contentType,
-            @ActionInput(name = "authentfication", label = "@text/sendPushsaferMessageActionInputAuthentficationLabel", description = "@text/sendPushsaferMessageActionInputAuthentficationDescription", type = "java.lang.String", defaultValue = DEFAULT_AUTH) @Nullable String authentfication) {
+            @ActionInput(name = "authentication", label = "@text/sendPushsaferMessageActionInputAuthenticationLabel", description = "@text/sendPushsaferMessageActionInputAuthenticationDescription", type = "java.lang.String", defaultValue = DEFAULT_AUTH) @Nullable String authentication) {
         logger.trace(
-                "ThingAction 'sendPushsaferAttachmentMessage' called with value(s): message='{}', title='{}', attachment='{}', contentType='{}', authentfication='{}'",
-                message, title, attachment, contentType, authentfication);
+                "ThingAction 'sendPushsaferAttachmentMessage' called with value(s): message='{}', title='{}', attachment='{}', contentType='{}', authentication='{}'",
+                message, title, attachment, contentType, authentication);
         if (attachment == null) {
-            return false;
+            throw new IllegalArgumentException("Skip sending message as 'attachment' is null.");
         }
 
         PushsaferMessageBuilder builder = getDefaultPushsaferMessageBuilder(message).withAttachment(attachment);
         if (contentType != null) {
             builder.withContentType(contentType);
         }
-        if (authentfication != null) {
-            builder.withAuthentfication(authentfication);
+        if (authentication != null) {
+            builder.withAuthentication(authentication);
         }
         return send(builder, title);
     }
 
     public static Boolean sendPushsaferAttachmentMessage(ThingActions actions, String message, @Nullable String title,
-            String attachment, @Nullable String contentType, @Nullable String authentfication) {
+            String attachment, @Nullable String contentType, @Nullable String authentication) {
         return ((PushsaferActions) actions).sendPushsaferAttachmentMessage(message, title, attachment, contentType,
-                authentfication);
+                authentication);
     }
 
     @RuleAction(label = "@text/sendPushsaferPriorityMessageActionLabel", description = "@text/sendPushsaferPriorityMessageActionDescription")
@@ -168,7 +168,7 @@ public class PushsaferActions implements ThingActions {
         }
 
         if (receipt == null) {
-            return false;
+            throw new IllegalArgumentException("Skip sending message as 'receipt' is null.");
         }
 
         return accountHandler.cancelPushsaferPriorityMessage(receipt);
@@ -187,7 +187,7 @@ public class PushsaferActions implements ThingActions {
                 "ThingAction 'sendPushsaferMessageToDevice' called with value(s): device='{}', message='{}', title='{}'",
                 device, message, title);
         if (device == null) {
-            return false;
+            throw new IllegalArgumentException("Skip sending message as 'device' is null.");
         }
 
         return send(getDefaultPushsaferMessageBuilder(message).withDevice(device), title);
@@ -204,7 +204,7 @@ public class PushsaferActions implements ThingActions {
         }
 
         if (message == null) {
-            return false;
+            throw new IllegalArgumentException("Skip sending message as 'message' is null.");
         }
 
         return accountHandler.getDefaultPushsaferMessageBuilder(message);

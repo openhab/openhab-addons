@@ -30,14 +30,15 @@ public class PushsaferBindingConstants {
     public static final String CONFIG_SOUND = "sound";
     public static final String CONFIG_ICON = "icon";
 
+    public static final String ALL_DEVICES = "a";
     public static final String DEFAULT_SOUND = "";
     public static final String DEFAULT_ICON = "1";
     public static final String DEFAULT_COLOR = "";
     public static final String DEFAULT_URL = "";
     public static final String DEFAULT_URLTITLE = "";
     public static final String DEFAULT_VIBRATION = "1";
-    public static final String DEFAULT_CONFIRM = "0";
-    public static final String DEFAULT_ANSWER = "0";
-    public static final String DEFAULT_TIME2LIVE = "0";
+    public static final int DEFAULT_CONFIRM = 0;
+    public static final boolean DEFAULT_ANSWER = false;
+    public static final int DEFAULT_TIME2LIVE = 0;
     public static final String DEFAULT_TITLE = "openHAB";
 }

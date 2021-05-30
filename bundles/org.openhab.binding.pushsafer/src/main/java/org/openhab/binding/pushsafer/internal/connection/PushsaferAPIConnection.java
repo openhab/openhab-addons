@@ -14,7 +14,6 @@ package org.openhab.binding.pushsafer.internal.connection;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ import org.openhab.core.cache.ExpiringCacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -63,16 +62,26 @@ public class PushsaferAPIConnection {
 
     private final ExpiringCacheMap<String, String> cache = new ExpiringCacheMap<>(TimeUnit.DAYS.toMillis(1));
 
-    private final JsonParser parser = new JsonParser();
-
     public PushsaferAPIConnection(HttpClient httpClient, PushsaferAccountConfiguration config) {
         this.httpClient = httpClient;
         this.config = config;
     }
 
     public boolean validateUser() throws PushsaferCommunicationException, PushsaferConfigurationException {
-        return getMessageStatus(
-                post(VALIDATE_URL, PushsaferMessageBuilder.getInstance(config.apikey, config.user).build()));
+        final String localApikey = config.apikey;
+        if (localApikey == null || localApikey.isEmpty()) {
+            throw new PushsaferConfigurationException("@text/offline.conf-error-missing-apikey");
+        }
+        final String localUser = config.user;
+        if (localUser == null || localUser.isEmpty()) {
+            throw new PushsaferConfigurationException("@text/offline.conf-error-missing-user");
+        }
+
+        final String content = get(buildURL(VALIDATE_URL, Map.of(PushsaferMessageBuilder.MESSAGE_KEY_TOKEN, localApikey,
+                PushsaferMessageBuilder.MESSAGE_KEY_USER, localUser)));
+        final JsonObject json = content == null || content.isBlank() ? null
+                : JsonParser.parseString(content).getAsJsonObject();
+        return json == null ? false : getMessageStatus(json);
     }
 
     public boolean sendPushsaferMessage(PushsaferMessageBuilder message)
@@ -82,14 +91,14 @@ public class PushsaferAPIConnection {
 
     public String sendPushsaferPriorityMessage(PushsaferMessageBuilder message)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
-        final JsonObject json = parser.parse(post(MESSAGE_URL, message.build())).getAsJsonObject();
+        final JsonObject json = JsonParser.parseString(post(MESSAGE_URL, message.build())).getAsJsonObject();
         return getMessageStatus(json) && json.has("receipt") ? json.get("receipt").getAsString() : "";
     }
 
     public boolean cancelPushsaferPriorityMessage(String receipt)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
         return getMessageStatus(post(CANCEL_MESSAGE_URL.replace("{receipt}", receipt),
-                PushsaferMessageBuilder.getInstance(config.apikey, config.user).build()));
+                PushsaferMessageBuilder.getInstance(config.apikey, config.device).build()));
     }
 
     public List<Sound> getSounds() throws PushsaferCommunicationException, PushsaferConfigurationException {
@@ -101,16 +110,14 @@ public class PushsaferAPIConnection {
         final Map<String, String> params = new HashMap<>(1);
         params.put(PushsaferMessageBuilder.MESSAGE_KEY_TOKEN, localApikey);
 
-        final JsonObject json = parser.parse(getFromCache(buildURL(SOUNDS_URL, params))).getAsJsonObject();
-        if (json.has("sounds")) {
-            final JsonObject sounds = json.get("sounds").getAsJsonObject();
-            if (sounds != null) {
-                return Collections.unmodifiableList(sounds.entrySet().stream()
-                        .map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
-                        .collect(Collectors.toList()));
-            }
-        }
-        return Collections.emptyList();
+        final String content = getFromCache(buildURL(SOUNDS_URL, params));
+        final JsonObject json = content == null || content.isBlank() ? null
+                : JsonParser.parseString(content).getAsJsonObject();
+        final JsonObject sounds = json == null || !json.has("sounds") ? null : json.get("sounds").getAsJsonObject();
+
+        return sounds == null ? List.of()
+                : sounds.entrySet().stream().map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
+                        .collect(Collectors.toUnmodifiableList());
     }
 
     public List<Icon> getIcons() throws PushsaferCommunicationException, PushsaferConfigurationException {
@@ -122,16 +129,14 @@ public class PushsaferAPIConnection {
         final Map<String, String> params = new HashMap<>(1);
         params.put(PushsaferMessageBuilder.MESSAGE_KEY_TOKEN, localApikey);
 
-        final JsonObject json = parser.parse(getFromCache(buildURL(ICONS_URL, params))).getAsJsonObject();
-        if (json.has("icons")) {
-            final JsonObject icons = json.get("icons").getAsJsonObject();
-            if (icons != null) {
-                return Collections.unmodifiableList(
-                        icons.entrySet().stream().map(entry -> new Icon(entry.getKey(), entry.getValue().getAsString()))
-                                .collect(Collectors.toList()));
-            }
-        }
-        return Collections.emptyList();
+        final String content = getFromCache(buildURL(ICONS_URL, params));
+        final JsonObject json = content == null || content.isBlank() ? null
+                : JsonParser.parseString(content).getAsJsonObject();
+        final JsonObject icons = json == null || !json.has("icons") ? null : json.get("icons").getAsJsonObject();
+
+        return icons == null ? List.of()
+                : icons.entrySet().stream().map(entry -> new Icon(entry.getKey(), entry.getValue().getAsString()))
+                        .collect(Collectors.toUnmodifiableList());
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
@@ -158,7 +163,7 @@ public class PushsaferAPIConnection {
 
     private String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
-        logger.trace("Pushsafer request: {} - URL = '{}'", httpMethod, url);
+        logger.trace("Pushsafer request: {} - URL = '{}'", httpMethod, uglifyApikey(url));
         try {
             final Request request = httpClient.newRequest(url).method(httpMethod).timeout(10, TimeUnit.SECONDS);
 
@@ -177,6 +182,7 @@ public class PushsaferAPIConnection {
             switch (httpStatus) {
                 case HttpStatus.OK_200:
                     return content;
+                case 250:
                 case HttpStatus.BAD_REQUEST_400:
                     logger.debug("Pushsafer server responded with status code {}: {}", httpStatus, content);
                     throw new PushsaferConfigurationException(getMessageError(content));
@@ -193,20 +199,21 @@ public class PushsaferAPIConnection {
         }
     }
 
+    private String uglifyApikey(String url) {
+        return url.replaceAll("(k=)+\\w+", "k=*****");
+    }
+
     private String getMessageError(String content) {
-        final JsonObject json = parser.parse(content).getAsJsonObject();
-        if (json.has("errors")) {
-            final JsonArray errors = json.get("errors").getAsJsonArray();
-            if (errors != null) {
-                return errors.toString();
-            }
+        final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
+        final JsonElement errorsElement = json.get("errors");
+        if (errorsElement != null && errorsElement.isJsonArray()) {
+            return errorsElement.getAsJsonArray().toString();
         }
-        return "Unknown error occured.";
+        return "@text/offline.conf-error-unknown";
     }
 
     private boolean getMessageStatus(String content) {
-        final JsonObject json = parser.parse(content).getAsJsonObject();
-        return json.has("status") ? json.get("status").getAsInt() == 1 : false;
+        return getMessageStatus(JsonParser.parseString(content).getAsJsonObject());
     }
 
     private boolean getMessageStatus(JsonObject json) {

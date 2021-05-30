@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class PushsaferAccountConfiguration {
     public @Nullable String apikey;
     public @Nullable String user;
+    public String device = ALL_DEVICES;
     public String title = DEFAULT_TITLE;
     public String format = "none";
     public String sound = DEFAULT_SOUND;
@@ -33,9 +34,9 @@ public class PushsaferAccountConfiguration {
     public String color = DEFAULT_COLOR;
     public String url = DEFAULT_URL;
     public String urlTitle = DEFAULT_URLTITLE;
-    public String answer = DEFAULT_ANSWER;
-    public String confirm = DEFAULT_CONFIRM;
-    public String time2live = DEFAULT_TIME2LIVE;
+    public boolean answer = DEFAULT_ANSWER;
+    public int confirm = DEFAULT_CONFIRM;
+    public int time2live = DEFAULT_TIME2LIVE;
     public String vibration = DEFAULT_VIBRATION;
     public int retry = 300;
     public int expire = 3600;

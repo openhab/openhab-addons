@@ -43,10 +43,10 @@ public class PushsaferMessageBuilder {
     private final Logger logger = LoggerFactory.getLogger(PushsaferMessageBuilder.class);
 
     public static final String MESSAGE_KEY_TOKEN = "k";
-    private static final String MESSAGE_KEY_USER = "d";
+    public static final String MESSAGE_KEY_USER = "u";
     private static final String MESSAGE_KEY_MESSAGE = "m";
     private static final String MESSAGE_KEY_TITLE = "t";
-    private static final String MESSAGE_KEY_DEVICE = "dd";
+    private static final String MESSAGE_KEY_DEVICE = "d";
     private static final String MESSAGE_KEY_ICON = "i";
     private static final String MESSAGE_KEY_COLOR = "c";
     private static final String MESSAGE_KEY_VIBRATION = "v";
@@ -88,33 +88,33 @@ public class PushsaferMessageBuilder {
     private @Nullable String urlTitle;
     private @Nullable String sound;
     private @Nullable String icon;
-    private @Nullable String confirm;
-    private @Nullable String time2live;
-    private @Nullable String answer;
+    private int confirm;
+    private int time2live;
+    private boolean answer;
     private @Nullable String color;
     private @Nullable String vibration;
     private @Nullable String attachment;
     private String contentType = DEFAULT_CONTENT_TYPE;
-    private String authentfication = DEFAULT_AUTH;
+    private String authentication = DEFAULT_AUTH;
     private boolean html = false;
     private boolean monospace = false;
 
-    private PushsaferMessageBuilder(String apikey, String user) throws PushsaferConfigurationException {
+    private PushsaferMessageBuilder(String apikey, String device) throws PushsaferConfigurationException {
         body.addFieldPart(MESSAGE_KEY_TOKEN, new StringContentProvider(apikey), null);
-        body.addFieldPart(MESSAGE_KEY_USER, new StringContentProvider(user), null);
+        body.addFieldPart(MESSAGE_KEY_DEVICE, new StringContentProvider(device), null);
     }
 
-    public static PushsaferMessageBuilder getInstance(@Nullable String apikey, @Nullable String user)
+    public static PushsaferMessageBuilder getInstance(@Nullable String apikey, @Nullable String device)
             throws PushsaferConfigurationException {
         if (apikey == null || apikey.isEmpty()) {
             throw new PushsaferConfigurationException("@text/offline.conf-error-missing-apikey");
         }
 
-        if (user == null || user.isEmpty()) {
-            throw new PushsaferConfigurationException("@text/offline.conf-error-missing-user");
+        if (device == null || device.isEmpty()) {
+            throw new PushsaferConfigurationException("@text/offline.conf-error-missing-device");
         }
 
-        return new PushsaferMessageBuilder(apikey, user);
+        return new PushsaferMessageBuilder(apikey, device);
     }
 
     public PushsaferMessageBuilder withMessage(String message) {
@@ -177,17 +177,17 @@ public class PushsaferMessageBuilder {
         return this;
     }
 
-    public PushsaferMessageBuilder withAnswer(String answer) {
+    public PushsaferMessageBuilder withAnswer(boolean answer) {
         this.answer = answer;
         return this;
     }
 
-    public PushsaferMessageBuilder withTime2live(String time2live) {
+    public PushsaferMessageBuilder withTime2live(int time2live) {
         this.time2live = time2live;
         return this;
     }
 
-    public PushsaferMessageBuilder withConfirm(String confirm) {
+    public PushsaferMessageBuilder withConfirm(int confirm) {
         this.confirm = confirm;
         return this;
     }
@@ -202,8 +202,8 @@ public class PushsaferMessageBuilder {
         return this;
     }
 
-    public PushsaferMessageBuilder withAuthentfication(String authentfication) {
-        this.authentfication = authentfication;
+    public PushsaferMessageBuilder withAuthentication(String authentication) {
+        this.authentication = authentication;
         return this;
     }
 
@@ -217,7 +217,7 @@ public class PushsaferMessageBuilder {
         return this;
     }
 
-    public ContentProvider build() {
+    public ContentProvider build() throws PushsaferCommunicationException {
         if (message != null) {
             if (message.length() > MAX_MESSAGE_LENGTH) {
                 throw new IllegalArgumentException(String.format(
@@ -304,27 +304,20 @@ public class PushsaferMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_VIBRATION, new StringContentProvider(vibration), null);
         }
 
-        if (confirm != null) {
-            body.addFieldPart(MESSAGE_KEY_CONFIRM, new StringContentProvider(confirm), null);
-        }
+        body.addFieldPart(MESSAGE_KEY_CONFIRM, new StringContentProvider(String.valueOf(confirm)), null);
 
-        if (answer != null) {
-            body.addFieldPart(MESSAGE_KEY_ANSWER, new StringContentProvider(answer), null);
-        }
+        body.addFieldPart(MESSAGE_KEY_ANSWER, new StringContentProvider(String.valueOf(answer)), null);
 
-        if (time2live != null) {
-            body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(time2live), null);
-        }
+        body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(String.valueOf(time2live)), null);
 
         if (attachment != null) {
-            if (attachment.substring(0, 4).equals("http")) {
+            if (attachment.startsWith("http")) {
                 try {
                     URL url = new URL(attachment);
                     URLConnection conn = url.openConnection();
-                    if (authentfication != null) {
-                        String auth = Base64.getEncoder().withoutPadding()
-                                .encodeToString(authentfication.getBytes(StandardCharsets.UTF_8));
-                        conn.setRequestProperty("Authorization", "Basic " + auth);
+                    if (!authentication.isBlank()) {
+                        conn.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().withoutPadding()
+                                .encodeToString(authentication.getBytes(StandardCharsets.UTF_8)));
                     }
                     conn.setRequestProperty("User-Agent", "Mozilla/5.0");
                     InputStream instream = conn.getInputStream();
@@ -332,8 +325,9 @@ public class PushsaferMessageBuilder {
                             + Base64.getEncoder().encodeToString(instream.readAllBytes());
                     body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
                 } catch (IOException e) {
-                    throw new IllegalArgumentException(
-                            String.format("Skip sending with URL Image message: %s", e.getMessage()));
+                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
+                    throw new PushsaferCommunicationException(
+                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
                 }
             } else {
                 File file = new File(attachment);
@@ -347,8 +341,9 @@ public class PushsaferMessageBuilder {
                             + Base64.getEncoder().encodeToString(fileContent);
                     body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
                 } catch (IOException e) {
-                    throw new IllegalArgumentException(
-                            String.format("Skip sending with local Image message: %s", e.getMessage()));
+                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
+                    throw new PushsaferCommunicationException(
+                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
                 }
             }
         }

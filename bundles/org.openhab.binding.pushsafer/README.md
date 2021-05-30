@@ -14,7 +14,8 @@ You are able to create multiple instances of this Thing to broadcast to differen
 | Configuration Parameter | Type    | Description                                                                                                                                          |
 |-------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `apikey`                | text    | Your private-key to access the Pushsafer [Message API](https://www.pushsafer.com/pushapi). **mandatory**                                                                   |
-| `user`                  | text    | Your device or group id to which device(s) you want to push notifications. **mandatory**                                                         |
+| `user`                  | text    | Your username or email address to validate against the Pushsafer Message API. **mandatory**                                                         |
+| `device`                | text    | Your device or group id to which device(s) you want to push notifications. **mandatory**                                                         |
 | `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                 |
 | `format`                | text    | The default format (`none`, `HTML` or `monospace`) of a message (default: `none`).                                                                   |
 | `sound`                 | text    | The default notification sound on target device (default: `1`) (see [supported notification sounds](https://www.pushsafer.com/pushapi#api-sound)).         |
@@ -46,7 +47,7 @@ The parameter `message` is **mandatory**, the `title` parameter defaults to what
 
 - `sendPushsaferMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
 
-- `sendPushsaferAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable String authentfication)` - This method is used to send a message with an image attachment. It takes a local path or url to the image attachment (parameter `attachment` **mandatory**), an optional `contentType` to define the content-type of the attachment (default: `jpeg`, possible values: `jpeg, png, gif`) and an optional `authentication` for the given URL to define the authentication if needed (default: ``, example: `user:password`).
+- `sendPushsaferAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable String authentication)` - This method is used to send a message with an image attachment. It takes a local path or url to the image attachment (parameter `attachment` **mandatory**), an optional `contentType` to define the content-type of the attachment (default: `jpeg`, possible values: `jpeg, png, gif`) and an optional `authentication` for the given URL to define the authentication if needed (default: ``, example: `user:password`).
 
 - `sendPushsaferURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
 

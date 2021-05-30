@@ -12,15 +12,7 @@
  */
 package org.openhab.binding.pushsafer.internal.handler;
 
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_ANSWER;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_COLOR;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_CONFIRM;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_ICON;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_SOUND;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_TIME2LIVE;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_URL;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_URLTITLE;
-import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_VIBRATION;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -59,7 +51,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
 
-    private @NonNullByDefault({}) PushsaferAccountConfiguration config;
+    private PushsaferAccountConfiguration config = new PushsaferAccountConfiguration();
     private @Nullable PushsaferAPIConnection connection;
 
     public PushsaferAccountHandler(Thing thing, HttpClient httpClient) {
@@ -109,7 +101,14 @@ public class PushsaferAccountHandler extends BaseThingHandler {
      * @return a list of {@link Sound}s
      */
     public List<Sound> getSounds() {
-        return connection != null ? connection.getSounds() : List.of();
+        try {
+            return connection != null ? connection.getSounds() : List.of();
+        } catch (PushsaferCommunicationException e) {
+            // do nothing, causing exception is already logged
+        } catch (PushsaferConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+        return List.of();
     }
 
     /**
@@ -118,7 +117,14 @@ public class PushsaferAccountHandler extends BaseThingHandler {
      * @return a list of {@link Icon}s
      */
     public List<Icon> getIcons() {
-        return connection != null ? connection.getIcons() : List.of();
+        try {
+            return connection != null ? connection.getIcons() : List.of();
+        } catch (PushsaferCommunicationException e) {
+            // do nothing, causing exception is already logged
+        } catch (PushsaferConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+        return List.of();
     }
 
     /**
@@ -128,7 +134,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
      * @return a {@link PushsaferMessageBuilder} instance
      */
     public PushsaferMessageBuilder getDefaultPushsaferMessageBuilder(String message) {
-        PushsaferMessageBuilder builder = PushsaferMessageBuilder.getInstance(config.apikey, config.user)
+        PushsaferMessageBuilder builder = PushsaferMessageBuilder.getInstance(config.apikey, config.device)
                 .withMessage(message) //
                 .withTitle(config.title) //
                 .withRetry(config.retry) //
@@ -168,15 +174,15 @@ public class PushsaferAccountHandler extends BaseThingHandler {
             builder.withUrlTitle(config.urlTitle);
         }
         // add confirm if defined
-        if (!DEFAULT_CONFIRM.equals(config.confirm)) {
+        if (DEFAULT_CONFIRM != config.confirm) {
             builder.withConfirm(config.confirm);
         }
         // add answer if defined
-        if (!DEFAULT_ANSWER.equals(config.answer)) {
+        if (DEFAULT_ANSWER != config.answer) {
             builder.withAnswer(config.answer);
         }
         // add time2live if defined
-        if (!DEFAULT_TIME2LIVE.equals(config.time2live)) {
+        if (DEFAULT_TIME2LIVE != config.time2live) {
             builder.withTime2live(config.time2live);
         }
         return builder;
@@ -184,7 +190,14 @@ public class PushsaferAccountHandler extends BaseThingHandler {
 
     public boolean sendPushsaferMessage(PushsaferMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendPushsaferMessage(messageBuilder);
+            try {
+                return connection.sendPushsaferMessage(messageBuilder);
+            } catch (PushsaferCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushsaferConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return false;
         } else {
             throw new IllegalArgumentException("PushsaferAPIConnection is null!");
         }
@@ -192,7 +205,14 @@ public class PushsaferAccountHandler extends BaseThingHandler {
 
     public String sendPushsaferPriorityMessage(PushsaferMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendPushsaferPriorityMessage(messageBuilder);
+            try {
+                return connection.sendPushsaferPriorityMessage(messageBuilder);
+            } catch (PushsaferCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushsaferConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return "";
         } else {
             throw new IllegalArgumentException("PushsaferAPIConnection is null!");
         }
@@ -200,14 +220,23 @@ public class PushsaferAccountHandler extends BaseThingHandler {
 
     public boolean cancelPushsaferPriorityMessage(String receipt) {
         if (connection != null) {
-            return connection.cancelPushsaferPriorityMessage(receipt);
+            try {
+                return connection.cancelPushsaferPriorityMessage(receipt);
+            } catch (PushsaferCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushsaferConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return false;
         } else {
             throw new IllegalArgumentException("PushsaferAPIConnection is null!");
         }
     }
 
+    @SuppressWarnings("null")
     private void asyncValidateUser() {
         try {
+            connection.validateUser();
             updateStatus(ThingStatus.ONLINE);
         } catch (PushsaferCommunicationException | PushsaferConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());

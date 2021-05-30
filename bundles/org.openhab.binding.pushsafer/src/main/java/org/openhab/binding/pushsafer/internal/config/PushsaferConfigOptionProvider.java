@@ -37,8 +37,8 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Kevin Siml - Initial contribution, forked from Christoph Weitkamp
  */
-@NonNullByDefault
 @Component(service = ConfigOptionProvider.class)
+@NonNullByDefault
 public class PushsaferConfigOptionProvider implements ConfigOptionProvider, ThingHandlerService {
 
     private @Nullable PushsaferAccountHandler accountHandler;
@@ -46,22 +46,23 @@ public class PushsaferConfigOptionProvider implements ConfigOptionProvider, Thin
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        if (accountHandler != null && PUSHSAFER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart())
-                && CONFIG_SOUND.equals(param)) {
-            List<Sound> sounds = accountHandler.getSounds();
-            if (!sounds.isEmpty()) {
-                return sounds.stream().map(Sound::getAsParameterOption)
-                        .sorted(Comparator.comparing(ParameterOption::getLabel))
-                        .collect(Collectors.toUnmodifiableList());
+        PushsaferAccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler != null) {
+            if (PUSHSAFER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart()) && CONFIG_SOUND.equals(param)) {
+                List<Sound> sounds = localAccountHandler.getSounds();
+                if (!sounds.isEmpty()) {
+                    return sounds.stream().map(Sound::getAsParameterOption)
+                            .sorted(Comparator.comparing(ParameterOption::getLabel))
+                            .collect(Collectors.toUnmodifiableList());
+                }
             }
-        }
-        if (accountHandler != null && PUSHSAFER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart())
-                && CONFIG_ICON.equals(param)) {
-            List<Icon> icons = accountHandler.getIcons();
-            if (!icons.isEmpty()) {
-                return icons.stream().map(Icon::getAsParameterOption)
-                        .sorted(Comparator.comparing(ParameterOption::getLabel))
-                        .collect(Collectors.toUnmodifiableList());
+            if (PUSHSAFER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart()) && CONFIG_ICON.equals(param)) {
+                List<Icon> icons = localAccountHandler.getIcons();
+                if (!icons.isEmpty()) {
+                    return icons.stream().map(Icon::getAsParameterOption)
+                            .sorted(Comparator.comparing(ParameterOption::getLabel))
+                            .collect(Collectors.toUnmodifiableList());
+                }
             }
         }
         return null;
