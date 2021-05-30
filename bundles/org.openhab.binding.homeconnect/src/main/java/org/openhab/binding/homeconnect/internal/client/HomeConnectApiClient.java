@@ -80,6 +80,7 @@ public class HomeConnectApiClient {
     private final HttpClient client;
     private final String apiUrl;
     private final Map<String, List<AvailableProgramOption>> availableProgramOptionsCache;
+    private final Map<String, List<AvailableProgram>> programsCache;
     private final OAuthClientService oAuthClientService;
     private final CircularQueue<ApiRequest> communicationQueue;
     private final ApiBridgeConfiguration apiBridgeConfiguration;
@@ -91,6 +92,7 @@ public class HomeConnectApiClient {
         this.apiBridgeConfiguration = apiBridgeConfiguration;
 
         availableProgramOptionsCache = new ConcurrentHashMap<>();
+        programsCache = new ConcurrentHashMap<>();
         apiUrl = simulated ? API_SIMULATOR_BASE_URL : API_BASE_URL;
         communicationQueue = new CircularQueue<>(COMMUNICATION_QUEUE_SIZE);
         if (apiRequestHistory != null) {
@@ -610,7 +612,16 @@ public class HomeConnectApiClient {
 
     public List<AvailableProgram> getPrograms(String haId)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        return getAvailablePrograms(haId, BASE_PATH + haId + "/programs");
+        List<AvailableProgram> programs;
+        if (programsCache.containsKey(haId)) {
+            logger.debug("Returning cached programs for '{}'.", haId);
+            programs = programsCache.get(haId);
+            programs = programs != null ? programs : Collections.emptyList();
+        } else {
+            programs = getAvailablePrograms(haId, BASE_PATH + haId + "/programs");
+            programsCache.put(haId, programs);
+        }
+        return programs;
     }
 
     public List<AvailableProgram> getAvailablePrograms(String haId)

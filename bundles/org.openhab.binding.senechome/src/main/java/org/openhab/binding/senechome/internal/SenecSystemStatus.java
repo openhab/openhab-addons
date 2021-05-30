@@ -13,13 +13,13 @@
 package org.openhab.binding.senechome.internal;
 
 /**
- * The {@link SenecBatteryStatus} class defines available Senec specific
- * battery states.
+ * The {@link SenecSystemStatus} class defines available Senec specific
+ * system states.
  *
  * @author Steven Schwarznau - Initial contribution
  *
  */
-public enum SenecBatteryStatus {
+public enum SenecSystemStatus {
 
     INITIALSTATE(0, "INITIAL STATE"),
     ERROR_INVERTER_COMMUNICATION(1, "ERROR INVERTER COMMUNICATION"),
@@ -118,7 +118,7 @@ public enum SenecBatteryStatus {
     private int code;
     private String description;
 
-    SenecBatteryStatus(int index, String description) {
+    SenecSystemStatus(int index, String description) {
         this.code = index;
         this.description = description;
     }
@@ -131,21 +131,21 @@ public enum SenecBatteryStatus {
         return description;
     }
 
-    public static SenecBatteryStatus fromCode(int code) {
-        for (SenecBatteryStatus state : SenecBatteryStatus.values()) {
+    public static SenecSystemStatus fromCode(int code) {
+        for (SenecSystemStatus state : SenecSystemStatus.values()) {
             if (state.code == code) {
                 return state;
             }
         }
-        return SenecBatteryStatus.UNKNOWN;
+        return SenecSystemStatus.UNKNOWN;
     }
 
     public static String descriptionFromCode(int code) {
-        for (SenecBatteryStatus state : SenecBatteryStatus.values()) {
+        for (SenecSystemStatus state : SenecSystemStatus.values()) {
             if (state.code == code) {
                 return state.description;
             }
         }
-        return SenecBatteryStatus.UNKNOWN.description;
+        return SenecSystemStatus.UNKNOWN.description;
     }
 }

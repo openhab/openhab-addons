@@ -98,6 +98,7 @@ public class SonosBindingConstants {
     public static final String CURRENTTRACKURI = "currenttrackuri";
     public static final String CURRENTTRANSPORTURI = "currenttransporturi";
     public static final String FAVORITE = "favorite";
+    public static final String HEIGHTLEVEL = "heightlevel";
     public static final String LED = "led";
     public static final String LINEIN = "linein";
     public static final String ANALOGLINEIN = "analoglinein";

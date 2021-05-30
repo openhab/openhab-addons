@@ -145,12 +145,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
 
-        if (command instanceof OnOffType) {
-            if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-                apiClient.setPowerState(getThingHaId(),
-                        OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
-            }
-        }
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_OFF);
 
         // light commands
         handleLightCommands(channelUID, command, apiClient);
@@ -272,8 +267,8 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_HOOD_VENTING_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));

@@ -88,6 +88,7 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
         handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE));
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));
+        handlers.put(EVENT_FINISH_IN_RELATIVE, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_REMAINING_PROGRAM_TIME, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_LOCAL_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE));
@@ -142,12 +143,15 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        if (offline) {
+            getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        }
     }
 }

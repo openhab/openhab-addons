@@ -295,6 +295,24 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
 	</thing-type>
 
+	<thing-type id="HAN_FUN_ON_OFF">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN On / Off Device</label>
+		<description>HAN-FUN switchable device (e.g. SmartHome Zwischenstecker innen / SmartHome Zwischenstecker außen)</description>
+
+		<channels>
+			<channel id="on_off" typeId="system.power"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 	<!-- Supported FRITZ! groups and features -->
 	<thing-type id="FRITZ_GROUP_HEATING">
 		<supported-bridge-type-refs>

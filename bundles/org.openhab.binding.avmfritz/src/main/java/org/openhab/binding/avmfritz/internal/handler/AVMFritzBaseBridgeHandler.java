@@ -336,6 +336,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return DEVICE_HAN_FUN_CONTACT;
             } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {
                 return DEVICE_HAN_FUN_SWITCH;
+            } else if (interfaces.contains(HAN_FUN_INTERFACE_ON_OFF)) {
+                return DEVICE_HAN_FUN_ON_OFF;
             }
         }
         return device.getProductName().replaceAll(INVALID_PATTERN, "_");
