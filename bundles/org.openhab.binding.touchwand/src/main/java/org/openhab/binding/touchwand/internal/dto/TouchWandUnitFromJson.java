@@ -66,6 +66,12 @@ public class TouchWandUnitFromJson {
                         .create();
                 touchWandUnit = builder.fromJson(jsonUnit, TouchWandUnitDataAlarmSensor.class);
                 break;
+            case TYPE_BSENSOR:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandBSensorUnitData.class);
+                break;
+            case TYPE_THERMOSTAT:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandThermostatUnitData.class);
+                break;
             case TYPE_UNKNOWN:
                 touchWandUnit = new TouchWandUnknownTypeUnitData();
                 break;
