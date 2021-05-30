@@ -31,13 +31,14 @@ public class VenstarInfoData {
         super();
     }
 
-    public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode,VenstarAwayMode away) {
+    public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode,
+            VenstarAwayMode away) {
         super();
         this.cooltemp = cooltemp;
         this.heattemp = heattemp;
         this.state = state;
         this.mode = mode;
-        this.away=away;
+        this.away = away;
     }
 
     public double getCooltemp() {
@@ -79,10 +80,12 @@ public class VenstarInfoData {
     public void setTempunits(int tempunits) {
         this.tempunits = tempunits;
     }
+
     public VenstarAwayMode getAway() {
         return away;
     }
+
     public void setAwayMode(VenstarAwayMode away) {
-        this.away=away;
+        this.away = away;
     }
 }

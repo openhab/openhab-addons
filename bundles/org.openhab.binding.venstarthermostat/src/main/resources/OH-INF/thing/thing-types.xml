@@ -21,7 +21,7 @@
 			<channel id="systemStateRaw" typeId="systemStateRaw"/>
 			<channel id="awayMode" typeId="awayMode"/>
 			<channel id="awayModeRaw" typeId="awayModeRaw"/>
-        </channels>
+		</channels>
 
 		<properties>
 			<property name="uuid"></property>
@@ -69,26 +69,26 @@
 		<description>Current System Operating Mode, as an integer number</description>
 		<state readOnly="true"/>
 	</channel-type>
-	
-    <channel-type id="awayMode">
-        <item-type>String</item-type>
-        <label>Away Mode</label>
-        <description>Current Away Mode</description>
-        <state readOnly="false">
-            <options>
-                <option value="home">Home</option>
-                <option value="away">Away</option>
-            </options>
-        </state>
-    </channel-type>
 
-    <channel-type id="awayModeRaw" advanced="true">
-        <item-type>Number</item-type>
-        <label>Away Mode (Raw)</label>
-        <description>Current Away Mode, as an integer number</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
+	<channel-type id="awayMode">
+		<item-type>String</item-type>
+		<label>Away Mode</label>
+		<description>Current Away Mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="home">Home</option>
+				<option value="away">Away</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="awayModeRaw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Away Mode (Raw)</label>
+		<description>Current Away Mode, as an integer number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="systemState">
 		<item-type>String</item-type>
 		<label>System State</label>

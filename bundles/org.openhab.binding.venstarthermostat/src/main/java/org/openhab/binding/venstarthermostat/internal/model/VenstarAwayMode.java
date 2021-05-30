@@ -45,9 +45,9 @@ public enum VenstarAwayMode {
     }
 
     public static VenstarAwayMode fromInt(int mode) {
-        for (VenstarAwayMode sm : values()) {
-            if (sm.mode == mode) {
-                return sm;
+        for (VenstarAwayMode am : values()) {
+            if (am.mode == mode) {
+                return am;
             }
         }
 
