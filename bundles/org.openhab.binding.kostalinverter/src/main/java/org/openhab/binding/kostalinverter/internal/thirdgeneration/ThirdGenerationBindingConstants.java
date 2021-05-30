@@ -80,6 +80,8 @@ public class ThirdGenerationBindingConstants {
     public static final String CHANNEL_DEVICE_LOCAL_LIMIT_EVU_ABSOLUTE = "deviceLocalLimitEVUAbsolute";
     public static final String CHANNEL_DEVICE_LOCAL_LIMIT_EVU_RELATIV = "deviceLocalLimitEVURelativ";
     public static final String CHANNEL_DEVICE_LOCAL_WORKTIME = "deviceLocalWorktime";
+    public static final String CHANNEL_DEVICE_LOCAL_AC_COS_PHI = "deviceLocalACCosPhi";
+    public static final String CHANNEL_DEVICE_LOCAL_AC_FREQUENCY = "deviceLocalACFrequency";
     public static final String CHANNEL_DEVICE_LOCAL_AC_PHASE_1_CURRENT_AMPERAGE = "deviceLocalACPhase1CurrentAmperage";
     public static final String CHANNEL_DEVICE_LOCAL_AC_PHASE_1_CURRENT_POWER = "deviceLocalACPhase1CurrentPower";
     public static final String CHANNEL_DEVICE_LOCAL_AC_PHASE_1_CURRENT_VOLTAGE = "deviceLocalACPhase1CurrentVoltage";
