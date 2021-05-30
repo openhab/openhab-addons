@@ -32,7 +32,6 @@ Select the Item you like to control in the "Item Action" and leave the command e
 | `interval`      | Decimal | The constant interval in which the output is switch ON and OFF again in sec.                 | Yes      |
 | `minDutyCycle`  | Decimal | Any duty cycle below this value will be increased to this value                              | No       |
 | `maxDutycycle`  | Decimal | Any duty cycle above this value will be decreased to this value                              | No       |
-| `command`       | Item    | An Item (String) to send commands to, to control the module during runtime                   | No       |
 | `deadManSwitch` | Decimal | The output will be switched off, when the duty cycle is not updated within this time (in ms) | No       |
 
 The duty cycle can be limited via the parameters `minDutycycle` and `maxDutyCycle`.
