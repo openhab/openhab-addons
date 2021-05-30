@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         logger.trace("JuiceNetBridgeHandler:initialize");
 
         try {
-            api.initialize(config.apiToken, this.getThing().getUID());
+            api.initialize(config.api_token, this.getThing().getUID());
         } catch (JuiceNetApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
             return;

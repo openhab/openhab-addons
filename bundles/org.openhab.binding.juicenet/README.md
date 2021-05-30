@@ -1,6 +1,7 @@
 # JuiceNet Binding
 
-The JuiceNet binding will interface with the cloud portal to get status and manage your JuiceBox EV charger(s). In addition to getting the status of various items from the ev-charger, it is also possible to start and stop charging sessions.
+The JuiceNet binding will interface with the cloud portal to get status and manage your JuiceBox EV charger(s).
+In addition to getting the status of various items from the ev-charger, it is also possible to start and stop charging sessions.
 
 ## Supported Things
 
@@ -15,7 +16,8 @@ This binding should work with multiple JuiceBox EV-chargers associated with the 
 
 ## Thing Configuration
 
-The only configuration required is to create a JuiceNet account thing and fill in the appropriate API Token.  The API token can be found on the Account page at https://home.juice.net/Manage.
+The only configuration required is to create a JuiceNet account thing and fill in the appropriate API Token.
+The API token can be found on the Account page at https://home.juice.net/Manage.
 
 Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers associated with that account will be discovered and added to the inbox.
 
@@ -59,7 +61,7 @@ Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers asso
 
 The following custom widget can be used with this binding.
 
-![JuiceBox Widget](images/widget.png)
+![JuiceBox Widget](doc/widget.png)
 
 ```
 uid: widget_JuiceBox

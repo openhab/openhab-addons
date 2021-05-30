@@ -39,7 +39,7 @@
 			<channel id="lifetime_savings" typeId="lifetime_savings_type"/>
 
 			<channel id="gascost" typeId="gascost_type"/>
-			<channel id="mpg" typeId="mpg_type"/>
+			<channel id="fuelconsumption" typeId="fuelconsumption_type"/>
 			<channel id="ecost" typeId="ecost_type"/>
 			<channel id="whpermile" typeId="whpermile_type"/>
 
@@ -219,11 +219,11 @@
 		<state readOnly="true" pattern="$%.2f"/>
 	</channel-type>
 
-	<channel-type id="mpg_type">
+	<channel-type id="fuelconsumption_type">
 		<item-type>Number</item-type>
-		<label>MPG</label>
-		<description>Miles per gallon used in savings calculations.</description>
-		<state readOnly="true" pattern="%.1f mpg"/>
+		<label>Fuel consumption</label>
+		<description>Distance per volume (mpg) used in savings calculations.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ecost_type">
@@ -257,8 +257,8 @@
 	<channel-type id="car_battery_range_m_type">
 		<item-type>Number:Length</item-type>
 		<label>Mileage Range</label>
-		<description>Car mileage range.</description>
-		<state readOnly="true" pattern="%,d miles"/>
+		<description>Car distance range.</description>
+		<state readOnly="true" pattern="%,d"/>
 	</channel-type>
 
 	<channel-type id="car_charging_rate_w_type">

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,7 +147,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                     refreshStatusChannels();
                     break;
                 case DEVICE_GASCOST:
-                case DEVICE_MPG:
+                case DEVICE_FUELCONSUMPTION:
                 case DEVICE_ECOST:
                 case DEVICE_WHPERMILE:
                     refreshInfoChannels();
@@ -287,7 +287,8 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     protected void refreshInfoChannels() {
         updateState(DEVICE_NAME, new StringType(name));
         updateState(DEVICE_GASCOST, new DecimalType(deviceInfo.gascost / 100.0));
-        updateState(DEVICE_MPG, new DecimalType(deviceInfo.mpg));
+        updateState(DEVICE_FUELCONSUMPTION, new DecimalType(deviceInfo.mpg)); // currently there is no Unit defined for
+                                                                              // fuel consumption
         updateState(DEVICE_ECOST, new DecimalType(deviceInfo.ecost / 100.0));
         updateState(DEVICE_WHPERMILE, new DecimalType(deviceInfo.whpermile));
     }
