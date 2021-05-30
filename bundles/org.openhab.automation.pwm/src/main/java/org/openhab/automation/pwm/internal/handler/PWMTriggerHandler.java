@@ -91,7 +91,9 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     }
 
     @Override
-    public void initialize() {
+    public void setCallback(ModuleHandlerCallback callback) {
+        super.setCallback(callback);
+
         double periodSec = getDoubleFromConfig(module.getConfiguration(), CONFIG_PERIOD);
         stateMachine = new StateMachine(getCallback().getScheduler(), this::setOutput, (long) (periodSec * 1000));
 

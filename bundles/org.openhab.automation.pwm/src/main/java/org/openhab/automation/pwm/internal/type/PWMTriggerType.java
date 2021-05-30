@@ -72,13 +72,6 @@ public class PWMTriggerType extends TriggerType {
                 .withUnit("%") //
                 .withLabel("Max Dutycycle") //
                 .withDescription("The dutycycle will be max this value").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_COMMAND_ITEM, Type.TEXT) //
-                .withRequired(false) //
-                .withMultiple(false) //
-                .withContext("item") //
-                .withLabel("Command Item") //
-                .withDescription("You can send String commands to this Item like \"RESET\".") //
-                .build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_DEAD_MAN_SWITCH, Type.DECIMAL) //
                 .withRequired(false) //
                 .withMultiple(false) //
