@@ -248,6 +248,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         } else if (isThingOffline() && !KEEP_ALIVE.equals(event.getType())) {
             updateStatus(ONLINE);
             logger.debug("Set {} to ONLINE and update channels. haId={}", getThing().getLabel(), getThingHaId());
+            updateSelectedProgramStateDescription();
             updateChannels();
         }
 
