@@ -68,6 +68,22 @@
 				<label>Sensor ID</label>
 				<description>Sensor ID</description>
 			</parameter>
+			<parameter name="pressureMode" type="text" required="false">
+				<label>Pressure Mode</label>
+				<description>Station mode reports the measured pressure. Meteorological mode adjusts the reported pressure to sea
+					level.</description>
+				<options>
+					<option value="station">Station</option>
+					<option value="meteorological">Meteorological</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>station</default>
+			</parameter>
+			<parameter name="altitude" type="integer" required="false">
+				<label>Altitude</label>
+				<unitLabel>feet</unitLabel>
+				<description>Sensor altitude to use for pressure adjustment. Will be read from the cloud service if available.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

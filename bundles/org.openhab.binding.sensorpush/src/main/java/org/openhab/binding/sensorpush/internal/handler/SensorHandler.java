@@ -45,10 +45,27 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SensorHandler extends BaseThingHandler {
 
+    private static final String MODE_STATION = "station";
+    private static final String MODE_METEOROLOGICAL = "meteorological";
+
     private final Logger logger = LoggerFactory.getLogger(SensorHandler.class);
 
     private SensorConfiguration config = new SensorConfiguration();
     private @Nullable String address;
+    private boolean adjustPressure = false;
+
+    /**
+     * Adjust the supplied atmospheric pressure to mean sea level based on the provided sensor altitude and
+     * using a standard scale.
+     *
+     * @param stationPressure The pressure reading from the sensor in inches or mercury
+     * @param altitude The altitude of the sensor from MSL in feet
+     * @return The adjusted atmospheric pressure in inches of mercury (in Hg)
+     */
+    public static Double pressureAdjust(Double stationPressure, int altitude) {
+        Double hm = 0.3048 * altitude; // convert feet to meters
+        return stationPressure / Math.pow(((288 - 0.0065 * hm) / 288), 5.2561);
+    }
 
     public SensorHandler(Thing thing) {
         super(thing);
@@ -63,6 +80,13 @@ public class SensorHandler extends BaseThingHandler {
         }
 
         logger.debug("Initializing handler for sensor {}", config.id);
+
+        if (MODE_METEOROLOGICAL.equalsIgnoreCase(config.pressureMode)) {
+            adjustPressure = true;
+        } else if (!MODE_STATION.equalsIgnoreCase(config.pressureMode)) {
+            logger.warn("Parameter pressureMode set to invalid value for sensor ID {}. Assuming station mode.",
+                    config.id);
+        }
 
         Bridge bridge = getBridge();
         if (bridge == null) {
@@ -101,8 +125,19 @@ public class SensorHandler extends BaseThingHandler {
                     updateState(CHANNEL_TIME, new DateTimeType(observed));
                 }
 
-                Float barometricPressure = sample.barometricPressure;
-                if (barometricPressure != null) {
+                if (sample.barometricPressure != null) {
+                    Double barometricPressure = sample.barometricPressure.doubleValue();
+                    if (adjustPressure) {
+                        if (sample.altitude != null) {
+                            barometricPressure = pressureAdjust(barometricPressure, sample.altitude);
+                        } else if (config.altitude != null) {
+                            barometricPressure = pressureAdjust(barometricPressure, config.altitude);
+                        } else {
+                            logger.warn(
+                                    "Pressure mode set to Meteorological for sensor {}, but no sensor altitude is configured. Using station pressure.",
+                                    config.id);
+                        }
+                    }
                     updateState(CHANNEL_PRESSURE, QuantityType.valueOf(barometricPressure, INCH_OF_MERCURY));
                 }
 

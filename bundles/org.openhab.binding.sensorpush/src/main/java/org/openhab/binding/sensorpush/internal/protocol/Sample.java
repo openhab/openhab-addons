@@ -25,6 +25,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Sample {
 
+    /** Configured sensor altitude in feet above MSL **/
+    public @Nullable Integer altitude;
     /** Temperature in degrees F with 1 digit of precision */
     public @Nullable Float temperature;
     /** Relative humidity percentage with 1 digit of precision */

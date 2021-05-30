@@ -13,6 +13,7 @@
 package org.openhab.binding.sensorpush.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SensorConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,4 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SensorConfiguration {
     /** Sensor ID */
     public String id = "";
+
+    /** Pressure reporting mode **/
+    public String pressureMode = "station";
+
+    /** Sensor altitude in feet **/
+    public @Nullable Integer altitude;
 }
