@@ -50,7 +50,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
 
-    private @NonNullByDefault({}) PushoverAccountConfiguration config;
+    private PushoverAccountConfiguration config = new PushoverAccountConfiguration();
     private @Nullable PushoverAPIConnection connection;
 
     public PushoverAccountHandler(Thing thing, HttpClient httpClient) {
@@ -100,7 +100,14 @@ public class PushoverAccountHandler extends BaseThingHandler {
      * @return a list of {@link Sound}s
      */
     public List<Sound> getSounds() {
-        return connection != null ? connection.getSounds() : List.of();
+        try {
+            return connection != null ? connection.getSounds() : PushoverAccountConfiguration.DEFAULT_SOUNDS;
+        } catch (PushoverCommunicationException e) {
+            // do nothing, causing exception is already logged
+        } catch (PushoverConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+        return PushoverAccountConfiguration.DEFAULT_SOUNDS;
     }
 
     /**
@@ -125,7 +132,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
             default:
                 break;
         }
-        // add sound if defined
+        // add sound, if defined
         if (!DEFAULT_SOUND.equals(config.sound)) {
             builder.withSound(config.sound);
         }
