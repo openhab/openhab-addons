@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class SamplesRequest {
 
     public static final String[] ALL_MEASUREMENTS = { "temperature", "humidity", "vpd", "barometric_pressure",
-            "dewpoint" };
+            "dewpoint", "altitude" };
 
     /** Return samples for only active sensors (default=true) */
     public @Nullable Boolean active;

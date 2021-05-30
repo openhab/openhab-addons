@@ -43,7 +43,7 @@ Once you've logged in that initial time, your account will have access.
 
 The `sensor` thing represents an individual SensorPush sensor.
 It has a variety of channels that will be populated with the latest sensor readings at each poll period.
-Sensor relay their readings at approximate 1 minute intervals, so in normal operation the oldest a reading should be is approximately 1 minute plus the configured poll interval.
+Sensors relay their readings at approximate 1 minute intervals, so in normal operation the oldest a reading should be is approximately 1 minute plus the configured poll interval.
 The `time` channel will contain the timestamp of the latest readings.
 If your particular sensor model does not support a given channel, the value for that channel will remain NULL.
 The id parameter must be supplied.
@@ -51,6 +51,8 @@ The id parameter must be supplied.
 Parameters:
 
 * `id` (required) The unique ID number of the sensor
+* `pressureMode` The reporting mode for barometric pressure. Must be set to either "station" or "meteorological". The station mode reports the pressure as recorded by the sensor, while the meteorological mode adjusts the reported pressure to mean sea level as is common for weather reporting. Defaults to "station".
+* `altitude` The altitude of the sensor in feet above MSL. It is only necessary to set this parameter if you selected the "meteorological" option for pressureMode and have not set the sensor altitude in the SensorPush app. The altitude set in the SensorPush app will override this value.
 
 ## Channels
 
