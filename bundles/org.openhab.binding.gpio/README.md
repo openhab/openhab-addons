@@ -34,13 +34,15 @@ sudo nano /etc/systemd/system/pigpiod.service.d/public.conf
 ```
 sudo systemctl daemon-reload
 ```
-Now that Remote GPIO is enabled, get the daemon going:
+Now that Remote GPIO is enabled, get the daemon going (even if installed with apt-get):
 ```
 sudo systemctl enable pigpiod 
 sudo systemctl start pigpiod
 ```
 
 In openHAB, set `host` to the address of the pi and the `port` to the port of pigpio (default: 8888).
+
+Note: If you are running Pigpio on same host as OpenHab, then set host to **::1**.
 
 ## Channels
 
