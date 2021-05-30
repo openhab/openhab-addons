@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -49,7 +50,7 @@ public class dominoswissHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DOMINOSWISSEGATE_THING_TYPE)) {
-            return new org.openhab.binding.dominoswiss.internal.eGateHandler((org.openhab.core.thing.Bridge) thing);
+            return new eGateHandler((Bridge) thing);
         }
 
         if (thingTypeUID.equals(DOMINOSWISSBLINDS_THING_TYPE)) {

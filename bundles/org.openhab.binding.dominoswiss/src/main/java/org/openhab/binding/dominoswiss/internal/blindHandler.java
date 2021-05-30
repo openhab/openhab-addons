@@ -20,7 +20,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -29,19 +28,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BlindHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * sent to one of the channels.The class defines common constants, which are
+ * used across the whole binding
  *
  * @author Frieso Aeschbacher - Initial contribution
  */
 @NonNullByDefault
 public class blindHandler extends BaseThingHandler {
-
-    /**
-     * The {@link BlindHandler} class defines common constants, which are
-     * used across the whole binding.
-     *
-     * @author Frieso Aeschbacher - Initial contribution
-     */
 
     private Logger logger = LoggerFactory.getLogger(blindHandler.class);
 
@@ -53,23 +46,16 @@ public class blindHandler extends BaseThingHandler {
         super(thing);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Blind got command: {} and ChannelUID: {} ", command.toFullString(),
                 channelUID.getIdWithoutGroup());
-        try {
-            dominoswissHandler = (eGateHandler) getBridge().getHandler();
-        } catch (Exception e) {
-            logger.error("Could not get Bridge ", e);
-        }
-
+        dominoswissHandler = (eGateHandler) getBridge().getHandler();
         if (dominoswissHandler == null) {
-            logger.info("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
+            logger.debug("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
         }
-
-        String id = getConfigAs(blindConfig.class).id;
 
         // Some of the code below is not designed to handle REFRESH
         if (command == RefreshType.REFRESH) {
@@ -125,17 +111,25 @@ public class blindHandler extends BaseThingHandler {
 
             case TILTDOWN:
                 if (command instanceof Number) {
-                    dominoswissHandler.tiltDown(id);
+                    try {
+                        dominoswissHandler.tiltDown(id);
+                    } catch (InterruptedException e) {
+                        logger.error("EGate tiltDown error: {} ", e.toString());
+                    }
                 }
                 break;
 
             case TILTUP:
                 if (command instanceof Number) {
-                    dominoswissHandler.tiltUp(id);
+                    try {
+                        dominoswissHandler.tiltUp(id);
+                    } catch (InterruptedException e) {
+                        logger.error("EGate tiltUP error: {} ", e.toString());
+                    }
                 }
                 break;
 
-            case TILT:
+            case SHUTTERTILT:
                 if (command.toFullString() == UP) {
                     dominoswissHandler.pulseUp(id);
                 } else if (command.toFullString() == DOWN) {
@@ -156,24 +150,8 @@ public class blindHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         this.id = getConfig().as(blindConfig.class).id;
-        updateBridgeStatus();
+        dominoswissHandler = (eGateHandler) getBridge().getHandler();
         dominoswissHandler.registerBlind(this.id, getThing().getUID());
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        updateBridgeStatus();
-    }
-
-    /*
-     * Gets the ID of this Blind
-     */
-    public String getID() {
-        return this.id;
-    }
-
-    @SuppressWarnings("null")
-    private void updateBridgeStatus() {
         try {
             ThingStatus bridgeStatus = getBridge().getStatus();
             if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
@@ -184,7 +162,15 @@ public class blindHandler extends BaseThingHandler {
             }
         } catch (Exception e) {
             logger.error("Could not update ThingStatus ", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
 
         }
+    }
+
+    /*
+     * Gets the ID of this Blind
+     */
+    public String getID() {
+        return this.id;
     }
 }

@@ -41,7 +41,7 @@ public class dominoswissBindingConstants {
     public static final String SHUTTER = "shutter";
     public static final String TILTUP = "tiltUp";
     public static final String TILTDOWN = "tiltDown";
-    public static final String TILT = "tilt";
+    public static final String SHUTTERTILT = "shutterTilt";
 
     public static final String GETCONFIG = "getConfig";
 

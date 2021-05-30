@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="mytest"
+<thing:thing-descriptions bindingId="dominoswiss"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="egate">
 		<label>Dominoswiss EGate Server</label>
 		<description>This is a Dominoswiss EGate Server instance.</description>
-		<channels>
-			<channel id="getconfig" typeId="getconfig"/>
-		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<label>IP or Host Name (192.168.1.100, 1318) localhost 5500</label>
-				<description>The IP or host name of the Dominoswiss EGate Server</description>
+				<label>IP or Host Name</label>
+				<context>network-address</context>
+				<description>The IP or host name of the Dominoswiss EGate Server (192.168.1.100, localhost)</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true" min="1" max="65335">
-				<label>Dominoswiss EGat Web Port</label>
-				<description>Port interface of the Dominoswiss EGate Server</description>
+				<label>Web Port</label>
+				<description>Port interface of the Dominoswiss EGate Server, default 1318</description>
 				<default>1318</default>
 			</parameter>
 		</config-description>
@@ -27,7 +25,7 @@
 			<bridge-type-ref id="egate"/>
 		</supported-bridge-type-refs>
 		<label>Blinds controlled by Dominoswiss</label>
-		<description>Provides various controlcommands for Dominoswiss receivers</description>
+		<description>Provides various control commands for Dominoswiss receivers</description>
 		<channels>
 			<channel id="pulseUp" typeId="pulseUp"/>
 			<channel id="pulseDown" typeId="pulseDown"/>
@@ -35,15 +33,12 @@
 			<channel id="continuousDown" typeId="continuousDown"/>
 			<channel id="stop" typeId="stop"/>
 			<channel id="shutter" typeId="shutter"/>
-			<channel id="tilt" typeId="tilt"/>
+			<channel id="shutterTilt" typeId="shutterTilt"/>
 			<channel id="tiltUp" typeId="tiltUp"/>
 			<channel id="tiltDown" typeId="tiltDown"/>
 		</channels>
 		<properties>
 			<property name="vendor">Dominoswiss</property>
-			<property name="modelId"></property>
-			<property name="name"></property>
-			<property name="id"></property>
 		</properties>
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -76,7 +71,7 @@
 
 	<channel-type id="continuousDown">
 		<item-type>Number</item-type>
-		<label>Continous Down</label>
+		<label>Continuous Down</label>
 		<description>Send continuous down command to blind</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -90,18 +85,17 @@
 
 	<channel-type id="shutter">
 		<item-type>UpDownType</item-type>
-		<label>shutter</label>
+		<label>Shutter</label>
 		<description>Handle the commands up/down/stop </description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tilt">
+	<channel-type id="shutterTilt">
 		<item-type>UpDownType</item-type>
-		<label>shutter</label>
+		<label>Shutter tilt up down</label>
 		<description>Handle the commands tiltUp/tiltDown/stop </description>
 		<state readOnly="true"/>
 	</channel-type>
-
 
 	<channel-type id="tiltUp">
 		<item-type>Number</item-type>
@@ -114,13 +108,6 @@
 		<item-type>Number</item-type>
 		<label>Tilt Down</label>
 		<description>Handle the command for 3 tilts down </description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="getConfig">
-		<item-type>Number</item-type>
-		<label>get Config</label>
-		<description>getconfig of egate server </description>
 		<state readOnly="true"/>
 	</channel-type>
 
