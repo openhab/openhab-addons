@@ -81,7 +81,7 @@ Thing gpio:pigpio-remote:sample-pi-1 "Sample-Pi 1" [host="192.168.2.36", port=88
 Thing gpio:pigpio-remote:sample-pi-2 "Sample-Pi 2" [host="192.168.2.37", port=8888] {
     Channels:
         Type pigpio-digital-input : sample-input-3 [ gpioId=16, debouncingTime=20]
-        Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5]
+        Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5, pullupdown=2]
         Type pigpio-digital-output : sample-output-2 [ gpioId=4, invert=true]
 }
 ```
