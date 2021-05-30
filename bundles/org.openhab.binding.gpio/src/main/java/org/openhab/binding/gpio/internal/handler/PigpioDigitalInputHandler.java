@@ -62,6 +62,8 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
             Date thisChange = new Date();
             scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime, TimeUnit.MILLISECONDS);
         });
+        Integer pullupdown = configuration.pullupdown;
+        jPigpio.gpioSetPullUpDown(gpio.getPin(), pullupdown);
     }
 
     private void afterDebounce(Date thisChange) {

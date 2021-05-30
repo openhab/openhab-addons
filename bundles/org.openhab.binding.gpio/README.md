@@ -56,6 +56,7 @@ In openHAB, set `host` to the address of the pi and the `port` to the port of pi
 Set the number of the pin in `gpioId`.
 If you want to invert the value, set `invert` to true.
 To prevent incorrect change events, you can adjust the `debouncingTime`.
+Using `pullupdown` you can enable pull up or pull down resistor (0 = Off, 1 = Pull Down, 2 = Pull Up).
 
 ### GPIO digital output channel
 
