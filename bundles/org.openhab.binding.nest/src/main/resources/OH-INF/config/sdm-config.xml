@@ -29,8 +29,7 @@
 		</parameter>
 		<parameter name="sdmAuthorizationCode" type="text" groupName="sdm">
 			<label>Authorization Code</label>
-			<description>This is the one time authorization code used to retrieve the refresh and access token used with the SDM
-				API</description>
+			<description><![CDATA[The one time authorization code used to retrieve the refresh and access token used with the SDM API. The code is obtained by following the instructions at the following URL in your browser:<br><br>https://nestservices.google.com/partnerconnections/{{ProjectID}}/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id={{ClientID}}&response_type=code&scope=https://www.googleapis.com/auth/sdm.service]]></description>
 		</parameter>
 
 		<parameter name="pubsubProjectId" type="text" groupName="pubsub">
@@ -52,8 +51,7 @@
 		</parameter>
 		<parameter name="pubsubAuthorizationCode" type="text" groupName="pubsub">
 			<label>Authorization Code</label>
-			<description>This is the one time authorization code used to retrieve the refresh and access token used with the
-				Pub/Sub API</description>
+			<description><![CDATA[The one time authorization code used to retrieve the refresh and access token used with the Pub/Sub API. The code is obtained by following the instructions at the following URL in your browser:<br><br>https://accounts.google.com/o/oauth2/auth?client_id={{ClientID}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub]]></description>
 		</parameter>
 	</config-description>
 

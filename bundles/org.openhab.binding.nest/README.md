@@ -63,7 +63,7 @@ First a SDM project needs to be created and configured:
 
 Now an OAuth 2.0 client is created and configured for using the SDM API by the binding:
 
-1. Configure the "Publishing status" of your Google Cloud Platform to "Production" ([APIs & Services > OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) so the OAuth 2.0 tokens do not expire after 2 weeks
+1. Configure the "Publishing status" of your Google Cloud Platform to "Production" ([APIs & Services > OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent)) so the OAuth 2.0 tokens do not expire after 2 weeks
 1. Create a new client on the "Credentials" page ([APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)):
     1. Click the "Create Credentials" button at the top of the page
     1. Choose "OAuth client ID"
@@ -88,11 +88,11 @@ Finally, an SDM Account Thing can be created to access the SDM project using the
 1. Create an authorization code for the binding:
     1. Replace the **Project ID** and **Client ID** in the URL below with your SDM Project ID and SDM OAuth 2.0 Client ID and open the URL in a new browser tab:
        
-       `https://nestservices.google.com/partnerconnections/{{Project ID}}/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id={{Client ID}}&scope=https://www.googleapis.com/auth/sdm.service`
+       `https://nestservices.google.com/partnerconnections/{{ProjectID}}/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id={{ClientID}}&response_type=code&scope=https://www.googleapis.com/auth/sdm.service`
        
        For the example values used so far this is:
        
-       `https://nestservices.google.com/partnerconnections/585de72e-968c-435c-b16a-31d1d3f76833/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id=1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com&scope=https://www.googleapis.com/auth/sdm.service`
+       `https://nestservices.google.com/partnerconnections/585de72e-968c-435c-b16a-31d1d3f76833/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id=1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com&response_type=code&scope=https://www.googleapis.com/auth/sdm.service`
     1. Enable all the permissions you want to use with the binding and click "Next" to continue
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
@@ -151,11 +151,11 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 1. Create an authorization code for the binding:
     1. Replace the **Client ID** in the URL below with your Pub/Sub OAuth 2.0 Client ID and open the URL in a new browser tab:
        
-       `https://accounts.google.com/o/oauth2/auth?client_id={{Client ID}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/pubsub&response_type=code`
+       `https://accounts.google.com/o/oauth2/auth?client_id={{ClientID}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub`
        
        For the example client this is:
        
-       `https://accounts.google.com/o/oauth2/auth?client_id=1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/pubsub&response_type=code`
+       `https://accounts.google.com/o/oauth2/auth?client_id=1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub`
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
     1. Then click on "Go to ... (advanced)"
