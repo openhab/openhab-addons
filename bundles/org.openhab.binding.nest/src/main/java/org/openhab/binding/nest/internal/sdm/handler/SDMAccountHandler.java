@@ -16,6 +16,7 @@ import static java.util.function.Predicate.not;
 import static org.openhab.binding.nest.internal.sdm.dto.SDMGson.GSON;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Collection;
@@ -281,7 +282,7 @@ public class SDMAccountHandler extends BaseBridgeHandler {
 
     private void handlePubSubMessage(PubSubMessage message) {
         String messageId = message.messageId;
-        String json = new String(Base64.getDecoder().decode(message.data));
+        String json = new String(Base64.getDecoder().decode(message.data), StandardCharsets.UTF_8);
 
         logger.debug("Handling messageId={} with content:", messageId);
         logger.debug("{}", json);
