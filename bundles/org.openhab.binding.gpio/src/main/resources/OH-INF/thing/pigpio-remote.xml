@@ -51,8 +51,8 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pullupdown" type="integer" min="0" max="2">
-				<label>Pull Up/Down resistor</label>
-				<description>Configure Pull Up/Down resistor of GPIO pin</description>
+				<label>Pull Up/Down Resistor</label>
+				<description>Configure Pull Up/Down Resistor of GPIO pin</description>
 				<options>
 					<option value="0">Off</option>
 					<option value="1">Pull Down</option>
