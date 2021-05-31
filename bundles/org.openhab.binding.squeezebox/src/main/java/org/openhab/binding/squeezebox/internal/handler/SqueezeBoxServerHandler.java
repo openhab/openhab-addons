@@ -566,18 +566,19 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 player.setMacAddress(macAddress);
                 // populate the player state
                 for (String parameter : parameterList) {
-                    if (parameter.startsWith("ip:")) {
-                        player.setIpAddr(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.startsWith("uuid:")) {
-                        player.setUuid(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.startsWith("name:")) {
-                        player.setName(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.startsWith("model:")) {
-                        player.setModel(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.startsWith("connected:")) {
-                        if ("1".equals(parameter.substring(parameter.indexOf(":") + 1))) {
-                            connectedPlayers.add(macAddress);
-                        }
+                    int colonPos = parameter.indexOf(":");
+                    final String key = parameter.substring(0, colonPos);
+                    final String value = parameter.substring(colonPos + 1);
+                    if ("ip".equals(key)) {
+                        player.setIpAddr(value);
+                    } else if ("uuid".equals(key)) {
+                        player.setUuid(value);
+                    } else if ("name".equals(key)) {
+                        player.setName(value);
+                    } else if ("model".equals(key)) {
+                        player.setModel(value);
+                    } else if ("connected".equals(key) && "1".equals(value)) {
+                        connectedPlayers.add(macAddress);
                     }
                 }
 
@@ -691,94 +692,95 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String artworkUrl = null;
 
             for (String messagePart : messageParts) {
+                final String decoded = decode(messagePart);
+                final int colonPos = decoded.indexOf(":");
+
+                if (colonPos < 0) {
+                    continue;
+                }
+
+                final String key = decoded.substring(0, colonPos);
+                final String value = decoded.substring(colonPos + 1);
+
                 // Parameter Power
-                if (messagePart.startsWith("power%3A")) {
-                    final boolean power = "1".matches(messagePart.substring("power%3A".length()));
+                if ("power".equals(key)) {
+                    final boolean power = "1".equals(value);
                     updatePlayer(listener -> listener.powerChangeEvent(mac, power));
                 }
                 // Parameter Volume
-                else if (messagePart.startsWith("mixer%20volume%3A")) {
-                    String value = messagePart.substring("mixer%20volume%3A".length());
+                else if ("mixer volume".equals(key)) {
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
                 }
                 // Parameter Mode
-                else if (messagePart.startsWith("mode%3A")) {
-                    final String mode = messagePart.substring("mode%3A".length());
-                    updatePlayer(listener -> listener.modeChangeEvent(mac, mode));
+                else if ("mode".equals(key)) {
+                    updatePlayer(listener -> listener.modeChangeEvent(mac, value));
                 }
                 // Parameter Playing Time
-                else if (messagePart.startsWith("time%3A")) {
-                    String value = messagePart.substring("time%3A".length());
+                else if ("time".equals(key)) {
                     final int time = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
                 }
                 // Parameter duration
-                else if (messagePart.startsWith("duration%3A")) {
-                    String value = messagePart.substring("duration%3A".length());
+                else if ("duration".equals(key)) {
                     final int duration = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.durationEvent(mac, duration));
                 }
                 // Parameter Playing Playlist Index
-                else if (messagePart.startsWith("playlist_cur_index%3A")) {
-                    String value = messagePart.substring("playlist_cur_index%3A".length());
+                else if ("playlist_cur_index".equals(key)) {
                     final int index = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.currentPlaylistIndexEvent(mac, index));
                 }
                 // Parameter Playlist Number Tracks
-                else if (messagePart.startsWith("playlist_tracks%3A")) {
-                    String value = messagePart.substring("playlist_tracks%3A".length());
+                else if ("playlist_tracks".equals(key)) {
                     final int track = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.numberPlaylistTracksEvent(mac, track));
                 }
                 // Parameter Playlist Repeat Mode
-                else if (messagePart.startsWith("playlist%20repeat%3A")) {
-                    String value = messagePart.substring("playlist%20repeat%3A".length());
+                else if ("playlist repeat".equals(key)) {
                     final int repeat = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.currentPlaylistRepeatEvent(mac, repeat));
                 }
                 // Parameter Playlist Shuffle Mode
-                else if (messagePart.startsWith("playlist%20shuffle%3A")) {
-                    String value = messagePart.substring("playlist%20shuffle%3A".length());
+                else if ("playlist shuffle".equals(key)) {
                     final int shuffle = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.currentPlaylistShuffleEvent(mac, shuffle));
                 }
                 // Parameter Title
-                else if (messagePart.startsWith("title%3A")) {
-                    final String value = messagePart.substring("title%3A".length());
+                else if ("title".equals(key)) {
                     updatePlayer(listener -> listener.titleChangeEvent(mac, decode(value)));
                 }
                 // Parameter Remote Title (radio)
-                else if (messagePart.startsWith("remote_title%3A")) {
-                    remoteTitle = messagePart.substring("remote_title%3A".length());
+                else if ("remote_title".equals(key)) {
+                    remoteTitle = value;
                 }
                 // Parameter Artist
-                else if (messagePart.startsWith("artist%3A")) {
-                    artist = messagePart.substring("artist%3A".length());
+                else if ("artist".equals(key)) {
+                    artist = value;
                 }
                 // Parameter Album
-                else if (messagePart.startsWith("album%3A")) {
-                    album = messagePart.substring("album%3A".length());
+                else if ("album".equals(key)) {
+                    album = value;
                 }
                 // Parameter Genre
-                else if (messagePart.startsWith("genre%3A")) {
-                    genre = messagePart.substring("genre%3A".length());
+                else if ("genre".equals(key)) {
+                    genre = value;
                 }
                 // Parameter Year
-                else if (messagePart.startsWith("year%3A")) {
-                    year = messagePart.substring("year%3A".length());
+                else if ("year".equals(key)) {
+                    year = value;
                 }
                 // Parameter artwork_url contains url to cover art
-                else if (messagePart.startsWith("artwork_url%3A")) {
-                    artworkUrl = messagePart.substring("artwork_url%3A".length());
+                else if ("artwork_url".equals(key)) {
+                    artworkUrl = value;
                 }
                 // When coverart is "1" coverid will contain a unique coverart id
-                else if (messagePart.startsWith("coverart%3A")) {
-                    coverart = "1".matches(messagePart.substring("coverart%3A".length()));
+                else if ("coverart".equals(key)) {
+                    coverart = "1".equals(value);
                 }
                 // Id for covert art (only valid when coverart is "1")
-                else if (messagePart.startsWith("coverid%3A")) {
-                    coverid = messagePart.substring("coverid%3A".length());
+                else if ("coverid".equals(key)) {
+                    coverid = value;
                 } else {
                     // Added to be able to see additional status message types
                     logger.trace("Unhandled status message type '{}'", messagePart);
@@ -794,11 +796,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             updatePlayer(listener -> {
                 listener.coverArtChangeEvent(mac, finalUrl);
-                listener.remoteTitleChangeEvent(mac, decode(finalRemoteTitle));
-                listener.artistChangeEvent(mac, decode(finalArtist));
-                listener.albumChangeEvent(mac, decode(finalAlbum));
-                listener.genreChangeEvent(mac, decode(finalGenre));
-                listener.yearChangeEvent(mac, decode(finalYear));
+                listener.remoteTitleChangeEvent(mac, finalRemoteTitle);
+                listener.artistChangeEvent(mac, finalArtist);
+                listener.albumChangeEvent(mac, finalAlbum);
+                listener.genreChangeEvent(mac, finalGenre);
+                listener.yearChangeEvent(mac, finalYear);
             });
         }
 
@@ -822,13 +824,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             } else if (artwork_url != null) {
                 if (artwork_url.startsWith("http")) {
                     // Typically indicates that cover art is not local to LMS
-                    url = decode(artwork_url);
-                } else if (artwork_url.startsWith("%2F")) {
+                    url = artwork_url;
+                } else if (artwork_url.startsWith("/")) {
                     // Typically used for default coverart for plugins (e.g. Pandora, etc.)
-                    url = hostAndPort + decode(artwork_url);
+                    url = hostAndPort + artwork_url;
                 } else {
                     // Another variation of default coverart for plugins (e.g. Pandora, etc.)
-                    url = hostAndPort + "/" + decode(artwork_url);
+                    url = hostAndPort + "/" + artwork_url;
                 }
             }
             return url;
@@ -906,25 +908,32 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             Favorite f = null;
             boolean isTypePlaylist = false;
             for (String part : messageParts) {
+                final String decoded = decode(part);
+                int colonPos = decoded.indexOf(":");
+                if (colonPos < 0) {
+                    continue;
+                }
+
+                final String key = decoded.substring(0, colonPos);
+                final String value = decoded.substring(colonPos);
+
                 // Favorite ID (in form xxxxxxxxx.n)
-                if (part.startsWith("id%3A")) {
-                    String id = part.substring("id%3A".length());
-                    f = new Favorite(id);
+                if ("id".equals(key)) {
+                    f = new Favorite(value);
                     favorites.add(f);
                     isTypePlaylist = false;
                 }
                 // Favorite name
-                else if (part.startsWith("name%3A")) {
-                    String name = decode(part.substring("name%3A".length()));
-                    if (f != null) {
-                        f.name = name;
+                else if ("name".equals(key)) {
+                    if (value != null) {
+                        f.name = value;
                     }
-                } else if (part.equals("type%3Aplaylist")) {
+                } else if ("type".equals(key) && "playlist".equals(value)) {
                     isTypePlaylist = true;
                 }
                 // When "1", favorite is a submenu with additional favorites
-                else if (part.startsWith("hasitems%3A")) {
-                    boolean hasitems = "1".matches(part.substring("hasitems%3A".length()));
+                else if ("hasitems".equals(key)) {
+                    boolean hasitems = "1".equals(value);
                     if (f != null) {
                         // Except for some favorites (e.g. Spotify) use hasitems:1 and type:playlist
                         if (hasitems && isTypePlaylist == false) {
