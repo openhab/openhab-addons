@@ -52,6 +52,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 
 /**
@@ -156,7 +157,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalTest() {
-        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10), null);
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10), null);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -174,7 +175,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalFractionalTest() {
-        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10.5), null);
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10.5), null);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -187,7 +188,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalUnitTest() {
-        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10), "W");
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10), Units.WATT);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -205,7 +206,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalAsPercentageUnitTest() {
-        NumberValue value = new NumberValue(channelUID, null, null, new BigDecimal(10), "%");
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10), Units.PERCENT);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 

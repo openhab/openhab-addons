@@ -22,7 +22,7 @@ import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
-import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.util.UnitUtils;
 
 /**
  * A MQTT sensor, following the https://www.home-assistant.io/components/sensor.mqtt/ specification.
@@ -62,8 +62,7 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
         String uom = channelConfiguration.unit_of_measurement;
 
         if (uom != null && !uom.isBlank()) {
-            value = new NumberValue(new ChannelUID(componentConfiguration.getThingUID(), sensorChannelID), null, null,
-                    null, uom);
+            value = new NumberValue(null, null, null, UnitUtils.parseUnit(uom));
         } else {
             value = new TextValue();
         }

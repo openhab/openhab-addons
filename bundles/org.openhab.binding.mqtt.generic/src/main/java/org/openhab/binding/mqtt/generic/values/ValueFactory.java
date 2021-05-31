@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
-import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.util.UnitUtils;
 
 /**
  * A factory t
@@ -25,14 +25,14 @@ import org.openhab.core.thing.ChannelUID;
  */
 @NonNullByDefault
 public class ValueFactory {
+
     /**
      * Creates a new channel state value.
      *
      * @param config The channel configuration
      * @param channelTypeID The channel type, for instance TEXT_CHANNEL.
      */
-    public static Value createValueState(ChannelUID channelUID, ChannelConfig config, String channelTypeID)
-            throws IllegalArgumentException {
+    public static Value createValueState(ChannelConfig config, String channelTypeID) throws IllegalArgumentException {
         Value value;
         switch (channelTypeID) {
             case MqttBindingConstants.STRING:
@@ -49,7 +49,7 @@ public class ValueFactory {
                 value = new LocationValue();
                 break;
             case MqttBindingConstants.NUMBER:
-                value = new NumberValue(channelUID, config.min, config.max, config.step, config.unit);
+                value = new NumberValue(config.min, config.max, config.step, UnitUtils.parseUnit(config.unit));
                 break;
             case MqttBindingConstants.DIMMER:
                 value = new PercentageValue(config.min, config.max, config.step, config.on, config.off);
