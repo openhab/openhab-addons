@@ -42,7 +42,7 @@ sudo systemctl start pigpiod
 
 In openHAB, set `host` to the address of the pi and the `port` to the port of pigpio (default: 8888).
 
-Note: If you are running Pigpio on same host as OpenHab, then set host to **::1**.
+Note: If you are running Pigpio on same host as openHAB, then set host to **::1**.
 
 ## Channels
 
