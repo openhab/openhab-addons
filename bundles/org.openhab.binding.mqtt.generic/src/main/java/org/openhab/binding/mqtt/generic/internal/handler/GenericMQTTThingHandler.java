@@ -156,7 +156,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
             }
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
             try {
-                Value value = ValueFactory.createValueState(channel.getUID(), channelConfig, channelTypeUID.getId());
+                Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
                 channelStateByChannelUID.put(channel.getUID(), channelState);
                 StateDescription description = value.createStateDescription(channelConfig.commandTopic.isBlank())

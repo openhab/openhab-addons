@@ -26,11 +26,9 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,30 +49,16 @@ public class NumberValue extends Value {
     private final @Nullable BigDecimal min;
     private final @Nullable BigDecimal max;
     private final BigDecimal step;
-    private final String unit;
-    private final Unit<?> unitType;
+    private final Unit<?> unit;
 
-    public NumberValue(ChannelUID channelUID, @Nullable BigDecimal min, @Nullable BigDecimal max,
-            @Nullable BigDecimal step, @Nullable String unit) {
+    public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
+            @Nullable Unit<?> unit) {
         super(CoreItemFactory.NUMBER, Stream.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class)
                 .collect(Collectors.toList()));
         this.min = min;
         this.max = max;
         this.step = step == null ? BigDecimal.ONE : step;
-        String interpretedUnitString = unit == null ? "" : unit;
-        Unit<?> interpretedUnitType = null;
-        if (interpretedUnitString != "") {
-            try {
-                interpretedUnitType = UnitUtils.parseUnit(unit);
-            } finally {
-                if (interpretedUnitType == null) {
-                    logger.warn("unrecognised unit {} for channel {}, ignored", unit, channelUID);
-                    interpretedUnitString = "";
-                }
-            }
-        }
-        this.unit = interpretedUnitString;
-        this.unitType = interpretedUnitType != null ? interpretedUnitType : Units.ONE;
+        this.unit = unit != null ? unit : Units.ONE;
     }
 
     protected boolean checkConditions(BigDecimal newValue) {
@@ -128,8 +112,8 @@ public class NumberValue extends Value {
         }
         // items with units specified in the label in the UI but no unit on mqtt are stored as
         // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
-        if (unitType != Units.ONE) {
-            state = new QuantityType<>(newValue, unitType);
+        if (unit != Units.ONE) {
+            state = new QuantityType<>(newValue, unit);
         } else {
             state = new DecimalType(newValue);
         }
@@ -148,7 +132,7 @@ public class NumberValue extends Value {
     private BigDecimal getQuantityTypeAsDecimal(QuantityType<?> qType) {
         BigDecimal val = qType.toBigDecimal();
         if (!qType.getUnit().isCompatible(Units.ONE)) {
-            QuantityType<?> convertedType = qType.toUnit(unitType);
+            QuantityType<?> convertedType = qType.toUnit(unit);
             if (convertedType != null) {
                 val = convertedType.toBigDecimal();
             }
@@ -168,8 +152,9 @@ public class NumberValue extends Value {
             builder = builder.withMinimum(min);
         }
         builder = builder.withStep(step);
-        if (this.unit.length() > 0) {
-            builder = builder.withPattern("%s " + this.unit.replace("%", "%%"));
+        String unitSymbol = this.unit.getSymbol();
+        if (unitSymbol != null) {
+            builder = builder.withPattern("%s " + unitSymbol.replace("%", "%%"));
         }
         return builder;
     }

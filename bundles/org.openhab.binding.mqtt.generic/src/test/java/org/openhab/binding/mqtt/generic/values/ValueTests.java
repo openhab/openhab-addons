@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.generic.values;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants.testGenericThing;
 
 import java.math.BigDecimal;
 
@@ -32,7 +31,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.TypeParser;
 
@@ -85,7 +83,7 @@ public class ValueTests {
 
     @Test
     public void illegalNumberCommand() {
-        NumberValue v = new NumberValue(new ChannelUID(testGenericThing, "test"), null, null, null, null);
+        NumberValue v = new NumberValue(null, null, null, null);
         assertThrows(IllegalArgumentException.class, () -> v.update(OnOffType.OFF));
     }
 
@@ -167,7 +165,7 @@ public class ValueTests {
 
     @Test
     public void numberUpdate() {
-        NumberValue v = new NumberValue(new ChannelUID(testGenericThing, "test"), null, null, new BigDecimal(10), "W");
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.WATT);
 
         // Test with command with units
         v.update(new QuantityType<>(20, Units.WATT));
@@ -185,7 +183,7 @@ public class ValueTests {
 
     @Test
     public void numberPercentageUpdate() {
-        NumberValue v = new NumberValue(new ChannelUID(testGenericThing, "test"), null, null, new BigDecimal(10), "%");
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.PERCENT);
 
         // Test with command with units
         v.update(new QuantityType<>(20, Units.PERCENT));
