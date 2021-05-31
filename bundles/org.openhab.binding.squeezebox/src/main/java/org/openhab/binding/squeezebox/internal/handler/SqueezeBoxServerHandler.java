@@ -584,12 +584,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // Save player if we haven't seen it yet
                 if (!players.containsKey(macAddress)) {
                     players.put(macAddress, player);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.playerAdded(player);
-                        }
-                    });
+                    updatePlayer(listener -> listener.playerAdded(player));
                     // tell the server we want to subscribe to player updates
                     sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNKjc");
                 }
@@ -630,12 +625,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     break;
                 case "ir":
                     final String ircode = messageParts[2];
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.irCodeChangeEvent(mac, ircode);
-                        }
-                    });
+                    updatePlayer(listener -> listener.irCodeChangeEvent(mac, ircode));
                     break;
                 default:
                     logger.trace("Unhandled player update message type '{}'.", messageType);
@@ -651,23 +641,20 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             switch (action) {
                 case "volume":
                     String volumeStringValue = decode(messageParts[3]);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            try {
-                                int volume = Integer.parseInt(volumeStringValue);
+                    updatePlayer(listener -> {
+                        try {
+                            int volume = Integer.parseInt(volumeStringValue);
 
-                                // Check if we received a relative volume change, or an absolute
-                                // volume value.
-                                if (volumeStringValue.contains("+") || (volumeStringValue.contains("-"))) {
-                                    listener.relativeVolumeChangeEvent(mac, volume);
-                                } else {
-                                    listener.absoluteVolumeChangeEvent(mac, volume);
-                                }
-                            } catch (NumberFormatException e) {
-                                logger.warn("Unable to parse volume [{}] received from mixer message.",
-                                        volumeStringValue, e);
+                            // Check if we received a relative volume change, or an absolute
+                            // volume value.
+                            if (volumeStringValue.contains("+") || (volumeStringValue.contains("-"))) {
+                                listener.relativeVolumeChangeEvent(mac, volume);
+                            } else {
+                                listener.absoluteVolumeChangeEvent(mac, volume);
                             }
+                        } catch (NumberFormatException e) {
+                            logger.warn("Unable to parse volume [{}] received from mixer message.", volumeStringValue,
+                                    e);
                         }
                     });
                     break;
@@ -707,109 +694,59 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // Parameter Power
                 if (messagePart.startsWith("power%3A")) {
                     final boolean power = "1".matches(messagePart.substring("power%3A".length()));
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.powerChangeEvent(mac, power);
-                        }
-                    });
+                    updatePlayer(listener -> listener.powerChangeEvent(mac, power));
                 }
                 // Parameter Volume
                 else if (messagePart.startsWith("mixer%20volume%3A")) {
                     String value = messagePart.substring("mixer%20volume%3A".length());
                     final int volume = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.absoluteVolumeChangeEvent(mac, volume);
-                        }
-                    });
+                    updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
                 }
                 // Parameter Mode
                 else if (messagePart.startsWith("mode%3A")) {
                     final String mode = messagePart.substring("mode%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.modeChangeEvent(mac, mode);
-                        }
-                    });
+                    updatePlayer(listener -> listener.modeChangeEvent(mac, mode));
                 }
                 // Parameter Playing Time
                 else if (messagePart.startsWith("time%3A")) {
                     String value = messagePart.substring("time%3A".length());
                     final int time = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.currentPlayingTimeEvent(mac, time);
-                        }
-                    });
+                    updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
                 }
                 // Parameter duration
                 else if (messagePart.startsWith("duration%3A")) {
                     String value = messagePart.substring("duration%3A".length());
                     final int duration = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.durationEvent(mac, duration);
-                        }
-                    });
+                    updatePlayer(listener -> listener.durationEvent(mac, duration));
                 }
                 // Parameter Playing Playlist Index
                 else if (messagePart.startsWith("playlist_cur_index%3A")) {
                     String value = messagePart.substring("playlist_cur_index%3A".length());
                     final int index = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.currentPlaylistIndexEvent(mac, index);
-                        }
-                    });
+                    updatePlayer(listener -> listener.currentPlaylistIndexEvent(mac, index));
                 }
                 // Parameter Playlist Number Tracks
                 else if (messagePart.startsWith("playlist_tracks%3A")) {
                     String value = messagePart.substring("playlist_tracks%3A".length());
                     final int track = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.numberPlaylistTracksEvent(mac, track);
-                        }
-                    });
+                    updatePlayer(listener -> listener.numberPlaylistTracksEvent(mac, track));
                 }
                 // Parameter Playlist Repeat Mode
                 else if (messagePart.startsWith("playlist%20repeat%3A")) {
                     String value = messagePart.substring("playlist%20repeat%3A".length());
                     final int repeat = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.currentPlaylistRepeatEvent(mac, repeat);
-                        }
-                    });
+                    updatePlayer(listener -> listener.currentPlaylistRepeatEvent(mac, repeat));
                 }
                 // Parameter Playlist Shuffle Mode
                 else if (messagePart.startsWith("playlist%20shuffle%3A")) {
                     String value = messagePart.substring("playlist%20shuffle%3A".length());
                     final int shuffle = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.currentPlaylistShuffleEvent(mac, shuffle);
-                        }
-                    });
+                    updatePlayer(listener -> listener.currentPlaylistShuffleEvent(mac, shuffle));
                 }
                 // Parameter Title
                 else if (messagePart.startsWith("title%3A")) {
                     final String value = messagePart.substring("title%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.titleChangeEvent(mac, decode(value));
-                        }
-                    });
+                    updatePlayer(listener -> listener.titleChangeEvent(mac, decode(value)));
                 }
                 // Parameter Remote Title (radio)
                 else if (messagePart.startsWith("remote_title%3A")) {
@@ -855,16 +792,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             final String finalGenre = genre;
             final String finalYear = year;
 
-            updatePlayer(new PlayerUpdateEvent() {
-                @Override
-                public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                    listener.coverArtChangeEvent(mac, finalUrl);
-                    listener.remoteTitleChangeEvent(mac, decode(finalRemoteTitle));
-                    listener.artistChangeEvent(mac, decode(finalArtist));
-                    listener.albumChangeEvent(mac, decode(finalAlbum));
-                    listener.genreChangeEvent(mac, decode(finalGenre));
-                    listener.yearChangeEvent(mac, decode(finalYear));
-                }
+            updatePlayer(listener -> {
+                listener.coverArtChangeEvent(mac, finalUrl);
+                listener.remoteTitleChangeEvent(mac, decode(finalRemoteTitle));
+                listener.artistChangeEvent(mac, decode(finalArtist));
+                listener.albumChangeEvent(mac, decode(finalAlbum));
+                listener.genreChangeEvent(mac, decode(finalGenre));
+                listener.yearChangeEvent(mac, decode(finalYear));
             });
         }
 
@@ -911,12 +845,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // Execute in separate thread to avoid delaying listener
                 scheduler.execute(() -> updateCustomButtons(mac));
                 // Set the track duration to 0
-                updatePlayer(new PlayerUpdateEvent() {
-                    @Override
-                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                        listener.durationEvent(mac, 0);
-                    }
-                });
+                updatePlayer(listener -> listener.durationEvent(mac, 0));
             } else if (action.equals("pause")) {
                 if (messageParts.length < 4) {
                     return;
@@ -935,22 +864,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 return;
             }
             final String value = mode;
-            updatePlayer(new PlayerUpdateEvent() {
-                @Override
-                public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                    listener.modeChangeEvent(mac, value);
-                }
-            });
+            updatePlayer(listener -> listener.modeChangeEvent(mac, value));
         }
 
         private void handleSourceChangeMessage(String mac, String rawSource) {
             String source = URLDecoder.decode(rawSource);
-            updatePlayer(new PlayerUpdateEvent() {
-                @Override
-                public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                    listener.sourceChangeEvent(mac, source);
-                }
-            });
+            updatePlayer(listener -> listener.sourceChangeEvent(mac, source));
         }
 
         private void handlePrefsetMessage(final String mac, String[] messageParts) {
@@ -963,20 +882,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 String value = messageParts[4];
                 if (function.equals("power")) {
                     final boolean power = value.equals("1");
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.powerChangeEvent(mac, power);
-                        }
-                    });
+                    updatePlayer(listener -> listener.powerChangeEvent(mac, power));
                 } else if (function.equals("volume")) {
                     final int volume = (int) Double.parseDouble(value);
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.absoluteVolumeChangeEvent(mac, volume);
-                        }
-                    });
+                    updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
                 }
             }
         }
@@ -1026,17 +935,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     }
                 }
             }
-            updatePlayersFavoritesList(favorites);
+            updatePlayer(listener -> listener.updateFavoritesListEvent(favorites));
             updateChannelFavoritesList(favorites);
-        }
-
-        private void updatePlayersFavoritesList(List<Favorite> favorites) {
-            updatePlayer(new PlayerUpdateEvent() {
-                @Override
-                public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                    listener.updateFavoritesListEvent(favorites);
-                }
-            });
         }
 
         private void updateChannelFavoritesList(List<Favorite> favorites) {
@@ -1098,12 +998,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
                 final String like = likeCommand;
                 final String unlike = unlikeCommand;
-                updatePlayer(new PlayerUpdateEvent() {
-                    @Override
-                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                        listener.buttonsChangeEvent(mac, like, unlike);
-                    }
-                });
+                updatePlayer(listener -> listener.buttonsChangeEvent(mac, like, unlike));
             }
         }
 
