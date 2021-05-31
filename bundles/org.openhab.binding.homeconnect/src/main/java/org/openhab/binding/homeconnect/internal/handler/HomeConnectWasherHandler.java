@@ -79,6 +79,20 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                         .handle(channel.get().getUID(), cache);
             }
         });
+        handlers.put(CHANNEL_WASHER_IDOS1, (channelUID, cache) -> {
+            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
+            if (channel.isPresent()) {
+                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
+                        .handle(channel.get().getUID(), cache);
+            }
+        });
+        handlers.put(CHANNEL_WASHER_IDOS2, (channelUID, cache) -> {
+            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
+            if (channel.isPresent()) {
+                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
+                        .handle(channel.get().getUID(), cache);
+            }
+        });
     }
 
     @Override

@@ -79,6 +79,14 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
                         .handle(channel.get().getUID(), cache);
             }
         });
+        // register dryer specific handlers
+        handlers.put(CHANNEL_DRYER_DRYING_TARGET, (channelUID, cache) -> {
+            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
+            if (channel.isPresent()) {
+                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
+                        .handle(channel.get().getUID(), cache);
+            }
+        });
     }
 
     @Override
@@ -103,6 +111,7 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
         handlers.put(EVENT_WASHER_SPIN_SPEED,
                 event -> getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
+        // register dryer specific event handlers
         handlers.put(EVENT_DRYER_DRYING_TARGET,
                 event -> getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
