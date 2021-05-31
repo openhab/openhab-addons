@@ -345,8 +345,25 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         // the function can be expanded with other parameters which are changed via POST /settings
         Map<String, String> params = new HashMap<>();
         params.put("away", "" + away.mode());
-        String updateURLextension = "settings";
-        updateThermostat(updateURLextension, params);
+        try {
+            String result = postData("/settings", params);
+            VenstarResponse res = gson.fromJson(result, VenstarResponse.class);
+            if (res.isSuccess()) {
+                log.debug("Updated thermostat");
+                // update our local copy until the next refresh occurs
+                infoData.setAwayMode(away);
+                // add other parameters here in the same way
+            } else {
+                log.debug("Failed to update thermostat: {}", res.getReason());
+                goOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Thermostat update failed: " + res.getReason());
+            }
+        } catch (VenstarCommunicationException | JsonSyntaxException e) {
+            log.debug("Unable to fetch info data", e);
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
+        } catch (VenstarAuthenticationException e) {
+            goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
+        }
     }
 
     private void updateControls(int heat, int cool, VenstarSystemMode mode) {
@@ -360,65 +377,12 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             params.put("cooltemp", String.valueOf(cool));
         }
         params.put("mode", "" + mode.mode());
-        String updateURLextension = "control";
-        updateThermostat(updateURLextension, params);
-    }
-
-    private void updateThermostat(String updateType, Map<String, String> params) {
-        // this function is called from either updateControl or updateSettings and sends the command to the thermostat
-        // add other API variables here if they get programmed in future
-
-        // settings
-        VenstarAwayMode away = infoData.getAway();
-
-        // controls
-        double heat = infoData.getHeattemp();
-        double cool = infoData.getCooltemp();
-        VenstarSystemMode mode = infoData.getMode();
-
-        if (updateType == "settings") {
-            if (params.containsKey("away")) {
-                String awayString = params.get("away");
-                if (awayString != null) {
-                    int awayInt = Integer.parseInt(awayString);
-                    away = VenstarAwayMode.fromInt(awayInt);
-                }
-
-            }
-
-            // other thermostat settings can be added here in the same way
-            log.debug("Updating thermostat {} with settings {}", getThing().getLabel(), params);
-        }
-        if (updateType == "control") {
-            if (params.containsKey("heattemp")) {
-                String heatString = params.get("heattemp");
-                if (heatString != null) {
-                    heat = Double.parseDouble(heatString);
-                }
-            }
-            if (params.containsKey("cooltemp")) {
-                String coolString = params.get("cooltemp");
-                if (coolString != null) {
-                    cool = Double.parseDouble(coolString);
-                }
-            }
-            if (params.containsKey("mode")) {
-                String modeString = params.get("mode");
-                if (modeString != null) {
-                    int modeInt = Integer.parseInt(modeString);
-                    mode = VenstarSystemMode.fromInt(modeInt);
-                }
-
-            }
-            // other thermostat controls can be added here in the same way
-        }
         try {
-            String result = postData("/" + updateType, params);
+            String result = postData("/control", params);
             VenstarResponse res = gson.fromJson(result, VenstarResponse.class);
             if (res.isSuccess()) {
                 log.debug("Updated thermostat");
                 // update our local copy until the next refresh occurs
-                infoData.setAwayMode(away);
                 infoData.setCooltemp(cool);
                 infoData.setHeattemp(heat);
                 infoData.setMode(mode);
