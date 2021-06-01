@@ -344,25 +344,13 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         // this function corresponds to the thermostat local API POST /settings instruction
         // the function can be expanded with other parameters which are changed via POST /settings
         Map<String, String> params = new HashMap<>();
-        params.put("away", "" + away.mode());
-        try {
-            String result = postData("/settings", params);
-            VenstarResponse res = gson.fromJson(result, VenstarResponse.class);
-            if (res.isSuccess()) {
-                log.debug("Updated thermostat");
-                // update our local copy until the next refresh occurs
-                infoData.setAwayMode(away);
-                // add other parameters here in the same way
-            } else {
-                log.debug("Failed to update thermostat: {}", res.getReason());
-                goOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Thermostat update failed: " + res.getReason());
-            }
-        } catch (VenstarCommunicationException | JsonSyntaxException e) {
-            log.debug("Unable to fetch info data", e);
-            String message = e.getMessage();
-            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
-        } catch (VenstarAuthenticationException e) {
-            goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
+        params.put("away", String.valueOf(away.mode()));
+        VenstarResponse res = updateThermostat("/settings", params);
+        if (res != null) {
+            log.debug("Updated thermostat");
+            // update our local copy until the next refresh occurs
+            infoData.setAwayMode(away);
+            // add other parameters here in the same way
         }
     }
 
@@ -376,20 +364,35 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         if (cool > 0) {
             params.put("cooltemp", String.valueOf(cool));
         }
-        params.put("mode", "" + mode.mode());
+        params.put("mode", String.valueOf(mode.mode()));
+        VenstarResponse res = updateThermostat("/control", params);
+        if (res != null) {
+            log.debug("Updated thermostat");
+            // update our local copy until the next refresh occurs
+            infoData.setCooltemp(cool);
+            infoData.setHeattemp(heat);
+            infoData.setMode(mode);
+            // add other parameters here in the same way
+        }
+    }
+
+    /**
+     * Function to send data to the thermostat and update the Thing state if there is an error
+     *
+     * @param path
+     * @param params
+     * @return VenstarResponse object or null if there was an error
+     */
+    private @Nullable VenstarResponse updateThermostat(String path, Map<String, String> params) {
         try {
-            String result = postData("/control", params);
+            String result = postData(path, params);
             VenstarResponse res = gson.fromJson(result, VenstarResponse.class);
-            if (res.isSuccess()) {
-                log.debug("Updated thermostat");
-                // update our local copy until the next refresh occurs
-                infoData.setCooltemp(cool);
-                infoData.setHeattemp(heat);
-                infoData.setMode(mode);
-                // add other parameters here in the same way
+            if (res != null && res.isSuccess()) {
+                return res;
             } else {
-                log.debug("Failed to update thermostat: {}", res.getReason());
-                goOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Thermostat update failed: " + res.getReason());
+                String reason = res == null ? "invalid response" : res.getReason();
+                log.debug("Failed to update thermostat: {}", reason);
+                goOffline(ThingStatusDetail.COMMUNICATION_ERROR, reason);
             }
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
@@ -398,6 +401,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }
+        return null;
     }
 
     private void updateData() {
