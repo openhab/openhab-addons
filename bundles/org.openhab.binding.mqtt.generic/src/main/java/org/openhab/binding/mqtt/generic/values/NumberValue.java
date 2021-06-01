@@ -151,11 +151,6 @@ public class NumberValue extends Value {
         if (min != null) {
             builder = builder.withMinimum(min);
         }
-        builder = builder.withStep(step);
-        String unitSymbol = this.unit.getSymbol();
-        if (unitSymbol != null) {
-            builder = builder.withPattern("%s " + unitSymbol.replace("%", "%%"));
-        }
-        return builder;
+        return builder.withStep(step).withPattern("%s %unit%");
     }
 }
