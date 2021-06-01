@@ -866,7 +866,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             // update available program options if update was previously delayed and remote control is enabled
             try {
                 String programKey = programOptionsDelayedUpdate;
-                if (programKey != null && "true".equals(event.getValue())) {
+                if (programKey != null && Boolean.parseBoolean(event.getValue())) {
                     logger.debug("Delayed update of options for program {}", programKey);
                     updateProgramOptionsStateDescriptions(programKey, null);
                     programOptionsDelayedUpdate = null;
