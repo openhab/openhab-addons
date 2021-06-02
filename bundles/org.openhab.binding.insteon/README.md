@@ -748,7 +748,7 @@ The format is `broadcastOnOff#X` where X is the group that you want to be able t
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
-      Type broadcastOnOff : broadcastOnOff#2
+      Type switch : broadcastOnOff#2
   }
 }
 
