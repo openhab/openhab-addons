@@ -69,15 +69,17 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     protected void handleNextDurationCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof QuantityType<?>)) {
             logger.info("Ignoring implausible non-QuantityType command for NEXT_DURATION");
             return;
         }
         QuantityType<?> quantity = (QuantityType<?>) command;
-        nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
-        updateState(channelUID, quantity);
+        quantity = quantity.toUnit(Units.SECOND);
+        if (quantity != null) {
+            nextDurationTime = quantity.toBigDecimal();
+            updateState(channelUID, quantity);
+        }
     }
 
     protected BigDecimal nextDurationValue() {

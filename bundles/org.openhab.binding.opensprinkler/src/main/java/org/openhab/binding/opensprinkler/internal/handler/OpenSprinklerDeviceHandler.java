@@ -175,13 +175,14 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     protected void handleRainDelayCommand(ChannelUID channelUID, Command command, OpenSprinklerApi api)
             throws UnauthorizedApiException, CommunicationApiException {
         if (!(command instanceof QuantityType<?>)) {
-            logger.info("Ignoring implausible non-QuantityType command for rainDelay.");
+            logger.warn("Ignoring implausible non-QuantityType command for rainDelay.");
             return;
         }
         QuantityType<?> quantity = (QuantityType<?>) command;
-        @SuppressWarnings("null")
-        BigDecimal hours = quantity.toUnit(Units.HOUR).toBigDecimal();
-        api.setRainDelay(hours.intValue());
+        quantity = quantity.toUnit(Units.HOUR);
+        if (quantity != null) {
+            api.setRainDelay(quantity.intValue());
+        }
     }
 
     @Override
