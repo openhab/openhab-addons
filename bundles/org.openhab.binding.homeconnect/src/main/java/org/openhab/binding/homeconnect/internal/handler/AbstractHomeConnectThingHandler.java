@@ -863,7 +863,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             try {
                 String programKey = event.getValue();
                 if (programKey != null) {
-                    updateProgramOptionsStateDescriptions(programKey, null);
+                    updateProgramOptionsStateDescriptions(programKey);
                 }
             } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
                 logger.debug("Could not update program options. {}", e.getMessage());
@@ -1031,7 +1031,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 Program program = apiClient.get().getSelectedProgram(getThingHaId());
 
                 if (program != null) {
-                    updateProgramOptionsStateDescriptions(program.getKey(), program.getOptions());
+                    updateProgramOptionsStateDescriptions(program.getKey());
                     processProgramOptions(program.getOptions());
 
                     return new StringType(program.getKey());
@@ -1318,7 +1318,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return mapStringType(value);
     }
 
-    protected void updateProgramOptionsStateDescriptions(String programKey, @Nullable List<Option> optionsValues)
+    protected void updateProgramOptionsStateDescriptions(String programKey)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Optional<HomeConnectApiClient> apiClient = getApiClient();
         if (apiClient.isPresent()) {
@@ -1330,43 +1330,12 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             Optional<Channel> channelDryingTarget = getThingChannel(CHANNEL_DRYER_DRYING_TARGET);
 
             if (availableProgramOptions.isEmpty()) {
-                List<Option> options;
-                if (optionsValues != null) {
-                    options = optionsValues;
-                } else if (channelSpinSpeed.isPresent() || channelTemperature.isPresent()
-                        || channelDryingTarget.isPresent()) {
-                    Program program = apiClient.get().getSelectedProgram(getThingHaId());
-                    options = program != null ? program.getOptions() : emptyList();
-                } else {
-                    options = emptyList();
-                }
-
-                channelSpinSpeed.ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                        options.stream()
-                                .filter(option -> option.getKey() != null && option.getValue() != null
-                                        && OPTION_WASHER_SPIN_SPEED.equals(option.getKey()))
-                                .map(option -> option.getValue())
-                                .map(value -> new StateOption(value == null ? "" : value,
-                                        convertWasherSpinSpeed(value == null ? "" : value)))
-                                .collect(Collectors.toList())));
-                channelTemperature
-                        .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                                options.stream()
-                                        .filter(option -> option.getKey() != null && option.getValue() != null
-                                                && OPTION_WASHER_TEMPERATURE.equals(option.getKey()))
-                                        .map(option -> option.getValue())
-                                        .map(value -> new StateOption(value == null ? "" : value,
-                                                convertWasherTemperature(value == null ? "" : value)))
-                                        .collect(Collectors.toList())));
-                channelDryingTarget
-                        .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                                options.stream()
-                                        .filter(option -> option.getKey() != null && option.getValue() != null
-                                                && OPTION_DRYER_DRYING_TARGET.equals(option.getKey()))
-                                        .map(option -> option.getValue())
-                                        .map(value -> new StateOption(value == null ? "" : value,
-                                                mapStringType(value == null ? "" : value)))
-                                        .collect(Collectors.toList())));
+                channelSpinSpeed.ifPresent(
+                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
+                channelTemperature.ifPresent(
+                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
+                channelDryingTarget.ifPresent(
+                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
             }
 
             availableProgramOptions.forEach(option -> {
