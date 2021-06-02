@@ -748,7 +748,7 @@ The format is `broadcastOnOff#X` where X is the group that you want to be able t
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
-      Type broadcastOnOff : broadcastOnOff#2
+      Type switch : broadcastOnOff#2
   }
 }
 
@@ -803,7 +803,7 @@ A typical example would be a switch configured to broadcast to a group, and one 
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
-      Type broadcastOnOff : broadcastOnOff#3 [related="AA.BB.DD"]
+      Type switch : broadcastOnOff#3 [related="AA.BB.DD"]
   }
   Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11"]
 }
