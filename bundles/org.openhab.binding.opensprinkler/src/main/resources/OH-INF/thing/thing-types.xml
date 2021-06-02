@@ -81,7 +81,7 @@
 			<channel id="sensor2" typeId="sensor2"></channel>
 			<channel id="waterlevel" typeId="waterlevel"></channel>
 			<channel id="currentDraw" typeId="currentDraw"></channel>
-			<channel id="signalStrength" typeId="signalStrength"></channel>
+			<channel id="signalStrength" typeId="system.signal-strength"></channel>
 			<channel id="flowSensorCount" typeId="flowSensorCount"></channel>
 			<channel id="programs" typeId="programs"></channel>
 			<channel id="stations" typeId="stations"></channel>
@@ -167,10 +167,10 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="signalStrength" advanced="true">
-		<item-type>Number:Power</item-type>
+	<channel-type id="system-channel" system="true" advanced="true">
+		<item-type>Number</item-type>
 		<label>Signal Strength</label>
-		<description>Wi-Fi Received Signal Strength Indicator.</description>
+		<description>Wi-Fi Signal Strength.</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>

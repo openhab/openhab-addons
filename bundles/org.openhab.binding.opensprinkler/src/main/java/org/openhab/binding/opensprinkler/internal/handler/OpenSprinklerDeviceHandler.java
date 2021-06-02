@@ -27,6 +27,7 @@ import org.openhab.binding.opensprinkler.internal.OpenSprinklerStateDescriptionP
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -84,7 +85,18 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 updateState(channel, new QuantityType<ElectricCurrent>(localAPI.currentDraw(), MILLI(Units.AMPERE)));
                 break;
             case SENSOR_SIGNAL_STRENGTH:
-                updateState(channel, new QuantityType<>(localAPI.signalStrength(), Units.DECIBEL_MILLIWATTS));
+                int rssiValue = localAPI.signalStrength();
+                if (rssiValue < -80) {
+                    updateState(channel, DecimalType.ZERO);
+                } else if (rssiValue < -70) {
+                    updateState(channel, new DecimalType(1));
+                } else if (rssiValue < -60) {
+                    updateState(channel, new DecimalType(2));
+                } else if (rssiValue < -40) {
+                    updateState(channel, new DecimalType(3));
+                } else if (rssiValue >= -40) {
+                    updateState(channel, new DecimalType(4));
+                }
                 break;
             case SENSOR_FLOW_COUNT:
                 updateState(channel, new QuantityType<Dimensionless>(localAPI.flowSensorCount(), Units.ONE));
