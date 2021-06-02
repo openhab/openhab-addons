@@ -1043,6 +1043,25 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         }));
     }
 
+    protected ChannelUpdateHandler getAndUpdateSelectedProgramStateUpdateHandler() {
+        return (channelUID, cache) -> {
+            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
+            if (channel.isPresent()) {
+                defaultSelectedProgramStateUpdateHandler().handle(channel.get().getUID(), cache);
+            }
+        };
+    }
+
+    protected ChannelUpdateHandler getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler() {
+        return (channelUID, cache) -> {
+            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
+            if (channel.isPresent()) {
+                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
+                        .handle(channel.get().getUID(), cache);
+            }
+        };
+    }
+
     protected ChannelUpdateHandler defaultActiveProgramStateUpdateHandler() {
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();

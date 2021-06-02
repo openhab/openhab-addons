@@ -17,7 +17,6 @@ import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstan
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
@@ -26,7 +25,6 @@ import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationEx
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -65,34 +63,10 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                 updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
 
         // register washer specific handlers
-        handlers.put(CHANNEL_WASHER_SPIN_SPEED, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
-                        .handle(channel.get().getUID(), cache);
-            }
-        });
-        handlers.put(CHANNEL_WASHER_TEMPERATURE, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
-                        .handle(channel.get().getUID(), cache);
-            }
-        });
-        handlers.put(CHANNEL_WASHER_IDOS1, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
-                        .handle(channel.get().getUID(), cache);
-            }
-        });
-        handlers.put(CHANNEL_WASHER_IDOS2, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler()
-                        .handle(channel.get().getUID(), cache);
-            }
-        });
+        handlers.put(CHANNEL_WASHER_SPIN_SPEED, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_TEMPERATURE, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_IDOS1, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_IDOS2, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
     }
 
     @Override
