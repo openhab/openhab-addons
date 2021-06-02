@@ -62,7 +62,8 @@ public class HomeConnectDryerHandler extends AbstractHomeConnectThingHandler {
                 updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
 
         // register dryer specific handlers
-        handlers.put(CHANNEL_DRYER_DRYING_TARGET, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_DRYER_DRYING_TARGET,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
     }
 
     @Override

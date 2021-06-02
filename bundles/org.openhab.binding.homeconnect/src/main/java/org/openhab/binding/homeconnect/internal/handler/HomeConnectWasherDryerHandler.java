@@ -63,10 +63,13 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
                 updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
 
         // register washer specific handlers
-        handlers.put(CHANNEL_WASHER_SPIN_SPEED, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
-        handlers.put(CHANNEL_WASHER_TEMPERATURE, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_SPIN_SPEED,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_TEMPERATURE,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         // register dryer specific handlers
-        handlers.put(CHANNEL_DRYER_DRYING_TARGET, getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_DRYER_DRYING_TARGET,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
     }
 
     @Override
