@@ -109,6 +109,9 @@ public class HttpHelper {
                             accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                 }
                 lastAccessToken = accessTokenResponse.getAccessToken();
+
+                LoggerFactory.getLogger(HttpHelper.class).debug("Current access token: {}",
+                        accessTokenResponse.getAccessToken());
                 return BEARER + accessTokenResponse.getAccessToken();
             } else {
                 LoggerFactory.getLogger(HttpHelper.class).error("No access token available! Fatal error.");

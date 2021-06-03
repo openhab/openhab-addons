@@ -67,6 +67,8 @@ public class HomeConnectEventSourceListener {
     private final ScheduledExecutorService scheduledExecutorService;
 
     private @Nullable LocalDateTime lastEventReceived;
+    private @Nullable LocalDateTime lastSSENotAuthorizedException;
+    private int sSENotAuthorizedExceptionCount = 0;
 
     public HomeConnectEventSourceListener(String haId, final HomeConnectEventListener eventListener,
             final HomeConnectEventSourceClient client, final ScheduledExecutorService scheduler,
@@ -137,10 +139,11 @@ public class HomeConnectEventSourceListener {
                 // When you try to reconnect, it often fails with a NotAuthorizedException (401) for the next few
                 // seconds. So we wait few seconds before trying again.
                 if (error instanceof NotAuthorizedException) {
+                    int backoffSeconds = getSSENotAuthorizedExceptionBackoffTimeInSeconds();
                     logger.debug(
-                            "Event source listener connection failure due to unauthorized exception : wait 10 seconds... haId={}",
-                            haId);
-                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 10, TimeUnit.SECONDS);
+                            "Event source listener connection failure due to unauthorized exception : wait {}} seconds... haId={}",
+                            backoffSeconds, haId);
+                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), backoffSeconds, TimeUnit.SECONDS);
                 } else {
                     eventListener.onClosed();
                 }
@@ -149,6 +152,21 @@ public class HomeConnectEventSourceListener {
             logger.error("Could not publish closed event to listener ({})!", haId, e);
         }
         stopMonitor();
+    }
+
+    private synchronized int getSSENotAuthorizedExceptionBackoffTimeInSeconds() {
+        LocalDateTime now = LocalDateTime.now();
+        int[] backoffInterval = new int[] { 20, 20, 60, 60, 120, 240, 600 };
+
+        if (lastSSENotAuthorizedException != null) {
+            long minutesSinceLastException = lastSSENotAuthorizedException.until(now, ChronoUnit.MINUTES);
+            if (minutesSinceLastException > 60) {
+                sSENotAuthorizedExceptionCount = 0; // reset counter
+            }
+        }
+
+        lastSSENotAuthorizedException = now;
+        return backoffInterval[Math.min(sSENotAuthorizedExceptionCount++, backoffInterval.length - 1)];
     }
 
     private ScheduledFuture<?> createMonitor(ScheduledExecutorService scheduler) {
