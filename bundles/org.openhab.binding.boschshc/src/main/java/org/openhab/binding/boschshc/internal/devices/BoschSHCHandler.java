@@ -197,11 +197,13 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected BridgeHandler getBridgeHandler() throws BoschSHCException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            throw new BoschSHCException(String.format("No valid bridge set for %s", this.getThing()));
+            throw new BoschSHCException(String.format("No valid bridge set for %s (%s)", this.getThing().getLabel(),
+                    this.getThing().getUID().getAsString()));
         }
         BridgeHandler bridgeHandler = (BridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            throw new BoschSHCException(String.format("Bridge of %s has no valid bridge handler", this.getThing()));
+            throw new BoschSHCException(String.format("Bridge of %s (%s) has no valid bridge handler",
+                    this.getThing().getLabel(), this.getThing().getUID().getAsString()));
         }
         return bridgeHandler;
     }
