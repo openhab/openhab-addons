@@ -50,6 +50,7 @@
 			<channel-group id="destination3" typeId="destination"/>
 			<channel-group id="destination4" typeId="destination"/>
 			<channel-group id="destination5" typeId="destination"/>
+			<channel-group id="pictures" typeId="pictures"/>
 		</channel-groups>
 
 		<representation-property>vin</representation-property>
@@ -125,4 +126,9 @@
 		<label>@text/thing-type.carnet.vehicle.group.tires.label</label>
 		<description>@text/thing-type.carnet.vehicle.group.tires.description</description>
 	</channel-group-type>
+	<channel-group-type id="pictures">
+		<label>@text/thing-type.carnet.vehicle.group.pictures.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.pictures.description</description>
+	</channel-group-type>
+
 </thing:thing-descriptions>

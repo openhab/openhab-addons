@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
+import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,11 +47,12 @@ public class CarNetToken {
     }
 
     public CarNetToken(CNApiToken token) {
-        accessToken = token.accessToken != null ? token.accessToken : "";
-        idToken = token.idToken != null ? token.idToken : "";
-        securityToken = token.securityToken != null ? token.securityToken : "";
-        refreshToken = token.refreshToken != null ? token.refreshToken : "";
-        authType = token.authType;
+        idToken = getString(token.idToken);
+        accessToken = getString(token.accessToken);
+        securityToken = getString(token.securityToken);
+        refreshToken = getString(token.refreshToken);
+        authType = getString(token.authType);
+
         if (token.validity != null) {
             setValidity(token.validity);
         }

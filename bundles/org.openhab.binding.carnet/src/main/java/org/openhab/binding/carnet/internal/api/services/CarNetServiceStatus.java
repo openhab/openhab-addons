@@ -30,7 +30,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
-import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
+import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -207,9 +207,10 @@ public class CarNetServiceStatus extends CarNetBaseService {
     }
 
     private boolean checkWindows(CNStatusField field, ChannelIdMapEntry definition) {
-        if ((definition.symbolicName.contains("WINDOWS") || definition.symbolicName.contains("SUN_ROOF_MOTOR_COVER"))
-                && definition.symbolicName.contains("STATE3") && !"3".equals(field.value)) {
+        if ((definition.symbolicName.contains("WINDOWS") || definition.symbolicName.contains("_ROOF_"))
+                && definition.symbolicName.contains("STATE3") && !"3".equals(field.value) && !"0".equals(field.value)) {
             logger.debug("{}: Window {} is not closed ({})", thingId, definition.channelName, field.value);
+            return false;
         }
         return true;
     }
@@ -218,6 +219,7 @@ public class CarNetServiceStatus extends CarNetBaseService {
         if (definition.symbolicName.contains("TIREPRESS") && definition.symbolicName.contains("CURRENT")
                 && !"1".equals(field.value)) {
             logger.debug("{}: Tire pressure for {} is not ok", thingId, definition.channelName);
+            return false;
         }
         return true;
     }
@@ -260,21 +262,21 @@ public class CarNetServiceStatus extends CarNetBaseService {
         int value = Integer.parseInt(getString(field.value));
         State state;
 
-        if (value == 0) {
+        if (value == 0 && !definition.symbolicName.toUpperCase().startsWith("STATE30")) {
             state = UnDefType.UNDEF;
         } else {
             boolean on;
-            if (definition.symbolicName.toUpperCase().contains("STATE1_")) {
+            if (definition.symbolicName.toUpperCase().startsWith("STATE1")) {
                 on = value == 1; // 1=active, 0=not active
-            } else if (definition.symbolicName.toUpperCase().contains("STATE2_")) {
+            } else if (definition.symbolicName.toUpperCase().startsWith("STATE2")) {
                 on = value == 2; // 3=open, 2=closed
-            } else if (definition.symbolicName.toUpperCase().contains("STATE3_")
-                    || definition.symbolicName.toUpperCase().contains("SAFETY_")) {
+            } else if (definition.symbolicName.toUpperCase().startsWith("STATE3")
+                    || definition.symbolicName.toUpperCase().startsWith("SAFETY")) {
                 on = value == 3; // 2=open, 3=closed
-            } else if (definition.symbolicName.toUpperCase().contains("LOCK2_")) {
+            } else if (definition.symbolicName.toUpperCase().startsWith("LOCK2")) {
                 // mark a closed lock ON
                 on = value == 2; // 2=open, 3=closed
-            } else if (definition.symbolicName.toUpperCase().contains("LOCK3_")) {
+            } else if (definition.symbolicName.toUpperCase().startsWith("LOCK3")) {
                 // mark a closed lock ON
                 on = value == 3; // 3=open, 2=closed
             } else {

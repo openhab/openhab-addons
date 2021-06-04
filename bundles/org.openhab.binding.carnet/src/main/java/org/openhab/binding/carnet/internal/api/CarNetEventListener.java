@@ -15,16 +15,20 @@ package org.openhab.binding.carnet.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CarNetApiListener} defines the callback interface from the CarNetApi class
+ * The {@link CarNetEventListener} defines the callback interface from the CarNetApi class
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public interface CarNetApiListener {
+public interface CarNetEventListener {
 
     public void onActionSent(String service, String action, String requestId);
 
     public void onActionTimeout(String service, String action, String requestId);
 
     public void onActionResult(String service, String action, String requestId, String status, String statusDetail);
+
+    public void onActionNotification(String service, String action, String message);
+
+    public void onRateLimit(int rateLimit);
 }

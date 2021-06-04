@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.CarNetTextResources;
-import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper;
-import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
+import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper;
+import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -47,12 +47,14 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class CarNetStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
-    private final CarNetIChanneldMapper channelIdMapper;
+    private final CarNetChannelIdMapper channelIdMapper;
+    private final CarNetTextResources resources;
 
     @Activate
     public CarNetStateDescriptionProvider(@Reference CarNetTextResources resources,
-            @Reference CarNetIChanneldMapper channelIdMapper) {
+            @Reference CarNetChannelIdMapper channelIdMapper) {
         this.channelIdMapper = channelIdMapper;
+        this.resources = resources;
     }
 
     @Override
@@ -63,7 +65,7 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
             return null;
         }
         String channelId = ctu.getId();
-        StateDescriptionFragmentBuilder builder = buildStateDescriptor(channelIdMapper, channelId);
+        StateDescriptionFragmentBuilder builder = buildStateDescriptor(resources, channelIdMapper, channelId);
         if (builder == null) {
             builder = original == null ? StateDescriptionFragmentBuilder.create()
                     : StateDescriptionFragmentBuilder.create(original);
@@ -77,8 +79,8 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         }
     }
 
-    public @Nullable static StateDescriptionFragmentBuilder buildStateDescriptor(CarNetIChanneldMapper channelIdMapper,
-            String channelId) {
+    public @Nullable static StateDescriptionFragmentBuilder buildStateDescriptor(CarNetTextResources resources,
+            CarNetChannelIdMapper channelIdMapper, String channelId) {
         ChannelIdMapEntry channelDef = channelIdMapper.find(channelId);
         if (channelDef == null) {
             return null;
@@ -122,7 +124,8 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         }
         if (!channelDef.options.isEmpty()) {
             for (String opt : channelDef.options.split(",")) {
-                String option = channelDef.getChannelAttribute("state.option." + opt);
+                String option = CarNetChannelIdMapper.getChannelAttribute(resources, channelDef.channelName,
+                        "state.option." + opt);
                 state.withOption(new StateOption(opt, option));
             }
         }

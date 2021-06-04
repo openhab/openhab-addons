@@ -18,9 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.CarNetApiListener;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetImageUrlsVW;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
+import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthen
     private final Logger logger = LoggerFactory.getLogger(CarNetBrandApiVW.class);
 
     public CarNetBrandApiVW(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
-            @Nullable CarNetApiListener eventListener) {
+            @Nullable CarNetEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
@@ -61,5 +62,16 @@ public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthen
     @Override
     public String updateAuthorizationUrl(String url) throws CarNetException {
         return url + "&prompt=login"; // + "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
+    }
+
+    @Override
+    public String[] getImageUrls() throws CarNetException {
+        if (config.vstatus.imageUrls.length == 0) {
+            config.vstatus.imageUrls = super.callApi("",
+                    "https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/{2}",
+                    fillAppHeaders(tokenManager.createProfileToken(config)), "getImageUrls",
+                    CarNetImageUrlsVW.class).imageUrls;
+        }
+        return config.vstatus.imageUrls;
     }
 }

@@ -34,19 +34,9 @@ public class CarNetApiConstants {
     public static final String API_STATUS_GW_ERROR = "gw.error";
 
     // URIs: {0}=brand, {1} = country, {2} = VIN, {3} = userId
-    public static final String CNAPI_URI_PROFILE = "https://customer-profile.apps.emea.vwapps.io/v1/customers/";
     public static final String CNAPI_URI_GET_TOKEN = "core/auth/v1/{0}/{1}/token";
-    public static final String CNAPI_URI_VEHICLE_MANAGEMENT = "vehicleMgmt/vehicledata/v2/{0}/{1}/vehicles/{2}";
-    public static final String CNAPI_URI_VEHICLE_LIST = "usermanagement/users/v1/{0}/{1}/vehicles";
-    public static final String CNAPI_URI_VEHICLE_DETAILS = "vehicleMgmt/vehicledata/v2/{0}/{1}/vehicles/{2}";
-    public static final String CNAPI_URI_VEHICLE_DATA = "bs/vsr/v1/{0}/{1}/vehicles/{2}/requests";
-    public static final String CNAPI_URI_CLIMATER_TIMER = "bs/departuretimer/v1/{0}/{1}/vehicles/{2}/timer";
-    public static final String CNAPI_URI_CHARGER_STATUS = "bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger";
-    public static final String CNAPI_URI_DESTINATIONS = "destinationfeedservice/mydestinations/v1/{0}/{1}/vehicles/{2}/destinations";
-    public static final String CNAPI_URI_GETTRIP = "bs/tripstatistics/v1/{0}/{1}/vehicles/{2}/tripdata/{3}?type={4}";
 
     public static final String CNAPI_VWG_MAL_1A_CONNECT = "https://mal-1a.prd.ece.vwg-connect.com/api";
-    public static final String CNAPI_VWG_MAL_3A_CONNECT = "https://mal-3a.prd.eu.dp.vwg-connect.com/api";
     public static final String CNAPI_URL_GET_SEC_REGISTER = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/register";
     public static final String CNAPI_URL_GET_SEC_TOKEN = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
     public static final String CNAPI_VW_TOKEN_URL = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
@@ -154,6 +144,7 @@ public class CarNetApiConstants {
     public static final String CNAPI_TRIP_LONG_TERM = "longTerm";
 
     public static final String CNAPI_REQUEST_SUCCESSFUL = "request_successful";
+    public static final String CNAPI_REQUEST_SUCCEEDED = "succeeded";
     public static final String CNAPI_REQUEST_IN_PROGRESS = "request_in_progress";
     public static final String CNAPI_REQUEST_NOT_FOUND = "request_not_found";
     public static final String CNAPI_REQUEST_FAIL = "request_fail";
@@ -163,4 +154,5 @@ public class CarNetApiConstants {
     public static final String CNAPI_REQUEST_FAILED = "failed";
     public static final String CNAPI_REQUEST_ERROR = "api_error";
     public static final String CNAPI_REQUEST_TIMEOUT = "timoute";
+    public static final String CNAPI_REQUEST_REJECTED = "local_rejected";
 }

@@ -71,11 +71,13 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_GENERAL_ACTION = "lastAction";
     public static final String CHANNEL_GENERAL_ACTION_STATUS = "lastActionStatus";
     public static final String CHANNEL_GENERAL_ACTION_PENDING = "lastActionPending";
+    public static final String CHANNEL_GENERAL_RATELIM = "rateLimit";
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
     public static final String CHANNEL_CONTROL_UPDATE = "update";
     public static final String CHANNEL_CONTROL_LOCK = "lock";
     public static final String CHANNEL_CONTROL_CHARGER = "charge";
+    public static final String CHANNEL_CONTROL_MAXCURRENT = "maxCurrent";
     public static final String CHANNEL_CONTROL_CLIMATER = "climater";
     public static final String CHANNEL_CONTROL_HEATSOURCE = "heaterSource";
     public static final String CHANNEL_CONTROL_WINHEAT = "windowHeat";
@@ -106,7 +108,6 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_CLIMATER_MIRROR_HEAT = "mirrorHeat";
 
     public static final String CHANNEL_GROUP_CHARGER = "charger";
-    public static final String CHANNEL_CHARGER_CURRENT = "setMaxCurrent";
     public static final String CHANNEL_CHARGER_STATUS = "chargingStatus";
     public static final String CHANNEL_CHARGER_ERROR = "errorCode";
     public static final String CHANNEL_CHARGER_PWR_STATE = "powerState";
@@ -159,6 +160,8 @@ public class CarNetBindingConstants {
     public static final String CHANNEL_GROUP_WINDOWS = "windows";
     public static final String CHANNEL_GROUP_DOORS = "doors";
     public static final String CHANNEL_GROUP_TIRES = "tires";
+    public static final String CHANNEL_GROUP_PICTURES = "pictures";
+    public static final String CHANNEL_PICTURES_IMG_PREFIX = "imageUrl";
 
     public static final String CHANNEL_GROUP_RLUHIST = "rluHistory";
     public static final String CHANNEL_RLUHIST_TS = "rluTimestamp";
@@ -188,7 +191,7 @@ public class CarNetBindingConstants {
     public static final String ITEMT_POWER = "Number:Power";
     public static final String ITEMT_ENERGY = "Number:Energy";
     public static final String ITEMT_VOLT = "Number:ElectricPotential";
-    public static final String ITEMT_AMP = "Number:ElectricPotential";
+    public static final String ITEMT_AMP = "Number:ElectricCurrent";
 
     public static final String CNAPI_BRAND_AUDI = "Audi";
     public static final String CNAPI_BRAND_VW = "VW";

@@ -39,10 +39,10 @@
 			<label>Advanced Options</label>
 		</parameter-group>
 
-        <parameter name="vin" type="text" required="false">
-            <label>Vehicle Identification Number (VIN)</label>
-            <description>This is the unique ID to identify the vehicle</description>
-        </parameter>
+		<parameter name="vin" type="text" required="false">
+			<label>Vehicle Identification Number (VIN)</label>
+			<description>This is the unique ID to identify the vehicle</description>
+		</parameter>
 		<parameter name="pin" type="text" required="false">
 			<label>Security PIN</label>
 			<context>password</context>
@@ -54,6 +54,13 @@
 			<default>true</default>
 		</parameter>
 
+		<parameter name="numRluHistory" type="integer" required="false" min="0" max="5">
+			<label>Entries in Remote Lock/Unlock History</label>
+			<description>Number of entries to fetch from the action history (if supported for the vehicle model). Newest one will
+				be first, for each entry a group is created (1..5). 0 means disable fetching this history</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="numShortTrip" type="integer" required="false" min="0" max="5">
 			<label>Entries in Short Trip history</label>
 			<description>Number of entries to fetch from the short trip history (if supported for the vehicle model). Newest one
@@ -68,13 +75,6 @@
 			<default>1</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="numRluHistory" type="integer" required="false" min="0" max="5">
-			<label>Entries in Action History</label>
-			<description>Number of entries to fetch from the action history (if supported for the vehicle model). Newest one will
-				be first, for each entry a group is created (1..5). 0 means disable fetching this history</description>
-			<default>1</default>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="numDestinations" type="integer" required="false" min="0" max="5">
 			<label>Entries in Destination History</label>
 			<description>Number of entries to fetch from the destination history (if supported for the vehicle model). Newest one
@@ -85,7 +85,7 @@
 		<parameter name="numSpeedAlerts" type="integer" required="false" min="0" max="5">
 			<label>Entries in Speed Alert History</label>
 			<description>Number of entries to fetch from the speed alert history (if supported for the vehicle model). Newest one
-				will be first,for each entry a group is created (1..10). 0 means disable fetching this history.</description>
+				will be first,for each entry a group is created (1..5). 0 means disable fetching this history.</description>
 			<default>1</default>
 			<advanced>true</advanced>
 		</parameter>

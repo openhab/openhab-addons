@@ -18,6 +18,7 @@ Some verified vehicles:
 |Skoda     |Superb      |2020|Hybrid    |DE/CH |        |     |       |           |    |   |     |    |      |                                                       |
 |Volkswagen|Arteon      |2021|          |DE/   |        |     |       |           |    |   |     |    |      |                                                       |
 |Volkswagen|eGolf       |2020|Electrical|DE/DE |no      |yes  |n/a    |           |    |   |     |    |      |                                                       |
+|Volkswagen|eGolf       |2020|Electrical|DE/DE |yes     |yes  |n/a    |n/a        |    |yes*|    |    |      |*Flash only, no honk                                   |
 |Volkswagen|eUp         |    |Electrical|DE/DE |        |     |       |           |    |   |     |    |      |                                                       |
 |Volkswagen|Passat GTE  |2016|Hybrid    |DE/NL |        |     |n/a    |n/a        |    |n/a|     |    |      |                                                       |
 |Volkswagen|Passat Va   |2016|Diesel    |DE/NL |yes     |n/a  |n/a    |           |    |   |     |    |      |                                                       |
@@ -40,6 +41,18 @@ Once the account is online the binding can query all registered vehicles and cre
 ## Binding Configuration
 
 The binding itself has no configuration options
+
+### API Throtteling
+
+Usually the vehicle sends frequent status updates to the CarNet backend.
+You have the option to request a forced update from the vehicle using the control#update channel.
+
+The CarNet API has an integrated throttling, which protects the 12V battery to get drained from frequent status refresh requests. 
+Once the limit is reached further API calls are rejected until the engine is started (which usually recharges the battery). 
+Therefore be careful by using the "Update Vehicle Status" channel, each time a request is send. 
+The channel general#rateLimit allows you to keep an eye on the remaining number of refreshes. 
+**This is not a daily limit!** 
+Therefore if your vehicle sits for a week you have apx. 7 requests per day (50 requests/7 days).
 
 ### Status Codes / Errors
 
@@ -143,7 +156,7 @@ The following channels are available depending on the vehicle type:
 |                 | ventilation             | Switch               | no      | Turn ventilation on/off                                                                    |
 |                 | duration                | Number               | no      |                                                                                            |
 |                 | charge                  | Switch               | no      | Turn charger on/off                                                                        |
-|                 | setMaxCurrent           | Number               | no      | Set the maximum current for the charging process                                           |
+|                 | maxCurrent              | Number               | no      | Set the maximum current for the charging process                                           |
 |                 | flash                   | Switch               | no      | ON: Triggers lights flashing                                                               |
 |                 | honkFlash               | Switch               | no      | ON: Treiggers Honk and Flash                                                               |
 |                 | hfDuration              | Number               | no      | Duration in seconds for Flash/Honk &amp; Flash                                             |
@@ -256,54 +269,59 @@ The following channels are available depending on the vehicle type:
 
 .things
 
+```
+Bridge carnet:volkswagen:vw   "VW" [user="<username>", password="<password>" ] {
+    Thing vehicle   WAUZZZXXXXXXXXXXX   "My Car"    [ vin="WAUZZZXXXXXXXXXXX", pin="<s-pin>", pollingInterval=15, enableAddressLookup=true ]
+}
+```
+
 .items
 
 ```
-// Audi e-tron
-Switch                      Locked               "Vehicle Locked"                      { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:general#vehicleLocked" }
-Switch                      AllWindowsClosed     "All Windows Closed"                  { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:general#windowsClosed" }
-Switch                      TirePressureOk       "Tire Pressure OK"                    { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:general#tiresOk" }
-Switch                      ParkingBrake         "Parking Brake"                       { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:general#parkingBrake" }
-Number:Length               Reichweite1          "Reichweite [%.1f %unit%]"            { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:range#totalRange" }
-Number:Length               MonthlyMilage        "Monthly Milage [%.1f %unit%]"        { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:general#monthlyMilage" }
-Number:Dimensionless        LadestandPer1        "Ladestand [%.1f %unit%]"             { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:range#chargingLevel" }
-Number:Length               Km1                  "Kilometerstand [%.1f %unit%]"        { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:general#kilometerStatus" }
-Location                    Position1            "Position"                            { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:location#position" }
-Switch                      Update1              "Update"                              { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#update" }
-Number:Temperature          OutsideTemp1         "Außentemperatur [%.1f %unit%]"       { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:general#tempOutside" }
-DateTime                    Timestamp_S          "Timestamp"                           { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripShort1#timestamp" }
-Number:Energy               AvgConsumption_S     "Avg Electrical Cons [%.1f %unit%]"   { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripShort1#avgElectricConsumption" }
-Number:Speed                AvgSpeed_S           "Avg Speed [%.1f %unit%]"             { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripShort1#avgSpeed" }
-Number:Length               TripMilage_S         "Trip Milage [%.1f %unit%]"           { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripShort1#mileage" }
-DateTime                    Timestamp_L          "Timestamp"                           { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripLong1#timestamp" }
-Number:Energy               AvgConsumption_L     "Avg Electrical Cons [%.1f %unit%]"   { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripLong1#avgElectricConsumption" }
-Number:Speed                AvgSpeed_L           "Avg Speed [%.1f %unit%]"             { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripLong1#avgSpeed" }
-Number:Length               TripMilage_L         "Trip Milage [%.1f %unit%]"           { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripLong1#mileage" }
-Number:Length               StartMilage_L        "Start Milage [%.1f %unit%]"          { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripLong1#startMileage" }
-Number:Length               OverallMilage_L      "Overall Milage [%.1f %unit%]"        { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:tripLong1#overallMileage" }
-String                      ChargingStatus       "Charging Status"                     { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#chargingStatus" }
-Number                      ChargingError        "Charging Error [%.1f %unit%]"        { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#errorCode" }
-String                      PowerState           "Power State"                         { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#powerState" }
-String                      ChargingState        "Charging State"                      { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#chargingState" }
-String                      EnergyFlow           "Energy Flow"                         { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#energyFlow" }
-Number:Dimensionless        BatteryState         "Battery State [%.1f %unit%]"         { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#batteryState" }
-Number                      RemainingTime        "Remaining Time [%.1f %unit%]"        { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#remainingTime" }
-String                      PlugState            "Plug State"                          { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#plugState" }
-String                      PlugLockState        "Plug Lock State"                     { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:charger#lockState" }
-Number:Temperature          TargetTemp           "Target Temperature [%.1f %unit%]"    { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#targetTemperature" }
-String                      HeaterSource         "Heater Source"                       { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#heaterSource" }
-String                      ClimatisationState   "Climatisation State"                 { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#climatisationState" }
-Switch                      ZoneFrontLeft        "Zone Front Left"                     { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#frontLeft" }
-Switch                      ZoneFrontRight       "Zone Front Right"                    { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#frontRight" }
-Switch                      ZoneRearLeft         "Zone Rear Left"                      { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#rearLeft" }
-Switch                      ZoneRearRight        "Zone Rear Right"                     { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#rearRight" }
-Switch                      MirrorHeating        "Mirror Heating"                      { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:climater#mirrorHeat" }
-Switch                      LockVehicle          "Lock Vehicle"                        { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#lock" }
-Switch                      ClimateControl       "Climate ON/OFF"                      { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#climater" }
-Switch                      WindowHeater         "Window Heater ON/OFF"                { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#windowHeat" }
-Switch                      ChargerSwitch        "Charging ON/OFF"                     { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#charger" }
-Switch                      PreHeater            "Pre-Heater ON/OFF"                   { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#preHeater" }
-Number                      Current_Speed        "Current Speed [%.1f %unit%]"         { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:status#currentSpeed" }
+Switch                      Locked               "Vehicle Locked"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#vehicleLocked" }
+Switch                      AllWindowsClosed     "All Windows Closed"                  { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#windowsClosed" }
+Switch                      TirePressureOk       "Tire Pressure OK"                    { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#tiresOk" }
+Switch                      ParkingBrake         "Parking Brake"                       { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#parkingBrake" }
+Number:Length               Reichweite1          "Reichweite [%.1f %unit%]"            { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:range#totalRange" }
+Number:Length               MonthlyMilage        "Monthly Milage [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#monthlyMilage" }
+Number:Dimensionless        LadestandPer1        "Ladestand [%.1f %unit%]"             { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:range#chargingLevel" }
+Number:Length               Km1                  "Kilometerstand [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#kilometerStatus" }
+Location                    Position1            "Position"                            { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:location#position" }
+Switch                      Update1              "Update"                              { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#update" }
+Number:Temperature          OutsideTemp1         "Außentemperatur [%.1f %unit%]"       { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#tempOutside" }
+DateTime                    Timestamp_S          "Timestamp"                           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#timestamp" }
+Number:Energy               AvgConsumption_S     "Avg Electrical Cons [%.1f %unit%]"   { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#avgElectricConsumption" }
+Number:Speed                AvgSpeed_S           "Avg Speed [%.1f %unit%]"             { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#avgSpeed" }
+Number:Length               TripMilage_S         "Trip Milage [%.1f %unit%]"           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#mileage" }
+DateTime                    Timestamp_L          "Timestamp"                           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#timestamp" }
+Number:Energy               AvgConsumption_L     "Avg Electrical Cons [%.1f %unit%]"   { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#avgElectricConsumption" }
+Number:Speed                AvgSpeed_L           "Avg Speed [%.1f %unit%]"             { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#avgSpeed" }
+Number:Length               TripMilage_L         "Trip Milage [%.1f %unit%]"           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#mileage" }
+Number:Length               StartMilage_L        "Start Milage [%.1f %unit%]"          { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#startMileage" }
+Number:Length               OverallMilage_L      "Overall Milage [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#overallMileage" }
+String                      ChargingStatus       "Charging Status"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#chargingStatus" }
+Number                      ChargingError        "Charging Error [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#errorCode" }
+String                      PowerState           "Power State"                         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#powerState" }
+String                      ChargingState        "Charging State"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#chargingState" }
+String                      EnergyFlow           "Energy Flow"                         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#energyFlow" }
+Number:Dimensionless        BatteryState         "Battery State [%.1f %unit%]"         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#batteryState" }
+Number                      RemainingTime        "Remaining Time [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#remainingTime" }
+String                      PlugState            "Plug State"                          { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#plugState" }
+String                      PlugLockState        "Plug Lock State"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#lockState" }
+Number:Temperature          TargetTemp           "Target Temperature [%.1f %unit%]"    { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#targetTemperature" }
+String                      HeaterSource         "Heater Source"                       { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#heaterSource" }
+String                      ClimatisationState   "Climatisation State"                 { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#climatisationState" }
+Switch                      ZoneFrontLeft        "Zone Front Left"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#frontLeft" }
+Switch                      ZoneFrontRight       "Zone Front Right"                    { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#frontRight" }
+Switch                      ZoneRearLeft         "Zone Rear Left"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#rearLeft" }
+Switch                      ZoneRearRight        "Zone Rear Right"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#rearRight" }
+Switch                      MirrorHeating        "Mirror Heating"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#mirrorHeat" }
+Switch                      LockVehicle          "Lock Vehicle"                        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#lock" }
+Switch                      ClimateControl       "Climate ON/OFF"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#climater" }
+Switch                      WindowHeater         "Window Heater ON/OFF"                { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#windowHeat" }
+Switch                      ChargerSwitch        "Charging ON/OFF"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#charger" }
+Switch                      PreHeater            "Pre-Heater ON/OFF"                   { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#preHeater" }
+Number                      Current_Speed        "Current Speed [%.1f %unit%]"         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:status#currentSpeed" }
 ```
 
 .sitemap

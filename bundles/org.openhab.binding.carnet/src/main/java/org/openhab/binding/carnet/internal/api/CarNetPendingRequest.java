@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CarNetPendingRequest} holds the information for queued requests
+ * {@link CarNetPendingRequest} handles queueing for service requests and status updates
  *
  * @author Markus Michels - Initial contribution
  */
@@ -73,6 +73,14 @@ public class CarNetPendingRequest {
                     this.status = rsp.action.actionState;
                 }
                 checkUrl = "bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions/" + requestId;
+                break;
+            case CNAPI_SERVICE_REMOTE_BATTERY_CHARGE:
+                // {"action":{"settings":{"maxChargeCurrent":5},"actionState":"queued","actionId":64876731,"type":"setSettings"}}
+                if (rsp.action != null) {
+                    this.requestId = rsp.action.actionId;
+                    this.status = rsp.action.actionState;
+                }
+                checkUrl = "bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger/actions/" + requestId;
                 break;
             case CNAPI_SERVICE_REMOTE_HONK_AND_FLASH:
                 if (rsp.honkAndFlashRequest != null) {

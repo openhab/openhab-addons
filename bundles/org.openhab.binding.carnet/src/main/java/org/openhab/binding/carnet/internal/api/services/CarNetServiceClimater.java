@@ -29,7 +29,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNe
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData.CNClimaterElementState.CarNetClimaterZoneStateList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData.CarNetClimaterZoneState;
-import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
+import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
@@ -108,9 +108,6 @@ public class CarNetServiceClimater extends CarNetBaseService {
                             getString(cs.status.vehicleParkingClockStatusData.vehicleParkingClock.content));
                 }
             }
-
-            String timer = api.getClimaterTimer();
-
         } catch (IncommensurableException e) {
             logger.debug("IncommensurableException ignored");
         }

@@ -29,6 +29,8 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleSta
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -36,16 +38,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CarNetIChanneldMapper} maps status value IDs from the API to channel definitions.
+ * The {@link CarNetChannelIdMapper} maps status value IDs from the API to channel definitions.
  *
  * @author Markus Michels - Initial contribution
  * @author Lorenzo Bernardi - Additional contribution
  *
  */
 @NonNullByDefault
-@Component(service = CarNetIChanneldMapper.class)
-public class CarNetIChanneldMapper {
-    private final Logger logger = LoggerFactory.getLogger(CarNetIChanneldMapper.class);
+@Component(service = CarNetChannelIdMapper.class)
+public class CarNetChannelIdMapper {
+    private final Logger logger = LoggerFactory.getLogger(CarNetChannelIdMapper.class);
     private static final Map<String, ChannelIdMapEntry> channelDefinitions = new LinkedHashMap<>();
     private final CarNetTextResources resources;
 
@@ -57,6 +59,7 @@ public class CarNetIChanneldMapper {
         public String channelName = "";
         public String itemType = "";
         public String groupName = "";
+        public String groupPrefix = "";
 
         public boolean disabled = false;
         public boolean advanced = false;
@@ -69,7 +72,8 @@ public class CarNetIChanneldMapper {
         public int step = -1;
         public String pattern = "";
 
-        public ChannelIdMapEntry(CarNetTextResources resources) {
+        @Activate
+        public ChannelIdMapEntry(@Reference CarNetTextResources resources) {
             this.resources = resources;
         }
 
@@ -77,64 +81,88 @@ public class CarNetIChanneldMapper {
             return !groupName.isEmpty() ? groupName : CHANNEL_GROUP_STATUS;
         }
 
-        public String getLabel() {
-            String label = getChannelAttribute("label");
+        public String getGroupIndex() {
+            if (groupName.isEmpty()) {
+                return "";
+            }
             char index = groupName.charAt(groupName.length() - 1);
-            return Character.isDigit(index) ? label : label + " " + index;
+            return Character.isDigit(index) ? String.valueOf(index) : "";
+        }
+
+        public ChannelGroupTypeUID getGroupTypeUID() {
+            return new ChannelGroupTypeUID(BINDING_ID, groupName);
+        }
+
+        public ChannelTypeUID getChannelTypeUID() {
+            String groupIndex = ""; // getGroupIndex();
+            return new ChannelTypeUID(BINDING_ID, groupIndex.isEmpty() ? channelName : channelName + groupIndex);
+        }
+
+        public String getLabel() {
+            String key = channelName;
+            Character index = channelName.charAt(key.length() - 1);
+            if (Character.isDigit(index)) {
+                key = key.substring(0, key.length() - 1); // ignore channel index for lookup
+            }
+            String label = getChannelAttribute(resources, key, "label");
+            if (label.isEmpty()) {
+                throw new IllegalArgumentException("Missing label in channel definition " + channelName);
+            }
+            if (groupName.isEmpty()) {
+                return label;
+            }
+            // return groupPrefix.isEmpty() ? label : groupPrefix + getGroupIndex() + "_" + label;
+            if (getGroupIndex().isEmpty()) {
+                return label;
+            }
+            // return groupPrefix + getGroupIndex() + "_" + label;
+            return groupName + "_" + label.replaceAll("[ \\(\\)]", "");
         }
 
         public String getDescription() {
-            return getChannelAttribute("description");
+            return getChannelAttribute(resources, channelName, "description");
         }
 
         public String getAdvanced() {
-            return getChannelAttribute("advanced");
+            return getChannelAttribute(resources, channelName, "advanced");
         }
 
         public String getReadOnly() {
-            return getChannelAttribute("readonly");
+            return getChannelAttribute(resources, channelName, "readonly");
         }
 
         public Integer getMin() {
-            String value = getChannelAttribute("min");
+            String value = getChannelAttribute(resources, channelName, "min");
             return !value.isEmpty() ? Integer.parseInt(value) : -1;
         }
 
         public Integer getMax() {
-            String value = getChannelAttribute("maxm" + "");
+            String value = getChannelAttribute(resources, channelName, "max");
             return !value.isEmpty() ? Integer.parseInt(value) : -1;
         }
 
         public Integer getStep() {
-            String value = getChannelAttribute("step");
+            String value = getChannelAttribute(resources, channelName, "step");
             return !value.isEmpty() ? Integer.parseInt(value) : -1;
         }
 
         public String getOptions() {
-            return getChannelAttribute("options");
+            return getChannelAttribute(resources, channelName, "options");
         }
 
         public String getPattern() {
-            return getChannelAttribute("pattern");
-        }
-
-        /**
-         * Return attribute (label, description etc.) from properties file
-         *
-         * @param attribute Attribute to lookup from i18n properties
-         * @return Returns the attribute value as defined in the properties file
-         */
-        public String getChannelAttribute(String attribute) {
-            String key = "channel-type.carnet." + channelName + "." + attribute;
-            String value = resources.getText(key);
-            return !value.equals(key) ? value : "";
+            return getChannelAttribute(resources, channelName, "pattern");
         }
     }
 
     @Activate
-    public CarNetIChanneldMapper(@Reference CarNetTextResources resources) {
+    public CarNetChannelIdMapper(@Reference CarNetTextResources resources) {
         this.resources = resources;
         initializeChannelTable();
+    }
+
+    public Map<String, ChannelIdMapEntry> getDefinitions() {
+        return channelDefinitions;
     }
 
     /**
@@ -145,11 +173,12 @@ public class CarNetIChanneldMapper {
      */
     public @Nullable ChannelIdMapEntry find(String id) {
         for (Map.Entry<String, ChannelIdMapEntry> e : channelDefinitions.entrySet()) {
-            if (e.getKey().equalsIgnoreCase(id)) {
+            if (id.startsWith(e.getKey())) {
                 return e.getValue();
             }
             ChannelIdMapEntry v = e.getValue();
-            if (v.symbolicName.equalsIgnoreCase(id) || v.channelName.equalsIgnoreCase(id)) {
+            if ((!v.symbolicName.isEmpty() && id.startsWith(v.symbolicName))
+                    || (!v.channelName.isEmpty() && id.startsWith(v.channelName))) {
                 return v;
             }
         }
@@ -235,6 +264,7 @@ public class CarNetIChanneldMapper {
         entry.id = id;
         entry.symbolicName = name;
         entry.groupName = group;
+        entry.groupPrefix = getGroupAttribute(resources, entry.groupName, "prefix");
         entry.channelName = channel;
         entry.itemType = itemType;
         if (ITEMT_PERCENT.equals(itemType) && (unit == null)) {
@@ -257,6 +287,27 @@ public class CarNetIChanneldMapper {
         return entry;
     }
 
+    public static String getGroupAttribute(CarNetTextResources resources, String groupName, String attribute) {
+        int len = groupName.length() - 1;
+        char index = groupName.charAt(len);
+        String groupType = Character.isDigit(index) ? groupName.substring(0, len) : groupName;
+        String key = "thing-type." + BINDING_ID + ".vehicle.group." + groupType + "." + attribute;
+        String value = resources.getText(key);
+        return !value.equals(key) ? value : "";
+    }
+
+    /**
+     * Return attribute (label, description etc.) from properties file
+     *
+     * @param attribute Attribute to lookup from i18n properties
+     * @return Returns the attribute value as defined in the properties file
+     */
+    public static String getChannelAttribute(CarNetTextResources resources, String channelName, String attribute) {
+        String key = "channel-type." + BINDING_ID + "." + channelName + "." + attribute;
+        String value = resources.getText(key);
+        return !value.equals(key) ? value : "";
+    }
+
     /**
      * The table provides the mapping from the CarNet Datapoint Id to channel definition.
      * Channel label and description is retrieved from i18 to support multi-language resources
@@ -265,7 +316,7 @@ public class CarNetIChanneldMapper {
         // Status
         add("KILOMETER_STATUS", "0x0101010002", "kilometerStatus", ITEMT_DISTANCE, CHANNEL_GROUP_STATUS, KILOMETRE);
         add("TEMPERATURE_OUTSIDE", "0x0301020001", "tempOutside", ITEMT_TEMP, CHANNEL_GROUP_STATUS, SIUnits.CELSIUS);
-        add("STATE1_PARKING_LIGHT", "0x0301010001", "parkingLight", ITEMT_SWITCH);
+        add("STATE3_PARKING_LIGHT", "0x0301010001", "parkingLight", ITEMT_SWITCH);
         add("STATE30_PARKING_BRAKE", "0x0301030001", "parkingBrake", ITEMT_SWITCH);
         add("STATE3_SPOILER", "0x0301050011");
         add("POS_SPOILER", "0x0301050012");

@@ -191,6 +191,10 @@ public class CarNetTokenManager {
                 throw new CarNetSecurityException(
                         "Login failed due to invalid password, locked account or API throtteling!");
             }
+            if (url.contains("&updated=dataprivacy")) {
+                throw new CarNetSecurityException(
+                        "Login failed: New Terms&Conditions/Data Privacy Policy has to be accepted, login to Web portal");
+            }
 
             // Now we need to follow multiple redirects, required data is fetched from the redirect URLs
             // String userId = "";
@@ -240,7 +244,6 @@ public class CarNetTokenManager {
                 }
                 throw new CarNetSecurityException("Login/OAuth failed, didn't got accessToken/idToken");
             }
-
             // In this case the id and access token were returned by the login process
             logger.trace("{}: OAuth successful, idToken/userId was retrieved", config.vehicle.vin);
             tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
@@ -323,6 +326,15 @@ public class CarNetTokenManager {
         return tokens.idToken.idToken;
     }
 
+    public String createProfileToken(CarNetCombinedConfig config) throws CarNetException {
+        TokenSet tokens = getTokenSet(config.tokenSetId);
+        if (!tokens.idToken.isExpired()) {
+            // Token is still valid
+            createIdToken(config);
+        }
+        return tokens.idToken.accessToken;
+    }
+
     /**
      * Create security token required for priviledged functions like lock/unlock.
      *
@@ -335,7 +347,7 @@ public class CarNetTokenManager {
     public String createSecurityToken(CarNetCombinedConfig config, String service, String action)
             throws CarNetException {
         if (config.vehicle.pin.isEmpty()) {
-            throw new CarNetException("No SPIN is confirgured, can't perform authentication");
+            throw new CarNetSecurityException("No SPIN is confirgured, can't perform authentication");
         }
 
         // First check for a valid token
@@ -371,7 +383,7 @@ public class CarNetTokenManager {
         // https://mal-3a.prd.eu.dp.vwg-connect.com/api/rolesrights/operationlist/v3/vehicles/WAUZZZGE0MB027113
 
         // "https://mal-3a.prd.eu.dp.vwg-connect.com/api/rolesrights/authorization/v2/vehicles/"
-        String url = config.vehicle.rolesRightsUrl + "/rolesrights/authorization/v2/vehicles/"
+        String url = config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/vehicles/"
                 + config.vehicle.vin.toUpperCase() + "/services/" + service + "/operations/" + action
                 + "/security-pin-auth-requested";
         String json = http.get(url, headers, accessToken);
@@ -387,7 +399,7 @@ public class CarNetTokenManager {
         pinAuth.securityPinAuthentication.securityPin.securityPinHash = pinHash;
         // "https://mal-3a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/security-pin-auth-completed",
         String data = gson.toJson(pinAuth);
-        json = http.post(config.vehicle.rolesRightsUrl + "/rolesrights/authorization/v2/security-pin-auth-completed",
+        json = http.post(config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/security-pin-auth-completed",
                 headers, data);
         CNApiToken t = fromJson(gson, json, CNApiToken.class);
         CarNetToken securityToken = new CarNetToken(t);

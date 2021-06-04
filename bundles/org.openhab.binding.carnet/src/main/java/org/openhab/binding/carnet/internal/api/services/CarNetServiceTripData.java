@@ -26,7 +26,7 @@ import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetTripData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetTripData.CarNetTripDataList.CarNetTripDataEntry;
-import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
+import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.core.library.types.DecimalType;
@@ -50,17 +50,19 @@ public class CarNetServiceTripData extends CarNetBaseService {
 
     @Override
     public boolean isEnabled() {
-        return (getConfig().vehicle.numShortTrip > 0 || getConfig().vehicle.numLongTrip > 0) && super.isEnabled();
+        CarNetCombinedConfig config = getConfig();
+        return (config.vehicle.numShortTrip > 0 || config.vehicle.numLongTrip > 0) && super.isEnabled();
     }
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
         try {
+            CarNetCombinedConfig config = getConfig();
             boolean updated = false;
-            if (getConfig().vehicle.numShortTrip > 0) {
+            if (config.vehicle.numShortTrip > 0) {
                 updated |= update("shortTerm", channels);
             }
-            if (getConfig().vehicle.numLongTrip > 0) {
+            if (config.vehicle.numLongTrip > 0) {
                 updated |= update("longTerm", channels);
             }
             return updated;

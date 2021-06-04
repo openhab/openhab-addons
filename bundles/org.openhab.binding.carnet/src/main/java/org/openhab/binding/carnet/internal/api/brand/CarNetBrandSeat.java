@@ -15,8 +15,8 @@ package org.openhab.binding.carnet.internal.api.brand;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.CarNetApiListener;
 import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
+import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 
@@ -28,7 +28,7 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 @NonNullByDefault
 public class CarNetBrandSeat extends CarNetApiBase {
     public CarNetBrandSeat(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
-            @Nullable CarNetApiListener eventListener) {
+            @Nullable CarNetEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 

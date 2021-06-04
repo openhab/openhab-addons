@@ -61,6 +61,41 @@ public class CarNetApiGSonDTO {
         }
     }
 
+    public static class CarNetJwtToken {
+        /*
+         * "at_hash":"9wYmNBTSKQ8bJV7F2f4otQ",
+         * "sub":"c3ab56e9-XXXX-41c8-XXXX-XXXXXXXX",
+         * "email_verified":true,
+         * "cor":"DE",
+         * "iss":"https:\/\/identity.vwgroup.io",
+         * "jtt":"id_token",
+         * "type":"identity",
+         * "nonce":"MTYyMjMxNzA0MTQ5OA==",
+         * "lee":[
+         * "AUDI"
+         * ],
+         * "aud":[
+         * "09b6cbec-cd19-4589-82fd-363dfa8c24da@apps_vw-dilab_com",
+         * "VWGMBB01DELIV1",
+         * "https:\/\/api.vas.eu.dp15.vwg-connect.com",
+         * "https:\/\/api.vas.eu.wcardp.io"
+         * ],
+         * "acr":"https:\/\/identity.vwgroup.io\/assurance\/loa-2",
+         * "updated_at":1617052457793,
+         * "aat":"identitykit",
+         * "exp":1622320642,
+         * "iat":1622317042,
+         * "jti":"1cb4abb3-497d-4f46-a300-669223f830ee",
+         * "email":"user@me.com"
+         *
+         */
+        public String sub;
+        public Boolean email_verified;
+        public String cor;
+        public String type;
+        public String nonce;
+    }
+
     public static class CarNetSecurityPinAuthInfo {
         public static class CNSecurityPinAuthInfo {
             public class CNSecurityPinTransmission {
@@ -74,6 +109,20 @@ public class CarNetApiGSonDTO {
         }
 
         public CNSecurityPinAuthInfo securityPinAuthInfo;
+    }
+
+    public static class CarNetPersonalData {
+        // {"businessIdentifierType":"BUSINESS_IDENTIFIER_TYPE:MBB_ID","businessIdentifierValue":"dYeJ7CoMzqV0obHyRZJSXXXXXXXX"}
+        public String businessIdentifierType;
+        public String businessIdentifierValue;
+    }
+
+    public static class CarNetMbbStatus {
+        // {"profileCompleted":true,"spinDefined":false,"carnetEnrollmentCountry":"DE","mbbUserId":"dYeJ7CoMzqV0obHyRZJSXXXXXXXX"}
+        public Boolean profileCompleted = false;
+        public Boolean spinDefined = false;
+        public String carnetEnrollmentCountry = "";
+        public String mbbUserId = "";
     }
 
     public static class CarNetSecurityPinAuthentication {
@@ -968,117 +1017,118 @@ public class CarNetApiGSonDTO {
         CarNetHeaterVentilationStatus statusResponse;
     }
 
-    public static class CNVehicleSpec {
-        public class CarNetVehicleSpec {
-            public class CarNetUserVehicles {
-                public class CNUserRole {
-                    String role;
-                }
-
-                public class CarNetVehicle {
-                    public class CNVehicleCore {
-                        public String commissionNumber;
-                        public String modelYear;
-                        public String exteriorColorId;
-                    }
-
-                    public class CNVehicleClassification {
-                        public String driveTrain;
-                        public String modelRange;
-                    }
-
-                    public class CarNetVehicleMedia {
-                        public String shortName;
-                        public String longName;
-                        public String exteriorColor;
-                        public String interiorColor;
-                    }
-
-                    public class CarNetVehiclePicture {
-                        public String mediaType;
-                        public String url;
-                    }
-
-                    public class CNVehicleHifa {
-                        public String factoryPickupDateFrom;
-                        public String factoryPickupDateTill;
-                        public String fbDestination;
-                    }
-
-                    public class CNVehiclePdw {
-                        Boolean pdwVehicle;
-                    }
-
-                    public class CarNetEquipment {
-                        public String code;
-                        public String name;
-                        public String categoryId;
-                        public String categoryName;
-                        public String subCategoryId;
-                        public String subCategoryName;
-                        public String teaserImage;
-                        public Boolean standard;
-                    }
-
-                    public class CarNetTechSpec {
-                        public String key;
-                        public String name;
-                        public String value;
-                        public String groupId;
-                        public String groupName;
-                    }
-
-                    public class CNConsumption {
-                        public class CNWltps {
-                            public class CNAttribute {
-                                public String attributeId;
-                                public String scaleUnit;
-                                public String value;
-                            }
-
-                            public String attributeGroup;
-                            public ArrayList<CNAttribute> attributes;
-                        }
-
-                        public class CNTechnicalSpecification {
-                            public String key;
-                            public String name;
-                            public String value;
-                            public String unit;
-                            public String groupId;
-                            public String groupName;
-                        }
-
-                        public ArrayList<CNWltps> wltps;
-                        public ArrayList<CNTechnicalSpecification> technicalSpecifications;
-                    }
-
-                    public CNVehicleCore core;
-                    public CNVehicleClassification classification;
-                    public CarNetVehicleMedia media;
-                    public ArrayList<CarNetVehiclePicture> renderPictures;
-                    public CNVehicleHifa hifa;
-                    public CNVehiclePdw pdw;
-                    public ArrayList<CarNetEquipment> equipments;
-                    public ArrayList<CarNetTechSpec> techSpecs;
-                    public CNConsumption consumption;
-                }
-
-                public String csid;
-                public String vin;
-                public Boolean owner;
-                public String type;
-                public String devicePlatform;
-                public Boolean mbbConnect;
-                public CNUserRole userRole;
-            }
-
-            public ArrayList<CarNetUserVehicles> userVehicles;
-        }
-
-        public CarNetVehicleSpec data;
-    }
-
+    /*
+     * public static class CNVehicleSpec {
+     * public class CarNetVehicleSpec {
+     * public class CarNetUserVehicles {
+     * public class CNUserRole {
+     * String role;
+     * }
+     * 
+     * public class CarNetVehicle {
+     * public class CNVehicleCore {
+     * public String commissionNumber;
+     * public String modelYear;
+     * public String exteriorColorId;
+     * }
+     * 
+     * public class CNVehicleClassification {
+     * public String driveTrain;
+     * public String modelRange;
+     * }
+     * 
+     * public class CarNetVehicleMedia {
+     * public String shortName;
+     * public String longName;
+     * public String exteriorColor;
+     * public String interiorColor;
+     * }
+     * 
+     * public class CarNetVehiclePicture {
+     * public String mediaType;
+     * public String url;
+     * }
+     * 
+     * public class CNVehicleHifa {
+     * public String factoryPickupDateFrom;
+     * public String factoryPickupDateTill;
+     * public String fbDestination;
+     * }
+     * 
+     * public class CNVehiclePdw {
+     * Boolean pdwVehicle;
+     * }
+     * 
+     * public class CarNetEquipment {
+     * public String code;
+     * public String name;
+     * public String categoryId;
+     * public String categoryName;
+     * public String subCategoryId;
+     * public String subCategoryName;
+     * public String teaserImage;
+     * public Boolean standard;
+     * }
+     * 
+     * public class CarNetTechSpec {
+     * public String key;
+     * public String name;
+     * public String value;
+     * public String groupId;
+     * public String groupName;
+     * }
+     * 
+     * public class CNConsumption {
+     * public class CNWltps {
+     * public class CNAttribute {
+     * public String attributeId;
+     * public String scaleUnit;
+     * public String value;
+     * }
+     * 
+     * public String attributeGroup;
+     * public ArrayList<CNAttribute> attributes;
+     * }
+     * 
+     * public class CNTechnicalSpecification {
+     * public String key;
+     * public String name;
+     * public String value;
+     * public String unit;
+     * public String groupId;
+     * public String groupName;
+     * }
+     * 
+     * public ArrayList<CNWltps> wltps;
+     * public ArrayList<CNTechnicalSpecification> technicalSpecifications;
+     * }
+     * 
+     * public CNVehicleCore core;
+     * public CNVehicleClassification classification;
+     * public CarNetVehicleMedia media;
+     * public ArrayList<CarNetVehiclePicture> renderPictures;
+     * public CNVehicleHifa hifa;
+     * public CNVehiclePdw pdw;
+     * public ArrayList<CarNetEquipment> equipments;
+     * public ArrayList<CarNetTechSpec> techSpecs;
+     * public CNConsumption consumption;
+     * }
+     * 
+     * public String csid;
+     * public String vin;
+     * public Boolean owner;
+     * public String type;
+     * public String devicePlatform;
+     * public Boolean mbbConnect;
+     * public CNUserRole userRole;
+     * }
+     * 
+     * public ArrayList<CarNetUserVehicles> userVehicles;
+     * }
+     * 
+     * public CarNetVehicleSpec data;
+     * }
+     */
     public static class CNRequestStatus {
         // {"requestStatusResponse":{"vin":"WAUZZZF21LN046449","status":"request_not_found"}}
         // {"requestStatusResponse":{"vin":"WAUZZZF21LN046449","status":"request_fail","error":200}}
@@ -1100,5 +1150,17 @@ public class CarNetApiGSonDTO {
         public CarNetRequestStatus requestStatusResponse;
         public CarNetActionStatus action;
         public CNHonkFlashResponse.CarNetHonkFlashResponse.CNFonkFlashStatusCode status;
+    }
+
+    public static class CarNetImageUrlsVW {
+        public static class CNImageUrl {
+            public String url;
+            public String viewDirection;
+            public String angle;
+        }
+
+        public String service;
+        public String[] imageUrls;
+        public ArrayList<CNImageUrl> images;
     }
 }

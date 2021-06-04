@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -56,13 +57,15 @@ public class CarNetHttpClient {
     private final HttpClient httpClient;
     private CarNetCombinedConfig config = new CarNetCombinedConfig();
     private HttpFields responseHeaders = new HttpFields();
+    private @Nullable CarNetEventListener eventListener;
 
     public CarNetHttpClient() {
         this.httpClient = new HttpClient();
     }
 
-    public CarNetHttpClient(HttpClient httpClient) {
+    public CarNetHttpClient(HttpClient httpClient, @Nullable CarNetEventListener eventListener) {
         this.httpClient = httpClient;
+        this.eventListener = eventListener;
     }
 
     public void setConfig(CarNetCombinedConfig config) {
@@ -174,12 +177,21 @@ public class CarNetHttpClient {
             int code = contentResponse.getStatus();
             String response = contentResponse.getContentAsString().replaceAll("[\r\n\t]", "");
             responseHeaders = contentResponse.getHeaders();
+            if (responseHeaders.containsKey("X-RateLimit-Remaining")) {
+                int rateLimit = Integer.parseInt(responseHeaders.get("X-RateLimit-Remaining"));
+                apiResult.rateLimit = rateLimit;
+                logger.debug("{}: Remaining rate limit = {}", config.vehicle.vin, rateLimit);
+                if (eventListener != null) {
+                    eventListener.onRateLimit(rateLimit);
+                }
+            }
 
             // validate response, API errors are reported as Json
             logger.trace("HTTP Response: {}", response);
             logger.trace("  Headers: \n{}", responseHeaders);
             String loc = getRedirect();
             switch (code) {
+                case HttpStatus.UNAUTHORIZED_401:
                 case HttpStatus.FORBIDDEN_403:
                 case HttpStatus.METHOD_NOT_ALLOWED_405:
                     throw new CarNetSecurityException("Forbidden", apiResult);
@@ -349,8 +361,8 @@ public class CarNetHttpClient {
      * @throws CarNetException
      */
     public String getBaseUrl() throws CarNetException {
-        if (!config.vehicle.apiUrlPrefix.isEmpty()) {
-            return config.vehicle.apiUrlPrefix;
+        if (!config.vstatus.apiUrlPrefix.isEmpty()) {
+            return config.vstatus.apiUrlPrefix;
         }
         if (!config.api.apiDefaultUrl.isEmpty()) {
             return config.api.apiDefaultUrl;

@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper;
+import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.openhab.binding.carnet.internal.discovery.CarNetDiscoveryService;
 import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
@@ -55,7 +55,7 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(CarNetHandlerFactory.class);
 
     private final CarNetTextResources resources;
-    private final CarNetIChanneldMapper channelIdMapper;
+    private final CarNetChannelIdMapper channelIdMapper;
     private final CarNetTokenManager tokenManager;
     private final CarNetChannelTypeProvider channelTypeProvider;
     private final ZoneId zoneId;
@@ -63,7 +63,7 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public CarNetHandlerFactory(@Reference TimeZoneProvider tzProvider, @Reference CarNetTextResources resources,
-            @Reference CarNetIChanneldMapper channelIdMapper, @Reference CarNetTokenManager tokenManager,
+            @Reference CarNetChannelIdMapper channelIdMapper, @Reference CarNetTokenManager tokenManager,
             @Reference CarNetChannelTypeProvider channelTypeProvider) {
         this.resources = resources;
         this.channelIdMapper = channelIdMapper;

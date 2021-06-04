@@ -35,7 +35,7 @@ import org.openhab.binding.carnet.internal.CarNetUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleList;
-import org.openhab.binding.carnet.internal.api.CarNetApiListener;
+import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiAudi;
@@ -161,7 +161,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         for (String vin : vehices.userVehicles.vehicle) {
             config.vehicle.vin = vin;
             api.setConfig(config);
-            config.vehicle.apiUrlPrefix = api.getApiUrl();
+            config.vstatus.apiUrlPrefix = api.getApiUrl();
             api.setConfig(config);
             CarNetVehicleDetails details = api.getVehicleDetails(vin);
             vehicleList.add(new CarNetVehicleInformation(details));
@@ -202,8 +202,8 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         logger.debug("{}: Undefined command '{}' for channel {}", thingId, command, channelId);
     }
 
-    public CarNetApiBase createApi(CarNetCombinedConfig config, @Nullable CarNetApiListener apiListener) {
-        CarNetHttpClient httpClient = createHttpClient();
+    public CarNetApiBase createApi(CarNetCombinedConfig config, @Nullable CarNetEventListener apiListener) {
+        CarNetHttpClient httpClient = createHttpClient(apiListener);
         switch (config.account.brand) {
             case CNAPI_BRAND_AUDI:
                 return new CarNetBrandApiAudi(httpClient, tokenManager, apiListener);
@@ -224,7 +224,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private CarNetHttpClient createHttpClient() {
+    private CarNetHttpClient createHttpClient(@Nullable CarNetEventListener apiListener) {
         // Each instance has it's own http client. Audi requires weaked SSL attributes, other may not
         HttpClient httpClient = new HttpClient();
         try {
@@ -236,7 +236,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.warn("{}: {}", messages.get("init-fialed", "Unable to start HttpClient!"), thingId, e);
         }
-        CarNetHttpClient client = new CarNetHttpClient(httpClient);
+        CarNetHttpClient client = new CarNetHttpClient(httpClient, apiListener);
         client.setConfig(config);
         return client;
     }

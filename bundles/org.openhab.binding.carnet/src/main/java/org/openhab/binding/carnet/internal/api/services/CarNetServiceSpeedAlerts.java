@@ -26,8 +26,9 @@ import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts.CarNetpeedAlertEntry;
-import org.openhab.binding.carnet.internal.api.CarNetIChanneldMapper.ChannelIdMapEntry;
+import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,8 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
                     updated |= updateChannel(group, CHANNEL_SPEEDALERT_DESCR, getStringType(entry.definitionName));
                     updated |= updateChannel(group, CHANNEL_SPEEDALERT_TIME,
                             getDateTime(getString(entry.occurenceDateTime)));
-                    updated |= updateChannel(group, CHANNEL_SPEEDALERT_LIMIT, getDecimal(entry.speedLimit));
+                    updated |= updateChannel(group, CHANNEL_SPEEDALERT_LIMIT, getDecimal(entry.speedLimit), 0,
+                            SIUnits.KILOMETRE_PER_HOUR);
                 }
             }
             i++;

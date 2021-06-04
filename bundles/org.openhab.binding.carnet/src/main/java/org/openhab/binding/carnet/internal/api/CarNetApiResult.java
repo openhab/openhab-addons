@@ -37,6 +37,7 @@ public class CarNetApiResult {
     public int httpCode = 0;
     public String httpReason = "";
     public String location = "";
+    public int rateLimit = -1;
     CarNetApiErrorDTO apiError = new CarNetApiErrorDTO();
 
     public CarNetApiResult() {
