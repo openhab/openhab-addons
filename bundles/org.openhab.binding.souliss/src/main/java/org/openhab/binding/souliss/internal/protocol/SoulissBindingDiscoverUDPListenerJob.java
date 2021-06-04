@@ -31,7 +31,16 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Del Pex - Souliss App
  */
 @NonNullByDefault
-public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
+public class SoulissBindingDiscoverUDPListenerJob extends Thread {
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        if (soulissDatagramSocket != null) {
+            soulissDatagramSocket.close();
+            logger.debug("close socket");
+        }
+    }
 
     @Nullable
     protected BufferedReader in = null;
@@ -69,22 +78,27 @@ public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
         DatagramSocket localDatagramSocket = this.soulissDatagramSocket;
         if (localDatagramSocket != null) {
             if (!localDatagramSocket.isClosed()) {
-                try {
-                    byte[] buf = new byte[256];
-                    // receive request
-                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                    localDatagramSocket.receive(packet);
-                    buf = packet.getData();
+                while (true) {
+                    try {
+                        byte[] buf = new byte[256];
+                        // receive request
+                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                        localDatagramSocket.receive(packet);
+                        buf = packet.getData();
 
-                    // **************** DECODER ********************
-                    logger.debug("Packet received (port {}) {}", localDatagramSocket.getLocalPort(),
-                            macacoToString(buf));
-                    if (this.decoder != null) {
-                        decoder.decodeVNetDatagram(packet);
+                        // **************** DECODER ********************
+                        logger.debug("Packet received (port {}) {}", localDatagramSocket.getLocalPort(),
+                                macacoToString(buf));
+                        if (this.decoder != null) {
+                            decoder.decodeVNetDatagram(packet);
+                        }
+
+                    } catch (IOException e) {
+                        if (!Thread.currentThread().isInterrupted()) {
+                            logger.warn("Error in Class SoulissBindingUDPServerThread: {}", e.getMessage());
+                        }
                     }
-
-                } catch (IOException e) {
-                    logger.warn("Error in Class SoulissBindingUDPServerThread: {}", e.getMessage());
+                    logger.debug("UDP Listener Thread issue");
                 }
             }
         } else {
