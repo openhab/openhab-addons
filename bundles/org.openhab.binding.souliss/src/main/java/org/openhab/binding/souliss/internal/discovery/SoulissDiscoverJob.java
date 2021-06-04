@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
+import org.openhab.binding.souliss.internal.protocol.SoulissBindingDiscoverUDPListenerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class SoulissDiscoverJob implements Runnable {
     private @Nullable DatagramSocket datagramSocket;
 
     @Nullable
-    SoulissBindingUDPServerJob udpServerOnDefaultPort = null;
+    SoulissBindingDiscoverUDPListenerJob udpServerOnDefaultPort = null;
     ///// Debug
     private final Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);
 
@@ -74,7 +74,6 @@ public class SoulissDiscoverJob implements Runnable {
             // ===============================================================================
             // ===============================================================================
             logger.debug("Sent discovery packet");
-
         } catch (Exception e) {
             logger.debug("Sending a discovery packet failed: {} ", e.getLocalizedMessage());
         }

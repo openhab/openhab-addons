@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Del Pex - Souliss App
  */
 @NonNullByDefault
-public class SoulissBindingUDPServerJob implements Runnable {
+public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
 
     @Nullable
     protected BufferedReader in = null;
@@ -43,9 +43,9 @@ public class SoulissBindingUDPServerJob implements Runnable {
 
     @Nullable
     DatagramSocket soulissDatagramSocket;
-    private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPServerJob.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissBindingDiscoverUDPListenerJob.class);
 
-    public SoulissBindingUDPServerJob(@Nullable DatagramSocket datagramSocket,
+    public SoulissBindingDiscoverUDPListenerJob(@Nullable DatagramSocket datagramSocket,
             @Nullable DiscoverResult pDiscoverResult) {
         super();
         this.discoverResult = pDiscoverResult;

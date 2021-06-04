@@ -140,6 +140,7 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         }
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private PercentType getOhStateT22FromSoulissVal(short sVal) {
         int iState = 0;
         switch (sVal) {

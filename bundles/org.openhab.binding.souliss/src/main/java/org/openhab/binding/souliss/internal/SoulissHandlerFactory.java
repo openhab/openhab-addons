@@ -79,6 +79,11 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(GATEWAY_THING_TYPE)) {
+            if (!SoulissBindingNetworkParameters.getHashTableGateways().isEmpty()) {
+                // logger.warn("Multiple gateways configuration is not supported");
+                throw new UnsupportedOperationException("Multiple gateways configuration is not supported");
+
+            }
             // get last byte of IP number
             Configuration gwConfigurationMap = thing.getConfiguration();
             String ipAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
