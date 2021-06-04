@@ -35,10 +35,8 @@
 			</parameter>
 			<parameter name="simpleProtocolSinkIdleTimeout" type="integer" required="false">
 				<label>Idle Timeout</label>
-				<description>Timeout in ms after which the connection will be closed when no stream is running.
-					This ensures that
-					your
-					speaker is not on all the time and the pulseaudio sink can go to idle mode.
+				<description>Timeout in ms after which the connection will be closed when no stream is running. This ensures that
+					your speaker is not on all the time and the pulseaudio sink can go to idle mode.
 				</description>
 				<default>30000</default>
 			</parameter>
