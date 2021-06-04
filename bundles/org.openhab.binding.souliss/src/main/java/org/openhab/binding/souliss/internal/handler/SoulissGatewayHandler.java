@@ -13,7 +13,6 @@
 package org.openhab.binding.souliss.internal.handler;
 
 import java.math.BigDecimal;
-import java.net.DatagramSocket;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,9 +20,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissBindingUDPConstants;
 import org.openhab.binding.souliss.internal.SoulissDatagramSocketFactory;
+import org.openhab.binding.souliss.internal.protocol.SoulissBindingDiscoverUDPListenerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingSendDispatcherJob;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -48,8 +47,8 @@ import org.slf4j.LoggerFactory;
 public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayHandler.class);
-    public @Nullable DatagramSocket datagramSocketDefaultPort;
-    private @Nullable SoulissBindingUDPServerJob udpServerDefaultPortRunnableClass;
+    // public @Nullable DatagramSocket datagramSocketDefaultPort;
+    private @Nullable SoulissBindingDiscoverUDPListenerJob udpServerDefaultPortRunnableClass;
     private SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
 
     boolean bGatewayDetected = false;
@@ -169,9 +168,15 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         // START SERVER ON DEFAULT PORT - Used for topics
         if (udpServerDefaultPortRunnableClass == null) {
             logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
-            datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort, this.logger);
-            if (datagramSocketDefaultPort != null) {
-                udpServerDefaultPortRunnableClass = new SoulissBindingUDPServerJob(datagramSocketDefaultPort,
+            // datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort,
+            // this.logger);
+            // datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort,
+            // this.logger);
+            if (SoulissBindingNetworkParameters.getDatagramSocket() != null) {
+                SoulissBindingNetworkParameters.setDatagramSocket(
+                        SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort, this.logger));
+                udpServerDefaultPortRunnableClass = new SoulissBindingDiscoverUDPListenerJob(
+                        SoulissBindingNetworkParameters.getDatagramSocket(),
                         SoulissBindingNetworkParameters.discoverResult);
                 scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
                         SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);

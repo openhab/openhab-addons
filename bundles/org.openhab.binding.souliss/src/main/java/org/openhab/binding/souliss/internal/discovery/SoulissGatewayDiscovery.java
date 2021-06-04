@@ -24,11 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissBindingProtocolConstants;
-import org.openhab.binding.souliss.internal.SoulissDatagramSocketFactory;
 import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
+import org.openhab.binding.souliss.internal.protocol.SoulissBindingDiscoverUDPListenerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * The {@link soulissHandlerFactory} is responsible for creating things and thingGeneric
  * handlers.
  *
- * @author David Graeff - Initial contribution
+ * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
@@ -57,7 +56,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     @Nullable
     private DatagramSocket datagramSocket;
     @Nullable
-    SoulissBindingUDPServerJob udpServerRunnableClass = null;
+    SoulissBindingDiscoverUDPListenerJob udpServerRunnableClass = null;
 
     @Nullable
     private ScheduledFuture<?> discoveryJob = null;
@@ -74,16 +73,14 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         logger.debug("Starting: {} - Version: {}", sSymbolicName, bindingVersion.toString());
         logger.debug("Starting Servers");
 
-        datagramSocket = SoulissDatagramSocketFactory.getSocketDatagram(this.logger);
+        // datagramSocket = SoulissDatagramSocketFactory.getSocketDatagram(this.logger);
+        datagramSocket = SoulissBindingNetworkParameters.getDatagramSocket();
         if (datagramSocket != null) {
-            SoulissBindingNetworkParameters.setDatagramSocket(datagramSocket);
+            // SoulissBindingNetworkParameters.setDatagramSocket(datagramSocket);
 
             logger.debug("Starting UDP server on Preferred Local Port (random if it is zero)");
-            udpServerRunnableClass = new SoulissBindingUDPServerJob(datagramSocket,
+            udpServerRunnableClass = new SoulissBindingDiscoverUDPListenerJob(datagramSocket,
                     SoulissBindingNetworkParameters.discoverResult);
-
-            scheduler.scheduleWithFixedDelay(udpServerRunnableClass, 100,
-                    SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("Error - datagramSocket is null - Server not started");
         }
@@ -98,7 +95,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     }
 
     /**
-     * The {@link gatewayDetected} used to create the Gateway
+     * The {@link gatewayDetected} callback used to create the Gateway
      *
      * @author Tonino Fazio - Initial contribution
      * @author Luca Calcaterra - Refactor for OH3
@@ -123,8 +120,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
-            if (datagramSocket != null) {
-                soulissDiscoverRunnableClass = new SoulissDiscoverJob(datagramSocket, this);
+            if (SoulissBindingNetworkParameters.getDatagramSocket() != null) {
+                soulissDiscoverRunnableClass = new SoulissDiscoverJob(
+                        SoulissBindingNetworkParameters.getDatagramSocket(), this);
             }
         }
         // create discovery job, that run discovery class
