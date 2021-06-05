@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -371,7 +371,7 @@ public class SonosXMLParser {
                 int trackNumberVal = 0;
                 try {
                     trackNumberVal = Integer.parseInt(trackNumber.toString());
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                 }
 
                 SonosResourceMetaData md = null;
@@ -877,6 +877,7 @@ public class SonosXMLParser {
                 case "SurroundMode":
                 case "SurroundLevel":
                 case "MusicSurroundLevel":
+                case "HeightChannelLevel":
                     val = attributes == null ? null : attributes.getValue("val");
                     if (val != null) {
                         changes.put(qName, val);

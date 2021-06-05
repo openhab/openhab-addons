@@ -12,25 +12,47 @@
  */
 package org.openhab.binding.automower.internal.things;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import org.openhab.core.thing.ChannelUID;
+
 /**
  * @author Markus Pfleger - Initial contribution
  */
 public enum AutomowerCommand {
+    START("Start", "mower#start"),
+    RESUME_SCHEDULE("ResumeSchedule", "mower#resume_schedule"),
+    PAUSE("Pause", "mower#pause"),
+    PARK("Park", "mower#park"),
+    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule", "mower#park_until_next_schedule"),
+    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice", "mower#park_until_further_notice");
 
-    START("Start"),
-    RESUME_SCHEDULE("ResumeSchedule"),
-    PAUSE("Pause"),
-    PARK("Park"),
-    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule"),
-    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice");
+    private static final Map<String, AutomowerCommand> CHANNEL_TO_CMD_MAP = new HashMap<>();
+
+    static {
+        EnumSet.allOf(AutomowerCommand.class).forEach(cmd -> CHANNEL_TO_CMD_MAP.put(cmd.getChannel(), cmd));
+    }
 
     private final String command;
+    private final String channel;
 
-    private AutomowerCommand(String command) {
+    AutomowerCommand(String command, String channel) {
         this.command = command;
+        this.channel = channel;
+    }
+
+    public static Optional<AutomowerCommand> fromChannelUID(ChannelUID channelUID) {
+        return Optional.ofNullable(CHANNEL_TO_CMD_MAP.get(channelUID.getId()));
     }
 
     public String getCommand() {
         return command;
+    }
+
+    public String getChannel() {
+        return channel;
     }
 }

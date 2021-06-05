@@ -19,6 +19,8 @@ import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link TemplateListModel}.
@@ -37,26 +37,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AVMFritzTemplateListModelTest {
 
-    private final Logger logger = LoggerFactory.getLogger(AVMFritzTemplateListModelTest.class);
-
     private @NonNullByDefault({}) TemplateListModel templates;
 
+    @SuppressWarnings("null")
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws JAXBException, XMLStreamException {
         //@formatter:off
         String xml =
                 "<templatelist version=\"1\">" +
                     "<template identifier=\"tmpXXXXX-39DC738C5\" id=\"30103\" functionbitmask=\"6784\" applymask=\"64\"><name>Test template #1</name><devices><device identifier=\"YY:5D:AA-900\" /><device identifier=\"XX:5D:AA-900\" /></devices><applymask><relay_automatic /></applymask></template>" +
                     "<template identifier=\"tmpXXXXX-39722FC0F\" id=\"30003\" functionbitmask=\"6784\" applymask=\"64\"><name>Test template #2</name><devices><device identifier=\"YY:5D:AA-900\" /></devices><applymask><relay_automatic /></applymask></template>" +
                 "</templatelist>";
-        //@formatter:off
-
-        try {
-            Unmarshaller u = JAXBUtils.JAXBCONTEXT_TEMPLATES.createUnmarshaller();
-            templates = (TemplateListModel) u.unmarshal(new StringReader(xml));
-        } catch (JAXBException e) {
-            logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
-        }
+        //@formatter:on
+        XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_TEMPLATES.createUnmarshaller();
+        templates = u.unmarshal(xsr, TemplateListModel.class).getValue();
     }
 
     @Test

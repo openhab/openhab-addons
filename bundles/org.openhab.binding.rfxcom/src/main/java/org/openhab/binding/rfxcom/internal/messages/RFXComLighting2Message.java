@@ -18,6 +18,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Message.Commands.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
@@ -155,7 +156,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
         return pt.toBigDecimal().multiply(BigDecimal.valueOf(15))
-                .divide(PercentType.HUNDRED.toBigDecimal(), 0, BigDecimal.ROUND_UP).intValue();
+                .divide(PercentType.HUNDRED.toBigDecimal(), 0, RoundingMode.UP).intValue();
     }
 
     /**
@@ -168,7 +169,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
         value = Math.min(value, 15);
 
         return new PercentType(BigDecimal.valueOf(value).multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(15), 0, BigDecimal.ROUND_UP).intValue());
+                .divide(BigDecimal.valueOf(15), 0, RoundingMode.UP).intValue());
     }
 
     @Override

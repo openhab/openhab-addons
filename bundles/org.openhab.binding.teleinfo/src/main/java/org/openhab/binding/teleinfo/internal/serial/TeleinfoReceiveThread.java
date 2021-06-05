@@ -13,12 +13,10 @@
 package org.openhab.binding.teleinfo.internal.serial;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.reader.io.TeleinfoInputStream;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -33,52 +31,36 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TeleinfoReceiveThread extends Thread {
 
-    private static final int SERIAL_PORT_DELAY_RETRY_IN_SECONDS = 60;
-
     private final Logger logger = LoggerFactory.getLogger(TeleinfoReceiveThread.class);
 
     private SerialPort serialPort;
     private @Nullable TeleinfoReceiveThreadListener listener;
     private boolean autoRepairInvalidADPSgroupLine;
-    private ExecutorService executorService;
 
     public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoSerialControllerHandler listener,
-            boolean autoRepairInvalidADPSgroupLine, ExecutorService scheduler) {
+            boolean autoRepairInvalidADPSgroupLine) {
         super("OH-binding-TeleinfoReceiveThread-" + listener.getThing().getUID().getId());
         setDaemon(true);
         this.serialPort = serialPort;
         this.listener = listener;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
-        this.executorService = scheduler;
     }
 
     @Override
     public void run() {
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
-                TeleinfoInputStream.DEFAULT_TIMEOUT_NEXT_HEADER_FRAME_US * 100,
-                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME_US * 100, autoRepairInvalidADPSgroupLine,
-                executorService)) {
+                autoRepairInvalidADPSgroupLine)) {
             while (!interrupted()) {
                 TeleinfoReceiveThreadListener listener = this.listener;
                 if (listener != null) {
                     try {
                         Frame nextFrame = teleinfoStream.readNextFrame();
-                        if (nextFrame != null)
-                            listener.onFrameReceived(this, nextFrame);
+                        if (nextFrame != null) {
+                            listener.onFrameReceived(nextFrame);
+                        }
                     } catch (InvalidFrameException e) {
                         logger.warn("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
                         listener.onInvalidFrameReceived(this, e);
-                    } catch (TimeoutException e) {
-                        logger.warn("Got timeout during frame reading", e);
-                        logger.warn("Retry in progress. Next retry in {} seconds...",
-                                SERIAL_PORT_DELAY_RETRY_IN_SECONDS);
-                        listener.continueOnReadNextFrameTimeoutException();
-                        try {
-                            Thread.sleep(SERIAL_PORT_DELAY_RETRY_IN_SECONDS * 1000);
-                        } catch (InterruptedException e1) {
-                            break;
-                        }
-
                     } catch (IOException e) {
                         logger.warn("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
                         listener.onSerialPortInputStreamIOException(this, e);

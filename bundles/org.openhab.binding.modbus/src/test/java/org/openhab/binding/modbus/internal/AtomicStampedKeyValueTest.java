@@ -16,11 +16,13 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class AtomicStampedKeyValueTest {
 
     @Test
@@ -84,7 +86,6 @@ public class AtomicStampedKeyValueTest {
      */
     @Test
     public void testCopyIfStampAfterEqual() {
-        Object key = new Object();
         Object val = new Object();
         AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
         AtomicStampedValue<Object> copy = keyValue.copyIfStampAfter(42L);
@@ -98,7 +99,6 @@ public class AtomicStampedKeyValueTest {
         assertThat(keyValue.getValue(), is(equalTo(copy.getValue())));
 
         // after update they live life of their own
-        Object key2 = new Object();
         Object val2 = new Object();
         copy.update(-99L, val2);
 
@@ -144,7 +144,6 @@ public class AtomicStampedKeyValueTest {
         assertThat(keyValue.getValue(), is(equalTo(copy.getValue())));
 
         // after update they live life of their own
-        Object key2 = new Object();
         Object val2 = new Object();
         copy.update(-99L, val2);
 

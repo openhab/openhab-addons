@@ -103,7 +103,10 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 // skip, could check against thing mode...
                 break;
 
-            case "1101": // S, output, 0/1
+            case "1101": // relay_0: output, 0/1
+            case "1201": // relay_1: output, 0/1
+            case "1301": // relay_2: output, 0/1
+            case "1401": // relay_3: output, 0/1
                 updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
                 break;
             case "1102": // roler_0: S, roller, open/close/stop -> roller state
@@ -316,8 +319,14 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE, getStringType(s.valueStr));
                 break;
             case "6110": // A, vibration, 0/1, -1=unknown
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                        value == 1 ? OnOffType.ON : OnOffType.OFF);
+                if (profile.isMotion) {
+                    // handle as status
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                            s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                } else if (s.value == 1) {
+                    // handle as event
+                    thingHandler.triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, EVENT_TYPE_VIBRATION);
+                }
                 break;
             case "9102": // EV, wakeupEvent, battery/button/periodic/poweron/sensor/ext_power, "unknown"=unknown
                 if (s.valueArray.size() > 0) {

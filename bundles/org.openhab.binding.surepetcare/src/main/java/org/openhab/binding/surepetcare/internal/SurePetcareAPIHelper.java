@@ -385,8 +385,7 @@ public class SurePetcareAPIHelper {
      */
     private JsonElement getDataFromApi(String url) throws SurePetcareApiException {
         String apiResult = getResultFromApi(url);
-        JsonParser parser = new JsonParser();
-        JsonObject object = (JsonObject) parser.parse(apiResult);
+        JsonObject object = (JsonObject) JsonParser.parseString(apiResult);
         return object.get("data");
     }
 

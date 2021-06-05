@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.ftpserver.DataConnectionConfigurationFactory;
 import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.ftplet.FtpException;
@@ -98,7 +97,7 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
 
         if (properties.get("port") != null) {
             String strPort = properties.get("port").toString();
-            if (StringUtils.isNotEmpty(strPort)) {
+            if (!strPort.isEmpty()) {
                 try {
                     port = Integer.valueOf(strPort);
                 } catch (NumberFormatException e) {
@@ -109,7 +108,7 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
 
         if (properties.get("idleTimeout") != null) {
             String strIdleTimeout = properties.get("idleTimeout").toString();
-            if (StringUtils.isNotEmpty(strIdleTimeout)) {
+            if (!strIdleTimeout.isEmpty()) {
                 try {
                     idleTimeout = Integer.valueOf(strIdleTimeout);
                 } catch (NumberFormatException e) {

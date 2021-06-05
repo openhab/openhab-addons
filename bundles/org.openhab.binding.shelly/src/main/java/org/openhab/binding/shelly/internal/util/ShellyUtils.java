@@ -44,7 +44,6 @@ import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.Primitives;
 
 /**
  * {@link ShellyUtils} provides general utility functions
@@ -53,8 +52,8 @@ import com.google.gson.internal.Primitives;
  */
 @NonNullByDefault
 public class ShellyUtils {
-    private final static String PRE = "Unable to create object of type ";
-    public final static DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
+    private static final String PRE = "Unable to create object of type ";
+    public static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
         @Nullable
@@ -78,7 +77,7 @@ public class ShellyUtils {
         }
 
         if (classOfT.isInstance(json)) {
-            return Primitives.wrap(classOfT).cast(json);
+            return wrap(classOfT).cast(json);
         } else if (json.isEmpty()) { // update GSON might return null
             throw new ShellyApiException(PRE + className + "from empty JSON");
         } else {
@@ -95,6 +94,38 @@ public class ShellyUtils {
                 throw new ShellyApiException(PRE + className + "from JSON: " + json, e);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Class<T> wrap(Class<T> type) {
+        if (type == int.class) {
+            return (Class<T>) Integer.class;
+        }
+        if (type == float.class) {
+            return (Class<T>) Float.class;
+        }
+        if (type == byte.class) {
+            return (Class<T>) Byte.class;
+        }
+        if (type == double.class) {
+            return (Class<T>) Double.class;
+        }
+        if (type == long.class) {
+            return (Class<T>) Long.class;
+        }
+        if (type == char.class) {
+            return (Class<T>) Character.class;
+        }
+        if (type == boolean.class) {
+            return (Class<T>) Boolean.class;
+        }
+        if (type == short.class) {
+            return (Class<T>) Short.class;
+        }
+        if (type == void.class) {
+            return (Class<T>) Void.class;
+        }
+        return type;
     }
 
     public static String mkChannelId(String group, String channel) {

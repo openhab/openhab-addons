@@ -13,7 +13,6 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.common.Login;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
@@ -112,15 +111,11 @@ class SClogin extends Login implements SlipBridgeCommunicationProtocol {
                 int cfmStatus = responseData.getOneByteValue(0);
                 switch (cfmStatus) {
                     case 0:
-                        logger.info("{} bridge connection successfully established (login succeeded).",
-                                VeluxBindingConstants.BINDING_ID);
-                        logger.debug("setResponse(): returned status: The request was successful.");
+                        logger.debug("setResponse(): bridge connection successfully established (login succeeded).");
                         success = true;
                         break;
                     case 1:
-                        logger.warn("{} bridge connection successfully established but login failed.",
-                                VeluxBindingConstants.BINDING_ID);
-                        logger.debug("setResponse(): returned status: The request failed.");
+                        logger.warn("setResponse(): bridge connection successfully established but login failed.");
                         break;
                     default:
                         logger.warn("setResponse(): returned status={} (not defined).", cfmStatus);

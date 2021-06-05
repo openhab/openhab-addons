@@ -30,6 +30,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class LocationItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "location";
     // values are encoded as lat,lon[,alt] , ordering goes wrt strings
     private static final PointType STATE1 = new PointType(
@@ -38,6 +39,7 @@ public class LocationItemIntegrationTest extends AbstractTwoItemIntegrationTest 
     private static final PointType STATE2 = new PointType(new DecimalType(61.0), new DecimalType(30.));
     private static final PointType STATE_BETWEEN = new PointType(new DecimalType(60.5), new DecimalType(30.));
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         LocationItem item = (LocationItem) ITEMS.get(NAME);

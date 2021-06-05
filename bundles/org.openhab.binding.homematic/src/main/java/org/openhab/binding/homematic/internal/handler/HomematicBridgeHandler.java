@@ -213,9 +213,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         if (homematicConfig.getCallbackHost() == null) {
             homematicConfig.setCallbackHost(this.ipv4Address);
         }
-        if (homematicConfig.getBindAddress() == null) {
-            homematicConfig.setBindAddress(homematicConfig.getCallbackHost());
-        }
         if (homematicConfig.getXmlCallbackPort() == 0) {
             homematicConfig.setXmlCallbackPort(portPool.getNextPort());
         } else {

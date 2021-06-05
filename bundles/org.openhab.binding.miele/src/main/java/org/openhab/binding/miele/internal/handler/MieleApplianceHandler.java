@@ -20,10 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceOperation;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.openhab.core.thing.Bridge;
@@ -144,7 +143,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onApplianceStateChanged(String UID, DeviceClassObject dco) {
-        String myUID = ((String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
+        String myUID = (getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
                 + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         String modelID = StringUtils.right(dco.DeviceClass,
                 dco.DeviceClass.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
@@ -162,22 +161,13 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                         // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
                     }
                 }
-
-                for (JsonElement operation : dco.Operations.getAsJsonArray()) {
-                    try {
-                        DeviceOperation devop = gson.fromJson(operation, DeviceOperation.class);
-                        DeviceMetaData pmd = gson.fromJson(devop.Metadata, DeviceMetaData.class);
-                    } catch (Exception p) {
-                        // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
-                    }
-                }
             }
         }
     }
 
     @Override
     public void onAppliancePropertyChanged(String UID, DeviceProperty dp) {
-        String myUID = ((String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
+        String myUID = (getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
                 + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
         if (myUID.equals(UID)) {
@@ -186,8 +176,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 if (dp.Metadata == null) {
                     String metadata = metaDataCache.get(new StringBuilder().append(dp.Name).toString().trim());
                     if (metadata != null) {
-                        JsonParser parser = new JsonParser();
-                        JsonObject jsonMetaData = (JsonObject) parser.parse(metadata);
+                        JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
                         dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
                         // only keep the enum, if any - that's all we care for events we receive via multicast
                         // all other fields are nulled
@@ -199,8 +188,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 }
                 if (dp.Metadata != null) {
                     String metadata = StringUtils.replace(dp.Metadata.toString(), "enum", "MieleEnum");
-                    JsonParser parser = new JsonParser();
-                    JsonObject jsonMetaData = (JsonObject) parser.parse(metadata);
+                    JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
                     dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
                     metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
                 }

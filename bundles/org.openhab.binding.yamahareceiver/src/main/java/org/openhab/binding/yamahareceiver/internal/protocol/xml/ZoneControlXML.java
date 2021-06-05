@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
@@ -135,7 +134,7 @@ public class ZoneControlXML implements ZoneControl {
                     ZONE_BASIC_STATUS_PATH);
             String surroundProgram = getNodeContentOrEmpty(basicStatusNode, "Surr/Pgm_Sel/Pgm");
 
-            if (StringUtils.isNotEmpty(surroundProgram)) {
+            if (!surroundProgram.isEmpty()) {
                 surroundSelProgram = new CommandTemplate(
                         "<Surr><Pgm_Sel><Straight>Off</Straight><Pgm>%s</Pgm></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Pgm");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelProgram);
@@ -287,7 +286,7 @@ public class ZoneControlXML implements ZoneControl {
 
         value = getNodeContentOrEmpty(statusNode, inputSel.getPath());
         state.inputID = inputConverterSupplier.get().fromStateName(value);
-        if (StringUtils.isBlank(state.inputID)) {
+        if (state.inputID == null || state.inputID.isBlank()) {
             throw new ReceivedMessageParseException("Expected inputID. Failed to read Input/Input_Sel");
         }
 

@@ -45,6 +45,7 @@
 			<channel id="album" typeId="album"/>
 			<channel id="artist" typeId="artist"/>
 			<channel id="listenmode" typeId="listenmode"/>
+			<channel id="audioinfo" typeId="audioinfo"/>
 			<channel id="playuri" typeId="playuri"/>
 			<channel id="albumArt" typeId="albumArt"/>
 			<channel id="albumArtUrl" typeId="albumArtUrl"/>

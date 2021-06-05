@@ -20,7 +20,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.UniFiBindingConstants;
@@ -84,7 +83,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
 
     private static boolean belongsToSite(UniFiClient client, String siteName) {
         boolean result = true; // mgb: assume true = proof by contradiction
-        if (StringUtils.isNotEmpty(siteName)) {
+        if (!siteName.isEmpty()) {
             UniFiSite site = client.getSite();
             // mgb: if the 'site' can't be found or the name doesn't match...
             if (site == null || !site.matchesName(siteName)) {
@@ -166,21 +165,21 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
 
             // :site
             case CHANNEL_SITE:
-                if (clientHome && site != null && StringUtils.isNotBlank(site.getDescription())) {
+                if (clientHome && site != null && site.getDescription() != null && !site.getDescription().isBlank()) {
                     state = StringType.valueOf(site.getDescription());
                 }
                 break;
 
             // :macAddress
             case CHANNEL_MAC_ADDRESS:
-                if (clientHome && StringUtils.isNotBlank(client.getMac())) {
+                if (clientHome && client.getMac() != null && !client.getMac().isBlank()) {
                     state = StringType.valueOf(client.getMac());
                 }
                 break;
 
             // :ipAddress
             case CHANNEL_IP_ADDRESS:
-                if (clientHome && StringUtils.isNotBlank(client.getIp())) {
+                if (clientHome && client.getIp() != null && !client.getIp().isBlank()) {
                     state = StringType.valueOf(client.getIp());
                 }
                 break;
@@ -235,14 +234,14 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             // :ap
             case CHANNEL_AP:
                 UniFiDevice device = client.getDevice();
-                if (clientHome && device != null && StringUtils.isNotBlank(device.getName())) {
+                if (clientHome && device != null && device.getName() != null && !device.getName().isBlank()) {
                     state = StringType.valueOf(device.getName());
                 }
                 break;
 
             // :essid
             case CHANNEL_ESSID:
-                if (clientHome && StringUtils.isNotBlank(client.getEssid())) {
+                if (clientHome && client.getEssid() != null && !client.getEssid().isBlank()) {
                     state = StringType.valueOf(client.getEssid());
                 }
                 break;

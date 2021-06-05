@@ -14,6 +14,7 @@ package org.openhab.binding.remoteopenhab.internal.rest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
@@ -576,7 +578,10 @@ public class RemoteopenhabRestClient {
             } else {
                 throw new RemoteopenhabException(e);
             }
-        } catch (Exception e) {
+        } catch (IOException | TimeoutException e) {
+            throw new RemoteopenhabException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RemoteopenhabException(e);
         }
     }

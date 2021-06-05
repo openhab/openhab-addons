@@ -12,7 +12,6 @@
  */
 package org.openhab.io.imperihome.internal.action;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.events.ItemCommandEvent;
@@ -39,7 +38,8 @@ public class StopShutterAction extends Action {
 
     @Override
     public boolean supports(AbstractDevice device, Item item) {
-        return device.getType() == DeviceType.SHUTTER && StringUtils.isNotBlank(device.getLinks().get("stopper"));
+        String stopper = device.getLinks().get("stopper");
+        return device.getType() == DeviceType.SHUTTER && stopper != null && !stopper.isBlank();
     }
 
     @Override

@@ -18,7 +18,6 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 import org.openhab.core.library.types.DecimalType;
@@ -128,7 +127,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
         final BigDecimal port = (BigDecimal) getThing().getConfiguration().get(CONFIG_PROPERTY_PORT);
         final String pin = (String) getThing().getConfiguration().get(CONFIG_PROPERTY_PIN);
 
-        if (ip == null || StringUtils.isEmpty(pin) || port.intValue() == 0) {
+        if (ip == null || pin == null || pin.isEmpty() || port.intValue() == 0) {
             // configuration incomplete
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration incomplete");
         } else {

@@ -76,7 +76,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     private int lastCommand = -1;
     private LinkedHashMap<Integer, MiIoBasicChannel> testChannelList = new LinkedHashMap<>();
     private LinkedHashMap<MiIoBasicChannel, String> supportedChannelList = new LinkedHashMap<>();
-    private String model = conf.model != null ? conf.model : "";
+    private String model = conf.model;
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
         miIoScheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
@@ -264,7 +264,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             sb.append(supportedChannelList.get(ch));
             sb.append("\r\n");
         }
-        if (supportedChannelList.size() > 0) {
+        if (!supportedChannelList.isEmpty()) {
             MiIoBasicDevice mbd = createBasicDeviceDb(model, new ArrayList<>(supportedChannelList.keySet()));
             sb.append("Created experimental database for your device:\r\n");
             sb.append(GSONP.toJson(mbd));

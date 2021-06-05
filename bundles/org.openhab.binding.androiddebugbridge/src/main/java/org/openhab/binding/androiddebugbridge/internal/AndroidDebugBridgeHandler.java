@@ -23,7 +23,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.NextPreviousType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.RewindFastforwardType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -52,6 +58,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     public static final String KEY_EVENT_PREVIOUS = "88";
     public static final String KEY_EVENT_MEDIA_REWIND = "89";
     public static final String KEY_EVENT_MEDIA_FAST_FORWARD = "90";
+    private static final String SHUTDOWN_POWER_OFF = "POWER_OFF";
+    private static final String SHUTDOWN_REBOOT = "REBOOT";
     private static final Gson GSON = new Gson();
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeHandler.class);
     private final AndroidDebugBridgeDevice adbConnection;
@@ -105,6 +113,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             case TEXT_CHANNEL:
                 adbConnection.sendText(command.toFullString());
                 break;
+            case TAP_CHANNEL:
+                adbConnection.sendTap(command.toFullString());
+                break;
             case MEDIA_VOLUME_CHANNEL:
                 handleMediaVolume(channelUID, command);
                 break;
@@ -148,6 +159,17 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     updateState(channelUID, OnOffType.from(screenState));
                 }
                 break;
+            case SHUTDOWN_CHANNEL:
+                switch (command.toFullString()) {
+                    case SHUTDOWN_POWER_OFF:
+                        adbConnection.powerOffDevice();
+                        updateStatus(ThingStatus.OFFLINE);
+                        break;
+                    case SHUTDOWN_REBOOT:
+                        adbConnection.rebootDevice();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Rebooting");
+                        break;
+                }
         }
     }
 
@@ -271,8 +293,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     public void checkConnection() {
         var currentConfig = config;
-        if (currentConfig == null)
+        if (currentConfig == null) {
             return;
+        }
         try {
             logger.debug("Refresh device {} status", currentConfig.ip);
             if (adbConnection.isConnected()) {

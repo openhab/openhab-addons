@@ -32,6 +32,7 @@ import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCrypto;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoDevices;
+import org.openhab.binding.miio.internal.MiIoInfoApDTO;
 import org.openhab.binding.miio.internal.MiIoInfoDTO;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MiIoAbstractHandler} is responsible for handling commands, which are
@@ -76,7 +77,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
-    protected final JsonParser parser = new JsonParser();
     protected byte[] token = new byte[0];
 
     protected @Nullable MiIoBindingConfiguration configuration;
@@ -135,7 +135,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
-        if (configuration.host == null || configuration.host.isEmpty()) {
+        if (configuration.host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "IP address required. Configure IP address");
             return;
@@ -144,7 +144,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
-        cloudServer = (configuration.cloudServer != null) ? configuration.cloudServer : "";
+        this.cloudServer = configuration.cloudServer;
         isIdentified = false;
         miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
@@ -264,7 +264,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         // use direct communications and in case of failures fall back to cloud communication. For now we keep it
         // simple and only have the option for cloud or direct.
         final MiIoBindingConfiguration configuration = this.configuration;
-        if (configuration != null && configuration.communication != null) {
+        if (configuration != null) {
             return configuration.communication.equals("cloud") ? cloudServer : "";
         }
         return "";
@@ -294,19 +294,30 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     protected boolean updateNetwork(JsonObject networkData) {
         try {
-            updateState(CHANNEL_SSID, new StringType(networkData.getAsJsonObject("ap").get("ssid").getAsString()));
-            updateState(CHANNEL_BSSID, new StringType(networkData.getAsJsonObject("ap").get("bssid").getAsString()));
-            if (networkData.getAsJsonObject("ap").get("rssi") != null) {
-                updateState(CHANNEL_RSSI, new DecimalType(networkData.getAsJsonObject("ap").get("rssi").getAsLong()));
-            } else if (networkData.getAsJsonObject("ap").get("wifi_rssi") != null) {
-                updateState(CHANNEL_RSSI,
-                        new DecimalType(networkData.getAsJsonObject("ap").get("wifi_rssi").getAsLong()));
-            } else {
-                logger.debug("No RSSI info in response");
+            final MiIoInfoDTO miioInfo = GSON.fromJson(networkData, MiIoInfoDTO.class);
+            final MiIoInfoApDTO ap = miioInfo != null ? miioInfo.ap : null;
+            if (miioInfo != null && ap != null) {
+                if (ap.getSsid() != null) {
+                    updateState(CHANNEL_SSID, new StringType(ap.getSsid()));
+                }
+                if (ap.getBssid() != null) {
+                    updateState(CHANNEL_BSSID, new StringType(ap.getBssid()));
+                }
+                if (ap.getRssi() != null) {
+                    updateState(CHANNEL_RSSI, new DecimalType(ap.getRssi()));
+                } else if (ap.getWifiRssi() != null) {
+                    updateState(CHANNEL_RSSI, new DecimalType(ap.getWifiRssi()));
+                } else {
+                    logger.debug("No RSSI info in response");
+                }
+                if (miioInfo.life != null) {
+                    updateState(CHANNEL_LIFE, new DecimalType(miioInfo.life));
+                }
             }
-            updateState(CHANNEL_LIFE, new DecimalType(networkData.get("life").getAsLong()));
             return true;
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            logger.debug("Could not parse number in network response: {}", networkData);
+        } catch (JsonSyntaxException e) {
             logger.debug("Could not parse network response: {}", networkData, e);
         }
         return false;
@@ -335,13 +346,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return miioCom;
         }
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
-        if (configuration.host == null || configuration.host.isEmpty()) {
+        if (configuration.host.isBlank()) {
             return null;
         }
         @Nullable
         String deviceId = configuration.deviceId;
         try {
-            if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
+            if (deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
                 final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
                         Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout, cloudConnector);
                 if (getCloudServer().isBlank()) {
@@ -422,6 +433,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     private void updateProperties(JsonObject miioInfo) {
         final MiIoInfoDTO info = GSON.fromJson(miioInfo, MiIoInfoDTO.class);
+        if (info == null) {
+            return;
+        }
         Map<String, String> properties = editProperties();
         if (info.model != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, info.model);
@@ -446,7 +460,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         String model = miioInfo.get("model").getAsString();
         miDevice = MiIoDevices.getType(model);
-        if (configuration.model == null || configuration.model.isEmpty()) {
+        if (configuration.model.isEmpty()) {
             Configuration config = editConfiguration();
             config.put(PROPERTY_MODEL, model);
             updateConfiguration(config);

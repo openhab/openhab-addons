@@ -92,7 +92,7 @@ public class DimmerItemConverter extends AbstractTransformingItemConverter {
                     value = PercentType.ZERO.toBigDecimal();
                 }
                 newState = new PercentType(value);
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 // ignore
             }
         }

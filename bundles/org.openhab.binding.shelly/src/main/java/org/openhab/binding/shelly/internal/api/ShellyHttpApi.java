@@ -32,6 +32,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySendKeyList;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySenseKeyCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
@@ -88,6 +89,14 @@ public class ShellyHttpApi {
 
     public ShellySettingsDevice getDevInfo() throws ShellyApiException {
         return callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
+    }
+
+    public String setDebug(boolean enabled) throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "?debug_enable=" + Boolean.valueOf(enabled), String.class);
+    }
+
+    public String getDebugLog(String id) throws ShellyApiException {
+        return callApi("/debug/" + id, String.class);
     }
 
     /**
@@ -237,8 +246,19 @@ public class ShellyHttpApi {
     }
 
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
-        return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + user + "&password=" + password,
-                ShellySettingsLogin.class);
+        return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + urlEncode(user) + "&password="
+                + urlEncode(password), ShellySettingsLogin.class);
+    }
+
+    public String getCoIoTDescription() throws ShellyApiException {
+        try {
+            return callApi("/cit/d", String.class);
+        } catch (ShellyApiException e) {
+            if (e.getApiResult().isNotFound()) {
+                return ""; // only supported by FW 1.10+
+            }
+            throw e;
+        }
     }
 
     public ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException {
@@ -251,6 +271,23 @@ public class ShellyHttpApi {
 
     public String factoryReset() throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "?reset=true", String.class);
+    }
+
+    public ShellyOtaCheckResult checkForUpdate() throws ShellyApiException {
+        return callApi("/ota/check", ShellyOtaCheckResult.class); // nw FW 1.10+: trigger update check
+    }
+
+    public String setWiFiRecovery(boolean enable) throws ShellyApiException {
+        return callApi(SHELLY_URL_SETTINGS + "?wifirecovery_reboot_enabled=" + (enable ? "true" : "false"),
+                String.class); // FW 1.10+: Enable auto-restart on WiFi problems
+    }
+
+    public String setApRoaming(boolean enable) throws ShellyApiException { // FW 1.10+: Enable AP Roadming
+        return callApi(SHELLY_URL_SETTINGS + "?ap_roaming_enabled=" + (enable ? "true" : "false"), String.class);
+    }
+
+    public String resetStaCache() throws ShellyApiException { // FW 1.10+: Reset cached STA/AP list and to a rescan
+        return callApi("/sta_cache_reset", String.class);
     }
 
     public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException {
@@ -560,7 +597,8 @@ public class ShellyHttpApi {
             if (contentResponse.getStatus() != HttpStatus.OK_200) {
                 throw new ShellyApiException(apiResult);
             }
-            if (response.isEmpty() || !response.startsWith("{") && !response.startsWith("[")) {
+            if (response.isEmpty() || !response.startsWith("{") && !response.startsWith("[") && !url.contains("/debug/")
+                    && !url.contains("/sta_cache_reset")) {
                 throw new ShellyApiException("Unexpected response: " + response);
             }
         } catch (ExecutionException | InterruptedException | TimeoutException | IllegalArgumentException e) {

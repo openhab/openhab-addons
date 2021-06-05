@@ -13,6 +13,7 @@
 			<channel id="open" typeId="open"></channel>
 			<channel id="lock" typeId="lock"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

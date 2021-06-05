@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.somfymylink.internal.handler;
 
-import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.*;
+import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.CHANNEL_SCENES;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +23,11 @@ import java.io.Writer;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -179,7 +183,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             SomfyMyLinkCommandShadePing command = new SomfyMyLinkCommandShadePing(config.systemId);
             sendCommandWithResponse(command, SomfyMyLinkPingResponse.class).get();
             updateStatus(ThingStatus.ONLINE);
-
         } catch (SomfyMyLinkException | InterruptedException | ExecutionException e) {
             logger.warn("Problem with mylink during heartbeat: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -298,7 +301,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         Writer out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.US_ASCII);
                         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
-
                     // send the command
                     logger.debug("Sending: {}", json);
                     out.write(json);
@@ -337,8 +339,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private <T extends SomfyMyLinkResponseBase> T parseResponse(Reader reader, Class<T> responseType) {
-        JsonParser parser = new JsonParser();
-        JsonObject jsonObj = parser.parse(gson.newJsonReader(reader)).getAsJsonObject();
+        JsonObject jsonObj = JsonParser.parseReader(gson.newJsonReader(reader)).getAsJsonObject();
 
         logger.debug("Got full message: {}", jsonObj.toString());
 
