@@ -17,6 +17,8 @@
 			<channel id="deviceLocalLimitEVUAbsolute" typeId="device-local-limit-evu-absolute"/>
 			<channel id="deviceLocalLimitEVURelativ" typeId="device-local-limit-evu-relativ"/>
 			<channel id="deviceLocalWorktime" typeId="device-local-worktime"/>
+			<channel id="deviceLocalACCosPhi" typeId="device-local-ac-cos-phi"/>
+			<channel id="deviceLocalACFrequency" typeId="device-local-ac-frequency"/>
 			<channel id="deviceLocalACPhase1CurrentAmperage" typeId="device-local-ac-phase-1-current-amperage"/>
 			<channel id="deviceLocalACPhase1CurrentPower" typeId="device-local-ac-phase-1-current-power"/>
 			<channel id="deviceLocalACPhase1CurrentVoltage" typeId="device-local-ac-phase-1-current-voltage"/>

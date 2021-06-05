@@ -69,6 +69,10 @@ class ThirdGenerationMappingInverterToChannel {
                 ThirdGenerationChannelDatatypes.PERCEMTAGE);
         addInverterChannel(allInvertersList, CHANNEL_DEVICE_LOCAL_WORKTIME, "devices:local", "WorkTime",
                 ThirdGenerationChannelDatatypes.SECONDS);
+        addInverterChannel(allInvertersList, CHANNEL_DEVICE_LOCAL_AC_COS_PHI, "devices:local:ac", "CosPhi",
+                ThirdGenerationChannelDatatypes.INTEGER);
+        addInverterChannel(allInvertersList, CHANNEL_DEVICE_LOCAL_AC_FREQUENCY, "devices:local:ac", "Frequency",
+                ThirdGenerationChannelDatatypes.HERTZ);
         addInverterChannel(allInvertersList, CHANNEL_DEVICE_LOCAL_AC_PHASE_1_CURRENT_AMPERAGE, "devices:local:ac",
                 "L1_I", ThirdGenerationChannelDatatypes.AMPERE);
         addInverterChannel(allInvertersList, CHANNEL_DEVICE_LOCAL_AC_PHASE_1_CURRENT_POWER, "devices:local:ac", "L1_P",
