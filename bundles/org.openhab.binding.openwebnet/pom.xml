@@ -23,7 +23,7 @@
     <dependency>
       <groupId>io.github.openwebnet4j</groupId>
       <artifactId>openwebnet4j</artifactId>
-      <version>0.4.1</version>
+      <version>0.5.2</version>
       <scope>compile</scope>
     </dependency>
 
