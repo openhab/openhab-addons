@@ -29,12 +29,141 @@
 	<!-- Shutter Channel -->
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>
-		<label>Roller shutter</label>
+		<label>Roller Shutter</label>
 		<description>Control the roller shutter position</description>
 		<category>Blinds</category>
 		<tags>
 			<tag>Blinds</tag>
 		</tags>
+	</channel-type>
+
+	<!-- Thermo channels -->
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature (read only)</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="function">
+		<item-type>String</item-type>
+		<label>Thermo Function</label>
+		<description>Thermo function of the thermostat (read/write)</description>
+		<state>
+			<options>
+				<option value="HEATING">Heating</option>
+				<option value="COOLING">Cooling</option>
+				<option value="GENERIC">Generic</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setpointTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Setpoint temperature (read/write)</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>TargetTemperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Set mode of the thermostat (read/write)</description>
+		<state>
+			<options>
+				<option value="MANUAL">Manual</option>
+				<option value="PROTECTION">Protection</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="speedFanCoil">
+		<item-type>String</item-type>
+		<label>Set Fan Speed</label>
+		<description>Set speed of the Fan Coil (read/write)</description>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="SPEED_1">Fan speed 1</option>
+				<option value="SPEED_2">Fan speed 2</option>
+				<option value="SPEED_3">Fan speed 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="conditioningValve" advanced="true">
+		<item-type>String</item-type>
+		<label>Conditioning Valve</label>
+		<description>Conditioning Valve status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="ON">ON</option>
+				<option value="OPENED">Opened</option>
+				<option value="CLOSED">Closed</option>
+				<option value="STOP">Stop</option>
+				<option value="OFF_FAN_COIL">OFF Fan Coil</option>
+				<option value="ON_SPEED_1">ON speed 1</option>
+				<option value="ON_SPEED_2">ON speed 2</option>
+				<option value="ON_SPEED_3">ON speed 3</option>
+				<option value="OFF_SPEED_1">OFF speed 1</option>
+				<option value="OFF_SPEED_2">OFF speed 2</option>
+				<option value="OFF_SPEED_3">OFF speed 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatingValve" advanced="true">
+		<item-type>String</item-type>
+		<label>Heating Valve</label>
+		<description>Heating Valve status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="ON">ON</option>
+				<option value="OPENED">Opened</option>
+				<option value="CLOSED">Closed</option>
+				<option value="STOP">Stop</option>
+				<option value="OFF_FAN_COIL">OFF Fan Coil</option>
+				<option value="ON_SPEED_1">ON speed 1</option>
+				<option value="ON_SPEED_2">ON speed 2</option>
+				<option value="ON_SPEED_3">ON speed 3</option>
+				<option value="OFF_SPEED_1">OFF speed 1</option>
+				<option value="OFF_SPEED_2">OFF speed 2</option>
+				<option value="OFF_SPEED_3">OFF speed 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="actuator" advanced="true">
+		<item-type>String</item-type>
+		<label>Actuator Status</label>
+		<description>Actuator status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="ON">ON</option>
+				<option value="OPENED">Opened</option>
+				<option value="CLOSED">Closed</option>
+				<option value="STOP">Stop</option>
+				<option value="OFF_FAN_COIL">OFF Fan Coil</option>
+				<option value="ON_SPEED_1">ON speed 1</option>
+				<option value="ON_SPEED_2">ON speed 2</option>
+				<option value="ON_SPEED_3">ON speed 3</option>
+				<option value="OFF_SPEED_1">OFF speed 1</option>
+				<option value="OFF_SPEED_2">OFF speed 2</option>
+				<option value="OFF_SPEED_3">OFF speed 3</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<!-- Energy channels -->
