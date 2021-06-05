@@ -85,7 +85,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
     protected void configureEventHandlers(Map<String, EventHandler> handlers) {
         // register default event handlers
         handlers.put(EVENT_DOOR_STATE, defaultDoorStateEventHandler());
-        handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE));
+        handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, updateRemoteControlActiveAndProgramOptionsStateEventHandler());
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));
         handlers.put(EVENT_FINISH_IN_RELATIVE, defaultRemainingProgramTimeEventHandler());
