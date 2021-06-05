@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
 import org.openhab.binding.resol.internal.ResolStateDescriptionOptionProvider;
 import org.openhab.binding.resol.internal.providers.ResolChannelTypeProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -134,7 +135,11 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                 channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
                         pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
             } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.DateTime) {
-                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "DateTime");
+                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "datetime");
+            } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.WeekTime) {
+                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "weektime");
+            } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.Time) {
+                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, CoreItemFactory.STRING);
             } else {
                 /* used for enums and the numeric types without unit */
                 channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
@@ -144,14 +149,14 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
             Thing thing = getThing();
             switch (pfv.getPacketFieldSpec().getType()) {
+                case WeekTime:
                 case DateTime:
                     acceptedItemType = "DateTime";
                     break;
-                case WeekTime:
+                case Time:
                 case Number:
                     acceptedItemType = ResolChannelTypeProvider.itemTypeForUnit(pfv.getPacketFieldSpec().getUnit());
                     break;
-                case Time:
                 default:
                     acceptedItemType = "String";
                     break;
@@ -180,9 +185,31 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
                     thingBuilder.withChannel(channel).withLabel(thing.getLabel());
                     updateThing(thingBuilder.build());
+                } else if ("DateTime".equals(acceptedItemType)) {
+                    /* a date channel */
+                    Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
+                            .withLabel(pfv.getName(lang)).build();
+
+                    thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                    updateThing(thingBuilder.build());
+
+                } else if ("String".equals(acceptedItemType)) {
+                    /* a string channel */
+                    Channel channel = ChannelBuilder.create(channelUID, "String").withType(channelTypeUID)
+                            .withLabel(pfv.getName(lang)).build();
+
+                    thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                    updateThing(thingBuilder.build());
                 } else if (pfv.getRawValueDouble() != null) {
                     /* a number channel */
                     Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
+                            .withLabel(pfv.getName(lang)).build();
+
+                    thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                    updateThing(thingBuilder.build());
+                } else {
+                    /* a string channel */
+                    Channel channel = ChannelBuilder.create(channelUID, "String").withType(channelTypeUID)
                             .withLabel(pfv.getName(lang)).build();
 
                     thingBuilder.withChannel(channel).withLabel(thing.getLabel());
@@ -197,6 +224,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
             } else {
                 switch (pfv.getPacketFieldSpec().getType()) {
+                    case Time:
                     case Number:
                         Double dd = pfv.getRawValueDouble();
                         if (dd != null) {
@@ -229,19 +257,23 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                          * }
                          */
                         break;
+                    case WeekTime:
                     case DateTime:
                         synchronized (DATE_FORMAT) {
                             DateTimeType d = new DateTimeType(DATE_FORMAT.format(pfv.getRawValueDate()));
                             this.updateState(channelId, d);
                         }
                         break;
-                    case WeekTime:
-                    case Time:
                     default:
                         Bridge b = getBridge();
                         if (b != null) {
-                            String value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(),
-                                    ((ResolBridgeHandler) b).getLocale());
+                            ResolBridgeHandler handler = (ResolBridgeHandler) b.getHandler();
+                            String value;
+                            if (handler != null) {
+                                value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), handler.getLocale());
+                            } else {
+                                value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), Locale.getDefault());
+                            }
                             try {
                                 QuantityType<?> q = new QuantityType<>(value);
                                 this.updateState(channelId, q);
