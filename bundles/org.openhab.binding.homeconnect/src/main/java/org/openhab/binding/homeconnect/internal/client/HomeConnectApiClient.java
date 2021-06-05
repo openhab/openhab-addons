@@ -79,7 +79,6 @@ public class HomeConnectApiClient {
     private final Logger logger = LoggerFactory.getLogger(HomeConnectApiClient.class);
     private final HttpClient client;
     private final String apiUrl;
-    private final Map<String, List<AvailableProgramOption>> availableProgramOptionsCache;
     private final Map<String, List<AvailableProgram>> programsCache;
     private final OAuthClientService oAuthClientService;
     private final CircularQueue<ApiRequest> communicationQueue;
@@ -91,7 +90,6 @@ public class HomeConnectApiClient {
         this.oAuthClientService = oAuthClientService;
         this.apiBridgeConfiguration = apiBridgeConfiguration;
 
-        availableProgramOptionsCache = new ConcurrentHashMap<>();
         programsCache = new ConcurrentHashMap<>();
         apiUrl = simulated ? API_SIMULATOR_BASE_URL : API_BASE_URL;
         communicationQueue = new CircularQueue<>(COMMUNICATION_QUEUE_SIZE);
@@ -631,12 +629,6 @@ public class HomeConnectApiClient {
 
     public List<AvailableProgramOption> getProgramOptions(String haId, String programKey)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        if (availableProgramOptionsCache.containsKey(programKey)) {
-            logger.debug("Returning cached options for '{}'.", programKey);
-            List<AvailableProgramOption> availableProgramOptions = availableProgramOptionsCache.get(programKey);
-            return availableProgramOptions != null ? availableProgramOptions : Collections.emptyList();
-        }
-
         Request request = createRequest(HttpMethod.GET, BASE_PATH + haId + "/programs/available/" + programKey);
         try {
             ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
@@ -652,11 +644,8 @@ public class HomeConnectApiClient {
                         responseBody == null ? "" : responseBody);
             }
 
-            List<AvailableProgramOption> availableProgramOptions = response.getStatus() == HttpStatus.OK_200
-                    ? mapToAvailableProgramOption(responseBody, haId)
+            return response.getStatus() == HttpStatus.OK_200 ? mapToAvailableProgramOption(responseBody, haId)
                     : List.of();
-            availableProgramOptionsCache.put(programKey, availableProgramOptions);
-            return availableProgramOptions;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Failed to get program options! haId={}, programKey={}, error={}", haId, programKey,
                     e.getMessage());
