@@ -96,9 +96,8 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         if (state.jsReply.sn.length > 0) {
             if (state.jsReply.sn[station] == 1) {
                 return true;
-            } else {
-                return false;
             }
+            return false;
         } else {
             throw new GeneralApiException("There was a problem parsing the station status for the sn value.");
         }

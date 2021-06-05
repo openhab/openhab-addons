@@ -147,7 +147,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public boolean isStationOpen(int station) throws CommunicationApiException, GeneralApiException {
         String returnContent = http.sendHttpGet(getBaseUrl() + "sn" + station, null);
-        return returnContent.equals("1");
+        return "1".equals(returnContent);
     }
 
     @Override
@@ -391,7 +391,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
             String content = response.getContentAsString();
-            if (content.equals("{\"result\":2}")) {
+            if ("{\"result\":2}".equals(content)) {
                 throw new UnauthorizedApiException("Unauthorized, check your password is correct");
             }
             return content;

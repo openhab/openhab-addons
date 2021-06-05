@@ -16,12 +16,15 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,7 +54,6 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE));
-
     private ExecutorService discoverySearchPool = scheduler;
     private OpenSprinklerApiFactory apiFactory;
 
@@ -82,12 +84,6 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Completed discovery of OpenSprinkler devices.");
     }
 
-    @Override
-    protected void stopScan() {
-        discoverySearchPool.shutdownNow();
-        super.stopScan();
-    }
-
     /**
      * Create a new Thing with an IP address given. Uses default port and password.
      *
@@ -110,29 +106,48 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
                 .withRepresentationProperty("hostname").withLabel("OpenSprinkler Device").build());
     }
 
+    private void scanSingleSubnet(InterfaceAddress hostAddress) {
+        byte[] broadcastAddress = hostAddress.getBroadcast().getAddress();
+        // Create subnet mask from length
+        int shft = 0xffffffff << (32 - hostAddress.getNetworkPrefixLength());
+        byte oct1 = (byte) (((byte) ((shft & 0xff000000) >> 24)) & 0xff);
+        byte oct2 = (byte) (((byte) ((shft & 0x00ff0000) >> 16)) & 0xff);
+        byte oct3 = (byte) (((byte) ((shft & 0x0000ff00) >> 8)) & 0xff);
+        byte oct4 = (byte) (((byte) (shft & 0x000000ff)) & 0xff);
+        byte[] subnetMask = new byte[] { oct1, oct2, oct3, oct4 };
+        // calc first IP to start scanning from on this subnet
+        byte[] startAddress = new byte[4];
+        startAddress[0] = (byte) (broadcastAddress[0] & subnetMask[0]);
+        startAddress[1] = (byte) (broadcastAddress[1] & subnetMask[1]);
+        startAddress[2] = (byte) (broadcastAddress[2] & subnetMask[2]);
+        startAddress[3] = (byte) (broadcastAddress[3] & subnetMask[3]);
+        // Loop from start of subnet to the broadcast address.
+        for (int i = ByteBuffer.wrap(startAddress).getInt(); i < ByteBuffer.wrap(broadcastAddress).getInt(); i++) {
+            try {
+                InetAddress currentIP = InetAddress.getByAddress(ByteBuffer.allocate(4).putInt(i).array());
+                // Try to reach each IP with a timeout of 500ms which is enough for local network
+                if (currentIP.isReachable(500)) {
+                    String host = currentIP.getHostAddress().toString();
+                    logger.debug("Unknown device was found at: {}", host);
+                    discoverySearchPool.execute(new OpenSprinklerDiscoveryJob(this, host));
+                }
+            } catch (IOException e) {
+            }
+        }
+    }
+
     private void ipAddressScan() {
-        String ipAddress;
         try {
             for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks
                     .hasMoreElements();) {
                 NetworkInterface networkInterface = enumNetworks.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr
-                        .hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
+                List<InterfaceAddress> list = networkInterface.getInterfaceAddresses();
+                for (InterfaceAddress hostAddress : list) {
+                    InetAddress inetAddress = hostAddress.getAddress();
                     if (!inetAddress.isLoopbackAddress() && inetAddress.isSiteLocalAddress()) {
-                        ipAddress = inetAddress.getHostAddress().toString();
-                        String temp = ipAddress.substring(0, ipAddress.lastIndexOf("."));
-                        for (int i = 1; i < 254; i++) {
-                            String host = temp + "." + i;
-                            try {
-                                // Try to reach each IP with a timeout of 500ms which is enough for local network
-                                if (InetAddress.getByName(host).isReachable(500)) {
-                                    logger.trace("Unknown device was found at:{}", host);
-                                    discoverySearchPool.execute(new OpenSprinklerDiscoveryJob(this, host));
-                                }
-                            } catch (IOException e) {
-                            }
-                        }
+                        logger.debug("Scanning all IP address's that IP {}/{} is on", hostAddress.getAddress(),
+                                hostAddress.getNetworkPrefixLength());
+                        scanSingleSubnet(hostAddress);
                     }
                 }
             }
