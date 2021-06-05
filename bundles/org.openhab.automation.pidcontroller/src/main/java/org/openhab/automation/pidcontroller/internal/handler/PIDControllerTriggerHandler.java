@@ -119,9 +119,9 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         eventFilter = event -> {
             String topic = event.getTopic();
 
-            return topic.equals("openhab/items/" + inputItemName + "/state")
-                    || topic.equals("openhab/items/" + inputItemName + "/statechanged")
-                    || topic.equals("openhab/items/" + setpointItemName + "/statechanged")
+            return ("openhab/items/" + inputItemName + "/state").equals(topic)
+                    || ("openhab/items/" + inputItemName + "/statechanged").equals(topic)
+                    || ("openhab/items/" + setpointItemName + "/statechanged").equals(topic)
                     || commandTopic.map(t -> topic.equals(t)).orElse(false);
         };
 
