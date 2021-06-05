@@ -16,6 +16,7 @@ package org.openhab.binding.venstarthermostat.internal.model;
  * The {@link VenstarInfoData} represents a thermostat state from the REST API.
  *
  * @author William Welliver - Initial contribution
+ * @author Matthew Davies - added VenstarAwayMode to include away mode in binding
  */
 public class VenstarInfoData {
     double cooltemp;
@@ -23,18 +24,21 @@ public class VenstarInfoData {
 
     VenstarSystemState state;
     VenstarSystemMode mode;
+    VenstarAwayMode away;
     int tempunits;
 
     public VenstarInfoData() {
         super();
     }
 
-    public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode) {
+    public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode,
+            VenstarAwayMode away) {
         super();
         this.cooltemp = cooltemp;
         this.heattemp = heattemp;
         this.state = state;
         this.mode = mode;
+        this.away = away;
     }
 
     public double getCooltemp() {
@@ -75,5 +79,13 @@ public class VenstarInfoData {
 
     public void setTempunits(int tempunits) {
         this.tempunits = tempunits;
+    }
+
+    public VenstarAwayMode getAway() {
+        return away;
+    }
+
+    public void setAwayMode(VenstarAwayMode away) {
+        this.away = away;
     }
 }

@@ -23,6 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author William Welliver - Initial contribution
+ * @author Matthew Davies - added awayMode and awayModeRaw to include thermostat away mode in binding
  */
 @NonNullByDefault
 public class VenstarThermostatBindingConstants {
@@ -44,6 +45,8 @@ public class VenstarThermostatBindingConstants {
     public final static String CHANNEL_SYSTEM_MODE = "systemMode";
     public final static String CHANNEL_SYSTEM_STATE_RAW = "systemStateRaw";
     public final static String CHANNEL_SYSTEM_MODE_RAW = "systemModeRaw";
+    public final static String CHANNEL_AWAY_MODE = "awayMode";
+    public final static String CHANNEL_AWAY_MODE_RAW = "awayModeRaw";
 
     public final static String CONFIG_USERNAME = "username";
     public final static String CONFIG_PASSWORD = "password";
