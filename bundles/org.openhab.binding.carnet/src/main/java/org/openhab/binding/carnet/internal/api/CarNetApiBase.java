@@ -307,7 +307,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public CarNetChargerStatus getChargerStatus() throws CarNetException {
-        return callApi("bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charge", "chargerStatus", CNChargerInfo.class).charger;
+        return callApi("bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger", "chargerStatus",
+                CNChargerInfo.class).charger;
     }
 
     public CarNetTripData getTripData(String type) throws CarNetException {
@@ -713,7 +714,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                         logger.debug("{}: Request {} has unknown status: {}", config.vehicle.vin, requestId, status);
                 }
 
-                if (eventListener != null && remove) {
+                if (eventListener != null) {
                     eventListener.onActionResult(request.service, request.action, request.requestId,
                             actionStatus.toUpperCase(), status);
                 }

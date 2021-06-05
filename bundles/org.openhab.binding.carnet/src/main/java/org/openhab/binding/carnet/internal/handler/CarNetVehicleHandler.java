@@ -219,7 +219,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 // General channels
                 Map<String, ChannelIdMapEntry> channels = new LinkedHashMap<>();
                 addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, null, false, true);
-                addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_RATELIM, ITEMT_NUMBER, null, true, true);
+                addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_RATELIM, ITEMT_NUMBER, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED, ITEMT_SWITCH, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, null, false, true);
@@ -497,6 +497,10 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private int getHfDuration() {
         State state = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HFDURATION);
         return state != UnDefType.NULL ? ((DecimalType) state).intValue() : HF_DEFAULT_DURATION_SEC;
+    }
+
+    public State getChannelValue(String group, String channel) {
+        return cache.getValue(group, channel);
     }
 
     @Override

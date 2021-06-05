@@ -88,7 +88,7 @@ public class CarNetTokenManager {
      */
     public String createVwToken(CarNetCombinedConfig config) throws CarNetException {
         TokenSet tokens = getTokenSet(config.tokenSetId);
-        if (!tokens.vwToken.isExpired()) {
+        if (tokens.vwToken.isValid() && !tokens.vwToken.isExpired()) {
             // Token is still valid
             return tokens.vwToken.accessToken;
         }
@@ -245,12 +245,10 @@ public class CarNetTokenManager {
                 throw new CarNetSecurityException("Login/OAuth failed, didn't got accessToken/idToken");
             }
             // In this case the id and access token were returned by the login process
-            logger.trace("{}: OAuth successful, idToken/userId was retrieved", config.vehicle.vin);
             tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
+            logger.trace("{}: OAuth successful, idToken was retrieved, valid for {}sec", config.vehicle.vin,
+                    tokens.idToken.validity);
             tokens.csrf = csrf;
-        } catch (CarNetException e) {
-            logger.warn("Login failed: {}", e.toString());
-            throw e;
         } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
             logger.warn("Technical problem with algorithms", e);
             throw new CarNetException("Technical problem with algorithms", e);
@@ -310,6 +308,7 @@ public class CarNetTokenManager {
                 throw new CarNetSecurityException("Authentication failed: Unable to get access token!");
             }
             tokens.vwToken = new CarNetToken(token);
+            logger.debug("{}: accessToken was created, valid for {}sec", config.api.brand, tokens.vwToken.validity);
             updateTokenSet(config.tokenSetId, tokens);
             return tokens.vwToken.accessToken;
         } catch (CarNetException e) {
@@ -448,7 +447,7 @@ public class CarNetTokenManager {
             }
         } catch (CarNetException e) {
             // Ignore problems with the idToken or securityToken if the accessToken was requested successful
-            logger.debug("Unable to create secondary token: {}", e.toString()); // "normal, no stack trace"
+            logger.debug("Unable to refresh token: {}", e.toString()); // "normal, no stack trace"
         } catch (IllegalArgumentException e) {
             logger.debug("Invalid token!");
         }
@@ -465,7 +464,12 @@ public class CarNetTokenManager {
      */
     public boolean refreshToken(CarNetCombinedConfig config, CarNetToken token) throws CarNetException {
         if (!token.isValid()) {
-            // token is still valid
+            return false;
+        }
+
+        if (token.refreshToken.isEmpty()) {
+            logger.debug("{}: No refresh_token available, token is now invalid", config.vehicle.vin);
+            token.invalidate();
             return false;
         }
 
@@ -487,8 +491,8 @@ public class CarNetTokenManager {
                 }
                 tokens.vwToken = new CarNetToken(newToken);
                 updateTokenSet(config.tokenSetId, tokens);
-                logger.debug("{}: Token refresh successful", config.vehicle.vin);
-                return true;
+                logger.debug("{}: Token refresh successful, valid for {} sec", config.vehicle.vin,
+                        tokens.vwToken.validity);
             } catch (CarNetException e) {
                 logger.debug("{}: Unable to refresh token: {}", config.vehicle.vin, e.toString());
                 // Invalidate token
@@ -496,10 +500,10 @@ public class CarNetTokenManager {
                     tokens.vwToken.invalidate();
                     updateTokenSet(config.tokenSetId, tokens);
                 }
+                return false;
             }
         }
-
-        return false;
+        return true;
     }
 
     /**

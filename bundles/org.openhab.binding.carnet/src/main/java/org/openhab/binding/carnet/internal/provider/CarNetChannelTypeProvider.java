@@ -153,7 +153,6 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
         StateDescriptionFragmentBuilder desc = CarNetStateDescriptionProvider.buildStateDescriptor(resources,
                 channelIdMapper, channelId);
         if (desc != null) {
-            logger.trace("Adding ChannelType with id={}, UID={}", channelId, channelTypeUID.toString());
             ct = ChannelTypeBuilder.state(channelTypeUID, channelDef.getLabel(), channelDef.itemType)
                     .withDescription(channelDef.getDescription()).isAdvanced(channelDef.advanced)
                     .withStateDescriptionFragment(desc.build()).build();

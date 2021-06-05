@@ -181,14 +181,18 @@ public class CarNetServiceStatus extends CarNetBaseService {
     }
 
     private boolean checkMaintenance(CNStatusField field, ChannelIdMapEntry definition) {
-        if (definition.symbolicName.contains("MAINT_ALARM") && "1".equals(field.value)) {
-            // MAINT_ALARM_INSPECTION+MAINT_ALARM_OIL_CHANGE + MAINT_ALARM_OIL_MINIMUM
-            logger.debug("{}: Maintenance required: {} has incorrect pressure", thingId, definition.symbolicName);
-            return true;
-        }
-        if (definition.symbolicName.contains("AD_BLUE_RANGE") && (Integer.parseInt(field.value) < 1000)) {
-            logger.debug("{}: Maintenance required: Ad Blue at {} (< 1.000km)", thingId, field.value);
-            return true;
+        if (definition.symbolicName.contains("MAINT_")) {
+            if (definition.symbolicName.contains("ALARM_") && "1".equals(field.value)) {
+                // MAINT_ALARM_INSPECTION+MAINT_ALARM_OIL_CHANGE + MAINT_ALARM_OIL_MINIMUM
+                logger.debug("{}: Maintenance required: Alarm {} was detected", thingId, definition.symbolicName);
+                return true;
+            } else if (definition.symbolicName.contains("DISTANCE_")
+                    && Math.abs(Double.parseDouble(field.value)) < 1000.0) {
+                // MAINT_DISTANCE_INSPECTION | MAINT_OIL_DISTANCE_CHANGE MAINT_| AD_BLUE_DISTANCE
+                logger.debug("{}: Maintenance required: Remaining distance for {} is {}km, therefore < 1.000km",
+                        thingId, definition.symbolicName, field.value);
+                return true;
+            }
         }
         return false;
     }
@@ -207,7 +211,7 @@ public class CarNetServiceStatus extends CarNetBaseService {
     }
 
     private boolean checkWindows(CNStatusField field, ChannelIdMapEntry definition) {
-        if ((definition.symbolicName.contains("WINDOWS") || definition.symbolicName.contains("_ROOF_"))
+        if ((definition.symbolicName.contains("WINDOWS") /* || definition.symbolicName.contains("_ROOF_") */)
                 && definition.symbolicName.contains("STATE3") && !"3".equals(field.value) && !"0".equals(field.value)) {
             logger.debug("{}: Window {} is not closed ({})", thingId, definition.channelName, field.value);
             return false;
@@ -216,7 +220,7 @@ public class CarNetServiceStatus extends CarNetBaseService {
     }
 
     private boolean checkTires(CNStatusField field, ChannelIdMapEntry definition) {
-        if (definition.symbolicName.contains("TIREPRESS") && definition.symbolicName.contains("CURRENT")
+        if (definition.symbolicName.contains("TPRESS") && definition.symbolicName.contains("CURRENT")
                 && !"1".equals(field.value)) {
             logger.debug("{}: Tire pressure for {} is not ok", thingId, definition.channelName);
             return false;
@@ -260,33 +264,29 @@ public class CarNetServiceStatus extends CarNetBaseService {
 
     private boolean updateSwitchChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
         int value = Integer.parseInt(getString(field.value));
+        boolean on = false;
         State state;
 
-        if (value == 0 && !definition.symbolicName.toUpperCase().startsWith("STATE30")) {
-            state = UnDefType.UNDEF;
-        } else {
-            boolean on;
-            if (definition.symbolicName.toUpperCase().startsWith("STATE1")) {
+        String symbolicName = definition.symbolicName.toUpperCase();
+        if (symbolicName.startsWith("STATE") || symbolicName.startsWith("LOCK") || symbolicName.startsWith("SAFETY")) {
+            if (symbolicName.startsWith("STATE1")) {
                 on = value == 1; // 1=active, 0=not active
-            } else if (definition.symbolicName.toUpperCase().startsWith("STATE2")) {
+            } else if (symbolicName.startsWith("STATE2") || symbolicName.startsWith("LOCK2")) {
                 on = value == 2; // 3=open, 2=closed
-            } else if (definition.symbolicName.toUpperCase().startsWith("STATE3")
-                    || definition.symbolicName.toUpperCase().startsWith("SAFETY")) {
+            } else if (symbolicName.startsWith("STATE3") || symbolicName.startsWith("LOCK3")
+                    || symbolicName.startsWith("SAFETY")) {
                 on = value == 3; // 2=open, 3=closed
-            } else if (definition.symbolicName.toUpperCase().startsWith("LOCK2")) {
-                // mark a closed lock ON
-                on = value == 2; // 2=open, 3=closed
-            } else if (definition.symbolicName.toUpperCase().startsWith("LOCK3")) {
-                // mark a closed lock ON
-                on = value == 3; // 3=open, 2=closed
             } else {
                 on = value == 1;
             }
-            state = ITEMT_SWITCH.equals(definition.itemType) ? (on ? OnOffType.ON : OnOffType.OFF)
-                    : (on ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+        } else if (value == 0) {
+            on = value == 1;
         }
-        logger.debug("{}: Map value {} to state {} for channe {}, symnolicName{}", thingId, value, state,
-                definition.channelName, definition.symbolicName);
+
+        state = ITEMT_SWITCH.equals(definition.itemType) ? (on ? OnOffType.ON : OnOffType.OFF)
+                : (on ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+        logger.debug("{}: Map {}={} to state {} for channel {}", thingId, definition.symbolicName, value, state,
+                definition.channelName);
         return thingHandler.updateChannel(channel, state);
     }
 }
