@@ -324,7 +324,7 @@ public class ShellyComponents {
             if ((sdata.adcs != null) && (sdata.adcs.size() > 0)) {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
-                        getDecimal(adc.voltage));
+                        toQuantityType(getDouble(adc.voltage), 1, Units.VOLT));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
