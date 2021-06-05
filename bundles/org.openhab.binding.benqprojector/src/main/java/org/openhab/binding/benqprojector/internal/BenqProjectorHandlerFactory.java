@@ -14,10 +14,7 @@ package org.openhab.binding.benqprojector.internal;
 
 import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,8 +39,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.benqprojector", service = ThingHandlerFactory.class)
 public class BenqProjectorHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_PROJECTOR_SERIAL, THING_TYPE_PROJECTOR_TCP).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PROJECTOR_SERIAL,
+            THING_TYPE_PROJECTOR_TCP);
     private final SerialPortManager serialPortManager;
 
     @Override

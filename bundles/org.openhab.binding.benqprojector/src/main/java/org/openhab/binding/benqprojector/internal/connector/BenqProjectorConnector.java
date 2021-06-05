@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.benqprojector.internal.connector;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.benqprojector.internal.BenqProjectorException;
 
 /**
@@ -22,6 +28,7 @@ import org.openhab.binding.benqprojector.internal.BenqProjectorException;
  */
 @NonNullByDefault
 public interface BenqProjectorConnector {
+    public static final int TIMEOUT_MS = 5 * 1000;
 
     public static final String START = "\r*";
     public static final String END = "#\r";
@@ -42,15 +49,59 @@ public interface BenqProjectorConnector {
     void disconnect() throws BenqProjectorException;
 
     /**
-     * Procedure for send raw data to projector.
+     * Procedure for sending raw data to projector.
      *
      * @param data
      *            Message to send.
      *
-     * @param timeout
-     *            timeout to wait response in milliseconds.
+     * @throws BenqProjectorException
+     */
+    String sendMessage(String data) throws BenqProjectorException;
+
+    /**
+     * Common method called by the Serial or Tcp connector to send the message to the projector, wait for a response and
+     * return it after processing.
+     *
+     * @param data
+     *            Message to send.
+     * @param in
+     *            The connector's input stream.
+     * @param out
+     *            The connector's output stream.
      *
      * @throws BenqProjectorException
      */
-    String sendMessage(String data, int timeout) throws BenqProjectorException;
+    default String sendMsgReadResp(String data, @Nullable InputStream in, @Nullable OutputStream out)
+            throws IOException, BenqProjectorException {
+        String resp = BLANK;
+
+        if (in != null && out != null) {
+            out.write((START + data + END).getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+
+            long startTime = System.currentTimeMillis();
+            long elapsedTime = 0;
+
+            while (elapsedTime < TIMEOUT_MS) {
+                int availableBytes = in.available();
+                if (availableBytes > 0) {
+                    byte[] tmpData = new byte[availableBytes];
+                    int readBytes = in.read(tmpData, 0, availableBytes);
+                    resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
+                    if (resp.contains(END)) {
+                        return resp.replaceAll("[\\r\\n*#>]", BLANK).replace(data, BLANK);
+                    }
+                } else {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new BenqProjectorException(e);
+                    }
+                }
+
+                elapsedTime = System.currentTimeMillis() - startTime;
+            }
+        }
+        return resp;
+    }
 }

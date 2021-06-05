@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -100,7 +99,7 @@ public class BenqProjectorTcpConnector implements BenqProjectorConnector {
     }
 
     @Override
-    public String sendMessage(String data, int timeout) throws BenqProjectorException {
+    public String sendMessage(String data) throws BenqProjectorException {
         InputStream in = this.in;
         OutputStream out = this.out;
 
@@ -125,7 +124,7 @@ public class BenqProjectorTcpConnector implements BenqProjectorConnector {
                         }
                     }
                 }
-                return sendMmsg(data, timeout);
+                return sendMsgReadResp(data, in, out);
             } else {
                 return BLANK;
             }
@@ -135,46 +134,10 @@ public class BenqProjectorTcpConnector implements BenqProjectorConnector {
             connect();
 
             try {
-                return sendMmsg(data, timeout);
+                return sendMsgReadResp(data, in, out);
             } catch (IOException e1) {
                 throw new BenqProjectorException(e);
             }
         }
-    }
-
-    private String sendMmsg(String data, int timeout) throws IOException, BenqProjectorException {
-        String resp = BLANK;
-
-        InputStream in = this.in;
-        OutputStream out = this.out;
-
-        if (in != null && out != null) {
-            out.write((START + data + END).getBytes(StandardCharsets.US_ASCII));
-            out.flush();
-
-            long startTime = System.currentTimeMillis();
-            long elapsedTime = 0;
-
-            while (elapsedTime < timeout) {
-                int availableBytes = in.available();
-                if (availableBytes > 0) {
-                    byte[] tmpData = new byte[availableBytes];
-                    int readBytes = in.read(tmpData, 0, availableBytes);
-                    resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
-                    if (resp.contains(END)) {
-                        return resp.replaceAll("[\\r\\n*#>]", BLANK).replace(data, BLANK);
-                    }
-                } else {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        throw new BenqProjectorException(e);
-                    }
-                }
-
-                elapsedTime = System.currentTimeMillis() - startTime;
-            }
-        }
-        return resp;
     }
 }

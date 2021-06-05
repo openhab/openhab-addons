@@ -22,14 +22,18 @@ All settings are through thing configuration parameters.
 
 The `projector-serial` thing has the following configuration parameters:
 
-- _serialPort_: Serial port device name that is connected to the BenQ projector to control, e.g. COM1 on Windows, /dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac
-- _pollingInterval_: Polling interval in seconds to update channel states | 5-60 seconds; default 10 seconds
+| Parameter         | Name             | Description                                                                                                                                               | Required |
+|-------------------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `serialPort`      | Serial Port      | Serial port device name that is connected to the BenQ projector to control, e.g. COM1 on Windows, /dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac. | yes      |
+| `pollingInterval` | Polling Interval | Polling interval in seconds to update channel states, range 5-60 seconds; default 10 seconds.                                                             | no       |
 
 The `projector-tcp` thing has the following configuration parameters:
 
-- _host_: IP address for the projector or serial over IP device
-- _port_: Port for the projector or serial over IP device | Default 8000 for BenQ projectors with built in networking
-- _pollingInterval_: Polling interval in seconds to update channel states | 5-60 seconds; default 10 seconds
+| Parameter         | Name             | Description                                                                                                 | Required |
+|-------------------|------------------|-------------------------------------------------------------------------------------------------------------|----------|
+| `host`            | Host Name        | Host Name or IP address for the projector or serial over IP device.                                         | yes      |
+| `port`            | Port             | Port for the projector or serial over IP device, Default 8000 for BenQ projectors with built in networking. | yes      |
+| `pollingInterval` | Polling Interval | Polling interval in seconds to update channel states, range 5-60 seconds; default 10 seconds.               | no       |
 
 Some notes:
 
@@ -65,7 +69,7 @@ Some notes:
 
 things/benq.things:
 
-```java
+```
 //serial port connection
 benqprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10 ]
 

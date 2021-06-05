@@ -9,7 +9,7 @@
 		<description>A BenQ projector connected via a serial port</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
 			<channel id="picturemode" typeId="picturemode"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
@@ -40,7 +40,7 @@
 			IP device</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
 			<channel id="picturemode" typeId="picturemode"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
@@ -62,7 +62,7 @@
 				<default>8000</default>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
 			</parameter>
@@ -70,11 +70,6 @@
 
 	</thing-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Powers the Projector On or Off</description>
-	</channel-type>
 	<channel-type id="source">
 		<item-type>String</item-type>
 		<label>Source</label>

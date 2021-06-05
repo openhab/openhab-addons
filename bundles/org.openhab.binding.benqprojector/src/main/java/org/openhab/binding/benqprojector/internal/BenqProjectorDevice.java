@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BenqProjectorDevice {
-    private static final int DEFAULT_TIMEOUT_MS = 5 * 1000;
-
     private static final String UNSUPPORTED_ITM = "Unsupported item";
     private static final String BLOCK_ITM = "Block item";
     private static final String ILLEGAL_FMT = "Illegal format";
@@ -57,10 +55,9 @@ public class BenqProjectorDevice {
         connection = new BenqProjectorTcpConnector(config.host, config.port);
     }
 
-    private synchronized String sendQuery(String query, int timeout)
-            throws BenqProjectorCommandException, BenqProjectorException {
+    private synchronized String sendQuery(String query) throws BenqProjectorCommandException, BenqProjectorException {
         logger.debug("Query: '{}'", query);
-        String response = connection.sendMessage(query, timeout);
+        String response = connection.sendMessage(query);
 
         if (response.length() == 0) {
             throw new BenqProjectorException("No response received");
@@ -89,22 +86,17 @@ public class BenqProjectorDevice {
         return responseParts[1].toLowerCase();
     }
 
-    protected void sendCommand(String command, int timeout)
-            throws BenqProjectorCommandException, BenqProjectorException {
-        sendQuery(command, timeout);
-    }
-
     protected void sendCommand(String command) throws BenqProjectorCommandException, BenqProjectorException {
-        sendCommand(command, DEFAULT_TIMEOUT_MS);
+        sendQuery(command);
     }
 
     protected int queryInt(String query) throws BenqProjectorCommandException, BenqProjectorException {
-        String response = sendQuery(query, DEFAULT_TIMEOUT_MS);
+        String response = sendQuery(query);
         return Integer.parseInt(response);
     }
 
     protected String queryString(String query) throws BenqProjectorCommandException, BenqProjectorException {
-        return sendQuery(query, DEFAULT_TIMEOUT_MS);
+        return sendQuery(query);
     }
 
     public void connect() throws BenqProjectorException {
@@ -173,7 +165,7 @@ public class BenqProjectorDevice {
     }
 
     public void setBlank(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
-        sendCommand(String.format("blank=%s", (value == Switch.ON ? "on" : "off")), DEFAULT_TIMEOUT_MS);
+        sendCommand(String.format("blank=%s", (value == Switch.ON ? "on" : "off")));
     }
 
     /*
@@ -184,7 +176,7 @@ public class BenqProjectorDevice {
     }
 
     public void setFreeze(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
-        sendCommand(String.format("freeze=%s", (value == Switch.ON ? "on" : "off")), DEFAULT_TIMEOUT_MS);
+        sendCommand(String.format("freeze=%s", (value == Switch.ON ? "on" : "off")));
     }
 
     /*
