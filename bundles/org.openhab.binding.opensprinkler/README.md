@@ -60,7 +60,7 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 | currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device.                                              |
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
-| signalStrength  | Number:Power           | RO | Shows the reported RSSI value in dB to indicate how strong the WiFi Signal is.     |
+| signalStrength  | Number                 | RO | Shows how strong the WiFi Signal is.     |
 | flowSensorCount | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
 | programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when      |
 |                 |                        |    | selected will start that program for you.                                          |
