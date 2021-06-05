@@ -176,7 +176,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     private void updateChannels(final Map<WasteType, CollectionDate> collectionDates) {
         for (final Channel channel : this.getThing().getChannels()) {
 
-        	final WasteType wasteType = getWasteTypeByChannel(channel.getUID().getId());
+            final WasteType wasteType = getWasteTypeByChannel(channel.getUID().getId());
 
             final CollectionDate collectionDate = collectionDates.get(wasteType);
             if (collectionDate == null) {
