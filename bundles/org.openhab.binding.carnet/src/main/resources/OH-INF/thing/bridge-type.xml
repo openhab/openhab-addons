@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="carnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="myaudi">
+		<label>myAudi Account (CarNet)</label>
+		<description>This thing represents a myAudi CarNet Account.</description>
+
+		<config-description-ref uri="bridge-type:carnet:account"/>
+	</bridge-type>
+
+	<bridge-type id="volkswagen">
+		<label>Volkswagen Account (CarNet)</label>
+		<description>This thing represents a VW CarNet Account.</description>
+
+		<config-description-ref uri="bridge-type:carnet:account"/>
+	</bridge-type>
+
+	<bridge-type id="skoda">
+		<label>Skoda Account (CarNet)</label>
+		<description>This thing represents a Skoda CarNet Account.</description>
+
+		<config-description-ref uri="bridge-type:carnet:account"/>
+	</bridge-type>
+
+</thing:thing-descriptions>

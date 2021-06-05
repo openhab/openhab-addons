@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="carnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vehicle">
+		<label>@text/thing-type.carnet.vehicle.label</label>
+		<description>@text/thing-type.carnet.vehicle.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="control" typeId="control"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="location" typeId="location"/>
+			<channel-group id="maintenance" typeId="maintenance"/>
+			<channel-group id="charger" typeId="charger"/>
+			<channel-group id="range" typeId="range"/>
+			<channel-group id="rluHistory1" typeId="rluHistory"/>
+			<channel-group id="rluHistory2" typeId="rluHistory"/>
+			<channel-group id="rluHistory3" typeId="rluHistory"/>
+			<channel-group id="climater" typeId="climater"/>
+			<channel-group id="tripShort1" typeId="tripShort"/>
+			<channel-group id="tripShort2" typeId="tripShort"/>
+			<channel-group id="tripShort3" typeId="tripShort"/>
+			<channel-group id="tripShort4" typeId="tripShort"/>
+			<channel-group id="tripShort5" typeId="tripShort"/>
+			<channel-group id="tripLong1" typeId="tripLong"/>
+			<channel-group id="tripLong2" typeId="tripLong"/>
+			<channel-group id="tripLong3" typeId="tripLong"/>
+			<channel-group id="tripLong4" typeId="tripLong"/>
+			<channel-group id="tripLong5" typeId="tripLong"/>
+			<channel-group id="destination1" typeId="destination"/>
+			<channel-group id="destination2" typeId="destination"/>
+			<channel-group id="destination3" typeId="destination"/>
+			<channel-group id="destination4" typeId="destination"/>
+			<channel-group id="destination5" typeId="destination"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="tires" typeId="tires"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:carnet:vehicle"/>
+	</thing-type>
+
+	<channel-group-type id="general">
+		<label>@text/thing-type.carnet.vehicle.group.general.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.general.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="control">
+		<label>@text/thing-type.carnet.vehicle.group.control.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.control.description</description>
+	</channel-group-type>
+	<channel-group-type id="status">
+		<label>@text/thing-type.carnet.vehicle.group.status.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.status.description</description>
+	</channel-group-type>
+	<channel-group-type id="location">
+		<label>@text/thing-type.carnet.vehicle.group.location.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.location.description</description>
+	</channel-group-type>
+	<channel-group-type id="range">
+		<label>@text/thing-type.carnet.vehicle.group.range.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.range.description</description>
+	</channel-group-type>
+	<channel-group-type id="maintenance">
+		<label>@text/thing-type.carnet.vehicle.group.maintenance.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.maintenance.description</description>
+	</channel-group-type>
+	<channel-group-type id="climater">
+		<label>@text/thing-type.carnet.vehicle.group.climater.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.climater.description</description>
+	</channel-group-type>
+	<channel-group-type id="charger">
+		<label>@text/thing-type.carnet.vehicle.group."charger".label</label>
+		<description>@text/thing-type.carnet.vehicle.group."charger".description</description>
+	</channel-group-type>
+	<channel-group-type id="rluHistory">
+		<label>@text/thing-type.carnet.vehicle.group.rluHistory.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.rluHistory.description</description>
+	</channel-group-type>
+	<channel-group-type id="tripShort">
+		<label>@text/thing-type.carnet.vehicle.group.tripShort.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.tripShort.description</description>
+	</channel-group-type>
+	<channel-group-type id="tripLong">
+		<label>@text/thing-type.carnet.vehicle.group.tripLong.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.tripLong.description</description>
+	</channel-group-type>
+	<channel-group-type id="destination">
+		<label>@text/thing-type.carnet.vehicle.group.destination.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.destination.description</description>
+	</channel-group-type>
+	<channel-group-type id="windows">
+		<label>@text/thing-type.carnet.vehicle.group.windows.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.windows.description</description>
+	</channel-group-type>
+	<channel-group-type id="doors">
+		<label>@text/thing-type.carnet.vehicle.group.doors.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.doors.description</description>
+	</channel-group-type>
+	<channel-group-type id="tires">
+		<label>@text/thing-type.carnet.vehicle.group.tires.label</label>
+		<description>@text/thing-type.carnet.vehicle.group.tires.description</description>
+	</channel-group-type>
+</thing:thing-descriptions>

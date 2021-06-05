@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="bridge-type:carnet:account">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+
+		<parameter name="user" type="text" required="true" groupName="authentication">
+			<label>Online User</label>
+			<description>User name for the CarNet Login.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<context>password</context>
+			<description>Password to access the CarNet Account.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:carnet:vehicle">
+		<parameter-group name="advancedOptions">
+			<label>Advanced Options</label>
+		</parameter-group>
+
+		<parameter name="pin" type="text" required="false">
+			<label>PIN</label>
+			<context>password</context>
+			<description>Security PIN to access control functions.</description>
+		</parameter>
+
+		<parameter name="numShortTrip" type="integer" required="false" min="0" max="5">
+			<label>Entries in Short Trip history</label>
+			<description>Number of entries to fetch from the short trip history (if supported for the vehicle model). Newest one
+				will be first, for each entry a group is created (1..5). 0 means disable fetching this history</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="numLongTrip" type="integer" required="false" min="0" max="5">
+			<label>Entries in Long Trip history</label>
+			<description>Number of entries to fetch from the long trip history (if supported for the vehicle model). Newest one
+				will be first, for each entry a group is created (1..5). 0 means disable fetching this history</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="numActionHistory" type="integer" required="false" min="0" max="5">
+			<label>Entries in Action History</label>
+			<description>Number of entries to fetch from the action history (if supported for the vehicle model). Newest one will
+				be first, for each entry a group is created (1..5). 0 means disable fetching this history</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="numDestinations" type="integer" required="false" min="0" max="5">
+			<label>Entries in Destination History</label>
+			<description>Number of entries to fetch from the destination history (if supported for the vehicle model). Newest one
+				will be first,for each entry a group is created (1..5). 0 means disable fetching this history.</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="pollingInterval" type="integer" required="false" min="5">
+			<label>Polling Interval</label>
+			<description>Status update interval in minutes.</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
