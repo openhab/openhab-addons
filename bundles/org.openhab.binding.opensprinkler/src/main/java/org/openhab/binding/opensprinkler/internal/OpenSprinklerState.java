@@ -59,15 +59,15 @@ public class OpenSprinklerState {
         public long rdst = 0;
         public int en = 1;
         public int sn2 = -1;
-        @SerializedName(value = "RSSI")
-        public int rssi = 1; // json reply uses all uppercase
+        @SerializedName(value = "RSSI", alternate = "rssi") // json reply uses all uppercase
+        public int rssi = 1;
         public int flcrt = -1;
         public int curr = -1;
     }
 
     public static class JnResponse {
         public List<String> snames = new ArrayList<>();
-        @SerializedName(value = "ignore_rain")
+        @SerializedName(value = "ignore_rain", alternate = "ignoreRain")
         public byte[] ignoreRain = { 0 };
     }
 }
