@@ -253,7 +253,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private String observe(CoapClient client, String uri, Type type, boolean sendPing)
             throws ConnectorException, IOException {
         client.setURI(uri);
-        logger.debug("OBSERVE " + uri);
+        logger.debug("OBSERVE {}", uri);
         client.setURI(uri);
 
         Request request = Request.newGet();
@@ -269,7 +269,6 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 String resp = PhilipsAirCoapCipher.decryptMsg(content.trim());
                 logger.debug("Decryped response: {}", resp);
                 logger.info("Response {}", resp);
-
             }
 
             @Override
