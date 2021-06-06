@@ -71,7 +71,7 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
 
     protected void handleNextDurationCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof QuantityType<?>)) {
-            logger.info("Ignoring implausible non-QuantityType command for NEXT_DURATION");
+            logger.warn("Ignoring implausible non-QuantityType command for NEXT_DURATION");
             return;
         }
         QuantityType<?> quantity = (QuantityType<?>) command;
