@@ -31,4 +31,5 @@ public class PushoverAccountConfiguration {
     public String sound = DEFAULT_SOUND;
     public int retry = 300;
     public int expire = 3600;
+    public int timeout = 10;
 }

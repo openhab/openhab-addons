@@ -134,7 +134,8 @@ public class PushoverAPIConnection {
             throws PushoverCommunicationException, PushoverConfigurationException {
         logger.trace("Pushover request: {} - URL = '{}'", httpMethod, url);
         try {
-            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(10, TimeUnit.SECONDS);
+            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(config.timeout,
+                    TimeUnit.SECONDS);
 
             if (body != null) {
                 if (logger.isTraceEnabled()) {
