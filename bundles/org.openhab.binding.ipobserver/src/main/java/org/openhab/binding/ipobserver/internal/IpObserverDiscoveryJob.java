@@ -54,7 +54,7 @@ public class IpObserverDiscoveryJob implements Runnable {
         ContentResponse contentResponse;
         try {
             contentResponse = request.send();
-            if (contentResponse.getStatus() == 200) {
+            if (contentResponse.getStatus() == 200 && contentResponse.getContentAsString().contains("livedata.htm")) {
                 return true;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

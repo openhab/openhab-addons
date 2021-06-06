@@ -34,6 +34,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -57,9 +58,14 @@ public class IpObserverDiscoveryService extends AbstractDiscoveryService {
     private HttpClient httpClient;
 
     @Activate
-    public IpObserverDiscoveryService(@Reference IpObserverHandlerFactory handlerFactory) {
+    public IpObserverDiscoveryService(@Reference HttpClientFactory httpClientFactory) {
         super(SUPPORTED_THING_TYPES_UIDS, 240);
-        httpClient = handlerFactory.getHttpClient();
+        httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     protected HttpClient getHttpClient() {
@@ -70,8 +76,8 @@ public class IpObserverDiscoveryService extends AbstractDiscoveryService {
         ThingUID thingUID = new ThingUID(THING_WEATHER_STATION, ip.replace('.', '_'));
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("address", ip);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withLabel("OpenSprinkler HTTP Bridge").withRepresentationProperty("address").build());
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel("Weather Station")
+                .withRepresentationProperty("address").build());
     }
 
     private void scanSingleSubnet(InterfaceAddress hostAddress) {
