@@ -23,7 +23,6 @@ import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.PresenceChannelHelper;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -39,8 +38,8 @@ public class PresenceHandler extends CameraHandler {
     private final Optional<PresenceChannelHelper> presenceHelper;
 
     public PresenceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
+            NetatmoDescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, descriptionProvider);
         presenceHelper = channelHelpers.stream().filter(c -> c instanceof PresenceChannelHelper).findFirst()
                 .map(PresenceChannelHelper.class::cast);
     }

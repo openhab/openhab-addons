@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+
 import java.util.List;
-import java.util.Set;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,62 +35,70 @@ import org.openhab.binding.netatmo.internal.api.dto.NAPing;
 public class HomeApi extends RestManager {
 
     public HomeApi(ApiBridge apiClient) {
-        super(apiClient, Set.of());
+        super(apiClient);
     }
 
     public class NAHomesDataResponse extends ApiResponse<NAHomeData> {
     }
 
-    public List<NAHome> getHomeData() throws NetatmoException {
-        String req = "gethomedata";
-        NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
-        return response.getBody().getHomes();
+    public class NAHomeDataResponse extends ApiResponse<NAHomeData> {
+    }
+
+    public NAHome getHomeData(String homeId) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH).queryParam("home_id", homeId);
+        NAHomeDataResponse response = get(uriBuilder.build(), NAHomeDataResponse.class);
+
+        List<NAHome> homes = response.getBody().getHomes();
+
+        if (homes.size() != 1) {
+            throw new NetatmoException(String.format("Home %s was not found", homeId));
+        }
+        return homes.get(0);
     }
 
     public List<NAHome> getHomeList(@Nullable ModuleType type) throws NetatmoException {
-        String req = "homesdata";
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMES_SPATH);
+
         if (type != null) {
-            req += "?gateway_types=" + type.name();
+            uriBuilder.queryParam("gateway_types", type.name());
         }
-        NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
+
+        NAHomesDataResponse response = get(uriBuilder.build(), NAHomesDataResponse.class);
         return response.getBody().getHomes();
     }
 
-    public NAHome getHomesData(String homeId) throws NetatmoException {
+    public NAHome getHomesData(String homeId, @Nullable ModuleType type) throws NetatmoException {
         String req = "homesdata?home_id=" + homeId;
+        if (type != null) {
+            req += "&gateway_types=" + type.name();
+        }
         NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
         return response.getBody().getHomes().get(0);
     }
 
     public boolean setpersonsaway(String homeId, String personId) throws NetatmoException {
-        String req = "setpersonsaway";
+        UriBuilder uriBuilder = getAppUriBuilder().path(NA_PERSON_AWAY_SPATH);
         String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
-        ApiOkResponse response = post(req, payload, ApiOkResponse.class, false);
-        if (!response.isSuccess()) {
-            throw new NetatmoException(String.format("Unsuccessfull person away command : %s", response.getStatus()));
-        }
+        post(uriBuilder.build(), ApiOkResponse.class, payload);
         return true;
     }
 
     public boolean setpersonshome(String homeId, String personId) throws NetatmoException {
-        String req = "setpersonshome";
+        UriBuilder uriBuilder = getAppUriBuilder().path(NA_PERSON_HOME_SPATH);
         String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
-        ApiOkResponse response = post(req, payload, ApiOkResponse.class, false);
-        if (!response.isSuccess()) {
-            throw new NetatmoException(String.format("Unsuccessfull person away command : %s", response.getStatus()));
-        }
+        post(uriBuilder.build(), ApiOkResponse.class, payload);
         return true;
     }
 
-    public boolean switchSchedule(String homeId, String scheduleId) throws NetatmoException {
-        String req = "switchschedule";
-        String payload = String.format("{\"home_id\":\"%s\",\"schedule_id\":\"%s\"}", homeId, scheduleId);
-        ApiOkResponse response = post(req, payload, ApiOkResponse.class, false);
-        if (!response.isSuccess()) {
-            throw new NetatmoException(String.format("Unsuccessfull schedule change : %s", response.getStatus()));
-        }
-        return true;
-    }
+    // public boolean switchSchedule(String homeId, String scheduleId) throws NetatmoException {
+    // String req = "switchschedule";
+    // String payload = String.format("{\"home_id\":\"%s\",\"schedule_id\":\"%s\"}", homeId, scheduleId);
+    // ApiOkResponse response = post(req, payload, ApiOkResponse.class, false);
+    // if (!response.isSuccess()) {
+    // throw new NetatmoException(String.format("Unsuccessfull schedule change : %s", response.getStatus()));
+    // }
+    // return true;
+    // }
 
     public String ping(String vpnUrl) throws NetatmoException {
         String url = vpnUrl + "/command/ping";

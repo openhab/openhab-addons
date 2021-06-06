@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+
 import java.net.URI;
 import java.util.List;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.HomeApi.NAHomesDataResponse;
-import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NALastEventsData;
 
@@ -35,33 +35,49 @@ public class SecurityApi extends RestManager {
         super(apiClient, NetatmoConstants.SECURITY_SCOPES);
     }
 
-    /**
-     *
-     * Returns information about users homes and cameras.
-     *
-     * @param homeId Specify if you're looking for the events of a specific Home. (optional)
-     * @param size Number of events to retrieve. Default is 30. (optional)
-     * @return NAWelcomeHomeDataResponse
-     * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
-     *             response body
-     */
-    private NAHomesDataResponse getWelcomeData(@Nullable String homeId) throws NetatmoException {
-        String req = "gethomedata";
-        if (homeId != null) {
-            req += "?home_id=" + homeId;
-        }
-        NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
-        return response;
-    }
+    // /**
+    // *
+    // * Returns information about users homes and cameras.
+    // *
+    // * @param homeId Specify if you're looking for the events of a specific Home. (optional)
+    // * @param size Number of events to retrieve. Default is 30. (optional)
+    // * @return NAWelcomeHomeDataResponse
+    // * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
+    // * response body
+    // */
+    // private NAObjectMap<NAHome> getWelcomeData(@Nullable String homeId) throws NetatmoException {
+    // // String req = "gethomedata";
+    // // if (homeId != null) {
+    // // req += "?home_id=" + homeId;
+    // // }
+    // // NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
+    // // return response;
+    //
+    // UriBuilder apiUriBuilder = getApiUriBuilder();
+    // apiUriBuilder = apiUriBuilder.path(NA_GETHOMEDATA_SPATH);
+    //
+    // if (homeId != null) {
+    // apiUriBuilder.queryParam("home_id", homeId);
+    // }
+    // NAHomesDataResponse response = get(apiUriBuilder.build(), NAHomesDataResponse.class);
+    // return response.getBody();
+    // }
 
-    public NAHome getWelcomeHomeData(String homeId) throws NetatmoException {
-        NAHomesDataResponse response = getWelcomeData(homeId);
-        return response.getBody().getHomes().get(0);
-    }
+    // public NAHome getWelcomeHomeData(String homeId) throws NetatmoException {
+    // // NAHomesDataResponse response = getWelcomeData(homeId);
+    // // return response.getBody().getHomes().get(0);
+    //
+    // NAObjectMap<NAHome> homeList = getHomeData(null);
+    // NAHome home = homeList.get(homeId);
+    // if (home != null) {
+    // return home;
+    // }
+    // throw new NetatmoException(String.format("Home %s was not found", homeId));
+    // }
 
-    public NAHomeData getWelcomeDataBody() throws NetatmoException {
-        return getWelcomeData(null).getBody();
-    }
+    // public NAHomeData getWelcomeDataBody() throws NetatmoException {
+    // return getWelcomeData(null).getBody();
+    // }
 
     /**
      *
@@ -72,11 +88,8 @@ public class SecurityApi extends RestManager {
      *             response body
      */
     public boolean dropWebhook() throws NetatmoException {
-        String req = "dropwebhook";
-        ApiOkResponse response = post(req, null, ApiOkResponse.class, true);
-        if (!response.isSuccess()) {
-            throw new NetatmoException(String.format("Unsuccessfull schedule change : %s", response.getStatus()));
-        }
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_DROPWEBHOOK_SPATH);
+        post(uriBuilder.build(), ApiOkResponse.class, null);
         return true;
     }
 
@@ -90,11 +103,9 @@ public class SecurityApi extends RestManager {
      *             response body
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
-        String req = "addwebhook?url=" + uri.toString();
-        ApiOkResponse response = post(req, null, ApiOkResponse.class, true);
-        if (!response.isSuccess()) {
-            throw new NetatmoException(String.format("Unsuccessfull schedule change : %s", response.getStatus()));
-        }
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_ADDWEBHOOK_SPATH);
+        uriBuilder.queryParam("url", uri.toString());
+        post(uriBuilder.build(), ApiOkResponse.class, null);
         return true;
     }
 

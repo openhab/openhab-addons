@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
@@ -34,7 +36,7 @@ import org.openhab.core.types.State;
 public class WindChannelHelper extends AbstractChannelHelper {
 
     public WindChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_WIND);
+        super(thing, timeZoneProvider, Set.of(GROUP_WIND));
     }
 
     @Override
@@ -51,7 +53,7 @@ public class WindChannelHelper extends AbstractChannelHelper {
             case CHANNEL_MAX_WIND_STRENGTH:
                 return toQuantityType(dashboard.getMaxWindStr(), MeasureClass.WIND_SPEED);
             case CHANNEL_DATE_MAX_WIND_STRENGTH:
-                return toDateTimeType(dashboard.getDateMaxWindStr(), zoneId);
+                return toDateTimeType(dashboard.getDateMaxWindStr());
         }
         return null;
     }

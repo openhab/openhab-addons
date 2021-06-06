@@ -24,20 +24,33 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 
 @NonNullByDefault
 public class NASetpoint {
-    private double setpointTemp;
+    private double thermSetpointTemperature;
     private long setpointEndtime;
     private @Nullable SetpointMode setpointMode;
 
-    public double getSetpointTemp() {
-        return setpointTemp;
+    public double getSetpointTemperature() {
+        return thermSetpointTemperature;
+    }
+
+    // TODO : dégager les setters ?
+    public void setSetpointTemperature(double thermSetpointTemperature) {
+        this.thermSetpointTemperature = thermSetpointTemperature;
     }
 
     public long getSetpointEndtime() {
         return setpointEndtime;
     }
 
+    public void setSetpointEndtime(long setpointEndtime) {
+        this.setpointEndtime = setpointEndtime;
+    }
+
     public SetpointMode getMode() {
         SetpointMode mode = setpointMode;
         return mode != null ? mode : SetpointMode.UNKNOWN;
+    }
+
+    public void setSetpointMode(SetpointMode mode) {
+        this.setpointMode = mode;
     }
 }

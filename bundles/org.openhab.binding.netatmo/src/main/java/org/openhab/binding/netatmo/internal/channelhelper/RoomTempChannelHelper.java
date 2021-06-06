@@ -12,37 +12,38 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ROOM_TEMPERATURE;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAModule;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
+import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ModuleChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link RoomTempChannelHelper} handle specific behavior
+ * of the thermostat module
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class ModuleChannelHelper extends AbstractChannelHelper {
+public class RoomTempChannelHelper extends AbstractChannelHelper {
 
-    public ModuleChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_MODULE);
+    public RoomTempChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider, Set.of(GROUP_ROOM_TEMPERATURE));
     }
 
     @Override
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        NAModule module = (NAModule) naThing;
-
-        return CHANNEL_LAST_SEEN.equals(channelId)
-                ? ChannelTypeUtils.toDateTimeType(Math.max(module.getLastSeen(), module.getLastMessage()), zoneId)
-                : null;
+        NARoom room = (NARoom) naThing;
+        // TODO : are U sure we do not test we return the value for the appropriate channel ???
+        return toQuantityType(room.getThermMeasuredTemperature(), MeasureClass.INTERIOR_TEMPERATURE);
     }
 }

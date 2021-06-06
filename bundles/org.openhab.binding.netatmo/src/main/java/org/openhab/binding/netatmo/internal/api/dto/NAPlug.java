@@ -25,13 +25,10 @@ import org.openhab.core.types.UnDefType;
 /**
  *
  * @author Gaël L'hopital - Initial contribution
- *
- *         DTO for the NAPlug object.
- *
  */
 
 @NonNullByDefault
-public class NAPlug extends NADevice {
+public class NAPlug extends NAModule {
     private @Nullable OpenClosedType plugConnectedBoiler;
     private Map<String, @Nullable Integer> lastBilan = Map.of();
 

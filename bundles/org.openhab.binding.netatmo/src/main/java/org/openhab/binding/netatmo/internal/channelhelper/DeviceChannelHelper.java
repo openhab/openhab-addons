@@ -14,18 +14,15 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NADevice;
-import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link DeviceChannelHelper} handle specific behavior
@@ -38,25 +35,11 @@ import org.openhab.core.types.UnDefType;
 public class DeviceChannelHelper extends AbstractChannelHelper {
 
     public DeviceChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_DEVICE);
+        super(thing, timeZoneProvider, Set.of(GROUP_DEVICE));
     }
 
     @Override
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        if (CHANNEL_LOCATION.equals(channelId)) {
-            PointType point = null;
-            if (naThing instanceof NAHome) {
-                point = ((NAHome) naThing).getLocation();
-            } else if (naThing instanceof NADevice) {
-                NAPlace place = ((NADevice) naThing).getPlace();
-                if (place != null) {
-                    point = place.getLocation();
-                }
-            }
-            return point != null ? point : UnDefType.UNDEF;
-        } else if (CHANNEL_LAST_SEEN.equals(channelId)) {
-            return ChannelTypeUtils.toDateTimeType(naThing.getLastSeen(), zoneId);
-        }
-        return null;
+        return CHANNEL_LAST_SEEN.equals(channelId) ? ChannelTypeUtils.toDateTimeType(naThing.getLastSeen()) : null;
     }
 }

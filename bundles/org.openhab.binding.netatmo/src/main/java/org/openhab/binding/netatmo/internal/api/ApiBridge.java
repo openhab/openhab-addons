@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.SERVICE_PID;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,12 +43,23 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
+import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMap;
+import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMapDeserializer;
+import org.openhab.binding.netatmo.internal.deserialization.NAHomeDeserializer;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMapDeserializer;
+import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
+import org.openhab.binding.netatmo.internal.deserialization.NAPushTypeDeserializer;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -53,6 +68,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -73,6 +92,7 @@ public class ApiBridge {
 
     private final HttpClient httpClient;
     private final AuthenticationApi connectApi;
+    private final Gson gson;
 
     private NetatmoBindingConfiguration configuration = new NetatmoBindingConfiguration();
     private Map<Class<? extends RestManager>, Object> managers = new HashMap<>();
@@ -81,10 +101,32 @@ public class ApiBridge {
 
     @Activate
     public ApiBridge(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
-            ComponentContext componentContext) {
+            @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpHeaders.put(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
         this.connectApi = new AuthenticationApi(this, oAuthFactory, configuration, scheduler);
+
+        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
+                .registerTypeAdapter(NADynamicObjectMap.class, new NADynamicObjectMapDeserializer())
+                .registerTypeAdapter(NAHome.class, new NAHomeDeserializer())
+                .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
+                            long netatmoTS = json.getAsJsonPrimitive().getAsLong();
+                            Instant i = Instant.ofEpochSecond(netatmoTS);
+                            return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
+                        })
+                .registerTypeAdapter(OnOffType.class,
+                        (JsonDeserializer<OnOffType>) (json, type, jsonDeserializationContext) -> OnOffType
+                                .from(json.getAsJsonPrimitive().getAsString()))
+                .registerTypeAdapter(OpenClosedType.class,
+                        (JsonDeserializer<OpenClosedType>) (json, type, jsonDeserializationContext) -> {
+                            String value = json.getAsJsonPrimitive().getAsString().toUpperCase();
+                            return "TRUE".equals(value) || "1".equals(value) ? OpenClosedType.CLOSED
+                                    : OpenClosedType.OPEN;
+                        })
+                .create();
 
         modified(BindingUtils.ComponentContextToMap(componentContext));
     }
@@ -93,23 +135,19 @@ public class ApiBridge {
     protected void modified(Map<String, Object> config) {
         configuration.update(new Configuration(config).as(NetatmoBindingConfiguration.class));
         logger.debug("Updated binding configuration to {}", configuration);
-        testConnection();
+        openConnection();
     }
 
-    private void testConnection() {
+    void openConnection() {
         try {
             configuration.checkIfValid();
             connectApi.authenticate();
             // Just a sample call to ensure connection is fine
-            getHomeApi().getHomeData();
+            getHomeApi().getHomeList(null);
             setConnectionStatus(ConnectionStatus.Success());
         } catch (NetatmoException e) {
-            if (e.getStatusCode() != 403) { // Forbidden Access maybe too many requests ? Let's wait next cycle
-                setConnectionStatus(ConnectionStatus.Failed("Unable to connect Netatmo API : %s", e));
-            } else {
-                setConnectionStatus(ConnectionStatus.Failed("Connection failed, retrying"));
-                scheduler.schedule(() -> testConnection(), configuration.reconnectInterval, TimeUnit.SECONDS);
-            }
+            setConnectionStatus(ConnectionStatus.Failed("Will retry to connect Netatmo API, this one failed : %s", e));
+            scheduler.schedule(() -> openConnection(), configuration.reconnectInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -166,12 +204,26 @@ public class ApiBridge {
         return homeApi;
     }
 
+    public <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT) throws NetatmoException {
+        return executeUri(uri, method, classOfT, null);
+    }
+
+    public <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT, @Nullable String payload)
+            throws NetatmoException {
+        try {
+            return executeUrl(uri.toURL().toString(), method, payload, classOfT,
+                    NetatmoConstants.NA_API_URL.contains(uri.getHost()));
+        } catch (MalformedURLException e) {
+            throw new NetatmoException(e);
+        }
+    }
+
     synchronized <T> T executeUrl(String anUrl, HttpMethod method, @Nullable String payload, Class<T> classOfT,
             boolean baseUrl) throws NetatmoException {
         String url = anUrl.startsWith("http") ? anUrl
-                : (baseUrl ? NetatmoConstants.NETATMO_BASE_URL : NetatmoConstants.NETATMO_APP_URL) + anUrl;
+                : (baseUrl ? NetatmoConstants.NA_API_URL : NetatmoConstants.NA_APP_URL) + anUrl;
         try {
-            logger.debug("executeUrl  {} {} ", method.toString(), url);
+            logger.debug("executeUrl {}  {} ", method.toString(), url);
 
             final Request request = httpClient.newRequest(url).method(method).timeout(TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
@@ -215,9 +267,9 @@ public class ApiBridge {
         }
     }
 
-    private <T> T deserialize(Class<T> classOfT, String serviceAnswer) throws NetatmoException {
+    public <T> T deserialize(Class<T> classOfT, String serviceAnswer) throws NetatmoException {
         try {
-            T deserialized = NETATMO_GSON.fromJson(serviceAnswer, classOfT);
+            T deserialized = gson.fromJson(serviceAnswer, classOfT);
             return deserialized;
         } catch (JsonSyntaxException e) {
             throw new NetatmoException(String.format("Unexpected error deserializing '%s'", serviceAnswer), e);

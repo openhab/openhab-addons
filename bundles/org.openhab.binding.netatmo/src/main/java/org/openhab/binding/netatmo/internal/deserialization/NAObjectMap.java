@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api.dto;
+package org.openhab.binding.netatmo.internal.deserialization;
 
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 
 /**
- * The {@link NADynamicObjectMap} defines an hashmap of NAObjects identified
- * by their id, dynamically created upon API response
+ * The {@link NAObjectMap} defines an hashmap of NAObjects identified
+ * by their id.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NADynamicObjectMap extends HashMap<String, NAThing> {
-    private static final long serialVersionUID = -7864636414965562293L;
+public class NAObjectMap<T extends NAObject> extends HashMap<String, T> {
+    private static final long serialVersionUID = 7635233672795516649L;
 }

@@ -15,6 +15,9 @@ package org.openhab.binding.netatmo.internal.handler;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +32,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NASnapshot;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -48,13 +51,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PersonHandler extends NetatmoDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(PersonHandler.class);
-    private long maxEventTime;
+    private ZonedDateTime maxEventTime;
 
     public PersonHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
+            NetatmoDescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, descriptionProvider);
         String lastEvent = editProperties().get(PROPERTY_MAX_EVENT_TIME);
-        maxEventTime = lastEvent != null ? Long.parseLong(lastEvent) : 0;
+        maxEventTime = lastEvent != null ? ZonedDateTime.parse(lastEvent) : Instant.EPOCH.atZone(ZoneOffset.UTC);
     }
 
     private @Nullable HomeSecurityHandler getHomeHandler() {
@@ -81,20 +84,20 @@ public class PersonHandler extends NetatmoDeviceHandler {
         if (homeHandler != null) {
             descriptionProvider.setStateOptions(
                     new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID),
-                    homeHandler.getCameras().stream().map(p -> new StateOption(p.getId(), p.getName()))
+                    homeHandler.getCameras().values().stream().map(p -> new StateOption(p.getId(), p.getName()))
                             .collect(Collectors.toList()));
         }
     }
 
     @Override
     public void setEvent(NAEvent event) {
-        if (event.getTime() > maxEventTime) {
+        if (event.getTime().isAfter(maxEventTime)) {
             logger.debug("Updating person  with event : {}", event.toString());
 
             maxEventTime = event.getTime();
-            updateProperty(PROPERTY_MAX_EVENT_TIME, Long.toString(maxEventTime));
+            updateProperty(PROPERTY_MAX_EVENT_TIME, maxEventTime.toString());
 
-            updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime(), zoneId));
+            updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_TIME, new DateTimeType(event.getTime()));
             updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID, toStringType(event.getCameraId()));
             updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,
                     event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));

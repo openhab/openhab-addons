@@ -14,8 +14,9 @@ package org.openhab.binding.netatmo.internal.discovery;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.EQUIPMENT_ID;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +27,9 @@ import org.openhab.binding.netatmo.internal.api.ConnectionListener;
 import org.openhab.binding.netatmo.internal.api.ConnectionStatus;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.WeatherApi.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeSecurity;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -47,7 +50,6 @@ import org.slf4j.LoggerFactory;
  * devices and modules connected to the API console
  *
  * @author Gaël L'hopital - Initial contribution
- * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
 @Component(service = DiscoveryService.class, configurationPid = "binding.netatmo")
@@ -59,9 +61,9 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
     @Activate
     public NetatmoDiscoveryService(@Reference ApiBridge apiBridge, @Reference LocaleProvider localeProvider,
-            @Reference TranslationProvider translationProvider/* , ComponentContext componentContext */) {
+            @Reference TranslationProvider translationProvider) {
 
-        super(Stream.of(ModuleType.values()).map(supported -> supported.thingTypeUID).collect(Collectors.toSet()),
+        super(Stream.of(ModuleType.values()).map(supported -> supported.getThingTypeUID()).collect(Collectors.toSet()),
                 DISCOVER_TIMEOUT_SECONDS);
         this.apiBridge = apiBridge;
         this.localeProvider = localeProvider;
@@ -80,33 +82,55 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void startScan() {
-        HashMap<String, ThingUID> localBridges = new HashMap<>();
         try {
             List<NAHome> result = apiBridge.getHomeApi().getHomeList(null);
+            Set<String> myWeatherStations = new HashSet<>();
             result.forEach(home -> {
-                List<NAPerson> persons = home.getKnownPersons();
-                // ThingUID homeUID = findThingUID(persons == null ? ModuleType.NAHomeEnergy :
-                // ModuleType.NAHomeSecurity,
-                // home.getId(), null);
-                // addDiscoveredThing(homeUID, home.getId(), home.getNonNullName(), null);
-                ThingUID homeUID = createDiscoveredThing(null, home,
-                        persons == null ? ModuleType.NAHomeEnergy : ModuleType.NAHomeSecurity);
-                home.getModules().values().stream().filter(module -> module.getBridge() == null).forEach(module -> {
-                    ThingUID moduleUID = createDiscoveredThing(homeUID, module, module.getType());
-                    // ThingUID moduleUID = findThingUID(module.getType(), module.getId(), homeUID);
-                    // addDiscoveredThing(moduleUID, module.getId(), module.getNonNullName(), homeUID);
-                    localBridges.put(module.getId(), moduleUID);
-                });
-                home.getModules().values().stream().filter(module -> module.getBridge() != null).forEach(module -> {
-                    ThingUID bridgeUID = localBridges.get(module.getBridge());
-                    if (bridgeUID != null) {
-                        // ThingUID moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
-                        // addDiscoveredThing(moduleUID, module.getId(), module.getNonNullName(), homeUID);
-                        createDiscoveredThing(bridgeUID, module, module.getType());
-                    }
-                });
-                if (persons != null) {
+                ThingUID homeUID = createDiscoveredThing(null, home, home.getType());
+                home.getModules().values().stream().filter(module -> module.getBridge() == null)
+                        .forEach(foundBridge -> {
+                            if (foundBridge.getType() == ModuleType.NAMain) {
+                                myWeatherStations.add(foundBridge.getId());
+                            }
+                            ThingUID bridgeUID = createDiscoveredThing(homeUID, foundBridge, foundBridge.getType());
+                            home.getModules().values().stream()
+                                    .filter(module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
+                                    .forEach(foundChild -> {
+                                        createDiscoveredThing(bridgeUID, foundChild, foundChild.getType());
+                                    });
+                        });
+                if (home instanceof NAHomeSecurity) {
+                    NAHomeSecurity homesec = (NAHomeSecurity) home;
+                    List<NAPerson> persons = homesec.getKnownPersons();
                     persons.forEach(person -> createDiscoveredThing(homeUID, person, person.getType()));
+                }
+                // Are or should modules be childs of their room ?
+                home.getRooms().forEach(room -> {
+                    ThingUID moduleUID = createDiscoveredThing(homeUID, room, room.getType());
+                });
+            });
+            // Get weather station and favorites !!! Ongoing work
+            apiBridge.getWeatherApi().ifPresent(weatherApi -> {
+                try {
+                    NAStationDataResponse stations = weatherApi.getStationsData(null, true);
+                    stations.getBody().getDevices().values().forEach(station -> {
+                        if (!myWeatherStations.contains(station.getId())) {
+                            ThingUID stationUID = createDiscoveredThing(null, station, station.getType());
+                            station.getModules().values().stream().filter(module -> module.getBridge() == null)
+                                    .forEach(foundBridge -> {
+                                        ThingUID bridgeUID = createDiscoveredThing(null, foundBridge,
+                                                foundBridge.getType());
+                                        station.getModules().values().stream().filter(
+                                                module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
+                                                .forEach(foundChild -> {
+                                                    createDiscoveredThing(bridgeUID, foundChild, foundChild.getType());
+                                                });
+                                    });
+                        }
+                    });
+                } catch (NetatmoException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             });
         } catch (NetatmoException e) {
@@ -117,7 +141,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
     private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID)
             throws IllegalArgumentException {
-
         for (ThingTypeUID supported : getSupportedThingTypes()) {
             if (supported.getId().equalsIgnoreCase(thingType.name())) {
                 String id = thingId.replaceAll("[^a-zA-Z0-9_]", "");
@@ -130,18 +153,24 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
     }
 
-    private ThingUID createDiscoveredThing(@Nullable ThingUID bridgeUID, NAThing module, ModuleType moduleType) {
-        ThingUID moduleUID = findThingUID(moduleType, module.getId(), bridgeUID);
-        DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
-                .withProperty(EQUIPMENT_ID, module.getId()).withLabel(module.getNonNullName())
-                .withRepresentationProperty(EQUIPMENT_ID);
-        if (bridgeUID != null) {
-            resultBuilder = resultBuilder.withBridge(bridgeUID);
+    private @Nullable ThingUID createDiscoveredThing(@Nullable ThingUID bridgeUID, NAThing module,
+            ModuleType moduleType) {
+        ThingUID moduleUID = null;
+        if (moduleType != ModuleType.NAHomeWeather) { // Homeweather is so ...virtual...
+            moduleUID = findThingUID(moduleType, module.getId(), bridgeUID);
+            DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
+                    .withProperty(EQUIPMENT_ID, module.getId())
+                    .withLabel(module.getName() != null ? module.getName() : module.getId())
+                    .withRepresentationProperty(EQUIPMENT_ID);
+            if (bridgeUID != null) {
+                resultBuilder = resultBuilder.withBridge(bridgeUID);
+            }
+            thingDiscovered(resultBuilder.build());
         }
-        thingDiscovered(resultBuilder.build());
         return moduleUID;
     }
 
+    // Normally home coach should be discovered by home discovery but not 100% sure, kept for the moment.
     // private void searchHomeCoach(AircareApi api) {
     // try {
     // NADeviceDataBody<NAMain> result = api.getHomeCoachDataBody(null);

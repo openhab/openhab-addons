@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
@@ -36,7 +38,7 @@ import org.openhab.core.types.State;
 public class PersonChannelHelper extends AbstractChannelHelper {
 
     public PersonChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_PERSON);
+        super(thing, timeZoneProvider, Set.of(GROUP_PERSON));
     }
 
     @Override
@@ -45,7 +47,7 @@ public class PersonChannelHelper extends AbstractChannelHelper {
         if (CHANNEL_PERSON_AT_HOME.equals(channelId)) {
             return OnOffType.from(!naPerson.isOutOfSight());
         } else if (CHANNEL_LAST_SEEN.equals(channelId)) {
-            return toDateTimeType(naPerson.getLastSeen(), zoneId);
+            return toDateTimeType(naPerson.getLastSeen());
         }
         NASnapshot avatar = naPerson.getFace();
         return avatar != null ? internalGetAvatar(avatar, channelId) : null;

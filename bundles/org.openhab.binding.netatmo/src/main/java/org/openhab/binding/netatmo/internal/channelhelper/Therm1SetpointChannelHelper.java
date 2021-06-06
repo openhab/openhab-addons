@@ -16,7 +16,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.*;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +44,7 @@ import org.openhab.core.types.UnDefType;
 public class Therm1SetpointChannelHelper extends AbstractChannelHelper {
 
     public Therm1SetpointChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_TH_SETPOINT);
+        super(thing, timeZoneProvider, Set.of(GROUP_TH_SETPOINT));
     }
 
     @Override
@@ -78,6 +78,8 @@ public class Therm1SetpointChannelHelper extends AbstractChannelHelper {
             case FROST_GUARD:
                 return toQuantityType(currentProgram != null ? currentProgram.getZoneTemperature(currentMode) : null,
                         MeasureClass.INTERIOR_TEMPERATURE);
+            case SCHEDULE:
+            case HOME:
             case MANUAL:
                 return toQuantityType(thermostat.getSetpointTemp(), MeasureClass.INTERIOR_TEMPERATURE);
             case OFF:
@@ -86,32 +88,5 @@ public class Therm1SetpointChannelHelper extends AbstractChannelHelper {
                 return UnDefType.UNDEF;
         }
         return UnDefType.NULL;
-    }
-
-    private @Nullable NATimeTableItem getCurrentProgramMode(@Nullable NAThermProgram activeProgram) {
-        if (activeProgram != null) {
-            long diff = getTimeDiff();
-            return activeProgram.getTimetable().stream().filter(t -> t.getMOffset() < diff)
-                    .reduce((first, second) -> second).orElse(null);
-        }
-        return null;
-    }
-
-    private long getNextProgramTime(@Nullable NAThermProgram activeProgram) {
-        long diff = getTimeDiff();
-        if (activeProgram != null) {
-            // By default we'll use the first slot of next week - this case will be true if
-            // we are in the last schedule of the week so below loop will not exit by break
-            List<NATimeTableItem> timetable = activeProgram.getTimetable();
-            int next = timetable.get(0).getMOffset() + (7 * 24 * 60);
-            for (NATimeTableItem timeTable : timetable) {
-                if (timeTable.getMOffset() > diff) {
-                    next = timeTable.getMOffset();
-                    break;
-                }
-            }
-            return next * 60 + getProgramBaseTime();
-        }
-        return -1;
     }
 }

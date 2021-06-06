@@ -13,8 +13,12 @@
 package org.openhab.binding.netatmo.internal.utils;
 
 import java.util.Calendar;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.NAThermProgram;
+import org.openhab.binding.netatmo.internal.api.dto.NATimeTableItem;
 
 /**
  * This class holds various Netatmo planning related functions
@@ -45,5 +49,32 @@ public class NetatmoCalendarUtils {
         Calendar now = Calendar.getInstance();
         long diff = (now.getTimeInMillis() / 1000 - getProgramBaseTime()) / 60;
         return diff;
+    }
+
+    public static long getNextProgramTime(@Nullable NAThermProgram activeProgram) {
+        long diff = getTimeDiff();
+        if (activeProgram != null) {
+            // By default we'll use the first slot of next week - this case will be true if
+            // we are in the last schedule of the week so below loop will not exit by break
+            List<NATimeTableItem> timetable = activeProgram.getTimetable();
+            int next = timetable.get(0).getMOffset() + (7 * 24 * 60);
+            for (NATimeTableItem timeTable : timetable) {
+                if (timeTable.getMOffset() > diff) {
+                    next = timeTable.getMOffset();
+                    break;
+                }
+            }
+            return next * 60 + getProgramBaseTime();
+        }
+        return -1;
+    }
+
+    public static @Nullable NATimeTableItem getCurrentProgramMode(@Nullable NAThermProgram activeProgram) {
+        if (activeProgram != null) {
+            long diff = getTimeDiff();
+            return activeProgram.getTimetable().stream().filter(t -> t.getMOffset() < diff)
+                    .reduce((first, second) -> second).orElse(null);
+        }
+        return null;
     }
 }

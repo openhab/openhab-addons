@@ -80,18 +80,24 @@ public class NetatmoConstants {
             new Measure(0, 360, 5, Units.DEGREE_ANGLE), MeasureClass.HUMIDITY, new Measure(0, 100, 3, Units.PERCENT));
 
     // Netatmo API urls
-    public static final String NETATMO_BASE_URL = "https://api.netatmo.com/";
-    public static final String NETATMO_APP_URL = "https://app.netatmo.net/";
-
-    // Units of measurement of the data delivered by the API
-    // public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
-    // public static final Unit<Dimensionless> HUMIDITY_UNIT = Units.PERCENT;
-    // public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
-    // public static final Unit<Speed> WIND_SPEED_UNIT = SIUnits.KILOMETRE_PER_HOUR;
-    // public static final Unit<Angle> WIND_DIRECTION_UNIT = Units.DEGREE_ANGLE;
-    // public static final Unit<Length> RAIN_UNIT = MILLI(SIUnits.METRE);
-    // public static final Unit<Dimensionless> CO2_UNIT = Units.PARTS_PER_MILLION;
-    // public static final Unit<Dimensionless> NOISE_UNIT = Units.DECIBEL;
+    public static final String NA_API_URL = "https://api.netatmo.com/";
+    public static final String NA_APP_URL = "https://app.netatmo.net/";
+    public static final String NA_OAUTH_PATH = "oauth2/token";
+    public static final String NA_API_PATH = "api";
+    public static final String NA_PERSON_AWAY_SPATH = "setpersonsaway";
+    public static final String NA_PERSON_HOME_SPATH = "setpersonshome";
+    public static final String NA_HOMES_SPATH = "homesdata";
+    public static final String NA_GETHOME_SPATH = "gethomedata";
+    public static final String NA_GETCAMERAPICTURE_SPATH = "getcamerapicture";
+    public static final String NA_ADDWEBHOOK_SPATH = "addwebhook";
+    public static final String NA_DROPWEBHOOK_SPATH = "dropwebhook";
+    public static final String NA_SETROOMTHERMPOINT_SPATH = "setroomthermpoint";
+    public static final String NA_SETTHERMMODE_SPATH = "setthermmode";
+    public static final String NA_SWITCHSCHEDULE_SPATH = "switchschedule";
+    public static final String NA_GETTHERMOSTAT_SPATH = "getthermostatsdata";
+    public static final String NA_GETSTATION_SPATH = "getstationsdata";
+    public static final String NA_GETMEASURE_SPATH = "getmeasure";
+    public static final String NA_HOMESTATUS_SPATH = "homestatus";
 
     public enum MeasureType {
         SUM_RAIN,
@@ -144,9 +150,6 @@ public class NetatmoConstants {
     }
 
     // Default unit associated with each kind of measurement
-    // public static final Map<MeasureType, Unit<?>> MEASUREUNITS = Map.of(MeasureType.SUM_RAIN, RAIN_UNIT,
-    // MeasureType.TEMP, TEMPERATURE_UNIT, MeasureType.HUM, HUMIDITY_UNIT, MeasureType.CO2, CO2_UNIT,
-    // MeasureType.NOISE, NOISE_UNIT, MeasureType.PRESSURE, PRESSURE_UNIT, MeasureType.WIND, WIND_SPEED_UNIT);
     public static final Map<MeasureType, MeasureClass> MEASUREUNITS = Map.of(MeasureType.SUM_RAIN,
             MeasureClass.RAIN_QTTY, MeasureType.TEMP, MeasureClass.EXTERIOR_TEMPERATURE, MeasureType.HUM,
             MeasureClass.HUMIDITY, MeasureType.CO2, MeasureClass.CO2, MeasureType.NOISE, MeasureClass.NOISE,
@@ -182,25 +185,23 @@ public class NetatmoConstants {
         ACCESS_DOORBELL;
     }
 
-    public static final Set<Scope> WEATHER_SCOPES = Set.of(Scope.READ_STATION);
-    public static final Set<Scope> ENERGY_SCOPES = Set.of(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT);
-    public static final Set<Scope> WELCOME_SCOPES = Set.of(Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA);
-    public static final Set<Scope> DOORBELL_SCOPES = Set.of(Scope.READ_DOORBELL, Scope.WRITE_DOORBELL,
+    static final Set<Scope> WEATHER_SCOPES = Set.of(Scope.READ_STATION);
+    private static final Set<Scope> SMOKE_SCOPES = Set.of(Scope.READ_SMOKEDETECTOR);
+    static final Set<Scope> AIR_QUALITY_SCOPES = Set.of(Scope.READ_HOMECOACH);
+    static final Set<Scope> ENERGY_SCOPES = Set.of(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT);
+    private static final Set<Scope> WELCOME_SCOPES = Set.of(Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA);
+    private static final Set<Scope> DOORBELL_SCOPES = Set.of(Scope.READ_DOORBELL, Scope.WRITE_DOORBELL,
             Scope.ACCESS_DOORBELL);
-    public static final Set<Scope> PRESENCE_SCOPES = Set.of(Scope.READ_PRESENCE, Scope.ACCESS_PRESENCE);
-    public static final Set<Scope> SMOKE_SCOPES = Set.of(Scope.READ_SMOKEDETECTOR);
-    public static final Set<Scope> AIR_QUALITY_SCOPES = Set.of(Scope.READ_HOMECOACH);
-    public static final Set<Scope> SECURITY_SCOPES = Stream.of(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES)
+    private static final Set<Scope> PRESENCE_SCOPES = Set.of(Scope.READ_PRESENCE, Scope.ACCESS_PRESENCE);
+    static final Set<Scope> SECURITY_SCOPES = Stream.of(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
-    public static final Set<Scope> ALL_SCOPES = Stream
-            .of(WEATHER_SCOPES, ENERGY_SCOPES, SECURITY_SCOPES, AIR_QUALITY_SCOPES).flatMap(Set::stream)
-            .collect(Collectors.toSet());
+    static final Set<Scope> ALL_SCOPES = Stream.of(WEATHER_SCOPES, ENERGY_SCOPES, SECURITY_SCOPES, AIR_QUALITY_SCOPES)
+            .flatMap(Set::stream).collect(Collectors.toSet());
 
     // Radio signal quality thresholds
-    private static final int[] EMPTY_INT_ARRAY = new int[0];
-    public static final int[] WIFI_SIGNAL_LEVELS = new int[] { 86, 71, 56 }; // Resp : bad, average, good
-    public static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
-    public static final int[] NO_RADIO = EMPTY_INT_ARRAY;
+    static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp : bad, average, good, full
+    static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
+    public static final int[] NO_RADIO = new int[0]; // No radio => no levels
 
     // Thermostat definitions
     public static enum SetpointMode {
@@ -216,7 +217,10 @@ public class NetatmoConstants {
         OFF("off"),
         @SerializedName("max")
         MAX("max"),
-        UNKNOWN("");
+        UNKNOWN(""),
+        @SerializedName("schedule")
+        SCHEDULE("schedule"),
+        HOME("home");
 
         String apiDescriptor;
 
@@ -226,6 +230,11 @@ public class NetatmoConstants {
 
         public String getDescriptor() {
             return apiDescriptor;
+        }
+
+        public static SetpointMode fromName(String name) {
+            return Arrays.stream(values()).filter(value -> value.apiDescriptor.equals(name)).findFirst()
+                    .orElse(UNKNOWN);
         }
     }
 

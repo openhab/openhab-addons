@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.util.HashMap;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * The {@link NAObjectMap} defines an hashmap of NAObjects identified
- * by their id.
  *
  * @author Gaël L'hopital - Initial contribution
+ *
  */
-@NonNullByDefault
-public class NAObjectMap<T extends NAObject> extends HashMap<String, T> {
-    private static final long serialVersionUID = 7635233672795516649L;
+
+public class NAHomeStatus {
+    private NAHome home;
+
+    public NAHome getHome() {
+        return home;
+    }
 }

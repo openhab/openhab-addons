@@ -16,15 +16,17 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAObjectMap;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeSecurity;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
@@ -48,14 +50,14 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
     private int unknowns = -1;
 
     public HomeSecurityChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_HOME_SECURITY);
+        super(thing, timeZoneProvider, Set.of(GROUP_HOME_SECURITY));
     }
 
     @Override
     public void setNewData(NAThing naThing) {
         super.setNewData(naThing);
-        if (naThing instanceof NAHome) {
-            NAHome home = (NAHome) naThing;
+        if (naThing instanceof NAHomeSecurity) {
+            NAHomeSecurity home = (NAHomeSecurity) naThing;
 
             persons = 0;
             unknowns = 0;
@@ -63,13 +65,13 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
             logger.debug("welcome home '{}' counts Persons at home", home.getId());
 
             NAObjectMap<NAPerson> personList = home.getPersons();
-            if (personList != null) {
-                List<NAPerson> present = personList.values().stream().filter(p -> !p.isOutOfSight())
-                        .collect(Collectors.toList());
-                persons = present.size();
-                present = present.stream().filter(p -> p.getName() != null).collect(Collectors.toList());
-                unknowns = persons - present.size();
-            }
+            // if (personList != null) {
+            List<NAPerson> present = personList.values().stream().filter(p -> !p.isOutOfSight())
+                    .collect(Collectors.toList());
+            persons = present.size();
+            present = present.stream().filter(p -> p.getName() != null).collect(Collectors.toList());
+            unknowns = persons - present.size();
+            // }
 
         }
     }

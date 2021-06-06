@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -20,16 +21,16 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 
+@NonNullByDefault
 public class NAModule extends NAThing {
+    private @Nullable String batteryState;
     private int batteryPercent;
-    @SerializedName(value = "last_message", alternate = { "last_activity" })
-    private long lastMessage;
 
     public int getBatteryPercent() {
         return batteryPercent;
     }
 
-    public long getLastMessage() {
-        return lastMessage;
+    public @Nullable String getBatteryState() {
+        return this.batteryState;
     }
 }

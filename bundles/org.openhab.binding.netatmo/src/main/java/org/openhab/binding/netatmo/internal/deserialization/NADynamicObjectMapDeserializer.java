@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api;
+package org.openhab.binding.netatmo.internal.deserialization;
 
 import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NADynamicObjectMap;
+import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +46,17 @@ public class NADynamicObjectMapDeserializer implements JsonDeserializer<NADynami
             for (JsonElement item : (JsonArray) json) {
                 JsonObject jsonO = item.getAsJsonObject();
                 String thingType = jsonO.get("type").getAsString();
-                ModuleType module = ModuleType.valueOf(thingType);
-                if (module.dto != null) {
-                    NAThing obj = context.deserialize(item, module.dto);
-                    result.put(obj.getId(), obj);
+                if (ModuleType.isModuleTypeImplemented(thingType)) {
+                    ModuleType module = ModuleType.valueOf(thingType);
+                    Class<?> dto = module.getDto();
+                    if (dto != null) {
+                        NAThing obj = context.deserialize(item, dto);
+                        result.put(obj.getId(), obj);
+                    } else {
+                        logger.warn("Unable to find appropriate dto for thing of type : {}", thingType);
+                    }
                 } else {
-                    logger.warn("Unable to find appropriate dto for thing of type : {}", thingType);
+                    logger.warn("unsupported moduletype {} found during discovery", thingType);
                 }
             }
             return result;

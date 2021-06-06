@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
@@ -36,7 +38,7 @@ import org.openhab.core.types.State;
 public class Therm1TempChannelHelper extends AbstractChannelHelper {
 
     public Therm1TempChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_TH_TEMPERATURE);
+        super(thing, timeZoneProvider, Set.of(GROUP_TH_TEMPERATURE));
     }
 
     @Override
@@ -46,7 +48,7 @@ public class Therm1TempChannelHelper extends AbstractChannelHelper {
         if (measured != null && CHANNEL_VALUE.equals(channelId)) {
             return toQuantityType(measured.getTemperature(), MeasureClass.EXTERIOR_TEMPERATURE);
         } else if (measured != null && CHANNEL_TIMEUTC.equals(channelId)) {
-            return toDateTimeType(measured.getTime(), zoneId);
+            return toDateTimeType(measured.getTime());
         }
         return null;
     }

@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +35,9 @@ public class RefreshStrategy {
     private final Logger logger = LoggerFactory.getLogger(RefreshStrategy.class);
 
     private long dataValidityPeriod;
-    private long dataTimeStamp;
+    private @Nullable ZonedDateTime dataTimeStamp;
     private boolean searchRefreshInterval;
-    private long dataTimestamp0;
+    private @Nullable ZonedDateTime dataTimestamp0;
 
     // By default we create dataTimeStamp to be outdated
     // A null or negative value for dataValidityPeriod will trigger an automatic search of the validity period
@@ -56,25 +54,24 @@ public class RefreshStrategy {
         expireData();
     }
 
-    public void setDataTimeStamp(long dataTimestamp, ZoneId zoneId) {
+    public void setDataTimeStamp(ZonedDateTime dataTimestamp) {
         if (searchRefreshInterval) {
-            if (dataTimestamp0 == 0) {
+            if (dataTimestamp0 == null) {
                 dataTimestamp0 = dataTimestamp;
                 logger.debug("First data timestamp is {}", dataTimestamp0);
-            } else if (dataTimestamp > dataTimestamp0) {
-                dataValidityPeriod = (dataTimestamp - dataTimestamp0) * 1000;
+            } else if (dataTimestamp.isAfter(dataTimestamp0)) {
+                dataValidityPeriod = ChronoUnit.MILLIS.between(dataTimestamp0, dataTimestamp);
                 searchRefreshInterval = false;
                 logger.debug("Data validity period found : {} ms", this.dataValidityPeriod);
             } else {
                 logger.debug("Data validity period not yet found - data timestamp unchanged");
             }
         }
-        this.dataTimeStamp = ChannelTypeUtils.toZonedDateTime(dataTimestamp, zoneId).toInstant().toEpochMilli();
+        this.dataTimeStamp = dataTimestamp;
     }
 
     public long dataAge() {
-        long now = Calendar.getInstance().getTimeInMillis();
-        return now - dataTimeStamp;
+        return ChronoUnit.MILLIS.between(dataTimeStamp, ZonedDateTime.now());
     }
 
     public boolean isDataOutdated() {
@@ -88,10 +85,10 @@ public class RefreshStrategy {
 
     public void expireData() {
         ZonedDateTime now = ZonedDateTime.now().minus(this.dataValidityPeriod, ChronoUnit.MILLIS);
-        dataTimeStamp = now.toInstant().toEpochMilli();
+        dataTimeStamp = now;
     }
 
     public boolean isSearchingRefreshInterval() {
-        return searchRefreshInterval && dataTimestamp0 != 0;
+        return searchRefreshInterval && dataTimestamp0 != null;
     }
 }

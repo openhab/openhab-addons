@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,13 +31,17 @@ import com.google.gson.annotations.SerializedName;
 
 @NonNullByDefault
 public class NAThing extends NAObject {
-    @SerializedName(value = "rf_status", alternate = { "wifi_status" })
+    @SerializedName(value = "rf_status", alternate = { "wifi_status", "rf_strength" })
     private int radioStatus;
-    @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen" })
-    private long lastSeen;
+    @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen",
+            "last_message", "last_activity" })
+    private @Nullable ZonedDateTime lastSeen;
+    @SerializedName(value = "firmware", alternate = { "firmware_revision" })
     private int firmware = -1;
+    private @Nullable ZonedDateTime setupDate;
     private List<MeasureType> dataType = List.of();
     private @NonNullByDefault({}) ModuleType type;
+
     private @Nullable Boolean reachable;
     private @Nullable NADashboard dashboardData;
     private @Nullable String bridge;
@@ -63,6 +69,10 @@ public class NAThing extends NAObject {
         return type;
     }
 
+    public void setType(ModuleType type) {
+        this.type = type;
+    }
+
     public int getFirmware() {
         return firmware;
     }
@@ -71,8 +81,12 @@ public class NAThing extends NAObject {
         return radioStatus;
     }
 
-    public long getLastSeen() {
-        return lastSeen;
+    public Optional<ZonedDateTime> getLastSeen() {
+        return Optional.ofNullable(lastSeen);
+    }
+
+    public @Nullable ZonedDateTime getSetupDate() {
+        return setupDate;
     }
 
     public @Nullable String getBridge() {

@@ -17,6 +17,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import javax.measure.Unit;
 
@@ -83,6 +84,10 @@ public class ChannelTypeUtils {
 
     public static State toDateTimeType(@Nullable ZonedDateTime zonedDateTime) {
         return (zonedDateTime == null) ? UnDefType.NULL : new DateTimeType(zonedDateTime);
+    }
+
+    public static State toDateTimeType(Optional<ZonedDateTime> lastSeen) {
+        return lastSeen.isPresent() ? toDateTimeType(lastSeen.get()) : UnDefType.UNDEF;
     }
 
     public static State toDecimalType(@Nullable BigDecimal value) {

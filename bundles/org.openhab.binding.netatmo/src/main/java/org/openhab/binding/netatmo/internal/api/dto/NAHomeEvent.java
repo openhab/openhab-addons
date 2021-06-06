@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,7 +30,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.VideoStatus;
 
 @NonNullByDefault
 public class NAHomeEvent extends NAEvent {
-    private long time;
+    private @NonNullByDefault({}) ZonedDateTime time;
     private @Nullable String personId;
     private @Nullable EventCategory category;
     private @Nullable NASnapshot snapshot;
@@ -38,7 +39,7 @@ public class NAHomeEvent extends NAEvent {
     private boolean isArrival;
 
     @Override
-    public long getTime() {
+    public ZonedDateTime getTime() {
         return time;
     }
 
@@ -86,7 +87,7 @@ public class NAHomeEvent extends NAEvent {
         return this.snapshot;
     }
 
-    public void setTime(int eventTime) {
+    public void setTime(ZonedDateTime eventTime) {
         this.time = eventTime;
     }
 }

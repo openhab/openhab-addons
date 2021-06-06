@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.TrendDescription;
@@ -38,8 +40,8 @@ public class NADashboard {
 
     private @Nullable TrendDescription pressureTrend;
     private @Nullable TrendDescription tempTrend;
-    private int dateMaxTemp;
-    private int dateMinTemp;
+    private @Nullable ZonedDateTime dateMaxTemp;
+    private @Nullable ZonedDateTime dateMinTemp;
     private double minTemp;
     private double maxTemp;
     @SerializedName("AbsolutePressure")
@@ -74,7 +76,7 @@ public class NADashboard {
     private int windStrength;
 
     private int maxWindStr;
-    private int dateMaxWindStr;
+    private @Nullable ZonedDateTime dateMaxWindStr;
 
     @SerializedName("GustStrength")
     private int gustStrength;
@@ -102,11 +104,11 @@ public class NADashboard {
         return trend != null ? trend : TrendDescription.UNKNOWN;
     }
 
-    public int getDateMaxTemp() {
+    public @Nullable ZonedDateTime getDateMaxTemp() {
         return dateMaxTemp;
     }
 
-    public int getDateMinTemp() {
+    public @Nullable ZonedDateTime getDateMinTemp() {
         return dateMinTemp;
     }
 
@@ -171,7 +173,7 @@ public class NADashboard {
         return maxWindStr;
     }
 
-    public double getDateMaxWindStr() {
+    public @Nullable ZonedDateTime getDateMaxWindStr() {
         return dateMaxWindStr;
     }
 

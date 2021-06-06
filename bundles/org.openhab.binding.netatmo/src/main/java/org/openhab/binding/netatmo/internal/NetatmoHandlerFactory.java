@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.SERVICE_PID;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -74,7 +74,12 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return (thingTypeUID.getBindingId().equals(BINDING_ID));
+        for (ModuleType moduleType : ModuleType.values()) {
+            if (moduleType.matches(thingTypeUID)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -101,18 +106,19 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             helpers.add(new SignalHelper(bridge, timeZoneProvider, moduleType.getSignalLevels()));
         }
         try {
-            for (Class<? extends AbstractChannelHelper> helperClass : moduleType.channelHelpers) {
-                Constructor<?> constructor = helperClass.getConstructor(Thing.class, TimeZoneProvider.class);
-                AbstractChannelHelper helper = (AbstractChannelHelper) constructor
-                        .newInstance(new Object[] { bridge, timeZoneProvider });
-                if (helper != null) {
-                    helpers.add(helper);
+            Constructor<?> handlerConstructor = moduleType.getHandlerConstructor();
+            if (handlerConstructor != null) {
+                for (Class<? extends AbstractChannelHelper> helperClass : moduleType.getChannelHelpers()) {
+                    Constructor<?> helperConstructor = helperClass.getConstructor(Thing.class, TimeZoneProvider.class);
+                    AbstractChannelHelper helper = (AbstractChannelHelper) helperConstructor
+                            .newInstance(new Object[] { bridge, timeZoneProvider });
+                    if (helper != null) {
+                        helpers.add(helper);
+                    }
                 }
+                return (BaseThingHandler) handlerConstructor
+                        .newInstance(new Object[] { bridge, helpers, apiBridge, stateDescriptionProvider });
             }
-            Constructor<?> constructor = moduleType.handlerClass.getConstructor(Bridge.class, List.class,
-                    ApiBridge.class, TimeZoneProvider.class, NetatmoDescriptionProvider.class);
-            return (BaseThingHandler) constructor.newInstance(
-                    new Object[] { bridge, helpers, apiBridge, timeZoneProvider, stateDescriptionProvider });
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             logger.warn("Error creating calling constructor : {}", e.getMessage());

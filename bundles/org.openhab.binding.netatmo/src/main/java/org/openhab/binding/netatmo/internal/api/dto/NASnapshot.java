@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NETATMO_BASE_URL;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_API_URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class NASnapshot extends NAObject {
-    private static String BASE_URL = NETATMO_BASE_URL + "/api/getcamerapicture?image_id=%s&key=%s";
+    // TODO : change using URIBuilder
+    private static String BASE_URL = NA_API_URL + "/api/getcamerapicture?image_id=%s&key=%s";
     private @Nullable String key;
 
     public NASnapshot(String id, String key) {

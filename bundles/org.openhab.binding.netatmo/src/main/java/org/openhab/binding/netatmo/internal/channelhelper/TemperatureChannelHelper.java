@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
@@ -34,7 +36,7 @@ import org.openhab.core.types.State;
 public class TemperatureChannelHelper extends AbstractChannelHelper {
 
     public TemperatureChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_TEMPERATURE);
+        super(thing, timeZoneProvider, Set.of(GROUP_TEMPERATURE));
     }
 
     @Override
@@ -49,9 +51,9 @@ public class TemperatureChannelHelper extends AbstractChannelHelper {
             case CHANNEL_TREND:
                 return toStringType(dashboard.getTempTrend());
             case CHANNEL_MIN_TIME:
-                return toDateTimeType(dashboard.getDateMinTemp(), zoneId);
+                return toDateTimeType(dashboard.getDateMinTemp());
             case CHANNEL_MAX_TIME:
-                return toDateTimeType(dashboard.getDateMaxTemp(), zoneId);
+                return toDateTimeType(dashboard.getDateMaxTemp());
         }
         return null;
     }

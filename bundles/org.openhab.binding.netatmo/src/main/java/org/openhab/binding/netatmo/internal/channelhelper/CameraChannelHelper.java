@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
@@ -37,7 +39,7 @@ public class CameraChannelHelper extends AbstractChannelHelper {
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
 
     public CameraChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_WELCOME);
+        super(thing, timeZoneProvider, Set.of(GROUP_WELCOME));
     }
 
     @Override

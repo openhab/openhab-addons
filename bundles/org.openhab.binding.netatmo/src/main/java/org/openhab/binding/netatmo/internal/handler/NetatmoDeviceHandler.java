@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.handler;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
 
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,7 +41,6 @@ import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.config.MeasureChannelConfig;
 import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -72,7 +70,6 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     public final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
 
     protected final List<AbstractChannelHelper> channelHelpers;
-    protected final ZoneId zoneId;
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final Optional<MeasuresChannelHelper> measureChannelHelper;
     protected final ApiBridge apiBridge;
@@ -84,12 +81,11 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     private @Nullable RefreshStrategy refreshStrategy;
 
     public NetatmoDeviceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
+            NetatmoDescriptionProvider descriptionProvider) {
         super(bridge);
         this.apiBridge = apiBridge;
         this.descriptionProvider = descriptionProvider;
         this.channelHelpers = channelHelpers;
-        this.zoneId = timeZoneProvider.getTimeZone();
 
         measureChannelHelper = channelHelpers.stream().filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .map(MeasuresChannelHelper.class::cast);
@@ -106,8 +102,9 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
             bridgeHandler.registerDataListener(config.id, this);
         }
 
-        refreshStrategy = supportedThingType.refreshPeriod == RefreshPolicy.AUTO ? new RefreshStrategy(-1)
-                : supportedThingType.refreshPeriod == RefreshPolicy.CONFIG ? new RefreshStrategy(config.refreshInterval)
+        refreshStrategy = supportedThingType.getRefreshPeriod() == RefreshPolicy.AUTO ? new RefreshStrategy(-1)
+                : supportedThingType.getRefreshPeriod() == RefreshPolicy.CONFIG
+                        ? new RefreshStrategy(config.refreshInterval)
                         : null;
 
         measureChannelHelper.ifPresent(channelHelper -> channelHelper.collectMeasuredChannels());
@@ -159,7 +156,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         }
     }
 
-    protected NADevice updateReadings() throws NetatmoException {
+    protected NAThing updateReadings() throws NetatmoException {
         throw new NetatmoException("Should not be called");
     }
 
@@ -172,12 +169,12 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
             if (dataOutdated) {
                 logger.debug("Trying to update channels on device {}", config.id);
                 try {
-                    NADevice newDeviceReading = updateReadings();
+                    NAThing newDeviceReading = updateReadings();
                     logger.debug("Successfully updated device {} readings! Now updating channels", config.id);
                     setNAThing(newDeviceReading);
                     updateStatus(newDeviceReading.isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
                     updateProperties(newDeviceReading);
-                    strategy.setDataTimeStamp(newDeviceReading.getLastSeen(), zoneId);
+                    newDeviceReading.getLastSeen().ifPresent(strategy::setDataTimeStamp);
                 } catch (NetatmoException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to connect Netatmo API : " + e.getLocalizedMessage());

@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
@@ -34,7 +36,7 @@ import org.openhab.core.types.State;
 public class Co2ChannelHelper extends AbstractChannelHelper {
 
     public Co2ChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_CO2);
+        super(thing, timeZoneProvider, Set.of(GROUP_CO2));
     }
 
     @Override

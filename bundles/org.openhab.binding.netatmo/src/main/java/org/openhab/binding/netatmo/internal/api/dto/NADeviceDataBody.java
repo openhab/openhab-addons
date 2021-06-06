@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class NADeviceDataBody<T extends NAThing> {
     private @NonNullByDefault({}) NAObjectMap<T> devices;
-    private @NonNullByDefault({}) NAUser user;
+    // private @NonNullByDefault({}) NAUser user;
 
     public NAObjectMap<T> getDevices() {
         return devices;
@@ -33,7 +34,7 @@ public class NADeviceDataBody<T extends NAThing> {
         return devices.get(id);
     }
 
-    public NAUser getUser() {
-        return user;
-    }
+    // public NAUser getUser() {
+    // return user;
+    // }
 }

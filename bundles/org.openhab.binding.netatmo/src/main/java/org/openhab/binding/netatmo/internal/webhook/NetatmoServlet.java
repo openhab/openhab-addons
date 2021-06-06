@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.webhook;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.NETATMO_CALLBACK_URI;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
+import org.openhab.binding.netatmo.internal.api.dto.NAWebhookEvent;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
@@ -64,11 +65,13 @@ public class NetatmoServlet extends HttpServlet {
     private final HttpService httpService;
     private boolean hookSet = false;
     private @Nullable SecurityApi api;
+    private final ApiBridge apiBridge;
 
     @Activate
     public NetatmoServlet(@Reference HttpService httpService, @Reference ApiBridge apiBridge,
             ComponentContext componentContext) {
         this.httpService = httpService;
+        this.apiBridge = apiBridge;
         try {
             httpService.registerServlet(NETATMO_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
             logger.debug("Started Netatmo Webhook Servlet at '{}'", NETATMO_CALLBACK_URI);
@@ -106,9 +109,9 @@ public class NetatmoServlet extends HttpServlet {
     }
 
     private void releaseWebHook() {
-        logger.info("Releasing Netatmo Welcome WebHook");
         SecurityApi localApi = api;
         if (hookSet && localApi != null) {
+            logger.info("Releasing Netatmo Welcome WebHook");
             try {
                 localApi.dropWebhook();
             } catch (NetatmoException e) {
@@ -124,14 +127,10 @@ public class NetatmoServlet extends HttpServlet {
             String data = inputStreamToString(req.getInputStream());
             if (!data.isEmpty()) {
                 logger.debug("Event transmitted from restService : {}", data);
-                NAWebhookEvent event = NETATMO_GSON.fromJson(data, NAWebhookEvent.class);
-                if (event != null) {
-                    NetatmoDeviceHandler targetListener = dataListeners.get(event.getHomeId());
-                    if (targetListener != null) {
-                        targetListener.setEvent(event);
-                    }
-                } else {
-                    logger.info("Unable to deserialize empty string");
+                NAWebhookEvent event = apiBridge.deserialize(NAWebhookEvent.class, data);
+                NetatmoDeviceHandler targetListener = dataListeners.get(event.getHomeId());
+                if (targetListener != null) {
+                    targetListener.setEvent(event);
                 }
             }
             resp.setCharacterEncoding(CHARSET);

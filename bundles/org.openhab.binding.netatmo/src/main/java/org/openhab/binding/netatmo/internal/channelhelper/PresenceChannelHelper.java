@@ -14,6 +14,8 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
@@ -37,7 +39,7 @@ public class PresenceChannelHelper extends AbstractChannelHelper {
     private State floodlightAutoMode = UnDefType.UNDEF;
 
     public PresenceChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, GROUP_PRESENCE);
+        super(thing, timeZoneProvider, Set.of(GROUP_PRESENCE));
     }
 
     @Override

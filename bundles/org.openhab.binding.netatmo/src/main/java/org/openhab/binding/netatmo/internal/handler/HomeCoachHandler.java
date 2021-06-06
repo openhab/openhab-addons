@@ -21,7 +21,6 @@ import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 
 /**
@@ -34,8 +33,8 @@ import org.openhab.core.thing.Bridge;
 public class HomeCoachHandler extends NetatmoDeviceHandler {
 
     public HomeCoachHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
+            NetatmoDescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, descriptionProvider);
     }
 
     @Override

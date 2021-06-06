@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -22,11 +25,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class NAThermMeasure {
-    private long time;
+    private @Nullable ZonedDateTime time;
     private double temperature;
     private double setpointTemp;
 
-    public long getTime() {
+    public @Nullable ZonedDateTime getTime() {
         return time;
     }
 

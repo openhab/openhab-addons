@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -46,7 +47,7 @@ public abstract class NAEvent extends NAObject {
         return message.replace("<b>", "").replace("</b>", "");
     }
 
-    public abstract long getTime();
+    public abstract ZonedDateTime getTime();
 
     public abstract @Nullable String getPersonId();
 
@@ -61,6 +62,7 @@ public abstract class NAEvent extends NAObject {
         this.type = type;
     }
 
+    // TODO : a supprimer ?
     @Override
     public String toString() {
         return "NAEvent [" + (type != null ? "type=" + type + ", " : "")

@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NADeviceDataBody;
+import org.openhab.binding.netatmo.internal.api.dto.NAHome;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlug;
 
 /**
@@ -29,24 +34,27 @@ public class EnergyApi extends RestManager {
     private class NAThermostatDataResponse extends ApiResponse<NADeviceDataBody<NAPlug>> {
     }
 
+    public class NAHomeStatusResponse extends ApiResponse<NAHomeStatus> {
+    }
+
     public EnergyApi(ApiBridge apiClient) {
         super(apiClient, NetatmoConstants.ENERGY_SCOPES);
     }
 
-    private NAThermostatDataResponse getThermostatsData(@Nullable String equipmentId) throws NetatmoException {
-        String req = "getthermostatsdata";
-        if (equipmentId != null) {
-            req += "?device_id=" + equipmentId;
-        }
-        return get(req, NAThermostatDataResponse.class);
-    }
+    public NAHome getHomeStatus(String homeId) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMESTATUS_SPATH).queryParam("home_id", homeId)
+                .queryParam("device_types", ModuleType.NAPlug.name()).queryParam("device_types", ModuleType.NRV.name())
+                .queryParam("device_types", ModuleType.NATherm1.name());
 
-    public NADeviceDataBody<NAPlug> getThermostatsDataBody(@Nullable String equipmentId) throws NetatmoException {
-        return getThermostatsData(equipmentId).getBody();
+        NAHomeStatusResponse response = get(uriBuilder.build(), NAHomeStatusResponse.class);
+        return response.getBody().getHome();
     }
 
     public NAPlug getThermostatData(String equipmentId) throws NetatmoException {
-        NADeviceDataBody<NAPlug> answer = getThermostatsData(equipmentId).getBody();
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETTHERMOSTAT_SPATH);
+        uriBuilder.queryParam("device_id", equipmentId);
+        NADeviceDataBody<NAPlug> answer = get(uriBuilder.build(), NAThermostatDataResponse.class).getBody();
+
         NAPlug plug = answer.getDevice(equipmentId);
         if (plug != null) {
             return plug;
@@ -56,56 +64,69 @@ public class EnergyApi extends RestManager {
 
     /**
      *
-     * The method switchschedule switches the Thermostat&#x27;s schedule to another existing schedule.
+     * The method switchschedule switches the home&#x27;s schedule to another existing schedule.
      *
-     * @param deviceId The relay id (required)
-     * @param moduleId The thermostat id (required)
+     * @param homeId The id of home (required)
      * @param scheduleId The schedule id. It can be found in the getthermstate response, under the keys
      *            therm_program_backup and therm_program. (required)
      * @return boolean success
      * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
      *             response body
      */
-    public boolean switchschedule(String deviceId, String moduleId, String scheduleId) throws NetatmoException {
-        String req = "switchschedule?device_id=%s&module_id=%s&schedule_id=%s";
-        req = String.format(req, deviceId, moduleId, scheduleId);
-        ApiOkResponse response = post(req, null, ApiOkResponse.class, true);
-        if (!response.isSuccess()) {
-            throw new NetatmoException(String.format("Unsuccessfull schedule change : %s", response.getStatus()));
-        }
+    public boolean switchSchedule(String homeId, String scheduleId) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder().path(NA_SWITCHSCHEDULE_SPATH);
+        String payload = String.format("{\"home_id\":\"%s\",\"schedule_id\":\"%s\"}", homeId, scheduleId);
+        post(uriBuilder.build(), ApiOkResponse.class, payload);
         return true;
     }
 
     /**
      *
-     * The method setthermpoint changes the Thermostat manual temperature setpoint.
+     * This endpoint permits to control the heating of a specific home. A home can be set in 3 differents modes:
+     * "schedule" mode in which the home will follow the user schedule
+     * "away" mode which will put the whole house to away (default is 12° but can be changed by the user in its
+     * settings)
+     * "hg" corresponds to frostguard mode (7° by default)
      *
-     * @param deviceId The relay id (required)
-     * @param moduleId The thermostat id (required)
-     * @param targetMode Chosen setpoint_mode (required)
-     * @param setpointEndtime When using the manual or max setpoint_mode, this parameter defines when the setpoint
+     * @param homeId The id of home (required)
+     * @param mode The mode. (required)
+     * @return boolean success
+     * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
+     *             response body
+     */
+    public boolean setThermMode(String homeId, String mode) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder().path(NA_SETTHERMMODE_SPATH);
+        String payload = String.format("{\"home_id\":\"%s\",\"mode\":\"%s\"}", homeId, mode);
+        post(uriBuilder.build(), ApiOkResponse.class, payload);
+        return true;
+    }
+
+    /**
+     *
+     * The method setroomthermpoint changes the Thermostat manual temperature setpoint.
+     *
+     * @param homeId The id of home (required)
+     * @param roomId The id of the room (required)
+     * @param mode The mode. (required)
+     * @param endtime When using the manual or max setpoint_mode, this parameter defines when the setpoint
      *            expires. (optional)
-     * @param setpointTemp When using the manual setpoint_mode, this parameter defines the temperature setpoint (in
+     * @param temp When using the manual setpoint_mode, this parameter defines the temperature setpoint (in
      *            Celcius) to use. (optional)
      * @return ApiOkResponse
      * @throws NetatmoCommunicationException If fail to call the API, e.g. server error or cannot deserialize the
      *             response body
      */
-    public boolean setthermpoint(String deviceId, String moduleId, SetpointMode targetMode, long setpointEndtime,
-            double setpointTemp) throws NetatmoException {
-        String req = "setthermpoint?device_id=%s&module_id=%s&setpoint_mode=%s";
-        req = String.format(req, deviceId, moduleId, targetMode.getDescriptor());
-        if (targetMode == SetpointMode.MANUAL || targetMode == SetpointMode.MAX) {
-            req += "&setpoint_endtime=" + setpointEndtime;
-            if (targetMode == SetpointMode.MANUAL) {
-                req += "&setpoint_temp=" + setpointTemp;
+    public boolean setRoomThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
+            throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder().path(NA_SETROOMTHERMPOINT_SPATH).queryParam("home_id", roomId)
+                .queryParam("room_id", mode.getDescriptor());
+        if (mode == SetpointMode.MANUAL || mode == SetpointMode.MAX) {
+            uriBuilder.queryParam("endtime", endtime);
+            if (mode == SetpointMode.MANUAL) {
+                uriBuilder.queryParam("temp", temp);
             }
         }
-
-        ApiOkResponse response = post(req, null, ApiOkResponse.class, true);
-        if (!response.isSuccess()) {
-            throw new NetatmoException(String.format("Unsuccessfull setpoint change : %s", response.getStatus()));
-        }
+        post(uriBuilder.build(), ApiOkResponse.class, null);
         return true;
     }
 }

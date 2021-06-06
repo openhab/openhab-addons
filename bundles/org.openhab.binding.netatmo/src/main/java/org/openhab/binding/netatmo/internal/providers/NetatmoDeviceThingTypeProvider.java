@@ -64,7 +64,7 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
     public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
         List<ThingType> thingTypes = new LinkedList<>();
         for (ModuleType supportedThingType : ModuleType.values()) {
-            ThingType thingType = getThingType(supportedThingType.thingTypeUID, locale);
+            ThingType thingType = getThingType(supportedThingType.getThingTypeUID(), locale);
             if (thingType != null) {
                 thingTypes.add(thingType);
             }
@@ -79,7 +79,8 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
                 ModuleType supportedThingType = ModuleType.valueOf(thingTypeUID.getId());
                 String configDescription = BINDING_ID + ":"
                         + (supportedThingType.getSignalLevels() == NetatmoConstants.NO_RADIO ? "virtual"
-                                : supportedThingType.refreshPeriod == RefreshPolicy.CONFIG ? "configurable" : "device");
+                                : supportedThingType.getRefreshPeriod() == RefreshPolicy.CONFIG ? "configurable"
+                                        : "device");
 
                 ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder
                         .instance(thingTypeUID, getLabelText(thingTypeUID.getId(), locale))
@@ -88,12 +89,12 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
                         .withChannelGroupDefinitions(getGroupDefinitions(supportedThingType))
                         .withConfigDescriptionURI(new URI(configDescription));
 
-                List<String> extensions = supportedThingType.extensions;
-                if (extensions != null) {
+                List<String> extensions = supportedThingType.getExtensions();
+                if (extensions.size() > 0) {
                     thingTypeBuilder.withExtensibleChannelTypeIds(extensions);
                 }
 
-                ThingTypeUID thingType = supportedThingType.bridgeThingType;
+                ThingTypeUID thingType = supportedThingType.getBridgeThingType();
                 if (thingType != null) {
                     thingTypeBuilder.withSupportedBridgeTypeUIDs(Arrays.asList(thingType.getAsString()));
                 }
@@ -108,7 +109,7 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
 
     private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType supportedThingType) {
         List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
-        for (String group : supportedThingType.groups) {
+        for (String group : supportedThingType.getGroups()) {
             ChannelGroupTypeUID groupType = new ChannelGroupTypeUID(BINDING_ID, group);
             groupDefinitions.add(new ChannelGroupDefinition(group, groupType));
         }

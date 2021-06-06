@@ -24,9 +24,14 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.ThermostatZoneT
 @NonNullByDefault
 public class NATimeTableItem extends NAObject {
     private int mOffset;
+    private int zoneId;
 
     public int getMOffset() {
         return mOffset;
+    }
+
+    public int getZoneId() {
+        return zoneId;
     }
 
     public ThermostatZoneType getZoneType() {

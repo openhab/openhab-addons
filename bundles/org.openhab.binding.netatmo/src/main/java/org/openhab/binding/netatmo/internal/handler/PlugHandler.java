@@ -12,19 +12,16 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.getSetpointEndTimeFromNow;
-
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
-import org.openhab.binding.netatmo.internal.api.EnergyApi;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlug;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 
@@ -39,11 +36,11 @@ import org.openhab.core.thing.ThingStatus;
 public class PlugHandler extends NetatmoDeviceHandler {
 
     public PlugHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
+            NetatmoDescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, descriptionProvider);
     }
 
-    private @NonNullByDefault({}) HomeEnergyHandler getHomeHandler() {
+    public @NonNullByDefault({}) HomeEnergyHandler getHomeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             return (HomeEnergyHandler) bridge.getHandler();
@@ -53,34 +50,37 @@ public class PlugHandler extends NetatmoDeviceHandler {
 
     @Override
     protected NAPlug updateReadings() throws NetatmoException {
-        EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
-        if (api != null) {
-            return api.getThermostatData(config.id);
+        HomeEnergyHandler handler = getHomeHandler();
+        if (handler != null) {
+            NAHome localHome = handler.getHome();
+            if (localHome != null) {
+                return (NAPlug) Objects.requireNonNullElse(localHome.getModule(config.id), new NAPlug());
+            }
         }
-        throw new NetatmoException("No restmanager available for Energy access");
+        return new NAPlug();
     }
 
-    public int getSetpointDefaultDuration() {
-        HomeEnergyHandler bridgeHandler = getHomeHandler();
-        return bridgeHandler != null ? bridgeHandler.getSetpointDefaultDuration() : 120;
-    }
-
-    public void callSetThermMode(String moduleId, SetpointMode targetMode) {
-        EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
-        tryApiCall(() -> api != null
-                ? api.setthermpoint(config.id, moduleId, targetMode,
-                        targetMode == SetpointMode.MAX ? getSetpointEndTimeFromNow(getSetpointDefaultDuration()) : 0, 0)
-                : false);
-    }
-
-    public void callSetThermTemp(String moduleId, double temperature) {
-        EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
-        tryApiCall(() -> api != null ? api.setthermpoint(config.id, moduleId, SetpointMode.MANUAL,
-                getSetpointEndTimeFromNow(getSetpointDefaultDuration()), temperature) : false);
-    }
-
-    public void callSwitchSchedule(String moduleId, String schedule) {
-        EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
-        tryApiCall(() -> api != null ? api.switchschedule(config.id, moduleId, schedule) : false);
-    }
+    // public int getSetpointDefaultDuration() {
+    // HomeEnergyHandler bridgeHandler = getHomeHandler();
+    // return bridgeHandler != null ? bridgeHandler.getSetpointDefaultDuration() : 120;
+    // }
+    //
+    // public void callSetThermMode(String moduleId, SetpointMode targetMode) {
+    // EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
+    // tryApiCall(() -> api != null
+    // ? api.setthermpoint(config.id, moduleId, targetMode,
+    // targetMode == SetpointMode.MAX ? getSetpointEndTimeFromNow(getSetpointDefaultDuration()) : 0, 0)
+    // : false);
+    // }
+    //
+    // public void callSetThermTemp(String moduleId, double temperature) {
+    // EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
+    // tryApiCall(() -> api != null ? api.setthermpoint(config.id, moduleId, SetpointMode.MANUAL,
+    // getSetpointEndTimeFromNow(getSetpointDefaultDuration()), temperature) : false);
+    // }
+    //
+    // public void callSwitchSchedule(String moduleId, String schedule) {
+    // EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
+    // tryApiCall(() -> api != null ? api.switchschedule(config.id, moduleId, schedule) : false);
+    // }
 }

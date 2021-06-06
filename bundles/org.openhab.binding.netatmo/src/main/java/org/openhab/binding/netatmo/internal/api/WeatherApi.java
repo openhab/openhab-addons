@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+
 import java.util.List;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,14 +57,14 @@ public class WeatherApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
      *             response body
      */
-    private NAStationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
+    public NAStationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
             throws NetatmoException {
-        String req = "getstationsdata";
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETSTATION_SPATH);
         if (deviceId != null) {
-            req += "?device_id=" + deviceId;
+            uriBuilder.queryParam("device_id", deviceId);
         }
-        // TODO : getFavorites is not used
-        NAStationDataResponse response = get(req, NAStationDataResponse.class);
+        uriBuilder.queryParam("get_favorites", getFavorites);
+        NAStationDataResponse response = get(uriBuilder.build(), NAStationDataResponse.class);
         return response;
     }
 
@@ -91,35 +95,30 @@ public class WeatherApi extends RestManager {
         return result.size() > 0 ? result.get(0).getSingleValue() : Double.NaN;
     }
 
-    public List<NAMeasureBodyElem> getmeasure(String deviceId, @Nullable String moduleId, MeasureScale scale,
+    private List<NAMeasureBodyElem> getmeasure(String deviceId, @Nullable String moduleId, MeasureScale scale,
             String[] type, long dateBegin, long dateEnd, int limit, boolean optimize, boolean realTime)
             throws NetatmoException {
-        String req = "getmeasure?device_id=" + deviceId;
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETMEASURE_SPATH);
+        uriBuilder.queryParam("device_id", deviceId).queryParam("scale", scale.getDescriptor())
+                .queryParam("optimize", optimize).queryParam("real_time", realTime);
         if (moduleId != null) {
-            req += "&module_id=" + moduleId;
+            uriBuilder.queryParam("module_id", moduleId);
         }
-        req += "&scale=" + scale.getDescriptor();
         for (String measureType : type) {
-            req += "&type=" + measureType;
+            uriBuilder.queryParam("type", measureType);
         }
         if (dateBegin > 0) {
-            req += "&date_begin=" + String.valueOf(dateBegin);
+            uriBuilder.queryParam("date_begin", dateBegin);
         }
         if (dateEnd > 0 && dateEnd > dateBegin) {
-            req += "&date_end=" + String.valueOf(dateEnd);
+            uriBuilder.queryParam("date_end", dateEnd);
         } else {
-            req += "&date_end=last";
+            uriBuilder.queryParam("date_end", "last");
         }
         if (limit > 0 && limit <= 1024) {
-            req += "&limit=" + String.valueOf(limit);
+            uriBuilder.queryParam("limit", limit);
         }
-        if (optimize) {
-            req += "&optimize=true";
-        }
-        if (realTime) {
-            req += "&real_time=true";
-        }
-        NAMeasuresResponse response = get(req, NAMeasuresResponse.class);
+        NAMeasuresResponse response = get(uriBuilder.build(), NAMeasuresResponse.class);
         return response.getBody();
     }
 }

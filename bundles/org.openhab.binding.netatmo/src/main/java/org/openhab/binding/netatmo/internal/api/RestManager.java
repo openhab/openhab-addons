@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+
+import java.net.URI;
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,20 +32,24 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
  */
 @NonNullByDefault
 public abstract class RestManager {
-    private static String SUB_URL = "api/";
+    private static final UriBuilder API_BASE_BUILDER = UriBuilder.fromUri(NA_API_URL);
+    private static final UriBuilder OAUTH_URI_BUILDER = API_BASE_BUILDER.clone().path(NA_OAUTH_PATH);
+    private static final UriBuilder API_URI_BUILDER = API_BASE_BUILDER.clone().path(NA_API_PATH);
+    private static final UriBuilder APP_URI_BUILDER = UriBuilder.fromUri(NA_APP_URL).path(NA_API_PATH);
+    private static final UriBuilder SNAPSHOT_URI_BUILDER = API_URI_BUILDER.clone().path(NA_GETCAMERAPICTURE_SPATH);
 
-    protected final ApiBridge apiHandler;
     private final Set<Scope> requiredScopes;
     private final String baseUrl;
+    protected final ApiBridge apiHandler;
 
-    public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes) {
-        this(apiHandler, requiredScopes, SUB_URL);
+    public RestManager(ApiBridge apiHandler) {
+        this(apiHandler, Collections.emptySet());
     }
 
-    public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes, String substitudedBaseUrl) {
+    public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes) {
         this.apiHandler = apiHandler;
         this.requiredScopes = requiredScopes;
-        this.baseUrl = substitudedBaseUrl;
+        this.baseUrl = NA_API_PATH + "/";
     }
 
     public Set<Scope> getRequiredScopes() {
@@ -50,12 +60,45 @@ public abstract class RestManager {
         return apiHandler.executeUrl(baseUrl + anUrl, HttpMethod.GET, null, classOfT, true);
     }
 
+    public <T extends ApiResponse<?>> T get(URI uri, Class<T> classOfT) throws NetatmoException {
+        return apiHandler.executeUri(uri, HttpMethod.GET, classOfT);
+    }
+
     public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean defaultApp)
             throws NetatmoException {
         return apiHandler.executeUrl(baseUrl + anUrl, HttpMethod.POST, payload, classOfT, defaultApp);
     }
 
+    public <T extends ApiResponse<?>> T post(URI uri, Class<T> classOfT, @Nullable String payload)
+            throws NetatmoException {
+        T response = apiHandler.executeUri(uri, HttpMethod.POST, classOfT, payload);
+        if (response instanceof ApiOkResponse) {
+            ApiOkResponse okResponse = (ApiOkResponse) response;
+            if (!okResponse.isSuccess()) {
+                throw new NetatmoException(String.format("Unsuccessfull command : %s for uri : %s",
+                        response.getStatus(), uri.toASCIIString()));
+            }
+        }
+        return response;
+    }
+
     public <T> T post(String payload, Class<T> classOfT) throws NetatmoException {
         return post("", payload, classOfT, true);
+    }
+
+    protected UriBuilder getApiUriBuilder() {
+        return API_URI_BUILDER.clone();
+    }
+
+    protected UriBuilder getAppUriBuilder() {
+        return APP_URI_BUILDER.clone();
+    }
+
+    protected UriBuilder getSnapshotUriBuilder() {
+        return SNAPSHOT_URI_BUILDER.clone();
+    }
+
+    protected URI getOAuthUri() {
+        return OAUTH_URI_BUILDER.build();
     }
 }

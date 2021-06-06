@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.webhook;
+package org.openhab.binding.netatmo.internal.deserialization;
 
 import java.lang.reflect.Type;
 
@@ -38,7 +38,7 @@ public class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
 
         String string = json.getAsString();
         String[] elements = string.split("-");
-        if (elements.length == 2) {
+        if (elements.length > 1) {
             ModuleType moduleType = ModuleType.valueOf(elements[0]);
             EventType eventType = EventType.valueOf(elements[1]);
 

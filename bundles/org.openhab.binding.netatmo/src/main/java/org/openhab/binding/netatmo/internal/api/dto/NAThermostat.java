@@ -56,7 +56,7 @@ public class NAThermostat extends NAModule {
 
     public double getSetpointTemp() {
         NASetpoint localSetpoint = setpoint;
-        return localSetpoint != null ? localSetpoint.getSetpointTemp() : Double.NaN;
+        return localSetpoint != null ? localSetpoint.getSetpointTemperature() : Double.NaN;
     }
 
     public long getSetpointEndtime() {
