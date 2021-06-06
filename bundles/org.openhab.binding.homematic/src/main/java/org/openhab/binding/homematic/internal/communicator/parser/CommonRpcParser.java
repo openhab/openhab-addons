@@ -177,12 +177,18 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             unit = unit.trim().replace("\ufffd", "°");
         }
         dp.setUnit(unit == null || unit.isEmpty() ? null : unit);
-        if (dp.getUnit() == null && dp.getName() != null && dp.getName().startsWith("RSSI_")) {
-            dp.setUnit("dBm");
-        }
-        // Bypass: For at least one device the CCU does not send a unit together with the value
-        if (dp.getUnit() == null && dp.getName().startsWith(HomematicConstants.DATAPOINT_NAME_OPERATING_VOLTAGE)) {
-            dp.setUnit("V");
+
+        // Bypass: For several devices the CCU does not send a unit together with the value in the data point definition
+        if (dp.getUnit() == null && dp.getName() != null) {
+            if (dp.getName().startsWith("RSSI_")) {
+                dp.setUnit("dBm");
+            } else if (dp.getName().startsWith(HomematicConstants.DATAPOINT_NAME_OPERATING_VOLTAGE)) {
+                dp.setUnit("V");
+            } else if (HomematicConstants.DATAPOINT_NAME_HUMIDITY.equals(dp.getName())) {
+                dp.setUnit("%");
+            } else if (HomematicConstants.DATAPOINT_NAME_LEVEL.equals(dp.getName())) {
+                dp.setUnit("100%");
+            }
         }
 
         HmValueType valueType = HmValueType.parse(type);
