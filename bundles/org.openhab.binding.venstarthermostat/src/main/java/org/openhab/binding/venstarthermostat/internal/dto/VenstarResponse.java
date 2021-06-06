@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.internal.model;
+package org.openhab.binding.venstarthermostat.internal.dto;
 
 /**
  * The {@link VenstarResponse} represents a response message from the REST API.

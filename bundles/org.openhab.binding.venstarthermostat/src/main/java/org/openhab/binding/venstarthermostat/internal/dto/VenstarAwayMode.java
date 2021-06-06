@@ -10,25 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.internal.model;
+package org.openhab.binding.venstarthermostat.internal.dto;
 
 /**
  * The {@link VenstarSystemMode} represents the value of the system mode returned
  * from the REST API.
  *
- * @author William Welliver - Initial contribution
+ * @author Matthew Davies - Initial contribution
  */
-public enum VenstarSystemMode {
-    OFF(0, "off", "Off"),
-    HEAT(1, "heat", "Heat"),
-    COOL(2, "cool", "Cool"),
-    AUTO(3, "auto", "Auto");
+public enum VenstarAwayMode {
+    HOME(0, "home", "Home"),
+    AWAY(1, "away", "Away");
 
     private int mode;
     private String name;
     private String friendlyName;
 
-    VenstarSystemMode(int mode, String name, String friendlyName) {
+    VenstarAwayMode(int mode, String name, String friendlyName) {
         this.mode = mode;
         this.name = name;
         this.friendlyName = friendlyName;
@@ -46,13 +44,13 @@ public enum VenstarSystemMode {
         return friendlyName;
     }
 
-    public static VenstarSystemMode fromInt(int mode) {
-        for (VenstarSystemMode sm : values()) {
-            if (sm.mode == mode) {
-                return sm;
+    public static VenstarAwayMode fromInt(int mode) {
+        for (VenstarAwayMode am : values()) {
+            if (am.mode == mode) {
+                return am;
             }
         }
 
-        throw (new IllegalArgumentException("Invalid system mode " + mode));
+        throw (new IllegalArgumentException("Invalid away mode " + mode));
     }
 }
