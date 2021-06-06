@@ -207,6 +207,7 @@ Every device has a channel group `device` with the following channels:
 |          |internalTemp       |Number  |yes      |Internal device temperature (when provided by the device)                        |
 |          |selfTest           |String  |yes      |Result from device self-test (pending/not_completed/running/completed/unknown)   |
 |          |alarm              |Trigger |yes      |Self-Test result not_completed/completed/running/pending                         |
+|          |supplyVoltage      |Number  |yes      |Shelly 1PM, 1L, 2.5: Supply voltage (fixed or measured depending on device)      |
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kwh of the device (including all meters)              |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kwh of the device (including all meters)           |

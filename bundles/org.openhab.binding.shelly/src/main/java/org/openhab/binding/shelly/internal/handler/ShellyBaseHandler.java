@@ -367,7 +367,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (res.isNotCalibrtated()) {
                 logger.warn("{}: {}", thingName, messages.get("roller.calibrating"));
             } else {
-                logger.info("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
+                logger.warn("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
                         e.toString());
             }
         } catch (IllegalArgumentException e) {
