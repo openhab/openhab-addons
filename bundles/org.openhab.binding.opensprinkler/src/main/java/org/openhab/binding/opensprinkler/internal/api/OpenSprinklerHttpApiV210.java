@@ -94,10 +94,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     @Override
     public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
         if (state.jsReply.sn.length > 0) {
-            if (state.jsReply.sn[station] == 1) {
-                return true;
-            }
-            return false;
+            return state.jsReply.sn[station] == 1;
         } else {
             throw new GeneralApiException("There was a problem parsing the station status for the sn value.");
         }

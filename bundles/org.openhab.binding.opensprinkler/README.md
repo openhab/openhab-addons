@@ -1,6 +1,10 @@
 # OpenSprinkler Binding
 
-This binding allows control of your OpenSprinkler devices.
+This binding allows good and flexible control over your OpenSprinkler devices.
+You can choose to manually start, stop or delay the stand alone watering programs that are stored and run fully from the OpenSprinkler device.
+Alternatively you can setup openHAB rules to control everything in more depth by setting up multiple `station` things for each watering zone to gain more in depth control.
+By using the internal programs and sensors of the OpenSprinkler device, it can remove the complexity of what happens to the watering if openHAB crashes, is rebooted, or drops out of WiFi range in the middle of your watering rules.
+Mixing the two concepts can also be done, the choice is yours.
 
 ## Supported Bridges
 
@@ -8,8 +12,10 @@ This binding allows control of your OpenSprinkler devices.
 
 ## Supported Things
 
-* `OpenSprinkler Station` is for advanced control over a single station (zone) of a device, e.g. to turn it on or off.
+* `OpenSprinkler Station` is for gaining advanced controls and status information over a single station (zone) of a device, e.g. to turn it on or off, or the time remaining.
 * `OpenSprinkler Device` is for device-specific controls that usually apply to multiple stations or main unit sensors, e.g. if rain was detected.
+
+Recommend that you first add a single `device` thing and then if you need the extra controls, add as many of the `station` things as you wish.
 
 ## Discovery
 
