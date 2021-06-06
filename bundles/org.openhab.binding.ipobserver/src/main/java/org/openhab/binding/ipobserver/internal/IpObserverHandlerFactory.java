@@ -38,13 +38,16 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.ipobserver", service = ThingHandlerFactory.class)
 public class IpObserverHandlerFactory extends BaseThingHandlerFactory {
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_WEATHER_STATION);
-    private final HttpClient httpClient;
+    protected final HttpClient httpClient;
 
     @Activate
     public IpObserverHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected HttpClient getHttpClient() {
+        return httpClient;
     }
 
     @Override

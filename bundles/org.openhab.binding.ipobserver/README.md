@@ -15,7 +15,7 @@ There is only one thing that can be added and is called `weatherstation`.
 
 ## Discovery
 
-Auto discovery is not supported as it would require a IP scan that would take longer than simply adding an IP or host name to the binding.
+Auto discovery is supported and may take a while to complete as it scans all IP addresses on your network one by one.
 
 ## Thing Configuration
 
