@@ -47,16 +47,16 @@ import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.venstarthermostat.internal.VenstarThermostatConfiguration;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarAwayMode;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarAwayModeSerializer;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarInfoData;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarResponse;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSensor;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSensorData;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemMode;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemModeSerializer;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemState;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemStateSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarAwayMode;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarAwayModeSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarInfoData;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarResponse;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSensor;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSensorData;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemMode;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemModeSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemState;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemStateSerializer;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -117,7 +117,6 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         log.trace("VenstarThermostatHandler for thing {}", getThing().getUID());
     }
 
-    @SuppressWarnings("null") // compiler does not see conf.refresh == null check
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         Collection<ConfigStatusMessage> status = new ArrayList<>();
@@ -134,7 +133,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
                     .withArguments(CONFIG_PASSWORD).build());
         }
 
-        if (config.refresh == null || config.refresh < 10) {
+        if (config.refresh < 10) {
             log.warn("refresh is too small: {}", config.refresh);
 
             status.add(ConfigStatusMessage.Builder.error(CONFIG_REFRESH).withMessageKeySuffix(REFRESH_INVALID)
@@ -145,7 +144,6 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             log.debug("Controller is NOT ONLINE and is not responding to commands");
             return;
@@ -160,12 +158,12 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             stateMap.remove(channelUID.getAsString());
             if (channelUID.getId().equals(CHANNEL_HEATING_SETPOINT)) {
                 QuantityType<Temperature> quantity = commandToQuantityType(command, unitSystem);
-                int value = quantityToRoundedTemperature(quantity, unitSystem).intValue();
+                double value = quantityToRoundedTemperature(quantity, unitSystem).doubleValue();
                 log.debug("Setting heating setpoint to {}", value);
                 setHeatingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_COOLING_SETPOINT)) {
                 QuantityType<Temperature> quantity = commandToQuantityType(command, unitSystem);
-                int value = quantityToRoundedTemperature(quantity, unitSystem).intValue();
+                double value = quantityToRoundedTemperature(quantity, unitSystem).doubleValue();
                 log.debug("Setting cooling setpoint to {}", value);
                 setCoolingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_SYSTEM_MODE)) {
@@ -298,20 +296,20 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private void setCoolingSetpoint(int cool) {
-        int heat = getHeatingSetpoint().intValue();
+    private void setCoolingSetpoint(double cool) {
+        double heat = getHeatingSetpoint().doubleValue();
         VenstarSystemMode mode = getSystemMode();
         updateControls(heat, cool, mode);
     }
 
     private void setSystemMode(VenstarSystemMode mode) {
-        int cool = getCoolingSetpoint().intValue();
-        int heat = getHeatingSetpoint().intValue();
+        double cool = getCoolingSetpoint().doubleValue();
+        double heat = getHeatingSetpoint().doubleValue();
         updateControls(heat, cool, mode);
     }
 
-    private void setHeatingSetpoint(int heat) {
-        int cool = getCoolingSetpoint().intValue();
+    private void setHeatingSetpoint(double heat) {
+        double cool = getCoolingSetpoint().doubleValue();
         VenstarSystemMode mode = getSystemMode();
         updateControls(heat, cool, mode);
     }
@@ -354,7 +352,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         }
     }
 
-    private void updateControls(int heat, int cool, VenstarSystemMode mode) {
+    private void updateControls(double heat, double cool, VenstarSystemMode mode) {
         // this function corresponds to the thermostat local API POST /control instruction
         // the function can be expanded with other parameters which are changed via POST /control
         Map<String, String> params = new HashMap<>();
@@ -503,7 +501,6 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             return content;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new VenstarCommunicationException(e);
-
         }
     }
 
