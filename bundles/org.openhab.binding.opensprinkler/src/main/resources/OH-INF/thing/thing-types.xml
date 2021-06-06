@@ -167,14 +167,6 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="system-channel" system="true" advanced="true">
-		<item-type>Number</item-type>
-		<label>Signal Strength</label>
-		<description>Wi-Fi Signal Strength.</description>
-		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%d %unit%"></state>
-	</channel-type>
-
 	<channel-type id="remainingWaterTime">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Water Time</label>

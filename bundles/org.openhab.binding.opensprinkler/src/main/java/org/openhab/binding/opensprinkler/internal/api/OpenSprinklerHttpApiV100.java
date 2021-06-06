@@ -181,7 +181,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public int signalStrength() {
-        return state.jcReply.RSSI;
+        return state.jcReply.rssi;
     }
 
     @Override
