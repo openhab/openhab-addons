@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.internal.model;
+package org.openhab.binding.venstarthermostat.internal.dto;
 
 import java.lang.reflect.Type;
 
@@ -20,16 +20,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link VenstarSystemModeSerializer} parses system mode values
+ * The {@link VenstarSystemStateSerializer} parses system state values
  * from the REST API JSON.
  *
  * @author William Welliver - Initial contribution
  */
-public class VenstarSystemModeSerializer implements JsonDeserializer<VenstarSystemMode> {
+public class VenstarSystemStateSerializer implements JsonDeserializer<VenstarSystemState> {
     @Override
-    public VenstarSystemMode deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
+    public VenstarSystemState deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
         int key = element.getAsInt();
-        return VenstarSystemMode.fromInt(key);
+        return VenstarSystemState.fromInt(key);
     }
 }

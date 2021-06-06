@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.internal.model;
+package org.openhab.binding.venstarthermostat.internal.dto;
 
 import java.lang.reflect.Type;
 
@@ -23,7 +23,7 @@ import com.google.gson.JsonParseException;
  * The {@link VenstarSystemModeSerializer} parses system mode values
  * from the REST API JSON.
  *
- * @author Matthew Davies - created new class to include away mode in binding
+ * @author Matthew Davies - Initial contribution
  */
 public class VenstarAwayModeSerializer implements JsonDeserializer<VenstarAwayMode> {
     @Override
