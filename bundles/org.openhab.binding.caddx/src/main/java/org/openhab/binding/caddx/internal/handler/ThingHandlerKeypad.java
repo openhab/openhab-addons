@@ -46,6 +46,19 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        // Follow the bridge status
+        updateStatus(bridgeHandler.getThing().getStatus());
+    }
+
+    @Override
     public void updateChannel(ChannelUID channelUID, String data) {
         if (channelUID.getId().equals(CaddxBindingConstants.KEYPAD_KEY_PRESSED)) {
             StringType stringType = new StringType(data);

@@ -51,6 +51,23 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        String cmd1 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
+        String cmd2 = CaddxBindingConstants.ZONE_NAME_REQUEST;
+        String data = String.format("%d", getZoneNumber() - 1);
+
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd1, data);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd2, data);
+    }
+
+    @Override
     public void updateChannel(ChannelUID channelUID, String data) {
         if (channelUID.getId().equals(CaddxBindingConstants.ZONE_NAME)) {
             updateState(channelUID, new StringType(data));
@@ -120,8 +137,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
                     String value = message.getPropertyById(p.getId());
                     channelUID = new ChannelUID(getThing().getUID(), p.getId());
                     updateChannel(channelUID, value);
-
-                    logger.trace("  updateChannel: {} = {}", channelUID, value);
+                    logger.trace("Updating zone channel: {}", channelUID.getAsString());
                 }
             }
         }

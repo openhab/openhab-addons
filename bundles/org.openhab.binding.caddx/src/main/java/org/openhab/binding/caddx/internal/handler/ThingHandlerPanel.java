@@ -53,6 +53,20 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        String cmd = CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST;
+        String data = "";
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
+    }
+
+    @Override
     public void updateChannel(ChannelUID channelUID, String data) {
         if (channelUID.getId().equals(CaddxBindingConstants.PANEL_FIRMWARE_VERSION)
                 || channelUID.getId().startsWith("panel_log_message_")) {
@@ -83,7 +97,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
                 data = "";
             } else if (System.currentTimeMillis() - lastRefreshTime > 2000) {
                 // Refresh only if 2 seconds have passed from the last refresh
-                cmd = CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST;
+                cmd = CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST;
                 data = "";
             } else {
                 return;
@@ -105,6 +119,15 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             CaddxMessageType mt = message.getCaddxMessageType();
             ChannelUID channelUID = null;
 
+            for (CaddxProperty p : mt.properties) {
+                if (!p.getId().isEmpty()) {
+                    String value = message.getPropertyById(p.getId());
+                    channelUID = new ChannelUID(getThing().getUID(), p.getId());
+                    updateChannel(channelUID, value);
+                    logger.trace("Updating panel channel: {}", channelUID.getAsString());
+                }
+            }
+
             // Log event messages have special handling
             if (CaddxMessageType.SYSTEM_STATUS_MESSAGE.equals(mt)) {
                 handleSystemStatusMessage(message);
@@ -112,14 +135,6 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
                 handleLogEventMessage(message);
             } else if (CaddxMessageType.ZONES_SNAPSHOT_MESSAGE.equals(mt)) {
                 handleZonesSnapshotMessage(message);
-            } else {
-                for (CaddxProperty p : mt.properties) {
-                    if (!p.getId().isEmpty()) {
-                        String value = message.getPropertyById(p.getId());
-                        channelUID = new ChannelUID(getThing().getUID(), p.getId());
-                        updateChannel(channelUID, value);
-                    }
-                }
             }
 
             updateStatus(ThingStatus.ONLINE);

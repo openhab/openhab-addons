@@ -542,7 +542,7 @@ public enum CaddxMessageType {
             new CaddxProperty("", 4, 1, 4, 1, CaddxPropertyType.BIT, "Box tamper", false),
             new CaddxProperty("", 4, 1, 5, 1, CaddxPropertyType.BIT, "Siren tamper / trouble", false),
             new CaddxProperty("", 4, 1, 6, 1, CaddxPropertyType.BIT, "Low Battery", false),
-            new CaddxProperty("", 4, 1, 7, 1, CaddxPropertyType.BIT, "AC fail", false),
+            new CaddxProperty("panel_ac_fail", 4, 1, 7, 1, CaddxPropertyType.BIT, "AC fail", false),
 
             // Byte 5
             new CaddxProperty("", 5, 1, 0, 1, CaddxPropertyType.BIT, "Expander box tamper", false),
@@ -565,8 +565,9 @@ public enum CaddxMessageType {
 
             // Byte 7
             new CaddxProperty("", 7, 1, 0, 1, CaddxPropertyType.BIT, "Dynamic battery test", false),
-            new CaddxProperty("", 7, 1, 1, 1, CaddxPropertyType.BIT, "AC power on", false),
-            new CaddxProperty("", 7, 1, 2, 1, CaddxPropertyType.BIT, "Low battery memory", false),
+            new CaddxProperty("panel_ac_power_on", 7, 1, 1, 1, CaddxPropertyType.BIT, "AC power on", false),
+            new CaddxProperty("panel_low_battery_memory", 7, 1, 2, 1, CaddxPropertyType.BIT, "Low battery memory",
+                    false),
             new CaddxProperty("", 7, 1, 3, 1, CaddxPropertyType.BIT, "Ground fault memory", false),
             new CaddxProperty("", 7, 1, 4, 1, CaddxPropertyType.BIT, "Fire alarm verification being timed", false),
             new CaddxProperty("", 7, 1, 5, 1, CaddxPropertyType.BIT, "Smoke power reset", false),

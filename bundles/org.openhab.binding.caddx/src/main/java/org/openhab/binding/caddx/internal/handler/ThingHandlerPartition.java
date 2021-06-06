@@ -50,6 +50,20 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        String cmd = CaddxBindingConstants.PARTITION_STATUS_REQUEST;
+        String data = String.format("%d", getPartitionNumber() - 1);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
+    }
+
+    @Override
     public void updateChannel(ChannelUID channelUID, String data) {
         if (CaddxBindingConstants.PARTITION_SECONDARY_COMMAND.equals(channelUID.getId())) {
             updateState(channelUID, new DecimalType(data));
@@ -106,6 +120,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
                     String value = message.getPropertyById(p.getId());
                     channelUID = new ChannelUID(getThing().getUID(), p.getId());
                     updateChannel(channelUID, value);
+                    logger.trace("Updating partition channel: {}", channelUID.getAsString());
                 }
             }
 
