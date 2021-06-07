@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api;
+package org.openhab.binding.carnet.internal.api.brand;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,6 +24,8 @@ public class CarNetApiProperties {
     public boolean weakSsl = false;
     public String oidcDate = ""; // Date in getOIDC http response header
     public String oidcConfigUrl = "";
+    public String issuerRegionMappingUrl = "https://identity.vwgroup.io";
+    public String customerProfileServiceUrl = "https://customer-profile.apps.emea.vwapps.io/v3";
 
     public String brand = "";
     public String apiDefaultUrl = "";

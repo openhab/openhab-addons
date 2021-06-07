@@ -75,6 +75,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetPosition;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetTripData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus;
+import org.openhab.binding.carnet.internal.api.brand.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
 import org.openhab.core.library.types.PointType;
@@ -140,6 +141,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         setConfig(config); // derive from account config
         if (!config.api.oidcConfigUrl.isEmpty()) {
             config.oidcConfig = getOidcConfig();
+            // default from OIDC config, may be overwritten by brand config
+            config.api.issuerRegionMappingUrl = config.oidcConfig.issuer;
         }
         tokenManager.refreshTokens(config);
         initialzed = true;
@@ -210,7 +213,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         if (config.user.identity.isEmpty()) {
             config.user.identity = getUserIdentity();
         }
-        return "https://customer-profile.apps.emea.vwapps.io/v3/customers/" + config.user.identity;
+        return config.api.customerProfileServiceUrl + "/customers/" + config.user.identity;
     }
 
     public CarNetPersonalData getPersonalData() throws CarNetException {
@@ -824,7 +827,8 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         }
         String url = "";
         try {
-            CarNetHomeRegion region = callApi(CNAPI_VWURL_HOMEREGION, "getHomeRegion", CarNetHomeRegion.class);
+            CarNetHomeRegion region = callApi(CNAPI_VWG_MAL_1A_CONNECT + "/cs/vds/v1/vehicles/{2}/homeRegion",
+                    "getHomeRegion", CarNetHomeRegion.class);
             url = getString(region.homeRegion.baseUri.content);
         } catch (CarNetException e) {
             url = CNAPI_VWG_MAL_1A_CONNECT;

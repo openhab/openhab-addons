@@ -113,8 +113,7 @@ public class CarNetTokenManager {
         CarNetHttpClient http = tokens.http;
         try {
             logger.debug("{}: Logging in, account={}", config.vehicle.vin, config.account.user);
-
-            String authUrl = CNAPI_OAUTH_AUTHORIZE_URL;
+            String authUrl = config.api.issuerRegionMappingUrl + "/oidc/v1/authorize";
             if (CNAPI_BRAND_VWID.equals(config.api.brand)) {
                 authUrl = http.get(
                         "https://login.apps.emea.vwapps.io/authorize?nonce=NZ2Q3T6jak0E5pDh&redirect_uri=weconnect://authenticated",
@@ -162,7 +161,7 @@ public class CarNetTokenManager {
 
             // Authenticate: Username
             logger.trace("{}: OAuth input: User", config.vehicle.vin);
-            url = CNAPI_OAUTH_BASE_URL + "/signin-service/v1/" + config.api.clientId + "/login/identifier";
+            url = config.api.issuerRegionMappingUrl + "/signin-service/v1/" + config.api.clientId + "/login/identifier";
             data.put("_csrf", csrf);
             data.put("relayState", relayState);
             data.put("hmac", hmac);
@@ -171,14 +170,15 @@ public class CarNetTokenManager {
 
             // Authenticate: Password
             logger.trace("{}: OAuth input: Password", config.vehicle.vin);
-            url = CNAPI_OAUTH_BASE_URL + http.getRedirect(); // Signin URL
+            url = config.api.issuerRegionMappingUrl + http.getRedirect(); // Signin URL
             html = http.get(url, headers, false);
             csrf = substringBetween(html, "name=\"_csrf\" value=\"", "\"/>");
             relayState = substringBetween(html, "name=\"relayState\" value=\"", "\"/>");
             hmac = substringBetween(html, "name=\"hmac\" value=\"", "\"/>");
 
             logger.trace("{}: OAuth input: Authenticate", config.vehicle.vin);
-            url = CNAPI_OAUTH_BASE_URL + "/signin-service/v1/" + config.api.clientId + "/login/authenticate";
+            url = config.api.issuerRegionMappingUrl + "/signin-service/v1/" + config.api.clientId
+                    + "/login/authenticate";
             data.clear();
             data.put("_csrf", csrf);
             data.put("relayState", relayState);
@@ -318,8 +318,10 @@ public class CarNetTokenManager {
 
     public String createIdToken(CarNetCombinedConfig config) throws CarNetException {
         TokenSet tokens = getTokenSet(config.tokenSetId);
-        if (!tokens.idToken.isExpired()) {
-            // Token is still valid
+        if (!tokens.idToken.isValid() || tokens.idToken.isExpired()) {
+            // Token got invlaid, force recreation
+            logger.debug("{}: idToken experied, re-login", config.vehicle.vin);
+            tokens.vwToken.invalidate();
             createVwToken(config);
         }
         return tokens.idToken.idToken;
@@ -327,10 +329,7 @@ public class CarNetTokenManager {
 
     public String createProfileToken(CarNetCombinedConfig config) throws CarNetException {
         TokenSet tokens = getTokenSet(config.tokenSetId);
-        if (!tokens.idToken.isExpired()) {
-            // Token is still valid
-            createIdToken(config);
-        }
+        createIdToken(config);
         return tokens.idToken.accessToken;
     }
 
@@ -442,6 +441,8 @@ public class CarNetTokenManager {
                 CarNetToken stoken = it.next();
                 if (!refreshToken(config, stoken)) {
                     // Token invalid / refresh failed -> remove
+                    logger.debug("{}: Security token for service {} expired, remove", config.vehicle.vin,
+                            stoken.service);
                     securityTokens.remove(stoken);
                 }
             }
@@ -468,7 +469,7 @@ public class CarNetTokenManager {
         }
 
         if (token.refreshToken.isEmpty()) {
-            logger.debug("{}: No refresh_token available, token is now invalid", config.vehicle.vin);
+            logger.debug("{}: No refreshToken available, token is now invalid", config.vehicle.vin);
             token.invalidate();
             return false;
         }
@@ -476,7 +477,7 @@ public class CarNetTokenManager {
         TokenSet tokens = getTokenSet(config.tokenSetId);
         CarNetHttpClient http = tokens.http;
         if (token.isExpired()) {
-            logger.debug("{}: Refreshing Token {}", config.vehicle.vin, token);
+            logger.debug("{}: Refreshing Token {}", config.vehicle.vin, token.accessToken);
             try {
                 String url = "";
                 Map<String, String> data = new TreeMap<>();

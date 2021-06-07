@@ -13,16 +13,19 @@
 package org.openhab.binding.carnet.internal.api.brand;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_BRAND_AUDI;
+import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
+import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link CarNetBrandApiAudi} provides the Audi specific functions of the API
@@ -31,6 +34,31 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
  */
 @NonNullByDefault
 public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuthenticator {
+    private final Logger logger = LoggerFactory.getLogger(CarNetBrandApiAudi.class);
+
+    public static class AudiServiceUrls {
+        public static class BaseUrl {
+            public @Nullable String baseUrl;
+        }
+
+        public static class Service {
+            public @Nullable String baseUrl;
+            public @Nullable BaseUrl emea;
+            public @Nullable BaseUrl ap;
+            public @Nullable BaseUrl na;
+        }
+
+        public class IssuerRegionMapping {
+            public @Nullable String emea;
+            public @Nullable String ap;
+            public @Nullable String na;
+        }
+
+        public @Nullable Service customerProfileService;
+        public @Nullable Service consentService;
+        public @Nullable IssuerRegionMapping issuerRegionMapping;
+    }
+
     private static CarNetApiProperties properties = new CarNetApiProperties();
     static {
         properties.brand = CNAPI_BRAND_AUDI;
@@ -54,7 +82,6 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
 
     @Override
     public CarNetApiProperties getProperties() {
-
         return properties;
     }
 
@@ -62,6 +89,36 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
     public String updateAuthorizationUrl(String url) throws CarNetException {
         return url + "&prompt=login&ui_locales=de-DE%20de";
     }
+
+    @Override
+    public CarNetCombinedConfig initialize(String vin, CarNetCombinedConfig configIn) throws CarNetException {
+        CarNetCombinedConfig cfg = super.initialize(vin, configIn);
+
+        if (!cfg.vstatus.pairingInfo.isPairingCompleted()) {
+            logger.warn("{}: Unable to verify pairing or pairing not completed (status {}, userId {}, code {})",
+                    thingId, getString(config.vstatus.pairingInfo.pairingStatus), getString(config.user.id),
+                    getString(config.vstatus.pairingInfo.pairingCode));
+        }
+        return cfg;
+    }
+
+    /*
+     * try {
+     * AudiServiceUrls urls = super.callApi(
+     * "https://featureapps.audi.com/audi-env-config/0/config/myaudi/livem1/idk.json", "getServiceUrls",
+     * AudiServiceUrls.class);
+     * if (urls.consentService != null && urls.consentService.emea != null
+     * && urls.consentService.emea.baseUrl != null) {
+     * properties.customerProfileServiceUrl = urls.consentService.emea.baseUrl;
+     * }
+     * if (urls.issuerRegionMapping != null && urls.issuerRegionMapping.emea != null) {
+     * properties.issuerRegionMappingUrl = urls.issuerRegionMapping.emea;
+     * }
+     * } catch (CarNetException e) {
+     * logger.debug("{}: Unable to get Service URLs", properties.brand);
+     * }
+     *
+     */
 
     /*
      * App token generation - incomplete, untested

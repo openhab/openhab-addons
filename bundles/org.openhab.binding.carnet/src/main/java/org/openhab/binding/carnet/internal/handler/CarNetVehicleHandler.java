@@ -195,11 +195,6 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             try {
                 config = api.initialize(config.vehicle.vin, config);
-                if (!config.vstatus.pairingInfo.isPairingCompleted() && api.getMbbStatus().profileCompleted) {
-                    logger.warn("{}: Unable to verify pairing or pairing not completed (status {}, userId {}, code {})",
-                            thingId, getString(config.vstatus.pairingInfo.pairingStatus), getString(config.user.id),
-                            getString(config.vstatus.pairingInfo.pairingCode));
-                }
             } catch (CarNetException e) {
                 logger.warn("{}: Available services coould not be determined, continue with default profile", thingId);
             }

@@ -1024,41 +1024,41 @@ public class CarNetApiGSonDTO {
      * public class CNUserRole {
      * String role;
      * }
-     * 
+     *
      * public class CarNetVehicle {
      * public class CNVehicleCore {
      * public String commissionNumber;
      * public String modelYear;
      * public String exteriorColorId;
      * }
-     * 
+     *
      * public class CNVehicleClassification {
      * public String driveTrain;
      * public String modelRange;
      * }
-     * 
+     *
      * public class CarNetVehicleMedia {
      * public String shortName;
      * public String longName;
      * public String exteriorColor;
      * public String interiorColor;
      * }
-     * 
+     *
      * public class CarNetVehiclePicture {
      * public String mediaType;
      * public String url;
      * }
-     * 
+     *
      * public class CNVehicleHifa {
      * public String factoryPickupDateFrom;
      * public String factoryPickupDateTill;
      * public String fbDestination;
      * }
-     * 
+     *
      * public class CNVehiclePdw {
      * Boolean pdwVehicle;
      * }
-     * 
+     *
      * public class CarNetEquipment {
      * public String code;
      * public String name;
@@ -1069,7 +1069,7 @@ public class CarNetApiGSonDTO {
      * public String teaserImage;
      * public Boolean standard;
      * }
-     * 
+     *
      * public class CarNetTechSpec {
      * public String key;
      * public String name;
@@ -1077,7 +1077,7 @@ public class CarNetApiGSonDTO {
      * public String groupId;
      * public String groupName;
      * }
-     * 
+     *
      * public class CNConsumption {
      * public class CNWltps {
      * public class CNAttribute {
@@ -1085,11 +1085,11 @@ public class CarNetApiGSonDTO {
      * public String scaleUnit;
      * public String value;
      * }
-     * 
+     *
      * public String attributeGroup;
      * public ArrayList<CNAttribute> attributes;
      * }
-     * 
+     *
      * public class CNTechnicalSpecification {
      * public String key;
      * public String name;
@@ -1098,11 +1098,11 @@ public class CarNetApiGSonDTO {
      * public String groupId;
      * public String groupName;
      * }
-     * 
+     *
      * public ArrayList<CNWltps> wltps;
      * public ArrayList<CNTechnicalSpecification> technicalSpecifications;
      * }
-     * 
+     *
      * public CNVehicleCore core;
      * public CNVehicleClassification classification;
      * public CarNetVehicleMedia media;
@@ -1113,7 +1113,7 @@ public class CarNetApiGSonDTO {
      * public ArrayList<CarNetTechSpec> techSpecs;
      * public CNConsumption consumption;
      * }
-     * 
+     *
      * public String csid;
      * public String vin;
      * public Boolean owner;
@@ -1122,10 +1122,10 @@ public class CarNetApiGSonDTO {
      * public Boolean mbbConnect;
      * public CNUserRole userRole;
      * }
-     * 
+     *
      * public ArrayList<CarNetUserVehicles> userVehicles;
      * }
-     * 
+     *
      * public CarNetVehicleSpec data;
      * }
      */

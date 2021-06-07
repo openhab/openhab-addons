@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.CarNetException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetImageUrlsVW;
-import org.openhab.binding.carnet.internal.api.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
