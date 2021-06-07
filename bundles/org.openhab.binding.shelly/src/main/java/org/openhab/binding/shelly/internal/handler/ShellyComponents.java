@@ -16,6 +16,9 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
@@ -25,11 +28,13 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSens
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor.ShellyADC;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /***
@@ -160,14 +165,9 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, Units.WATT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, Units.VOLT));
-
-                            if (emeter.current != null) {
-                                // Shelly
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
-                                        toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
-                                        getDecimal(emeter.pf));
-                            }
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
+                                    toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR, computePF(emeter));
 
                             accumulatedWatts += getDouble(emeter.power);
                             accumulatedTotal += getDouble(emeter.total) / 1000;
@@ -232,6 +232,19 @@ public class ShellyComponents {
         }
 
         return updated;
+    }
+
+    private static State computePF(ShellySettingsEMeter emeter) {
+        if (emeter.pf != null) { // EM3
+            return new DecimalType(emeter.pf); // take device value
+        }
+
+        // EM: compute from provided values
+        if (Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
+            double pf = emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
+            return new DecimalType(new BigDecimal(pf).setScale(2, RoundingMode.HALF_EVEN));
+        }
+        return UnDefType.UNDEF;
     }
 
     /**
