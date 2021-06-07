@@ -56,12 +56,14 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
         if (gpioId == null) {
             throw new NoGpioIdException();
         }
-        gpio = new GPIO(jPigpio, gpioId, 1);
+        gpio = new GPIO(jPigpio, gpioId, JPigpio.PI_INPUT);
         jPigpio.gpioSetAlertFunc(gpio.getPin(), (gpio, level, tick) -> {
             lastChanged = new Date();
             Date thisChange = new Date();
             scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime, TimeUnit.MILLISECONDS);
         });
+        Integer pullupdown = configuration.pullupdown;
+        jPigpio.gpioSetPullUpDown(gpio.getPin(), pullupdown);
     }
 
     private void afterDebounce(Date thisChange) {
