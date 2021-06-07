@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="broadlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="rm">
+		<label>Broadlink RM</label>
+		<description>The Broadlink RM Home is a Wi-Fi IR transmitter.</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+	</thing-type>
+	<thing-type id="rm2">
+		<label>Broadlink RM2</label>
+		<description>The Broadlink RM 2/Pro is a Wi-Fi IR/RF transmitter with a temperature sensor.</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+			<channel id="temperature" typeId="temperature"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+	</thing-type>
+	<thing-type id="rm3">
+		<label>Broadlink RM3</label>
+		<description>The Broadlink RM 3/Mini is a Wi-Fi IR transmitter.</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+	</thing-type>
+	<thing-type id="rm3q">
+		<label>Broadlink RM3 v44057</label>
+		<description>The Broadlink RM 3/Mini is a Wi-Fi IR transmitter running v44057 firmware.</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+	</thing-type>
+	<thing-type id="rm4">
+		<label>Broadlink RM4</label>
+		<description>The Broadlink RM 4 is a Wi-Fi IR transmitter with temperature and humidity sensors.</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+	</thing-type>
+</thing:thing-descriptions>

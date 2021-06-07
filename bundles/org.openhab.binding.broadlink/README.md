@@ -1,56 +1,47 @@
-# Broadlink Binding
+broadlink-openhab-binding
+=====
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+Introduction
 
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+------------
 
-## Supported Things
+This is building on the work of Cato Sognen, who developed the original Broadlink OpenHAB binding, but 
+never placed his source code into the public domain.
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This is ALPHA-quality software at this stage and should not be used for ANY important purpose. Many files are literally the result of decompilation with no attempt to fix style or layout problems.
 
-## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Known Issues
 
-## Binding Configuration
+------------
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+The original binding worked extremely well but there were a couple of issues related to multiple-device support (especially after a restart) that need to be addressed before this can be considered a mature binding. Github's issue tracking will be used for the basic stuff (getting this library working at all) but the main aims of this library are:
 
-```
-# Configuration for the Broadlink Binding
-#
-# Default secret key for the pairing of the Broadlink Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+- Make the source code of the binding publicly available for scrutiny and improvement
+- Fix multiple-device support
+- Remove reliance on IP addresses (the device MAC address is all that is really needed) 
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+These main aims are based on my own personal needs and from reading of the [relevant OpenHAB forum post](https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768). As mentioned above, please use Github Issues to log additional bugs/feature requests.
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
-## Thing Configuration
+Building It
+-------------
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+- `cd bundles/org.openhab.binding.broadlink`
+- `mvn clean package`
+- (Once you've downloaded all the dependency JARs, use the `-o` option to save time)
+- The binding JAR will be in the `target` directory
+- You can install it to your OpenHAB system by copying it (e.g. with `scp`) into the `addons` directory of the OpenHAB installation:
+  - `scp target/org.openhab.binding.broadlink-2.5.1-SNAPSHOT.jar openhab@rpi:/usr/share/openhab2/addons`
+  - The above command copies the jar to the default OpenHAB `addons` installation location for a Raspberry Pi called `rpi` running Debian
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Credits
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+---------
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+- [Cato Sognen](https://community.openhab.org/u/cato_sognen)
+- [OpenHAB](https://www.openhab.org/)
+- [JAD](http://www.javadecompilers.com/jad) (Java Decompiler)
 
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
