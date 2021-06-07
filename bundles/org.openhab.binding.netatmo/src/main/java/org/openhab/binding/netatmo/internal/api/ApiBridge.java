@@ -204,25 +204,13 @@ public class ApiBridge {
         return homeApi;
     }
 
-    public <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT) throws NetatmoException {
-        return executeUri(uri, method, classOfT, null);
-    }
-
-    public <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT, @Nullable String payload)
+    synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT, @Nullable String payload)
             throws NetatmoException {
+        // String url = anUrl.startsWith("http") ? anUrl
+        // : (baseUrl ? NetatmoConstants.NA_API_URL : NetatmoConstants.NA_APP_URL) + anUrl;
         try {
-            return executeUrl(uri.toURL().toString(), method, payload, classOfT,
-                    NetatmoConstants.NA_API_URL.contains(uri.getHost()));
-        } catch (MalformedURLException e) {
-            throw new NetatmoException(e);
-        }
-    }
+            String url = uri.toURL().toString();
 
-    synchronized <T> T executeUrl(String anUrl, HttpMethod method, @Nullable String payload, Class<T> classOfT,
-            boolean baseUrl) throws NetatmoException {
-        String url = anUrl.startsWith("http") ? anUrl
-                : (baseUrl ? NetatmoConstants.NA_API_URL : NetatmoConstants.NA_APP_URL) + anUrl;
-        try {
             logger.debug("executeUrl {}  {} ", method.toString(), url);
 
             final Request request = httpClient.newRequest(url).method(method).timeout(TIMEOUT_MS,
@@ -236,7 +224,7 @@ public class ApiBridge {
                         stream)) {
                     request.content(inputStreamContentProvider, null);
                 }
-                if (!baseUrl) {
+                if (!NetatmoConstants.NA_API_URL.contains(uri.getHost())) {
                     request.getHeaders().remove(HttpHeader.CONTENT_TYPE);
                     request.header(HttpHeader.CONTENT_TYPE, "application/json;charset=utf-8");
                 }
@@ -262,8 +250,8 @@ public class ApiBridge {
                 default:
                     throw new NetatmoException(statusCode, response.getContentAsString());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new NetatmoException("Exception while calling " + anUrl, e);
+        } catch (InterruptedException | TimeoutException | ExecutionException | MalformedURLException e) {
+            throw new NetatmoException("Exception while calling " + uri.toString(), e);
         }
     }
 

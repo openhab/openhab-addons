@@ -29,6 +29,7 @@ import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -82,15 +83,11 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     public void startScan() {
         try {
             List<NAHome> result = apiBridge.getHomeApi().getHomes(null); // .getHomeApi().getHomeList(null);
-            Set<String> myWeatherStations = new HashSet<>();
             Set<@Nullable String> roomsWithEnergyModules = new HashSet<>();
             result.forEach(home -> {
                 ThingUID homeUID = createDiscoveredThing(null, home, home.getType());
                 home.getModules().values().stream().filter(module -> module.getBridge() == null)
                         .forEach(foundBridge -> {
-                            if (foundBridge.getType() == ModuleType.NAMain) {
-                                myWeatherStations.add(foundBridge.getId());
-                            }
                             ThingUID bridgeUID = createDiscoveredThing(homeUID, foundBridge, foundBridge.getType());
                             home.getModules().values().stream()
                                     .filter(module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
@@ -100,7 +97,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                                                 || foundChild.getType() == ModuleType.NATherm1)
                                                 && (foundChild.getRoomId() != null)) {
                                             roomsWithEnergyModules.add(foundChild.getRoomId());
-
                                         }
                                     });
                         });
@@ -114,32 +110,27 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                 // mark energy-modules that are assigned to a room
                 // Are or should modules be childs of their room ?
                 // only create NARoom for energy-modules for now
-                home.getRooms().forEach(room -> {
-                    if (roomsWithEnergyModules.contains(room.getId())) {
-                        createDiscoveredThing(homeUID, room, room.getType());
-                    }
-                });
+                home.getRooms().stream().filter(r -> roomsWithEnergyModules.contains(r.getId()))
+                        .forEach(room -> createDiscoveredThing(homeUID, room, room.getType()));
             });
 
-            // Get weather station and favorites !!! Ongoing work
+            // Get favorites weather stations : they are readonly
             apiBridge.getWeatherApi().ifPresent(weatherApi -> {
                 try {
                     NAStationDataResponse stations = weatherApi.getStationsData(null, true);
-                    stations.getBody().getDevices().values().stream()
-                            .filter(station -> !myWeatherStations.contains(station.getId())).forEach(station -> {
-                                createDiscoveredThing(null, station, station.getType());
-                                station.getModules().values().stream().filter(module -> module.getBridge() == null)
-                                        .forEach(foundBridge -> {
-                                            ThingUID bridgeUID = createDiscoveredThing(null, foundBridge,
-                                                    foundBridge.getType());
-                                            station.getModules().values().stream().filter(
-                                                    module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
-                                                    .forEach(foundChild -> {
-                                                        createDiscoveredThing(bridgeUID, foundChild,
-                                                                foundChild.getType());
-                                                    });
-                                        });
-                            });
+                    stations.getBody().getDevices().values().stream().filter(NAMain::isReadOnly).forEach(station -> {
+                        createDiscoveredThing(null, station, station.getType());
+                        station.getModules().values().stream().filter(module -> module.getBridge() == null)
+                                .forEach(foundBridge -> {
+                                    ThingUID bridgeUID = createDiscoveredThing(null, foundBridge,
+                                            foundBridge.getType());
+                                    station.getModules().values().stream()
+                                            .filter(module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
+                                            .forEach(foundChild -> {
+                                                createDiscoveredThing(bridgeUID, foundChild, foundChild.getType());
+                                            });
+                                });
+                    });
                 } catch (NetatmoException e) {
                     logger.warn("Error getting stations", e);
                 }

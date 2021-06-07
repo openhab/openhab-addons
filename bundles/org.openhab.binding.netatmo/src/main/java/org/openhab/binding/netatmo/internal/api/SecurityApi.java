@@ -31,7 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NALastEventsData;
 
 @NonNullByDefault
 public class SecurityApi extends RestManager {
-    public SecurityApi(ApiBridge apiClient) {
+    public SecurityApi(ApiBridge apiClient) { // NO_UCD (unused code)
         super(apiClient, NetatmoConstants.SECURITY_SCOPES);
     }
 
@@ -57,7 +57,7 @@ public class SecurityApi extends RestManager {
     // apiUriBuilder = apiUriBuilder.path(NA_GETHOMEDATA_SPATH);
     //
     // if (homeId != null) {
-    // apiUriBuilder.queryParam("home_id", homeId);
+    // apiUriBuilder.queryParam(NA_HOMEID_PARAM, homeId);
     // }
     // NAHomesDataResponse response = get(apiUriBuilder.build(), NAHomesDataResponse.class);
     // return response.getBody();
@@ -89,7 +89,7 @@ public class SecurityApi extends RestManager {
      */
     public boolean dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_DROPWEBHOOK_SPATH);
-        post(uriBuilder.build(), ApiOkResponse.class, null);
+        post(uriBuilder, ApiOkResponse.class, null);
         return true;
     }
 
@@ -105,7 +105,7 @@ public class SecurityApi extends RestManager {
     public boolean addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_ADDWEBHOOK_SPATH);
         uriBuilder.queryParam("url", uri.toString());
-        post(uriBuilder.build(), ApiOkResponse.class, null);
+        post(uriBuilder, ApiOkResponse.class, null);
         return true;
     }
 
@@ -113,10 +113,10 @@ public class SecurityApi extends RestManager {
     }
 
     public List<NAHomeEvent> getLastEventOf(String homeId, String personId) throws NetatmoException {
-        String req = "getlasteventof";
-        req += "?home_id=" + homeId;
-        req += "&person_id=" + personId;
-        NALastEventsDataResponse response = get(req, NALastEventsDataResponse.class);
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETLASTEVENT_SPATH);
+        uriBuilder.queryParam(NA_HOMEID_PARAM, homeId);
+        uriBuilder.queryParam("person_id", personId);
+        NALastEventsDataResponse response = get(uriBuilder, NALastEventsDataResponse.class);
         return response.getBody().getEvents();
     }
 }

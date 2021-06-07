@@ -61,10 +61,10 @@ public class WeatherApi extends RestManager {
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETSTATION_SPATH);
         if (deviceId != null) {
-            uriBuilder.queryParam("device_id", deviceId);
+            uriBuilder.queryParam(NA_DEVICEID_PARAM, deviceId);
         }
         uriBuilder.queryParam("get_favorites", getFavorites);
-        NAStationDataResponse response = get(uriBuilder.build(), NAStationDataResponse.class);
+        NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
         return response;
     }
 
@@ -77,49 +77,34 @@ public class WeatherApi extends RestManager {
         throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
     }
 
-    // TODO Remove unused code found by UCDetector
-    // public NADeviceDataBody<NAMain> getStationsDataBody(@Nullable String deviceId) throws NetatmoException {
-    // return getStationsData(deviceId, true).getBody();
-    // }
-
     public double getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale, MeasureType type,
             MeasureLimit limit) throws NetatmoException {
         List<NAMeasureBodyElem> result = getmeasure(deviceId, moduleId, scale,
-                new String[] { (limit.toString() + "_" + type.toString()).toLowerCase() }, 0, 0, 0, false, false);
+                (limit.toString() + "_" + type.toString()).toLowerCase(), 0, 0);
         return result.size() > 0 ? result.get(0).getSingleValue() : Double.NaN;
     }
 
     public double getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale, MeasureType type)
             throws NetatmoException {
-        List<NAMeasureBodyElem> result = getmeasure(deviceId, moduleId, scale,
-                new String[] { type.toString().toLowerCase() }, 0, 0, 0, false, false);
+        List<NAMeasureBodyElem> result = getmeasure(deviceId, moduleId, scale, type.toString().toLowerCase(), 0, 0);
         return result.size() > 0 ? result.get(0).getSingleValue() : Double.NaN;
     }
 
     private List<NAMeasureBodyElem> getmeasure(String deviceId, @Nullable String moduleId, MeasureScale scale,
-            String[] type, long dateBegin, long dateEnd, int limit, boolean optimize, boolean realTime)
-            throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETMEASURE_SPATH);
-        uriBuilder.queryParam("device_id", deviceId).queryParam("scale", scale.getDescriptor())
-                .queryParam("optimize", optimize).queryParam("real_time", realTime);
+            String measureType, long dateBegin, long dateEnd) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETMEASURE_SPATH).queryParam(NA_DEVICEID_PARAM, deviceId)
+                .queryParam("scale", scale.getDescriptor()).queryParam("real_time", true)
+                .queryParam("date_end", (dateEnd > 0 && dateEnd > dateBegin) ? dateEnd : "last")
+                .queryParam("optimize", true) // NAMeasuresResponse is not designed for optimize=false
+                .queryParam("type", measureType);
+
         if (moduleId != null) {
-            uriBuilder.queryParam("module_id", moduleId);
-        }
-        for (String measureType : type) {
-            uriBuilder.queryParam("type", measureType);
+            uriBuilder.queryParam(NA_MODULEID_PARAM, moduleId);
         }
         if (dateBegin > 0) {
             uriBuilder.queryParam("date_begin", dateBegin);
         }
-        if (dateEnd > 0 && dateEnd > dateBegin) {
-            uriBuilder.queryParam("date_end", dateEnd);
-        } else {
-            uriBuilder.queryParam("date_end", "last");
-        }
-        if (limit > 0 && limit <= 1024) {
-            uriBuilder.queryParam("limit", limit);
-        }
-        NAMeasuresResponse response = get(uriBuilder.build(), NAMeasuresResponse.class);
+        NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
         return response.getBody();
     }
 }

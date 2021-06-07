@@ -83,14 +83,12 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
     protected NAHome updateReadings() throws NetatmoException {
         HomeApi api = apiBridge.getRestManager(HomeApi.class);
         if (api != null) {
-            NAHomeSecurity home = (NAHomeSecurity) api.getHomes(config.id).get(0);
-            // List<NAPerson> known = home.getKnownPersons();
-            // if (known != null) {
-            // this.knownPersons = known;
-            // }
-            this.knownPersons = home.getKnownPersons();
-            this.cameras = home.getCameras();
-            return home;
+            NAHome home = api.getHomes(config.id).get(0);
+            if (home instanceof NAHomeSecurity) {
+                this.knownPersons = ((NAHomeSecurity) home).getKnownPersons();
+                this.cameras = ((NAHomeSecurity) home).getCameras();
+                return home;
+            }
         }
         throw new NetatmoException("No api available to access Welcome Home");
     }

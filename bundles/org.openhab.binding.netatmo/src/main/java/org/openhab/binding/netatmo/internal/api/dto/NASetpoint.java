@@ -32,25 +32,12 @@ public class NASetpoint {
         return thermSetpointTemperature;
     }
 
-    // TODO : dégager les setters ?
-    public void setSetpointTemperature(double thermSetpointTemperature) {
-        this.thermSetpointTemperature = thermSetpointTemperature;
-    }
-
     public long getSetpointEndtime() {
         return setpointEndtime;
-    }
-
-    public void setSetpointEndtime(long setpointEndtime) {
-        this.setpointEndtime = setpointEndtime;
     }
 
     public SetpointMode getMode() {
         SetpointMode mode = setpointMode;
         return mode != null ? mode : SetpointMode.UNKNOWN;
-    }
-
-    public void setSetpointMode(SetpointMode mode) {
-        this.setpointMode = mode;
     }
 }

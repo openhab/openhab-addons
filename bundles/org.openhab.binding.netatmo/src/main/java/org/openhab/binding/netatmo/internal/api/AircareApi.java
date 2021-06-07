@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.WeatherApi.NAStationDataResponse;
@@ -40,12 +44,12 @@ public class AircareApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
      *             response body
      */
-    public NAStationDataResponse getHomeCoachData2(@Nullable String deviceId) throws NetatmoException {
-        String req = "gethomecoachsdata";
+    private NAStationDataResponse getHomeCoachData2(@Nullable String deviceId) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMECOACH_SPATH);
         if (deviceId != null) {
-            req += "?device_id=" + deviceId;
+            uriBuilder.queryParam(NA_DEVICEID_PARAM, deviceId);
         }
-        NAStationDataResponse response = get(req, NAStationDataResponse.class);
+        NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
         return response;
     }
 

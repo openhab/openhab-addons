@@ -46,6 +46,8 @@ public class NAHomeDeserializer implements JsonDeserializer<NAHome> {
             return homeEnergy;
         }
         if (result.containsModuleType(ModuleType.NACamera)) {
+            // This way of detecting home kinds presents a problem if no module is installed then everything will fall
+            // as a HomeWeather
             NAHomeSecurity homeSec = context.deserialize(json, NAHomeSecurity.class);
             homeSec.getModules().putAll(homeSec.getPersons());
             homeSec.getModules().putAll(homeSec.getCameras());

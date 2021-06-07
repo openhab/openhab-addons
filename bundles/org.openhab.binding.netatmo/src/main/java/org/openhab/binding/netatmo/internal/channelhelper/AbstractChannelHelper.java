@@ -59,7 +59,7 @@ public abstract class AbstractChannelHelper {
         if (module != null) {
             String channelId = channelUID.getIdWithoutGroup();
             String groupId = channelUID.getGroupId();
-            if (providedGroup.isEmpty() || providedGroup.contains(groupId)) {
+            if (providedGroup.isEmpty() || (groupId != null && providedGroup.contains(groupId))) {
                 result = internalGetProperty(module, channelId);
                 if (result == null) {
                     NADashboard dashboard = module.getDashboardData();

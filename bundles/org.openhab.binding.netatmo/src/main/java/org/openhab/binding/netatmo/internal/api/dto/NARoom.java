@@ -41,25 +41,10 @@ public class NARoom extends NAModule {
     }
 
     /**
-     * @param anticipating the anticipating to set
-     */
-    // TODO : dégager les setters ?
-    public void setAnticipating(boolean anticipating) {
-        this.anticipating = anticipating;
-    }
-
-    /**
      * @return the heatingPowerRequest
      */
     public int getHeatingPowerRequest() {
         return heatingPowerRequest;
-    }
-
-    /**
-     * @param heatingPowerRequest the heatingPowerRequest to set
-     */
-    public void setHeatingPowerRequest(int heatingPowerRequest) {
-        this.heatingPowerRequest = heatingPowerRequest;
     }
 
     /**
@@ -70,24 +55,10 @@ public class NARoom extends NAModule {
     }
 
     /**
-     * @param openWindow the openWindow to set
-     */
-    public void setOpenWindow(boolean openWindow) {
-        this.openWindow = openWindow;
-    }
-
-    /**
      * @return the thermMeasuredTemperature
      */
     public Double getThermMeasuredTemperature() {
         return thermMeasuredTemperature;
-    }
-
-    /**
-     * @param thermMeasuredTemperature the thermMeasuredTemperature to set
-     */
-    public void setThermMeasuredTemperature(Double thermMeasuredTemperature) {
-        this.thermMeasuredTemperature = thermMeasuredTemperature;
     }
 
     /**
@@ -99,40 +70,18 @@ public class NARoom extends NAModule {
     }
 
     /**
-     * @param thermSetpointMode the thermSetpointMode to set
-     */
-    public void setThermSetpointMode(SetpointMode thermSetpointMode) {
-        this.thermSetpointMode = thermSetpointMode;
-    }
-
-    /**
      * @return the thermSetpointTemperature
      */
     public double getThermSetpointTemperature() {
         return thermSetpointTemperature;
     }
 
-    /**
-     * @param thermSetpointTemperature the thermSetpointTemperature to set
-     */
-    public void setThermSetpointTemperature(Double thermSetpointTemperature) {
-        this.thermSetpointTemperature = thermSetpointTemperature;
-    }
-
     public long getThermSetpointStartTime() {
         return thermSetpointStartTime;
     }
 
-    public void setThermSetpointStartTime(long thermSetpointStartTime) {
-        this.thermSetpointStartTime = thermSetpointStartTime;
-    }
-
     public long getThermSetpointEndTime() {
         return thermSetpointEndTime;
-    }
-
-    public void setThermSetpointEndTime(long thermSetpointEndTime) {
-        this.thermSetpointEndTime = thermSetpointEndTime;
     }
 
     @Override

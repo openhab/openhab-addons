@@ -56,36 +56,22 @@ public abstract class RestManager {
         return requiredScopes;
     }
 
-    public <T> T get(String anUrl, Class<T> classOfT) throws NetatmoException {
-        return apiHandler.executeUrl(baseUrl + anUrl, HttpMethod.GET, null, classOfT, true);
+    public <T extends ApiResponse<?>> T get(UriBuilder uriBuilder, Class<T> classOfT) throws NetatmoException {
+        return apiHandler.executeUri(uriBuilder.build(), HttpMethod.GET, classOfT, null);
     }
 
-    public <T extends ApiResponse<?>> T get(URI uri, Class<T> classOfT) throws NetatmoException {
-        return apiHandler.executeUri(uri, HttpMethod.GET, classOfT);
-    }
-
-    public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean defaultApp)
+    public <T extends ApiResponse<?>> T post(UriBuilder uriBuilder, Class<T> classOfT, @Nullable String payload)
             throws NetatmoException {
-        return apiHandler.executeUrl(baseUrl + anUrl, HttpMethod.POST, payload, classOfT, defaultApp);
-    }
-
-    public <T extends ApiResponse<?>> T post(URI uri, Class<T> classOfT, @Nullable String payload)
-            throws NetatmoException {
-        T response = apiHandler.executeUri(uri, HttpMethod.POST, classOfT, payload);
+        T response = apiHandler.executeUri(uriBuilder.build(), HttpMethod.POST, classOfT, payload);
         if (response instanceof ApiOkResponse) {
             ApiOkResponse okResponse = (ApiOkResponse) response;
             if (!okResponse.isSuccess()) {
                 throw new NetatmoException(String.format("Unsuccessfull command : %s for uri : %s",
-                        response.getStatus(), uri.toASCIIString()));
+                        response.getStatus(), uriBuilder.build().toString()));
             }
         }
         return response;
     }
-
-    // TODO Remove unused code found by UCDetector
-    // public <T> T post(String payload, Class<T> classOfT) throws NetatmoException {
-    // return post("", payload, classOfT, true);
-    // }
 
     protected UriBuilder getApiUriBuilder() {
         return API_URI_BUILDER.clone();

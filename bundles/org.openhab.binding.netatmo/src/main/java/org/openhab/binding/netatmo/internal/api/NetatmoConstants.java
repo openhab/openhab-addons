@@ -84,6 +84,7 @@ public class NetatmoConstants {
     public static final String NA_APP_URL = "https://app.netatmo.net/";
     public static final String NA_OAUTH_PATH = "oauth2/token";
     public static final String NA_API_PATH = "api";
+    public static final String NA_COMMAND_PATH = "command";
     public static final String NA_PERSON_AWAY_SPATH = "setpersonsaway";
     public static final String NA_PERSON_HOME_SPATH = "setpersonshome";
     public static final String NA_HOMES_SPATH = "homesdata";
@@ -98,21 +99,31 @@ public class NetatmoConstants {
     public static final String NA_GETSTATION_SPATH = "getstationsdata";
     public static final String NA_GETMEASURE_SPATH = "getmeasure";
     public static final String NA_HOMESTATUS_SPATH = "homestatus";
+    public static final String NA_HOMECOACH_SPATH = "gethomecoachsdata";
+    public static final String NA_GETLASTEVENT_SPATH = "getlasteventof";
+
+    public static final String NA_DEVICEID_PARAM = "device_id";
+    public static final String NA_MODULEID_PARAM = "module_id";
+    public static final String NA_HOMEID_PARAM = "home_id";
 
     public enum MeasureType {
-        SUM_RAIN,
-        @SerializedName("Temperature")
-        TEMP,
-        @SerializedName("Humidity")
-        HUM,
-        @SerializedName("CO2")
-        CO2,
-        @SerializedName("Noise")
-        NOISE,
-        @SerializedName("Pressure")
-        PRESSURE,
-        @SerializedName("Wind")
-        WIND;
+        SUM_RAIN(MeasureClass.RAIN_QTTY),
+        TEMP(MeasureClass.EXTERIOR_TEMPERATURE),
+        HUM(MeasureClass.EXTERIOR_TEMPERATURE),
+        CO2(MeasureClass.CO2),
+        NOISE(MeasureClass.NOISE),
+        PRESSURE(MeasureClass.PRESSURE),
+        WIND(MeasureClass.WIND_SPEED);
+
+        private MeasureClass unit;
+
+        MeasureType(MeasureClass unit) {
+            this.unit = unit;
+        }
+
+        public MeasureClass getUnit() {
+            return unit;
+        }
     }
 
     public enum MeasureLimit {
@@ -148,12 +159,6 @@ public class NetatmoConstants {
             return stringMap.get(descriptor);
         }
     }
-
-    // Default unit associated with each kind of measurement
-    public static final Map<MeasureType, MeasureClass> MEASUREUNITS = Map.of(MeasureType.SUM_RAIN,
-            MeasureClass.RAIN_QTTY, MeasureType.TEMP, MeasureClass.EXTERIOR_TEMPERATURE, MeasureType.HUM,
-            MeasureClass.HUMIDITY, MeasureType.CO2, MeasureClass.CO2, MeasureType.NOISE, MeasureClass.NOISE,
-            MeasureType.PRESSURE, MeasureClass.PRESSURE, MeasureType.WIND, MeasureClass.WIND_SPEED);
 
     // Token scopes
     public static enum Scope {

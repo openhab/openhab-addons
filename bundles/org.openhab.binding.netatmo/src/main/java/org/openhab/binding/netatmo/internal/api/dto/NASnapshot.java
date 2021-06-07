@@ -12,10 +12,17 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_API_URL;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,8 +32,9 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class NASnapshot extends NAObject {
-    // TODO : change using URIBuilder
-    private static String BASE_URL = NA_API_URL + "/api/getcamerapicture?image_id=%s&key=%s";
+    private static UriBuilder URI_BUILDER = UriBuilder.fromUri(NA_API_URL).path(NA_API_PATH)
+            .path(NA_GETCAMERAPICTURE_SPATH);
+    private final Logger logger = LoggerFactory.getLogger(NASnapshot.class);
     private @Nullable String key;
 
     public NASnapshot(String id, String key) {
@@ -36,7 +44,12 @@ public class NASnapshot extends NAObject {
 
     public @Nullable String getUrl() {
         if (key != null) {
-            return String.format(BASE_URL, id, key);
+            URI uri = URI_BUILDER.clone().queryParam("image_id", id).queryParam("key", key).build();
+            try {
+                return uri.toURL().toString();
+            } catch (MalformedURLException e) {
+                logger.warn("Malformed URI in snapshot : {}", uri);
+            }
         }
         return null;
     }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.MEASUREUNITS;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.HashMap;
@@ -47,20 +46,20 @@ public class MeasuresChannelHelper extends AbstractChannelHelper {
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
-            Optional<MeasureChannelConfig> config = getChannelConfigIfValid2(channel);
+            Optional<MeasureChannelConfig> config = getChannelConfigIfValid(channel);
             if (config.isPresent()) {
                 MeasureChannelConfig channelConfig = config.get();
                 Double measure = measures.get(channelConfig);
                 if (channelConfig.limit == MeasureLimit.DATE_MAX || channelConfig.limit == MeasureLimit.DATE_MIN) {
                     return toDateTimeType(measure, zoneId);
                 }
-                return toQuantityType(measure, MEASUREUNITS.get(channelConfig.type));
+                return toQuantityType(measure, channelConfig.type.getUnit());
             }
         }
         return null;
     }
 
-    private Optional<MeasureChannelConfig> getChannelConfigIfValid2(Channel channel) {
+    private Optional<MeasureChannelConfig> getChannelConfigIfValid(Channel channel) {
         MeasureChannelConfig config = channel.getConfiguration().as(MeasureChannelConfig.class);
         return config.period != null && config.type != null ? Optional.of(config) : Optional.empty();
     }
@@ -71,7 +70,7 @@ public class MeasuresChannelHelper extends AbstractChannelHelper {
 
     public void collectMeasuredChannels() {
         measures.clear();
-        thing.getChannels().stream().map(channel -> getChannelConfigIfValid2(channel)).filter(c -> c.isPresent())
+        thing.getChannels().stream().map(channel -> getChannelConfigIfValid(channel)).filter(c -> c.isPresent())
                 .forEach(config -> {
                     measures.put(config.get(), Double.NaN);
                 });

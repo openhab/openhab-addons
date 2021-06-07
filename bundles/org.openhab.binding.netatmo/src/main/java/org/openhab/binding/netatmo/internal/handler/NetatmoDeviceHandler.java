@@ -67,11 +67,11 @@ import org.slf4j.LoggerFactory;
 public class NetatmoDeviceHandler extends BaseBridgeHandler implements ConnectionListener {
     private final Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
 
-    public final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
 
-    protected final List<AbstractChannelHelper> channelHelpers;
+    private final List<AbstractChannelHelper> channelHelpers;
     protected final NetatmoDescriptionProvider descriptionProvider;
-    protected final Optional<MeasuresChannelHelper> measureChannelHelper;
+    private final Optional<MeasuresChannelHelper> measureChannelHelper;
     protected final ApiBridge apiBridge;
 
     protected @Nullable NAThing naThing;
@@ -172,7 +172,6 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
                     NAThing newDeviceReading = updateReadings();
                     logger.debug("Successfully updated device {} readings! Now updating channels", config.id);
                     setNAThing(newDeviceReading);
-                    updateStatus(newDeviceReading.isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
                     updateProperties(newDeviceReading);
                     newDeviceReading.getLastSeen().ifPresent(strategy::setDataTimeStamp);
                 } catch (NetatmoException e) {
@@ -217,25 +216,29 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     }
 
     public void setNAThing(NAThing naThing) {
-        updateStatus(ThingStatus.ONLINE);
-        this.naThing = naThing;
-        channelHelpers.forEach(helper -> helper.setNewData(naThing));
-        measureChannelHelper.ifPresent(channelHelper -> {
-            channelHelper.collectMeasuredChannels();
-            if (refreshStrategy == null) {
-                NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
-                if (bridgeHandler != null) {
-                    bridgeHandler.callGetMeasurements(config.id, channelHelper.getMeasures());
+        if (naThing.isReachable()) {
+            updateStatus(ThingStatus.ONLINE);
+            this.naThing = naThing;
+            channelHelpers.forEach(helper -> helper.setNewData(naThing));
+            measureChannelHelper.ifPresent(channelHelper -> {
+                channelHelper.collectMeasuredChannels();
+                if (refreshStrategy == null) {
+                    NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
+                    if (bridgeHandler != null) {
+                        bridgeHandler.callGetMeasurements(config.id, channelHelper.getMeasures());
+                    }
+                } else {
+                    callGetMeasurements(null, channelHelper.getMeasures());
                 }
-            } else {
-                callGetMeasurements(null, channelHelper.getMeasures());
-            }
-        });
-        getThing().getChannels().stream()
-                .filter(channel -> !ChannelKind.TRIGGER.equals(channel.getKind()) && isLinked(channel.getUID()))
-                .map(channel -> channel.getUID()).forEach(channelUID -> {
-                    updateState(channelUID, getNAThingProperty(channelUID));
-                });
+            });
+            getThing().getChannels().stream()
+                    .filter(channel -> !ChannelKind.TRIGGER.equals(channel.getKind()) && isLinked(channel.getUID()))
+                    .map(channel -> channel.getUID()).forEach(channelUID -> {
+                        updateState(channelUID, getNAThingProperty(channelUID));
+                    });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected");
+        }
     }
 
     private void callGetMeasurements(@Nullable String moduleId, Map<MeasureChannelConfig, Double> measures) {
@@ -296,7 +299,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         updateChildModules();
     }
 
-    public void unregisterDataListener(NetatmoDeviceHandler dataListener) {
+    private void unregisterDataListener(NetatmoDeviceHandler dataListener) {
         dataListeners.entrySet().forEach(entry -> {
             if (entry.getValue().equals(dataListener)) {
                 dataListeners.remove(entry.getKey());

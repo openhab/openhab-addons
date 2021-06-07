@@ -45,9 +45,15 @@ public class HomeApi extends RestManager {
     private class NAHomeDataResponse extends ApiResponse<NAHomeData> {
     }
 
+    public List<NAHome> getHomeData(String homeId) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH);
+        uriBuilder.queryParam(NA_MODULEID_PARAM, homeId);
+        return get(uriBuilder, NAHomeDataResponse.class).getBody().getHomes();
+    }
+
     public List<NAHome> getHomes(@Nullable String homeId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH);
-        List<NAHome> homeDataResponse = get(uriBuilder.build(), NAHomeDataResponse.class).getBody().getHomes();
+        List<NAHome> homeDataResponse = get(uriBuilder, NAHomeDataResponse.class).getBody().getHomes();
 
         // Complete gethomedata with informations provided by homesdata
         List<NAHome> homeListResponse = getHomeList(null, null);
@@ -74,27 +80,27 @@ public class HomeApi extends RestManager {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMES_SPATH);
 
         if (homeId != null) {
-            uriBuilder.queryParam("home_id", homeId);
+            uriBuilder.queryParam(NA_HOMEID_PARAM, homeId);
         }
         if (type != null) {
             uriBuilder.queryParam("gateway_types", type.name());
         }
 
-        NAHomesDataResponse response = get(uriBuilder.build(), NAHomesDataResponse.class);
+        NAHomesDataResponse response = get(uriBuilder, NAHomesDataResponse.class);
         return response.getBody().getHomes();
     }
 
     public boolean setpersonsaway(String homeId, String personId) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder().path(NA_PERSON_AWAY_SPATH);
         String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
-        post(uriBuilder.build(), ApiOkResponse.class, payload);
+        post(uriBuilder, ApiOkResponse.class, payload);
         return true;
     }
 
     public boolean setpersonshome(String homeId, String personId) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder().path(NA_PERSON_HOME_SPATH);
         String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
-        post(uriBuilder.build(), ApiOkResponse.class, payload);
+        post(uriBuilder, ApiOkResponse.class, payload);
         return true;
     }
 
@@ -109,14 +115,16 @@ public class HomeApi extends RestManager {
     // }
 
     public String ping(String vpnUrl) throws NetatmoException {
-        String url = vpnUrl + "/command/ping";
-        NAPing response = get(url, NAPing.class);
+        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(NA_COMMAND_PATH).path("ping");
+        NAPing response = get(uriBuilder, NAPing.class);
         return response.getStatus();
     }
 
     public boolean changeStatus(String localCameraURL, boolean isOn) throws NetatmoException {
-        String url = localCameraURL + "/command/changestatus?status=" + (isOn ? "on" : "off");
-        ApiOkResponse response = post(url, null, ApiOkResponse.class, false);
+        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(NA_COMMAND_PATH).path("changestatus");
+        uriBuilder.queryParam("status", isOn ? "on" : "off");
+        // String url = localCameraURL + "/command/changestatus?status=" + (isOn ? "on" : "off");
+        ApiOkResponse response = post(uriBuilder, ApiOkResponse.class, null);
         if (!response.isSuccess()) {
             throw new NetatmoException(String.format("Unsuccessfull camara status change : %s", response.getStatus()));
         }
@@ -124,9 +132,11 @@ public class HomeApi extends RestManager {
     }
 
     public boolean changeFloodLightMode(String localCameraURL, PresenceLightMode mode) throws NetatmoException {
-        String url = localCameraURL + "/command/floodlight_set_config?config=%7B%22mode%22:%22" + mode.toString()
-                + "%22%7D";
-        ApiOkResponse response = get(url, ApiOkResponse.class);
+        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(NA_COMMAND_PATH).path("floodlight_set_config");
+        uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
+        // String url = localCameraURL + "/command/floodlight_set_config?config=%7B%22mode%22:%22" + mode.toString()
+        // + "%22%7D";
+        ApiOkResponse response = get(uriBuilder, ApiOkResponse.class);
         if (!response.isSuccess()) {
             throw new NetatmoException(String.format("Unsuccessfull camara status change : %s", response.getStatus()));
         }
