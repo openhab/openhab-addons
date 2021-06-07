@@ -494,16 +494,14 @@
 		<item-type>Switch</item-type>
 		<label>i-Dos 1</label>
 		<description>This status indicates whether i-Dos 1 is activated for a washer program of the home appliance. (If
-			appliance
-			supports i-Dos)</description>
+			appliance supports i-Dos)</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos2" advanced="true">
 		<item-type>Switch</item-type>
 		<label>i-Dos 2</label>
 		<description>This status indicates whether i-Dos 2 is activated for a washer program of the home appliance. (If
-			appliance
-			supports i-Dos)</description>
+			appliance supports i-Dos)</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_vario_perfect" advanced="true">
