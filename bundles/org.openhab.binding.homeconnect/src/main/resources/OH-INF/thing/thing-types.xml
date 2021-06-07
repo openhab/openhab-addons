@@ -149,6 +149,13 @@
 			<channel id="selected_program_state" typeId="selected_program_state"/>
 			<channel id="laundry_care_washer_temperature" typeId="laundry_care_washer_temperature"/>
 			<channel id="laundry_care_washer_spin_speed" typeId="laundry_care_washer_spin_speed"/>
+			<channel id="laundry_care_washer_vario_perfect" typeId="laundry_care_washer_vario_perfect"/>
+			<channel id="laundry_care_washer_less_ironing" typeId="laundry_care_washer_less_ironing"/>
+			<channel id="laundry_care_washer_pre_wash" typeId="laundry_care_washer_pre_wash"/>
+			<channel id="laundry_care_washer_rinse_plus" typeId="laundry_care_washer_rinse_plus"/>
+			<channel id="laundry_care_washer_soak" typeId="laundry_care_washer_soak"/>
+			<channel id="program_energy" typeId="program_energy"/>
+			<channel id="program_water" typeId="program_water"/>
 			<channel id="dryer_drying_target" typeId="dryer_drying_target"/>
 			<channel id="basic_actions_state" typeId="basic_actions_state"/>
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>

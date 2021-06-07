@@ -67,6 +67,20 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_TEMPERATURE,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_VARIO_PERFECT,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_LESS_IRONING,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_PRE_WASH,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_RINSE_PLUS,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_SOAK,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_PROGRAM_ENERGY,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_PROGRAM_WATER,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         // register dryer specific handlers
         handlers.put(CHANNEL_DRYER_DRYING_TARGET,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
@@ -98,6 +112,17 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
         handlers.put(EVENT_DRYER_DRYING_TARGET,
                 event -> getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
+    }
+
+    @Override
+    protected boolean isLinkedChannelsForUnsupportedFeatures() {
+        return (getThingChannel(CHANNEL_WASHER_VARIO_PERFECT).isPresent() && isLinked(CHANNEL_WASHER_VARIO_PERFECT))
+                || (getThingChannel(CHANNEL_WASHER_LESS_IRONING).isPresent() && isLinked(CHANNEL_WASHER_LESS_IRONING))
+                || (getThingChannel(CHANNEL_WASHER_PRE_WASH).isPresent() && isLinked(CHANNEL_WASHER_PRE_WASH))
+                || (getThingChannel(CHANNEL_WASHER_RINSE_PLUS).isPresent() && isLinked(CHANNEL_WASHER_RINSE_PLUS))
+                || (getThingChannel(CHANNEL_WASHER_SOAK).isPresent() && isLinked(CHANNEL_WASHER_SOAK))
+                || (getThingChannel(CHANNEL_PROGRAM_ENERGY).isPresent() && isLinked(CHANNEL_PROGRAM_ENERGY))
+                || (getThingChannel(CHANNEL_PROGRAM_WATER).isPresent() && isLinked(CHANNEL_PROGRAM_WATER));
     }
 
     @Override
@@ -143,6 +168,13 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
         if (offline) {
             getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_VARIO_PERFECT).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_RINSE_PLUS).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_SOAK).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_PROGRAM_WATER).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
