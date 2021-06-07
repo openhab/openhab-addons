@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="broadlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sp1">
+		<label>Broadlink SP1</label>
+		<description>The Broadlink SP1 is a Wi-Fi smart socket.</description>
+		<channels>
+			<channel id="powerOn" typeId="powerOn"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="sp2">
+		<label>Broadlink SP2</label>
+		<description>The Broadlink SP2 is a Wi-Fi smart socket with night light.</description>
+		<channels>
+			<channel id="powerOn" typeId="powerOn"/>
+			<channel id="nightLight" typeId="nightLight"/>
+			<channel id="powerConsumption" typeId="powerConsumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="sp3">
+		<label>Broadlink SP3</label>
+		<description>The Broadlink SP3 is a Wi-Fi smart socket with night light. The SP mini 3 omits the night light.</description>
+		<channels>
+			<channel id="powerOn" typeId="powerOn"/>
+			<channel id="nightLight" typeId="powerOn">
+				<label>Nightlight power</label>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+</thing:thing-descriptions>

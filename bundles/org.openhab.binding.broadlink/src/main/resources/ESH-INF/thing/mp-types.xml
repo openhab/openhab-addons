@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="broadlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mp1">
+		<label>Broadlink MP1</label>
+		<description>The Broadlink MP1 Smart Home Wifi Plug Power Strip 4 Ports Individual Wireless Remote Control.</description>
+		<channels>
+			<channel id="s1powerOn" typeId="powerOn">
+				<label>Socket 1 power</label>
+			</channel>
+			<channel id="s2powerOn" typeId="powerOn">
+				<label>Socket 2 power</label>
+			</channel>
+			<channel id="s3powerOn" typeId="powerOn">
+				<label>Socket 3 power</label>
+			</channel>
+			<channel id="s4powerOn" typeId="powerOn">
+				<label>Socket 4 power</label>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="mp1_1k3s2u">
+		<label>Broadlink MP1 1K3S2U</label>
+		<description>The Broadlink MP1 1K3S2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
+		<channels>
+			<channel id="s1powerOn" typeId="powerOn">
+				<label>Socket 1 power</label>
+			</channel>
+			<channel id="s2powerOn" typeId="powerOn">
+				<label>Socket 2 power</label>
+			</channel>
+			<channel id="s3powerOn" typeId="powerOn">
+				<label>Socket 3 power</label>
+			</channel>
+			<channel id="usbPowerOn" typeId="powerOn">
+				<label>USB power</label>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="mp2">
+		<label>Broadlink MP2</label>
+		<description>The Broadlink MP2 is a smart socket with Wi-Fi connectivity. It does not support switching by individual
+			ports.</description>
+		<channels>
+			<channel id="powerOn" typeId="powerOn"/>
+			<channel id="powerConsumption" typeId="powerConsumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+</thing:thing-descriptions>
