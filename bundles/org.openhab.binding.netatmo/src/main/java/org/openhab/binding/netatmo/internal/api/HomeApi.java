@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeSecurity;
 import org.openhab.binding.netatmo.internal.api.dto.NAPing;
 
 /**
@@ -44,36 +45,43 @@ public class HomeApi extends RestManager {
     public class NAHomeDataResponse extends ApiResponse<NAHomeData> {
     }
 
-    public NAHome getHomeData(String homeId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH).queryParam("home_id", homeId);
-        NAHomeDataResponse response = get(uriBuilder.build(), NAHomeDataResponse.class);
+    public List<NAHome> getHomes(@Nullable String homeId) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH);
+        List<NAHome> homeDataResponse = get(uriBuilder.build(), NAHomeDataResponse.class).getBody().getHomes();
 
-        List<NAHome> homes = response.getBody().getHomes();
+        // Complete gethomedata with informations provided by homesdata
+        List<NAHome> homeListResponse = getHomeList(null, null);
 
-        if (homes.size() != 1) {
-            throw new NetatmoException(String.format("Home %s was not found", homeId));
+        homeListResponse.forEach(h1 -> {
+            homeDataResponse.stream().filter(h2 -> h2.getId().equals(h1.getId())).findFirst().ifPresent(h2 -> {
+                h1.setPlace(h2.getPlace());
+                h1.getModules().putAll(h2.getModules());
+                if (h1 instanceof NAHomeSecurity && h2 instanceof NAHomeSecurity) {
+                    ((NAHomeSecurity) h1).getCameras().putAll(((NAHomeSecurity) h2).getCameras());
+                    ((NAHomeSecurity) h1).getPersons().putAll(((NAHomeSecurity) h2).getPersons());
+                }
+            });
+        });
+
+        if (homeId != null) {
+            homeListResponse.removeIf(home -> !home.getId().equals(homeId));
         }
-        return homes.get(0);
+
+        return homeListResponse;
     }
 
-    public List<NAHome> getHomeList(@Nullable ModuleType type) throws NetatmoException {
+    public List<NAHome> getHomeList(@Nullable String homeId, @Nullable ModuleType type) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMES_SPATH);
 
+        if (homeId != null) {
+            uriBuilder.queryParam("home_id", homeId);
+        }
         if (type != null) {
             uriBuilder.queryParam("gateway_types", type.name());
         }
 
         NAHomesDataResponse response = get(uriBuilder.build(), NAHomesDataResponse.class);
         return response.getBody().getHomes();
-    }
-
-    public NAHome getHomesData(String homeId, @Nullable ModuleType type) throws NetatmoException {
-        String req = "homesdata?home_id=" + homeId;
-        if (type != null) {
-            req += "&gateway_types=" + type.name();
-        }
-        NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
-        return response.getBody().getHomes().get(0);
     }
 
     public boolean setpersonsaway(String homeId, String personId) throws NetatmoException {

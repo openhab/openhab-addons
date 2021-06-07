@@ -55,6 +55,10 @@ public class NADevice extends NAThing {
         return place;
     }
 
+    public void setPlace(@Nullable NAPlace place) {
+        this.place = place;
+    }
+
     public boolean isCo2Calibrating() {
         return co2Calibrating;
     }

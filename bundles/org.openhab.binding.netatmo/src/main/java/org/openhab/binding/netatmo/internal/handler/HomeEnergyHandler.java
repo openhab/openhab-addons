@@ -57,7 +57,7 @@ public class HomeEnergyHandler extends NetatmoDeviceHandler {
         EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
         HomeApi homeapi = apiBridge.getRestManager(HomeApi.class);
         if (api != null && homeapi != null) {
-            home = homeapi.getHomesData(config.id, ModuleType.NAPlug);
+            home = homeapi.getHomeList(config.id, ModuleType.NAPlug).get(0);
             NAHome status = api.getHomeStatus(config.id);
             // could not find out how to persist retrieved /homesdata and /homestatus so that the information later is
             // accesssible by the other handlers

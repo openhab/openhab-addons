@@ -83,7 +83,7 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
     protected NAHome updateReadings() throws NetatmoException {
         HomeApi api = apiBridge.getRestManager(HomeApi.class);
         if (api != null) {
-            NAHomeSecurity home = (NAHomeSecurity) api.getHomeData(config.id);
+            NAHomeSecurity home = (NAHomeSecurity) api.getHomes(config.id).get(0);
             // List<NAPerson> known = home.getKnownPersons();
             // if (known != null) {
             // this.knownPersons = known;

@@ -41,7 +41,7 @@ public class NAThing extends NAObject {
     private @Nullable ZonedDateTime setupDate;
     private List<MeasureType> dataType = List.of();
     private @NonNullByDefault({}) ModuleType type;
-
+    private @Nullable String roomId;
     private @Nullable Boolean reachable;
     private @Nullable NADashboard dashboardData;
     private @Nullable String bridge;
@@ -91,5 +91,9 @@ public class NAThing extends NAObject {
 
     public @Nullable String getBridge() {
         return bridge;
+    }
+
+    public @Nullable String getRoomId() {
+        return roomId;
     }
 }
