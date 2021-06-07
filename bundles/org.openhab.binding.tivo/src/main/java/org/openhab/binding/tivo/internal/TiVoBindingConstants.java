@@ -29,6 +29,7 @@ public class TiVoBindingConstants {
     public static final String BINDING_ID = "tivo";
     public static final int CONFIG_SOCKET_TIMEOUT_MS = 1000;
     public static final int INIT_POLLING_DELAY_S = 5;
+    public static final int POLLING_DELAY_12HR_S = 43200;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_TIVO = new ThingTypeUID(BINDING_ID, "sckt");
