@@ -30,8 +30,8 @@
 		<description>Light State</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">OFF</option>
-				<option value="1">ON</option>
+				<option value="0">Off</option>
+				<option value="1">On</option>
 				<option value="4">15 Sec White Light</option>
 				<option value="7">Powering Off</option>
 			</options>
