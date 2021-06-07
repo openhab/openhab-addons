@@ -141,7 +141,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         refreshJob = null;
     }
 
-    protected void scheduleRefreshJob() {
+    private void scheduleRefreshJob() {
         RefreshStrategy strategy = refreshStrategy;
         if (strategy != null) {
             long delay = strategy.nextRunDelayInS();
@@ -238,7 +238,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
                 });
     }
 
-    public void callGetMeasurements(@Nullable String moduleId, Map<MeasureChannelConfig, Double> measures) {
+    private void callGetMeasurements(@Nullable String moduleId, Map<MeasureChannelConfig, Double> measures) {
         measures.keySet().forEach(measureDef -> {
             double result = Double.NaN;
             try {
@@ -259,7 +259,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         });
     }
 
-    protected void updateProperties(NAThing naThing) {
+    private void updateProperties(NAThing naThing) {
         int firmware = naThing.getFirmware();
         if (firmware != -1) {
             Map<String, String> properties = editProperties();
@@ -291,7 +291,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         }
     }
 
-    public void registerDataListener(String id, NetatmoDeviceHandler dataListener) {
+    private void registerDataListener(String id, NetatmoDeviceHandler dataListener) {
         dataListeners.put(id, dataListener);
         updateChildModules();
     }
@@ -314,7 +314,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         }
     }
 
-    protected State getNAThingProperty(ChannelUID channelUID) {
+    private State getNAThingProperty(ChannelUID channelUID) {
         for (AbstractChannelHelper helper : channelHelpers) {
             State state = helper.getNAThingProperty(channelUID);
             if (state != null) {

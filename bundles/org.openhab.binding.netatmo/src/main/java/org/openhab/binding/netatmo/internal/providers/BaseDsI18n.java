@@ -35,9 +35,9 @@ import org.osgi.service.component.ComponentContext;
 @NonNullByDefault
 public abstract class BaseDsI18n {
 
-    public static final String LABEL_ID = "label";
-    public static final String DESC_ID = "description";
-    public static final String SEPERATOR = ".";
+    private static final String LABEL_ID = "label";
+    private static final String DESC_ID = "description";
+    private static final String SEPERATOR = ".";
 
     private final TranslationProvider translationProvider;
     private @NonNullByDefault({}) Bundle bundle;
@@ -73,7 +73,7 @@ public abstract class BaseDsI18n {
      * @param locale
      * @return internationalized text
      */
-    protected String getText(String key, @Nullable Locale locale) {
+    private String getText(String key, @Nullable Locale locale) {
         String result = translationProvider.getText(bundle, key,
                 translationProvider.getText(bundle, key, key, Locale.ENGLISH), locale);
         return result != null ? result : key;
@@ -111,7 +111,7 @@ public abstract class BaseDsI18n {
      * @param parts to join
      * @return key
      */
-    public static String buildIdentifier(String p1, String p2) {
+    private static String buildIdentifier(String p1, String p2) {
         return String.join(SEPERATOR, "thing-type", BINDING_ID, p1, p2);
     }
 }

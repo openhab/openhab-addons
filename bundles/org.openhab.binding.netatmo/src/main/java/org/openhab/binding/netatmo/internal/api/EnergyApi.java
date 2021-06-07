@@ -50,17 +50,17 @@ public class EnergyApi extends RestManager {
         return response.getBody().getHome();
     }
 
-    public NAPlug getThermostatData(String equipmentId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETTHERMOSTAT_SPATH);
-        uriBuilder.queryParam("device_id", equipmentId);
-        NADeviceDataBody<NAPlug> answer = get(uriBuilder.build(), NAThermostatDataResponse.class).getBody();
-
-        NAPlug plug = answer.getDevice(equipmentId);
-        if (plug != null) {
-            return plug;
-        }
-        throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", equipmentId));
-    }
+    // public NAPlug getThermostatData(String equipmentId) throws NetatmoException {
+    // UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETTHERMOSTAT_SPATH);
+    // uriBuilder.queryParam("device_id", equipmentId);
+    // NADeviceDataBody<NAPlug> answer = get(uriBuilder.build(), NAThermostatDataResponse.class).getBody();
+    //
+    // NAPlug plug = answer.getDevice(equipmentId);
+    // if (plug != null) {
+    // return plug;
+    // }
+    // throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", equipmentId));
+    // }
 
     /**
      *

@@ -30,7 +30,7 @@ public class NetatmoBindingConfiguration {
     public @Nullable String password;
     public @Nullable String webHookUrl;
     public int reconnectInterval = 5400;
-    public boolean backgroundDiscovery;
+    private boolean backgroundDiscovery;
 
     public void update(NetatmoBindingConfiguration newConfiguration) {
         this.clientId = newConfiguration.clientId;

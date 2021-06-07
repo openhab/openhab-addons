@@ -113,7 +113,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_CAMERA_LIVESTREAM_URL = "live-stream-url";
     public static final String CHANNEL_EVENT_TYPE = "type";
     public static final String CHANNEL_EVENT_SUBTYPE = "subtype";
-    public static final String CHANNEL_EVENT_CATEGORY = "category";
     public static final String CHANNEL_EVENT_VIDEO_STATUS = "video-status";
     public static final String CHANNEL_EVENT_MESSAGE = "message";
     public static final String CHANNEL_EVENT_TIME = "time";
@@ -127,7 +126,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_PERSON_AVATAR_URL = "avatar-url";
 
     public static final String CHANNEL_HOME_EVENT = "home-event";
-    public static final String CHANNEL_CAMERA_EVENT = "camera-event";
     public static final String CHANNEL_SETPOINT_DURATION = "setpoint-duration";
 
     // Presence outdoor camera specific channels

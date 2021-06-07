@@ -30,8 +30,8 @@ import org.openhab.binding.netatmo.internal.api.EventType;
 @NonNullByDefault
 public abstract class NAEvent extends NAObject {
     protected @Nullable EventType type;
-    protected @NonNullByDefault({}) String cameraId;
-    protected @NonNullByDefault({}) String message;
+    private @NonNullByDefault({}) String cameraId;
+    private @NonNullByDefault({}) String message;
     protected int subType = -1;
 
     public EventType getEventType() {

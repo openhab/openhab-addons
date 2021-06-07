@@ -109,7 +109,7 @@ public class SecurityApi extends RestManager {
         return true;
     }
 
-    public class NALastEventsDataResponse extends ApiResponse<NALastEventsData> {
+    private class NALastEventsDataResponse extends ApiResponse<NALastEventsData> {
     }
 
     public List<NAHomeEvent> getLastEventOf(String homeId, String personId) throws NetatmoException {

@@ -35,7 +35,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class SignalHelper extends AbstractChannelHelper {
-    protected final int[] levels;
+    private final int[] levels;
 
     public SignalHelper(Thing thing, TimeZoneProvider timeZoneProvider, int[] signalLevels) {
         super(thing, timeZoneProvider, Set.of(GROUP_SIGNAL));

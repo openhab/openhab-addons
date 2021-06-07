@@ -36,7 +36,7 @@ public class NetatmoCalendarUtils {
         return cal.getTimeInMillis() / 1000;
     }
 
-    public static long getProgramBaseTime() {
+    private static long getProgramBaseTime() {
         Calendar mondayZero = Calendar.getInstance();
         mondayZero.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         mondayZero.set(Calendar.HOUR_OF_DAY, 0);
@@ -45,7 +45,7 @@ public class NetatmoCalendarUtils {
         return mondayZero.getTimeInMillis() / 1000;
     }
 
-    public static long getTimeDiff() {
+    private static long getTimeDiff() {
         Calendar now = Calendar.getInstance();
         long diff = (now.getTimeInMillis() / 1000 - getProgramBaseTime()) / 60;
         return diff;

@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
@@ -38,10 +37,12 @@ public class Therm1Handler extends NetatmoDeviceHandler {
         super(bridge, channelHelpers, apiBridge, descriptionProvider);
     }
 
-    private @Nullable PlugHandler getPlugHandler() {
-        NetatmoDeviceHandler handler = super.getBridgeHandler(getBridge());
-        return handler != null ? (PlugHandler) handler : null;
-    }
+    // TODO : if it happens that Therm1Handler does not any longer have code, this class could be removed
+
+    // private @Nullable PlugHandler getPlugHandler() {
+    // NetatmoDeviceHandler handler = super.getBridgeHandler(getBridge());
+    // return handler != null ? (PlugHandler) handler : null;
+    // }
 
     // @Override
     // public void handleCommand(ChannelUID channelUID, Command command) {

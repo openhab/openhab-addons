@@ -146,7 +146,7 @@ public class CameraHandler extends NetatmoDeviceHandler {
         }
     }
 
-    public @Nullable String getStreamURL(@Nullable String videoId) {
+    private @Nullable String getStreamURL(@Nullable String videoId) {
         if (videoId != null && vpnUrl != null) {
             StringBuilder result = new StringBuilder(String.format("%s/vod/%s/index", vpnUrl, videoId));
             if (isLocal) {
@@ -158,7 +158,7 @@ public class CameraHandler extends NetatmoDeviceHandler {
         return null;
     }
 
-    public @Nullable String pingVpnUrl(String vpnUrl) {
+    private @Nullable String pingVpnUrl(String vpnUrl) {
         try {
             return apiBridge.getHomeApi().ping(vpnUrl);
         } catch (NetatmoException e) {

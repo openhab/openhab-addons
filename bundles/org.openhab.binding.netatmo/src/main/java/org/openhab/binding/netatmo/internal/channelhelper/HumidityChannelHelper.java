@@ -47,7 +47,7 @@ public class HumidityChannelHelper extends AbstractChannelHelper {
                 : getDerived(dashboard.getTemperature(), dashboard.getHumidity(), channelId);
     }
 
-    protected @Nullable State getDerived(double temperature, double humidity, String channelId) {
+    private @Nullable State getDerived(double temperature, double humidity, String channelId) {
         double humidex = getHumidex(temperature, humidity);
         switch (channelId) {
             case CHANNEL_HUMIDEX:

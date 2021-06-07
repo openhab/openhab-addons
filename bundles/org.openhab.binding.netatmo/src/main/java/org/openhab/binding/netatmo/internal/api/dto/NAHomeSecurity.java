@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,9 +46,10 @@ public class NAHomeSecurity extends NAHome {
         return cameras;
     }
 
-    public Optional<NAPerson> getPerson(String id) {
-        return Optional.ofNullable(persons.get(id));
-    }
+    // TODO Remove unused code found by UCDetector
+    // public Optional<NAPerson> getPerson(String id) {
+    // return Optional.ofNullable(persons.get(id));
+    // }
 
     public void setEvents(List<NAHomeEvent> events) {
         this.events = events;

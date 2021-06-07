@@ -61,9 +61,10 @@ public class NAThing extends NAObject {
         return dataType;
     }
 
-    public boolean canDeriveWeather() {
-        return dataType.contains(MeasureType.TEMP) && dataType.contains(MeasureType.HUM);
-    }
+    // TODO Remove unused code found by UCDetector
+    // public boolean canDeriveWeather() {
+    // return dataType.contains(MeasureType.TEMP) && dataType.contains(MeasureType.HUM);
+    // }
 
     public ModuleType getType() {
         return type;

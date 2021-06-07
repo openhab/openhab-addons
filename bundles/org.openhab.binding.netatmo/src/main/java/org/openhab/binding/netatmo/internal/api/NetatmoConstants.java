@@ -232,10 +232,11 @@ public class NetatmoConstants {
             return apiDescriptor;
         }
 
-        public static SetpointMode fromName(String name) {
-            return Arrays.stream(values()).filter(value -> value.apiDescriptor.equals(name)).findFirst()
-                    .orElse(UNKNOWN);
-        }
+        // TODO Remove unused code found by UCDetector
+        // public static SetpointMode fromName(String name) {
+        // return Arrays.stream(values()).filter(value -> value.apiDescriptor.equals(name)).findFirst()
+        // .orElse(UNKNOWN);
+        // }
     }
 
     public static enum ThermostatZoneType {

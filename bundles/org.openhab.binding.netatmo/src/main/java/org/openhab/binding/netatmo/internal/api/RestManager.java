@@ -82,9 +82,10 @@ public abstract class RestManager {
         return response;
     }
 
-    public <T> T post(String payload, Class<T> classOfT) throws NetatmoException {
-        return post("", payload, classOfT, true);
-    }
+    // TODO Remove unused code found by UCDetector
+    // public <T> T post(String payload, Class<T> classOfT) throws NetatmoException {
+    // return post("", payload, classOfT, true);
+    // }
 
     protected UriBuilder getApiUriBuilder() {
         return API_URI_BUILDER.clone();
@@ -94,9 +95,10 @@ public abstract class RestManager {
         return APP_URI_BUILDER.clone();
     }
 
-    protected UriBuilder getSnapshotUriBuilder() {
-        return SNAPSHOT_URI_BUILDER.clone();
-    }
+    // TODO Remove unused code found by UCDetector
+    // protected UriBuilder getSnapshotUriBuilder() {
+    // return SNAPSHOT_URI_BUILDER.clone();
+    // }
 
     protected URI getOAuthUri() {
         return OAUTH_URI_BUILDER.build();

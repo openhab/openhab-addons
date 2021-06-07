@@ -69,7 +69,7 @@ public class RoomHandler extends NetatmoDeviceHandler {
         if (handler != null) {
             NAHome localHome = handler.getHome();
             if (localHome != null) {
-                return (NARoom) Objects.requireNonNullElse(localHome.getRoom(config.id), new NARoom());
+                return Objects.requireNonNullElse(localHome.getRoom(config.id), new NARoom());
             }
         }
         return new NARoom();
@@ -115,14 +115,14 @@ public class RoomHandler extends NetatmoDeviceHandler {
         return bridgeHandler != null ? bridgeHandler.getSetpointDefaultDuration() : 120;
     }
 
-    public void callSetRoomThermMode(String homeId, String roomId, SetpointMode targetMode) {
+    private void callSetRoomThermMode(String homeId, String roomId, SetpointMode targetMode) {
         apiBridge.getEnergyApi().ifPresent(api -> {
             tryApiCall(() -> api.setRoomThermpoint(homeId, roomId, targetMode,
                     targetMode == SetpointMode.MAX ? getSetpointEndTimeFromNow(getSetpointDefaultDuration()) : 0, 0));
         });
     }
 
-    public void callSetRoomThermTemp(String homeId, String roomId, double temperature) {
+    private void callSetRoomThermTemp(String homeId, String roomId, double temperature) {
         apiBridge.getEnergyApi().ifPresent(api -> {
             tryApiCall(() -> api.setRoomThermpoint(homeId, roomId, SetpointMode.MANUAL,
                     getSetpointEndTimeFromNow(getSetpointDefaultDuration()), temperature));

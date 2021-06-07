@@ -38,7 +38,7 @@ public class WeatherApi extends RestManager {
     public class NAStationDataResponse extends ApiResponse<NADeviceDataBody<NAMain>> {
     }
 
-    public class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem>> {
+    private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem>> {
     }
 
     public WeatherApi(ApiBridge apiClient) {
@@ -77,9 +77,10 @@ public class WeatherApi extends RestManager {
         throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
     }
 
-    public NADeviceDataBody<NAMain> getStationsDataBody(@Nullable String deviceId) throws NetatmoException {
-        return getStationsData(deviceId, true).getBody();
-    }
+    // TODO Remove unused code found by UCDetector
+    // public NADeviceDataBody<NAMain> getStationsDataBody(@Nullable String deviceId) throws NetatmoException {
+    // return getStationsData(deviceId, true).getBody();
+    // }
 
     public double getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale, MeasureType type,
             MeasureLimit limit) throws NetatmoException {

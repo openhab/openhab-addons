@@ -39,10 +39,10 @@ public class HomeApi extends RestManager {
         super(apiClient);
     }
 
-    public class NAHomesDataResponse extends ApiResponse<NAHomeData> {
+    private class NAHomesDataResponse extends ApiResponse<NAHomeData> {
     }
 
-    public class NAHomeDataResponse extends ApiResponse<NAHomeData> {
+    private class NAHomeDataResponse extends ApiResponse<NAHomeData> {
     }
 
     public List<NAHome> getHomes(@Nullable String homeId) throws NetatmoException {

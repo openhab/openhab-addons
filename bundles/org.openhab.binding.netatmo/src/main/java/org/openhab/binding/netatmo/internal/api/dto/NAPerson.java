@@ -34,7 +34,7 @@ public class NAPerson extends NAModule {
     // Provided by webhooks
     private @Nullable String faceId;
     private @Nullable String faceKey;
-    boolean isKnown;
+    private boolean isKnown;
 
     @Override
     public ModuleType getType() {

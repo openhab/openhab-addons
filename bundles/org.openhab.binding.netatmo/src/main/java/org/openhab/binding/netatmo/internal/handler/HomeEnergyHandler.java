@@ -99,7 +99,7 @@ public class HomeEnergyHandler extends NetatmoDeviceHandler {
         }
     }
 
-    public void callSetThermMode(String homeId, SetpointMode targetMode) {
+    private void callSetThermMode(String homeId, SetpointMode targetMode) {
         apiBridge.getEnergyApi().ifPresent(api -> {
             tryApiCall(() -> api.setThermMode(homeId, targetMode.getDescriptor()));
         });

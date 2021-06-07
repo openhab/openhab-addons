@@ -12,13 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.deserialization;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 
 /**
@@ -31,9 +27,10 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 public class NADynamicObjectMap extends HashMap<String, NAThing> {
     private static final long serialVersionUID = -7864636414965562293L;
 
-    public List<NAThing> forModuleType(ModuleType searchedType) {
-        List<NAThing> result = new ArrayList<>();
-        result.addAll(values().stream().filter(thing -> thing.getType() == searchedType).collect(Collectors.toList()));
-        return result;
-    }
+    // TODO Remove unused code found by UCDetector
+    // public List<NAThing> forModuleType(ModuleType searchedType) {
+    // List<NAThing> result = new ArrayList<>();
+    // result.addAll(values().stream().filter(thing -> thing.getType() == searchedType).collect(Collectors.toList()));
+    // return result;
+    // }
 }
