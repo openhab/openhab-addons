@@ -25,4 +25,10 @@ public class GPIOInputConfiguration extends GPIOConfiguration {
      * Time in ms to double check if value hasn't changed
      */
     public int debouncingTime = 10;
+
+    /**
+     * Setup a pullup resistor on the GPIO pin
+     * 0 = PI_PUD_OFF, 1 = PI_PUD_DOWN, 2 = PI_PUD_UP
+     */
+    public int pullupdown = 0;
 }

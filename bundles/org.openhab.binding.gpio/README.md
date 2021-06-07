@@ -34,13 +34,15 @@ sudo nano /etc/systemd/system/pigpiod.service.d/public.conf
 ```
 sudo systemctl daemon-reload
 ```
-Now that Remote GPIO is enabled, get the daemon going:
+Now that Remote GPIO is enabled, get the daemon going (even if installed with apt-get):
 ```
 sudo systemctl enable pigpiod 
 sudo systemctl start pigpiod
 ```
 
 In openHAB, set `host` to the address of the pi and the `port` to the port of pigpio (default: 8888).
+
+Note: If you are running Pigpio on same host as openHAB, then set host to **::1**.
 
 ## Channels
 
@@ -56,6 +58,7 @@ In openHAB, set `host` to the address of the pi and the `port` to the port of pi
 Set the number of the pin in `gpioId`.
 If you want to invert the value, set `invert` to true.
 To prevent incorrect change events, you can adjust the `debouncingTime`.
+Using `pullupdown` you can enable pull up or pull down resistor (0 = Off, 1 = Pull Down, 2 = Pull Up).
 
 ### GPIO digital output channel
 
@@ -78,7 +81,7 @@ Thing gpio:pigpio-remote:sample-pi-1 "Sample-Pi 1" [host="192.168.2.36", port=88
 Thing gpio:pigpio-remote:sample-pi-2 "Sample-Pi 2" [host="192.168.2.37", port=8888] {
     Channels:
         Type pigpio-digital-input : sample-input-3 [ gpioId=16, debouncingTime=20]
-        Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5]
+        Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5, pullupdown=2]
         Type pigpio-digital-output : sample-output-2 [ gpioId=4, invert=true]
 }
 ```
