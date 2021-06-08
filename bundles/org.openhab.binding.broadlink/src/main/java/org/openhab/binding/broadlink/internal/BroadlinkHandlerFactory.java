@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.broadlink")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.broadlink")
 public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkHandlerFactory.class);
@@ -41,7 +41,6 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet().contains(thingTypeUID);
     }
 
-    // FIXME: This function envies the ModelMapper and should be unified with it...
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (logger.isDebugEnabled())
