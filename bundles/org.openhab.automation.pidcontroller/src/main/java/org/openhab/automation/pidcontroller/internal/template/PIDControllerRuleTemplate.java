@@ -14,15 +14,11 @@ package org.openhab.automation.pidcontroller.internal.template;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.automation.pidcontroller.internal.PIDControllerConstants;
-import org.openhab.automation.pidcontroller.internal.handler.PIDControllerActionHandler;
 import org.openhab.automation.pidcontroller.internal.handler.PIDControllerTriggerHandler;
-import org.openhab.automation.pidcontroller.internal.type.PIDControllerActionType;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.Condition;
 import org.openhab.core.automation.Trigger;
@@ -45,15 +41,8 @@ public class PIDControllerRuleTemplate extends RuleTemplate {
         final List<Trigger> triggers = List.of(ModuleBuilder.createTrigger().withId(triggerId)
                 .withTypeUID(PIDControllerTriggerHandler.MODULE_TYPE_ID).withLabel("PID Controller Trigger").build());
 
-        final Map<String, String> actionInputs = Map.of(PIDControllerActionType.INPUT,
-                triggerId + "." + PIDControllerConstants.OUTPUT);
-
-        final List<Action> actions = List.of(ModuleBuilder.createAction().withId(UUID.randomUUID().toString())
-                .withTypeUID(PIDControllerActionHandler.MODULE_TYPE_ID).withLabel("PID Controller Action")
-                .withInputs(actionInputs).build());
-
-        return new PIDControllerRuleTemplate(Set.of("PID Controller"), triggers, Collections.emptyList(), actions,
-                Collections.emptyList());
+        return new PIDControllerRuleTemplate(Set.of("PID Controller"), triggers, Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList());
     }
 
     public PIDControllerRuleTemplate(Set<String> tags, List<Trigger> triggers, List<Condition> conditions,
