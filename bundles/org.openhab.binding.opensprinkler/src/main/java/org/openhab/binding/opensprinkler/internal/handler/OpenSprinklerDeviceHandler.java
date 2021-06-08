@@ -234,7 +234,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                         handleRainDelayCommand(channelUID, command, api);
                         break;
                 }
-                localBridge.refreshStations();// update sensors and controls after command is sent
+                localBridge.delayedRefresh();// update sensors and controls after command is sent
             }
         } catch (Exception e) {
             localBridge.communicationError(e);

@@ -92,6 +92,14 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    public void delayedRefresh() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+        refreshStations();
+    }
+
     @SuppressWarnings("null")
     private void setupAPI() {
         logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Refresh: {}).",

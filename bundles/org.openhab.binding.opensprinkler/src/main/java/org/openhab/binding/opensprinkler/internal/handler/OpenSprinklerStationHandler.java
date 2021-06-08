@@ -95,7 +95,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                     return;
                 }
                 // update all controls after a command is sent in case a long poll time is set.
-                localBridge.refreshStations();
+                localBridge.delayedRefresh();
             }
         } catch (GeneralApiException | CommunicationApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
