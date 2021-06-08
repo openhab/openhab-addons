@@ -21,7 +21,7 @@ You are able to create multiple instances of this Thing to broadcast to differen
 | `sound`                 | text    | The default notification sound on target device (default: `default`) (see [supported notification sounds](https://pushover.net/api#sounds)).         |
 | `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user (default: `300`). **advanced** |
 | `expire`                | integer | The expire parameter specifies how long (in seconds) your notification will continue to be retried (default: `3600`). **advanced**                   |
-| `timeout`               | integer | The timeout parameter specifies maximum number of seconds a request to pushover can take. **advanced**                                               |
+| `timeout`               | integer | The timeout parameter specifies maximum number of seconds a request to Pushover can take. **advanced**                                               |
 
 The `retry` and `expire` parameters are only used for emergency-priority notifications.
 
