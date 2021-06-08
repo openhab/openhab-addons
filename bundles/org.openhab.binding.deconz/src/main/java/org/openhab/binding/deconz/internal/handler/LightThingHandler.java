@@ -282,13 +282,17 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 return;
         }
 
-        Boolean newOn = newLightState.on;
-        if (newOn != null && !newOn) {
-            // if light shall be off, no other commands are allowed, so reset the new light state
-            newLightState.clear();
-            newLightState.on = false;
-        } else if (newOn != null && newOn) {
-            newLightState.ontime = onTime;
+        if (thing.getChannel(CHANNEL_ONTIME) != null) {
+            Boolean newOn = newLightState.on;
+            if (newOn != null && !newOn) {
+                // if light shall be off, no other commands are allowed, so reset the new light state
+                newLightState.clear();
+                newLightState.on = false;
+            } else if (newOn != null && newOn) {
+                newLightState.ontime = onTime;
+            }
+        } else {
+            newLightState.ontime = null;
         }
 
         sendCommand(newLightState, command, channelUID, () -> {
