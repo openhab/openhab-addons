@@ -16,11 +16,14 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.commandToQuantity;
 import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.getSetpointEndTimeFromNow;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
+import org.openhab.binding.netatmo.internal.action.RoomActions;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
@@ -32,6 +35,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -127,5 +131,22 @@ public class RoomHandler extends NetatmoDeviceHandler {
             tryApiCall(() -> api.setRoomThermpoint(homeId, roomId, SetpointMode.MANUAL,
                     getSetpointEndTimeFromNow(getSetpointDefaultDuration()), temperature));
         });
+    }
+
+    public void thingActionCallSetRoomThermTemp(double temperature, long endtime, SetpointMode mode) {
+        HomeEnergyHandler handler = getHomeHandler();
+        NAHome home = handler.getHome();
+        if (home != null) {
+            apiBridge.getEnergyApi().ifPresent(api -> {
+                tryApiCall(() -> api.setRoomThermpoint(home.getId(), config.id, mode, endtime, temperature));
+            });
+        } else {
+            logger.info("No home available to launch setRoomThermpoint action");
+        }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(RoomActions.class);
     }
 }

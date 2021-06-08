@@ -144,8 +144,6 @@ public class ApiBridge {
         try {
             configuration.checkIfValid();
             connectApi.authenticate();
-            // Just a sample call to ensure connection is fine
-            getHomeApi().getHomes(null);
             setConnectionStatus(ConnectionStatus.Success());
         } catch (NetatmoException e) {
             setConnectionStatus(ConnectionStatus.Failed("Will retry to connect Netatmo API, this one failed : %s", e));
