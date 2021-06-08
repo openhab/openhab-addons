@@ -32,7 +32,7 @@ public class NAWelcome extends NAModule {
     private boolean isLocal;
     private @Nullable OnOffType sdStatus;
     private @Nullable OnOffType alimStatus;
-    private @Nullable PresenceLightMode lightModeStatus;
+    private PresenceLightMode lightModeStatus = PresenceLightMode.UNKNOWN;
 
     /**
      * If camera is monitoring (on/off)
@@ -89,7 +89,6 @@ public class NAWelcome extends NAModule {
      * @return lightModeStatus
      **/
     public PresenceLightMode getLightModeStatus() {
-        PresenceLightMode mode = lightModeStatus;
-        return mode != null ? mode : PresenceLightMode.UNKNOWN;
+        return lightModeStatus;
     }
 }

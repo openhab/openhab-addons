@@ -52,6 +52,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMapDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 import org.openhab.binding.netatmo.internal.deserialization.NAPushTypeDeserializer;
+import org.openhab.binding.netatmo.internal.deserialization.StrictEnumTypeAdapterFactory;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.common.ThreadPoolManager;
@@ -107,6 +108,7 @@ public class ApiBridge {
         this.connectApi = new AuthenticationApi(this, oAuthFactory, configuration, scheduler);
 
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
                 .registerTypeAdapter(NADynamicObjectMap.class, new NADynamicObjectMapDeserializer())
                 .registerTypeAdapter(NAHome.class, new NAHomeDeserializer())

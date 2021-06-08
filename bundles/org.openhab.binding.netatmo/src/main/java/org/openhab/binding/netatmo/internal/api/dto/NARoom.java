@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 
@@ -23,12 +22,12 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
  *
  */
 @NonNullByDefault
-public class NARoom extends NAModule {
+public class NARoom extends NAThing {
     private boolean anticipating;
     private int heatingPowerRequest;
     private boolean openWindow;
     private double thermMeasuredTemperature;
-    private @Nullable SetpointMode thermSetpointMode;
+    private SetpointMode thermSetpointMode = SetpointMode.UNKNOWN;
     private double thermSetpointTemperature;
     private long thermSetpointStartTime;
     private long thermSetpointEndTime = -1;
@@ -65,8 +64,7 @@ public class NARoom extends NAModule {
      * @return the thermSetpointMode
      */
     public SetpointMode getThermSetpointMode() {
-        SetpointMode mode = this.thermSetpointMode;
-        return mode == null ? SetpointMode.UNKNOWN : mode;
+        return thermSetpointMode;
     }
 
     /**
@@ -86,6 +84,8 @@ public class NARoom extends NAModule {
 
     @Override
     public ModuleType getType() {
+        // In json api answer type for NARoom is used with words like kitchen, living...
+        // Maybe NARoom should not inherit from NAThing
         return ModuleType.NARoom;
     }
 }

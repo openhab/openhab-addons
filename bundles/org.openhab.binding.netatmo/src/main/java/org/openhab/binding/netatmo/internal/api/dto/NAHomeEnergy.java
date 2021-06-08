@@ -27,7 +27,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 @NonNullByDefault
 public class NAHomeEnergy extends NAHome {
     private List<NAThermProgram> schedules = List.of();
-    private @Nullable SetpointMode thermMode;
+    private SetpointMode thermMode = SetpointMode.UNKNOWN;
     private long thermModeEndtime = 0;
     private int thermSetpointDefaultDuration;
 
@@ -47,7 +47,7 @@ public class NAHomeEnergy extends NAHome {
         return thermSetpointDefaultDuration;
     }
 
-    public @Nullable SetpointMode getThermMode() {
+    public SetpointMode getThermMode() {
         return thermMode;
     }
 }

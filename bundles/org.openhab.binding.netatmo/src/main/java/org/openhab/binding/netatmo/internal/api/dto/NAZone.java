@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.ThermostatZoneType;
 
 /**
@@ -24,7 +23,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.ThermostatZoneT
 
 @NonNullByDefault
 public class NAZone extends NAObject {
-    private @Nullable ThermostatZoneType type;
+    private ThermostatZoneType type = ThermostatZoneType.UNKNOWN;
     private double temp;
 
     public double getTemp() {
@@ -32,7 +31,6 @@ public class NAZone extends NAObject {
     }
 
     public ThermostatZoneType getType() {
-        ThermostatZoneType localType = type;
-        return localType != null ? localType : ThermostatZoneType.UNKNOWN;
+        return type;
     }
 }

@@ -74,6 +74,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public enum ModuleType {
+    UNKNOWN(null, RefreshPolicy.NONE, null, List.of(), List.of(), List.of(), null),
+
     // Security Group
     NAHomeSecurity(HomeSecurityHandler.class, RefreshPolicy.CONFIG, null, List.of(),
             List.of(HomeSecurityChannelHelper.class), List.of(GROUP_HOME_SECURITY), null),

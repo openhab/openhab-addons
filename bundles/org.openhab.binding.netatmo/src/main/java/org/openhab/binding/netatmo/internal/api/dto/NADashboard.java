@@ -38,8 +38,8 @@ public class NADashboard {
     @SerializedName("Temperature")
     private double temperature;
 
-    private @Nullable TrendDescription pressureTrend;
-    private @Nullable TrendDescription tempTrend;
+    private TrendDescription pressureTrend = TrendDescription.UNKNOWN;
+    private TrendDescription tempTrend = TrendDescription.UNKNOWN;
     private @Nullable ZonedDateTime dateMaxTemp;
     private @Nullable ZonedDateTime dateMinTemp;
     private double minTemp;
@@ -100,8 +100,7 @@ public class NADashboard {
     }
 
     public TrendDescription getTempTrend() {
-        TrendDescription trend = tempTrend;
-        return trend != null ? trend : TrendDescription.UNKNOWN;
+        return tempTrend;
     }
 
     public @Nullable ZonedDateTime getDateMaxTemp() {
@@ -141,8 +140,7 @@ public class NADashboard {
     }
 
     public TrendDescription getPressureTrend() {
-        TrendDescription trend = pressureTrend;
-        return trend != null ? trend : TrendDescription.UNKNOWN;
+        return pressureTrend;
     }
 
     public double getRain() {

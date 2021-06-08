@@ -32,10 +32,10 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.VideoStatus;
 public class NAHomeEvent extends NAEvent {
     private @NonNullByDefault({}) ZonedDateTime time;
     private @Nullable String personId;
-    private @Nullable EventCategory category;
+    private EventCategory category = EventCategory.UNKNOWN;
     private @Nullable NASnapshot snapshot;
     private @Nullable String videoId;
-    private @Nullable VideoStatus videoStatus;
+    private VideoStatus videoStatus = VideoStatus.UNKNOWN;
     private boolean isArrival;
 
     @Override
@@ -53,8 +53,7 @@ public class NAHomeEvent extends NAEvent {
     }
 
     public VideoStatus getVideoStatus() {
-        VideoStatus status = videoStatus;
-        return status != null ? status : VideoStatus.UNKNOWN;
+        return videoStatus;
     }
 
     @Override
@@ -63,19 +62,18 @@ public class NAHomeEvent extends NAEvent {
         if (isArrival && type == EventType.PERSON) {
             this.subType = EventSubType.ARRIVAL.getSubType();
         } else {
-            EventCategory localCategory = category;
-            if (localCategory != null) {
-                switch (localCategory) {
-                    case ANIMAL:
-                        this.subType = EventSubType.ANIMAL.getSubType();
-                        break;
-                    case HUMAN:
-                        this.subType = EventSubType.HUMAN.getSubType();
-                        break;
-                    case VEHICLE:
-                        this.subType = EventSubType.VEHICLE.getSubType();
-                        break;
-                }
+            switch (category) {
+                case ANIMAL:
+                    this.subType = EventSubType.ANIMAL.getSubType();
+                    break;
+                case HUMAN:
+                    this.subType = EventSubType.HUMAN.getSubType();
+                    break;
+                case VEHICLE:
+                    this.subType = EventSubType.VEHICLE.getSubType();
+                    break;
+                default:
+                    break;
             }
         }
         // ... and let ancestor do his work

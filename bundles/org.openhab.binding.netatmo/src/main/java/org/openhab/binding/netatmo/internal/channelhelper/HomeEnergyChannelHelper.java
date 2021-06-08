@@ -58,28 +58,26 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
             case CHANNEL_PLANNING:
                 return (currentProgram != null ? toStringType(currentProgram.getName()) : null);
             case CHANNEL_SETPOINT_MODE:
-                if (thermMode != null) {
-                    switch (thermMode) {
-                        case PROGRAM:
-                        case HOME:
-                        case SCHEDULE:
-                            NATimeTableItem currentProgramMode = getCurrentProgramMode(localThing.getActiveProgram());
-                            if (currentProgram != null && currentProgramMode != null) {
-                                NAZone zone = currentProgram.getZone(String.valueOf(currentProgramMode.getZoneId()));
-                                if (zone != null) {
-                                    return new StringType(zone.getName());
-                                }
-                                return UnDefType.NULL;
+                switch (thermMode) {
+                    case PROGRAM:
+                    case HOME:
+                    case SCHEDULE:
+                        NATimeTableItem currentProgramMode = getCurrentProgramMode(localThing.getActiveProgram());
+                        if (currentProgram != null && currentProgramMode != null) {
+                            NAZone zone = currentProgram.getZone(String.valueOf(currentProgramMode.getZoneId()));
+                            if (zone != null) {
+                                return new StringType(zone.getName());
                             }
-                        case AWAY:
-                        case MANUAL:
-                        case FROST_GUARD:
-                            return new StringType(thermMode.name());
-                        case OFF:
-                        case MAX:
-                        case UNKNOWN:
-                            return UnDefType.UNDEF;
-                    }
+                            return UnDefType.NULL;
+                        }
+                    case AWAY:
+                    case MANUAL:
+                    case FROST_GUARD:
+                        return new StringType(thermMode.name());
+                    case OFF:
+                    case MAX:
+                    case UNKNOWN:
+                        return UnDefType.UNDEF;
                 }
                 return null;
             case CHANNEL_SETPOINT_END_TIME:

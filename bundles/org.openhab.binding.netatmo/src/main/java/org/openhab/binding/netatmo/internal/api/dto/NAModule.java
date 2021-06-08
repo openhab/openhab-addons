@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class NAModule extends NAThing {
+    // TODO : @Mdillman : can batteryState be changed to an enum ?
     private @Nullable String batteryState;
     private int batteryPercent;
 

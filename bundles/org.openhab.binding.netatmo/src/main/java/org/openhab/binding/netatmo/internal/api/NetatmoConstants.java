@@ -187,7 +187,8 @@ public class NetatmoConstants {
         @SerializedName("write_doorbell")
         WRITE_DOORBELL,
         @SerializedName("access_doorbell")
-        ACCESS_DOORBELL;
+        ACCESS_DOORBELL,
+        UNKNOWN;
     }
 
     static final Set<Scope> WEATHER_SCOPES = Set.of(Scope.READ_STATION);
@@ -289,7 +290,8 @@ public class NetatmoConstants {
         @SerializedName("animal")
         ANIMAL,
         @SerializedName("vehicle")
-        VEHICLE;
+        VEHICLE,
+        UNKNOWN;
     }
 
     public enum TrendDescription {

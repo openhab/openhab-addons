@@ -39,7 +39,7 @@ public class HomeApi extends RestManager {
         super(apiClient);
     }
 
-    private class NAHomesDataResponse extends ApiResponse<NAHomeData> {
+    public class NAHomesDataResponse extends ApiResponse<NAHomeData> {
     }
 
     private class NAHomeDataResponse extends ApiResponse<NAHomeData> {
@@ -53,11 +53,9 @@ public class HomeApi extends RestManager {
 
     public List<NAHome> getHomes(@Nullable String homeId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH);
-        List<NAHome> homeDataResponse = get(uriBuilder, NAHomeDataResponse.class).getBody().getHomes();
-
-        // Complete gethomedata with informations provided by homesdata
+        NAHomeData response = get(uriBuilder, NAHomeDataResponse.class).getBody();
         List<NAHome> homeListResponse = getHomeList(null, null);
-
+        List<NAHome> homeDataResponse = response.getHomes();
         homeListResponse.forEach(h1 -> {
             homeDataResponse.stream().filter(h2 -> h2.getId().equals(h1.getId())).findFirst().ifPresent(h2 -> {
                 h1.setPlace(h2.getPlace());
@@ -68,6 +66,7 @@ public class HomeApi extends RestManager {
                 }
             });
         });
+        // Complete gethomedata with informations provided by homesd ata
 
         if (homeId != null) {
             homeListResponse.removeIf(home -> !home.getId().equals(homeId));
