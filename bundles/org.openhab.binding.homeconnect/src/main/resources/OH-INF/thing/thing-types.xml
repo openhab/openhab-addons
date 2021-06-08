@@ -541,9 +541,9 @@
 		<state readOnly="true">
 			<options>
 				<option value="LaundryCare.Washer.EnumType.RinsePlus.Off">None</option>
-				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus1">Plus 1</option>
-				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus2">Plus 2</option>
-				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus3">Plus 3</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus1">+1</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus2">+2</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus3">+3</option>
 			</options>
 		</state>
 	</channel-type>
