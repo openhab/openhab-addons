@@ -122,7 +122,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected boolean isLinkedChannelsForUnsupportedFeatures() {
+    protected boolean isChannelLinkedToProgramOptionNotFullySupportedByApi() {
         return (getThingChannel(CHANNEL_WASHER_IDOS1).isPresent() && isLinked(CHANNEL_WASHER_IDOS1))
                 || (getThingChannel(CHANNEL_WASHER_IDOS2).isPresent() && isLinked(CHANNEL_WASHER_IDOS2))
                 || (getThingChannel(CHANNEL_WASHER_VARIO_PERFECT).isPresent() && isLinked(CHANNEL_WASHER_VARIO_PERFECT))

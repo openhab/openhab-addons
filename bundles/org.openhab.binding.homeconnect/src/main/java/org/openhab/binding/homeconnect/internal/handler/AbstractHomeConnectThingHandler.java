@@ -485,7 +485,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      */
     protected abstract void configureEventHandlers(final Map<String, EventHandler> handlers);
 
-    protected boolean isLinkedChannelsForUnsupportedFeatures() {
+    protected boolean isChannelLinkedToProgramOptionNotFullySupportedByApi() {
         return false;
     }
 
@@ -877,7 +877,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         programOptionsDelayedUpdate = null;
                     }
 
-                    if (isLinkedChannelsForUnsupportedFeatures()) {
+                    if (isChannelLinkedToProgramOptionNotFullySupportedByApi()) {
                         Optional<HomeConnectApiClient> apiClient = getApiClient();
                         if (apiClient.isPresent()) {
                             Program program = apiClient.get().getSelectedProgram(getThingHaId());
@@ -904,7 +904,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
                 if (apiClient.isPresent() && programKey != null) {
                     Boolean remoteControl = (availableProgramOptionsCache.get(programKey) == null
-                            || isLinkedChannelsForUnsupportedFeatures())
+                            || isChannelLinkedToProgramOptionNotFullySupportedByApi())
                                     ? apiClient.get().isRemoteControlActive(getThingHaId())
                                     : false;
 
@@ -916,7 +916,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         updateProgramOptionsStateDescriptions(programKey);
                     }
 
-                    if (isLinkedChannelsForUnsupportedFeatures() && remoteControl) {
+                    if (isChannelLinkedToProgramOptionNotFullySupportedByApi() && remoteControl) {
                         Program program = apiClient.get().getSelectedProgram(getThingHaId());
                         if (program != null) {
                             processProgramOptions(program.getOptions());
