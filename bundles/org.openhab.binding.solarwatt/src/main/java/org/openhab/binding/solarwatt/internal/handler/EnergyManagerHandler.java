@@ -148,11 +148,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             if (energyManager != null) {
                 this.calculateUpdates(energyManager);
 
-                /*
-                 * Map<String, String> properties = this.editProperties();
-                 * properties.put(THING_PROPERTIES_GUID, energyManager.getGuid());
-                 * this.updateProperties(properties);
-                 */
                 energyManager.getStateValues().forEach((stateName, stateValue) -> {
                     this.updateState(stateName, stateValue);
                 });

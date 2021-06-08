@@ -6,34 +6,12 @@
 
 	<bridge-type id="energymanager">
 		<label>Solarwatt Energymanager</label>
-		<description>Solarwatt Energymanager is the bridge to all things attached to the PV production system.</description>
+		<description>Solarwatt Energymanager is the bridge to all things attached to the PV production system.
+		</description>
 
 		<representation-property>hostname</representation-property>
 
-		<config-description>
-			<parameter name="hostname" type="text">
-				<label>Host Name / IP Address</label>
-				<description>The host name/ip address of the solarwatt energymanager.</description>
-				<context>network-address</context>
-				<advanced>false</advanced>
-			</parameter>
-			<parameter name="refresh" type="integer" unit="s">
-				<label>Refresh Data Period</label>
-				<description>Period between updates to the devices data in seconds.
-				</description>
-				<default>30</default>
-				<unitLabel>s</unitLabel>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="rescan" type="integer" unit="min">
-				<label>Redetect Devices Period</label>
-				<description>Period between updates to the detected devices in minutes.
-				</description>
-				<default>5</default>
-				<unitLabel>min</unitLabel>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:energymanager"/>
 	</bridge-type>
 
 	<thing-type id="evstation">
@@ -46,13 +24,7 @@
 
 		<representation-property>IdName</representation-property>
 
-		<config-description>
-			<parameter name="guid" type="text">
-				<label>Guid of device</label>
-				<description>Guid of the device as used by the solarwatt energymanager.</description>
-				<advanced>false</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
 	<thing-type id="batteryconverter">
@@ -65,13 +37,7 @@
 
 		<representation-property>IdName</representation-property>
 
-		<config-description>
-			<parameter name="guid" type="text">
-				<label>Guid of device</label>
-				<description>Guid of the device as used by the solarwatt energymanager.</description>
-				<advanced>false</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
 	<thing-type id="location">
@@ -84,13 +50,7 @@
 
 		<representation-property>IdName</representation-property>
 
-		<config-description>
-			<parameter name="guid" type="text">
-				<label>Guid of device</label>
-				<description>Guid of the device as used by the solarwatt energymanager.</description>
-				<advanced>false</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
 	<thing-type id="pvplant">
@@ -103,13 +63,7 @@
 
 		<representation-property>IdName</representation-property>
 
-		<config-description>
-			<parameter name="guid" type="text">
-				<label>Guid of device</label>
-				<description>Guid of the device as used by the solarwatt energymanager.</description>
-				<advanced>false</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
 	<thing-type id="gridflow">
@@ -122,13 +76,7 @@
 
 		<representation-property>IdName</representation-property>
 
-		<config-description>
-			<parameter name="guid" type="text">
-				<label>Guid of device</label>
-				<description>Guid of the device as used by the solarwatt energymanager.</description>
-				<advanced>false</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
 	<thing-type id="powermeter">
@@ -141,13 +89,7 @@
 
 		<representation-property>IdName</representation-property>
 
-		<config-description>
-			<parameter name="guid" type="text">
-				<label>Guid of device</label>
-				<description>Guid of the device as used by the solarwatt energymanager.</description>
-				<advanced>false</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
 	<thing-type id="inverter">
@@ -160,13 +102,7 @@
 
 		<representation-property>IdName</representation-property>
 
-		<config-description>
-			<parameter name="guid" type="text">
-				<label>Guid of device</label>
-				<description>Guid of the device as used by the solarwatt energymanager.</description>
-				<advanced>false</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
 </thing:thing-descriptions>
