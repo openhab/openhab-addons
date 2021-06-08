@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
+    @Nullable
+    private TransformationService transformService;
+
     public BroadlinkRemoteHandler(Thing thing) {
         super(thing, LoggerFactory.getLogger(BroadlinkRemoteHandler.class));
     }
@@ -85,24 +88,31 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             thingLogger.logError("Unexpected null channelTypeUID while handling command " + command.toFullString());
             return;
         }
-        String s;
-        switch ((s = channelTypeUID.getId()).hashCode()) {
-            case 950394699: // FIXME WTF?!?!
-                if (s.equals("command")) {
-                    thingLogger.logDebug(String.format("Handling ir/rf command '%s' on channel %s of thing %s", command,
-                            channelUID.getId(), getThing().getLabel()));
-                    byte code[] = lookupCode(command, channelUID);
-                    if (code != null)
-                        sendCode(code);
-                    break;
-                }
-                // fall through
-
-            default:
-                thingLogger.logDebug(
-                        "Thing " + getThing().getLabel() + " has unknown channel type " + channelTypeUID.getId());
-                break;
+        if (channelTypeUID.getId().equals("command")) {
+            thingLogger.logDebug(String.format("Handling ir/rf command '%s' on channel %s of thing %s", command,
+                    channelUID.getId(), getThing().getLabel()));
+            byte code[] = lookupCode(command, channelUID);
+            if (code != null) {
+                sendCode(code);
+            }
+        } else {
+            thingLogger
+                    .logDebug("Thing " + getThing().getLabel() + " has unknown channel type " + channelTypeUID.getId());
         }
+    }
+
+    @Nullable
+    private TransformationService getTransformService() {
+        // Lazy-load it
+        if (transformService == null) {
+            BundleContext bundleContext = FrameworkUtil.getBundle(BroadlinkRemoteHandler.class).getBundleContext();
+            transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
+            if (transformService == null) {
+                thingLogger.logError("Failed to get MAP transformation service for thing " + getThing().getLabel()
+                        + "; is bundle installed?");
+            }
+        }
+        return transformService;
     }
 
     private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
@@ -115,17 +125,11 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             thingLogger.logDebug("MAP file is not defined in configuration of thing " + getThing().getLabel());
             return null;
         }
-        BundleContext bundleContext = FrameworkUtil.getBundle(BroadlinkRemoteHandler.class).getBundleContext();
-        TransformationService transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
-        if (transformService == null) {
-            thingLogger.logError("Failed to get MAP transformation service for thing " + getThing().getLabel()
-                    + "; is bundle installed?");
-            return null;
-        }
+
         byte code[] = null;
         String value;
         try {
-            value = transformService.transform(mapFile, command.toString());
+            value = getTransformService().transform(mapFile, command.toString());
 
             if (value == null || value.isEmpty()) {
                 thingLogger.logError(String.format("No entry for command '%s' in map file '%s' for thing %s", command,
