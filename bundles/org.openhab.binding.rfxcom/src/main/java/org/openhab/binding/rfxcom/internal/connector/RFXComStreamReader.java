@@ -62,7 +62,7 @@ public class RFXComStreamReader extends Thread {
             while (!Thread.interrupted()) {
                 // First byte tells us how long the packet is
                 int bytesRead = connector.read(buf, 0, 1);
-                int packetLength = buf[0];
+                int packetLength = Byte.toUnsignedInt(buf[0]);
 
                 if (bytesRead > 0 && packetLength > 0) {
                     logger.trace("Message length is {} bytes", packetLength);
