@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Broadlink Binding</name>
-	<description>This is the binding for Broadlink.</description>
-
+	<description>This is the binding for Broadlink devices.</description>
+	<author>John Marshall/Cato Sognen</author>
 </binding:binding>
