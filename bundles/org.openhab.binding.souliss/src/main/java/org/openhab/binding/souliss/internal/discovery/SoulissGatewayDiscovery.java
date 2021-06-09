@@ -14,7 +14,6 @@ package org.openhab.binding.souliss.internal.discovery;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
@@ -31,12 +30,12 @@ import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParame
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +47,8 @@ import org.slf4j.LoggerFactory;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
-public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
+// @Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
+public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
     @Nullable
     private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
@@ -58,12 +57,22 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     @Nullable
     SoulissBindingDiscoverUDPListenerJob udpServerRunnableClass = null;
 
+    private final SoulissGatewayHandler bridgeHandler;
+
+    @Override
+    public void deactivate() {
+        // TODO Auto-generated method stub
+        super.deactivate();
+    }
+
     @Nullable
     private ScheduledFuture<?> discoveryJob = null;
 
-    public SoulissGatewayDiscovery() throws IllegalArgumentException, UnknownHostException {
+    public SoulissGatewayDiscovery(SoulissGatewayHandler bridgeHandler) {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
                 false);
+
+        this.bridgeHandler = bridgeHandler;
 
         SoulissBindingNetworkParameters.discoverResult = this;
         // open socket
@@ -74,16 +83,16 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         logger.debug("Starting Servers");
 
         // datagramSocket = SoulissDatagramSocketFactory.getSocketDatagram(this.logger);
-        datagramSocket = SoulissBindingNetworkParameters.getDatagramSocket();
-        if (datagramSocket != null) {
-            // SoulissBindingNetworkParameters.setDatagramSocket(datagramSocket);
-
-            logger.debug("Starting UDP server on Preferred Local Port (random if it is zero)");
-            udpServerRunnableClass = new SoulissBindingDiscoverUDPListenerJob(datagramSocket,
-                    SoulissBindingNetworkParameters.discoverResult);
-        } else {
-            logger.debug("Error - datagramSocket is null - Server not started");
-        }
+        // datagramSocket = SoulissBindingNetworkParameters.getDatagramSocket();
+        // if (datagramSocket != null) {
+        // // SoulissBindingNetworkParameters.setDatagramSocket(datagramSocket);
+        //
+        // logger.debug("Starting UDP server on Preferred Local Port (random if it is zero)");
+        // udpServerRunnableClass = new SoulissBindingDiscoverUDPListenerJob(datagramSocket,
+        // SoulissBindingNetworkParameters.discoverResult);
+        // } else {
+        // logger.debug("Error - datagramSocket is null - Server not started");
+        // }
     }
 
     @Override
@@ -120,9 +129,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
-            if (SoulissBindingNetworkParameters.getDatagramSocket() != null) {
-                soulissDiscoverRunnableClass = new SoulissDiscoverJob(
-                        SoulissBindingNetworkParameters.getDatagramSocket(), this);
+            if (this.bridgeHandler.getSenderSocket() != null) {
+                soulissDiscoverRunnableClass = new SoulissDiscoverJob(this.bridgeHandler.getSenderSocket(), this);
             }
         }
         // create discovery job, that run discovery class
@@ -292,5 +300,19 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
                 }
             }
         }
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        // TODO Auto-generated method stub
+        logger.info("test");
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        // TODO Auto-generated method stub
+        logger.info("test");
+
+        return null;
     }
 }

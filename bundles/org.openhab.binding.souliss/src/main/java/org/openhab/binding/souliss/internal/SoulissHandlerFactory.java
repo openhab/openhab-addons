@@ -14,8 +14,12 @@ package org.openhab.binding.souliss.internal;
 
 import static org.openhab.binding.souliss.internal.SoulissBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissT11Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT12Handler;
@@ -47,12 +51,15 @@ import org.openhab.binding.souliss.internal.handler.SoulissT68Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissTopicsHandler;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +81,8 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
+
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -84,11 +93,15 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
                 throw new UnsupportedOperationException("Multiple gateways configuration is not supported");
 
             }
+
+            SoulissGatewayHandler bridgeHandler = new SoulissGatewayHandler((Bridge) thing);
+            this.registerDiscoveryService(bridgeHandler);
+
             // get last byte of IP number
             Configuration gwConfigurationMap = thing.getConfiguration();
             String ipAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
             SoulissBindingNetworkParameters.addGateway((byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]), thing);
-            return new SoulissGatewayHandler((Bridge) thing);
+            return bridgeHandler;
         } else if (thingTypeUID.equals(T11_THING_TYPE)) {
             logger.debug("Create handler for T11 '{}'", thingTypeUID);
             return new SoulissT11Handler(thing);
@@ -177,5 +190,18 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    /**
+     * Register a discovery service for an IP bridge handler.
+     *
+     * @param bridgeHandler IP bridge handler for which to register the discovery service
+     */
+    private synchronized void registerDiscoveryService(SoulissGatewayHandler bridgeHandler) {
+        logger.debug("Registering XML device discovery service.");
+        SoulissGatewayDiscovery discoveryService = new SoulissGatewayDiscovery(bridgeHandler);
+        bridgeHandler.setDiscoveryService(discoveryService);
+        discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
     }
 }

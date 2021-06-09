@@ -14,7 +14,6 @@ package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.BridgeHandler;
@@ -62,8 +61,8 @@ public class SoulissGatewayJobPing implements Runnable {
     private void sendPing() {
         // sending ping packet
         if (ipAddressOnLAN.length() > 0) {
-            soulissCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN, nodeIndex,
-                    userIndex, (byte) 0, (byte) 0);
+            soulissCommands.sendPing(this.gwHandler.getSenderSocket(), ipAddressOnLAN, nodeIndex, userIndex, (byte) 0,
+                    (byte) 0);
             // ping packet sent
         }
     }
