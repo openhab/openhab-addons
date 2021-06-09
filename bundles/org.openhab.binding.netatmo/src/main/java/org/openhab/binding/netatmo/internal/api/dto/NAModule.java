@@ -24,6 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class NAModule extends NAThing {
     // TODO : @Mdillman : can batteryState be changed to an enum ?
+    // the states are not documented. In my env I currently only have "full" and "high"
+    // not sure if an enum with missing values makes sense
     private @Nullable String batteryState;
     private int batteryPercent;
 

@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_HOMEID_PARAM;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_HOMESTATUS_SPATH;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_ROOMID_PARAM;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SETROOMTHERMPOINT_SPATH;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SETTHERMMODE_SPATH;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SWITCHSCHEDULE_SPATH;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -42,6 +47,8 @@ public class EnergyApi extends RestManager {
     public NAHome getHomeStatus(String homeId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMESTATUS_SPATH).queryParam(NA_HOMEID_PARAM, homeId)
                 // TODO : @mdillman : can't this be wrapped in a single queryParam with multiple moduleTypes ?
+                // the API-builder on Netatmo uses this syntax. I modified the CURL as a test to use
+                // device_types=NAPlug,NRV,NATherm1 and it worked. Not sure if that always will be the case in the future
                 .queryParam("device_types", ModuleType.NAPlug.name()).queryParam("device_types", ModuleType.NRV.name())
                 .queryParam("device_types", ModuleType.NATherm1.name());
 
