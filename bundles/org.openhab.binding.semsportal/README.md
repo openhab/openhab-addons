@@ -8,8 +8,8 @@ It requires a power station that is connected through the internet to the SEMS p
 ## Supported Things
 
 This binding provides two Thing types: a bridge to the SEMS Portal, and the Power Stations which are found at the Portal.
-The Portal (semsportal:portal) represents your account in the SEMS portal. 
-The Power Station (semsportal:station) is an installation of a Power Station or inverter that reports to the SEMS portal and is available to your account.
+The Portal (``semsportal:portal``) represents your account in the SEMS portal. 
+The Power Station (``semsportal:station``) is an installation of a Power Station or inverter that reports to the SEMS portal and is available to your account.
 
 ## Discovery
 
@@ -64,7 +64,7 @@ The Power Station Thing has the following channels:
 
 ## Parameters
 
-The PowerStation Thing has no configuration parameters when auto discovered.
+The Power Station Thing has no configuration parameters when auto discovered.
 When using thing files you need to provide the station UUID.
 
 
