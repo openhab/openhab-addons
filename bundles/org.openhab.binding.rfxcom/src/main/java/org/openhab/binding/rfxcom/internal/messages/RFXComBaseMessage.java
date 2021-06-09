@@ -83,6 +83,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         RFXSENSOR(112),
         RFXMETER(113),
         FS20(114),
+        RAW(127),
         IO_LINES(128);
 
         private final int packetType;
@@ -163,7 +164,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         }
 
         str += ", Packet type = " + packetType;
-        str += ", Seq number = " + (short) (seqNbr & 0xFF);
+        str += ", Seq number = " + Byte.toUnsignedInt(seqNbr);
 
         return str;
     }

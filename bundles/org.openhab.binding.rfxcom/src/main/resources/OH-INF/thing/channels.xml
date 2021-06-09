@@ -9,13 +9,13 @@
 	<channel-type id="rawmessage">
 		<item-type>String</item-type>
 		<label>Raw Message</label>
-		<description>Hexadecimal representation of undecoded RFXCOM messages including header and payload</description>
+		<description>Hexadecimal representation of RFXCOM messages including header and payload</description>
 	</channel-type>
 
 	<channel-type id="rawpayload">
 		<item-type>String</item-type>
 		<label>Raw Payload</label>
-		<description>Hexadecimal representation of payload of undecoded RFXCOM messages</description>
+		<description>Hexadecimal representation of payload of raw and undecoded RFXCOM messages</description>
 	</channel-type>
 
 	<channel-type id="command">
