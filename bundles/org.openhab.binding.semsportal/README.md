@@ -36,6 +36,7 @@ The URL will look like this:
 ```
 https://www.semsportal.com/PowerStation/PowerStatusSnMin/xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
+
 Where the part after the last / character is the UUID to be used.
 
 Example portal configuration with a station:
