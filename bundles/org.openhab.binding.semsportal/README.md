@@ -29,6 +29,23 @@ The default is 5 minutes.
 
 Power Stations have no settings and will be auto discovered when you add a Portal Bridge.
 
+If you prefer manual configuration of things in thing files, you need to supply the power station UUID.
+It can be found in the SEMS portal URL after you have logged in. 
+The URL will look like this:
+
+```
+https://www.semsportal.com/PowerStation/PowerStatusSnMin/xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+Where the part after the last / character is the UUID to be used.
+
+Example portal configuration with a station:
+
+```
+Bridge semsportal:portal:myPortal [ username="my@username.com", password="MyPassword" ] {
+    station solarPanels "Solar Panels" [ stationUUID="xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" ]
+}
+```
+
 ## Channels
 
 The Portal(Bridge) has no channels.
@@ -46,14 +63,21 @@ The Power Station Thing has the following channels:
 
 ## Parameters
 
-The PowerStation Thing has no parameters.
-Only the Bridge has the following configuration parameters:
+The PowerStation Thing has no configuration parameters when auto discovered.
+When using thing files you need to provide the station UUID.
+
 
 | Parameter   | Required? | Description                                                                                                |
 | ----------- |:---------:| ---------------------------------------------------------------------------------------------------------- |
-| username    | X         | Account name (email address) at the SEMS portal. Account must have been used at least once to log in.       |
+| stationUUID | X         | UUID of the station. Can be found on the SEMS portal URL (see description above)                           |
+
+The Bridge has the following configuration parameters:
+
+| Parameter   | Required? | Description                                                                                                |
+| ----------- |:---------:| ---------------------------------------------------------------------------------------------------------- |
+| username    | X         | Account name (email address) at the SEMS portal. Account must have been used at least once to log in.      |
 | password    | X         | Password of the SEMS portal                                                                                |
-| update      |           | Number of minutes between two updates. Between 1 and 60 minutes, defaults to 5 minutes                     |
+| interval    |           | Number of minutes between two updates. Between 1 and 60 minutes, defaults to 5 minutes                     |
 
 ## Credits
 
