@@ -59,6 +59,10 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUnde
         RTS(0x14),
         SELECT_PLUS(0x15),
         HOME_CONFORT(0x16),
+        EDISIO(0x17),
+        HONEYWELL(0x18),
+        FUNKBUS(0x19),
+        BYRONSX(0x1A),
 
         UNKNOWN(0xFF);
 
@@ -85,7 +89,7 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUnde
     }
 
     public SubType subType;
-    public byte[] rawPayload = new byte[0];
+    public byte[] rawPayload;
 
     public RFXComUndecodedRFMessage() {
         super(UNDECODED_RF_MESSAGE);
