@@ -1,47 +1,93 @@
-broadlink-openhab-binding
-=====
+# Broadlink Binding
 
-Introduction
+This binding supports a range of home networking devices made by (and occasionally OEM licensed from) [Broadlink](https://www.ibroadlink.com/).
 
-------------
+## Supported Things
 
-This is building on the work of Cato Sognen, who developed the original Broadlink OpenHAB binding, but 
-never placed his source code into the public domain.
+| Thing ID   | Description                                                             |
+|------------|-------------------------------------------------------------------------|
+| a1         | Broadlink A1 multi sensor                                               |
+| mp1        | Broadlink MP1 WiFi Smart Power Strip (4 sockets)                        |
+| mp1_1k3s2u | Broadlink MP1 1K3S2U WiFi Smart Power Strip (3 sockets, 2 USB)          |
+| mp2        | Broadlink MP2 WiFi Smart Power Strip (3 sockets, 3 USB)                 |
+| sp1        | Broadlink SP1 WiFi Smart Socket                                         |
+| sp2        | Broadlink SP2 WiFi Smart Socket with night light                        |
+| sp3        | Broadlink SP3/Mini WiFi Smart Socket with night light                   |
+| sp3s       | Broadlink SP3s WiFi Smart Socket with Power Meter                       |
+| rm         | Broadlink RM WiFI IR Transmitter                                        |
+| rm2        | Broadline RM2/Pro WiFi IR/RF Transmitter with temperature sensor        |
+| rm3        | Broadlink RM3/Mini WiFi IR Transmitter                                  |
+| rm3q       | Broadlink RM3 WiFi IR Transmitter with Firmware v44057                  |
+| rm4        | Broadlink RM4 WiFi IR Transmitter with temperature and humidity sensors |
 
-This is ALPHA-quality software at this stage and should not be used for ANY important purpose. Many files are literally the result of decompilation with no attempt to fix style or layout problems.
+## Discovery
 
+Devices in the above list that are set up and working in the Broadlink mobile app should be discoverable by initiating a discovery from the OpenHAB UI.
 
-Known Issues
+> The `Lock Device` setting must be switched off for your device via the Broadlink app to be discoverable in openHAB.
 
-------------
+## Thing Configuration
 
-The original binding worked extremely well but there were a couple of issues related to multiple-device support (especially after a restart) that need to be addressed before this can be considered a mature binding. Github's issue tracking will be used for the basic stuff (getting this library working at all) but the main aims of this library are:
+| Name                | Type    | Default       | description                                                                       |
+|---------------------|---------|---------------|-----------------------------------------------------------------------------------|
+| ipAddress           | String  |               | Sets the IP address of the Broadlink device                                       |
+| staticIp            | Boolean | true          | Enabled if your broadlink device has a Static IP set                              |
+| port                | Integer | 80            | The network port for the device                                                   |
+| mac                 | String  |               | The devices MAC Address                                                           |
+| pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
+| retries             | Integer | 1             | The number of re-attempts for a request before the device is considered `OFFLINE` |
+| ignoreFailedUpdates | Boolean | false         | Is enabled, failed status requests put the device `OFFLINE`                       |
+| mapFilename         | String  | broadlink.map | The map file that contains remote codes to send via IR                            |
 
-- Make the source code of the binding publicly available for scrutiny and improvement
-- Fix multiple-device support
-- Remove reliance on IP addresses (the device MAC address is all that is really needed) 
+> The `mapFilename` setting is applicable to the RM series of devices only.
 
-These main aims are based on my own personal needs and from reading of the [relevant OpenHAB forum post](https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768). As mentioned above, please use Github Issues to log additional bugs/feature requests.
+## Channels
 
+| Channel          | Supported Devices        | Type                 | Description                                     |
+|------------------|--------------------------|----------------------|-------------------------------------------------|
+| powerOn          | mp2, sp1, sp2, sp3, sp3s | Switch               | Power on/off for switches/strips                |
+| nightLight       | sp2, sp3, sp3s           | Switch               | Night light on/off                              |
+| temperature      | a1, rm2, rm4             | Number:Temperature   | Temperature                                     |
+| humidity         | a1, rm4                  | Number:Dimensionless | Air humidity percentage                         |
+| noise            | a1                       | String               | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
+| light            | a1                       | String               | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT`     |
+| air              | a1                       | String               | Air quality: `PERFECT`/`GOOD`/`NORMAL`/`BAD`    |
+| s1powerOn        | mp1, mp1_1k3s2u          | Switch               | Socket 1 power                                  |
+| s2powerOn        | mp1, mp1_1k3s2u          | Switch               | Socket 2 power                                  |
+| s3powerOn        | mp1, mp1_1k3s2u          | Switch               | Socket 3 power                                  |
+| s4powerOn        | mp1                      | Switch               | Socket 4 power                                  |
+| usbPowerOn       | mp1_1k3s2u               | Switch               | USB power                                       |
+| powerConsumption | mp2, sp2,sp3s            | Number:Power         | Power consumption                               |
+| command          | rm, rm2, rm3, rm3q, rm4  | String               | IR Command code to transmit                     |
 
-Building It
--------------
+## Map File
 
-- `cd bundles/org.openhab.binding.broadlink`
-- `mvn clean package`
-- (Once you've downloaded all the dependency JARs, use the `-o` option to save time)
-- The binding JAR will be in the `target` directory
-- You can install it to your OpenHAB system by copying it (e.g. with `scp`) into the `addons` directory of the OpenHAB installation:
-  - `scp target/org.openhab.binding.broadlink-2.5.1-SNAPSHOT.jar openhab@rpi:/usr/share/openhab2/addons`
-  - The above command copies the jar to the default OpenHAB `addons` installation location for a Raspberry Pi called `rpi` running Debian
+The Broadlink RM family of devices can transmit IR codes.
+The map file contains a list of IR command codes to send via the device.
+The file uses the *Map Transformation* and is stored in the `<OPENHAB_CONF>/transform` folder.
+By default, the file name is `broadlink.map` but can be changed using the `mapFile` setting.
 
+Here is a map file example:
 
+```
+TV_POWER=26008c0092961039103a1039101510151014101510151039103a10391015101411141015101510141139101510141114101510151014103a10141139103911391037123a10391000060092961039103911391014111410151015101411391039103a101411141015101510141015103911141015101510141015101510391015103911391039103a1039103911000d05000000000000000000000000
+heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D290D290D290D290D290D290E0002900000
 
-Credits
+```
 
----------
+The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
+To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
+
+## Full Example
+
+Items file example; `sockets.items`:
+
+```
+Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:powerOn" } 
+```
+
+## Credits
 
 - [Cato Sognen](https://community.openhab.org/u/cato_sognen)
-- [OpenHAB](https://www.openhab.org/)
 - [JAD](http://www.javadecompilers.com/jad) (Java Decompiler)
 
