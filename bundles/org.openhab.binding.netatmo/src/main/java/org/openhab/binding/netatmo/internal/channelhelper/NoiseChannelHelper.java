@@ -21,8 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -35,8 +33,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class NoiseChannelHelper extends AbstractChannelHelper {
 
-    public NoiseChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_NOISE));
+    public NoiseChannelHelper() {
+        super(Set.of(GROUP_NOISE));
     }
 
     @Override

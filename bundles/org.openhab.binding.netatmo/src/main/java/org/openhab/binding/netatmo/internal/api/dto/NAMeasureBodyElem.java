@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api.dto;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -23,30 +24,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-public class NAMeasureBodyElem {
-    private long begTime;
-    private long stepTime;
-    private List<List<Double>> value = List.of();
+public class NAMeasureBodyElem<T> {
+    // private long begTime;
+    // private long stepTime;
+    private List<List<T>> value = List.of();
 
-    public long getBegTime() {
-        return begTime;
-    }
+    // public long getBegTime() {
+    // return begTime;
+    // }
+    //
+    // public long getStepTime() {
+    // return stepTime;
+    // }
 
-    public long getStepTime() {
-        return stepTime;
-    }
-
-    public List<List<Double>> getValue() {
+    public List<List<T>> getValue() {
         return value;
     }
 
-    public Double getSingleValue() {
+    public @Nullable T getSingleValue() {
         if (value.size() > 0) {
-            List<Double> first = value.get(0);
+            List<T> first = value.get(0);
             if (first.size() > 0) {
                 return first.get(0);
             }
         }
-        return Double.NaN;
+        return null;
     }
 }

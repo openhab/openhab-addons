@@ -14,10 +14,7 @@ package org.openhab.binding.netatmo.internal.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 import javax.measure.Unit;
 
@@ -69,26 +66,26 @@ public class ChannelTypeUtils {
         return (value == null) ? UnDefType.NULL : new StringType(value);
     }
 
-    private static ZonedDateTime toZonedDateTime(long netatmoTS, ZoneId zoneId) {
-        Instant i = Instant.ofEpochSecond(netatmoTS);
-        return ZonedDateTime.ofInstant(i, zoneId);
-    }
+    // private static ZonedDateTime toZonedDateTime(long netatmoTS, ZoneId zoneId) {
+    // Instant i = Instant.ofEpochSecond(netatmoTS);
+    // return ZonedDateTime.ofInstant(i, zoneId);
+    // }
 
-    public static State toDateTimeType(@Nullable Double netatmoTS, ZoneId zoneId) {
-        return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS.intValue(), zoneId));
-    }
+    // public static State toDateTimeType(@Nullable Double netatmoTS, ZoneId zoneId) {
+    // return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS.intValue(), zoneId));
+    // }
 
-    public static State toDateTimeType(long netatmoTS, ZoneId zoneId) {
-        return toDateTimeType(toZonedDateTime(netatmoTS, zoneId));
-    }
+    // public static State toDateTimeType(long netatmoTS, ZoneId zoneId) {
+    // return toDateTimeType(toZonedDateTime(netatmoTS, zoneId));
+    // }
 
     public static State toDateTimeType(@Nullable ZonedDateTime zonedDateTime) {
         return (zonedDateTime == null) ? UnDefType.NULL : new DateTimeType(zonedDateTime);
     }
 
-    public static State toDateTimeType(Optional<ZonedDateTime> lastSeen) {
-        return lastSeen.isPresent() ? toDateTimeType(lastSeen.get()) : UnDefType.UNDEF;
-    }
+    // public static State toDateTimeType(Optional<ZonedDateTime> lastSeen) {
+    // return lastSeen.isPresent() ? toDateTimeType(lastSeen.get()) : UnDefType.UNDEF;
+    // }
 
     // TODO Remove unused code found by UCDetector
     // public static State toDecimalType(@Nullable BigDecimal value) {

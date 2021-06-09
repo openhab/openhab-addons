@@ -54,20 +54,23 @@ public class RefreshStrategy {
         expireData();
     }
 
-    public void setDataTimeStamp(ZonedDateTime dataTimestamp) {
-        if (searchRefreshInterval) {
-            if (dataTimestamp0 == null) {
-                dataTimestamp0 = dataTimestamp;
-                logger.debug("First data timestamp is {}", dataTimestamp0);
-            } else if (dataTimestamp.isAfter(dataTimestamp0)) {
-                dataValidityPeriod = ChronoUnit.MILLIS.between(dataTimestamp0, dataTimestamp);
-                searchRefreshInterval = false;
-                logger.debug("Data validity period found : {} ms", this.dataValidityPeriod);
-            } else {
-                logger.debug("Data validity period not yet found - data timestamp unchanged");
+    public void setDataTimeStamp(@Nullable ZonedDateTime dataTimestamp) {
+        ZonedDateTime localTimeStamp = dataTimestamp;
+        if (localTimeStamp != null) {
+            if (searchRefreshInterval) {
+                if (dataTimestamp0 == null) {
+                    dataTimestamp0 = localTimeStamp;
+                    logger.debug("First data timestamp is {}", dataTimestamp0);
+                } else if (localTimeStamp.isAfter(dataTimestamp0)) {
+                    dataValidityPeriod = ChronoUnit.MILLIS.between(dataTimestamp0, localTimeStamp);
+                    searchRefreshInterval = false;
+                    logger.debug("Data validity period found : {} ms", this.dataValidityPeriod);
+                } else {
+                    logger.debug("Data validity period not yet found - data timestamp unchanged");
+                }
             }
+            this.dataTimeStamp = localTimeStamp;
         }
-        this.dataTimeStamp = dataTimestamp;
     }
 
     public long dataAge() {

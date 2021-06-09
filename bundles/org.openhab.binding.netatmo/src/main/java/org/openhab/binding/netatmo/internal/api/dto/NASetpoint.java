@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 
 /**
@@ -24,14 +27,14 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 @NonNullByDefault
 public class NASetpoint {
     private double thermSetpointTemperature;
-    private long setpointEndtime;
+    private @Nullable ZonedDateTime setpointEndtime;
     private SetpointMode setpointMode = SetpointMode.UNKNOWN;
 
     public double getSetpointTemperature() {
         return thermSetpointTemperature;
     }
 
-    public long getSetpointEndtime() {
+    public @Nullable ZonedDateTime getSetpointEndtime() {
         return setpointEndtime;
     }
 

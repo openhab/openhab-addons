@@ -23,9 +23,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -39,8 +37,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class RoomSetpointChannelHelper extends AbstractChannelHelper {
 
-    public RoomSetpointChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_TH_SETPOINT));
+    public RoomSetpointChannelHelper() {
+        super(Set.of(GROUP_TH_SETPOINT));
     }
 
     @Override

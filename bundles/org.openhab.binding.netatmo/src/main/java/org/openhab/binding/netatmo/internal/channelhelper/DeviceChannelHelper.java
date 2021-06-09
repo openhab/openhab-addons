@@ -20,8 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -34,8 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class DeviceChannelHelper extends AbstractChannelHelper {
 
-    public DeviceChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_DEVICE));
+    public DeviceChannelHelper() {
+        super(Set.of(GROUP_DEVICE));
     }
 
     @Override

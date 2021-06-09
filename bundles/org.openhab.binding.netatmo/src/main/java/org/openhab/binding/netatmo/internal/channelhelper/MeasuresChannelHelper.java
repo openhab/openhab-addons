@@ -14,19 +14,19 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.MeasureChannelConfig;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  *
@@ -36,43 +36,42 @@ import org.openhab.core.types.State;
 
 @NonNullByDefault
 public class MeasuresChannelHelper extends AbstractChannelHelper {
-    private final Map<MeasureChannelConfig, Double> measures = new HashMap<>();
+    private final Map<MeasureChannelConfig, Object> measures = new HashMap<>();
+    private final Map<String, MeasureChannelConfig> thingChannels = new HashMap<>();
 
-    public MeasuresChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public MeasuresChannelHelper() {
+        super();
     }
 
     @Override
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Optional<MeasureChannelConfig> config = getChannelConfigIfValid(channel);
-            if (config.isPresent()) {
-                MeasureChannelConfig channelConfig = config.get();
-                Double measure = measures.get(channelConfig);
-                if (channelConfig.limit == MeasureLimit.DATE_MAX || channelConfig.limit == MeasureLimit.DATE_MIN) {
-                    return toDateTimeType(measure, zoneId);
-                }
-                return toQuantityType(measure, channelConfig.type.getUnit());
-            }
+        MeasureChannelConfig channelConfig = thingChannels.get(channelId);
+        if (channelConfig != null) {
+            Object measure = measures.get(channelConfig);
+            return measure instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) measure)
+                    : measure instanceof Double ? toQuantityType((Double) measure, channelConfig.type.getUnit())
+                            : UnDefType.NULL;
         }
         return null;
     }
 
-    private Optional<MeasureChannelConfig> getChannelConfigIfValid(Channel channel) {
+    private boolean isChannelConfigIfValid(Channel channel) {
         MeasureChannelConfig config = channel.getConfiguration().as(MeasureChannelConfig.class);
-        return config.period != null && config.type != null ? Optional.of(config) : Optional.empty();
+        return config.period != null && config.type != null;
     }
 
-    public Map<MeasureChannelConfig, Double> getMeasures() {
+    public Map<MeasureChannelConfig, Object> getMeasures() {
         return measures;
     }
 
-    public void collectMeasuredChannels() {
+    public void collectMeasuredChannels(List<Channel> channels) {
         measures.clear();
-        thing.getChannels().stream().map(channel -> getChannelConfigIfValid(channel)).filter(c -> c.isPresent())
-                .forEach(config -> {
-                    measures.put(config.get(), Double.NaN);
+        thingChannels.clear();
+        channels.stream().filter(channel -> isChannelConfigIfValid(channel)).filter(Objects::nonNull)
+                .forEach(channel -> {
+                    MeasureChannelConfig config = channel.getConfiguration().as(MeasureChannelConfig.class);
+                    thingChannels.put(channel.getUID().getIdWithoutGroup(), config);
+                    measures.put(config, Double.NaN);
                 });
     }
 }

@@ -36,7 +36,6 @@ public abstract class RestManager {
     private static final UriBuilder OAUTH_URI_BUILDER = API_BASE_BUILDER.clone().path(NA_OAUTH_PATH);
     private static final UriBuilder API_URI_BUILDER = API_BASE_BUILDER.clone().path(NA_API_PATH);
     private static final UriBuilder APP_URI_BUILDER = UriBuilder.fromUri(NA_APP_URL).path(NA_API_PATH);
-    // private static final UriBuilder SNAPSHOT_URI_BUILDER = API_URI_BUILDER.clone().path(NA_GETCAMERAPICTURE_SPATH);
 
     private final Set<Scope> requiredScopes;
     protected final ApiBridge apiHandler;
@@ -78,11 +77,6 @@ public abstract class RestManager {
     protected UriBuilder getAppUriBuilder() {
         return APP_URI_BUILDER.clone();
     }
-
-    // TODO Remove unused code found by UCDetector
-    // protected UriBuilder getSnapshotUriBuilder() {
-    // return SNAPSHOT_URI_BUILDER.clone();
-    // }
 
     protected URI getOAuthUri() {
         return OAUTH_URI_BUILDER.build();

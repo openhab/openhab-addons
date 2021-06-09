@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.*;
 
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,9 +28,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThermProgram;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NATimeTableItem;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -43,8 +42,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class Therm1SetpointChannelHelper extends AbstractChannelHelper {
 
-    public Therm1SetpointChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_TH_SETPOINT));
+    public Therm1SetpointChannelHelper() {
+        super(Set.of(GROUP_TH_SETPOINT));
     }
 
     @Override
@@ -54,9 +53,8 @@ public class Therm1SetpointChannelHelper extends AbstractChannelHelper {
             case CHANNEL_VALUE:
                 return getCurrentSetpoint(thermostat);
             case CHANNEL_SETPOINT_END_TIME:
-                long endTime = thermostat.getSetpointEndtime();
-                return toDateTimeType(endTime != 0 ? endTime : getNextProgramTime(thermostat.getActiveProgram()),
-                        zoneId);
+                ZonedDateTime endTime = thermostat.getSetpointEndtime();
+                return toDateTimeType(endTime != null ? endTime : getNextProgramTime(thermostat.getActiveProgram()));
             case CHANNEL_SETPOINT_MODE:
                 return new StringType(thermostat.getSetpointMode().name());
         }

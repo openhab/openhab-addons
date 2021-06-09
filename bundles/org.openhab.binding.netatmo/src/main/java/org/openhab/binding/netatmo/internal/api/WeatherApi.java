@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.api;
 
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
@@ -38,7 +39,10 @@ public class WeatherApi extends RestManager {
     public class NAStationDataResponse extends ApiResponse<NADeviceDataBody<NAMain>> {
     }
 
-    private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem>> {
+    private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
+    }
+
+    private class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
     }
 
     public WeatherApi(ApiBridge apiClient) {
@@ -77,20 +81,20 @@ public class WeatherApi extends RestManager {
         throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
     }
 
-    public double getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale, MeasureType type,
-            MeasureLimit limit) throws NetatmoException {
-        List<NAMeasureBodyElem> result = getmeasure(deviceId, moduleId, scale,
+    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale,
+            MeasureType type, MeasureLimit limit) throws NetatmoException {
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale,
                 (limit.toString() + "_" + type.toString()).toLowerCase(), 0, 0);
-        return result.size() > 0 ? result.get(0).getSingleValue() : Double.NaN;
+        return result.getSingleValue();
     }
 
-    public double getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale, MeasureType type)
-            throws NetatmoException {
-        List<NAMeasureBodyElem> result = getmeasure(deviceId, moduleId, scale, type.toString().toLowerCase(), 0, 0);
-        return result.size() > 0 ? result.get(0).getSingleValue() : Double.NaN;
+    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale,
+            MeasureType type) throws NetatmoException {
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, type.toString().toLowerCase(), 0, 0);
+        return result.getSingleValue();
     }
 
-    private List<NAMeasureBodyElem> getmeasure(String deviceId, @Nullable String moduleId, MeasureScale scale,
+    private NAMeasureBodyElem<?> getmeasure(String deviceId, @Nullable String moduleId, MeasureScale scale,
             String measureType, long dateBegin, long dateEnd) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETMEASURE_SPATH).queryParam(NA_DEVICEID_PARAM, deviceId)
                 .queryParam("scale", scale.getDescriptor()).queryParam("real_time", true)
@@ -104,7 +108,12 @@ public class WeatherApi extends RestManager {
         if (dateBegin > 0) {
             uriBuilder.queryParam("date_begin", dateBegin);
         }
-        NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
-        return response.getBody();
+        if (!measureType.startsWith("date")) {
+            NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
+            return response.getBody().get(0);
+        } else {
+            NADateMeasuresResponse response = get(uriBuilder, NADateMeasuresResponse.class);
+            return response.getBody().get(0);
+        }
     }
 }

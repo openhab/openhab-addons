@@ -21,9 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -38,8 +36,8 @@ import org.openhab.core.types.UnDefType;
 public class PresenceChannelHelper extends AbstractChannelHelper {
     private State floodlightAutoMode = UnDefType.UNDEF;
 
-    public PresenceChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_PRESENCE));
+    public PresenceChannelHelper() {
+        super(Set.of(GROUP_PRESENCE));
     }
 
     @Override

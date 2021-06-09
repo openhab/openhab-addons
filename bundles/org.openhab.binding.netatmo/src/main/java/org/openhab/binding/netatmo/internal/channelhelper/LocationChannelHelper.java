@@ -22,9 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NADevice;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.PointType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -38,8 +36,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class LocationChannelHelper extends AbstractChannelHelper {
 
-    public LocationChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_LOCATION));
+    public LocationChannelHelper() {
+        super(Set.of(GROUP_LOCATION));
     }
 
     @Override

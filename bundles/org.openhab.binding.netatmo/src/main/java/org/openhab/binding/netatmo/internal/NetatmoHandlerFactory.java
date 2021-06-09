@@ -74,53 +74,39 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        for (ModuleType moduleType : ModuleType.values()) {
-            if (moduleType.matches(thingTypeUID)) {
-                return true;
-            }
-        }
-        return false;
+        return ModuleType.asSet.stream().anyMatch(mt -> mt.matches(thingTypeUID));
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         Bridge bridge = (Bridge) thing;
-        BaseThingHandler handler;
-        for (ModuleType mt : ModuleType.values()) {
-            if (mt.matches(thingTypeUID)) {
-                handler = build(bridge, mt);
-                if (handler instanceof HomeSecurityHandler) {
-                    ((HomeSecurityHandler) handler).setWebHookServlet(webhookServlet);
-                }
-                return handler;
-            }
+        BaseThingHandler handler = ModuleType.asSet.stream().filter(mt -> mt.matches(thingTypeUID)).findFirst()
+                .map(mt -> buildThing(bridge, mt)).orElse(null);
+        if (handler instanceof HomeSecurityHandler) {
+            ((HomeSecurityHandler) handler).setWebHookServlet(webhookServlet);
         }
-        logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
-        return null;
+        return handler;
     }
 
-    public @Nullable BaseThingHandler build(Bridge bridge, ModuleType moduleType) {
+    private @Nullable BaseThingHandler buildThing(Bridge bridge, ModuleType moduleType) {
         List<AbstractChannelHelper> helpers = new ArrayList<>();
         if (moduleType.getSignalLevels() != NetatmoConstants.NO_RADIO) {
-            helpers.add(new SignalHelper(bridge, timeZoneProvider, moduleType.getSignalLevels()));
+            helpers.add(new SignalHelper(moduleType.getSignalLevels()));
         }
         try {
             Constructor<?> handlerConstructor = moduleType.getHandlerConstructor();
             if (handlerConstructor != null) {
-                for (Class<? extends AbstractChannelHelper> helperClass : moduleType.getChannelHelpers()) {
-                    Constructor<?> helperConstructor = helperClass.getConstructor(Thing.class, TimeZoneProvider.class);
-                    AbstractChannelHelper helper = (AbstractChannelHelper) helperConstructor
-                            .newInstance(new Object[] { bridge, timeZoneProvider });
-                    if (helper != null) {
-                        helpers.add(helper);
-                    }
+                for (Class<?> helperClass : moduleType.getChannelHelpers()) {
+                    Constructor<?> helperConstructor = helperClass.getConstructor();
+                    AbstractChannelHelper helper = (AbstractChannelHelper) helperConstructor.newInstance();
+                    helpers.add(helper);
                 }
-                return (BaseThingHandler) handlerConstructor
-                        .newInstance(new Object[] { bridge, helpers, apiBridge, stateDescriptionProvider });
+                return (BaseThingHandler) handlerConstructor.newInstance(bridge, helpers, apiBridge,
+                        stateDescriptionProvider);
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
+                | NoSuchMethodException e) {
             logger.warn("Error creating calling constructor : {}", e.getMessage());
         }
         return null;

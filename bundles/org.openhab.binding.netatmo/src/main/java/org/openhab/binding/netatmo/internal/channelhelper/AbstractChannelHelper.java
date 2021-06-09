@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import java.time.ZoneId;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -33,19 +30,14 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public abstract class AbstractChannelHelper {
-    // TODO : finish removal of ZoneId in channelhelpers
-    protected final ZoneId zoneId;
-    protected final Thing thing;
     private @Nullable NAThing naThing;
     private final Set<String> providedGroup;
 
-    public AbstractChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        this(thing, timeZoneProvider, Set.of());
+    public AbstractChannelHelper() {
+        this(Set.of());
     }
 
-    public AbstractChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider, Set<String> providedGroup) {
-        this.zoneId = timeZoneProvider.getTimeZone();
-        this.thing = thing;
+    public AbstractChannelHelper(Set<String> providedGroup) {
         this.providedGroup = providedGroup;
     }
 

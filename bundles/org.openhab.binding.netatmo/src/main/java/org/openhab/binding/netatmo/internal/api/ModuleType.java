@@ -16,7 +16,9 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 
 import java.lang.reflect.Constructor;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -150,6 +152,8 @@ public enum ModuleType {
         NONE;
     }
 
+    public static final EnumSet<ModuleType> asSet = EnumSet.allOf(ModuleType.class);
+
     private final List<String> groups;
     private final List<String> extensions;
     private final RefreshPolicy refreshPeriod;
@@ -217,14 +221,19 @@ public enum ModuleType {
     }
 
     public static Boolean isModuleTypeImplemented(String name) {
-        if (name.isBlank()) {
-            return false;
-        }
-        for (ModuleType item : ModuleType.values()) {
-            if (name.equals(item.toString())) {
-                return true;
-            }
-        }
-        return false;
+        return Stream.of(values()).anyMatch(mt -> mt.toString().equals(name));
+        // if (name.isBlank()) {
+        // return false;
+        // }
+        // for (ModuleType item : values()) {
+        // if (name.equals(item.toString())) {
+        // return true;
+        // }
+        // }
+        // return false;
     }
+
+    // public static Stream<ModuleType> asStream() {
+    // return Stream.of(values());
+    // }
 }

@@ -27,9 +27,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -49,8 +47,8 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
     private int persons = -1;
     private int unknowns = -1;
 
-    public HomeSecurityChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_HOME_SECURITY));
+    public HomeSecurityChannelHelper() {
+        super(Set.of(GROUP_HOME_SECURITY));
     }
 
     @Override

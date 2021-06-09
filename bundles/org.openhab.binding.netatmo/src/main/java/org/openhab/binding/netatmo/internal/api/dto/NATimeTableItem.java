@@ -26,7 +26,7 @@ public class NATimeTableItem extends NAObject {
     private int mOffset;
     private int zoneId;
 
-    public int getMOffset() {
+    public int getMinuteOffset() {
         return mOffset;
     }
 

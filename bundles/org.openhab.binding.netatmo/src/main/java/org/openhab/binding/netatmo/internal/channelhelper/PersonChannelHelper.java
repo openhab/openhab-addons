@@ -22,9 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NASnapshot;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -37,8 +35,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class PersonChannelHelper extends AbstractChannelHelper {
 
-    public PersonChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_PERSON));
+    public PersonChannelHelper() {
+        super(Set.of(GROUP_PERSON));
     }
 
     @Override

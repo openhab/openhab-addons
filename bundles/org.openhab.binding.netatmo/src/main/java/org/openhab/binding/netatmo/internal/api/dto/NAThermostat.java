@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,9 +60,9 @@ public class NAThermostat extends NAModule {
         return localSetpoint != null ? localSetpoint.getSetpointTemperature() : Double.NaN;
     }
 
-    public long getSetpointEndtime() {
+    public @Nullable ZonedDateTime getSetpointEndtime() {
         NASetpoint localSetpoint = setpoint;
-        return localSetpoint != null ? localSetpoint.getSetpointEndtime() : 0;
+        return localSetpoint != null ? localSetpoint.getSetpointEndtime() : null;
     }
 
     public SetpointMode getSetpointMode() {

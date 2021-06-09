@@ -21,9 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -38,8 +36,8 @@ import org.openhab.core.types.UnDefType;
 public class CameraChannelHelper extends AbstractChannelHelper {
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
 
-    public CameraChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_WELCOME));
+    public CameraChannelHelper() {
+        super(Set.of(GROUP_WELCOME));
     }
 
     @Override

@@ -21,10 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -37,8 +35,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class Therm1PropsChannelHelper extends AbstractChannelHelper {
 
-    public Therm1PropsChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_TH_PROPERTIES));
+    public Therm1PropsChannelHelper() {
+        super(Set.of(GROUP_TH_PROPERTIES));
     }
 
     @Override

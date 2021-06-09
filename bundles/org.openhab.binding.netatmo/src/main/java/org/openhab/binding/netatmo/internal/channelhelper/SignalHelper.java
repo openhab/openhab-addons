@@ -19,11 +19,9 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -37,8 +35,8 @@ import org.openhab.core.types.State;
 public class SignalHelper extends AbstractChannelHelper {
     private final int[] levels;
 
-    public SignalHelper(Thing thing, TimeZoneProvider timeZoneProvider, int[] signalLevels) {
-        super(thing, timeZoneProvider, Set.of(GROUP_SIGNAL));
+    public SignalHelper(int[] signalLevels) {
+        super(Set.of(GROUP_SIGNAL));
         this.levels = signalLevels;
     }
 

@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,7 +61,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     public NetatmoDiscoveryService(@Reference ApiBridge apiBridge, @Reference LocaleProvider localeProvider,
             @Reference TranslationProvider translationProvider) {
 
-        super(Stream.of(ModuleType.values()).map(supported -> supported.getThingTypeUID()).collect(Collectors.toSet()),
+        super(ModuleType.asSet.stream().map(ModuleType::getThingTypeUID).collect(Collectors.toSet()),
                 DISCOVER_TIMEOUT_SECONDS);
         this.apiBridge = apiBridge;
         this.localeProvider = localeProvider;

@@ -22,9 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -37,8 +35,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class HumidityChannelHelper extends AbstractChannelHelper {
 
-    public HumidityChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_HUMIDITY));
+    public HumidityChannelHelper() {
+        super(Set.of(GROUP_HUMIDITY));
     }
 
     @Override

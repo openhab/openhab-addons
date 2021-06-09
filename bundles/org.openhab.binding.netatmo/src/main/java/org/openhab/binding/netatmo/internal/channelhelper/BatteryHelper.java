@@ -21,10 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -37,8 +35,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class BatteryHelper extends AbstractChannelHelper {
 
-    public BatteryHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_BATTERY, GROUP_ENERGY_BATTERY));
+    public BatteryHelper() {
+        super(Set.of(GROUP_BATTERY, GROUP_ENERGY_BATTERY));
     }
 
     @Override

@@ -31,17 +31,6 @@ public class NetatmoException extends IOException {
         super(e);
     }
 
-    // TODO Remove unused code found by UCDetector
-    // public NetatmoException(int statusCode, Exception e) {
-    // super(e);
-    // this.statusCode = statusCode;
-    // }
-
-    // TODO Remove unused code found by UCDetector
-    // public NetatmoException(int statusCode) {
-    // this.statusCode = statusCode;
-    // }
-
     public NetatmoException(int statusCode, String message) {
         super(message);
         this.statusCode = statusCode;

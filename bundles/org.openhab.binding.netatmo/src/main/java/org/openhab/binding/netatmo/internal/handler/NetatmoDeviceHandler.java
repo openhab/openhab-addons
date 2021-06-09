@@ -107,7 +107,8 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
                         ? new RefreshStrategy(config.refreshInterval)
                         : null;
 
-        measureChannelHelper.ifPresent(channelHelper -> channelHelper.collectMeasuredChannels());
+        measureChannelHelper
+                .ifPresent(channelHelper -> channelHelper.collectMeasuredChannels(getThing().getChannels()));
         apiBridge.addConnectionListener(this);
     }
 
@@ -173,7 +174,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
                     logger.debug("Successfully updated device {} readings! Now updating channels", config.id);
                     setNAThing(newDeviceReading);
                     updateProperties(newDeviceReading);
-                    newDeviceReading.getLastSeen().ifPresent(strategy::setDataTimeStamp);
+                    strategy.setDataTimeStamp(newDeviceReading.getLastSeen());
                 } catch (NetatmoException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to connect Netatmo API : " + e.getLocalizedMessage());
@@ -220,15 +221,15 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
             updateStatus(ThingStatus.ONLINE);
             this.naThing = naThing;
             channelHelpers.forEach(helper -> helper.setNewData(naThing));
-            measureChannelHelper.ifPresent(channelHelper -> {
-                channelHelper.collectMeasuredChannels();
+            measureChannelHelper.ifPresent(measureHelper -> {
+                measureHelper.collectMeasuredChannels(getThing().getChannels());
                 if (refreshStrategy == null) {
                     NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
                     if (bridgeHandler != null) {
-                        bridgeHandler.callGetMeasurements(config.id, channelHelper.getMeasures());
+                        bridgeHandler.callGetMeasurements(config.id, measureHelper.getMeasures());
                     }
                 } else {
-                    callGetMeasurements(null, channelHelper.getMeasures());
+                    callGetMeasurements(null, measureHelper.getMeasures());
                 }
             });
             getThing().getChannels().stream()
@@ -241,25 +242,27 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         }
     }
 
-    private void callGetMeasurements(@Nullable String moduleId, Map<MeasureChannelConfig, Double> measures) {
-        measures.keySet().forEach(measureDef -> {
-            double result = Double.NaN;
-            try {
-                WeatherApi api = apiBridge.getRestManager(WeatherApi.class);
-                if (api != null) {
+    private void callGetMeasurements(@Nullable String moduleId, Map<MeasureChannelConfig, Object> measures) {
+        WeatherApi api = apiBridge.getRestManager(WeatherApi.class);
+        if (api != null) {
+            measures.keySet().forEach(measureDef -> {
+                Object result = null;
+                try {
                     if (measureDef.limit == MeasureLimit.NONE) {
                         result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type);
                     } else {
                         result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type,
                                 measureDef.limit);
                     }
+                } catch (NetatmoException e) {
+                    logger.warn("Error getting measurement {} on period {} for module {} : {}", measureDef.type,
+                            measureDef.period, moduleId, e.getMessage());
                 }
-            } catch (NetatmoException e) {
-                logger.warn("Error getting measurement {} on period {} for module {} : {}", measureDef.type,
-                        measureDef.period, moduleId, e.getMessage());
-            }
-            measures.put(measureDef, result);
-        });
+                if (result != null) {
+                    measures.put(measureDef, result);
+                }
+            });
+        }
     }
 
     private void updateProperties(NAThing naThing) {

@@ -21,8 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlug;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -35,8 +33,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class PlugChannelHelper extends AbstractChannelHelper {
 
-    public PlugChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_PLUG));
+    public PlugChannelHelper() {
+        super(Set.of(GROUP_PLUG));
     }
 
     @Override

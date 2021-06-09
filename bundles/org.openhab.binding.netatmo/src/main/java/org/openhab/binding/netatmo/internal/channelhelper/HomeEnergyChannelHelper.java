@@ -26,10 +26,8 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThermProgram;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NATimeTableItem;
 import org.openhab.binding.netatmo.internal.api.dto.NAZone;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -43,8 +41,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class HomeEnergyChannelHelper extends AbstractChannelHelper {
 
-    public HomeEnergyChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_HOME_ENERGY));
+    public HomeEnergyChannelHelper() {
+        super(Set.of(GROUP_HOME_ENERGY));
     }
 
     @Override
@@ -85,7 +83,7 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
                     case PROGRAM:
                     case HOME:
                     case SCHEDULE:
-                        return toDateTimeType(getNextProgramTime(localThing.getActiveProgram()), zoneId);
+                        return toDateTimeType(getNextProgramTime(localThing.getActiveProgram()));
                     case AWAY:
                     case MANUAL:
                     case FROST_GUARD:

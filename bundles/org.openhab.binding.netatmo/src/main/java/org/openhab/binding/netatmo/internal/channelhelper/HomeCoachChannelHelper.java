@@ -19,9 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
 /**
@@ -34,8 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class HomeCoachChannelHelper extends AbstractChannelHelper {
 
-    public HomeCoachChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider, Set.of(GROUP_HEALTH));
+    public HomeCoachChannelHelper() {
+        super(Set.of(GROUP_HEALTH));
     }
 
     @Override
