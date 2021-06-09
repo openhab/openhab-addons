@@ -90,7 +90,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private @Nullable BaseThingHandler buildThing(Bridge bridge, ModuleType moduleType) {
-        List<AbstractChannelHelper> helpers = new ArrayList<>();
+        List<@Nullable AbstractChannelHelper> helpers = new ArrayList<>();
         if (moduleType.getSignalLevels() != NetatmoConstants.NO_RADIO) {
             helpers.add(new SignalHelper(moduleType.getSignalLevels()));
         }
