@@ -14,7 +14,6 @@ package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
 
@@ -56,8 +55,8 @@ public class SoulissGatewayJobHealthy extends Thread {
     private void sendHealthyRequest() {
         // sending healthy packet
         if (ipAddressOnLAN.length() > 0 && this.gwHandler != null) {
-            soulissCommands.sendHealthyRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
-                    nodeIndex, userIndex, this.gwHandler.getNodes());
+            soulissCommands.sendHealthyRequestFrame(this.gwHandler.getSenderSocket(), ipAddressOnLAN, nodeIndex,
+                    userIndex, this.gwHandler.getNodes());
             // healthy packet sent
         }
     }

@@ -84,8 +84,7 @@ public class SoulissDiscoverJob implements Runnable {
             SoulissGatewayHandler gw = (SoulissGatewayHandler) t.getHandler();
             if (gw != null) {
                 logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
-                soulissCommands.sendDBStructFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
-                        gw.ipAddressOnLAN, gw.nodeIndex, gw.userIndex);
+                soulissCommands.sendDBStructFrame(gw.getSenderSocket(), gw.ipAddressOnLAN, gw.nodeIndex, gw.userIndex);
             } else {
                 logger.debug("Gateway null - Skipped");
             }

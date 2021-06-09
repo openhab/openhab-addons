@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissBindingProtocolConstants;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -195,7 +194,14 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     @Nullable
     public DatagramSocket getDatagramSocket() {
-        return SoulissBindingNetworkParameters.getDatagramSocket();
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
+            if (soulissgwHandler != null) {
+                return soulissgwHandler.getSenderSocket();
+            }
+        }
+        return null;
     }
 
     public void setHealthy(byte shHealthy) {

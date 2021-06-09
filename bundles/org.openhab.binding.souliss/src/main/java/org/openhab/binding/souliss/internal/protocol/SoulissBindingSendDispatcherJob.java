@@ -156,6 +156,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                         localSocket.send(sp.packet);
                     }
                 }
+
                 // confronta gli stati in memoria con i frame inviati. Se
                 // corrispondono cancella il frame dalla lista inviati
                 safeSendCheck();

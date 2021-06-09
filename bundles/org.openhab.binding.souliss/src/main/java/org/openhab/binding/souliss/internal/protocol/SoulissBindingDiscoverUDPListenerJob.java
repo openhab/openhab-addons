@@ -33,14 +33,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissBindingDiscoverUDPListenerJob extends Thread {
 
-    @Override
-    public void interrupt() {
-        super.interrupt();
-        if (soulissDatagramSocket != null) {
-            soulissDatagramSocket.close();
-            logger.debug("close socket");
-        }
-    }
+    // @Override
+    // public void interrupt() {
+    // super.interrupt();
+    // if (soulissDatagramSocket != null) {
+    // soulissDatagramSocket.close();
+    // logger.debug("close socket");
+    // }
+    // }
 
     @Nullable
     protected BufferedReader in = null;
@@ -98,7 +98,6 @@ public class SoulissBindingDiscoverUDPListenerJob extends Thread {
                             logger.warn("Error in Class SoulissBindingUDPServerThread: {}", e.getMessage());
                         }
                     }
-                    logger.debug("UDP Listener Thread issue");
                 }
             }
         } else {
