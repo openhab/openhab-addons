@@ -13,9 +13,13 @@
 package org.openhab.binding.souliss.internal.protocol;
 
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
+import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.DatagramChannel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Del Pex - Souliss App
  */
 @NonNullByDefault
-public class SoulissBindingDiscoverUDPListenerJob extends Thread {
+public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
 
     // @Override
     // public void interrupt() {
@@ -51,58 +55,70 @@ public class SoulissBindingDiscoverUDPListenerJob extends Thread {
     DiscoverResult discoverResult = null;
 
     @Nullable
-    DatagramSocket soulissDatagramSocket;
+    DatagramSocket socket;
+
     private final Logger logger = LoggerFactory.getLogger(SoulissBindingDiscoverUDPListenerJob.class);
 
-    public SoulissBindingDiscoverUDPListenerJob(@Nullable DatagramSocket datagramSocket,
-            @Nullable DiscoverResult pDiscoverResult) {
+    public SoulissBindingDiscoverUDPListenerJob(@Nullable DiscoverResult pDiscoverResult) {
         super();
         this.discoverResult = pDiscoverResult;
-        this.soulissDatagramSocket = datagramSocket;
-        init(datagramSocket, pDiscoverResult);
-    }
 
-    private void init(@Nullable DatagramSocket datagramSocket, @Nullable DiscoverResult pDiscoverResult) {
         decoder = new SoulissBindingUDPDecoder(discoverResult);
-        @Nullable
-        DatagramSocket localSoulissDatagramSocket = this.soulissDatagramSocket;
-        if (localSoulissDatagramSocket != null) {
-            int localPort = localSoulissDatagramSocket.getLocalPort();
-            logger.debug("Starting UDP Server Job - Server on port {}", localPort);
-        }
+
     }
 
     @Override
     public void run() {
-        @Nullable
-        DatagramSocket localDatagramSocket = this.soulissDatagramSocket;
-        if (localDatagramSocket != null) {
-            if (!localDatagramSocket.isClosed()) {
-                while (true) {
-                    try {
-                        byte[] buf = new byte[256];
-                        // receive request
-                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                        localDatagramSocket.receive(packet);
-                        buf = packet.getData();
 
-                        // **************** DECODER ********************
-                        logger.debug("Packet received (port {}) {}", localDatagramSocket.getLocalPort(),
-                                macacoToString(buf));
-                        if (this.decoder != null) {
-                            decoder.decodeVNetDatagram(packet);
-                        }
+        while (true) {
+            try {
+                // open socket for listening...
+                DatagramChannel channel = DatagramChannel.open();
+                socket = channel.socket();
 
-                    } catch (IOException e) {
-                        if (!Thread.currentThread().isInterrupted()) {
-                            logger.warn("Error in Class SoulissBindingUDPServerThread: {}", e.getMessage());
-                        }
-                    }
+                socket.setReuseAddress(true);
+                socket.setBroadcast(true);
+
+                InetSocketAddress sa = new InetSocketAddress(23000);
+                socket.bind(sa);
+
+                byte[] buf = new byte[200];
+                // receive request
+                final DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                socket.receive(packet);
+                buf = packet.getData();
+
+                // **************** DECODER ********************
+                logger.debug("Packet received (port {}) {}", socket.getLocalPort(), macacoToString(buf));
+                if (this.decoder != null) {
+                    decoder.decodeVNetDatagram(packet);
                 }
+                socket.close();
+
+            } catch (BindException e) {
+                logger.error("***UDP Port busy, Souliss already listening? {} ", e.getMessage());
+                try {
+                    // Thread.sleep(opzioni.getDataServiceIntervalMsec());
+                    socket.close();
+                } catch (Exception e1) {
+                    logger.error("***UDP socket close failed: {} ", e1.getMessage());
+                }
+            } catch (SocketTimeoutException e2) {
+                logger.warn("***UDP SocketTimeoutException close! {}", e2);
+                socket.close();
+            } catch (ClosedByInterruptException xc) {
+                xc.printStackTrace();
+                logger.error("***UDP runnable interrupted!");
+                socket.close();
+                Thread.currentThread().interrupt();
+                return;
+            } catch (Exception ee) {
+                logger.error("***UDP unhandled error! {} of class {}", ee.getMessage(), ee.getClass());
+                socket.close();
+                Thread.currentThread().interrupt();
             }
-        } else {
-            logger.warn("Socket Closed - Cannot receive data");
         }
+
     }
 
     private String macacoToString(byte[] frame) {
