@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.core.library.unit.MetricPrefix.*;
+import static org.openhab.core.library.unit.MetricPrefix.HECTO;
+import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -106,6 +107,8 @@ public class NetatmoConstants {
     public static final String NA_MODULEID_PARAM = "module_id";
     public static final String NA_HOMEID_PARAM = "home_id";
     public static final String NA_ROOMID_PARAM = "room_id";
+    public static final String NA_SCHEDULEID_PARAM = "schedule_id";
+    public static final String NA_MODE_PARAM = "mode";
 
     public enum MeasureType {
         SUM_RAIN(MeasureClass.RAIN_QTTY),

@@ -14,7 +14,9 @@ package org.openhab.binding.netatmo.internal.api;
 
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_HOMEID_PARAM;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_HOMESTATUS_SPATH;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_MODE_PARAM;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_ROOMID_PARAM;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SCHEDULEID_PARAM;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SETROOMTHERMPOINT_SPATH;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SETTHERMMODE_SPATH;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SWITCHSCHEDULE_SPATH;
@@ -48,7 +50,8 @@ public class EnergyApi extends RestManager {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMESTATUS_SPATH).queryParam(NA_HOMEID_PARAM, homeId)
                 // TODO : @mdillman : can't this be wrapped in a single queryParam with multiple moduleTypes ?
                 // the API-builder on Netatmo uses this syntax. I modified the CURL as a test to use
-                // device_types=NAPlug,NRV,NATherm1 and it worked. Not sure if that always will be the case in the future
+                // device_types=NAPlug,NRV,NATherm1 and it worked. Not sure if that always will be the case in the
+                // future
                 .queryParam("device_types", ModuleType.NAPlug.name()).queryParam("device_types", ModuleType.NRV.name())
                 .queryParam("device_types", ModuleType.NATherm1.name());
 
@@ -81,8 +84,8 @@ public class EnergyApi extends RestManager {
      */
     public boolean switchSchedule(String homeId, String scheduleId) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder().path(NA_SWITCHSCHEDULE_SPATH);
-        String payload = String.format("{\"home_id\":\"%s\",\"schedule_id\":\"%s\"}", homeId, scheduleId);
-        post(uriBuilder, ApiOkResponse.class, payload);
+        uriBuilder.queryParam(NA_HOMEID_PARAM, homeId).queryParam(NA_SCHEDULEID_PARAM, scheduleId);
+        post(uriBuilder, ApiOkResponse.class, null);
         return true;
     }
 
@@ -102,7 +105,7 @@ public class EnergyApi extends RestManager {
      */
     public boolean setThermMode(String homeId, String mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_SETTHERMMODE_SPATH);
-        uriBuilder.queryParam(NA_HOMEID_PARAM, homeId).queryParam("mode", mode);
+        uriBuilder.queryParam(NA_HOMEID_PARAM, homeId).queryParam(NA_MODE_PARAM, mode);
         post(uriBuilder, ApiOkResponse.class, null);
         return true;
     }
@@ -124,8 +127,8 @@ public class EnergyApi extends RestManager {
      */
     public boolean setRoomThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
             throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_SETROOMTHERMPOINT_SPATH).queryParam(NA_HOMEID_PARAM, roomId)
-                .queryParam(NA_ROOMID_PARAM, mode.getDescriptor());
+        UriBuilder uriBuilder = getApiUriBuilder().path(NA_SETROOMTHERMPOINT_SPATH).queryParam(NA_HOMEID_PARAM, homeId)
+                .queryParam(NA_ROOMID_PARAM, roomId).queryParam(NA_MODE_PARAM, mode.getDescriptor());
         if (mode == SetpointMode.MANUAL || mode == SetpointMode.MAX) {
             uriBuilder.queryParam("endtime", endtime);
             if (mode == SetpointMode.MANUAL) {
