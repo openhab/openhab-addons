@@ -128,6 +128,9 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             logger.info("Refresh interval<10 not supported");
         }
         NetworkConfig netConfig = NetworkConfig.createStandardWithoutFile();
+        NetworkConfig.getStandard().setString(NetworkConfig.Keys.DEDUPLICATOR, NetworkConfig.Keys.NO_DEDUPLICATOR);
+        netConfig.setString(NetworkConfig.Keys.DEDUPLICATOR, NetworkConfig.Keys.NO_DEDUPLICATOR);
+
         CoapEndpoint endpoint = new CoapEndpoint.Builder().setNetworkConfig(netConfig).build();
         client.setEndpoint(endpoint);
         client.setTimeout(TIMEOUT);
