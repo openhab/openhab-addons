@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_SETPOINT_MODE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_VALUE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TH_SETPOINT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.commandToQuantity;
 import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.getSetpointEndTimeFromNow;
 
@@ -98,6 +100,7 @@ public class RoomHandler extends NetatmoDeviceHandler {
                             logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
                         } else {
                             callSetRoomThermMode(home.getId(), config.id, targetMode);
+                            handler.expireData();
                         }
                     } else if (GROUP_TH_SETPOINT.equals(groupName) && channelName.equals(CHANNEL_VALUE)) {
                         QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INTERIOR_TEMPERATURE);
