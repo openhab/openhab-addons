@@ -32,7 +32,7 @@
 		</parameter>
 		<parameter name="sound" type="text">
 			<label>Notification Sound</label>
-			<description>The default notification sound on target device.</description>
+			<description>The notification sound on target device.</description>
 			<default>default</default>
 		</parameter>
 		<parameter name="retry" type="integer" min="30" unit="s">
