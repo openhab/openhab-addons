@@ -52,6 +52,10 @@
 					<option value="RTS">RTS</option>
 					<option value="SELECT_PLUS">Select Plus</option>
 					<option value="HOME_CONFORT">Home Confort</option>
+					<option value="EDISIO">Edisio</option>
+					<option value="HONEYWELL">Honeywell</option>
+					<option value="FUNKBUS">Gira Funk-Bussystem</option>
+					<option value="BYRONSX">Byron SX</option>
 				</options>
 			</parameter>
 		</config-description>
