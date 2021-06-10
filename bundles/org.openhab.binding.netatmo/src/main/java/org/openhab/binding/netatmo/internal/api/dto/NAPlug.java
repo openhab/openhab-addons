@@ -29,11 +29,11 @@ import org.openhab.core.types.UnDefType;
 
 @NonNullByDefault
 public class NAPlug extends NAModule {
-    private @Nullable OpenClosedType plugConnectedBoiler;
+    private @Nullable OpenClosedType boilerCable;
     private Map<String, @Nullable Integer> lastBilan = Map.of();
 
     public State getPlugConnectedBoiler() {
-        OpenClosedType connected = plugConnectedBoiler;
+        OpenClosedType connected = boilerCable;
         return connected != null ? connected : UnDefType.NULL;
     }
 
