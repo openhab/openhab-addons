@@ -467,7 +467,7 @@ public class IpCameraHandler extends BaseThingHandler {
         String temp = longUrl;
         URL url;
 
-        if (longUrl.isEmpty() || longUrl.equals("ffmpeg")) {
+        if (longUrl.isEmpty() || "ffmpeg".equals(longUrl)) {
             return longUrl;
         }
 
@@ -772,7 +772,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (start) {
             if (mjpegChannelGroup.isEmpty()) {// first stream being requested.
                 mjpegChannelGroup.add(ctx.channel());
-                if (mjpegUri.isEmpty() || mjpegUri.equals("ffmpeg")) {
+                if (mjpegUri.isEmpty() || "ffmpeg".equals(mjpegUri)) {
                     sendMjpegFirstPacket(ctx);
                     setupFfmpegFormat(FFmpegFormat.MJPEG);
                 } else {
@@ -794,7 +794,7 @@ public class IpCameraHandler extends BaseThingHandler {
             mjpegChannelGroup.remove(ctx.channel());
             if (mjpegChannelGroup.isEmpty()) {
                 logger.debug("All ipcamera.mjpeg streams have stopped.");
-                if (mjpegUri.equals("ffmpeg") || mjpegUri.isEmpty()) {
+                if ("ffmpeg".equals(mjpegUri) || mjpegUri.isEmpty()) {
                     Ffmpeg localMjpeg = ffmpegMjpeg;
                     if (localMjpeg != null) {
                         localMjpeg.stopConverting();
@@ -979,7 +979,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     localGIF.startConverting();
                     if (gifHistory.isEmpty()) {
                         gifHistory = gifFilename;
-                    } else if (!gifFilename.equals("ipcamera")) {
+                    } else if (!"ipcamera".equals(gifFilename)) {
                         gifHistory = gifFilename + "," + gifHistory;
                         if (gifHistoryLength > 49) {
                             int endIndex = gifHistory.lastIndexOf(",");
@@ -1003,7 +1003,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     localRecord.startConverting();
                     if (mp4History.isEmpty()) {
                         mp4History = mp4Filename;
-                    } else if (!mp4Filename.equals("ipcamera")) {
+                    } else if (!"ipcamera".equals(mp4Filename)) {
                         mp4History = mp4Filename + "," + mp4History;
                         if (mp4HistoryLength > 49) {
                             int endIndex = mp4History.lastIndexOf(",");
@@ -1191,6 +1191,26 @@ public class IpCameraHandler extends BaseThingHandler {
 
     private void sendPTZRequest() {
         onvifCamera.sendPTZRequest(OnvifConnection.RequestType.AbsoluteMove);
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        if (serverBootstrap != null) {
+            switch (channelUID.getId()) {
+                case CHANNEL_MJPEG_URL:
+                    updateState(CHANNEL_MJPEG_URL, new StringType(
+                            "http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.mjpeg"));
+                    break;
+                case CHANNEL_HLS_URL:
+                    updateState(CHANNEL_HLS_URL,
+                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.m3u8"));
+                    break;
+                case CHANNEL_IMAGE_URL:
+                    updateState(CHANNEL_IMAGE_URL,
+                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.jpg"));
+                    break;
+            }
+        }
     }
 
     @Override
@@ -1488,7 +1508,7 @@ public class IpCameraHandler extends BaseThingHandler {
             if (rtspUri.isEmpty()) {
                 logger.warn("Binding has not been supplied with a FFmpeg Input URL, so some features will not work.");
             }
-            if (snapshotUri.isEmpty() || snapshotUri.equals("ffmpeg")) {
+            if (snapshotUri.isEmpty() || "ffmpeg".equals(snapshotUri)) {
                 snapshotIsFfmpeg();
             } else {
                 sendHttpRequest("GET", snapshotUri, null);
@@ -1500,7 +1520,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     cameraConfig.getOnvifPort());
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
-        if (snapshotUri.equals("ffmpeg")) {
+        if ("ffmpeg".equals(snapshotUri)) {
             snapshotIsFfmpeg();
         } else if (!snapshotUri.isEmpty()) {
             sendHttpRequest("GET", snapshotUri, null);
