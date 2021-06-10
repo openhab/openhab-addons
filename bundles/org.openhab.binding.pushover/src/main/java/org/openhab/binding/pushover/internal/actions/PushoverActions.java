@@ -59,7 +59,8 @@ public class PushoverActions implements ThingActions {
                 message, title, sound, url, urlTitle, attachment, contentType, priority, device);
 
         PushoverMessageBuilder builder = getDefaultPushoverMessageBuilder(message);
-        if (sound != null) {
+        // add sound, if defined
+        if (sound != null && !DEFAULT_SOUND.equals(sound)) {
             builder.withSound(sound);
         }
         if (url != null) {
