@@ -59,28 +59,4 @@ public class PlugHandler extends NetatmoDeviceHandler {
         }
         return new NAPlug();
     }
-
-    // public int getSetpointDefaultDuration() {
-    // HomeEnergyHandler bridgeHandler = getHomeHandler();
-    // return bridgeHandler != null ? bridgeHandler.getSetpointDefaultDuration() : 120;
-    // }
-    //
-    // public void callSetThermMode(String moduleId, SetpointMode targetMode) {
-    // EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
-    // tryApiCall(() -> api != null
-    // ? api.setthermpoint(config.id, moduleId, targetMode,
-    // targetMode == SetpointMode.MAX ? getSetpointEndTimeFromNow(getSetpointDefaultDuration()) : 0, 0)
-    // : false);
-    // }
-    //
-    // public void callSetThermTemp(String moduleId, double temperature) {
-    // EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
-    // tryApiCall(() -> api != null ? api.setthermpoint(config.id, moduleId, SetpointMode.MANUAL,
-    // getSetpointEndTimeFromNow(getSetpointDefaultDuration()), temperature) : false);
-    // }
-    //
-    // public void callSwitchSchedule(String moduleId, String schedule) {
-    // EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
-    // tryApiCall(() -> api != null ? api.switchschedule(config.id, moduleId, schedule) : false);
-    // }
 }

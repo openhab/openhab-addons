@@ -12,8 +12,35 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_BATTERY;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_CO2;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_DEVICE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ENERGY_BATTERY;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HEALTH;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HOME_ENERGY;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HOME_SECURITY;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HUMIDITY;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_LOCATION;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_NOISE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PERSON;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PERSON_EVENT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PLUG;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PRESENCE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PRESSURE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_RAIN;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ROOM_PROPERTIES;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ROOM_TEMPERATURE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_SIGNAL;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TEMPERATURE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TH_PROPERTIES;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TH_SETPOINT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_WELCOME;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_WELCOME_EVENT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_WIND;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NO_RADIO;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.RADIO_SIGNAL_LEVELS;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.WIFI_SIGNAL_LEVELS;
 
 import java.lang.reflect.Constructor;
 import java.util.EnumSet;
@@ -51,8 +78,6 @@ import org.openhab.binding.netatmo.internal.channelhelper.RoomSetpointChannelHel
 import org.openhab.binding.netatmo.internal.channelhelper.RoomTempChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.TemperatureChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.Therm1PropsChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.Therm1SetpointChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.Therm1TempChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.WindChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.CameraHandler;
 import org.openhab.binding.netatmo.internal.handler.HomeCoachHandler;
@@ -128,11 +153,9 @@ public enum ModuleType {
     NAPlug(PlugHandler.class, RefreshPolicy.CONFIG, NAHomeEnergy, List.of(),
             List.of(PlugChannelHelper.class, DeviceChannelHelper.class),
             List.of(GROUP_PLUG, GROUP_DEVICE, GROUP_SIGNAL), NAPlug.class),
-    NATherm1(Therm1Handler.class, RefreshPolicy.PARENT, NAPlug, List.of(),
-            List.of(Therm1PropsChannelHelper.class, Therm1SetpointChannelHelper.class, Therm1TempChannelHelper.class,
-                    BatteryHelper.class),
-            List.of(GROUP_TH_PROPERTIES, GROUP_TH_SETPOINT, GROUP_TH_TEMPERATURE, GROUP_SIGNAL, GROUP_BATTERY),
-            NAThermostat.class),
+    NATherm1(Therm1Handler.class, RefreshPolicy.CONFIG, NAPlug, List.of(),
+            List.of(Therm1PropsChannelHelper.class, BatteryHelper.class),
+            List.of(GROUP_TH_PROPERTIES, GROUP_SIGNAL, GROUP_ENERGY_BATTERY), NAThermostat.class),
     NARoom(RoomHandler.class, RefreshPolicy.CONFIG, NAHomeEnergy, List.of(),
             List.of(RoomChannelHelper.class, RoomTempChannelHelper.class, RoomSetpointChannelHelper.class),
             List.of(GROUP_ROOM_PROPERTIES, GROUP_TH_SETPOINT, GROUP_ROOM_TEMPERATURE), NARoom.class),

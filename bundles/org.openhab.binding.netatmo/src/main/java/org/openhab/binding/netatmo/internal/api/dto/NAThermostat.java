@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 
 /**
  *
@@ -28,49 +24,23 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 @NonNullByDefault
 public class NAThermostat extends NAModule {
     private @Nullable NAThermMeasure measured;
-    private @Nullable NASetpoint setpoint;
-    private int thermOrientation;
-    private int thermRelayCmd;
     private boolean anticipating;
-
-    private List<NAThermProgram> thermProgramList = List.of();
+    private boolean boilerStatus;
+    private boolean boilerValveComfortBoost;
 
     public @Nullable NAThermMeasure getMeasured() {
         return measured;
     }
 
-    public int getThermOrientation() {
-        return thermOrientation;
-    }
-
-    public List<NAThermProgram> getThermProgramList() {
-        return thermProgramList;
-    }
-
-    public @Nullable NAThermProgram getActiveProgram() {
-        return thermProgramList.stream().filter(NAThermProgram::isSelected).findFirst().orElse(null);
-    }
-
-    public boolean getThermRelayCmd() {
-        return thermRelayCmd != 0;
-    }
-
-    public double getSetpointTemp() {
-        NASetpoint localSetpoint = setpoint;
-        return localSetpoint != null ? localSetpoint.getSetpointTemperature() : Double.NaN;
-    }
-
-    public @Nullable ZonedDateTime getSetpointEndtime() {
-        NASetpoint localSetpoint = setpoint;
-        return localSetpoint != null ? localSetpoint.getSetpointEndtime() : null;
-    }
-
-    public SetpointMode getSetpointMode() {
-        NASetpoint localSetpoint = setpoint;
-        return localSetpoint != null ? localSetpoint.getMode() : SetpointMode.UNKNOWN;
-    }
-
     public boolean isAnticipating() {
         return anticipating;
+    }
+
+    public boolean getBoilerStatus() {
+        return boilerStatus;
+    }
+
+    public boolean getBoilerValveComfortBoost() {
+        return boilerValveComfortBoost;
     }
 }

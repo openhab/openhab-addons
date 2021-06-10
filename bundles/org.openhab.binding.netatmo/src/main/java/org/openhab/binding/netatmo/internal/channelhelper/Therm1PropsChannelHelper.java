@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_ANTICIPATING;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_THERM_RELAY;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TH_PROPERTIES;
 
 import java.util.Set;
 
@@ -22,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -44,9 +44,7 @@ public class Therm1PropsChannelHelper extends AbstractChannelHelper {
         NAThermostat thermostat = (NAThermostat) naThing;
         switch (channelId) {
             case CHANNEL_THERM_RELAY:
-                return OnOffType.from(thermostat.getThermRelayCmd());
-            case CHANNEL_THERM_ORIENTATION:
-                return toQuantityType((thermostat.getThermOrientation() - 1) * 90, Units.DEGREE_ANGLE);
+                return OnOffType.from(thermostat.getBoilerStatus());
             case CHANNEL_ANTICIPATING:
                 return OnOffType.from(thermostat.isAnticipating());
         }

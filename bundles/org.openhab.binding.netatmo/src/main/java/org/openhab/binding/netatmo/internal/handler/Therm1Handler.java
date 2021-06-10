@@ -13,12 +13,17 @@
 package org.openhab.binding.netatmo.internal.handler;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
+import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.dto.NAHome;
+import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
 
 /**
  * {@link Therm1Handler} is the class used to handle the thermostat
@@ -37,40 +42,26 @@ public class Therm1Handler extends NetatmoDeviceHandler {
         super(bridge, channelHelpers, apiBridge, descriptionProvider);
     }
 
-    // TODO : if it happens that Therm1Handler does not any longer have code, this class could be removed
+    private @NonNullByDefault({}) HomeEnergyHandler getHomeHandler() {
+        Bridge bridge = super.getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            PlugHandler plughandler = (PlugHandler) bridge.getHandler();
+            if (plughandler != null) {
+                return plughandler.getHomeHandler();
+            }
+        }
+        return null;
+    }
 
-    // private @Nullable PlugHandler getPlugHandler() {
-    // NetatmoDeviceHandler handler = super.getBridgeHandler(getBridge());
-    // return handler != null ? (PlugHandler) handler : null;
-    // }
-
-    // @Override
-    // public void handleCommand(ChannelUID channelUID, Command command) {
-    // if (command instanceof RefreshType) {
-    // super.handleCommand(channelUID, command);
-    // } else {
-    // NAThermostat currentData = (NAThermostat) naThing;
-    // PlugHandler handler = getPlugHandler();
-    // if (currentData != null && handler != null) {
-    // String channelName = channelUID.getIdWithoutGroup();
-    // String groupName = channelUID.getGroupId();
-    // if (channelName.equals(CHANNEL_SETPOINT_MODE)) {
-    // SetpointMode targetMode = SetpointMode.valueOf(command.toString());
-    // if (targetMode == SetpointMode.MANUAL) {
-    // updateState(channelUID, toStringType(currentData.getSetpointMode()));
-    // logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
-    // } else {
-    // handler.callSetThermMode(config.id, targetMode);
-    // }
-    // } else if (GROUP_TH_SETPOINT.equals(groupName) && channelName.equals(CHANNEL_VALUE)) {
-    // QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INTERIOR_TEMPERATURE);
-    // if (quantity != null) {
-    // handler.callSetThermTemp(config.id, quantity.doubleValue());
-    // } else {
-    // logger.warn("Incorrect command '{}' on channel '{}'", command, channelName);
-    // }
-    // }
-    // }
-    // }
-    // }
+    @Override
+    protected NAThermostat updateReadings() throws NetatmoException {
+        HomeEnergyHandler handler = getHomeHandler();
+        if (handler != null) {
+            NAHome localHome = handler.getHome();
+            if (localHome != null) {
+                return (NAThermostat) Objects.requireNonNullElse(localHome.getModule(config.id), new NAThermostat());
+            }
+        }
+        return new NAThermostat();
+    }
 }
