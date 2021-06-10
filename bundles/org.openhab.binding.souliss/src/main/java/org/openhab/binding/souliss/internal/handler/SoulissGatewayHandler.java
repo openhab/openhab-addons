@@ -54,8 +54,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     // public @Nullable DatagramSocket datagramSocketDefaultPort;
     // Our own thread pool for the long-running listener job
 
-    private @Nullable DatagramSocket receiverSocket;
-
     private @Nullable DatagramSocket senderSocket;
 
     private ExecutorService udpExecutorService = ThreadPoolManager.getScheduledPool("souliss" + "-" + thing.getUID());
@@ -188,45 +186,40 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // this.logger);
 
             // check if there is a socket
-            if (this.receiverSocket == null) {
-                // no.. create new and set to soulissparms class
-                this.receiverSocket = SoulissDatagramSocketFactory.getSocketDatagram(logger);
-                // new runnable udp listener
-                udpServerDefaultPortRunnableClass = new SoulissBindingDiscoverUDPListenerJob(this.receiverSocket,
-                        SoulissBindingNetworkParameters.discoverResult);
-                // exec thread
-                // scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
-                // SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
-                this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
+            // no.. create new and set to soulissparms class
+            // new runnable udp listener
+            udpServerDefaultPortRunnableClass = new SoulissBindingDiscoverUDPListenerJob(
+                    SoulissBindingNetworkParameters.discoverResult);
+            // exec thread
+            // scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
+            // SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
+            this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
 
-                // sender socket init
-                this.senderSocket = SoulissDatagramSocketFactory.getSocketDatagram(logger);
+            // sender socket init
+            this.senderSocket = SoulissDatagramSocketFactory.getSocketDatagram(logger);
 
-                // START JOB PING
+            // START JOB PING
 
-                SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
-                scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2,
-                        soulissGatewayJobPingRunnable.getPingRefreshInterval(), TimeUnit.SECONDS);
+            SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2,
+                    soulissGatewayJobPingRunnable.getPingRefreshInterval(), TimeUnit.SECONDS);
 
-                SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
-                        bridge);
-                scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
-                        soulissGatewayJobSubscriptionRunnable.getSubscriptionRefreshInterval(), TimeUnit.MINUTES);
+            SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
+                    bridge);
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
+                    soulissGatewayJobSubscriptionRunnable.getSubscriptionRefreshInterval(), TimeUnit.MINUTES);
 
-                SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
-                scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
-                        soulissGatewayJobHealthyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
+            SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
+                    soulissGatewayJobHealthyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
 
-                // il ciclo Send è schedulato con la costante
-                // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
-                // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
-                SoulissBindingSendDispatcherJob soulissSendDispatcherRunnable = new SoulissBindingSendDispatcherJob(
-                        bridge);
-                scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
-                        SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
-            }
+            // il ciclo Send è schedulato con la costante
+            // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
+            // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
+            SoulissBindingSendDispatcherJob soulissSendDispatcherRunnable = new SoulissBindingSendDispatcherJob(bridge);
+            scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
+                    SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
         }
-
     }
 
     private int gwIpByte() {
@@ -321,9 +314,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         thereIsAThingDetection = false;
     }
 
-    public @Nullable DatagramSocket getReceiverSocket() {
-        return receiverSocket;
-    }
+    // public @Nullable DatagramSocket getReceiverSocket() {
+    // return receiverSocket;
+    // }
 
     public @Nullable DatagramSocket getSenderSocket() {
         return senderSocket;
