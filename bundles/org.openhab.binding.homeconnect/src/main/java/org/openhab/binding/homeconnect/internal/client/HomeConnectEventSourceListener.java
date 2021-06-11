@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.sse.InboundSseEvent;
 
@@ -67,8 +68,6 @@ public class HomeConnectEventSourceListener {
     private final ScheduledExecutorService scheduledExecutorService;
 
     private @Nullable LocalDateTime lastEventReceived;
-    private @Nullable LocalDateTime lastSSENotAuthorizedException;
-    private int sSENotAuthorizedExceptionCount = 0;
 
     public HomeConnectEventSourceListener(String haId, final HomeConnectEventListener eventListener,
             final HomeConnectEventSourceClient client, final ScheduledExecutorService scheduler,
@@ -139,11 +138,15 @@ public class HomeConnectEventSourceListener {
                 // When you try to reconnect, it often fails with a NotAuthorizedException (401) for the next few
                 // seconds. So we wait few seconds before trying again.
                 if (error instanceof NotAuthorizedException) {
-                    int backoffSeconds = getSSENotAuthorizedExceptionBackoffTimeInSeconds();
                     logger.debug(
-                            "Event source listener connection failure due to unauthorized exception : wait {}} seconds... haId={}",
-                            backoffSeconds, haId);
-                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), backoffSeconds, TimeUnit.SECONDS);
+                            "Event source listener connection failure due to unauthorized exception : wait 20 seconds... haId={}",
+                            haId);
+                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 20, TimeUnit.SECONDS);
+                } else if (error instanceof InternalServerErrorException) {
+                    logger.debug(
+                            "Event source listener connection failure due to internal server exception : wait 2 seconds... haId={}",
+                            haId);
+                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 2, TimeUnit.SECONDS);
                 } else {
                     eventListener.onClosed();
                 }
@@ -152,21 +155,6 @@ public class HomeConnectEventSourceListener {
             logger.error("Could not publish closed event to listener ({})!", haId, e);
         }
         stopMonitor();
-    }
-
-    private synchronized int getSSENotAuthorizedExceptionBackoffTimeInSeconds() {
-        LocalDateTime now = LocalDateTime.now();
-        int[] backoffInterval = new int[] { 20, 20, 60, 60, 120, 240, 600 };
-
-        if (lastSSENotAuthorizedException != null) {
-            long minutesSinceLastException = lastSSENotAuthorizedException.until(now, ChronoUnit.MINUTES);
-            if (minutesSinceLastException > 60) {
-                sSENotAuthorizedExceptionCount = 0; // reset counter
-            }
-        }
-
-        lastSSENotAuthorizedException = now;
-        return backoffInterval[Math.min(sSENotAuthorizedExceptionCount++, backoffInterval.length - 1)];
     }
 
     private ScheduledFuture<?> createMonitor(ScheduledExecutorService scheduler) {

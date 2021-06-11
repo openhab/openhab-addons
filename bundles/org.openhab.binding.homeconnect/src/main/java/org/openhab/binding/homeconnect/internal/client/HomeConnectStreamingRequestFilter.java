@@ -13,6 +13,7 @@
 package org.openhab.binding.homeconnect.internal.client;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -37,17 +38,18 @@ public class HomeConnectStreamingRequestFilter implements ClientRequestFilter, C
     private static final String TEXT_EVENT_STREAM = "text/event-stream";
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectStreamingRequestFilter.class);
-    private final String authorizationHeader;
-
-    public HomeConnectStreamingRequestFilter(String authorizationHeader) {
-        this.authorizationHeader = authorizationHeader;
-    }
+    private final ConcurrentHashMap<String, String> authorizationHeaders = new ConcurrentHashMap<>();
 
     @Override
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-            headers.putSingle(HttpHeaders.AUTHORIZATION, authorizationHeader);
+            String authorizationHeader = authorizationHeaders.get(requestContext.getUri().toString());
+            if (authorizationHeader != null) {
+                headers.putSingle(HttpHeaders.AUTHORIZATION, authorizationHeader);
+            } else {
+                logger.warn("No authorization header set! uri={}", requestContext.getUri());
+            }
             headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-cache");
             headers.putSingle(HttpHeaders.ACCEPT, TEXT_EVENT_STREAM);
         }
@@ -70,5 +72,10 @@ public class HomeConnectStreamingRequestFilter implements ClientRequestFilter, C
 
             logger.debug("{}", sb);
         }
+    }
+
+    public void setAuthorizationHeader(String target, String header) {
+        logger.debug("Set authorization header. target={}, header={}", target, header);
+        authorizationHeaders.put(target, header);
     }
 }

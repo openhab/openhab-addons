@@ -90,39 +90,42 @@ public class HttpHelper {
 
     public static String getAuthorizationHeader(OAuthClientService oAuthClientService)
             throws AuthorizationException, CommunicationException {
-        try {
-            AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            // refresh the token if it's about to expire
-            if (accessTokenResponse != null
-                    && accessTokenResponse.isExpired(LocalDateTime.now(), OAUTH_EXPIRE_BUFFER)) {
-                LoggerFactory.getLogger(HttpHelper.class).debug("Requesting a refresh of the access token.");
-                accessTokenResponse = oAuthClientService.refreshToken();
-            }
-
-            if (accessTokenResponse != null) {
-                String lastToken = lastAccessToken;
-                if (lastToken == null) {
-                    LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
-                            accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                } else if (!lastToken.equals(accessTokenResponse.getAccessToken())) {
-                    LoggerFactory.getLogger(HttpHelper.class).debug("The access token changed. New one created at {}",
-                            accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        synchronized ("authorizationHeader") {
+            try {
+                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+                // refresh the token if it's about to expire
+                if (accessTokenResponse != null
+                        && accessTokenResponse.isExpired(LocalDateTime.now(), OAUTH_EXPIRE_BUFFER)) {
+                    LoggerFactory.getLogger(HttpHelper.class).debug("Requesting a refresh of the access token.");
+                    accessTokenResponse = oAuthClientService.refreshToken();
                 }
-                lastAccessToken = accessTokenResponse.getAccessToken();
 
-                LoggerFactory.getLogger(HttpHelper.class).debug("Current access token: {}",
-                        accessTokenResponse.getAccessToken());
-                return BEARER + accessTokenResponse.getAccessToken();
-            } else {
-                LoggerFactory.getLogger(HttpHelper.class).error("No access token available! Fatal error.");
-                throw new AuthorizationException("No access token available!");
+                if (accessTokenResponse != null) {
+                    String lastToken = lastAccessToken;
+                    if (lastToken == null) {
+                        LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
+                                accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                    } else if (!lastToken.equals(accessTokenResponse.getAccessToken())) {
+                        LoggerFactory.getLogger(HttpHelper.class).debug(
+                                "The access token changed. New one created at {}",
+                                accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                    }
+                    lastAccessToken = accessTokenResponse.getAccessToken();
+
+                    LoggerFactory.getLogger(HttpHelper.class).debug("Current access token: {}",
+                            accessTokenResponse.getAccessToken());
+                    return BEARER + accessTokenResponse.getAccessToken();
+                } else {
+                    LoggerFactory.getLogger(HttpHelper.class).error("No access token available! Fatal error.");
+                    throw new AuthorizationException("No access token available!");
+                }
+            } catch (IOException e) {
+                String errorMessage = e.getMessage();
+                throw new CommunicationException(errorMessage != null ? errorMessage : "IOException", e);
+            } catch (OAuthException | OAuthResponseException e) {
+                String errorMessage = e.getMessage();
+                throw new AuthorizationException(errorMessage != null ? errorMessage : "oAuth exception", e);
             }
-        } catch (IOException e) {
-            String errorMessage = e.getMessage();
-            throw new CommunicationException(errorMessage != null ? errorMessage : "IOException", e);
-        } catch (OAuthException | OAuthResponseException e) {
-            String errorMessage = e.getMessage();
-            throw new AuthorizationException(errorMessage != null ? errorMessage : "oAuth exception", e);
         }
     }
 
