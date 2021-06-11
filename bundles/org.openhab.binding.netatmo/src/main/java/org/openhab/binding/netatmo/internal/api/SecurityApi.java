@@ -15,13 +15,12 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Collection;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NALastEventsData;
 
 /**
  *
@@ -89,7 +88,7 @@ public class SecurityApi extends RestManager {
      */
     public boolean dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_DROPWEBHOOK_SPATH);
-        post(uriBuilder, ApiOkResponse.class, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
@@ -104,19 +103,19 @@ public class SecurityApi extends RestManager {
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_ADDWEBHOOK_SPATH);
-        uriBuilder.queryParam("url", uri.toString());
-        post(uriBuilder, ApiOkResponse.class, null);
+        uriBuilder.queryParam(NA_URL_PARAM, uri.toString());
+        post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
-    private class NALastEventsDataResponse extends ApiResponse<NALastEventsData> {
+    private class NALastEventsDataResponse extends ApiResponse<NAListBodyResponse<NAHomeEvent>> {
     }
 
-    public List<NAHomeEvent> getLastEventOf(String homeId, String personId) throws NetatmoException {
+    public Collection<NAHomeEvent> getLastEventOf(String homeId, String personId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETLASTEVENT_SPATH);
         uriBuilder.queryParam(NA_HOMEID_PARAM, homeId);
-        uriBuilder.queryParam("person_id", personId);
+        uriBuilder.queryParam(NA_PERSONID_PARAM, personId);
         NALastEventsDataResponse response = get(uriBuilder, NALastEventsDataResponse.class);
-        return response.getBody().getEvents();
+        return response.getBody().getElementsCollection();
     }
 }

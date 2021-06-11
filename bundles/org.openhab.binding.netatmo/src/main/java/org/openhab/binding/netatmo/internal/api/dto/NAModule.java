@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.BatteryLevel;
 
 /**
  *
@@ -23,17 +23,20 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class NAModule extends NAThing {
-    // TODO : @Mdillman : can batteryState be changed to an enum ?
-    // the states are not documented. In my env I currently only have "full" and "high"
-    // not sure if an enum with missing values makes sense
-    private @Nullable String batteryState;
-    private int batteryPercent;
+    private BatteryLevel batteryState = BatteryLevel.UNKNOWN;
+    private int batteryPercent = -1;
 
     public int getBatteryPercent() {
-        return batteryPercent;
+        if (batteryPercent != -1) {
+            return batteryPercent;
+        }
+        if (batteryState != BatteryLevel.UNKNOWN) {
+            return batteryState.getLevel();
+        }
+        return -1;
     }
 
-    public @Nullable String getBatteryState() {
+    public BatteryLevel getBatteryState() {
         return this.batteryState;
     }
 }

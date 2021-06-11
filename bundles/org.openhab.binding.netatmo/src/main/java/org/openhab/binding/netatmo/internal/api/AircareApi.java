@@ -19,7 +19,6 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.WeatherApi.NAStationDataResponse;
-import org.openhab.binding.netatmo.internal.api.dto.NADeviceDataBody;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 
 /**
@@ -53,8 +52,8 @@ public class AircareApi extends RestManager {
     }
 
     public NAMain getHomeCoach(String deviceId) throws NetatmoException {
-        NADeviceDataBody<NAMain> answer = getHomeCoachData(deviceId).getBody();
-        NAMain station = answer.getDevice(deviceId);
+        NAListBodyResponse<NAMain> answer = getHomeCoachData(deviceId).getBody();
+        NAMain station = answer.getElement(deviceId);
         if (station != null) {
             return station;
         }

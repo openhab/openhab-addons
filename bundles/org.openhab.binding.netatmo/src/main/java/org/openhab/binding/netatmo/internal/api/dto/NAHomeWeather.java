@@ -18,6 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Gaël L'hopital - Initial contribution
  *
+ *         This class must exist due to dynamic deserialization of
+ *         home types
+ *
  */
 
 @NonNullByDefault

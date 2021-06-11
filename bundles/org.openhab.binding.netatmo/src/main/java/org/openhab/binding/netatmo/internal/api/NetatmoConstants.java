@@ -106,8 +106,11 @@ public class NetatmoConstants {
     public static final String NA_MODULEID_PARAM = "module_id";
     public static final String NA_HOMEID_PARAM = "home_id";
     public static final String NA_ROOMID_PARAM = "room_id";
+    public static final String NA_PERSONID_PARAM = "person_id";
     public static final String NA_SCHEDULEID_PARAM = "schedule_id";
+    public static final String NA_DEVICETYPE_PARAM = "device_types";
     public static final String NA_MODE_PARAM = "mode";
+    public static final String NA_URL_PARAM = "url";
 
     public enum MeasureType {
         SUM_RAIN(MeasureClass.RAIN_QTTY),
@@ -240,12 +243,6 @@ public class NetatmoConstants {
         public String getDescriptor() {
             return apiDescriptor;
         }
-
-        // TODO Remove unused code found by UCDetector
-        // public static SetpointMode fromName(String name) {
-        // return Arrays.stream(values()).filter(value -> value.apiDescriptor.equals(name)).findFirst()
-        // .orElse(UNKNOWN);
-        // }
     }
 
     public static enum ThermostatZoneType {
@@ -276,7 +273,6 @@ public class NetatmoConstants {
         }
     }
 
-    // Presence
     public enum PresenceLightMode {
         @SerializedName("on")
         ON,
@@ -315,5 +311,27 @@ public class NetatmoConstants {
         @SerializedName("deleted")
         DELETED,
         UNKNOWN;
+    }
+
+    public enum BatteryLevel {
+        @SerializedName("full")
+        FULL(100),
+        @SerializedName("high")
+        HIGH(80),
+        @SerializedName("medium")
+        MEDIUM(50),
+        @SerializedName("low")
+        LOW(15),
+        UNKNOWN(-1);
+
+        private int level;
+
+        BatteryLevel(int i) {
+            this.level = i;
+        }
+
+        public int getLevel() {
+            return level;
+        }
     }
 }

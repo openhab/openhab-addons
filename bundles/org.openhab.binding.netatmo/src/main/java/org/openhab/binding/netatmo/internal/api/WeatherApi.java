@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureScale;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
-import org.openhab.binding.netatmo.internal.api.dto.NADeviceDataBody;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
 
@@ -36,7 +35,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
 
 @NonNullByDefault
 public class WeatherApi extends RestManager {
-    public class NAStationDataResponse extends ApiResponse<NADeviceDataBody<NAMain>> {
+    public class NAStationDataResponse extends ApiResponse<NAListBodyResponse<NAMain>> {
     }
 
     private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
@@ -73,8 +72,8 @@ public class WeatherApi extends RestManager {
     }
 
     public NAMain getStationData(String deviceId) throws NetatmoException {
-        NADeviceDataBody<NAMain> answer = getStationsData(deviceId, true).getBody();
-        NAMain station = answer.getDevice(deviceId);
+        NAListBodyResponse<NAMain> answer = getStationsData(deviceId, true).getBody();
+        NAMain station = answer.getElement(deviceId);
         if (station != null) {
             return station;
         }

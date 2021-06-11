@@ -40,11 +40,6 @@ public class NAHome extends NADevice {
         return rooms;
     }
 
-    // TODO : dégager setters ?
-    public void setRooms(List<NARoom> rooms) {
-        this.rooms = rooms;
-    }
-
     public @Nullable NARoom getRoom(String id) {
         return rooms.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
     }

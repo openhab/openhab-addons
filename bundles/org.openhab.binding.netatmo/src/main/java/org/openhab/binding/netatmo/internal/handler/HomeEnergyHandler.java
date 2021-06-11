@@ -59,14 +59,14 @@ public class HomeEnergyHandler extends NetatmoDeviceHandler {
         EnergyApi api = apiBridge.getRestManager(EnergyApi.class);
         HomeApi homeapi = apiBridge.getRestManager(HomeApi.class);
         if (api != null && homeapi != null) {
-            home = homeapi.getHomeList(config.id, ModuleType.NAPlug).get(0);
+            home = homeapi.getHomeList(config.id, ModuleType.NAPlug).iterator().next();
             if (home instanceof NAHomeEnergy) {
                 NAHomeEnergy homeEnergy = (NAHomeEnergy) home;
                 NAHome status = api.getHomeStatus(config.id);
                 // could not find out how to persist retrieved /homesdata and /homestatus so that the information later
                 // is accesssible by the other handlers
-                home.setRooms(status.getRooms());
-                home.setModules(status.getModules());
+                home.getRooms().addAll(status.getRooms());
+                home.getModules().putAll(status.getModules());
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), GROUP_HOME_ENERGY, CHANNEL_PLANNING);
                 descriptionProvider.setStateOptions(channelUID, homeEnergy.getThermSchedules().stream()
                         .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));

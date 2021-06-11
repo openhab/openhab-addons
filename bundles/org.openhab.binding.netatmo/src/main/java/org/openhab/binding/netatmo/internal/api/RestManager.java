@@ -50,14 +50,19 @@ public abstract class RestManager {
     }
 
     public <T extends ApiResponse<?>> T get(UriBuilder uriBuilder, Class<T> classOfT) throws NetatmoException {
-        return apiHandler.executeUri(uriBuilder.build(), HttpMethod.GET, classOfT, null);
+        return executeUri(uriBuilder, HttpMethod.GET, classOfT, null);
     }
 
     public <T extends ApiResponse<?>> T post(UriBuilder uriBuilder, Class<T> classOfT, @Nullable String payload)
             throws NetatmoException {
+        return executeUri(uriBuilder, HttpMethod.POST, classOfT, payload);
+    }
+
+    public <T extends ApiResponse<?>> T executeUri(UriBuilder uriBuilder, HttpMethod method, Class<T> classOfT,
+            @Nullable String payload) throws NetatmoException {
         T response = apiHandler.executeUri(uriBuilder.build(), HttpMethod.POST, classOfT, payload);
-        if (response instanceof ApiOkResponse) {
-            ApiOkResponse okResponse = (ApiOkResponse) response;
+        if (response instanceof ApiResponse.Ok) {
+            ApiResponse.Ok okResponse = (ApiResponse.Ok) response;
             if (!okResponse.isSuccess()) {
                 throw new NetatmoException(String.format("Unsuccessfull command : %s for uri : %s",
                         response.getStatus(), uriBuilder.build().toString()));

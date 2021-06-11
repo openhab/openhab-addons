@@ -10,11 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api.dto;
+package org.openhab.binding.netatmo.internal.api;
+
+import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  *
@@ -22,14 +27,16 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
  *
  */
 @NonNullByDefault
-public class NADeviceDataBody<T extends NAThing> {
-    private @NonNullByDefault({}) NAObjectMap<T> devices;
+public class NAListBodyResponse<T extends NAObject> {
+    @SerializedName(value = "devices", alternate = { "homes", "events-list" })
+    private @NonNullByDefault({}) NAObjectMap<T> elements;
 
-    public NAObjectMap<T> getDevices() {
-        return devices;
+    public @Nullable T getElement(String id) {
+        return elements.get(id);
     }
 
-    public @Nullable T getDevice(String id) {
-        return devices.get(id);
+    public Collection<T> getElementsCollection() {
+        return elements.values();
     }
+
 }

@@ -66,36 +66,9 @@ public class ChannelTypeUtils {
         return (value == null) ? UnDefType.NULL : new StringType(value);
     }
 
-    // private static ZonedDateTime toZonedDateTime(long netatmoTS, ZoneId zoneId) {
-    // Instant i = Instant.ofEpochSecond(netatmoTS);
-    // return ZonedDateTime.ofInstant(i, zoneId);
-    // }
-
-    // public static State toDateTimeType(@Nullable Double netatmoTS, ZoneId zoneId) {
-    // return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS.intValue(), zoneId));
-    // }
-
-    // public static State toDateTimeType(long netatmoTS, ZoneId zoneId) {
-    // return toDateTimeType(toZonedDateTime(netatmoTS, zoneId));
-    // }
-
     public static State toDateTimeType(@Nullable ZonedDateTime zonedDateTime) {
         return (zonedDateTime == null) ? UnDefType.NULL : new DateTimeType(zonedDateTime);
     }
-
-    // public static State toDateTimeType(Optional<ZonedDateTime> lastSeen) {
-    // return lastSeen.isPresent() ? toDateTimeType(lastSeen.get()) : UnDefType.UNDEF;
-    // }
-
-    // TODO Remove unused code found by UCDetector
-    // public static State toDecimalType(@Nullable BigDecimal value) {
-    // return value == null ? UnDefType.NULL : new DecimalType(value.setScale(2, RoundingMode.HALF_UP));
-    // }
-
-    // TODO Remove unused code found by UCDetector
-    // public static State toDecimalType(@Nullable String textualDecimal) {
-    // return textualDecimal == null ? UnDefType.NULL : new DecimalType(textualDecimal);
-    // }
 
     public static State toQuantityType(@Nullable Double value, @Nullable MeasureClass measureClass) {
         if (value != null && !value.isNaN()) {
@@ -112,13 +85,6 @@ public class ChannelTypeUtils {
         }
         return UnDefType.NULL;
     }
-
-    // TODO Remove unused code found by UCDetector
-    // public static State toQuantityType(@Nullable Double value, @Nullable Unit<?> unit) {
-    // return value == null || value.isNaN() ? UnDefType.NULL
-    // : unit == null ? new DecimalType(value)
-    // : toQuantityType(new BigDecimal(value).setScale(2, RoundingMode.HALF_UP), unit);
-    // }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
         return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);

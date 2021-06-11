@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_HOMEID_PARAM;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_HOMESTATUS_SPATH;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_MODE_PARAM;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_ROOMID_PARAM;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SCHEDULEID_PARAM;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SETROOMTHERMPOINT_SPATH;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SETTHERMMODE_SPATH;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NA_SWITCHSCHEDULE_SPATH;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -36,8 +29,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 
 @NonNullByDefault
 public class EnergyApi extends RestManager {
-    // private class NAThermostatDataResponse extends ApiResponse<NADeviceDataBody<NAPlug>> {
-    // }
 
     public class NAHomeStatusResponse extends ApiResponse<NAHomeStatus> {
     }
@@ -48,28 +39,12 @@ public class EnergyApi extends RestManager {
 
     public NAHome getHomeStatus(String homeId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMESTATUS_SPATH).queryParam(NA_HOMEID_PARAM, homeId)
-                // TODO : @mdillman : can't this be wrapped in a single queryParam with multiple moduleTypes ?
-                // the API-builder on Netatmo uses this syntax. I modified the CURL as a test to use
-                // device_types=NAPlug,NRV,NATherm1 and it worked. Not sure if that always will be the case in the
-                // future
-                .queryParam("device_types", ModuleType.NAPlug.name()).queryParam("device_types", ModuleType.NRV.name())
-                .queryParam("device_types", ModuleType.NATherm1.name());
+                .queryParam(NA_DEVICETYPE_PARAM, ModuleType.NAPlug.name(), ModuleType.NRV.name(),
+                        ModuleType.NATherm1.name());
 
         NAHomeStatusResponse response = get(uriBuilder, NAHomeStatusResponse.class);
         return response.getBody().getHome();
     }
-
-    // public NAPlug getThermostatData(String equipmentId) throws NetatmoException {
-    // UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETTHERMOSTAT_SPATH);
-    // uriBuilder.queryParam(NA_DEVICEID_PARAM, equipmentId);
-    // NADeviceDataBody<NAPlug> answer = get(uriBuilder.build(), NAThermostatDataResponse.class).getBody();
-    //
-    // NAPlug plug = answer.getDevice(equipmentId);
-    // if (plug != null) {
-    // return plug;
-    // }
-    // throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", equipmentId));
-    // }
 
     /**
      *
@@ -85,7 +60,7 @@ public class EnergyApi extends RestManager {
     public boolean switchSchedule(String homeId, String scheduleId) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder().path(NA_SWITCHSCHEDULE_SPATH);
         uriBuilder.queryParam(NA_HOMEID_PARAM, homeId).queryParam(NA_SCHEDULEID_PARAM, scheduleId);
-        post(uriBuilder, ApiOkResponse.class, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
@@ -106,7 +81,7 @@ public class EnergyApi extends RestManager {
     public boolean setThermMode(String homeId, String mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_SETTHERMMODE_SPATH);
         uriBuilder.queryParam(NA_HOMEID_PARAM, homeId).queryParam(NA_MODE_PARAM, mode);
-        post(uriBuilder, ApiOkResponse.class, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
@@ -121,7 +96,7 @@ public class EnergyApi extends RestManager {
      *            expires. (optional)
      * @param temp When using the manual setpoint_mode, this parameter defines the temperature setpoint (in
      *            Celcius) to use. (optional)
-     * @return ApiOkResponse
+     * @return ApiResponse.Ok
      * @throws NetatmoCommunicationException If fail to call the API, e.g. server error or cannot deserialize the
      *             response body
      */
@@ -135,7 +110,7 @@ public class EnergyApi extends RestManager {
                 uriBuilder.queryParam("temp", temp);
             }
         }
-        post(uriBuilder, ApiOkResponse.class, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 }

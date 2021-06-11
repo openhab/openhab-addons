@@ -26,11 +26,4 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 @NonNullByDefault
 public class NADynamicObjectMap extends HashMap<String, NAThing> {
     private static final long serialVersionUID = -7864636414965562293L;
-
-    // TODO Remove unused code found by UCDetector
-    // public List<NAThing> forModuleType(ModuleType searchedType) {
-    // List<NAThing> result = new ArrayList<>();
-    // result.addAll(values().stream().filter(thing -> thing.getType() == searchedType).collect(Collectors.toList()));
-    // return result;
-    // }
 }

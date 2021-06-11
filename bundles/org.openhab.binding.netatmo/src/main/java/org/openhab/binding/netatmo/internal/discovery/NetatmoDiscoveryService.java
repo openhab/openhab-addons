@@ -14,8 +14,8 @@ package org.openhab.binding.netatmo.internal.discovery;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.EQUIPMENT_ID;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,7 +83,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     @Override
     public void startScan() {
         try {
-            List<NAHome> result = apiBridge.getHomeApi().getHomes(null);
+            Collection<NAHome> result = apiBridge.getHomeApi().getHomes(null);
             Set<@Nullable String> roomsWithEnergyModules = new HashSet<>();
             result.forEach(home -> {
                 ThingUID homeUID = createDiscoveredThing(null, home, home.getType());
@@ -160,7 +160,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private void searchHomeCoach(AircareApi api) {
         try {
             NAStationDataResponse homeCoaches = api.getHomeCoachData(null);
-            homeCoaches.getBody().getDevices().values()
+            homeCoaches.getBody().getElementsCollection().stream()
                     .forEach(homeCoach -> createDiscoveredThing(null, homeCoach, homeCoach.getType()));
         } catch (NetatmoException e) {
             logger.warn("Error getting Home Coaches", e);
@@ -170,7 +170,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private void searchFavoriteWeather(WeatherApi api) {
         try {
             NAStationDataResponse stations = api.getStationsData(null, true);
-            stations.getBody().getDevices().values().stream().filter(NAMain::isReadOnly).forEach(station -> {
+            stations.getBody().getElementsCollection().stream().filter(NAMain::isReadOnly).forEach(station -> {
                 createDiscoveredThing(null, station, station.getType());
                 station.getModules().values().stream().filter(module -> module.getBridge() == null)
                         .forEach(foundBridge -> {

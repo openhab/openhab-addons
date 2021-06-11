@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DeviceActions} defines thing actions for RoomHandler.
+ * The {@link DeviceActions} defines thing actions for each Netatmo thing.
  *
- * @author Markus Dillmann - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @ThingActionsScope(name = "netatmo")
 @NonNullByDefault
@@ -54,7 +54,7 @@ public class DeviceActions implements ThingActions {
     public void reconnectApi() {
         NetatmoDeviceHandler roomHandler = handler;
         if (roomHandler == null) {
-            logger.debug("Handler not set for room thing actions.");
+            logger.debug("Handler not set for device thing actions.");
             return;
         }
 

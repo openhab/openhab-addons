@@ -21,6 +21,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ApiResponse<T> {
+    /**
+     * The {@link Ok} models a response that only holds a status
+     * toward the request sent to the API
+     */
+    static class Ok extends ApiResponse<String> {
+        public boolean isSuccess() {
+            return "ok".equals(getStatus());
+        }
+    }
+
     private @NonNullByDefault({}) String status;
     private T body;
 

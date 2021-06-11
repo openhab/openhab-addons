@@ -24,6 +24,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link BatteryHelper} handle specific behavior
@@ -45,12 +46,11 @@ public class BatteryHelper extends AbstractChannelHelper {
             NAModule module = (NAModule) naThing;
             int percent = module.getBatteryPercent();
             if (CHANNEL_VALUE.equals(channelId)) {
-                return new DecimalType(percent);
+                return percent >= 0 ? new DecimalType(percent) : UnDefType.NULL;
             } else if (CHANNEL_LOW_BATTERY.equals(channelId)) {
-                return OnOffType.from(percent < 20);
+                return percent >= 0 ? OnOffType.from(percent < 20) : UnDefType.NULL;
             } else if (CHANNEL_BATTERY_STATUS.equals(channelId)) {
-                String status = module.getBatteryState();
-                return toStringType(status);
+                return toStringType(module.getBatteryState());
             }
         }
         return null;
