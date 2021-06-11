@@ -142,7 +142,7 @@ public class SmhiHandler extends BaseThingHandler {
             if (channels.isEmpty()) {
                 continue;
             }
-            Optional<Forecast> forecast = timeSeries.getForecast(i);
+            Optional<Forecast> forecast = timeSeries.getForecast(currentHour, i);
             if (forecast.isPresent()) {
                 channels.forEach(c -> {
                     String id = c.getUID().getIdWithoutGroup();
@@ -258,18 +258,22 @@ public class SmhiHandler extends BaseThingHandler {
      * published, in that case, fetch it and update channels.
      */
     private void waitForForecast() {
-        if (isItNewHour()) {
-            currentHour = calculateCurrentHour();
-            currentDay = calculateCurrentDay();
-            // Update channels with cached forecasts - just shift an hour forward
-            TimeSeries forecast = cachedTimeSeries;
-            if (forecast != null) {
-                updateChannels(forecast);
+        try {
+            if (isItNewHour()) {
+                currentHour = calculateCurrentHour();
+                currentDay = calculateCurrentDay();
+                // Update channels with cached forecasts - just shift an hour forward
+                TimeSeries forecast = cachedTimeSeries;
+                if (forecast != null) {
+                    updateChannels(forecast);
+                }
+                hasLatestForecast = false;
             }
-            hasLatestForecast = false;
-        }
-        if (!hasLatestForecast && isForecastUpdated()) {
-            getUpdatedForecast();
+            if (!hasLatestForecast && isForecastUpdated()) {
+                getUpdatedForecast();
+            }
+        } catch (Exception e) {
+            logger.debug("Error in updater thread: {}", e.getMessage());
         }
     }
 
@@ -430,6 +434,7 @@ public class SmhiHandler extends BaseThingHandler {
                 break;
             case WIND_DIRECTION:
                 itemType += ":Angle";
+                break;
             case WIND_SPEED:
             case WIND_MAX:
             case WIND_MIN:

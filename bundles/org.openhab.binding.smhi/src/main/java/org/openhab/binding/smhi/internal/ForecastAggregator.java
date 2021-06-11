@@ -38,6 +38,9 @@ public class ForecastAggregator {
 
     public static Optional<BigDecimal> total(TimeSeries timeSeries, int dayOffset, String parameter) {
         List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
+        if (dayForecasts.isEmpty()) {
+            return Optional.empty();
+        }
         BigDecimal sum = dayForecasts.stream().map(forecast -> forecast.getParameter(parameter))
                 .filter(Optional::isPresent).map(Optional::get).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
         BigDecimal mean = sum.divide(BigDecimal.valueOf(dayForecasts.size()), RoundingMode.HALF_UP);
