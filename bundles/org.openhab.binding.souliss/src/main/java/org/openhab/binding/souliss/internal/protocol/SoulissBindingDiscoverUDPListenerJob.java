@@ -37,15 +37,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
 
-    // @Override
-    // public void interrupt() {
-    // super.interrupt();
-    // if (soulissDatagramSocket != null) {
-    // soulissDatagramSocket.close();
-    // logger.debug("close socket");
-    // }
-    // }
-
     @Nullable
     protected BufferedReader in = null;
     protected boolean bExit = false;
@@ -73,6 +64,7 @@ public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
         while (true) {
             try {
                 // open socket for listening...
+                socket = new DatagramSocket(null);
                 DatagramChannel channel = DatagramChannel.open();
                 socket = channel.socket();
 
@@ -85,6 +77,7 @@ public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
                 byte[] buf = new byte[200];
                 // receive request
                 final DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                socket.setSoTimeout(100000);
                 socket.receive(packet);
                 buf = packet.getData();
 
