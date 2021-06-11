@@ -15,6 +15,9 @@ package org.openhab.binding.carnet.internal.api.brand;
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_BRAND_AUDI;
 import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.CarNetException;
@@ -57,6 +60,19 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
         public @Nullable Service customerProfileService;
         public @Nullable Service consentService;
         public @Nullable IssuerRegionMapping issuerRegionMapping;
+    }
+
+    public static class AudiVehicles {
+        public static class AudiVehicle {
+            public @Nullable String type;
+            public @Nullable Boolean favorite;
+            public @Nullable String vin;
+            public @Nullable String commissionNumber;
+            public @Nullable String shortName;
+            public @Nullable String imageUrl;
+        }
+
+        public @Nullable ArrayList<AudiVehicle> vehicles;
     }
 
     private static CarNetApiProperties properties = new CarNetApiProperties();
@@ -102,6 +118,31 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
         return cfg;
     }
 
+    @Override
+    public String[] getImageUrls() throws CarNetException {
+        if (config.vstatus.imageUrls.length == 0) {
+            // config.vstatus.imageUrls =
+            Map<String, String> headers = fillAppHeaders(tokenManager.createProfileToken(config));
+            headers.put("x-market", "de_DE");
+            AudiVehicles data = super.callApi("", "https://api.my.audi.com/smns/v1/navigation/v1/vehicles", headers,
+                    "getImageUrls", AudiVehicles.class);
+            String[] imageUrls = new String[1];
+            if (data.vehicles != null) {
+                for (AudiVehicles.AudiVehicle vehicle : data.vehicles) {
+                    if (config.vehicle.vin.equalsIgnoreCase(getString(vehicle.vin))) {
+                        // for whatever the imageUrl is missing http: at the beginning
+                        imageUrls[0] = vehicle.imageUrl.startsWith("//") ? "https:" + vehicle.imageUrl
+                                : vehicle.imageUrl;
+                        break;
+                    }
+                }
+            }
+            if (imageUrls.length > 0) {
+                config.vstatus.imageUrls = imageUrls;
+            }
+        }
+        return config.vstatus.imageUrls;
+    }
     /*
      * try {
      * AudiServiceUrls urls = super.callApi(

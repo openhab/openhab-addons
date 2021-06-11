@@ -69,7 +69,7 @@ public class OpenStreetMapApiDTO {
             Map<String, String> headers = new HashMap<>();
             headers.put(HttpHeader.USER_AGENT.toString(), "openHAB/" + BINDING_ID);
             headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
-            String json = http.get(url, headers);
+            String json = http.get(url, headers).response;
             OSMPointResponse r = fromJson(gson, json, OSMPointResponse.class);
             String address = getString(r.address.road) + ";" + getString(r.address.house_number) + ";"
                     + getString(r.address.postcode) + ";" + getString(r.address.postcode) + ";"

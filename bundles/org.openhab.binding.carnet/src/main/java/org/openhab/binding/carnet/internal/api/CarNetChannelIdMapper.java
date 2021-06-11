@@ -17,8 +17,8 @@ import static org.openhab.binding.carnet.internal.CarNetUtils.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.measure.Unit;
 
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = CarNetChannelIdMapper.class)
 public class CarNetChannelIdMapper {
     private final Logger logger = LoggerFactory.getLogger(CarNetChannelIdMapper.class);
-    private static final Map<String, ChannelIdMapEntry> channelDefinitions = new LinkedHashMap<>();
+    private static final Map<String, ChannelIdMapEntry> CHANNEL_DEFINITIONS = new ConcurrentHashMap<>();
     private final CarNetTextResources resources;
 
     public class ChannelIdMapEntry {
@@ -162,7 +162,7 @@ public class CarNetChannelIdMapper {
     }
 
     public Map<String, ChannelIdMapEntry> getDefinitions() {
-        return channelDefinitions;
+        return CHANNEL_DEFINITIONS;
     }
 
     /**
@@ -172,7 +172,7 @@ public class CarNetChannelIdMapper {
      * @return Returns channel definition
      */
     public @Nullable ChannelIdMapEntry find(String id) {
-        for (Map.Entry<String, ChannelIdMapEntry> e : channelDefinitions.entrySet()) {
+        for (Map.Entry<String, ChannelIdMapEntry> e : CHANNEL_DEFINITIONS.entrySet()) {
             if (id.startsWith(e.getKey())) {
                 return e.getValue();
             }
@@ -280,8 +280,8 @@ public class CarNetChannelIdMapper {
         entry.pattern = entry.getPattern();
         entry.options = entry.getOptions();
 
-        if (!channelDefinitions.containsKey(id)) {
-            channelDefinitions.put(id, entry);
+        if (!CHANNEL_DEFINITIONS.containsKey(id)) {
+            CHANNEL_DEFINITIONS.put(id, entry);
         }
 
         return entry;
@@ -447,7 +447,7 @@ public class CarNetChannelIdMapper {
     public void dumpChannelDefinitions() {
         try (FileWriter myWriter = new FileWriter("carnetChannels.MD")) {
             String lastGroup = "";
-            for (Map.Entry<String, ChannelIdMapEntry> m : channelDefinitions.entrySet()) {
+            for (Map.Entry<String, ChannelIdMapEntry> m : CHANNEL_DEFINITIONS.entrySet()) {
                 ChannelIdMapEntry e = m.getValue();
                 if (!e.channelName.isEmpty()) {
                     String group = lastGroup.equals(e.groupName) ? "" : e.groupName;

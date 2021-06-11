@@ -144,5 +144,5 @@ public class CarNetApiConstants {
     public static final String CNAPI_REQUEST_FAILED = "failed";
     public static final String CNAPI_REQUEST_ERROR = "api_error";
     public static final String CNAPI_REQUEST_TIMEOUT = "timoute";
-    public static final String CNAPI_REQUEST_REJECTED = "local_rejected";
+    public static final String CNAPI_REQUEST_REJECTED = "rejected";
 }

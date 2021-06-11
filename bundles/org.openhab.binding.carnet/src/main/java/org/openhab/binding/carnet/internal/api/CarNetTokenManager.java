@@ -21,10 +21,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -93,6 +91,12 @@ public class CarNetTokenManager {
             return tokens.vwToken.accessToken;
         }
 
+        // First try to refresh token
+        if (!tokens.vwToken.refreshToken.isEmpty() && refreshToken(config, tokens.vwToken)) {
+            // successful, return new token, otherwise re-login
+            return tokens.vwToken.accessToken;
+        }
+
         /*
          * Authentication is performed as follows
          * 1. OAuth based login is performed given the account credentials. This results in the so-called Id Token
@@ -103,30 +107,26 @@ public class CarNetTokenManager {
          * The token service also provides the option to revoke a token, this is not used. Token stays until unless the
          * refresh fails.
          */
-        String url = "", html = "", csrf = "";
-        String userId = "", idToken = "", accessToken = "", expiresIn = "", code = "", codeVerifier = "",
-                codeChallenge = "";
+        String url = "";
         String state = UUID.randomUUID().toString();
         String nonce = generateNonce();
-        Map<String, String> headers = new LinkedHashMap<>();
-        Map<String, String> data = new LinkedHashMap<>();
-        CarNetHttpClient http = tokens.http;
+        CarNetApiResult res = new CarNetApiResult();
+
+        OAuthFlow oauth = new OAuthFlow(tokens.http);
         try {
             logger.debug("{}: Logging in, account={}", config.vehicle.vin, config.account.user);
-            String authUrl = config.api.issuerRegionMappingUrl + "/oidc/v1/authorize";
+            String authUrl = "";
             if (CNAPI_BRAND_VWID.equals(config.api.brand)) {
-                authUrl = http.get(
-                        "https://login.apps.emea.vwapps.io/authorize?nonce=NZ2Q3T6jak0E5pDh&redirect_uri=weconnect://authenticated",
-                        headers, false);
-                url = http.getRedirect();
+                res = oauth.get(
+                        "https://login.apps.emea.vwapps.io/authorize?nonce=NZ2Q3T6jak0E5pDh&redirect_uri=weconnect://authenticated");
+                authUrl = res.response;
+                url = res.getLocation();
             } else {
-                headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-                headers.put(HttpHeader.ACCEPT.toString(),
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-                headers.put(HttpHeader.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded");
-                headers.put("x-requested-with", config.api.xrequest);
-                headers.put("upgrade-insecure-requests", "1");
-
+                authUrl = config.api.issuerRegionMappingUrl + "/oidc/v1/authorize";
+                oauth.header(HttpHeader.USER_AGENT, CNAPI_HEADER_USER_AGENT).header(HttpHeader.ACCEPT,
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
+                        .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                        .header("x-requested-with", config.api.xrequest).header("upgrade-insecure-requests", "1");
                 url = authUrl + "?client_id=" + urlEncode(config.api.clientId) + "&scope="
                         + urlEncode(config.api.authScope).replace("%20", "+") + "&response_type="
                         + urlEncode(config.api.responseType).replace("%20", "+") + "&redirect_uri="
@@ -134,18 +134,12 @@ public class CarNetTokenManager {
                 if (config.authenticator != null) {
                     url = config.authenticator.updateAuthorizationUrl(url);
                 }
-                if (url.contains("code_challenge")) {
-                    codeVerifier = generateCodeVerifier();
-                    codeChallenge = generateCodeChallange(codeVerifier);
-                    url = url + "&code_challenge=" + codeChallenge;
-                }
+                url = oauth.addCodeChallenge(url);
             }
+
             logger.debug("{}: OAuth: Get signin form", config.vehicle.vin);
-            html = http.get(url, headers, false);
-            url = http.getRedirect(); // Signin URL
-            if (url.isEmpty()) {
-                throw new CarNetException("Unable to get signin URL");
-            }
+            res = oauth.get(url);
+            url = oauth.location;
             if (url.contains("error=consent_required")) {
                 logger.debug("Missing consent: {}", url);
                 String message = URLDecoder.decode(url, UTF_8);
@@ -153,40 +147,39 @@ public class CarNetTokenManager {
                 throw new CarNetSecurityException(
                         "Login failed, Consent missing. Login to the Web App and give consent: " + message);
             }
-            html = http.get(url, headers, false);
-            url = http.getRedirect();
-            csrf = substringBetween(html, "name=\"_csrf\" value=\"", "\"/>");
-            String relayState = substringBetween(html, "name=\"relayState\" value=\"", "\"/>");
-            String hmac = substringBetween(html, "name=\"hmac\" value=\"", "\"/>");
+            res = oauth.follow();
+            if (oauth.csrf.isEmpty() || oauth.relayState.isEmpty() || oauth.hmac.isEmpty()) {
+                logger.debug("{}: OAuth failed, can't get parameters\nHTML {}: {}", config.vehicle.vin, res.httpCode,
+                        res.response);
+                throw new CarNetSecurityException("Unable to login - can't get OAuth parameters!");
+            }
 
             // Authenticate: Username
             logger.trace("{}: OAuth input: User", config.vehicle.vin);
-            url = config.api.issuerRegionMappingUrl + "/signin-service/v1/" + config.api.clientId + "/login/identifier";
-            data.put("_csrf", csrf);
-            data.put("relayState", relayState);
-            data.put("hmac", hmac);
-            data.put("email", URLEncoder.encode(config.account.user, UTF_8));
-            http.post(url, headers, data, false);
+            // "/signin-service/v1/" + config.api.clientId + "/login/identifier";
+            url = config.api.issuerRegionMappingUrl + oauth.action;
+            oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
+                    .data("email", URLEncoder.encode(config.account.user, UTF_8));
+            oauth.post(url);
+            if (oauth.location.isEmpty()) {
+                logger.debug("{}: OAuth failed, can't input password - HTML {}: {}", config.vehicle.vin, res.httpCode,
+                        res.response);
+                throw new CarNetSecurityException("Unable to login - can't get OAuth parameters!");
+            }
 
             // Authenticate: Password
             logger.trace("{}: OAuth input: Password", config.vehicle.vin);
-            url = config.api.issuerRegionMappingUrl + http.getRedirect(); // Signin URL
-            html = http.get(url, headers, false);
-            csrf = substringBetween(html, "name=\"_csrf\" value=\"", "\"/>");
-            relayState = substringBetween(html, "name=\"relayState\" value=\"", "\"/>");
-            hmac = substringBetween(html, "name=\"hmac\" value=\"", "\"/>");
+            url = config.api.issuerRegionMappingUrl + oauth.location; // Signin URL
+            res = oauth.get(url);
 
             logger.trace("{}: OAuth input: Authenticate", config.vehicle.vin);
-            url = config.api.issuerRegionMappingUrl + "/signin-service/v1/" + config.api.clientId
-                    + "/login/authenticate";
-            data.clear();
-            data.put("_csrf", csrf);
-            data.put("relayState", relayState);
-            data.put("hmac", hmac);
-            data.put("email", URLEncoder.encode(config.account.user, UTF_8));
-            data.put("password", URLEncoder.encode(config.account.password, UTF_8));
-            html = http.post(url, headers, data, false, false);
-            url = http.getRedirect(); // Continue URL
+            // "/signin-service/v1/" + config.api.clientId + "/login/authenticate";
+            url = config.api.issuerRegionMappingUrl + oauth.action;
+            oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
+                    .data("email", URLEncoder.encode(config.account.user, UTF_8))
+                    .data("password", URLEncoder.encode(config.account.password, UTF_8));
+            res = oauth.post(url);
+            url = oauth.location; // Continue URL
             if (url.contains("error=login.error.throttled")) {
                 throw new CarNetSecurityException(
                         "Login failed due to invalid password, locked account or API throtteling!");
@@ -201,59 +194,38 @@ public class CarNetTokenManager {
             int count = 10;
             String lastUrl = "";
             while (count-- > 0) {
-                html = http.get(url, headers, false);
-                url = http.getRedirect(); // Continue URL
+                res = oauth.follow(); // also fetches oauth fields from redirect urls
+                url = oauth.location; // Continue URL
                 if (url.isEmpty()) {
                     break; // end of redirects
                 }
                 lastUrl = url;
-
-                if (url.contains("&code=")) {
-                    code = getUrlParm(url, "code");
-                }
-                if (url.contains("&userId")) {
-                    userId = getUrlParm(url, "userId");
-                }
-                if (url.contains("&id_token=")) {
-                    idToken = getUrlParm(url, "id_token");
-                }
-                if (url.contains("&expires_in=")) {
-                    expiresIn = getUrlParm(url, "expires_in");
-                }
-                if (url.contains("&access_token=")) {
-                    accessToken = getUrlParm(url, "access_token");
-                }
-                if (url.contains("#state=")) {
-                    state = getUrlParm(url, "state", "#");
-                }
 
                 if (url.contains(config.api.redirect_uri)) {
                     break;
                 }
             }
 
-            if (idToken.isEmpty() || accessToken.isEmpty()) {
-                if (html.contains("Allow access")) // additional consent required
+            if (oauth.idToken.isEmpty() || oauth.accessToken.isEmpty()) {
+                if (res.response.contains("Allow access")) // additional consent required
                 {
-                    String pdata = "&internalAndAlreadyConsentedScopes=openid&internalAndAlreadyConsentedScopes?mbb&internalAndAlreadyConsentedScopes=cars&internalAndAlreadyConsentedScopes=de09395d98992d354a470291296eda97050e9adf76c77f8518753857cc0293ec&checkbox-vehicleLights=vehicleLights&consentedScopes=vehicleLights";
-                    html = http.post(lastUrl, headers, pdata);
-                    url = http.getRedirect(); // Continue URL
-                    logger.debug("Consent missing, URL={}\n   HTML: {}", lastUrl, html);
+                    logger.debug("Consent missing, URL={}\n   HTML: {}", res.url, res.response);
                     throw new CarNetSecurityException(
                             "Consent missing. Login to the Web App and give consent: " + config.api.authScope);
                 }
                 throw new CarNetSecurityException("Login/OAuth failed, didn't got accessToken/idToken");
             }
             // In this case the id and access token were returned by the login process
-            tokens.idToken = new CarNetToken(idToken, accessToken, "bearer", Integer.parseInt(expiresIn, 10));
+            tokens.idToken = new CarNetToken(oauth.idToken, oauth.accessToken, "bearer",
+                    Integer.parseInt(oauth.expiresIn, 10));
             logger.trace("{}: OAuth successful, idToken was retrieved, valid for {}sec", config.vehicle.vin,
                     tokens.idToken.validity);
-            tokens.csrf = csrf;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            tokens.csrf = oauth.csrf;
+        } catch (UnsupportedEncodingException e) {
             logger.warn("Technical problem with algorithms", e);
             throw new CarNetException("Technical problem with algorithms", e);
         }
-        if (userId.isEmpty() && idToken.isEmpty()) {
+        if (oauth.userId.isEmpty() && oauth.idToken.isEmpty()) {
             throw new CarNetException("OAuth failed, check credentials!");
         }
 
@@ -264,9 +236,6 @@ public class CarNetTokenManager {
             if (CNAPI_BRAND_VWID.equals(config.api.brand)) { // config.api.xClientId.isEmpty()) {
                 // We Connect
                 logger.debug("{}: Login to We Connect", config.vehicle.vin);
-                headers.clear();
-                headers.put(HttpHeader.HOST.toString(), "login.apps.emea.vwapps.io");
-                data.clear();
                 /*
                  * state: jwtstate,
                  * id_token: jwtid_token,
@@ -276,32 +245,26 @@ public class CarNetTokenManager {
                  * authorizationCode: jwtauth_code,
                  * });
                  */
-                data.put("state", state);
-                data.put("id_token", idToken);
-                data.put("redirect_uri", config.api.redirect_uri);
-                data.put("region", "emea");
-                data.put("access_token", accessToken);
-                data.put("authorizationCode", code);
-                json = http.post("https://login.apps.emea.vwapps.io/login/v1", headers, data, true, false);
+                json = oauth.clearHeader().header(HttpHeader.HOST, "login.apps.emea.vwapps.io") //
+                        .clearData().data("state", state).data("id_token", oauth.idToken)
+                        .data("redirect_uri", config.api.redirect_uri).data("region", "emea")
+                        .data("access_token", oauth.accessToken).data("authorizationCode", oauth.code) //
+                        .post("https://login.apps.emea.vwapps.io/login/v1", true).response;
                 token = fromJson(gson, json, CNApiToken.class);
                 token.normalize();
             } else {
                 // Last step: Request the access token from the VW token management
                 // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
                 // tokens. The tokenSetId provides access to that set.
-                logger.debug("{}: Get VW Token", config.vehicle.vin);
-                headers.clear();
-                headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
-                headers.put(CNAPI_HEADER_CLIENTID, config.api.xClientId);
-                headers.put(HttpHeader.HOST.toString(), "mbboauth-1d.prd.ece.vwg-connect.com");
-                headers.put(CNAPI_HEADER_APP, config.api.xappName);
-                headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
-                headers.put(HttpHeader.ACCEPT.toString(), "*/*");
-                data.clear();
-                data.put("grant_type", "id_token");
-                data.put("token", tokens.idToken.idToken);
-                data.put("scope", "sc2:fal");
-                json = http.post(CNAPI_URL_GET_SEC_TOKEN, headers, data, false);
+                logger.debug("{}: Get Access Token", config.vehicle.vin);
+                json = oauth.clearHeader().header(HttpHeader.USER_AGENT, "okhttp/3.7.0")
+                        .header(CNAPI_HEADER_CLIENTID, config.api.xClientId)
+                        .header(HttpHeader.HOST.toString(), "mbboauth-1d.prd.ece.vwg-connect.com")
+                        .header(CNAPI_HEADER_APP, config.api.xappName).header(CNAPI_HEADER_VERS, config.api.xappVersion)
+                        .header(HttpHeader.ACCEPT, "*/*") //
+                        .clearData().data("grant_type", "id_token").data("token", tokens.idToken.idToken)
+                        .data("scope", "sc2:fal") //
+                        .post(CNAPI_URL_GET_SEC_TOKEN).response;
                 token = fromJson(gson, json, CNApiToken.class);
             }
             if ((token.accessToken == null) || token.accessToken.isEmpty()) {
@@ -319,7 +282,7 @@ public class CarNetTokenManager {
     public String createIdToken(CarNetCombinedConfig config) throws CarNetException {
         TokenSet tokens = getTokenSet(config.tokenSetId);
         if (!tokens.idToken.isValid() || tokens.idToken.isExpired()) {
-            // Token got invlaid, force recreation
+            // Token got invalid, force recreation
             logger.debug("{}: idToken experied, re-login", config.vehicle.vin);
             tokens.vwToken.invalidate();
             createVwToken(config);
@@ -384,7 +347,7 @@ public class CarNetTokenManager {
         String url = config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/vehicles/"
                 + config.vehicle.vin.toUpperCase() + "/services/" + service + "/operations/" + action
                 + "/security-pin-auth-requested";
-        String json = http.get(url, headers, accessToken);
+        String json = http.get(url, headers, accessToken).response;
         CarNetSecurityPinAuthInfo authInfo = fromJson(gson, json, CarNetSecurityPinAuthInfo.class);
         String pinHash = sha512(config.vehicle.pin, authInfo.securityPinAuthInfo.securityPinTransmission.challenge)
                 .toUpperCase();
@@ -398,7 +361,7 @@ public class CarNetTokenManager {
         // "https://mal-3a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/security-pin-auth-completed",
         String data = gson.toJson(pinAuth);
         json = http.post(config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/security-pin-auth-completed",
-                headers, data);
+                headers, data).response;
         CNApiToken t = fromJson(gson, json, CNApiToken.class);
         CarNetToken securityToken = new CarNetToken(t);
         if (securityToken.securityToken.isEmpty()) {
@@ -455,6 +418,16 @@ public class CarNetTokenManager {
         return false;
     }
 
+    public boolean isAccessTokenValid(CarNetCombinedConfig config) {
+        try {
+            TokenSet tokens = getTokenSet(config.tokenSetId);
+            return tokens.vwToken.isValid();
+        } catch (IllegalArgumentException e) {
+            logger.debug("Invalid token!");
+            return false;
+        }
+    }
+
     /**
      * Refresh the access token
      *
@@ -468,14 +441,14 @@ public class CarNetTokenManager {
             return false;
         }
 
-        if (token.refreshToken.isEmpty()) {
+        TokenSet tokens = getTokenSet(config.tokenSetId);
+        CarNetHttpClient http = tokens.http;
+        if (tokens.vwToken.refreshToken.isEmpty()) {
             logger.debug("{}: No refreshToken available, token is now invalid", config.vehicle.vin);
             token.invalidate();
             return false;
         }
 
-        TokenSet tokens = getTokenSet(config.tokenSetId);
-        CarNetHttpClient http = tokens.http;
         if (token.isExpired()) {
             logger.debug("{}: Refreshing Token {}", config.vehicle.vin, token.accessToken);
             try {
@@ -485,21 +458,25 @@ public class CarNetTokenManager {
                 data.put("grant_type", "refresh_token");
                 data.put("refresh_token", tokens.vwToken.refreshToken);
                 data.put("scope", "sc2%3Afal");
-                String json = http.post(url, http.fillRefreshHeaders(), data, false);
+                String json = http.post(url, http.fillRefreshHeaders(), data, false).response;
                 CNApiToken newToken = gson.fromJson(json, CNApiToken.class);
                 if (newToken == null) {
                     throw new CarNetSecurityException("Unable to parse token information from JSON");
                 }
-                tokens.vwToken = new CarNetToken(newToken);
+                tokens.vwToken.accessToken = newToken.accessToken;
+                tokens.vwToken.setValidity(newToken.validity);
                 updateTokenSet(config.tokenSetId, tokens);
-                logger.debug("{}: Token refresh successful, valid for {} sec", config.vehicle.vin,
-                        tokens.vwToken.validity);
+                logger.debug("{}: Token refresh successful, valid for {} sec, new token={}", config.vehicle.vin,
+                        tokens.vwToken.validity, tokens.vwToken.accessToken);
             } catch (CarNetException e) {
                 logger.debug("{}: Unable to refresh token: {}", config.vehicle.vin, e.toString());
-                // Invalidate token
+                // Invalidate token (triggers a new login when accessToken is required)
                 if (token.isExpired()) {
                     tokens.vwToken.invalidate();
                     updateTokenSet(config.tokenSetId, tokens);
+                    logger.debug("Token refresh failed and current accessToken is expired");
+                } else {
+                    logger.debug("Token refresh failed, but accessToken is still valid");
                 }
                 return false;
             }

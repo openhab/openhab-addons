@@ -26,7 +26,7 @@
 			<default>2</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="apiLevelClimatisation" type="integer" min="1" max="2" required="false">
+		<parameter name="apiLevelClimatisation" type="integer" min="1" max="3" required="false">
 			<label>API Level Climatisation</label>
 			<description>Specifies API format variant to control climatisation, change only if not working with default</description>
 			<default>2</default>

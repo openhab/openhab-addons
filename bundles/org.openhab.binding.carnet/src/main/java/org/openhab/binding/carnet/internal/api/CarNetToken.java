@@ -55,7 +55,25 @@ public class CarNetToken {
 
         if (token.validity != null) {
             setValidity(token.validity);
+        } else {
+            validity = -1;
         }
+    }
+
+    public void updateToken(CNApiToken token) {
+        if (!token.idToken.isEmpty()) {
+            this.idToken = token.idToken;
+        }
+        if (!token.accessToken.isEmpty()) {
+            this.accessToken = token.accessToken;
+        }
+        if (!token.refreshToken.isEmpty()) {
+            this.refreshToken = token.refreshToken;
+        }
+        if (!token.securityToken.isEmpty()) {
+            this.securityToken = token.securityToken;
+        }
+        setValidity(token.validity);
     }
 
     public void setValidity(int validity) {

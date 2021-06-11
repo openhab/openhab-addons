@@ -67,14 +67,17 @@ public class CarNetServiceRLU extends CarNetBaseService {
         Collections.sort(hist.actions.action, Collections.reverseOrder(new Comparator<CarNetRluLockAction>() {
             @Override
             public int compare(CarNetRluLockAction a, CarNetRluLockAction b) {
-                return b.timestamp.compareTo(a.timestamp);
+                return a.timestamp.compareTo(b.timestamp);
             }
         }));
 
-        int max = Math.min(getConfig().vehicle.numRluHistory, hist.actions.action.size());
-        for (int i = 0; i < max; i++) {
-            CarNetRluLockAction entry = hist.actions.action.get(i);
-            String group = CHANNEL_GROUP_RLUHIST + (i + 1);
+        int i = 0;
+        int count = getConfig().vehicle.numRluHistory;
+        for (CarNetRluLockAction entry : hist.actions.action) {
+            if (++i > count) {
+                break;
+            }
+            String group = CHANNEL_GROUP_RLUHIST + i;
             updated |= updateChannel(group, CHANNEL_RLUHIST_TS, getDateTime(getString(entry.timestamp)));
             updated |= updateChannel(group, CHANNEL_RLUHIST_OP, getStringType(entry.operation));
             updated |= updateChannel(group, CHANNEL_RLUHIST_RES, getStringType(entry.rluResult));

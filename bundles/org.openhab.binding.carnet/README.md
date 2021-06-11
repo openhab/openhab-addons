@@ -15,6 +15,7 @@ Some verified vehicles:
 |----------|------------|----|----------|------|--------|-----|-------|-----------|----|---|-----|----|------|-------------------------------------------------------|
 |Audi      |A6          |2020|Diesel    |DE/DE |yes     |n/a  |no     |no         |no  |no |no   |no  |no    |Various services not available even with active license|
 |Audi      |Q3 Sportback|2020|Gas       |DE/DE |        |     |       |           |    |   |     |    |      |                                                       |
+|Audi      |e-tron  300 |2021|Electrical|DE/DE |        |     |       |           |    |   |     |    |      |                                                       |
 |Skoda     |Superb      |2020|Hybrid    |DE/CH |        |     |       |           |    |   |     |    |      |                                                       |
 |Volkswagen|Arteon      |2021|          |DE/   |        |     |       |           |    |   |     |    |      |                                                       |
 |Volkswagen|eGolf       |2020|Electrical|DE/DE |no      |yes  |n/a    |           |    |   |     |    |      |                                                       |
@@ -131,6 +132,26 @@ For all num-options:
 Values can be 1..5 or 0 to disable this history.
 This creates a channel group per entry, e.g. destination1, destination2, destination3, rluHistory1, rluHistory2 etc.
 The newest entry will be in xxx1 channel group.
+
+### Vehicle Remote Actions
+
+The binding supports remote actions depending on available services.
+Make sure you issues only once action at a time, you could use the `lastActionPending` (ON=action pending) and `lastActionResult`  channels to synchronize.
+
+The result codes are not consistent across the different services:
+
+|Code                                                 | Description                                                                                   |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+|rejected                                             |Action was rejected, because another one was pending or API returned a general error, check log|
+|request_fail, failed, api_error                      |Action failed, check log                                                                       | 
+|request_in_progress, queued, fetched, request_started|Temporarity status, action is processing, but not yet performed                                |
+|timeout                                              |Action timed out and was most likely not performed                                             |
+|request_successful, succeeded                        |Request wascompleted successful, action performed                                              |
+|request_in_progress                                  |Request id was not found in the backend, maybe a bug                                           |
+
+Enable openHAB's DEBUG or TRACE log for details analysis.
+
+### Thing Channels
 
 The following channels are available depending on the vehicle type:
 

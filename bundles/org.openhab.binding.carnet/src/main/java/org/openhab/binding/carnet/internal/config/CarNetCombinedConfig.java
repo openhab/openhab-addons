@@ -16,10 +16,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNPairingInfo.CarNetPairingInfo;
-import org.openhab.binding.carnet.internal.api.brand.CarNetApiProperties;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetMbbStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetOidcConfig;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
+import org.openhab.binding.carnet.internal.api.brand.CarNetApiProperties;
 
 /**
  * {@link CarNetCombinedConfig} combines account and vehicle config on the api level

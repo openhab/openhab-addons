@@ -52,22 +52,16 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
-        try {
-            return update(channels);
-        } catch (CarNetException e) {
-            logger.debug("{}: Unable to create channels for service {}", thingId, serviceId);
+        boolean created = false;
+        int count = getConfig().vehicle.numSpeedAlerts;
+        for (int i = 0; i < count; i++) {
+            String group = CHANNEL_GROUP_SPEEDALERT + i;
+            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TYPE, ITEMT_STRING, null, false, true);
+            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TIME, ITEMT_DATETIME, null, false, true);
+            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_DESCR, ITEMT_STRING, null, false, true);
+            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_LIMIT, ITEMT_SPEED, null, false, true);
         }
-        return false;
-    }
-
-    private boolean createChannels(Map<String, ChannelIdMapEntry> ch, int index) {
-        boolean a = false;
-        String group = CHANNEL_GROUP_SPEEDALERT + index;
-        a |= addChannel(ch, group, CHANNEL_SPEEDALERT_TYPE, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_SPEEDALERT_TIME, ITEMT_DATETIME, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_SPEEDALERT_DESCR, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_SPEEDALERT_LIMIT, ITEMT_SPEED, null, false, true);
-        return a;
+        return created;
     }
 
     @Override
@@ -76,7 +70,6 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
     }
 
     private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarNetException {
-        boolean updated = false;
         CarNetSpeedAlerts sa = api.getSpeedAlerts();
         if (sa.speedAlert == null) {
             return false;
@@ -88,26 +81,19 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
             }
         }));
 
+        boolean updated = false;
         int i = 0; // latest first
-        int l = 1;
-        while ((i < sa.speedAlert.size()) && (l <= getConfig().vehicle.numSpeedAlerts)) {
-            if (channels != null) {
-                createChannels(channels, l);
-                updated = true;
-            } else {
-                String group = CHANNEL_GROUP_SPEEDALERT + l;
-                CarNetpeedAlertEntry entry = sa.speedAlert.get(i);
-                if (entry != null) {
-                    updated |= updateChannel(group, CHANNEL_SPEEDALERT_TYPE, getStringType(entry.alertType));
-                    updated |= updateChannel(group, CHANNEL_SPEEDALERT_DESCR, getStringType(entry.definitionName));
-                    updated |= updateChannel(group, CHANNEL_SPEEDALERT_TIME,
-                            getDateTime(getString(entry.occurenceDateTime)));
-                    updated |= updateChannel(group, CHANNEL_SPEEDALERT_LIMIT, getDecimal(entry.speedLimit), 0,
-                            SIUnits.KILOMETRE_PER_HOUR);
-                }
+        int count = getConfig().vehicle.numSpeedAlerts;
+        for (CarNetpeedAlertEntry entry : sa.speedAlert) {
+            if (++i > count) {
+                break;
             }
-            i++;
-            l++;
+            String group = CHANNEL_GROUP_SPEEDALERT + i;
+            updated |= updateChannel(group, CHANNEL_SPEEDALERT_TYPE, getStringType(entry.alertType));
+            updated |= updateChannel(group, CHANNEL_SPEEDALERT_DESCR, getStringType(entry.definitionName));
+            updated |= updateChannel(group, CHANNEL_SPEEDALERT_TIME, getDateTime(getString(entry.occurenceDateTime)));
+            updated |= updateChannel(group, CHANNEL_SPEEDALERT_LIMIT, getDecimal(entry.speedLimit), 0,
+                    SIUnits.KILOMETRE_PER_HOUR);
         }
         return updated;
     }

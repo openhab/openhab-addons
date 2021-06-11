@@ -34,7 +34,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -56,7 +55,6 @@ public class CarNetHttpClient {
 
     private final HttpClient httpClient;
     private CarNetCombinedConfig config = new CarNetCombinedConfig();
-    private HttpFields responseHeaders = new HttpFields();
     private @Nullable CarNetEventListener eventListener;
 
     public CarNetHttpClient() {
@@ -96,20 +94,20 @@ public class CarNetHttpClient {
      * @param path Path of the requested resource
      * @return response
      */
-    public String get(String uri, Map<String, String> headers, String token) throws CarNetException {
+    public CarNetApiResult get(String uri, Map<String, String> headers, String token) throws CarNetException {
         headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + token);
         return request(HttpMethod.GET, uri, "", headers, "", "", token);
     }
 
-    public String get(String uri, Map<String, String> headers, boolean followRedirect) throws CarNetException {
+    public CarNetApiResult get(String uri, Map<String, String> headers, boolean followRedirect) throws CarNetException {
         return request(HttpMethod.GET, uri, "", headers, "", "", "", followRedirect);
     }
 
-    public String get(String uri, Map<String, String> headers) throws CarNetException {
+    public CarNetApiResult get(String uri, Map<String, String> headers) throws CarNetException {
         return request(HttpMethod.GET, uri, "", headers, "", "", "");
     }
 
-    public String get(String uri, String vin, Map<String, String> headers) throws CarNetException {
+    public CarNetApiResult get(String uri, String vin, Map<String, String> headers) throws CarNetException {
         return request(HttpMethod.GET, uri, "", headers, "", vin, "");
     }
 
@@ -119,26 +117,37 @@ public class CarNetHttpClient {
      * @param path Path of the requested resource
      * @return response
      */
-    public String post(String uri, String parms, Map<String, String> headers, String data) throws CarNetException {
+    public CarNetApiResult post(String uri, String parms, Map<String, String> headers, String data)
+            throws CarNetException {
         return request(HttpMethod.POST, uri, parms, headers, data, "", "", false);
     }
 
-    public String post(String uri, Map<String, String> headers, String data) throws CarNetException {
+    public CarNetApiResult post(String uri, Map<String, String> headers, String data) throws CarNetException {
         return request(HttpMethod.POST, uri, "", headers, data, "", "", false);
     }
 
-    public String post(String uri, Map<String, String> headers, String data, String token) throws CarNetException {
+    public CarNetApiResult post(String uri, Map<String, String> headers, String data, String token)
+            throws CarNetException {
         return request(HttpMethod.POST, uri, "", headers, data, "", token, false);
     }
 
-    public String post(String uri, Map<String, String> headers, Map<String, String> data, boolean json)
+    public CarNetApiResult post(String uri, Map<String, String> headers, Map<String, String> data, boolean json)
             throws CarNetException {
         return request(HttpMethod.POST, uri, "", headers, buildPostData(data, json), "", "", false);
     }
 
-    public String post(String uri, Map<String, String> headers, Map<String, String> data, boolean json,
+    public CarNetApiResult post(String uri, Map<String, String> headers, Map<String, String> data, boolean json,
             boolean followRedirect) throws CarNetException {
         return request(HttpMethod.POST, uri, "", headers, buildPostData(data, json), "", "", followRedirect);
+    }
+
+    private CarNetApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers,
+            String data, String pvin, String token) throws CarNetException {
+        return request(method, uri, parms, headers, data, pvin, token, true);
+    }
+
+    public void clearCookies() {
+        httpClient.getCookieStore().removeAll();
     }
 
     /**
@@ -155,8 +164,8 @@ public class CarNetHttpClient {
      * @return Returns the HTTP response. In additional lastHttpHeaders get filled with the http response headers
      * @throws CarNetException
      */
-    private String request(HttpMethod method, String uri, String parms, Map<String, String> headers, String data,
-            String pvin, String token, boolean followRedirect) throws CarNetException {
+    private CarNetApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers,
+            String data, String pvin, String token, boolean followRedirect) throws CarNetException {
         Request request = null;
         String url = "";
         try {
@@ -168,29 +177,25 @@ public class CarNetHttpClient {
             fillPostData(request, data);
 
             // Do request and get response
-            logger.debug("HTTP {} {}\nBody/Data={}", request.getMethod(), request.getURI(), data);
+            logger.debug("HTTP {} {}\nBody/Data: {}", request.getMethod(), request.getURI(), data);
             logger.trace("  Headers: \n{}", request.getHeaders().toString());
             // request.followRedirects(followRedirect);
             request.followRedirects(false);
             ContentResponse contentResponse = request.send();
             apiResult = new CarNetApiResult(contentResponse);
-            int code = contentResponse.getStatus();
-            String response = contentResponse.getContentAsString().replaceAll("[\r\n\t]", "");
-            responseHeaders = contentResponse.getHeaders();
-            if (responseHeaders.containsKey("X-RateLimit-Remaining")) {
-                int rateLimit = Integer.parseInt(responseHeaders.get("X-RateLimit-Remaining"));
-                apiResult.rateLimit = rateLimit;
-                logger.debug("{}: Remaining rate limit = {}", config.vehicle.vin, rateLimit);
+            String response = apiResult.response.replaceAll("[\r\n\t]", "");
+            if (apiResult.rateLimit > 0) {
+                logger.debug("{}: Remaining rate limit = {}", config.vehicle.vin, apiResult.rateLimit);
                 if (eventListener != null) {
-                    eventListener.onRateLimit(rateLimit);
+                    eventListener.onRateLimit(apiResult.rateLimit);
                 }
             }
 
             // validate response, API errors are reported as Json
-            logger.trace("HTTP Response: {}", response);
-            logger.trace("  Headers: \n{}", responseHeaders);
-            String loc = getRedirect();
-            switch (code) {
+            logger.trace("HTTP {} Response: {}", apiResult.httpCode, response);
+            logger.trace("  Headers: \n{}", apiResult.responseHeaders);
+            String loc = apiResult.getLocation();
+            switch (apiResult.httpCode) {
                 case HttpStatus.UNAUTHORIZED_401:
                 case HttpStatus.FORBIDDEN_403:
                 case HttpStatus.METHOD_NOT_ALLOWED_405:
@@ -199,15 +204,16 @@ public class CarNetHttpClient {
                 case HttpStatus.ACCEPTED_202:
                 case HttpStatus.NO_CONTENT_204:
                 case HttpStatus.SEE_OTHER_303:
-                    return response; // valid
+                    return apiResult; // valid
                 case HttpStatus.MOVED_PERMANENTLY_301:
                 case HttpStatus.TEMPORARY_REDIRECT_307:
                 case HttpStatus.FOUND_302:
                     if (!loc.isEmpty()) {
-                        logger.debug("HTTP {} -> {}", code, loc);
-                        apiResult.location = loc;
+                        logger.debug("HTTP {} -> {}", apiResult.httpCode, loc);
                     }
                     break;
+                default:
+                    throw new CarNetException("API call failed", apiResult);
             }
             if (response.contains("\"error\":")) {
                 throw new CarNetException("API returned error", apiResult);
@@ -215,40 +221,10 @@ public class CarNetHttpClient {
             if (response.isEmpty() && loc.isEmpty()) {
                 throw new CarNetException("Invalid result received from API, maybe URL problem", apiResult);
             }
-            return response;
+            return apiResult;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             throw new CarNetException("API call failed!", new CarNetApiResult(request, e), e);
         }
-    }
-
-    private String request(HttpMethod method, String uri, String parms, Map<String, String> headers, String data,
-            String pvin, String token) throws CarNetException {
-        return request(method, uri, parms, headers, data, pvin, token, true);
-    }
-
-    /**
-     * Get redirect location from http response headers
-     *
-     * @return
-     */
-    public String getRedirect() {
-        String value = responseHeaders.get("Location");
-        return value != null ? value : "";
-    }
-
-    public String getReferrer() {
-        String value = responseHeaders.get("Referer");
-        return value != null ? value : "";
-    }
-
-    /**
-     * Get rresponse time from http response headers
-     *
-     * @return
-     */
-    public String getResponseDate() {
-        String value = responseHeaders.get("Date");
-        return value != null ? value : "";
     }
 
     /**

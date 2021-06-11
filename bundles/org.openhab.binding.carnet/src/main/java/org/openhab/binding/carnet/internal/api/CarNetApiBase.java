@@ -267,12 +267,12 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     public String refreshVehicleStatus() throws CarNetException {
-        String json = http.post("bs/vsr/v1/{0}/{1}/vehicles/{2}/requests", fillAppHeaders(), "", "");
+        String json = http.post("bs/vsr/v1/{0}/{1}/vehicles/{2}/requests", fillAppHeaders(), "", "").response;
         return queuePendingAction(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, "status", json);
     }
 
     public String getVehicleRequets() throws CarNetException {
-        return http.post("bs/vsr/v1/{0}/{1}/vehicles/{2}/requests", fillAppHeaders(), "", "");
+        return http.post("bs/vsr/v1/{0}/{1}/vehicles/{2}/requests", fillAppHeaders(), "", "").response;
     }
 
     public CarNetPosition getVehiclePosition() throws CarNetException {
@@ -345,12 +345,14 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         boolean secToken = !CNAPI_HEATER_SOURCE_ELECTRIC.equals(heaterSource);
         if (start) {
             if ((config.account.apiLevelClimatisation == 1) || heaterSource.isEmpty()) {
-                // simplified format without header source
+                // simplified format without header source, Skoda?
                 body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>startClimatisation</type></action>";
+            } else if (config.account.apiLevelClimatisation == 3) {
+                // standard format with header source, e.g. E-Tron
+                body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><action><type>startClimatisation</type>"
+                        + "<settings><heaterSource>" + heaterSource + "</heaterSource></settings></action>";
             } else {
-                // standard format with header source
-                // body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><action><type>startClimatisation</type>"
-                // + "<settings><heaterSource>" + heaterSource + "</heaterSource></settings></action>";
+                // json format, e.g. VW
                 contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_2+json";
                 body = "{\"action\": {\"settings\": {\"climatisationWithoutHVpower\": \"without_hv_power\", \"heaterSource\": \""
                         + heaterSource + "\"}, \"type\": \"startClimatisation\"}";
@@ -541,7 +543,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                         CNAPI_ACTION_REMOTE_PRETRIP_CLIMATISATION_START_AUX_OR_AUTO.equals(action) ? " X-securityToken"
                                 : "x-mbbSecToken",
                         reqSecToken ? createSecurityToken(service, action) : "");
-                String json = http.post(uri, headers, body);
+                String json = http.post(uri, headers, body).response;
                 return queuePendingAction(service, action, json);
             }
         } catch (CarNetException e) {
@@ -567,7 +569,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             throws CarNetException {
         String json = "";
         try {
-            json = http.get(uri, vin, headers);
+            json = http.get(uri, vin, headers).response;
         } catch (CarNetException e) {
             CarNetApiResult res = e.getApiResult();
             if (e.isSecurityException() || res.isHttpUnauthorized()) {
@@ -576,7 +578,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 // Handle redirect
                 String newLocation = res.getLocation();
                 logger.debug("{}: Handle HTTP Redirect -> {}", config.vehicle.vin, newLocation);
-                json = http.get(newLocation, vin, fillAppHeaders());
+                json = http.get(newLocation, vin, fillAppHeaders()).response;
             }
 
             if ((json == null) || json.isEmpty()) {
@@ -749,8 +751,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
         headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
         headers.put(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_FORM_URLENC);
-        String json = http.get(url, headers);
-        config.api.oidcDate = http.getResponseDate();
+        CarNetApiResult res = http.get(url, headers);
+        String json = res.response;
+        config.api.oidcDate = res.getResponseDate();
         return fromJson(gson, json, CarNetOidcConfig.class);
     }
 
@@ -901,7 +904,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     private CarNetJwtToken decodeJwt(String token) throws CarNetException {
         Base64.Decoder decoder = Base64.getDecoder();
         String[] chunks = token.split("\\.");
-        String header = new String(decoder.decode(chunks[0]));
+        // Header is chunks[0], payload chunks[1]
         String payload = new String(decoder.decode(chunks[1]));
         return fromJson(gson, payload, CarNetJwtToken.class);
     }
@@ -912,5 +915,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
 
     public boolean refreshTokens() throws CarNetException {
         return tokenManager.refreshTokens(config);
+    }
+
+    public boolean isAccessTokenValid() throws CarNetException {
+        return tokenManager.isAccessTokenValid(config);
     }
 }

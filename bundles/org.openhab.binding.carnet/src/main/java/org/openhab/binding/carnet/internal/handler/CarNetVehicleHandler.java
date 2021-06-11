@@ -438,14 +438,20 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         }
 
         if (!pending && requestStatus) {
-            String status = api.refreshVehicleStatus();
-            logger.debug("{}: Vehicle status refresh initiated, status={}", thingId, status);
-            requestStatus = false;
-            updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, OnOffType.OFF);
+            try {
+                requestStatus = false;
+                String status = api.refreshVehicleStatus();
+                logger.debug("{}: Vehicle status refresh initiated, status={}", thingId, status);
+                updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, OnOffType.OFF);
+            } catch (CarNetException e) {
+                logger.debug("{}: Unable to request status refresh from vehicle: {}", thingId, e.toString());
+            }
         }
 
         /*
          * Iterate all enabled services and poll for updates
+         * If a single service poll fails, continue anyways
+         * unless the access token expired and can't be renewed
          */
         boolean updated = false;
         for (Map.Entry<String, CarNetBaseService> s : services.entrySet()) {
@@ -455,8 +461,17 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             } catch (CarNetException e) {
                 logger.debug("{}: Unable to get updates from service {}: {}", thingId, service.getServiceId(),
                         e.toString());
+                if (!api.isAccessTokenValid()) {
+                    logger.debug("{}: Access token became invalid, cancel update", thingId);
+                    break;
+                }
             }
         }
+
+        if (!api.isAccessTokenValid()) {
+            throw new CarNetException("Access Token expired, renewal failed!");
+        }
+
         return updateLastUpdate(updated);
     }
 
@@ -602,22 +617,17 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
 
             if (forceUpdate || (updateCounter % skipCount == 0)) {
                 CarNetAccountHandler handler = accountHandler;
-                if ((handler != null) && (handler.getThing().getStatus() == ThingStatus.ONLINE)) {
+                if (handler != null) {
                     String error = "";
+                    boolean initialized = true;
                     try {
                         ThingStatus s = getThing().getStatus();
-                        boolean initialized = true;
                         boolean offline = (s == ThingStatus.UNKNOWN) || (s == ThingStatus.OFFLINE);
                         if (offline) {
                             initialized = initializeThing();
                         }
                         if (initialized) {
                             updateVehicleStatus(); // on success thing must be online
-                            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                                logger.debug("{}: Thing is now online", thingId);
-                                updateStatus(ThingStatus.ONLINE);
-                                updateAllChannels();
-                            }
                         }
                     } catch (CarNetException e) {
                         if (e.isTooManyRequests() || e.isHttpNotModified()) {
@@ -630,9 +640,16 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                         error = "General Error: " + getString(e.getMessage());
                         logger.warn("{}: {}", thingId, error, e);
                     }
-
-                    if (!error.isEmpty()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                    if (error.isEmpty()) {
+                        if (getThing().getStatus() != ThingStatus.ONLINE) {
+                            logger.debug("{}: Thing is now online", thingId);
+                            updateAllChannels();
+                            updateStatus(ThingStatus.ONLINE);
+                        }
+                    } else {
+                        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                        }
                     }
 
                     if ((updateCounter >= cacheCount) && !cache.isEnabled()) {

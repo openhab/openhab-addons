@@ -13,11 +13,13 @@
 package org.openhab.binding.carnet.internal.api;
 
 import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO.CNApiError2;
 
@@ -34,10 +36,11 @@ public class CarNetApiResult {
     public String url = "";
     public String method = "";
     public String response = "";
+    private String location = "";
     public int httpCode = 0;
     public String httpReason = "";
-    public String location = "";
     public int rateLimit = -1;
+    public HttpFields responseHeaders = new HttpFields();
     CarNetApiErrorDTO apiError = new CarNetApiErrorDTO();
 
     public CarNetApiResult() {
@@ -106,12 +109,23 @@ public class CarNetApiResult {
         return location;
     }
 
+    public String getResponseDate() {
+        String value = responseHeaders.get("Date");
+        return value != null ? value : "";
+    }
+
     private void fillFromResponse(@Nullable ContentResponse contentResponse) {
         if (contentResponse != null) {
             String r = contentResponse.getContentAsString();
             response = r != null ? r : "";
             httpCode = contentResponse.getStatus();
             httpReason = contentResponse.getReason();
+
+            responseHeaders = contentResponse.getHeaders();
+            location = getString(responseHeaders.get("Location"));
+            if (responseHeaders.containsKey("X-RateLimit-Remaining")) {
+                rateLimit = Integer.parseInt(responseHeaders.get("X-RateLimit-Remaining"));
+            }
 
             Request request = contentResponse.getRequest();
             if (request != null) {
