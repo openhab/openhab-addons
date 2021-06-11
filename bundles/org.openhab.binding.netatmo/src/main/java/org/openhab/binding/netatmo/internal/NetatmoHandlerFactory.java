@@ -26,9 +26,8 @@ import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.SignalHelper;
-import org.openhab.binding.netatmo.internal.handler.HomeSecurityHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoEventDeviceHandler;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -56,18 +55,15 @@ import org.slf4j.LoggerFactory;
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
 
-    private final TimeZoneProvider timeZoneProvider;
     private final NetatmoDescriptionProvider stateDescriptionProvider;
     private final ApiBridge apiBridge;
     private final NetatmoServlet webhookServlet;
 
     @Activate
     public NetatmoHandlerFactory(@Reference HttpService httpService,
-            @Reference NetatmoDescriptionProvider stateDescriptionProvider,
-            @Reference TimeZoneProvider timeZoneProvider, @Reference ApiBridge apiBridge,
+            @Reference NetatmoDescriptionProvider stateDescriptionProvider, @Reference ApiBridge apiBridge,
             @Reference NetatmoServlet webhookServlet) {
         this.webhookServlet = webhookServlet;
-        this.timeZoneProvider = timeZoneProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.apiBridge = apiBridge;
     }
@@ -83,8 +79,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         Bridge bridge = (Bridge) thing;
         BaseThingHandler handler = ModuleType.asSet.stream().filter(mt -> mt.matches(thingTypeUID)).findFirst()
                 .map(mt -> buildThing(bridge, mt)).orElse(null);
-        if (handler instanceof HomeSecurityHandler) {
-            ((HomeSecurityHandler) handler).setWebHookServlet(webhookServlet);
+        if (handler instanceof NetatmoEventDeviceHandler) {
+            ((NetatmoEventDeviceHandler) handler).setWebHookServlet(webhookServlet);
         }
         return handler;
     }

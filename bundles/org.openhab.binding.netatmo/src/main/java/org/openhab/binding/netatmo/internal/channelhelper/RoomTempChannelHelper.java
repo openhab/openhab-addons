@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_VALUE;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ROOM_TEMPERATURE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
 import java.util.Set;
@@ -42,10 +41,8 @@ public class RoomTempChannelHelper extends AbstractChannelHelper {
     @Override
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
         NARoom room = (NARoom) naThing;
-        Double temp = room.getThermMeasuredTemperature();
-        if (temp != null && CHANNEL_VALUE.equals(channelId)) {
-            return toQuantityType(temp, MeasureClass.INTERIOR_TEMPERATURE);
-        }
-        return null;
+        return CHANNEL_VALUE.equals(channelId)
+                ? toQuantityType(room.getThermMeasuredTemperature(), MeasureClass.INTERIOR_TEMPERATURE)
+                : null;
     }
 }

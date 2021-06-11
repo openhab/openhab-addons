@@ -12,35 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_BATTERY;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_CO2;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_DEVICE;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ENERGY_BATTERY;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HEALTH;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HOME_ENERGY;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HOME_SECURITY;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_HUMIDITY;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_LOCATION;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_NOISE;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PERSON;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PERSON_EVENT;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PLUG;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PRESENCE;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_PRESSURE;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_RAIN;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ROOM_PROPERTIES;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_ROOM_TEMPERATURE;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_SIGNAL;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TEMPERATURE;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TH_PROPERTIES;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TH_SETPOINT;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_WELCOME;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_WELCOME_EVENT;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_WIND;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NO_RADIO;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.RADIO_SIGNAL_LEVELS;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.WIFI_SIGNAL_LEVELS;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 
 import java.lang.reflect.Constructor;
 import java.util.EnumSet;
@@ -165,7 +138,7 @@ public enum ModuleType {
     // NACamDoorTag : self explaining
     // NSD : smoke detector
     // NIS : indoor siren
-    // NDB : doobell
+    // NDB : doorbell
     ;
 
     public enum RefreshPolicy {

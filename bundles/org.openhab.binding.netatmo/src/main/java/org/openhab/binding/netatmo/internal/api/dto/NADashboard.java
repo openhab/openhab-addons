@@ -179,7 +179,7 @@ public class NADashboard {
         return gustStrength;
     }
 
-    public double getHealthIdx() {
+    public int getHealthIdx() {
         return healthIdx;
     }
 }

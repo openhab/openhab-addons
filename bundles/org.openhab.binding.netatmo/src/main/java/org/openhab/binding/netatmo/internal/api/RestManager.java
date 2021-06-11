@@ -33,9 +33,9 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 @NonNullByDefault
 public abstract class RestManager {
     private static final UriBuilder API_BASE_BUILDER = UriBuilder.fromUri(NA_API_URL);
-    private static final UriBuilder OAUTH_URI_BUILDER = API_BASE_BUILDER.clone().path(NA_OAUTH_PATH);
     private static final UriBuilder API_URI_BUILDER = API_BASE_BUILDER.clone().path(NA_API_PATH);
     private static final UriBuilder APP_URI_BUILDER = UriBuilder.fromUri(NA_APP_URL).path(NA_API_PATH);
+    protected static final URI OAUTH_URI = API_BASE_BUILDER.clone().path(NA_OAUTH_PATH).build();
 
     private final Set<Scope> requiredScopes;
     protected final ApiBridge apiHandler;
@@ -47,10 +47,6 @@ public abstract class RestManager {
     public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes) {
         this.apiHandler = apiHandler;
         this.requiredScopes = requiredScopes;
-    }
-
-    public Set<Scope> getRequiredScopes() {
-        return requiredScopes;
     }
 
     public <T extends ApiResponse<?>> T get(UriBuilder uriBuilder, Class<T> classOfT) throws NetatmoException {
@@ -78,7 +74,7 @@ public abstract class RestManager {
         return APP_URI_BUILDER.clone();
     }
 
-    protected URI getOAuthUri() {
-        return OAUTH_URI_BUILDER.build();
+    public Set<Scope> getRequiredScopes() {
+        return requiredScopes;
     }
 }

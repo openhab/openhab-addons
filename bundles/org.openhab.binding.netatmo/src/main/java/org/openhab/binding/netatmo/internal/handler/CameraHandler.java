@@ -15,9 +15,6 @@ package org.openhab.binding.netatmo.internal.handler;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,23 +47,15 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class CameraHandler extends NetatmoDeviceHandler {
+public class CameraHandler extends NetatmoEventDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
     private @Nullable CameraAddress cameraAddress;
     private @Nullable String vpnUrl;
     private boolean isLocal;
-    private ZonedDateTime maxEventTime;
 
     public CameraHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {
         super(bridge, channelHelpers, apiBridge, descriptionProvider);
-        String lastEvent = editProperties().get(PROPERTY_MAX_EVENT_TIME);
-        maxEventTime = lastEvent != null ? ZonedDateTime.parse(lastEvent) : Instant.EPOCH.atZone(ZoneOffset.UTC);
-    }
-
-    private @Nullable HomeSecurityHandler getHomeHandler() {
-        NetatmoDeviceHandler handler = super.getBridgeHandler(getBridge());
-        return handler != null ? (HomeSecurityHandler) handler : null;
     }
 
     @Override
@@ -74,14 +63,12 @@ public class CameraHandler extends NetatmoDeviceHandler {
         super.setNAThing(naModule);
         NAWelcome camera = (NAWelcome) naModule;
         this.vpnUrl = camera.getVpnUrl();
-        this.isLocal = camera.isLocal();
-        HomeSecurityHandler homeHandler = getHomeHandler();
-        if (homeHandler != null) {
+        getHomeHandler().ifPresent(h -> {
             descriptionProvider.setStateOptions(
                     new ChannelUID(getThing().getUID(), GROUP_WELCOME_EVENT, CHANNEL_EVENT_PERSON_ID),
-                    homeHandler.getKnownPersons().stream().map(p -> new StateOption(p.getId(), p.getName()))
+                    h.getKnownPersons().stream().map(p -> new StateOption(p.getId(), p.getName()))
                             .collect(Collectors.toList()));
-        }
+        });
     }
 
     @Override
@@ -118,31 +105,25 @@ public class CameraHandler extends NetatmoDeviceHandler {
 
     @Override
     public void setEvent(NAEvent event) {
-        if (event.getTime().isAfter(maxEventTime)) {
-            maxEventTime = event.getTime();
-            updateProperty(PROPERTY_MAX_EVENT_TIME, maxEventTime.toString());
+        logger.debug("Updating camera with event : {}", event.toString());
+        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
+        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getMessage()));
+        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TIME, new DateTimeType(event.getTime()));
+        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_PERSON_ID, toStringType(event.getPersonId()));
+        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,
+                event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
 
-            logger.debug("Updating camera with event : {}", event.toString());
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getMessage()));
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TIME, new DateTimeType(event.getTime()));
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_PERSON_ID, toStringType(event.getPersonId()));
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,
-                    event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
-
-            NASnapshot snapshot = event.getSnapshot();
-            if (snapshot != null) {
-                String url = snapshot.getUrl();
-                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
-                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
-            }
-            if (event instanceof NAHomeEvent) {
-                NAHomeEvent homeEvent = (NAHomeEvent) event;
-                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_STATUS,
-                        toStringType(homeEvent.getVideoStatus()));
-                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_URL,
-                        toStringType(getStreamURL(homeEvent.getVideoId())));
-            }
+        NASnapshot snapshot = event.getSnapshot();
+        if (snapshot != null) {
+            String url = snapshot.getUrl();
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
+        }
+        if (event instanceof NAHomeEvent) {
+            NAHomeEvent homeEvent = (NAHomeEvent) event;
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_STATUS, toStringType(homeEvent.getVideoStatus()));
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_URL,
+                    toStringType(getStreamURL(homeEvent.getVideoId())));
         }
     }
 

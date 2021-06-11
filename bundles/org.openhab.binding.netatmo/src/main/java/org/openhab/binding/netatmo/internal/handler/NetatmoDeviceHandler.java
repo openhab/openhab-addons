@@ -14,6 +14,8 @@ package org.openhab.binding.netatmo.internal.handler;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
+import org.openhab.binding.netatmo.internal.action.DeviceActions;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.ConnectionListener;
 import org.openhab.binding.netatmo.internal.api.ConnectionStatus;
@@ -34,7 +37,6 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NADevice;
-import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
@@ -47,6 +49,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -68,10 +71,10 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     private final Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
 
     private final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
-
     private final List<AbstractChannelHelper> channelHelpers;
-    protected final NetatmoDescriptionProvider descriptionProvider;
     private final Optional<MeasuresChannelHelper> measureChannelHelper;
+
+    protected final NetatmoDescriptionProvider descriptionProvider;
     protected final ApiBridge apiBridge;
 
     protected @Nullable NAThing naThing;
@@ -115,7 +118,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     @Override
     public void notifyStatusChange(ConnectionStatus connectionStatus) {
         if (connectionStatus.isConnected()) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, connectionStatus.getMessage());
+            updateStatus(ThingStatus.ONLINE);
             scheduleRefreshJob();
         } else {
             freeRefreshJob();
@@ -170,11 +173,11 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
             if (dataOutdated) {
                 logger.debug("Trying to update channels on device {}", config.id);
                 try {
-                    NAThing newDeviceReading = updateReadings();
+                    NAThing newData = updateReadings();
                     logger.debug("Successfully updated device {} readings! Now updating channels", config.id);
-                    setNAThing(newDeviceReading);
-                    updateProperties(newDeviceReading);
-                    strategy.setDataTimeStamp(newDeviceReading.getLastSeen());
+                    updateProperties(newData);
+                    setNAThing(newData);
+                    strategy.setDataTimeStamp(newData.getLastSeen());
                 } catch (NetatmoException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to connect Netatmo API : " + e.getLocalizedMessage());
@@ -198,13 +201,9 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     }
 
     protected void notifyListener(String id, NAObject newData) {
-        NetatmoDeviceHandler listener = dataListeners.get(id);
-        if (listener != null) {
-            if (newData instanceof NAEvent) {
-                listener.setEvent((NAEvent) newData);
-            } else {
-                listener.setNAThing((NAThing) newData);
-            }
+        NetatmoDeviceHandler listener = getDataListeners().get(id);
+        if (listener != null && newData instanceof NAThing) {
+            listener.setNAThing((NAThing) newData);
         }
     }
 
@@ -298,19 +297,16 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     }
 
     private void registerDataListener(String id, NetatmoDeviceHandler dataListener) {
-        dataListeners.put(id, dataListener);
+        getDataListeners().put(id, dataListener);
         updateChildModules();
     }
 
     private void unregisterDataListener(NetatmoDeviceHandler dataListener) {
-        dataListeners.entrySet().forEach(entry -> {
+        getDataListeners().entrySet().forEach(entry -> {
             if (entry.getValue().equals(dataListener)) {
-                dataListeners.remove(entry.getKey());
+                getDataListeners().remove(entry.getKey());
             }
         });
-    }
-
-    public void setEvent(NAEvent event) {
     }
 
     protected void updateIfLinked(String group, String channelName, State state) {
@@ -335,5 +331,18 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
             return (NetatmoDeviceHandler) bridge.getHandler();
         }
         return null;
+    }
+
+    protected Map<String, NetatmoDeviceHandler> getDataListeners() {
+        return dataListeners;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(DeviceActions.class);
+    }
+
+    public void reconnectApi() {
+        apiBridge.openConnection();
     }
 }

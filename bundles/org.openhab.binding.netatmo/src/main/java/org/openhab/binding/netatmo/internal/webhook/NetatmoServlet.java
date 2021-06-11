@@ -18,9 +18,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +38,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAWebhookEvent;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoEventDeviceHandler;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
 import org.openhab.core.config.core.Configuration;
 import org.osgi.service.component.ComponentContext;
@@ -61,7 +64,7 @@ public class NetatmoServlet extends HttpServlet {
     private static final String CHARSET = "utf-8";
 
     private final Logger logger = LoggerFactory.getLogger(NetatmoServlet.class);
-    private final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, NetatmoEventDeviceHandler> dataListeners = new ConcurrentHashMap<>();
     private final HttpService httpService;
     private boolean hookSet = false;
     private @Nullable SecurityApi api;
@@ -128,10 +131,14 @@ public class NetatmoServlet extends HttpServlet {
             if (!data.isEmpty()) {
                 logger.debug("Event transmitted from restService : {}", data);
                 NAWebhookEvent event = apiBridge.deserialize(NAWebhookEvent.class, data);
-                NetatmoDeviceHandler targetListener = dataListeners.get(event.getHomeId());
-                if (targetListener != null) {
-                    targetListener.setEvent(event);
-                }
+                List<String> tobeNotified = collectNotified(event);
+                dataListeners.keySet().stream().filter(tobeNotified::contains)
+                        .forEach(id -> dataListeners.get(id).setEvent(event));
+                // intersect = tobeNotified.stream().distinct().filter(dataListeners.keySet().contains(tobeNotified))
+                // NetatmoEventDeviceHandler targetListener = dataListeners.get(event.getHomeId());
+                // if (targetListener != null) {
+                // targetListener.setEvent(event);
+                // }
             }
             resp.setCharacterEncoding(CHARSET);
             resp.setContentType(MediaType.APPLICATION_JSON);
@@ -143,11 +150,22 @@ public class NetatmoServlet extends HttpServlet {
         }
     }
 
-    public void registerDataListener(String id, NetatmoDeviceHandler dataListener) {
+    private List<String> collectNotified(NAWebhookEvent event) {
+        List<String> result = new ArrayList<>();
+        result.add(event.getCameraId());
+        String person = event.getPersonId();
+        if (person != null) {
+            result.add(person);
+        }
+        result.addAll(event.getPersons().keySet());
+        return result.stream().distinct().collect(Collectors.toList());
+    }
+
+    public void registerDataListener(String id, NetatmoEventDeviceHandler dataListener) {
         dataListeners.put(id, dataListener);
     }
 
-    public void unregisterDataListener(NetatmoDeviceHandler dataListener) {
+    public void unregisterDataListener(NetatmoEventDeviceHandler dataListener) {
         dataListeners.entrySet().forEach(entry -> {
             if (entry.getValue().equals(dataListener)) {
                 dataListeners.remove(entry.getKey());

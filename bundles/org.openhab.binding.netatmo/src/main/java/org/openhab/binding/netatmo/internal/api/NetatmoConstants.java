@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.core.library.unit.MetricPrefix.HECTO;
-import static org.openhab.core.library.unit.MetricPrefix.MILLI;
+import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.util.Arrays;
 import java.util.Map;

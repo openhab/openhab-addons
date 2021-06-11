@@ -45,7 +45,7 @@ public abstract class AbstractChannelHelper {
         this.naThing = naThing;
     }
 
-    public @Nullable State getNAThingProperty(ChannelUID channelUID) {
+    public final @Nullable State getNAThingProperty(ChannelUID channelUID) {
         State result = null;
         NAThing module = this.naThing;
         if (module != null) {

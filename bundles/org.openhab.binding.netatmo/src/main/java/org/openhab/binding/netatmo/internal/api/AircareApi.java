@@ -44,17 +44,16 @@ public class AircareApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
      *             response body
      */
-    private NAStationDataResponse getHomeCoachData2(@Nullable String deviceId) throws NetatmoException {
+    public NAStationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMECOACH_SPATH);
         if (deviceId != null) {
             uriBuilder.queryParam(NA_DEVICEID_PARAM, deviceId);
         }
-        NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
-        return response;
+        return get(uriBuilder, NAStationDataResponse.class);
     }
 
-    public NAMain getHomeCoachData(String deviceId) throws NetatmoException {
-        NADeviceDataBody<NAMain> answer = getHomeCoachData2(deviceId).getBody();
+    public NAMain getHomeCoach(String deviceId) throws NetatmoException {
+        NADeviceDataBody<NAMain> answer = getHomeCoachData(deviceId).getBody();
         NAMain station = answer.getDevice(deviceId);
         if (station != null) {
             return station;
@@ -62,12 +61,4 @@ public class AircareApi extends RestManager {
         throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
     }
 
-    public NADeviceDataBody<NAMain> getHomeCoachDataBody(@Nullable String deviceId) throws NetatmoException {
-        return getHomeCoachData2(deviceId).getBody();
-        // NAMain result = answer.getDevice(deviceId);
-        // if (result != null) {
-        // return result;
-        // }
-        // throw new NetatmoException(String.format("Unexpected answer searching device '%s' : not found.", deviceId));
-    }
 }

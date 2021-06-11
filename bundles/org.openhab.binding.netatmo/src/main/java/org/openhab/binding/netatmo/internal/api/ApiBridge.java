@@ -18,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -140,7 +139,7 @@ public class ApiBridge {
         openConnection();
     }
 
-    void openConnection() {
+    public void openConnection() {
         try {
             configuration.checkIfValid();
             connectApi.authenticate();
@@ -164,17 +163,15 @@ public class ApiBridge {
         if (!managers.containsKey(typeOfRest)) {
             try {
                 Constructor<?> constructor = typeOfRest.getConstructor(ApiBridge.class);
-                T tentative = (T) constructor.newInstance(new Object[] { this });
-                if (grantedScopes.containsAll(tentative.getRequiredScopes())) {
-                    managers.put(typeOfRest, tentative);
-                } else {
-                    logger.warn("Required scopes missing to access {}", typeOfRest);
+                T tentative = (T) constructor.newInstance(this);
+                if (!grantedScopes.containsAll(tentative.getRequiredScopes())) {
+                    throw new NetatmoException("Required scopes missing to access : " + typeOfRest);
                 }
+                managers.put(typeOfRest, tentative);
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                    | IllegalArgumentException | InvocationTargetException e) {
+                    | InvocationTargetException | NetatmoException e) {
                 logger.error("Error invoking RestManager constructor for class {} : {}", typeOfRest, e.getMessage());
             }
-
         }
         return (T) managers.get(typeOfRest);
     }
@@ -206,15 +203,10 @@ public class ApiBridge {
 
     synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT, @Nullable String payload)
             throws NetatmoException {
-        // String url = anUrl.startsWith("http") ? anUrl
-        // : (baseUrl ? NetatmoConstants.NA_API_URL : NetatmoConstants.NA_APP_URL) + anUrl;
         try {
-            String url = uri.toURL().toString();
+            logger.debug("executeUri {}  {} ", method.toString(), uri);
 
-            logger.debug("executeUrl {}  {} ", method.toString(), url);
-
-            final Request request = httpClient.newRequest(url).method(method).timeout(TIMEOUT_MS,
-                    TimeUnit.MILLISECONDS);
+            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             httpHeaders.entrySet().forEach(entry -> request.header(entry.getKey(), entry.getValue()));
 
@@ -235,8 +227,7 @@ public class ApiBridge {
             int statusCode = response.getStatus();
             if (statusCode >= 200 && statusCode < 300) {
                 String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
-                T deserialized = deserialize(classOfT, responseBody);
-                return deserialized;
+                return deserialize(classOfT, responseBody);
             }
 
             switch (statusCode) {
@@ -250,15 +241,14 @@ public class ApiBridge {
                 default:
                     throw new NetatmoException(statusCode, response.getContentAsString());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException | MalformedURLException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new NetatmoException("Exception while calling " + uri.toString(), e);
         }
     }
 
     public <T> T deserialize(Class<T> classOfT, String serviceAnswer) throws NetatmoException {
         try {
-            T deserialized = gson.fromJson(serviceAnswer, classOfT);
-            return deserialized;
+            return gson.fromJson(serviceAnswer, classOfT);
         } catch (JsonSyntaxException e) {
             throw new NetatmoException(String.format("Unexpected error deserializing '%s'", serviceAnswer), e);
         }

@@ -41,7 +41,7 @@ public class HomeCoachHandler extends NetatmoDeviceHandler {
     protected NAMain updateReadings() throws NetatmoException {
         AircareApi api = apiBridge.getRestManager(AircareApi.class);
         if (api != null) {
-            return api.getHomeCoachData(config.id);
+            return api.getHomeCoach(config.id);
         }
         throw new NetatmoException("No restmanager available for Air Care access");
     }

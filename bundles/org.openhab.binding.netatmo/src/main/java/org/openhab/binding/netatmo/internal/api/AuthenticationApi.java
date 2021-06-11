@@ -60,8 +60,8 @@ class AuthenticationApi extends RestManager {
     }
 
     private void requestToken(String tokenRequest) throws NetatmoException {
-        NAAccessTokenResponse answer = apiHandler.executeUri(getOAuthUri(), HttpMethod.POST,
-                NAAccessTokenResponse.class, tokenRequest);
+        NAAccessTokenResponse answer = apiHandler.executeUri(OAUTH_URI, HttpMethod.POST, NAAccessTokenResponse.class,
+                tokenRequest);
         apiHandler.onAccessTokenResponse(answer.getAccessToken(), answer.getScope());
         scheduler.schedule(() -> {
             try {

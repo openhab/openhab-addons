@@ -41,10 +41,10 @@ public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
             @NonNullByDefault({}) TypeToken<T> type) {
         @SuppressWarnings("unchecked")
         Class<T> rawType = (Class<T>) type.getRawType();
-        if (!rawType.isEnum()) {
-            return null;
+        if (rawType.isEnum()) {
+            return newStrictEnumAdapter(gson.getDelegateAdapter(this, type));
         }
-        return newStrictEnumAdapter(gson.getDelegateAdapter(this, type));
+        return null;
     }
 
     private <T> TypeAdapter<T> newStrictEnumAdapter(final TypeAdapter<T> delegateAdapter) {

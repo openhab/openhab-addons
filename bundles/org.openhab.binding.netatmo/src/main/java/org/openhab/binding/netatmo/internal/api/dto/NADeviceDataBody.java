@@ -24,7 +24,6 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 @NonNullByDefault
 public class NADeviceDataBody<T extends NAThing> {
     private @NonNullByDefault({}) NAObjectMap<T> devices;
-    // private @NonNullByDefault({}) NAUser user;
 
     public NAObjectMap<T> getDevices() {
         return devices;
@@ -33,8 +32,4 @@ public class NADeviceDataBody<T extends NAThing> {
     public @Nullable T getDevice(String id) {
         return devices.get(id);
     }
-
-    // public NAUser getUser() {
-    // return user;
-    // }
 }

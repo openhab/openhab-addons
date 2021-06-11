@@ -21,11 +21,13 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.ConnectionListener;
 import org.openhab.binding.netatmo.internal.api.ConnectionStatus;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.WeatherApi.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
@@ -81,7 +83,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     @Override
     public void startScan() {
         try {
-            List<NAHome> result = apiBridge.getHomeApi().getHomes(null); // .getHomeApi().getHomeList(null);
+            List<NAHome> result = apiBridge.getHomeApi().getHomes(null);
             Set<@Nullable String> roomsWithEnergyModules = new HashSet<>();
             result.forEach(home -> {
                 ThingUID homeUID = createDiscoveredThing(null, home, home.getType());
@@ -113,33 +115,12 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                         .forEach(room -> createDiscoveredThing(homeUID, room, room.getType()));
             });
 
-            // Get favorites weather stations : they are readonly
-            apiBridge.getWeatherApi().ifPresent(weatherApi -> {
-                try {
-                    NAStationDataResponse stations = weatherApi.getStationsData(null, true);
-                    stations.getBody().getDevices().values().stream().filter(NAMain::isReadOnly).forEach(station -> {
-                        createDiscoveredThing(null, station, station.getType());
-                        station.getModules().values().stream().filter(module -> module.getBridge() == null)
-                                .forEach(foundBridge -> {
-                                    ThingUID bridgeUID = createDiscoveredThing(null, foundBridge,
-                                            foundBridge.getType());
-                                    station.getModules().values().stream()
-                                            .filter(module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
-                                            .forEach(foundChild -> {
-                                                createDiscoveredThing(bridgeUID, foundChild, foundChild.getType());
-                                            });
-                                });
-                    });
-                } catch (NetatmoException e) {
-                    logger.warn("Error getting stations", e);
-                }
-            });
-        } catch (
-
-        NetatmoException e) {
+        } catch (NetatmoException e) {
             logger.warn("Error getting Home List", e);
         }
-        // apiBridge.getAirCareApi().ifPresent(api -> searchHomeCoach(api));
+
+        apiBridge.getAirCareApi().ifPresent(api -> searchHomeCoach(api));
+        apiBridge.getWeatherApi().ifPresent(api -> searchFavoriteWeather(api));
     }
 
     private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID)
@@ -176,15 +157,33 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         return moduleUID;
     }
 
-    // Normally home coach should be discovered by home discovery but not 100% sure, kept for the moment.
-    // private void searchHomeCoach(AircareApi api) {
-    // try {
-    // NADeviceDataBody<NAMain> result = api.getHomeCoachDataBody(null);
-    // for (NAMain homeCoach : result.getDevices().values()) {
-    // discoverHomeCoach(homeCoach);
-    // }
-    // } catch (NetatmoException e) {
-    // logger.warn("Error retrieving thermostat(s)", e);
-    // }
-    // }
+    private void searchHomeCoach(AircareApi api) {
+        try {
+            NAStationDataResponse homeCoaches = api.getHomeCoachData(null);
+            homeCoaches.getBody().getDevices().values()
+                    .forEach(homeCoach -> createDiscoveredThing(null, homeCoach, homeCoach.getType()));
+        } catch (NetatmoException e) {
+            logger.warn("Error getting Home Coaches", e);
+        }
+    }
+
+    private void searchFavoriteWeather(WeatherApi api) {
+        try {
+            NAStationDataResponse stations = api.getStationsData(null, true);
+            stations.getBody().getDevices().values().stream().filter(NAMain::isReadOnly).forEach(station -> {
+                createDiscoveredThing(null, station, station.getType());
+                station.getModules().values().stream().filter(module -> module.getBridge() == null)
+                        .forEach(foundBridge -> {
+                            ThingUID bridgeUID = createDiscoveredThing(null, foundBridge, foundBridge.getType());
+                            station.getModules().values().stream()
+                                    .filter(module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
+                                    .forEach(foundChild -> {
+                                        createDiscoveredThing(bridgeUID, foundChild, foundChild.getType());
+                                    });
+                        });
+            });
+        } catch (NetatmoException e) {
+            logger.warn("Error getting stations", e);
+        }
+    }
 }

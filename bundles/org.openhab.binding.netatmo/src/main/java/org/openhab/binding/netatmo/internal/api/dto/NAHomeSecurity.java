@@ -46,12 +46,4 @@ public class NAHomeSecurity extends NAHome {
         return cameras;
     }
 
-    // TODO Remove unused code found by UCDetector
-    // public Optional<NAPerson> getPerson(String id) {
-    // return Optional.ofNullable(persons.get(id));
-    // }
-
-    public void setEvents(List<NAHomeEvent> events) {
-        this.events = events;
-    }
 }

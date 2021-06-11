@@ -26,7 +26,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeSecurity;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -44,8 +43,8 @@ import org.slf4j.LoggerFactory;
 public class HomeSecurityChannelHelper extends AbstractChannelHelper {
     private final Logger logger = LoggerFactory.getLogger(HomeSecurityChannelHelper.class);
 
-    private int persons = -1;
-    private int unknowns = -1;
+    private long persons = -1;
+    private long unknowns = -1;
 
     public HomeSecurityChannelHelper() {
         super(Set.of(GROUP_HOME_SECURITY));
@@ -57,20 +56,13 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
         if (naThing instanceof NAHomeSecurity) {
             NAHomeSecurity home = (NAHomeSecurity) naThing;
 
-            persons = 0;
-            unknowns = 0;
-
             logger.debug("welcome home '{}' counts Persons at home", home.getId());
 
-            NAObjectMap<NAPerson> personList = home.getPersons();
-            // if (personList != null) {
-            List<NAPerson> present = personList.values().stream().filter(p -> !p.isOutOfSight())
+            List<NAPerson> present = home.getPersons().values().stream().filter(p -> !p.isOutOfSight())
                     .collect(Collectors.toList());
-            persons = present.size();
-            present = present.stream().filter(p -> p.getName() != null).collect(Collectors.toList());
-            unknowns = persons - present.size();
-            // }
 
+            persons = present.size();
+            unknowns = present.stream().filter(p -> p.getName() == null).count();
         }
     }
 
@@ -81,6 +73,7 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
         } else if (CHANNEL_HOME_UNKNOWNCOUNT.equals(channelId)) {
             return unknowns != -1 ? new DecimalType(unknowns) : UnDefType.UNDEF;
         }
+
         NAHome localThing = (NAHome) naThing;
         NAPlace place = localThing.getPlace();
         return place == null ? null
