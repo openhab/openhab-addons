@@ -15,6 +15,8 @@ package org.openhab.binding.souliss.internal.handler;
 import java.math.BigDecimal;
 import java.net.DatagramSocket;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +29,7 @@ import org.openhab.binding.souliss.internal.protocol.SoulissBindingDiscoverUDPLi
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingSendDispatcherJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
-import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -56,9 +58,12 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private @Nullable DatagramSocket senderSocket;
 
-    private ExecutorService udpExecutorService = ThreadPoolManager.getScheduledPool("souliss" + "-" + thing.getUID());
+    private ExecutorService udpExecutorService = Executors
+            .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
     private @Nullable SoulissBindingDiscoverUDPListenerJob udpServerDefaultPortRunnableClass;
+    private @Nullable Future<?> eventListenerJob;
+
     private SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
 
     boolean bGatewayDetected = false;
@@ -193,6 +198,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // exec thread
             // scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
             // SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
+
             this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
 
             // sender socket init

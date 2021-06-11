@@ -14,6 +14,8 @@ package org.openhab.binding.souliss.internal.protocol;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -142,6 +144,8 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
 
     @Override
     public void run() {
+        DatagramSocket sender = null;
+
         try {
             if (checkTime()) {
                 SoulissBindingSocketAndPacketStruct sp = pop();
@@ -150,11 +154,16 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                             "SendDispatcherJob - Functional Code 0x{} - Packet: {} - Elementi rimanenti in lista: {}",
                             Integer.toHexString(sp.packet.getData()[7]), macacoToString(sp.packet.getData()),
                             packetsList.size());
-                    @Nullable
-                    DatagramSocket localSocket = sp.socket;
-                    if (localSocket != null) {
-                        localSocket.send(sp.packet);
-                    }
+                    // @Nullable
+                    // DatagramSocket localSocket = sp.socket;
+                    DatagramChannel channel = DatagramChannel.open();
+                    sender = channel.socket();
+                    sender.setReuseAddress(true);
+
+                    InetSocketAddress sa = new InetSocketAddress(23000);
+                    sender.bind(sa);
+                    sender.send(sp.packet);
+
                 }
 
                 // confronta gli stati in memoria con i frame inviati. Se
@@ -165,6 +174,10 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
             }
         } catch (Exception e) {
             logger.warn("{}", e.getMessage());
+        } finally {
+            if (sender != null && !sender.isClosed()) {
+                sender.close();
+            }
         }
     }
 
