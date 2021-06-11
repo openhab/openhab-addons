@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_SERIAL_NO;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -312,12 +314,12 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             BaseOpenMessage bmsg = baseMsg;
             if (baseMsg instanceof Lighting) {
                 What what = baseMsg.getWhat();
-                if (Lighting.WHAT.OFF.equals(what)) { // skipping OFF msg: cannot distinguish dimmer/switch
+                if (Lighting.WhatLighting.OFF.equals(what)) { // skipping OFF msg: cannot distinguish dimmer/switch
                     logger.debug("discoverByActivation: skipping OFF msg: cannot distinguish dimmer/switch");
                     return;
                 }
-                if (Lighting.WHAT.ON.equals(what)) { // if not already done just now, request light status to
-                                                     // distinguish dimmer from switch
+                if (Lighting.WhatLighting.ON.equals(what)) { // if not already done just now, request light status to
+                    // distinguish dimmer from switch
                     if (discoveringDevices.containsKey(ownIdFromMessage(baseMsg))) {
                         logger.debug(
                                 "discoverByActivation: we just requested status for this device and it's ON -> it's a switch");

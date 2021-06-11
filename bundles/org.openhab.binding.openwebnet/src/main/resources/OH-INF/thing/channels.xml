@@ -100,10 +100,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="conditioningValve" advanced="true">
+	<channel-type id="conditioningValves" advanced="true">
 		<item-type>String</item-type>
-		<label>Conditioning Valve</label>
-		<description>Conditioning Valve status (read only)</description>
+		<label>Conditioning Valves</label>
+		<description>Conditioning Valves status (read only)</description>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">OFF</option>
@@ -122,10 +122,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="heatingValve" advanced="true">
+	<channel-type id="heatingValves" advanced="true">
 		<item-type>String</item-type>
-		<label>Heating Valve</label>
-		<description>Heating Valve status (read only)</description>
+		<label>Heating Valves</label>
+		<description>Heating Valves status (read only)</description>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">OFF</option>
@@ -144,10 +144,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="actuator" advanced="true">
+	<channel-type id="actuators" advanced="true">
 		<item-type>String</item-type>
-		<label>Actuator Status</label>
-		<description>Actuator status (read only)</description>
+		<label>Actuators Status</label>
+		<description>Actuators status (read only)</description>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">OFF</option>
