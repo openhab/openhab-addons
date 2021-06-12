@@ -29,19 +29,15 @@ public class ConnectionStatus {
         this.message = message;
     }
 
-    public static ConnectionStatus Success() {
+    static ConnectionStatus Success() {
         return new ConnectionStatus(true, "Successfully connected");
     }
 
-    public static ConnectionStatus Failed(String message) {
-        return new ConnectionStatus(false, message);
-    }
-
-    public static ConnectionStatus Failed(String format, Exception e) {
+    static ConnectionStatus Failed(String format, Exception e) {
         return new ConnectionStatus(false, String.format(format, e.getMessage()));
     }
 
-    public static ConnectionStatus Unknown() {
+    static ConnectionStatus Unknown() {
         return new ConnectionStatus(false, "No connection tried yet.");
     }
 

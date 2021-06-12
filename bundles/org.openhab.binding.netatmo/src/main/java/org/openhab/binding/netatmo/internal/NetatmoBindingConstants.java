@@ -60,7 +60,6 @@ public class NetatmoBindingConstants {
     public static final String GROUP_ROOM_PROPERTIES = "room-properties";
     public static final String GROUP_TH_PROPERTIES = "th-properties";
     public static final String GROUP_TH_SETPOINT = "setpoint";
-    public static final String GROUP_TH_TEMPERATURE = "th-temperature";
 
     // Channel ids
     public static final String CHANNEL_VALUE = "value";
@@ -82,7 +81,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SIGNAL_STRENGTH = "strength";
     public static final String CHANNEL_SUM_RAIN1 = "sum-1";
     public static final String CHANNEL_SUM_RAIN24 = "sum-24";
-    public static final String CHANNEL_TIMEUTC = "timestamp";
+
     public static final String CHANNEL_WIND_ANGLE = "angle";
     public static final String CHANNEL_WIND_STRENGTH = "strength";
     public static final String CHANNEL_MAX_WIND_STRENGTH = "max-strength";
@@ -95,7 +94,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SETPOINT_START_TIME = "start";
     public static final String CHANNEL_SETPOINT_END_TIME = "end";
     public static final String CHANNEL_THERM_RELAY = "relay-status";
-    public static final String CHANNEL_THERM_ORIENTATION = "orientation";
+
     public static final String CHANNEL_ANTICIPATING = "anticipating";
     public static final String CHANNEL_ROOM_WINDOW_OPEN = "window-open";
     public static final String CHANNEL_ROOM_HEATING_POWER = "heating-power-request";

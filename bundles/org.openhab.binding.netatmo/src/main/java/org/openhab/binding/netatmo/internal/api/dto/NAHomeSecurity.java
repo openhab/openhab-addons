@@ -45,5 +45,4 @@ public class NAHomeSecurity extends NAHome {
     public NAObjectMap<NAWelcome> getCameras() {
         return cameras;
     }
-
 }

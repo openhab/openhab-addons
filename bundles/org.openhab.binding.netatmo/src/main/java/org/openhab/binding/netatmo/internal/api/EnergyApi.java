@@ -38,9 +38,8 @@ public class EnergyApi extends RestManager {
     }
 
     public NAHome getHomeStatus(String homeId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMESTATUS_SPATH).queryParam(NA_HOMEID_PARAM, homeId)
-                .queryParam(NA_DEVICETYPE_PARAM, ModuleType.NAPlug.name(), ModuleType.NRV.name(),
-                        ModuleType.NATherm1.name());
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_HOMESTATUS).queryParam(PARM_HOMEID, homeId).queryParam(
+                PARM_DEVICETYPE, ModuleType.NAPlug.name(), ModuleType.NRV.name(), ModuleType.NATherm1.name());
 
         NAHomeStatusResponse response = get(uriBuilder, NAHomeStatusResponse.class);
         return response.getBody().getHome();
@@ -58,8 +57,8 @@ public class EnergyApi extends RestManager {
      *             response body
      */
     public boolean switchSchedule(String homeId, String scheduleId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder().path(NA_SWITCHSCHEDULE_SPATH);
-        uriBuilder.queryParam(NA_HOMEID_PARAM, homeId).queryParam(NA_SCHEDULEID_PARAM, scheduleId);
+        UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_SWITCHSCHEDULE);
+        uriBuilder.queryParam(PARM_HOMEID, homeId).queryParam(PARM_SCHEDULEID, scheduleId);
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
@@ -79,8 +78,8 @@ public class EnergyApi extends RestManager {
      *             response body
      */
     public boolean setThermMode(String homeId, String mode) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_SETTHERMMODE_SPATH);
-        uriBuilder.queryParam(NA_HOMEID_PARAM, homeId).queryParam(NA_MODE_PARAM, mode);
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_SETTHERMMODE);
+        uriBuilder.queryParam(PARM_HOMEID, homeId).queryParam(PARM_MODE, mode);
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
@@ -102,8 +101,8 @@ public class EnergyApi extends RestManager {
      */
     public boolean setRoomThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
             throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_SETROOMTHERMPOINT_SPATH).queryParam(NA_HOMEID_PARAM, homeId)
-                .queryParam(NA_ROOMID_PARAM, roomId).queryParam(NA_MODE_PARAM, mode.getDescriptor());
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_SETROOMTHERMPOINT).queryParam(PARM_HOMEID, homeId)
+                .queryParam(PARM_ROOMID, roomId).queryParam(PARM_MODE, mode.getDescriptor());
         if (mode == SetpointMode.MANUAL || mode == SetpointMode.MAX) {
             uriBuilder.queryParam("endtime", endtime);
             if (mode == SetpointMode.MANUAL) {

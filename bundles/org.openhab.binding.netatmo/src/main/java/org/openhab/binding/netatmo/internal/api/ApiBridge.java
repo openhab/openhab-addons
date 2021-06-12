@@ -216,7 +216,7 @@ public class ApiBridge {
                         stream)) {
                     request.content(inputStreamContentProvider, null);
                 }
-                if (!NetatmoConstants.NA_API_URL.contains(uri.getHost())) {
+                if (!NetatmoConstants.URL_API.contains(uri.getHost())) {
                     request.getHeaders().remove(HttpHeader.CONTENT_TYPE);
                     request.header(HttpHeader.CONTENT_TYPE, "application/json;charset=utf-8");
                 }
@@ -254,7 +254,7 @@ public class ApiBridge {
         }
     }
 
-    public void onAccessTokenResponse(String accessToken, List<Scope> grantedScopes) {
+    void onAccessTokenResponse(String accessToken, List<Scope> grantedScopes) {
         this.grantedScopes = grantedScopes;
         httpHeaders.put(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
     }

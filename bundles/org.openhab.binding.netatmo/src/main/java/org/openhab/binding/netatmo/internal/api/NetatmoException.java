@@ -27,9 +27,9 @@ public class NetatmoException extends IOException {
     private static final long serialVersionUID = 1513549973502021727L;
     private int statusCode = -1;
 
-    public NetatmoException(Exception e) {
-        super(e);
-    }
+    // public NetatmoException(Exception e) {
+    // super(e);
+    // }
 
     public NetatmoException(int statusCode, String message) {
         super(message);

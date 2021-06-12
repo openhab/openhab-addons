@@ -87,7 +87,7 @@ public class SecurityApi extends RestManager {
      *             response body
      */
     public boolean dropWebhook() throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_DROPWEBHOOK_SPATH);
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_DROPWEBHOOK);
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
@@ -102,19 +102,19 @@ public class SecurityApi extends RestManager {
      *             response body
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_ADDWEBHOOK_SPATH);
-        uriBuilder.queryParam(NA_URL_PARAM, uri.toString());
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_ADDWEBHOOK);
+        uriBuilder.queryParam(PARM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
-    private class NALastEventsDataResponse extends ApiResponse<NAListBodyResponse<NAHomeEvent>> {
+    private class NALastEventsDataResponse extends ApiResponse<ListBodyResponse<NAHomeEvent>> {
     }
 
     public Collection<NAHomeEvent> getLastEventOf(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETLASTEVENT_SPATH);
-        uriBuilder.queryParam(NA_HOMEID_PARAM, homeId);
-        uriBuilder.queryParam(NA_PERSONID_PARAM, personId);
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETLASTEVENT);
+        uriBuilder.queryParam(PARM_HOMEID, homeId);
+        uriBuilder.queryParam(PARM_PERSONID, personId);
         NALastEventsDataResponse response = get(uriBuilder, NALastEventsDataResponse.class);
         return response.getBody().getElementsCollection();
     }

@@ -35,7 +35,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
 
 @NonNullByDefault
 public class WeatherApi extends RestManager {
-    public class NAStationDataResponse extends ApiResponse<NAListBodyResponse<NAMain>> {
+    public class NAStationDataResponse extends ApiResponse<ListBodyResponse<NAMain>> {
     }
 
     private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
@@ -62,9 +62,9 @@ public class WeatherApi extends RestManager {
      */
     public NAStationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
             throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETSTATION_SPATH);
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETSTATION);
         if (deviceId != null) {
-            uriBuilder.queryParam(NA_DEVICEID_PARAM, deviceId);
+            uriBuilder.queryParam(PARM_DEVICEID, deviceId);
         }
         uriBuilder.queryParam("get_favorites", getFavorites);
         NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
@@ -72,7 +72,7 @@ public class WeatherApi extends RestManager {
     }
 
     public NAMain getStationData(String deviceId) throws NetatmoException {
-        NAListBodyResponse<NAMain> answer = getStationsData(deviceId, true).getBody();
+        ListBodyResponse<NAMain> answer = getStationsData(deviceId, true).getBody();
         NAMain station = answer.getElement(deviceId);
         if (station != null) {
             return station;
@@ -95,14 +95,14 @@ public class WeatherApi extends RestManager {
 
     private NAMeasureBodyElem<?> getmeasure(String deviceId, @Nullable String moduleId, MeasureScale scale,
             String measureType, long dateBegin, long dateEnd) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETMEASURE_SPATH).queryParam(NA_DEVICEID_PARAM, deviceId)
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETMEASURE).queryParam(PARM_DEVICEID, deviceId)
                 .queryParam("scale", scale.getDescriptor()).queryParam("real_time", true)
                 .queryParam("date_end", (dateEnd > 0 && dateEnd > dateBegin) ? dateEnd : "last")
                 .queryParam("optimize", true) // NAMeasuresResponse is not designed for optimize=false
                 .queryParam("type", measureType);
 
         if (moduleId != null) {
-            uriBuilder.queryParam(NA_MODULEID_PARAM, moduleId);
+            uriBuilder.queryParam(PARM_MODULEID, moduleId);
         }
         if (dateBegin > 0) {
             uriBuilder.queryParam("date_begin", dateBegin);

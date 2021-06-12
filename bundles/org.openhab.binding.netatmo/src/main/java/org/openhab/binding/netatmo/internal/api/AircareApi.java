@@ -44,20 +44,19 @@ public class AircareApi extends RestManager {
      *             response body
      */
     public NAStationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMECOACH_SPATH);
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_HOMECOACH);
         if (deviceId != null) {
-            uriBuilder.queryParam(NA_DEVICEID_PARAM, deviceId);
+            uriBuilder.queryParam(PARM_DEVICEID, deviceId);
         }
         return get(uriBuilder, NAStationDataResponse.class);
     }
 
     public NAMain getHomeCoach(String deviceId) throws NetatmoException {
-        NAListBodyResponse<NAMain> answer = getHomeCoachData(deviceId).getBody();
+        ListBodyResponse<NAMain> answer = getHomeCoachData(deviceId).getBody();
         NAMain station = answer.getElement(deviceId);
         if (station != null) {
             return station;
         }
         throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
     }
-
 }

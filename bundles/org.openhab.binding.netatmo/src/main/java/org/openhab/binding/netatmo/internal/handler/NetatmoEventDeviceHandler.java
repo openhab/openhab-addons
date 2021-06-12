@@ -29,7 +29,7 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
 
-    class LastEventTimeHelper {
+    protected class LastEventTimeHelper {
         private @Nullable ZonedDateTime maxEventTime;
 
         protected ZonedDateTime get() {
@@ -42,7 +42,7 @@ public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
             return eventTime;
         }
 
-        public void set(ZonedDateTime maxEventTime) {
+        void set(ZonedDateTime maxEventTime) {
             this.maxEventTime = maxEventTime;
             updateProperty(PROPERTY_MAX_EVENT_TIME, maxEventTime.toString());
         }
@@ -98,5 +98,4 @@ public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
     public void setWebHookServlet(NetatmoServlet servlet) {
         this.webhookServlet = servlet;
     }
-
 }

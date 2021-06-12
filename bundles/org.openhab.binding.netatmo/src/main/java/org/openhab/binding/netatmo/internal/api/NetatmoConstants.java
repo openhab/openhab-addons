@@ -80,37 +80,40 @@ public class NetatmoConstants {
             new Measure(0, 360, 5, Units.DEGREE_ANGLE), MeasureClass.HUMIDITY, new Measure(0, 100, 3, Units.PERCENT));
 
     // Netatmo API urls
-    public static final String NA_API_URL = "https://api.netatmo.com/";
-    public static final String NA_APP_URL = "https://app.netatmo.net/";
-    public static final String NA_OAUTH_PATH = "oauth2/token";
-    public static final String NA_API_PATH = "api";
-    public static final String NA_COMMAND_PATH = "command";
-    public static final String NA_PERSON_AWAY_SPATH = "setpersonsaway";
-    public static final String NA_PERSON_HOME_SPATH = "setpersonshome";
-    public static final String NA_HOMES_SPATH = "homesdata";
-    public static final String NA_GETHOME_SPATH = "gethomedata";
-    public static final String NA_GETCAMERAPICTURE_SPATH = "getcamerapicture";
-    public static final String NA_ADDWEBHOOK_SPATH = "addwebhook";
-    public static final String NA_DROPWEBHOOK_SPATH = "dropwebhook";
-    public static final String NA_SETROOMTHERMPOINT_SPATH = "setroomthermpoint";
-    public static final String NA_SETTHERMMODE_SPATH = "setthermmode";
-    public static final String NA_SWITCHSCHEDULE_SPATH = "switchschedule";
-    public static final String NA_GETTHERMOSTAT_SPATH = "getthermostatsdata";
-    public static final String NA_GETSTATION_SPATH = "getstationsdata";
-    public static final String NA_GETMEASURE_SPATH = "getmeasure";
-    public static final String NA_HOMESTATUS_SPATH = "homestatus";
-    public static final String NA_HOMECOACH_SPATH = "gethomecoachsdata";
-    public static final String NA_GETLASTEVENT_SPATH = "getlasteventof";
+    public static final String URL_API = "https://api.netatmo.com/";
+    public static final String URL_APP = "https://app.netatmo.net/";
+    public static final String PATH_OAUTH = "oauth2/token";
+    public static final String PATH_API = "api";
+    public static final String PATH_COMMAND = "command";
+    public static final String SPATH_PERSON_AWAY = "setpersonsaway";
+    public static final String SPATH_PERSON_HOME = "setpersonshome";
+    public static final String SPATH_HOMES = "homesdata";
+    public static final String SPATH_GETHOME = "gethomedata";
+    public static final String SPATH_GETCAMERAPICTURE = "getcamerapicture";
+    public static final String SPATH_ADDWEBHOOK = "addwebhook";
+    public static final String SPATH_DROPWEBHOOK = "dropwebhook";
+    public static final String SPATH_SETROOMTHERMPOINT = "setroomthermpoint";
+    public static final String SPATH_SETTHERMMODE = "setthermmode";
+    public static final String SPATH_SWITCHSCHEDULE = "switchschedule";
+    public static final String SPATH_GETTHERMOSTAT = "getthermostatsdata";
+    public static final String SPATH_GETSTATION = "getstationsdata";
+    public static final String SPATH_GETMEASURE = "getmeasure";
+    public static final String SPATH_HOMESTATUS = "homestatus";
+    public static final String SPATH_HOMECOACH = "gethomecoachsdata";
+    public static final String SPATH_GETLASTEVENT = "getlasteventof";
 
-    public static final String NA_DEVICEID_PARAM = "device_id";
-    public static final String NA_MODULEID_PARAM = "module_id";
-    public static final String NA_HOMEID_PARAM = "home_id";
-    public static final String NA_ROOMID_PARAM = "room_id";
-    public static final String NA_PERSONID_PARAM = "person_id";
-    public static final String NA_SCHEDULEID_PARAM = "schedule_id";
-    public static final String NA_DEVICETYPE_PARAM = "device_types";
-    public static final String NA_MODE_PARAM = "mode";
-    public static final String NA_URL_PARAM = "url";
+    public static final String PARM_DEVICEID = "device_id";
+    public static final String PARM_MODULEID = "module_id";
+    public static final String PARM_HOMEID = "home_id";
+    public static final String PARM_ROOMID = "room_id";
+    public static final String PARM_PERSONID = "person_id";
+    public static final String PARM_SCHEDULEID = "schedule_id";
+    public static final String PARM_DEVICETYPE = "device_types";
+    public static final String PARM_GATEWAYTYPE = "gateway_types";
+    public static final String PARM_MODE = "mode";
+    public static final String PARM_URL = "url";
+    public static final String PARM_CHANGESTATUS = "changestatus";
+    public static final String PARM_FLOODLIGHTSET = "floodlight_set_config";
 
     public enum MeasureType {
         SUM_RAIN(MeasureClass.RAIN_QTTY),

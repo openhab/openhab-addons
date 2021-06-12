@@ -38,19 +38,19 @@ public class HomeApi extends RestManager {
         super(apiClient);
     }
 
-    public class NAHomesDataResponse extends ApiResponse<NAListBodyResponse<NAHome>> {
+    public class NAHomesDataResponse extends ApiResponse<ListBodyResponse<NAHome>> {
     }
 
-    public Collection<NAHome> getHomeData(String homeId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH);
-        uriBuilder.queryParam(NA_MODULEID_PARAM, homeId);
-        return get(uriBuilder, NAHomesDataResponse.class).getBody().getElementsCollection();
-    }
+    // public Collection<NAHome> getHomeData(String homeId) throws NetatmoException {
+    // UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETHOME);
+    // uriBuilder.queryParam(PARM_MODULEID, homeId);
+    // return get(uriBuilder, NAHomesDataResponse.class).getBody().getElementsCollection();
+    // }
 
     // Not sure if I will keep this...
     public Collection<NAHome> getHomes(@Nullable String homeId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_GETHOME_SPATH);
-        NAListBodyResponse<NAHome> response = get(uriBuilder, NAHomesDataResponse.class).getBody();
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETHOME);
+        ListBodyResponse<NAHome> response = get(uriBuilder, NAHomesDataResponse.class).getBody();
         Collection<NAHome> homeListResponse = getHomeList(null, null);
         Collection<NAHome> homeDataResponse = response.getElementsCollection();
         homeListResponse.forEach(h1 -> {
@@ -73,13 +73,13 @@ public class HomeApi extends RestManager {
     }
 
     public Collection<NAHome> getHomeList(@Nullable String homeId, @Nullable ModuleType type) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(NA_HOMES_SPATH);
+        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_HOMES);
 
         if (homeId != null) {
-            uriBuilder.queryParam(NA_HOMEID_PARAM, homeId);
+            uriBuilder.queryParam(PARM_HOMEID, homeId);
         }
         if (type != null) {
-            uriBuilder.queryParam("gateway_types", type.name());
+            uriBuilder.queryParam(PARM_GATEWAYTYPE, type.name());
         }
 
         NAHomesDataResponse response = get(uriBuilder, NAHomesDataResponse.class);
@@ -87,34 +87,34 @@ public class HomeApi extends RestManager {
     }
 
     public boolean setpersonsaway(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder().path(NA_PERSON_AWAY_SPATH);
+        UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_AWAY);
         String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);
         return true;
     }
 
     public boolean setpersonshome(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder().path(NA_PERSON_HOME_SPATH);
+        UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_HOME);
         String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);
         return true;
     }
 
     public String ping(String vpnUrl) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(NA_COMMAND_PATH).path("ping");
+        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path("ping");
         NAPing response = get(uriBuilder, NAPing.class);
         return response.getStatus();
     }
 
-    public boolean changeStatus(String localCameraURL, boolean isOn) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(NA_COMMAND_PATH).path("changestatus");
-        uriBuilder.queryParam("status", isOn ? "on" : "off");
+    public boolean changeStatus(String localCameraURL, boolean setOn) throws NetatmoException {
+        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARM_CHANGESTATUS);
+        uriBuilder.queryParam("status", setOn ? "on" : "off");
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
     public boolean changeFloodLightMode(String localCameraURL, PresenceLightMode mode) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(NA_COMMAND_PATH).path("floodlight_set_config");
+        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARM_FLOODLIGHTSET);
         uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
         get(uriBuilder, ApiResponse.Ok.class);
         return true;

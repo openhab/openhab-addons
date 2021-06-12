@@ -89,7 +89,9 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                 ThingUID homeUID = createDiscoveredThing(null, home, home.getType());
                 home.getModules().values().stream().filter(module -> module.getBridge() == null)
                         .forEach(foundBridge -> {
-                            ThingUID bridgeUID = createDiscoveredThing(homeUID, foundBridge, foundBridge.getType());
+                            ThingUID bridgeUID = createDiscoveredThing(
+                                    foundBridge.getType() == ModuleType.NAMain ? null : homeUID, foundBridge,
+                                    foundBridge.getType());
                             home.getModules().values().stream()
                                     .filter(module -> foundBridge.getId().equalsIgnoreCase(module.getBridge()))
                                     .forEach(foundChild -> {
@@ -108,8 +110,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                 // List<NAPerson> persons = homesec.getKnownPersons();
                 // persons.forEach(person -> createDiscoveredThing(homeUID, person, person.getType()));
                 // }
-                // mark energy-modules that are assigned to a room
-                // Are or should modules be childs of their room ?
+                // mark energy-modules that are assigned to a room. Are or should modules be childs of their room ?
                 // only create NARoom for energy-modules for now
                 home.getRooms().stream().filter(r -> roomsWithEnergyModules.contains(r.getId()))
                         .forEach(room -> createDiscoveredThing(homeUID, room, room.getType()));

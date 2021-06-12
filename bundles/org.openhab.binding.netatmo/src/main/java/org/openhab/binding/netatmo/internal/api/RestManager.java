@@ -32,10 +32,10 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
  */
 @NonNullByDefault
 public abstract class RestManager {
-    private static final UriBuilder API_BASE_BUILDER = UriBuilder.fromUri(NA_API_URL);
-    private static final UriBuilder API_URI_BUILDER = API_BASE_BUILDER.clone().path(NA_API_PATH);
-    private static final UriBuilder APP_URI_BUILDER = UriBuilder.fromUri(NA_APP_URL).path(NA_API_PATH);
-    protected static final URI OAUTH_URI = API_BASE_BUILDER.clone().path(NA_OAUTH_PATH).build();
+    private static final UriBuilder API_BASE_BUILDER = UriBuilder.fromUri(URL_API);
+    private static final UriBuilder API_URI_BUILDER = API_BASE_BUILDER.clone().path(PATH_API);
+    private static final UriBuilder APP_URI_BUILDER = UriBuilder.fromUri(URL_APP).path(PATH_API);
+    protected static final URI OAUTH_URI = API_BASE_BUILDER.clone().path(PATH_OAUTH).build();
 
     private final Set<Scope> requiredScopes;
     protected final ApiBridge apiHandler;
