@@ -76,8 +76,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -217,8 +219,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -445,8 +449,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -696,8 +702,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -993,8 +1001,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -1266,8 +1276,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -1536,8 +1548,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -1831,8 +1845,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
@@ -2113,8 +2129,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the binding.
+				<description>A unique path for each camera where FFmpeg has the ability to write files to ending with a slash. For
+					windows use this
+					format, c:\openhabconf\html\ipcamera\. Under Linux if left blank this can be auto set by the
+					binding.
 				</description>
 			</parameter>
 
