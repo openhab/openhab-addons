@@ -35,6 +35,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcFatalExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 import org.openhab.binding.ihc.internal.ws.services.IhcAirlinkManagementService;
@@ -88,6 +89,7 @@ public class IhcClient {
     private String username;
     private String password;
     private String host;
+    private String tlsVersion;
 
     /** Timeout in milliseconds */
     private int timeout;
@@ -96,14 +98,15 @@ public class IhcClient {
     private List<IhcEventListener> eventListeners = new ArrayList<>();
 
     public IhcClient(String host, String username, String password) {
-        this(host, username, password, 5000);
+        this(host, username, password, 5000, "TLSv1");
     }
 
-    public IhcClient(String host, String username, String password, int timeout) {
+    public IhcClient(String host, String username, String password, int timeout, String tlsVersion) {
         this.host = host;
         this.username = username;
         this.password = password;
         this.timeout = timeout;
+        this.tlsVersion = tlsVersion;
     }
 
     public synchronized ConnectionState getConnectionState() {
@@ -171,7 +174,7 @@ public class IhcClient {
         logger.debug("Opening connection");
 
         setConnectionState(ConnectionState.CONNECTING);
-        ihcConnectionPool = new IhcConnectionPool();
+        ihcConnectionPool = new IhcConnectionPool(tlsVersion);
         authenticationService = new IhcAuthenticationService(host, timeout, ihcConnectionPool);
         WSLoginResult loginResult = authenticationService.authenticate(username, password, "treeview");
 
@@ -181,18 +184,18 @@ public class IhcClient {
             setConnectionState(ConnectionState.DISCONNECTED);
 
             if (loginResult.isLoginFailedDueToAccountInvalid()) {
-                throw new IhcExecption("login failed because of invalid account");
+                throw new IhcFatalExecption("login failed because of invalid account");
             }
 
             if (loginResult.isLoginFailedDueToConnectionRestrictions()) {
-                throw new IhcExecption("login failed because of connection restrictions");
+                throw new IhcFatalExecption("login failed because of connection restrictions");
             }
 
             if (loginResult.isLoginFailedDueToInsufficientUserRights()) {
-                throw new IhcExecption("login failed because of insufficient user rights");
+                throw new IhcFatalExecption("login failed because of insufficient user rights");
             }
 
-            throw new IhcExecption("login failed because of unknown reason");
+            throw new IhcFatalExecption("login failed because of unknown reason");
         }
 
         logger.debug("Connection successfully opened");
