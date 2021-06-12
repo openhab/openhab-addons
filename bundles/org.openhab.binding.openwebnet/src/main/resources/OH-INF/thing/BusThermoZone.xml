@@ -4,14 +4,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for BUS Thermostat (BTicino xxx/xxx/...) -->
+	<!-- Thing for BUS Thermo Zone -->
 	<thing-type id="bus_thermo_zone">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Zone</label>
-		<description>A OpenWebNet BUS/SCS zone (centralized or standalone). BTicino models: 3550, LN4691, ...</description>
+		<label>Thermo Zone</label>
+		<description>A OpenWebNet BUS/SCS configured thermo zone (managed via Central Unit or stand alone).</description>
 
 		<channels>
 			<!-- read only -->
@@ -28,8 +28,8 @@
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<property name="model">BTI-LN4691 (stand-alone), 3550 (99 zones central unit)</property>
-			<property name="ownDeviceType">410/420/430</property>
+			<property name="model">Zone thermostat BTI-LN4691 (stand-alone), 3550 (99 zones Central Unit)</property>
+			<property name="ownDeviceType">410/420</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>
@@ -37,12 +37,12 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Device Address</label>
-				<description>Example: Zone 2 --> where=2.</description>
+				<description>Example: zone 2 --> where=2.</description>
 			</parameter>
 
 			<parameter name="standAlone" type="boolean">
 				<label>Stand-alone</label>
-				<description>Distinguishes between zone managed by central unit or stand-alone (default: true)</description>
+				<description>Distinguishes between a zone managed by a Central Unit (false) or stand-alone (true, default)</description>
 				<default>true</default>
 			</parameter>
 		</config-description>

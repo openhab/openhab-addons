@@ -42,7 +42,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
 | Lighting             | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
-| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Zones management and external wireless temperature sensors. Please note that usage of Central Units (4 or 99 zones) is not yet fully supported. See [Channels - Thermo](#thermo-channels) for more details. | Successfully tested: H/LN4691; external sensors: L/N/NT4577 + 3455 |
+| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691; thermo sensors: L/N/NT4577 + 3455 |
 | Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
@@ -122,8 +122,27 @@ For any manually added device, you must configure:
 - the `where` config parameter (`OpenWebNet Device Address`):
   - example for BUS/SCS device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
   - example for BUS/SCS device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
-  - example for BUS/SCS thermo Zones: `Zone=1` --> `where="1"`; external sensor `5` --> `where="500"`
   - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
+
+#### Configuring Thermo
+
+In BTicino MyHOME Thermoregulation (WHO=4) each **zone** has associated a thermostat, additional temperature sensors (optional), actuators and heating/conditioning valves. A zone is associated to at least one thermostat and one actuator.
+
+Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone with the following parameters:
+
+- the `where` config parameter (`OpenWebNet Device Address`):
+  - example BUS/SCS Thermo `zone=1` --> `where="1"` 
+- the `standAlone` config parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
+
+Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
+- the `where` config parameter (`OpenWebNet Device Address`):
+  - example sensor `5` of external zone `00` --> `where="500"`
+  - example: slave sensor `3` of zone 2 --> `where="302"`
+
+#### NOTE
+
+Systems with Central Units (4 or 99 zones) are not fully supported yet.
+
 
 ## Channels 
 
@@ -137,13 +156,6 @@ For any manually added device, you must configure:
 | `power`                                  | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter      |     R      |
 
 ### Thermo channels
-
-It is more correct to identify an environment with the concept of `zone` rather than  `thermostat` as a `zone` is composed of both at least one `thermostat` and at least one `actuator`.
-
-Configuration parameters of a zone are:
-
-- `zone` is equivalent to `where`
-- `standAlone` (`boolean`, default: `true`): identifies if the zone is managed or not by a central unit (4 or 99 zones). `true` means that a central unit is not present in the system.
 
 | Channel Type ID (channel ID) | Applies to Thing Type IDs           | Item Type          | Description                                       | Read/Write | Advanced |
 | ---------------------------- | ----------------------------------- | ------------------ | ------------------------------------------------- | :--------: | :------: |

@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_ACTUATORS;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_CONDITIONING_VALVES;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_FAN_SPEED;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_FUNCTION;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_HEATING_VALVES;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_TEMP_SETPOINT;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
 import java.util.Set;
 
@@ -48,8 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetThermoregulationHandler} is responsible for handling commands/messages for a Thermoregulation
- * OpenWebNet device. It extends the abstract {@link OpenWebNetThingHandler}.
+ * The {@link OpenWebNetThermoregulationHandler} is responsible for handling commands/messages for Thermoregulation
+ * Things. It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Thermoregulation
@@ -62,7 +55,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.THERMOREGULATION_SUPPORTED_THING_TYPES;
 
-    private boolean isTempSensor = false; // is the device a sensor or thermostat?
+    private boolean isTempSensor = false; // is the thing a sensor ?
 
     private double currentSetPointTemp = 11.5d; // 11.5 is the default setTemp used in MyHomeUP mobile app
 
@@ -329,7 +322,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             try {
                 send(Thermoregulation.requestTemperature(w));
                 if (!this.isTempSensor) {
-                    // for bus_thermostat request also other single channels updates
+                    // for bus_thermo_zone request also other single channels updates
                     send(Thermoregulation.requestSetPointTemperature(w));
                     send(Thermoregulation.requestFanCoilSpeed(w));
                     send(Thermoregulation.requestMode(w));

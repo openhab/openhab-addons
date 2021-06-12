@@ -56,9 +56,9 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
     public static final String THING_LABEL_BUS_ENERGY_METER = "Energy Meter";
     public static final ThingTypeUID THING_TYPE_BUS_THERMO_SENSOR = new ThingTypeUID(BINDING_ID, "bus_thermo_sensor");
-    public static final String THING_LABEL_BUS_THERMO_SENSOR = "Temperature Sensor";
+    public static final String THING_LABEL_BUS_THERMO_SENSOR = "Thermo Sensor";
     public static final ThingTypeUID THING_TYPE_BUS_THERMO_ZONE = new ThingTypeUID(BINDING_ID, "bus_thermo_zone");
-    public static final String THING_LABEL_BUS_THERMO_ZONE = "Zone";
+    public static final String THING_LABEL_BUS_THERMO_ZONE = "Thermo Zone";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
