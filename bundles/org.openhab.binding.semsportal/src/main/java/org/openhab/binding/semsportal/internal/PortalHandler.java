@@ -200,7 +200,7 @@ public class PortalHandler extends BaseBridgeHandler {
     }
 
     public long getUpdateInterval() {
-        return config.update;
+        return config.interval;
     }
 
     public List<Station> getAllStations() {
