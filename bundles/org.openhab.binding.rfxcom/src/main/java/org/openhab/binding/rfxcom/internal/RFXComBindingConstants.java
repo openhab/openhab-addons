@@ -47,6 +47,8 @@ public class RFXComBindingConstants {
     public static final ThingTypeUID BRIDGE_RFXTRX315 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXTRX315);
     public static final ThingTypeUID BRIDGE_RFXREC443 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXREC433);
 
+    public static final int MAX_RFXCOM_MESSAGE_LEN = 256;
+
     /**
      * Presents all supported Bridge types by RFXCOM binding.
      */
