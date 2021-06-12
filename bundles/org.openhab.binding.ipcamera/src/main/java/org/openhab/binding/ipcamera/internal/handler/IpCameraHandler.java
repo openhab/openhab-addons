@@ -1684,6 +1684,9 @@ public class IpCameraHandler extends BaseThingHandler {
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
+        if (cameraConfig.getFfmpegOutput().isEmpty()) {
+            cameraConfig.setFfmpegOutput("/etc/openhab/html/cameras/" + this.thing.getUID().getId() + "/");
+        }
 
         if (cameraConfig.getServerPort() < 1) {
             logger.warn(
