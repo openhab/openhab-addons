@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pidcontroller.internal.handler.PIDControllerActionHandler;
 import org.openhab.automation.pidcontroller.internal.handler.PIDControllerTriggerHandler;
 import org.openhab.core.automation.type.ModuleType;
 import org.openhab.core.automation.type.ModuleTypeProvider;
@@ -33,9 +32,8 @@ import org.osgi.service.component.annotations.Component;
 @Component
 @NonNullByDefault
 public class PIDControllerModuleTypeProvider implements ModuleTypeProvider {
-    private static final Map<String, ModuleType> PROVIDED_MODULE_TYPES = Map.of(
-            PIDControllerActionHandler.MODULE_TYPE_ID, PIDControllerActionType.initialize(),
-            PIDControllerTriggerHandler.MODULE_TYPE_ID, PIDControllerTriggerType.initialize());
+    private static final Map<String, ModuleType> PROVIDED_MODULE_TYPES = Map
+            .of(PIDControllerTriggerHandler.MODULE_TYPE_ID, PIDControllerTriggerType.initialize());
 
     @SuppressWarnings("unchecked")
     @Override

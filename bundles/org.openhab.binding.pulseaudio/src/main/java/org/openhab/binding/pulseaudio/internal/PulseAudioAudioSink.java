@@ -18,6 +18,8 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 
@@ -52,8 +54,11 @@ public class PulseAudioAudioSink implements AudioSink {
     private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
 
     private PulseaudioHandler pulseaudioHandler;
+    private ScheduledExecutorService scheduler;
 
     private @Nullable Socket clientSocket;
+
+    private boolean isIdle = true;
 
     static {
         SUPPORTED_FORMATS.add(AudioFormat.WAV);
@@ -61,8 +66,9 @@ public class PulseAudioAudioSink implements AudioSink {
         SUPPORTED_STREAMS.add(FixedLengthAudioStream.class);
     }
 
-    public PulseAudioAudioSink(PulseaudioHandler pulseaudioHandler) {
+    public PulseAudioAudioSink(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler) {
         this.pulseaudioHandler = pulseaudioHandler;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -120,11 +126,14 @@ public class PulseAudioAudioSink implements AudioSink {
      * Disconnect the socket to pulseaudio simple protocol
      */
     public void disconnect() {
-        if (clientSocket != null) {
+        if (clientSocket != null && isIdle) {
+            logger.debug("Disconnecting");
             try {
                 clientSocket.close();
             } catch (IOException e) {
             }
+        } else {
+            logger.debug("Stream still running or socket not open");
         }
     }
 
@@ -153,6 +162,7 @@ public class PulseAudioAudioSink implements AudioSink {
                     connectIfNeeded();
                     if (audioInputStream != null && clientSocket != null) {
                         // send raw audio to the socket and to pulse audio
+                        isIdle = false;
                         audioInputStream.transferTo(clientSocket.getOutputStream());
                         break;
                     }
@@ -178,9 +188,16 @@ public class PulseAudioAudioSink implements AudioSink {
                     audioInputStream.close();
                 }
                 audioStream.close();
+                scheduleDisconnect();
             } catch (IOException e) {
             }
         }
+        isIdle = true;
+    }
+
+    public void scheduleDisconnect() {
+        logger.debug("Scheduling disconnect");
+        scheduler.schedule(this::disconnect, pulseaudioHandler.getIdleTimeout(), TimeUnit.MILLISECONDS);
     }
 
     @Override

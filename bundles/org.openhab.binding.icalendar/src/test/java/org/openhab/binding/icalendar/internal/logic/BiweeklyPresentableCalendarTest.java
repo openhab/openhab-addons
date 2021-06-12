@@ -41,13 +41,14 @@ import org.openhab.core.types.Command;
  * @author Michael Wodniok - Initial contribution.
  * @author Andrew Fiddian-Green - Tests for Command Tag code
  * @author Michael Wodniok - Extended Tests for filtered Events
- *
+ * @author Michael Wodniok - Extended Test for parallel current events
  */
 public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar;
     private AbstractPresentableCalendar calendar2;
     private AbstractPresentableCalendar calendar3;
     private AbstractPresentableCalendar calendar_issue9647;
+    private AbstractPresentableCalendar calendar_issue10808;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
@@ -56,6 +57,8 @@ public class BiweeklyPresentableCalendarTest {
         calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"));
         calendar_issue9647 = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-issue9647.ics"));
+        calendar_issue10808 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue10808.ics"));
     }
 
     /**
@@ -117,6 +120,18 @@ public class BiweeklyPresentableCalendarTest {
 
         Event nonExistingEvent = calendar.getCurrentEvent(Instant.parse("2019-09-09T09:07:00Z"));
         assertNull(nonExistingEvent);
+
+        Event currentEvent2 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:10:05Z"));
+        assertNotNull(currentEvent2);
+        assertTrue("Test event 1".contentEquals(currentEvent2.title));
+
+        Event currentEvent3 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:13:05Z"));
+        assertNotNull(currentEvent3);
+        assertTrue("Test event 2".contentEquals(currentEvent3.title));
+
+        Event currentEvent4 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:18:05Z"));
+        assertNotNull(currentEvent4);
+        assertTrue("Test event 1".contentEquals(currentEvent4.title));
     }
 
     /**
