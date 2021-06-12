@@ -31,7 +31,7 @@ import org.openhab.core.thing.Thing;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-public class SoulissBindingNetworkParameters {
+public class NetworkParameters {
 
     public static final Byte DEFAULT_NODE_INDEX = (byte) 130;
     public static final Byte DEFAULT_USER_INDEX = (byte) 70;
@@ -64,7 +64,7 @@ public class SoulissBindingNetworkParameters {
     }
 
     public static void setDatagramSocket(@Nullable DatagramSocket datagramSocket) {
-        SoulissBindingNetworkParameters.datagramSocket = datagramSocket;
+        NetworkParameters.datagramSocket = datagramSocket;
     }
 
     public static void addGateway(byte lastByteGatewayIP, Thing thing) {

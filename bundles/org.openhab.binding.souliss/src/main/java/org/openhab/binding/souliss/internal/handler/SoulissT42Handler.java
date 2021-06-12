@@ -15,7 +15,7 @@ package org.openhab.binding.souliss.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingProtocolConstants;
+import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -49,7 +49,7 @@ public class SoulissT42Handler extends SoulissGenericHandler {
         if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
             if (command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
-                    commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
+                    commandSEND(SoulissProtocolConstants.SOULISS_T4N_REARM);
                     this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
                 }
             }
@@ -107,8 +107,8 @@ public class SoulissT42Handler extends SoulissGenericHandler {
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T4N_REARM) {
-                return SoulissBindingProtocolConstants.SOULISS_T4N_ANTITHEFT;
+            if (bCmd == SoulissProtocolConstants.SOULISS_T4N_REARM) {
+                return SoulissProtocolConstants.SOULISS_T4N_ANTITHEFT;
             }
         }
         return -1;

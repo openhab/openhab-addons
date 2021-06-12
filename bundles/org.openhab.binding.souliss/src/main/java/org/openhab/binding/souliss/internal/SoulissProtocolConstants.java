@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-public final class SoulissBindingProtocolConstants {
+public final class SoulissProtocolConstants {
 
     public static final String TAG = "SoulissApp:Typicals";
 

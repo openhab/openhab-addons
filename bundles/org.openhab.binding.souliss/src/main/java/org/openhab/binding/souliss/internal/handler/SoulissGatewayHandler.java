@@ -22,13 +22,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingUDPConstants;
+import org.openhab.binding.souliss.internal.SoulissUDPConstants;
 import org.openhab.binding.souliss.internal.SoulissDatagramSocketFactory;
 import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingDiscoverUDPListenerJob;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingSendDispatcherJob;
-import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
+import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
+import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
+import org.openhab.binding.souliss.internal.protocol.SendDispatcherRunnable;
+import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -61,10 +61,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
-    private @Nullable SoulissBindingDiscoverUDPListenerJob udpServerDefaultPortRunnableClass;
+    private @Nullable UDPListenDiscoverRunnable udpServerDefaultPortRunnableClass;
     private @Nullable Future<?> eventListenerJob;
 
-    private SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+    private CommonCommands soulissCommands = new CommonCommands();
 
     boolean bGatewayDetected = false;
 
@@ -119,8 +119,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         }
         if (soulissGatewayPort < 0 && soulissGatewayPort > 65000) {
             bridge.getConfiguration().put(SoulissBindingConstants.CONFIG_PORT,
-                    SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
-            logger.debug("Set Souliss Gateway Port to {}", SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
+                    SoulissUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
+            logger.debug("Set Souliss Gateway Port to {}", SoulissUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
         }
 
         if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_USER_INDEX) != null) {
@@ -128,8 +128,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             logger.debug("Get User Index: {}", userIndex);
             if (userIndex < 0 && userIndex > 255) {
                 bridge.getConfiguration().put(SoulissBindingConstants.CONFIG_USER_INDEX,
-                        SoulissBindingUDPConstants.SOULISS_DEFAULT_USER_INDEX);
-                logger.debug("Set User Index to {}", SoulissBindingUDPConstants.SOULISS_DEFAULT_USER_INDEX);
+                        SoulissUDPConstants.SOULISS_DEFAULT_USER_INDEX);
+                logger.debug("Set User Index to {}", SoulissUDPConstants.SOULISS_DEFAULT_USER_INDEX);
             }
         }
 
@@ -139,8 +139,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         }
         if (nodeIndex < 0 && nodeIndex > 255) {
             bridge.getConfiguration().put(SoulissBindingConstants.CONFIG_NODE_INDEX,
-                    SoulissBindingUDPConstants.SOULISS_DEFAULT_NODE_INDEX);
-            logger.debug("Set Node Index to {}", SoulissBindingUDPConstants.SOULISS_DEFAULT_NODE_INDEX);
+                    SoulissUDPConstants.SOULISS_DEFAULT_NODE_INDEX);
+            logger.debug("Set Node Index to {}", SoulissUDPConstants.SOULISS_DEFAULT_NODE_INDEX);
         }
 
         if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_NODE_INDEX) != null) {
@@ -193,8 +193,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // check if there is a socket
             // no.. create new and set to soulissparms class
             // new runnable udp listener
-            udpServerDefaultPortRunnableClass = new SoulissBindingDiscoverUDPListenerJob(
-                    SoulissBindingNetworkParameters.discoverResult);
+            udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(
+                    NetworkParameters.discoverResult);
             // exec thread
             // scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
             // SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
@@ -222,7 +222,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // il ciclo Send è schedulato con la costante
             // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
             // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
-            SoulissBindingSendDispatcherJob soulissSendDispatcherRunnable = new SoulissBindingSendDispatcherJob(bridge);
+            SendDispatcherRunnable soulissSendDispatcherRunnable = new SendDispatcherRunnable(bridge);
             scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
                     SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
         }
@@ -234,14 +234,14 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
+        NetworkParameters.removeGateway((byte) gwIpByte());
         logger.debug("Gateway handler removing");
     }
 
     @Override
     public void thingUpdated(Thing thing) {
         logger.debug("Thing Updated: {}", thing.getThingTypeUID());
-        SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
+        NetworkParameters.removeGateway((byte) gwIpByte());
         this.thing = thing;
     }
 

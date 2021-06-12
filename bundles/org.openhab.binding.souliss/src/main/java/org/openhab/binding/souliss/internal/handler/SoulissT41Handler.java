@@ -16,7 +16,7 @@ package org.openhab.binding.souliss.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingProtocolConstants;
+import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -53,15 +53,15 @@ public class SoulissT41Handler extends SoulissGenericHandler {
             if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL)) {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.OFF)) {
-                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_NOT_ARMED);
+                        commandSEND(SoulissProtocolConstants.SOULISS_T4N_NOT_ARMED);
                     } else if (command.equals(OnOffType.ON)) {
-                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_ARMED);
+                        commandSEND(SoulissProtocolConstants.SOULISS_T4N_ARMED);
                     }
                 }
             } else if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.OFF)) {
-                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
+                        commandSEND(SoulissProtocolConstants.SOULISS_T4N_REARM);
                         this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
                     }
 
@@ -105,18 +105,18 @@ public class SoulissT41Handler extends SoulissGenericHandler {
         // update item state only if it is different from previous
         if (t4nRawState != rawState) {
             switch (rawState) {
-                case SoulissBindingProtocolConstants.SOULISS_T4N_NO_ANTITHEFT:
+                case SoulissProtocolConstants.SOULISS_T4N_NO_ANTITHEFT:
                     this.setState(OnOffType.OFF);
                     this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
                     break;
-                case SoulissBindingProtocolConstants.SOULISS_T4N_ANTITHEFT:
+                case SoulissProtocolConstants.SOULISS_T4N_ANTITHEFT:
                     this.setState(OnOffType.ON);
                     this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
                     break;
-                case SoulissBindingProtocolConstants.SOULISS_T4N_IN_ALARM:
+                case SoulissProtocolConstants.SOULISS_T4N_IN_ALARM:
                     this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL));
                     break;
-                case SoulissBindingProtocolConstants.SOULISS_T4N_ARMED:
+                case SoulissProtocolConstants.SOULISS_T4N_ARMED:
                     this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ARMED_MESSAGE_CHANNEL));
                     break;
             }
@@ -133,12 +133,12 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
             // da testare
-            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T4N_ARMED) {
-                return SoulissBindingProtocolConstants.SOULISS_T4N_ANTITHEFT;
-            } else if (bCmd == SoulissBindingProtocolConstants.SOULISS_T4N_NOT_ARMED) {
-                return SoulissBindingProtocolConstants.SOULISS_T4N_NO_ANTITHEFT;
-            } else if (bCmd >= SoulissBindingProtocolConstants.SOULISS_T4N_REARM) {
-                return SoulissBindingProtocolConstants.SOULISS_T4N_ANTITHEFT;
+            if (bCmd == SoulissProtocolConstants.SOULISS_T4N_ARMED) {
+                return SoulissProtocolConstants.SOULISS_T4N_ANTITHEFT;
+            } else if (bCmd == SoulissProtocolConstants.SOULISS_T4N_NOT_ARMED) {
+                return SoulissProtocolConstants.SOULISS_T4N_NO_ANTITHEFT;
+            } else if (bCmd >= SoulissProtocolConstants.SOULISS_T4N_REARM) {
+                return SoulissProtocolConstants.SOULISS_T4N_ANTITHEFT;
             }
         }
         return -1;

@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingDiscoverUDPListenerJob;
-import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
-import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
+import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
+import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
+import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SoulissDiscoverJob implements Runnable {
-    private SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+    private CommonCommands soulissCommands = new CommonCommands();
 
     /**
      * Result callback interface.
@@ -51,7 +51,7 @@ public class SoulissDiscoverJob implements Runnable {
     private @Nullable DatagramSocket datagramSocket;
 
     @Nullable
-    SoulissBindingDiscoverUDPListenerJob udpServerOnDefaultPort = null;
+    UDPListenDiscoverRunnable udpServerOnDefaultPort = null;
     ///// Debug
     private final Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);
 
@@ -78,7 +78,7 @@ public class SoulissDiscoverJob implements Runnable {
             logger.debug("Sending a discovery packet failed: {} ", e.getLocalizedMessage());
         }
 
-        ConcurrentMap<Byte, Thing> gwMaps = SoulissBindingNetworkParameters.getHashTableGateways();
+        ConcurrentMap<Byte, Thing> gwMaps = NetworkParameters.getHashTableGateways();
         Collection<Thing> gwMapsCollection = gwMaps.values();
         for (Thing t : gwMapsCollection) {
             SoulissGatewayHandler gw = (SoulissGatewayHandler) t.getHandler();

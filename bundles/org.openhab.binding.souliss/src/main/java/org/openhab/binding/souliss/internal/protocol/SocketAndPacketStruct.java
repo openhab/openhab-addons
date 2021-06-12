@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-public class SoulissBindingSocketAndPacketStruct {
+public class SocketAndPacketStruct {
     @Nullable
     public DatagramSocket socket;
 
@@ -33,7 +33,7 @@ public class SoulissBindingSocketAndPacketStruct {
     public boolean sent;
     public long time = 0;
 
-    public SoulissBindingSocketAndPacketStruct(@Nullable DatagramSocket socketPar, DatagramPacket packetPar) {
+    public SocketAndPacketStruct(@Nullable DatagramSocket socketPar, DatagramPacket packetPar) {
         socket = socketPar;
         packet = packetPar;
     }

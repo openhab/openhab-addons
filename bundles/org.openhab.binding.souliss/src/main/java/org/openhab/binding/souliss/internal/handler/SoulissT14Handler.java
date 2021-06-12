@@ -15,7 +15,7 @@ package org.openhab.binding.souliss.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingProtocolConstants;
+import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -66,9 +66,9 @@ public class SoulissT14Handler extends SoulissGenericHandler {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.PULSE_CHANNEL:
                     if (command.equals(OnOffType.ON)) {
-                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
+                        commandSEND(SoulissProtocolConstants.SOULISS_T1N_ON_CMD);
                     } else if (command.equals(OnOffType.OFF)) {
-                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
+                        commandSEND(SoulissProtocolConstants.SOULISS_T1N_OFF_CMD);
                     }
                     break;
             }

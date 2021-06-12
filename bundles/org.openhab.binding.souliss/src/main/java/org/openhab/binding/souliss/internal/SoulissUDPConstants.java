@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Alessandro Del Pex - @since 1.7.0
  */
 @NonNullByDefault
-public class SoulissBindingUDPConstants {
+public class SoulissUDPConstants {
 
     public static final String TAG = "SoulissApp";
 
