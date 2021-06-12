@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingProtocolConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingUDPConstants;
+import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
+import org.openhab.binding.souliss.internal.SoulissUDPConstants;
 import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissGenericHandler;
@@ -67,14 +67,14 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Del Pex - Souliss App
  */
 @NonNullByDefault
-public class SoulissBindingUDPDecoder {
+public class UDPDecoder {
 
-    private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPDecoder.class);
+    private final Logger logger = LoggerFactory.getLogger(UDPDecoder.class);
     @Nullable
     private static DiscoverResult discoverResult;
 
-    public SoulissBindingUDPDecoder(@Nullable DiscoverResult pDiscoverResult) {
-        SoulissBindingUDPDecoder.discoverResult = pDiscoverResult;
+    public UDPDecoder(@Nullable DiscoverResult pDiscoverResult) {
+        UDPDecoder.discoverResult = pDiscoverResult;
     }
 
     /**
@@ -104,7 +104,7 @@ public class SoulissBindingUDPDecoder {
     private void decodeMacaco(byte lastByteGatewayIP, ArrayList<Byte> macacoPck) {
         int functionalCode = macacoPck.get(0);
         switch (functionalCode) {
-            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_PING_RESP:
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_PING_RESP:
                 logger.debug("Received functional code: 0x{}- Ping answer", Integer.toHexString(functionalCode));
                 decodePing(lastByteGatewayIP, macacoPck);
                 break;
@@ -119,25 +119,25 @@ public class SoulissBindingUDPDecoder {
             // }
             // break;
 
-            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP:
-            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_POLL_RESP:
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP:
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_POLL_RESP:
                 logger.debug("Received functional code: 0x{} - Read state answer", Integer.toHexString(functionalCode));
                 decodeStateRequest(lastByteGatewayIP, macacoPck);
                 break;
 
-            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_TYP_RESP:// Answer for assigned typical logic
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_RESP:// Answer for assigned typical logic
                 logger.debug("Received functional code: 0x{}- Read typical logic answer",
                         Integer.toHexString(functionalCode));
                 decodeTypRequest(lastByteGatewayIP, macacoPck);
                 break;
 
-            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_RESP:// Answer
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_RESP:// Answer
                 // nodes healthy
                 logger.debug("Received functional code: 0x{} - Nodes Healthy", Integer.toHexString(functionalCode));
                 decodeHealthyRequest(lastByteGatewayIP, macacoPck);
                 break;
 
-            case (byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_RESP:
+            case (byte) SoulissUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_RESP:
                 logger.debug("Received functional code: 0x{} - Database structure answer",
                         Integer.toHexString(functionalCode));
                 decodeDBStructRequest(lastByteGatewayIP, macacoPck);
@@ -151,7 +151,7 @@ public class SoulissBindingUDPDecoder {
             case 0x85:
                 logger.debug("Subscription refused");
                 break;
-            case (byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_ACTION_MESSAGE:
+            case (byte) SoulissUDPConstants.SOULISS_UDP_FUNCTION_ACTION_MESSAGE:
                 logger.debug("Received functional code: 0x{} - Action Message (Topic)",
                         Integer.toHexString(functionalCode));
                 decodeActionMessages(lastByteGatewayIP, macacoPck);
@@ -170,7 +170,7 @@ public class SoulissBindingUDPDecoder {
         int putIn2 = mac.get(2); // not used
         logger.debug("decodePing: putIn code: {}, {}", putIn1, putIn2);
 
-        Bridge gw = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+        Bridge gw = NetworkParameters.getGateway(lastByteGatewayIP);
 
         if (gw != null) {
             SoulissGatewayHandler gwHandler = (SoulissGatewayHandler) gw.getHandler();
@@ -188,7 +188,7 @@ public class SoulissBindingUDPDecoder {
         logger.debug("decodePingBroadcast. Gateway Discovery. IP: {}", ip);
 
         @Nullable
-        DiscoverResult localDiscoverResult = SoulissBindingUDPDecoder.discoverResult;
+        DiscoverResult localDiscoverResult = UDPDecoder.discoverResult;
         if (localDiscoverResult != null) {
             localDiscoverResult.gatewayDetected(InetAddress.getByAddress(addr), macaco.get(8).toString());
         } else {
@@ -209,7 +209,7 @@ public class SoulissBindingUDPDecoder {
             byte tgtnode = mac.get(3);
             int numberOf = mac.get(4);
 
-            Bridge bridge = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
             if (bridge != null) {
                 SoulissGatewayHandler gateway;
                 gateway = (SoulissGatewayHandler) bridge.getHandler();
@@ -220,14 +220,14 @@ public class SoulissBindingUDPDecoder {
                     // creates Souliss nodes
                     for (int j = 0; j < numberOf; j++) {
                         if (mac.get(5 + j) != 0) {// create only not-empty typicals
-                            if ((mac.get(5 + j) != SoulissBindingProtocolConstants.SOULISS_T_RELATED)) {
+                            if ((mac.get(5 + j) != SoulissProtocolConstants.SOULISS_T_RELATED)) {
                                 byte typical = mac.get(5 + j);
                                 byte slot = (byte) (j % typXnodo);
                                 byte node = (byte) (j / typXnodo + tgtnode);
                                 logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
                                         lastByteGatewayIP, Integer.toHexString(typical), node, slot);
                                 @Nullable
-                                DiscoverResult localDiscoverResult = SoulissBindingUDPDecoder.discoverResult;
+                                DiscoverResult localDiscoverResult = UDPDecoder.discoverResult;
                                 if (localDiscoverResult != null) {
                                     localDiscoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
                                 } else {
@@ -288,7 +288,7 @@ public class SoulissBindingUDPDecoder {
             }
 
             try {
-                ConcurrentMap<String, Thing> gwMaps = SoulissBindingNetworkParameters.getHashTableTopics();
+                ConcurrentMap<String, Thing> gwMaps = NetworkParameters.getHashTableTopics();
                 Collection<Thing> gwMapsCollection = gwMaps.values();
                 SoulissTopicsHandler topicHandler;
                 boolean bIsPresent = false;
@@ -303,7 +303,7 @@ public class SoulissBindingUDPDecoder {
                         }
                     }
                 }
-                DiscoverResult localDiscoverResult = SoulissBindingUDPDecoder.discoverResult;
+                DiscoverResult localDiscoverResult = UDPDecoder.discoverResult;
                 if (localDiscoverResult != null && !bIsPresent) {
                     localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
                 }
@@ -334,7 +334,7 @@ public class SoulissBindingUDPDecoder {
             int nodes = mac.get(5);
             int maxTypicalXnode = mac.get(7);
 
-            Bridge bridge = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
             if (bridge != null) {
                 SoulissGatewayHandler gateway = (SoulissGatewayHandler) bridge.getHandler();
                 if (gateway != null) {
@@ -360,7 +360,7 @@ public class SoulissBindingUDPDecoder {
         int numberOf = mac.get(4);
         SoulissGatewayHandler gateway = null;
         try {
-            Bridge bridge = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
             if (bridge != null) {
                 gateway = (SoulissGatewayHandler) bridge.getHandler();
             }
@@ -395,7 +395,7 @@ public class SoulissBindingUDPDecoder {
         int tgtnode = mac.get(3);
         SoulissGatewayHandler gateway = null;
         try {
-            Bridge bridge = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
             if (bridge != null) {
                 gateway = (SoulissGatewayHandler) bridge.getHandler();
             }
@@ -497,11 +497,11 @@ public class SoulissBindingUDPDecoder {
                                     case SoulissBindingConstants.T42:
                                         ((SoulissT42Handler) handler).setRawState(sVal);
                                         switch (sVal) {
-                                            case SoulissBindingProtocolConstants.SOULISS_T4N_NO_ANTITHEFT:
+                                            case SoulissProtocolConstants.SOULISS_T4N_NO_ANTITHEFT:
                                                 ((SoulissT42Handler) handler).setState(StringType
                                                         .valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
                                                 break;
-                                            case SoulissBindingProtocolConstants.SOULISS_T4N_ALARM:
+                                            case SoulissProtocolConstants.SOULISS_T4N_ALARM:
                                                 ((SoulissT42Handler) handler).setState(StringType
                                                         .valueOf(SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL));
                                                 break;

@@ -35,26 +35,26 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Del Pex - Souliss App
  */
 @NonNullByDefault
-public class SoulissBindingDiscoverUDPListenerJob implements Runnable {
+public class UDPListenDiscoverRunnable implements Runnable {
 
     @Nullable
     protected BufferedReader in = null;
     protected boolean bExit = false;
     @Nullable
-    SoulissBindingUDPDecoder decoder = null;
+    UDPDecoder decoder = null;
     @Nullable
     DiscoverResult discoverResult = null;
 
     @Nullable
     DatagramSocket socket;
 
-    private final Logger logger = LoggerFactory.getLogger(SoulissBindingDiscoverUDPListenerJob.class);
+    private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
-    public SoulissBindingDiscoverUDPListenerJob(@Nullable DiscoverResult pDiscoverResult) {
+    public UDPListenDiscoverRunnable(@Nullable DiscoverResult pDiscoverResult) {
         super();
         this.discoverResult = pDiscoverResult;
 
-        decoder = new SoulissBindingUDPDecoder(discoverResult);
+        decoder = new UDPDecoder(discoverResult);
 
     }
 

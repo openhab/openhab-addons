@@ -19,8 +19,8 @@ import java.util.Date;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingProtocolConstants;
-import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
+import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
+import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -56,7 +56,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     Thing thingGeneric;
 
-    private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+    private final CommonCommands soulissCommands = new CommonCommands();
 
     private int iSlot;
     private int iNode;
@@ -213,17 +213,17 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     protected @Nullable OnOffType getOhStateOnOffFromSoulissVal(byte sVal) {
-        if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
+        if (sVal == SoulissProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OnOffType.ON;
-        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL) {
+        } else if (sVal == SoulissProtocolConstants.SOULISS_T1N_OFF_COIL) {
             return OnOffType.OFF;
-        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_FEEDBACK) {
+        } else if (sVal == SoulissProtocolConstants.SOULISS_T1N_ON_FEEDBACK) {
             return OnOffType.ON;
-        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_FEEDBACK) {
+        } else if (sVal == SoulissProtocolConstants.SOULISS_T1N_OFF_FEEDBACK) {
             return OnOffType.OFF;
-        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T4N_NOT_ARMED) {
+        } else if (sVal == SoulissProtocolConstants.SOULISS_T4N_NOT_ARMED) {
             return OnOffType.OFF;
-        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T4N_ARMED) {
+        } else if (sVal == SoulissProtocolConstants.SOULISS_T4N_ARMED) {
             return OnOffType.ON;
         }
 
@@ -232,9 +232,9 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     @Nullable
     protected OpenClosedType getOhStateOpenCloseFromSoulissVal(byte sVal) {
-        if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
+        if (sVal == SoulissProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OpenClosedType.CLOSED;
-        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL) {
+        } else if (sVal == SoulissProtocolConstants.SOULISS_T1N_OFF_COIL) {
             return OpenClosedType.OPEN;
         }
         return null;

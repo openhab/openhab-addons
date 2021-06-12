@@ -14,7 +14,7 @@ package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
+import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.BridgeHandler;
 
@@ -31,7 +31,7 @@ public class SoulissGatewayJobPing implements Runnable {
     private byte nodeIndex;
     private int pingRefreshInterval;
 
-    private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+    private final CommonCommands soulissCommands = new CommonCommands();
 
     @Nullable
     private SoulissGatewayHandler gwHandler;

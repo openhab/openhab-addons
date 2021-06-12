@@ -22,7 +22,7 @@ import java.util.Iterator;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissBindingUDPConstants;
+import org.openhab.binding.souliss.internal.SoulissUDPConstants;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissGenericHandler;
 import org.openhab.core.thing.Bridge;
@@ -38,25 +38,25 @@ import org.slf4j.LoggerFactory;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-public class SoulissBindingSendDispatcherJob implements Runnable {
+public class SendDispatcherRunnable implements Runnable {
 
-    private final Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
+    private final Logger logger = LoggerFactory.getLogger(SendDispatcherRunnable.class);
 
     @Nullable
     private SoulissGatewayHandler gwHandler;
     static boolean bPopSuspend = false;
-    protected static ArrayList<SoulissBindingSocketAndPacketStruct> packetsList = new ArrayList<>();
+    protected static ArrayList<SocketAndPacketStruct> packetsList = new ArrayList<>();
     private long startTime = System.currentTimeMillis();
     static String ipAddressOnLAN = "";
     static int iDelay = 0; // equal to 0 if array is empty
     static int sendMinDelay = 0;
 
-    public SoulissBindingSendDispatcherJob(Bridge bridge) {
+    public SendDispatcherRunnable(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         @Nullable
         SoulissGatewayHandler localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
-            SoulissBindingSendDispatcherJob.ipAddressOnLAN = localGwHandler.ipAddressOnLAN;
+            SendDispatcherRunnable.ipAddressOnLAN = localGwHandler.ipAddressOnLAN;
         }
     }
 
@@ -128,7 +128,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                             packetsList.remove(i);
                             // inserisce il nuovo
                             logger.debug("Optimizer. Add frame: {}", macacoToString(packetToPUT.getData()));
-                            packetsList.add(new SoulissBindingSocketAndPacketStruct(socket, packetToPUT));
+                            packetsList.add(new SocketAndPacketStruct(socket, packetToPUT));
                         }
                     }
                 }
@@ -137,7 +137,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
 
         if (!bPacchettoGestito) {
             logger.debug("Add packet: {}", macacoToString(packetToPUT.getData()));
-            packetsList.add(new SoulissBindingSocketAndPacketStruct(socket, packetToPUT));
+            packetsList.add(new SocketAndPacketStruct(socket, packetToPUT));
         }
         bPopSuspend = false;
     }
@@ -148,7 +148,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
 
         try {
             if (checkTime()) {
-                SoulissBindingSocketAndPacketStruct sp = pop();
+                SocketAndPacketStruct sp = pop();
                 if (sp != null) {
                     logger.debug(
                             "SendDispatcherJob - Functional Code 0x{} - Packet: {} - Elementi rimanenti in lista: {}",
@@ -187,7 +187,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     private static int getNode(DatagramPacket packet) {
         // 7 è il byte del frame VNet al quale trovo il codice comando
         // 10 è il byte del frame VNet al quale trovo l'ID del nodo
-        if (packet.getData()[7] == SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
+        if (packet.getData()[7] == SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
             return packet.getData()[10];
         }
         return -1;
@@ -232,7 +232,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
                         @Nullable
-                        SoulissGenericHandler localTyp = SoulissBindingSendDispatcherJob.typ;
+                        SoulissGenericHandler localTyp = SendDispatcherRunnable.typ;
                         localTyp = getHandler(ipAddressOnLAN, node, iSlot, this.logger);
 
                         if (localTyp == null) {
@@ -324,7 +324,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         SoulissGatewayHandler gateway = null;
         byte lastByteGatewayIP = (byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]);
         try {
-            Bridge bridge = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
             if (bridge != null) {
                 gateway = (SoulissGatewayHandler) bridge.getHandler();
             }
@@ -380,7 +380,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
      * Pop SocketAndPacket from ArrayList PacketList
      */
     @Nullable
-    private synchronized SoulissBindingSocketAndPacketStruct pop() {
+    private synchronized SocketAndPacketStruct pop() {
         synchronized (this) {
             @Nullable
             SoulissGatewayHandler localGwHandler = this.gwHandler;
@@ -424,12 +424,12 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                         tPrec = System.currentTimeMillis();
 
                         // estratto il primo elemento della lista
-                        SoulissBindingSocketAndPacketStruct sp = packetsList.get(iPacket);
+                        SocketAndPacketStruct sp = packetsList.get(iPacket);
 
                         // GESTIONE PACCHETTO: eliminato dalla lista oppure
                         // contrassegnato come inviato se è un FORCE
                         if (packetsList.get(iPacket).packet
-                                .getData()[7] == SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
+                                .getData()[7] == SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
                             // flag inviato a true
                             packetsList.get(iPacket).setSent(true);
                             // imposto time
