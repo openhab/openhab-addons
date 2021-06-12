@@ -1195,7 +1195,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        if (serverBootstrap != null) {
+        if (cameraConfig.getServerPort() > 0) {
             switch (channelUID.getId()) {
                 case CHANNEL_MJPEG_URL:
                     updateState(CHANNEL_MJPEG_URL, new StringType(
