@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api;
+package org.openhab.binding.carnet.internal;
 
 import static org.eclipse.jetty.http.HttpStatus.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+import static org.openhab.binding.carnet.internal.CarUtils.getString;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,18 +21,19 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO;
 import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO.CNApiError2;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link CarNetApiResult} stores API result information.
+ * The {@link ApiResult} stores API result information.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetApiResult {
+public class ApiResult {
     public String url = "";
     public String method = "";
     public String response = "";
@@ -43,31 +44,31 @@ public class CarNetApiResult {
     public HttpFields responseHeaders = new HttpFields();
     CarNetApiErrorDTO apiError = new CarNetApiErrorDTO();
 
-    public CarNetApiResult() {
+    public ApiResult() {
     }
 
-    public CarNetApiResult(String url, String method) {
+    public ApiResult(String url, String method) {
         this.method = method;
         this.url = url;
     }
 
-    public CarNetApiResult(String url, String method, Integer responseCode, String response) {
+    public ApiResult(String url, String method, Integer responseCode, String response) {
         this.method = method;
         this.url = url;
         this.httpCode = 0;
         this.response = response;
     }
 
-    public CarNetApiResult(@Nullable ContentResponse contentResponse) {
+    public ApiResult(@Nullable ContentResponse contentResponse) {
         fillFromResponse(contentResponse);
     }
 
-    public CarNetApiResult(@Nullable ContentResponse contentResponse, Throwable e) {
+    public ApiResult(@Nullable ContentResponse contentResponse, Throwable e) {
         fillFromResponse(contentResponse);
         response = response + "(" + e.toString() + ")";
     }
 
-    public CarNetApiResult(@Nullable Request request, Throwable e) {
+    public ApiResult(@Nullable Request request, Throwable e) {
         response = e.toString();
         if (request != null) {
             url = request.getURI().toString();

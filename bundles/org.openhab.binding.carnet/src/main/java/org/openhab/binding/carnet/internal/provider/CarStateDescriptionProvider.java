@@ -23,9 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetTextResources;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
+import org.openhab.binding.carnet.internal.TextResources;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -38,21 +37,21 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link CarNetStateDescriptionProvider} class is a dynamic provider of state options while leaving other state
+ * The {@link CarStateDescriptionProvider} class is a dynamic provider of state options while leaving other state
  * description fields as original.
  *
  * @author Markus Michels - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, CarNetStateDescriptionProvider.class })
+@Component(service = { DynamicStateDescriptionProvider.class, CarStateDescriptionProvider.class })
 @NonNullByDefault
-public class CarNetStateDescriptionProvider implements DynamicStateDescriptionProvider {
+public class CarStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
-    private final CarNetChannelIdMapper channelIdMapper;
-    private final CarNetTextResources resources;
+    private final ChannelDefinitions channelIdMapper;
+    private final TextResources resources;
 
     @Activate
-    public CarNetStateDescriptionProvider(@Reference CarNetTextResources resources,
-            @Reference CarNetChannelIdMapper channelIdMapper) {
+    public CarStateDescriptionProvider(@Reference TextResources resources,
+            @Reference ChannelDefinitions channelIdMapper) {
         this.channelIdMapper = channelIdMapper;
         this.resources = resources;
     }
@@ -79,8 +78,8 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         }
     }
 
-    public @Nullable static StateDescriptionFragmentBuilder buildStateDescriptor(CarNetTextResources resources,
-            CarNetChannelIdMapper channelIdMapper, String channelId) {
+    public @Nullable static StateDescriptionFragmentBuilder buildStateDescriptor(TextResources resources,
+            ChannelDefinitions channelIdMapper, String channelId) {
         ChannelIdMapEntry channelDef = channelIdMapper.find(channelId);
         if (channelDef == null) {
             return null;
@@ -124,7 +123,7 @@ public class CarNetStateDescriptionProvider implements DynamicStateDescriptionPr
         }
         if (!channelDef.options.isEmpty()) {
             for (String opt : channelDef.options.split(",")) {
-                String option = CarNetChannelIdMapper.getChannelAttribute(resources, channelDef.channelName,
+                String option = ChannelDefinitions.getChannelAttribute(resources, channelDef.channelName,
                         "state.option." + opt);
                 state.withOption(new StateOption(opt, option));
             }

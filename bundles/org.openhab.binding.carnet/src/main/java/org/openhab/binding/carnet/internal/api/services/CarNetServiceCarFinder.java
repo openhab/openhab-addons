@@ -13,19 +13,19 @@
 package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+import static org.openhab.binding.carnet.internal.CarUtils.getString;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_CAR_FINDER;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.OpenStreetMapApiDTO;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetPosition;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -50,7 +50,7 @@ public class CarNetServiceCarFinder extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarException {
         addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, null, false, true);
         addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, null, false, true);
         addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, null, false, true);
@@ -61,7 +61,7 @@ public class CarNetServiceCarFinder extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         boolean updated = false;
         try {
             logger.debug("{}: Get Vehicle Position", thingId);
@@ -77,7 +77,7 @@ public class CarNetServiceCarFinder extends CarNetBaseService {
             updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
                     !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.UNDEF);
             updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_CAR_MOVING, OnOffType.OFF);
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, UnDefType.UNDEF);
             if (e.getApiResult().httpCode == HttpStatus.NO_CONTENT_204) {
@@ -101,7 +101,7 @@ public class CarNetServiceCarFinder extends CarNetBaseService {
             try {
                 String address = osmApi.getAddressFromPosition(api.getHttp(), position);
                 return updateChannel(CHANNEL_GROUP_LOCATION, channel, new StringType(address));
-            } catch (CarNetException e) {
+            } catch (CarException e) {
                 updateChannel(CHANNEL_GROUP_LOCATION, channel, UnDefType.UNDEF);
             }
         }

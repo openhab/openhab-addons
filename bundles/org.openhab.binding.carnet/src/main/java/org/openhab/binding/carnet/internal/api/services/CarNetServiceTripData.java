@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_REMOTE_TRIP_STATISTICS;
 
 import java.util.Collections;
@@ -22,13 +22,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetTripData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetTripData.CarNetTripDataList.CarNetTripDataEntry;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -55,7 +55,7 @@ public class CarNetServiceTripData extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarException {
         try {
             CarNetCombinedConfig config = getConfig();
             boolean updated = false;
@@ -66,7 +66,7 @@ public class CarNetServiceTripData extends CarNetBaseService {
                 updated |= update("longTerm", channels);
             }
             return updated;
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             logger.debug("{}: Unable to create channels for service {}", thingId, serviceId);
         }
         return false;
@@ -86,12 +86,12 @@ public class CarNetServiceTripData extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         boolean updated = update("shortTerm", null);
         return updated | update("longTerm", null);
     }
 
-    private boolean update(String type, @Nullable Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    private boolean update(String type, @Nullable Map<String, ChannelIdMapEntry> channels) throws CarException {
         boolean updated = false;
         CarNetTripData std = api.getTripData(type);
         Collections.sort(std.tripDataList.tripData, Collections.reverseOrder(new Comparator<CarNetTripDataEntry>() {

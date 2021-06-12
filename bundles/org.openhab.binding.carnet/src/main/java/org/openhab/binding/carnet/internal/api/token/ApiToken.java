@@ -10,22 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api;
+package org.openhab.binding.carnet.internal.api.token;
 
-import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+import static org.openhab.binding.carnet.internal.CarUtils.getString;
 
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNApiToken;
 
 /**
- * The {@link CarNetToken} store the API token information.
+ * The {@link ApiToken} store the API token information.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetToken {
+public class ApiToken {
     protected String accessToken = "";
     protected String idToken = "";
     protected String securityToken = "";
@@ -36,17 +37,17 @@ public class CarNetToken {
     protected String service = "";
     protected Date creationTime = new Date();
 
-    public CarNetToken() {
+    public ApiToken() {
     }
 
-    public CarNetToken(String idToken, String accessToken, String authType, int validity) {
+    public ApiToken(String idToken, String accessToken, String authType, int validity) {
         this.idToken = idToken;
         this.accessToken = accessToken;
         this.authType = authType;
         setValidity(validity);
     }
 
-    public CarNetToken(CNApiToken token) {
+    public ApiToken(CNApiToken token) {
         idToken = getString(token.idToken);
         accessToken = getString(token.accessToken);
         securityToken = getString(token.securityToken);

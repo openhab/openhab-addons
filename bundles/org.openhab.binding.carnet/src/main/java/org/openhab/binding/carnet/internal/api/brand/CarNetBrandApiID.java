@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
-import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
+import org.openhab.binding.carnet.internal.api.token.TokenManager;
 
 /**
  * {@link CarNetBrandApiID} provides the VW ID.3/ID.4 specific functions of the API
@@ -28,7 +28,7 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
  */
 @NonNullByDefault
 public class CarNetBrandApiID extends CarNetApiBase {
-    public CarNetBrandApiID(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+    public CarNetBrandApiID(CarNetHttpClient httpClient, TokenManager tokenManager,
             @Nullable CarNetEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }

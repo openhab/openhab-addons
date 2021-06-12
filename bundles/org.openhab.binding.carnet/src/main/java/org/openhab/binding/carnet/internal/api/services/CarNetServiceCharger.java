@@ -13,18 +13,18 @@
 package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_REMOTE_BATTERY_CHARGE;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus.CNChargerStatus.CarNetChargerStatusData;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -61,7 +61,7 @@ public class CarNetServiceCharger extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         boolean updated = false;
         CarNetChargerStatus cs = api.getChargerStatus();
         if ((cs.status == null) || (cs.status.chargingStatusData == null)) {

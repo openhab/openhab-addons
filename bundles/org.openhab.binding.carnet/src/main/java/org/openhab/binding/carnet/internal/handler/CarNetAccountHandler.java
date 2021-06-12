@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.handler;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+import static org.openhab.binding.carnet.internal.CarUtils.getString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,21 +29,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
-import org.openhab.binding.carnet.internal.CarNetException;
-import org.openhab.binding.carnet.internal.CarNetTextResources;
-import org.openhab.binding.carnet.internal.CarNetUtils;
+import org.openhab.binding.carnet.internal.CarException;
+import org.openhab.binding.carnet.internal.TextResources;
+import org.openhab.binding.carnet.internal.CarUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleList;
 import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
-import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiAudi;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiID;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiNull;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiSkoda;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiVW;
 import org.openhab.binding.carnet.internal.api.brand.CarNetBrandSeat;
+import org.openhab.binding.carnet.internal.api.token.TokenManager;
 import org.openhab.binding.carnet.internal.config.CarNetAccountConfiguration;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.core.thing.Bridge;
@@ -70,8 +70,8 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
 
     public final String thingId;
     private final CarNetCombinedConfig config = new CarNetCombinedConfig();
-    private final CarNetTextResources messages;
-    private final CarNetTokenManager tokenManager;
+    private final TextResources messages;
+    private final TokenManager tokenManager;
 
     private CarNetApiBase api = new CarNetBrandApiNull();
     private List<CarNetVehicleInformation> vehicleList = new CopyOnWriteArrayList<>();
@@ -100,7 +100,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public CarNetAccountHandler(Bridge bridge, CarNetTextResources messages, CarNetTokenManager tokenManager) {
+    public CarNetAccountHandler(Bridge bridge, TextResources messages, TokenManager tokenManager) {
         super(bridge);
         this.messages = messages;
         this.tokenManager = tokenManager;
@@ -110,7 +110,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         // allows sharing the tokens across all things associated with the account.
         config.account = getConfigAs(CarNetAccountConfiguration.class);
         String ttype = getThing().getUID().toString();
-        ttype = CarNetUtils.substringBetween(ttype, ":", ":");
+        ttype = CarUtils.substringBetween(ttype, ":", ":");
         String brand = brandMap.get(ttype);
         if (brand != null) {
             config.account.brand = brand;
@@ -132,7 +132,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         scheduler.execute(() -> {
             try {
                 initializeThing();
-            } catch (CarNetException e) {
+            } catch (CarException e) {
                 String detail = e.isSecurityException() ? messages.get("login-failed", getString(e.getMessage()))
                         : getString(e.getMessage());
                 stateChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
@@ -146,9 +146,9 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
      * A background job is scheduled to check token status and trigger a refresh before they expire.
      *
      * @return
-     * @throws CarNetException
+     * @throws CarException
      */
-    public boolean initializeThing() throws CarNetException {
+    public boolean initializeThing() throws CarException {
         Map<String, String> properties = new TreeMap<String, String>();
 
         if (!api.isInitialized()) {
@@ -185,7 +185,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
             config.account = getConfigAs(CarNetAccountConfiguration.class);
             api.setConfig(config);
             initializeThing();
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             logger.warn("{}: {}", messages.get("init-fialed", "Re-initialization failed!"), thingId, e);
         }
     }
@@ -310,7 +310,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
             } else {
                 api.refreshTokens();
             }
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             logger.debug("Unable to refresh tokens", e);
         }
     }

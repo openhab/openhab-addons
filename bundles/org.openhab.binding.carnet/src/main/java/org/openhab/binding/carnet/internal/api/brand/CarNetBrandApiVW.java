@@ -16,13 +16,13 @@ import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_B
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetImageUrlsVW;
+import org.openhab.binding.carnet.internal.api.token.TokenManager;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
-import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(CarNetBrandApiVW.class);
 
-    public CarNetBrandApiVW(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+    public CarNetBrandApiVW(CarNetHttpClient httpClient, TokenManager tokenManager,
             @Nullable CarNetEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
@@ -59,12 +59,12 @@ public class CarNetBrandApiVW extends CarNetApiBase implements CarNetBrandAuthen
     }
 
     @Override
-    public String updateAuthorizationUrl(String url) throws CarNetException {
+    public String updateAuthorizationUrl(String url) throws CarException {
         return url + "&prompt=login"; // + "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
     }
 
     @Override
-    public String[] getImageUrls() throws CarNetException {
+    public String[] getImageUrls() throws CarException {
         if (config.vstatus.imageUrls.length == 0) {
             config.vstatus.imageUrls = super.callApi("",
                     "https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/{2}",

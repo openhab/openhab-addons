@@ -21,7 +21,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
 import org.openhab.binding.carnet.internal.handler.CarNetDeviceListener;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleInformation;
@@ -84,7 +84,7 @@ public class CarNetDiscoveryService extends AbstractDiscoveryService implements 
     protected void startScan() {
         try {
             accountHandler.initializeThing();
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             logger.debug("Discovery failed: {}", e.getMessage());
         }
     }

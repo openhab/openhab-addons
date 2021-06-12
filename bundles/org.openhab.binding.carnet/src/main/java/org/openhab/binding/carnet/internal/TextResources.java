@@ -30,14 +30,14 @@ import org.osgi.service.component.annotations.Reference;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = CarNetTextResources.class)
-public class CarNetTextResources {
+@Component(service = TextResources.class)
+public class TextResources {
     private final Bundle bundle;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
     @Activate
-    public CarNetTextResources(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider) {
+    public TextResources(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider) {
         this.bundle = FrameworkUtil.getBundle(this.getClass());
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;

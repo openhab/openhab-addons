@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_SPEED_ALERT;
 
 import java.util.Collections;
@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts.CarNetpeedAlertEntry;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarException {
         boolean created = false;
         int count = getConfig().vehicle.numSpeedAlerts;
         for (int i = 0; i < count; i++) {
@@ -65,11 +65,11 @@ public class CarNetServiceSpeedAlerts extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         return update(null);
     }
 
-    private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarException {
         CarNetSpeedAlerts sa = api.getSpeedAlerts();
         if (sa.speedAlert == null) {
             return false;

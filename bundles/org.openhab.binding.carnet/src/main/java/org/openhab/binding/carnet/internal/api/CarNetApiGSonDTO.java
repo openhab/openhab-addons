@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
-import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+import static org.openhab.binding.carnet.internal.CarUtils.getString;
 
 import java.util.ArrayList;
 

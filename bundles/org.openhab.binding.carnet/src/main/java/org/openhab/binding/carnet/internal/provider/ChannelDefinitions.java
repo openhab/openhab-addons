@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api;
+package org.openhab.binding.carnet.internal.provider;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetTextResources;
+import org.openhab.binding.carnet.internal.TextResources;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -38,21 +38,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CarNetChannelIdMapper} maps status value IDs from the API to channel definitions.
+ * The {@link ChannelDefinitions} maps status value IDs from the API to channel definitions.
  *
  * @author Markus Michels - Initial contribution
  * @author Lorenzo Bernardi - Additional contribution
  *
  */
 @NonNullByDefault
-@Component(service = CarNetChannelIdMapper.class)
-public class CarNetChannelIdMapper {
-    private final Logger logger = LoggerFactory.getLogger(CarNetChannelIdMapper.class);
+@Component(service = ChannelDefinitions.class)
+public class ChannelDefinitions {
+    private final Logger logger = LoggerFactory.getLogger(ChannelDefinitions.class);
     private static final Map<String, ChannelIdMapEntry> CHANNEL_DEFINITIONS = new ConcurrentHashMap<>();
-    private final CarNetTextResources resources;
+    private final TextResources resources;
 
     public class ChannelIdMapEntry {
-        private final CarNetTextResources resources;
+        private final TextResources resources;
 
         public String id = "";
         public String symbolicName = "";
@@ -73,7 +73,7 @@ public class CarNetChannelIdMapper {
         public String pattern = "";
 
         @Activate
-        public ChannelIdMapEntry(@Reference CarNetTextResources resources) {
+        public ChannelIdMapEntry(@Reference TextResources resources) {
             this.resources = resources;
         }
 
@@ -112,9 +112,9 @@ public class CarNetChannelIdMapper {
                 return label;
             }
             // return groupPrefix.isEmpty() ? label : groupPrefix + getGroupIndex() + "_" + label;
-            if (getGroupIndex().isEmpty()) {
-                return label;
-            }
+            // if (getGroupIndex().isEmpty()) {
+            // return label;
+            // }
             // return groupPrefix + getGroupIndex() + "_" + label;
             return groupName + "_" + label.replaceAll("[ \\(\\)]", "");
         }
@@ -156,7 +156,7 @@ public class CarNetChannelIdMapper {
     }
 
     @Activate
-    public CarNetChannelIdMapper(@Reference CarNetTextResources resources) {
+    public ChannelDefinitions(@Reference TextResources resources) {
         this.resources = resources;
         initializeChannelTable();
     }
@@ -287,7 +287,7 @@ public class CarNetChannelIdMapper {
         return entry;
     }
 
-    public static String getGroupAttribute(CarNetTextResources resources, String groupName, String attribute) {
+    public static String getGroupAttribute(TextResources resources, String groupName, String attribute) {
         int len = groupName.length() - 1;
         char index = groupName.charAt(len);
         String groupType = Character.isDigit(index) ? groupName.substring(0, len) : groupName;
@@ -302,7 +302,7 @@ public class CarNetChannelIdMapper {
      * @param attribute Attribute to lookup from i18n properties
      * @return Returns the attribute value as defined in the properties file
      */
-    public static String getChannelAttribute(CarNetTextResources resources, String channelName, String attribute) {
+    public static String getChannelAttribute(TextResources resources, String channelName, String attribute) {
         String key = "channel-type." + BINDING_ID + "." + channelName + "." + attribute;
         String value = resources.getText(key);
         return !value.equals(key) ? value : "";
@@ -363,25 +363,25 @@ public class CarNetChannelIdMapper {
 
         // Doors/trunk
         add("STATE3_LEFT_FRONT_DOOR", "0x0301040002", "doorFrontLeftState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_LEFT_FRONT_DOOR", "0x0301040001", "doorFrontLeftLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
-        add("SAFETY_LEFT_FRONT_DOOR", "0x0301040003", "doorFrontLeftSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("LOCK2_LEFT_FRONT_DOOR", "0x0301040001");
+        add("SAFETY_LEFT_FRONT_DOOR", "0x0301040003");
         add("STATE3_RIGHT_FRONT_DOOR", "0x0301040008", "doorFrontRightState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_RIGHT_FRONT_DOOR", "0x0301040007", "doorFrontRightLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
-        add("SAFETY_RIGHT_FRONT_DOOR", "0x0301040009", "doorFrontRightSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("LOCK2_RIGHT_FRONT_DOOR", "0x0301040007");
+        add("SAFETY_RIGHT_FRONT_DOOR", "0x0301040009");
         add("STATE3_LEFT_REAR_DOOR", "0x0301040005", "doorRearLeftState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_LEFT_REAR_DOOR", "0x0301040004", "doorRearLeftLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
-        add("SAFETY_LEFT_REAR_DOOR", "0x0301040006", "doorRearLeftSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("LOCK2_LEFT_REAR_DOOR", "0x0301040004");
+        add("SAFETY_LEFT_REAR_DOOR", "0x0301040006");
         add("STATE3_RIGHT_REAR_DOOR", "0x030104000B", "doorRearRightState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_RIGHT_REAR_DOOR", "0x030104000A", "doorRearRightLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
-        add("SAFETY_RIGHT_REAR_DOOR", "0x030104000C", "doorRearRightSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("LOCK2_RIGHT_REAR_DOOR", "0x030104000A");
+        add("SAFETY_RIGHT_REAR_DOOR", "0x030104000C");
+        add("STATE3_TRUNK_LID", "0x030104000E", "trunkLidState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
+        add("LOCK2_TRUNK_LID", "0x030104000D");
+        add("SAFETY_TRUNK_LID", "0x030104000F");
+        add("STATE3_HOOD", "0x0301040011", "hoodState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
+        add("LOCK3_HOOD", "0x0301040010");
+        add("SAFETY_HOOD", "0x0301040012");
         add("STATE3_CONVERTIBLE_TOP", "0x0301050009", "covertibleTopState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
         add("POS_CONVERTIBLE_TOP", "0x030105000A", "covertibleTopPos", ITEMT_PERCENT, CHANNEL_GROUP_DOORS);
-        add("STATE3_TRUNK_LID", "0x030104000E", "trunkLidState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_TRUNK_LID", "0x030104000D", "trunkLidLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
-        add("SAFETY_TRUNK_LID", "0x030104000F", "trunkLidSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
-        add("STATE3_HOOD", "0x0301040011", "hoodState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK3_HOOD", "0x0301040010", "hoodLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
-        add("SAFETY_HOOD", "0x0301040012", "hoodSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
 
         // Windows
         add("STATE3_LEFT_FRONT_WINDOW", "0x0301050001", "windowFrontLeftState", ITEMT_CONTACT, CHANNEL_GROUP_WINDOWS);

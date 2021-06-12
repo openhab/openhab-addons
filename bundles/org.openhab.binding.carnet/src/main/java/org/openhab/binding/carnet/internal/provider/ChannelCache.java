@@ -10,14 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal;
+package org.openhab.binding.carnet.internal.provider;
 
-import static org.openhab.binding.carnet.internal.CarNetUtils.mkChannelId;
+import static org.openhab.binding.carnet.internal.CarUtils.mkChannelId;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.carnet.internal.CarUtils;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -30,15 +31,15 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetChannelCache {
-    private final Logger logger = LoggerFactory.getLogger(CarNetChannelCache.class);
+public class ChannelCache {
+    private final Logger logger = LoggerFactory.getLogger(ChannelCache.class);
 
     private final CarNetVehicleHandler thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingId = "";
     private boolean enabled = false;
 
-    public CarNetChannelCache(CarNetVehicleHandler thingHandler, String thingId) {
+    public ChannelCache(CarNetVehicleHandler thingHandler, String thingId) {
         this.thingHandler = thingHandler;
         setthingId(thingId);
     }
@@ -93,7 +94,7 @@ public class CarNetChannelCache {
             }
         } catch (IllegalArgumentException e) {
             logger.debug("{}: Unable to update channel {} with {} (type {}): {} ({})", thingId, channelId, newValue,
-                    newValue.getClass(), CarNetUtils.getMessage(e), e.getClass(), e);
+                    newValue.getClass(), CarUtils.getMessage(e), e.getClass(), e);
         }
         return false;
     }

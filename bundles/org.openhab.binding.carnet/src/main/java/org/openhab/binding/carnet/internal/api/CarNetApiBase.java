@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
 import java.io.File;
@@ -32,7 +32,8 @@ import javax.measure.IncommensurableException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.ApiResult;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNChargerInfo;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater;
@@ -76,6 +77,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetTripData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus;
 import org.openhab.binding.carnet.internal.api.brand.CarNetApiProperties;
+import org.openhab.binding.carnet.internal.api.token.TokenManager;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
 import org.openhab.core.library.types.PointType;
@@ -98,7 +100,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     protected String thingId = "";
     protected CarNetCombinedConfig config = new CarNetCombinedConfig();
     protected CarNetHttpClient http = new CarNetHttpClient();
-    protected CarNetTokenManager tokenManager = new CarNetTokenManager();
+    protected TokenManager tokenManager = new TokenManager();
     protected @Nullable CarNetEventListener eventListener;
 
     private boolean initialzed = false;
@@ -107,7 +109,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     public CarNetApiBase() {
     }
 
-    public CarNetApiBase(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+    public CarNetApiBase(CarNetHttpClient httpClient, TokenManager tokenManager,
             @Nullable CarNetEventListener eventListener) {
         logger.debug("Initializing CarNet API");
         this.http = httpClient;
@@ -134,9 +136,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
      * Simple initialization, in fact used by Account Handler
      *
      * @param configIn
-     * @throws CarNetException
+     * @throws CarException
      */
-    public void initialize(CarNetCombinedConfig configIn) throws CarNetException {
+    public void initialize(CarNetCombinedConfig configIn) throws CarException {
         config = configIn;
         setConfig(config); // derive from account config
         if (!config.api.oidcConfigUrl.isEmpty()) {
@@ -155,9 +157,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
      * @param vin Vehicle ID (VIN)
      * @param configIn Combined config, which gets updated and will be returned
      * @return Updated config
-     * @throws CarNetException
+     * @throws CarException
      */
-    public CarNetCombinedConfig initialize(String vin, CarNetCombinedConfig configIn) throws CarNetException {
+    public CarNetCombinedConfig initialize(String vin, CarNetCombinedConfig configIn) throws CarException {
         initialize(configIn);
 
         // update based von VIN specific settings
@@ -180,7 +182,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
 
         try {
             config.vstatus.pairingInfo = getPairingStatus();
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             logger.debug("{}: Unable to verify pairing status: {}", thingId, e.toString());
         }
 
@@ -199,28 +201,28 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     @Override
-    public String updateAuthorizationUrl(String url) throws CarNetException {
+    public String updateAuthorizationUrl(String url) throws CarException {
         return url; // default: no modification
     }
 
-    public String getUserIdentity() throws CarNetException {
+    public String getUserIdentity() throws CarException {
         String idToken = createIdToken(); // extract identity id from jwt token
         CarNetJwtToken jwt = decodeJwt(idToken);
         return jwt.sub;// get identity from JWT sub
     }
 
-    public String getProfileUrl() throws CarNetException {
+    public String getProfileUrl() throws CarException {
         if (config.user.identity.isEmpty()) {
             config.user.identity = getUserIdentity();
         }
         return config.api.customerProfileServiceUrl + "/customers/" + config.user.identity;
     }
 
-    public CarNetPersonalData getPersonalData() throws CarNetException {
+    public CarNetPersonalData getPersonalData() throws CarException {
         return callProfileApi("getPersonalData", "/personalData", CarNetPersonalData.class);
     }
 
-    public CarNetMbbStatus getMbbStatus() throws CarNetException {
+    public CarNetMbbStatus getMbbStatus() throws CarException {
         if (config.vstatus.mbb.mbbUserId.isEmpty()) {
             // currently empty, query from API, otherwise return cached result
             config.vstatus.mbb = callProfileApi("getMbbStatus", "/mbbStatusData", CarNetMbbStatus.class);
@@ -228,31 +230,31 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return config.vstatus.mbb;
     }
 
-    public <T> T callProfileApi(String api, String uri, Class<T> classOfT) throws CarNetException {
+    public <T> T callProfileApi(String api, String uri, Class<T> classOfT) throws CarException {
         return callApi("", config.user.profileUrl + uri, fillAppHeaders(tokenManager.createProfileToken(config)), api,
                 classOfT);
     }
 
-    public String[] getImageUrls() throws CarNetException {
+    public String[] getImageUrls() throws CarException {
         // Default: No image URLs (will be overwritten by brand specific API)
         return config.vstatus.imageUrls;
     }
 
-    public CarNetPairingInfo getPairingStatus() throws CarNetException {
+    public CarNetPairingInfo getPairingStatus() throws CarException {
         return callApi("usermanagement/users/v1/{0}/{1}/vehicles/{2}/pairing", "", CNPairingInfo.class).pairingInfo;
     }
 
-    public String getMyDestinationsFeed() throws CarNetException {
+    public String getMyDestinationsFeed() throws CarException {
         return callApi("destinationfeedservice/mydestinations/v1/{0}/{1}/vehicles/{2}/users/{3}/destinations",
                 "getMyDestinationsFeed", String.class);
     }
 
-    public CarNetVehicleList getVehicles() throws CarNetException {
+    public CarNetVehicleList getVehicles() throws CarException {
         return callApi("https://msg.volkswagen.de/fs-car/usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
                 CarNetVehicleList.class);
     }
 
-    public CarNetVehicleDetails getVehicleDetails(String vin) throws CarNetException {
+    public CarNetVehicleDetails getVehicleDetails(String vin) throws CarException {
         Map<String, String> headers = fillAppHeaders();
         headers.put("Accept",
                 "application/vnd.vwg.mbb.vehicleDataDetail_v2_1_0+json, application/vnd.vwg.mbb.genericError_v1_0_2+json");
@@ -261,21 +263,21 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return details.vehicleDataDetail;
     }
 
-    public CarNetVehicleStatus getVehicleStatus() throws CarNetException {
+    public CarNetVehicleStatus getVehicleStatus() throws CarException {
         return callApi(getApiUrl() + "/" + "bs/vsr/v1/{0}/{1}/vehicles/{2}/status", "getVehicleStatus",
                 CarNetVehicleStatus.class);
     }
 
-    public String refreshVehicleStatus() throws CarNetException {
+    public String refreshVehicleStatus() throws CarException {
         String json = http.post("bs/vsr/v1/{0}/{1}/vehicles/{2}/requests", fillAppHeaders(), "", "").response;
         return queuePendingAction(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, "status", json);
     }
 
-    public String getVehicleRequets() throws CarNetException {
+    public String getVehicleRequets() throws CarException {
         return http.post("bs/vsr/v1/{0}/{1}/vehicles/{2}/requests", fillAppHeaders(), "", "").response;
     }
 
-    public CarNetPosition getVehiclePosition() throws CarNetException {
+    public CarNetPosition getVehiclePosition() throws CarException {
         // needs explicit Accept: application/json, otherwhise storedPosition is returned
         Map<String, String> headers = fillAppHeaders();
         headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
@@ -283,12 +285,12 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 CNFindCarResponse.class));
     }
 
-    public CarNetPosition getStoredPosition() throws CarNetException {
+    public CarNetPosition getStoredPosition() throws CarException {
         return new CarNetPosition(
                 callApi("bs/cf/v1/{0}/{1}/vehicles/{2}/position", "getStoredPosition", CNStoredPosition.class));
     }
 
-    public CarNetDestinationList getDestinations() throws CarNetException {
+    public CarNetDestinationList getDestinations() throws CarException {
         // The API returns 403 when service is not available, but
         CNDestinations dest = callApi("destinationfeedservice/mydestinations/v1/{0}/{1}/vehicles/{2}/destinations",
                 "getDestinations", CNDestinations.class);
@@ -301,31 +303,31 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return dest.destinations;
     }
 
-    public String getHistory() throws CarNetException {
+    public String getHistory() throws CarException {
         return callApi("bs/dwap/v1/{0}/{1}/vehicles/{2}/history", "getHistory", String.class);
     }
 
-    public @Nullable String getVehicleUsers() throws CarNetException {
+    public @Nullable String getVehicleUsers() throws CarException {
         return callApi("bs//uic/v1/vin/{2}/users", "getVehicleUsers", String.class);
     }
 
-    public CarNetChargerStatus getChargerStatus() throws CarNetException {
+    public CarNetChargerStatus getChargerStatus() throws CarException {
         return callApi("bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger", "chargerStatus",
                 CNChargerInfo.class).charger;
     }
 
-    public CarNetTripData getTripData(String type) throws CarNetException {
+    public CarNetTripData getTripData(String type) throws CarException {
         String url = "bs/tripstatistics/v1/{0}/{1}/vehicles/{2}/tripdata/" + type + "?type=list";
         return callApi(url, "getTripData", CarNetTripData.class);
     }
 
-    public @Nullable CarNetOperationList getOperationList() throws CarNetException {
+    public @Nullable CarNetOperationList getOperationList() throws CarException {
         return config.vstatus.operationList != null ? config.vstatus.operationList
                 : callApi(config.vstatus.rolesRightsUrl + "/rolesrights/operationlist/v3/vehicles/{2}?scope=ALL",
                         "getOperationList", CNOperationList.class).operationList;
     }
 
-    public String controlLock(boolean lock) throws CarNetException {
+    public String controlLock(boolean lock) throws CarException {
         String action = lock ? CNAPI_ACTION_REMOTE_LOCK_UNLOCK_LOCK : CNAPI_ACTION_REMOTE_LOCK_UNLOCK_UNLOCK;
         String data = "<?xml version=\"1.0\" encoding= \"UTF-8\" ?>"
                 + "<rluAction xmlns=\"http://audi.de/connect/rlu\">" + "<action>" + action.toLowerCase()
@@ -334,12 +336,12 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 "application/vnd.vwg.mbb.RemoteLockUnlock_v1_0_0+xml", data);
     }
 
-    public CarNetRluHistory getRluActionHistory() throws CarNetException {
+    public CarNetRluHistory getRluActionHistory() throws CarException {
         return callApi("bs/rlu/v1/{0}/{1}/vehicles/{2}/actions", "rluActionHistory",
                 CNEluActionHistory.class).actionsResponse;
     }
 
-    public String controlClimater(boolean start, String heaterSource) throws CarNetException {
+    public String controlClimater(boolean start, String heaterSource) throws CarException {
         String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8";
         String body = "", action = "";
         boolean secToken = !CNAPI_HEATER_SOURCE_ELECTRIC.equals(heaterSource);
@@ -369,7 +371,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 secToken, contentType, body);
     }
 
-    public String controlClimaterTemp(double tempC, String heaterSource) throws CarNetException {
+    public String controlClimaterTemp(double tempC, String heaterSource) throws CarException {
         try {
             int tempdK = (int) SIUnits.CELSIUS.getConverterToAny(DKELVIN).convert(tempC);
             String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml;charset=utf-8";
@@ -385,7 +387,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         }
     }
 
-    public String controlPreHeating(boolean start, int duration) throws CarNetException {
+    public String controlPreHeating(boolean start, int duration) throws CarException {
         String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
         if (config.account.apiLevelVentilation == 1) {
@@ -408,7 +410,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         }
     }
 
-    public String controlVentilation(boolean start, int duration) throws CarNetException {
+    public String controlVentilation(boolean start, int duration) throws CarException {
         String contentType = "", body = "";
         final String action = start ? CNAPI_ACTION_REMOTE_HEATING_QUICK_START : CNAPI_ACTION_REMOTE_HEATING_QUICK_STOP;
         if (config.account.apiLevelVentilation == 1) {
@@ -433,14 +435,14 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         }
     }
 
-    public String controlCharger(boolean start) throws CarNetException {
+    public String controlCharger(boolean start) throws CarException {
         String action = start ? "start" : "stop";
         String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>" + action + "</type></action>";
         return sendAction("bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger/actions", "batterycharge_v1", action, false,
                 "application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml", data);
     }
 
-    public String controlMaxCharge(int maxCurrent) throws CarNetException {
+    public String controlMaxCharge(int maxCurrent) throws CarException {
         String contentType = "application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml";
         String body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>setSettings</type>"
                 + "<settings><maxChargeCurrent>" + maxCurrent + "</maxChargeCurrent></settings></action>";
@@ -451,44 +453,44 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 CNAPI_SERVICE_REMOTE_BATTERY_CHARGE, "setMaxCharge", false, contentType, body);
     }
 
-    public CarNetClimaterStatus getClimaterStatus() throws CarNetException {
+    public CarNetClimaterStatus getClimaterStatus() throws CarException {
         return callApi("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater", "climaterStatus",
                 CNClimater.class).climater;
     }
 
-    public CarNetHeaterVentilationStatus getHeaterVentilationStatus() throws CarNetException {
+    public CarNetHeaterVentilationStatus getHeaterVentilationStatus() throws CarException {
         return callApi("bs/rs/v1/{0}/{1}/vehicles/{2}/status", "heaterVentilationStatus",
                 CNHeaterVentilation.class).statusResponse;
     }
 
-    public CarNetSpeedAlertConfig getSpeedAlertConfig() throws CarNetException {
+    public CarNetSpeedAlertConfig getSpeedAlertConfig() throws CarException {
         return callApi("bs/speedalert/v1/{0}/{1}/vehicles/{2}/speedAlertConfiguration", "getSpeedAlertConfig",
                 CNSpeedAlertConfig.class).speedAlertConfiguration;
     }
 
-    public CarNetSpeedAlerts getSpeedAlerts() throws CarNetException {
+    public CarNetSpeedAlerts getSpeedAlerts() throws CarException {
         CNSpeedAlerts sa = callApi("bs/speedalert/v1/{0}/{1}/vehicles/{2}/speedAlerts", "getSpeedAlerts",
                 CNSpeedAlerts.class);
         return sa.speedAlerts != null ? sa.speedAlerts : new CarNetSpeedAlerts();
     }
 
-    public CarNetGeoFenceConfig getGeoFenceConfig() throws CarNetException {
+    public CarNetGeoFenceConfig getGeoFenceConfig() throws CarException {
         return callApi("bs/geofencing/v1/{0}/{1}/vehicles/{2}/geofencingConfiguration", "getGeoFenceConfig",
                 CNGeoFenceAlertConfig.class).geofencingConfiguration;
     }
 
-    public CarNetGeoFenceAlerts getGeoFenceAlerts() throws CarNetException {
+    public CarNetGeoFenceAlerts getGeoFenceAlerts() throws CarException {
         CNGeoFenceAlerts gfa = callApi("bs/geofencing/v1/{0}/{1}/vehicles/{2}/geofencingAlerts", "getGeoFenceAlerts",
                 CNGeoFenceAlerts.class);
         return gfa.geofencingAlerts != null ? gfa.geofencingAlerts : new CarNetGeoFenceAlerts();
     }
 
-    public String getClimaterTimer() throws CarNetException {
+    public String getClimaterTimer() throws CarException {
         String json = callApi("bs/departuretimer/v1/{0}/{1}/vehicles/{2}/timer", "getClimaterTimer", String.class);
         return json;
     }
 
-    public String controlWindowHeating(boolean start) throws CarNetException {
+    public String controlWindowHeating(boolean start) throws CarException {
         final String action = start ? "startWindowHeating" : "stopWindowHeating";
         String contentType = "application/vnd.vwg.mbb.ClimaterAction_v1_0_0+xml";
         String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>" + action + "</type></action>";
@@ -502,9 +504,9 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
      * @param honk true=honk&flash, false=flash only
      * @param position Geo position of the vehicle
      * @return
-     * @throws CarNetException
+     * @throws CarException
      */
-    public String controlHonkFlash(boolean honk, PointType position, int duration) throws CarNetException {
+    public String controlHonkFlash(boolean honk, PointType position, int duration) throws CarException {
         /*
          * data = {'honkAndFlashRequest': {
          * 'serviceOperationCode': mode,
@@ -528,7 +530,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     private String sendAction(String uri, String service, String action, boolean reqSecToken, String contentType,
-            String body) throws CarNetException {
+            String body) throws CarException {
         String message = "";
         try {
             if (reqSecToken && config.vehicle.pin.isEmpty()) {
@@ -546,7 +548,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                 String json = http.post(uri, headers, body).response;
                 return queuePendingAction(service, action, json);
             }
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             message = e.toString();
         }
         if (eventListener != null) {
@@ -555,23 +557,23 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return CNAPI_REQUEST_REJECTED;
     }
 
-    public String getTripStats(String tripType) throws CarNetException {
+    public String getTripStats(String tripType) throws CarException {
         String json = callApi("bs/tripstatistics/v1/{0}/{1}/vehicles/{2}/tripdata/" + tripType + "?newest", "",
                 String.class);
         return json;
     }
 
-    protected <T> T callApi(String uri, String function, Class<T> classOfT) throws CarNetException {
+    protected <T> T callApi(String uri, String function, Class<T> classOfT) throws CarException {
         return callApi("", uri, fillAppHeaders(), function, classOfT);
     }
 
     protected <T> T callApi(String vin, String uri, Map<String, String> headers, String function, Class<T> classOfT)
-            throws CarNetException {
+            throws CarException {
         String json = "";
         try {
             json = http.get(uri, vin, headers).response;
-        } catch (CarNetException e) {
-            CarNetApiResult res = e.getApiResult();
+        } catch (CarException e) {
+            ApiResult res = e.getApiResult();
             if (e.isSecurityException() || res.isHttpUnauthorized()) {
                 json = loadJson(function);
             } else if (e.getApiResult().isRedirect()) {
@@ -587,7 +589,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             }
         } catch (RuntimeException e) {
             logger.debug("{}: API call {} failed", config.vehicle.vin, function, e);
-            throw new CarNetException("API call failes: RuntimeException", e);
+            throw new CarException("API call failes: RuntimeException", e);
         }
 
         if (classOfT.isInstance(json)) {
@@ -617,7 +619,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return null;
     }
 
-    private String queuePendingAction(String service, String action, String json) throws CarNetException {
+    private String queuePendingAction(String service, String action, String json) throws CarException {
         CNActionResponse in;
         if (CNAPI_SERVICE_REMOTE_HONK_AND_FLASH.equals(service)) {
             // Honk&Flash has special format
@@ -650,7 +652,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return pendingRequests;
     }
 
-    public String getRequestStatus(String requestId, String rstatus) throws CarNetException {
+    public String getRequestStatus(String requestId, String rstatus) throws CarException {
         if (!pendingRequests.containsKey(requestId)) {
             throw new IllegalArgumentException("Invalid requestId");
         }
@@ -723,7 +725,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
                     eventListener.onActionResult(request.service, request.action, request.requestId,
                             actionStatus.toUpperCase(), status);
                 }
-            } catch (CarNetException e) {
+            } catch (CarException e) {
                 logger.debug("{}: Unable to validate request {}, {}", config.vehicle.vin, requestId, e.toString());
             } catch (RuntimeException e) {
                 logger.debug("{}: Unable to validate request {}", config.vehicle.vin, requestId, e);
@@ -742,16 +744,16 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
      * Get OpenID Connect configuration
      *
      * @return OIDC config
-     * @throws CarNetException
+     * @throws CarException
      */
-    private CarNetOidcConfig getOidcConfig() throws CarNetException {
+    private CarNetOidcConfig getOidcConfig() throws CarException {
         // get OIDC confug
         String url = config.api.oidcConfigUrl;
         Map<String, String> headers = new LinkedHashMap<>();
         headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
         headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
         headers.put(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_FORM_URLENC);
-        CarNetApiResult res = http.get(url, headers);
+        ApiResult res = http.get(url, headers);
         String json = res.response;
         config.api.oidcDate = res.getResponseDate();
         return fromJson(gson, json, CarNetOidcConfig.class);
@@ -819,7 +821,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return null;
     }
 
-    public CarNetUserRoleRights getRoleRights() throws CarNetException {
+    public CarNetUserRoleRights getRoleRights() throws CarException {
         return callApi("rolesrights/permissions/v1/{0}/{1}/vehicles/{2}/fetched-role", "getRoleRights",
                 CNRoleRights.class).role;
     }
@@ -833,14 +835,14 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
             CarNetHomeRegion region = callApi(CNAPI_VWG_MAL_1A_CONNECT + "/cs/vds/v1/vehicles/{2}/homeRegion",
                     "getHomeRegion", CarNetHomeRegion.class);
             url = getString(region.homeRegion.baseUri.content);
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             url = CNAPI_VWG_MAL_1A_CONNECT;
         }
         config.vstatus.homeRegionUrl = url;
         return url;
     }
 
-    public String getApiUrl() throws CarNetException {
+    public String getApiUrl() throws CarException {
         String url = getHomeReguionUrl();
         config.vstatus.rolesRightsUrl = url;
         if (!CNAPI_VWG_MAL_1A_CONNECT.equalsIgnoreCase(url)) {
@@ -853,7 +855,7 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
     }
 
     protected Map<String, String> fillActionHeaders(String contentType, String accessToken, String secTokenHeader,
-            String securityToken) throws CarNetException {
+            String securityToken) throws CarException {
         // "User-Agent": "okhttp/3.7.0",
         // "Host": "msg.volkswagen.de",
         // "X-App-Version": "3.14.0",
@@ -885,23 +887,23 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return headers;
     }
 
-    protected Map<String, String> fillAppHeaders(String token) throws CarNetException {
+    protected Map<String, String> fillAppHeaders(String token) throws CarException {
         return http.fillAppHeaders(new HashMap<>(), token);
     }
 
-    protected Map<String, String> fillAppHeaders() throws CarNetException {
+    protected Map<String, String> fillAppHeaders() throws CarException {
         return fillAppHeaders(createVwToken());
     }
 
-    protected String createVwToken() throws CarNetException {
+    protected String createVwToken() throws CarException {
         return tokenManager.createVwToken(config);
     }
 
-    protected String createIdToken() throws CarNetException {
+    protected String createIdToken() throws CarException {
         return tokenManager.createIdToken(config);
     }
 
-    private CarNetJwtToken decodeJwt(String token) throws CarNetException {
+    private CarNetJwtToken decodeJwt(String token) throws CarException {
         Base64.Decoder decoder = Base64.getDecoder();
         String[] chunks = token.split("\\.");
         // Header is chunks[0], payload chunks[1]
@@ -909,15 +911,15 @@ public abstract class CarNetApiBase implements CarNetBrandAuthenticator {
         return fromJson(gson, payload, CarNetJwtToken.class);
     }
 
-    protected String createSecurityToken(String service, String action) throws CarNetException {
+    protected String createSecurityToken(String service, String action) throws CarException {
         return tokenManager.createSecurityToken(config, service, action);
     }
 
-    public boolean refreshTokens() throws CarNetException {
+    public boolean refreshTokens() throws CarException {
         return tokenManager.refreshTokens(config);
     }
 
-    public boolean isAccessTokenValid() throws CarNetException {
+    public boolean isAccessTokenValid() throws CarException {
         return tokenManager.isAccessTokenValid(config);
     }
 }

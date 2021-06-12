@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.getStringType;
+import static org.openhab.binding.carnet.internal.CarUtils.getStringType;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_DESTINATIONS;
 
 import java.util.Collections;
@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNDestinations.CarNetDestination;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNDestinations.CarNetDestinationList;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.types.UnDefType;
@@ -49,12 +49,12 @@ public class CarNetServiceDestinations extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarException {
         if (getConfig().vehicle.numDestinations > 0) {
             try {
                 update(channels);
                 return true;
-            } catch (CarNetException e) {
+            } catch (CarException e) {
             }
         }
         return false;
@@ -75,11 +75,11 @@ public class CarNetServiceDestinations extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         return update(null);
     }
 
-    private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws CarException {
         boolean updated = false;
         CarNetDestinationList dest = api.getDestinations();
         if (dest.destination.size() == 0) {

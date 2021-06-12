@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api;
+package org.openhab.binding.carnet.internal.api.token;
 
-import static org.openhab.binding.carnet.internal.CarNetUtils.substringBetween;
+import static org.openhab.binding.carnet.internal.CarUtils.substringBetween;
 import static org.openhab.binding.carnet.internal.api.CarNetHttpClient.getUrlParm;
 
 import java.io.UnsupportedEncodingException;
@@ -24,7 +24,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.ApiResult;
+import org.openhab.binding.carnet.internal.CarException;
+import org.openhab.binding.carnet.internal.api.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +44,7 @@ public class OAuthFlow {
     public String userId = "", idToken = "", accessToken = "", expiresIn = "";
     public String code = "", codeVerifier = "", codeChallenge = "";
     public String action = "";
-    public CarNetApiResult res = new CarNetApiResult();
+    public ApiResult res = new ApiResult();
     private final CarNetHttpClient http;
 
     public OAuthFlow(CarNetHttpClient http) {
@@ -67,28 +70,28 @@ public class OAuthFlow {
         return this;
     }
 
-    public CarNetApiResult get(String url) throws CarNetException {
+    public ApiResult get(String url) throws CarException {
         res = http.get(url, headers, false);
         return update();
     }
 
-    public CarNetApiResult post(String url, boolean json) throws CarNetException {
+    public ApiResult post(String url, boolean json) throws CarException {
         res = http.post(url, headers, data, json);
         return update();
     }
 
-    public CarNetApiResult post(String url) throws CarNetException {
+    public ApiResult post(String url) throws CarException {
         return post(url, false);
     }
 
-    public CarNetApiResult follow() throws CarNetException {
+    public ApiResult follow() throws CarException {
         if (location.isEmpty()) {
-            throw new CarNetException("Missing localtion on redirect");
+            throw new CarException("Missing localtion on redirect");
         }
         return get(location);
     }
 
-    private CarNetApiResult update() {
+    private ApiResult update() {
         location = res.getLocation();
         action = substringBetween(res.response, "action=\"", "\">");
         if (!res.response.isEmpty()) {

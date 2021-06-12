@@ -13,26 +13,25 @@
 package org.openhab.binding.carnet.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.api.CarNetApiResult;
 
 /**
- * {@link CarNetSecurityException} indicates security exceptions like login failures
+ * {@link ApiSecurityException} indicates security exceptions like login failures
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetSecurityException extends CarNetException {
+public class ApiSecurityException extends CarException {
     private static final long serialVersionUID = 3774082851695011862L;
 
-    public CarNetSecurityException(String message) {
+    public ApiSecurityException(String message) {
         super(message);
     }
 
-    public CarNetSecurityException(String message, Throwable e) {
+    public ApiSecurityException(String message, Throwable e) {
         super(message, e);
     }
 
-    public CarNetSecurityException(String message, CarNetApiResult apiResult) {
+    public ApiSecurityException(String message, ApiResult apiResult) {
         super(message, apiResult);
     }
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_GEOFENCING;
 
 import java.util.Collections;
@@ -21,12 +21,12 @@ import java.util.Comparator;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts.CarNetGeoFenceAlertEntry;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class CarNetServiceGeoFenceAlerts extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarException {
         int count = getConfig().vehicle.numGeoFenceAlerts;
         boolean created = false;
         for (int index = 1; index <= count; index++) {
@@ -62,7 +62,7 @@ public class CarNetServiceGeoFenceAlerts extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         CarNetGeoFenceAlerts gfa = api.getGeoFenceAlerts();
         if (gfa.geofencingAlert == null) {
             return false;

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.handler;
 
-import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+import static org.openhab.binding.carnet.internal.CarUtils.getString;
 
 import java.util.Map;
 import java.util.TreeMap;

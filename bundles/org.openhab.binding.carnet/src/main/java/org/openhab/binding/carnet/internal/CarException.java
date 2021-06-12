@@ -21,37 +21,36 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.carnet.internal.api.CarNetApiResult;
 
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link CarNetException} implements an extension to the standard Exception class. This allows to keep also the
+ * The {@link CarException} implements an extension to the standard Exception class. This allows to keep also the
  * result of the last API call (e.g. including the http status code in the message).
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetException extends Exception {
+public class CarException extends Exception {
     private static final long serialVersionUID = -5809459454769761821L;
     private static String NONE = "none";
 
-    private CarNetApiResult apiResult = new CarNetApiResult();
+    private ApiResult apiResult = new ApiResult();
 
-    public CarNetException(String message) {
+    public CarException(String message) {
         super(message);
     }
 
-    public CarNetException(String message, Throwable throwable) {
+    public CarException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
-    public CarNetException(String message, CarNetApiResult result) {
+    public CarException(String message, ApiResult result) {
         super(message);
         apiResult = result;
     }
 
-    public CarNetException(String message, CarNetApiResult result, Throwable throwable) {
+    public CarException(String message, ApiResult result, Throwable throwable) {
         super(message, throwable);
         apiResult = result;
     }
@@ -77,7 +76,7 @@ public class CarNetException extends Exception {
                 message = nonNullString(cause.toString()) + "(" + nonNullString(cause.getMessage()) + ")";
             }
         } else {
-            if (super.getClass() != CarNetException.class) {
+            if (super.getClass() != CarException.class) {
                 message = MessageFormat.format("{0} {1}", super.getClass().toString(), super.getMessage());
             }
         }
@@ -89,12 +88,12 @@ public class CarNetException extends Exception {
         return MessageFormat.format("{0} {1}{2}", message, url, resultString);
     }
 
-    public CarNetApiResult getApiResult() {
+    public ApiResult getApiResult() {
         return apiResult;
     }
 
     public boolean isSecurityException() {
-        return (getCauseClass() == CarNetSecurityException.class) || (apiResult.httpCode == HttpStatus.FORBIDDEN_403);
+        return (getCauseClass() == ApiSecurityException.class) || (apiResult.httpCode == HttpStatus.FORBIDDEN_403);
     }
 
     public boolean isHttpAccessUnauthorized() {
@@ -137,7 +136,7 @@ public class CarNetException extends Exception {
         if (cause != null) {
             return cause.getClass();
         }
-        return CarNetException.class;
+        return CarException.class;
     }
 
     private boolean isEmpty() {

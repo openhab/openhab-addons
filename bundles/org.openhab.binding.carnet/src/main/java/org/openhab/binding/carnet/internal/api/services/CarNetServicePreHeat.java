@@ -18,12 +18,12 @@ import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_S
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.CarNetException;
-import org.openhab.binding.carnet.internal.CarNetUtils;
+import org.openhab.binding.carnet.internal.CarException;
+import org.openhab.binding.carnet.internal.CarUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNHeaterVentilation.CarNetHeaterVentilationStatus;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 
 /**
  * {@link CarNetServicePreHeat} implements the remote heater service
@@ -37,7 +37,7 @@ public class CarNetServicePreHeat extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarException {
         // rheating includes pre-heater and ventilation
         addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PREHEAT, ITEMT_SWITCH, null, false, false);
         addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
@@ -46,7 +46,7 @@ public class CarNetServicePreHeat extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         boolean updated = false;
         CarNetHeaterVentilationStatus hvs = api.getHeaterVentilationStatus();
         String group = CHANNEL_GROUP_CONTROL;
@@ -54,12 +54,12 @@ public class CarNetServicePreHeat extends CarNetBaseService {
             if (hvs.climatisationStateReport.climatisationState != null) {
                 String sd = hvs.climatisationStateReport.climatisationState;
                 if ("heating".equalsIgnoreCase(sd)) {
-                    updated |= updateChannel(group, CHANNEL_CONTROL_PREHEAT, CarNetUtils.getOnOff(1));
+                    updated |= updateChannel(group, CHANNEL_CONTROL_PREHEAT, CarUtils.getOnOff(1));
                 } else if ("ventilation".equalsIgnoreCase(sd)) {
-                    updated |= updateChannel(group, CHANNEL_CONTROL_VENT, CarNetUtils.getOnOff(1));
+                    updated |= updateChannel(group, CHANNEL_CONTROL_VENT, CarUtils.getOnOff(1));
                 } else {
-                    updated |= updateChannel(group, CHANNEL_CONTROL_PREHEAT, CarNetUtils.getOnOff(0));
-                    updated |= updateChannel(group, CHANNEL_CONTROL_VENT, CarNetUtils.getOnOff(0));
+                    updated |= updateChannel(group, CHANNEL_CONTROL_PREHEAT, CarUtils.getOnOff(0));
+                    updated |= updateChannel(group, CHANNEL_CONTROL_VENT, CarUtils.getOnOff(0));
                 }
             }
         }

@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
 import java.nio.charset.StandardCharsets;
@@ -38,8 +38,9 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.openhab.binding.carnet.internal.CarNetException;
-import org.openhab.binding.carnet.internal.CarNetSecurityException;
+import org.openhab.binding.carnet.internal.ApiResult;
+import org.openhab.binding.carnet.internal.CarException;
+import org.openhab.binding.carnet.internal.ApiSecurityException;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,20 +95,20 @@ public class CarNetHttpClient {
      * @param path Path of the requested resource
      * @return response
      */
-    public CarNetApiResult get(String uri, Map<String, String> headers, String token) throws CarNetException {
+    public ApiResult get(String uri, Map<String, String> headers, String token) throws CarException {
         headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + token);
         return request(HttpMethod.GET, uri, "", headers, "", "", token);
     }
 
-    public CarNetApiResult get(String uri, Map<String, String> headers, boolean followRedirect) throws CarNetException {
+    public ApiResult get(String uri, Map<String, String> headers, boolean followRedirect) throws CarException {
         return request(HttpMethod.GET, uri, "", headers, "", "", "", followRedirect);
     }
 
-    public CarNetApiResult get(String uri, Map<String, String> headers) throws CarNetException {
+    public ApiResult get(String uri, Map<String, String> headers) throws CarException {
         return request(HttpMethod.GET, uri, "", headers, "", "", "");
     }
 
-    public CarNetApiResult get(String uri, String vin, Map<String, String> headers) throws CarNetException {
+    public ApiResult get(String uri, String vin, Map<String, String> headers) throws CarException {
         return request(HttpMethod.GET, uri, "", headers, "", vin, "");
     }
 
@@ -117,32 +118,32 @@ public class CarNetHttpClient {
      * @param path Path of the requested resource
      * @return response
      */
-    public CarNetApiResult post(String uri, String parms, Map<String, String> headers, String data)
-            throws CarNetException {
+    public ApiResult post(String uri, String parms, Map<String, String> headers, String data)
+            throws CarException {
         return request(HttpMethod.POST, uri, parms, headers, data, "", "", false);
     }
 
-    public CarNetApiResult post(String uri, Map<String, String> headers, String data) throws CarNetException {
+    public ApiResult post(String uri, Map<String, String> headers, String data) throws CarException {
         return request(HttpMethod.POST, uri, "", headers, data, "", "", false);
     }
 
-    public CarNetApiResult post(String uri, Map<String, String> headers, String data, String token)
-            throws CarNetException {
+    public ApiResult post(String uri, Map<String, String> headers, String data, String token)
+            throws CarException {
         return request(HttpMethod.POST, uri, "", headers, data, "", token, false);
     }
 
-    public CarNetApiResult post(String uri, Map<String, String> headers, Map<String, String> data, boolean json)
-            throws CarNetException {
+    public ApiResult post(String uri, Map<String, String> headers, Map<String, String> data, boolean json)
+            throws CarException {
         return request(HttpMethod.POST, uri, "", headers, buildPostData(data, json), "", "", false);
     }
 
-    public CarNetApiResult post(String uri, Map<String, String> headers, Map<String, String> data, boolean json,
-            boolean followRedirect) throws CarNetException {
+    public ApiResult post(String uri, Map<String, String> headers, Map<String, String> data, boolean json,
+            boolean followRedirect) throws CarException {
         return request(HttpMethod.POST, uri, "", headers, buildPostData(data, json), "", "", followRedirect);
     }
 
-    private CarNetApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers,
-            String data, String pvin, String token) throws CarNetException {
+    private ApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers,
+            String data, String pvin, String token) throws CarException {
         return request(method, uri, parms, headers, data, pvin, token, true);
     }
 
@@ -162,16 +163,16 @@ public class CarNetHttpClient {
      * @param pvin The account handler specifies a specific pin, if empty config.vehicle.vin will be used
      * @param token Bearer or security token (or empty)
      * @return Returns the HTTP response. In additional lastHttpHeaders get filled with the http response headers
-     * @throws CarNetException
+     * @throws CarException
      */
-    private CarNetApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers,
-            String data, String pvin, String token, boolean followRedirect) throws CarNetException {
+    private ApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers,
+            String data, String pvin, String token, boolean followRedirect) throws CarException {
         Request request = null;
         String url = "";
         try {
             String vin = pvin.isEmpty() ? config.vehicle.vin : pvin;
             url = getBrandUrl(uri, parms, vin);
-            CarNetApiResult apiResult = new CarNetApiResult(method.toString(), url);
+            ApiResult apiResult = new ApiResult(method.toString(), url);
             request = httpClient.newRequest(url).method(method).timeout(API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             fillHttpHeaders(request, headers, token);
             fillPostData(request, data);
@@ -182,7 +183,7 @@ public class CarNetHttpClient {
             // request.followRedirects(followRedirect);
             request.followRedirects(false);
             ContentResponse contentResponse = request.send();
-            apiResult = new CarNetApiResult(contentResponse);
+            apiResult = new ApiResult(contentResponse);
             String response = apiResult.response.replaceAll("[\r\n\t]", "");
             if (apiResult.rateLimit > 0) {
                 logger.debug("{}: Remaining rate limit = {}", config.vehicle.vin, apiResult.rateLimit);
@@ -199,7 +200,7 @@ public class CarNetHttpClient {
                 case HttpStatus.UNAUTHORIZED_401:
                 case HttpStatus.FORBIDDEN_403:
                 case HttpStatus.METHOD_NOT_ALLOWED_405:
-                    throw new CarNetSecurityException("Forbidden", apiResult);
+                    throw new ApiSecurityException("Forbidden", apiResult);
                 case HttpStatus.OK_200:
                 case HttpStatus.ACCEPTED_202:
                 case HttpStatus.NO_CONTENT_204:
@@ -213,17 +214,17 @@ public class CarNetHttpClient {
                     }
                     break;
                 default:
-                    throw new CarNetException("API call failed", apiResult);
+                    throw new CarException("API call failed", apiResult);
             }
             if (response.contains("\"error\":")) {
-                throw new CarNetException("API returned error", apiResult);
+                throw new CarException("API returned error", apiResult);
             }
             if (response.isEmpty() && loc.isEmpty()) {
-                throw new CarNetException("Invalid result received from API, maybe URL problem", apiResult);
+                throw new CarException("Invalid result received from API, maybe URL problem", apiResult);
             }
             return apiResult;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            throw new CarNetException("API call failed!", new CarNetApiResult(request, e), e);
+            throw new CarException("API call failed!", new ApiResult(request, e), e);
         }
     }
 
@@ -231,9 +232,9 @@ public class CarNetHttpClient {
      * Constructs an URL from the stored information, a specified path and a specified argument string
      *
      */
-    private String getBrandUrl(String uriTemplate, String args, String vin) throws CarNetException {
+    private String getBrandUrl(String uriTemplate, String args, String vin) throws CarException {
         if (config.api.brand.isEmpty()) {
-            throw new CarNetException("Brand for API access not set");
+            throw new CarException("Brand for API access not set");
         }
         String path = MessageFormat.format(uriTemplate, config.api.brand, config.api.xcountry, vin, config.user.id);
         if (!uriTemplate.contains("://")) { // not a full URL
@@ -246,7 +247,7 @@ public class CarNetHttpClient {
     /**
      * Fill standad http headers
      */
-    public Map<String, String> fillAppHeaders(Map<String, String> headers, String token) throws CarNetException {
+    public Map<String, String> fillAppHeaders(Map<String, String> headers, String token) throws CarException {
         if (!config.api.xappName.isEmpty()) {
             headers.put(CNAPI_HEADER_APP, config.api.xappName);
             headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
@@ -325,7 +326,7 @@ public class CarNetHttpClient {
      * @param path Path to include in URL
      * @return URL
      */
-    private String getUrl(String path) throws CarNetException {
+    private String getUrl(String path) throws CarException {
         String base = getBaseUrl();
         return base.endsWith("/") && path.startsWith("/") ? base + path : base + "/" + path;
     }
@@ -334,16 +335,16 @@ public class CarNetHttpClient {
      * Build URL base depending on brand
      *
      * @return URL prefix/base url
-     * @throws CarNetException
+     * @throws CarException
      */
-    public String getBaseUrl() throws CarNetException {
+    public String getBaseUrl() throws CarException {
         if (!config.vstatus.apiUrlPrefix.isEmpty()) {
             return config.vstatus.apiUrlPrefix;
         }
         if (!config.api.apiDefaultUrl.isEmpty()) {
             return config.api.apiDefaultUrl;
         }
-        throw new CarNetException("Unknown brand for base URL");
+        throw new CarException("Unknown brand for base URL");
     }
 
     /**

@@ -19,14 +19,14 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.carnet.internal.CarNetException;
-import org.openhab.binding.carnet.internal.CarNetUtils;
+import org.openhab.binding.carnet.internal.CarException;
+import org.openhab.binding.carnet.internal.CarUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class CarNetBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetBaseService.class);
     protected final CarNetApiBase api;
     protected final CarNetVehicleHandler thingHandler;
-    protected final CarNetChannelIdMapper idMapper;
+    protected final ChannelDefinitions idMapper;
     protected final String thingId;
     protected String serviceId = "";
     protected boolean enabled = true;
@@ -65,7 +65,7 @@ public class CarNetBaseService {
     }
 
     // will be overload by service
-    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarException {
         return false;
     }
 
@@ -73,13 +73,13 @@ public class CarNetBaseService {
         enabled = false;
     }
 
-    public boolean update() throws CarNetException {
+    public boolean update() throws CarException {
         try {
             if (!enabled) {
                 return false;
             }
             return serviceUpdate();
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             int httpCode = e.getApiResult().httpCode;
             if (e.isSecurityException()) {
                 enabled = false;
@@ -92,7 +92,7 @@ public class CarNetBaseService {
     }
 
     // will be overload by service
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         return false;
     }
 
@@ -114,7 +114,7 @@ public class CarNetBaseService {
     }
 
     protected State getDateTime(String time) {
-        return CarNetUtils.getDateTime(time, thingHandler.getZoneId());
+        return CarUtils.getDateTime(time, thingHandler.getZoneId());
     }
 
     protected CarNetCombinedConfig getConfig() {

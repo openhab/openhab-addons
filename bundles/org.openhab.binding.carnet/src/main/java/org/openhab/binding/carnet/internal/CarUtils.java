@@ -49,20 +49,20 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 @NonNullByDefault
-public class CarNetUtils {
+public class CarUtils {
     private static final String PRE = "Can't create object of type ";
 
-    public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws CarNetException {
-        String className = CarNetUtils.substringAfter(classOfT.getName(), "$");
+    public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws CarException {
+        String className = CarUtils.substringAfter(classOfT.getName(), "$");
 
         if (json == null) {
-            throw new CarNetException(PRE + className + ": json is null!");
+            throw new CarException(PRE + className + ": json is null!");
         }
 
         if (classOfT.isInstance(json)) {
             return wrap(classOfT).cast(json);
         } else if (json.isEmpty()) { // update GSON might return null
-            throw new CarNetException(PRE + className + "from empty JSON");
+            throw new CarException(PRE + className + "from empty JSON");
         } else {
             try {
                 @Nullable
@@ -72,9 +72,9 @@ public class CarNetUtils {
                 }
                 return obj;
             } catch (JsonSyntaxException e) {
-                throw new CarNetException(PRE + className + "from JSON (syntax/format error): " + json, e);
+                throw new CarException(PRE + className + "from JSON (syntax/format error): " + json, e);
             } catch (RuntimeException e) {
-                throw new CarNetException(PRE + className + "from JSON: " + json, e);
+                throw new CarException(PRE + className + "from JSON: " + json, e);
             }
         }
     }
@@ -240,7 +240,7 @@ public class CarNetUtils {
         }
     }
 
-    public static String sha512(String pin, String challenge) throws CarNetException {
+    public static String sha512(String pin, String challenge) throws CarException {
         try {
             MessageDigest hash = MessageDigest.getInstance("SHA-512");
             byte[] pinBytes = DatatypeConverter.parseHexBinary(pin);
@@ -255,7 +255,7 @@ public class CarNetUtils {
             }
             return sb.toString().toUpperCase();
         } catch (NoSuchAlgorithmException e) {
-            throw new CarNetException("sha512() failed", e);
+            throw new CarException("sha512() failed", e);
         }
     }
 

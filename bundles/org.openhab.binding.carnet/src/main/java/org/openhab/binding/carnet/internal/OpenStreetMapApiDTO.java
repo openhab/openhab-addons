@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class OpenStreetMapApiDTO {
         public String[] boundingbox;
     }
 
-    public String getAddressFromPosition(CarNetHttpClient http, CarNetPosition position) throws CarNetException {
+    public String getAddressFromPosition(CarNetHttpClient http, CarNetPosition position) throws CarException {
         try {
             String url = "https://nominatim.openstreetmap.org/reverse?lat=" + position.getLattitude() + "&lon="
                     + position.getLongitude() + "&format=json";
@@ -76,7 +76,7 @@ public class OpenStreetMapApiDTO {
                     + getString(r.address.town) + ";" + getString(r.address.village) + ";"
                     + getString(r.address.country + ";" + getString(r.address.countryCocde));
             return address;
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             logger.debug("OSM: Unable to lookup address for Geo position: {}", e.toString());
             return "";
         }

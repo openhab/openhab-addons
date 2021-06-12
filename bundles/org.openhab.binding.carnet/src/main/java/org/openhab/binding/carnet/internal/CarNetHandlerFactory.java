@@ -21,12 +21,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper;
-import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
+import org.openhab.binding.carnet.internal.api.token.TokenManager;
 import org.openhab.binding.carnet.internal.discovery.CarNetDiscoveryService;
 import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
-import org.openhab.binding.carnet.internal.provider.CarNetChannelTypeProvider;
+import org.openhab.binding.carnet.internal.provider.CarChannelTypeProvider;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
@@ -54,17 +54,17 @@ import org.slf4j.LoggerFactory;
 public class CarNetHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(CarNetHandlerFactory.class);
 
-    private final CarNetTextResources resources;
-    private final CarNetChannelIdMapper channelIdMapper;
-    private final CarNetTokenManager tokenManager;
-    private final CarNetChannelTypeProvider channelTypeProvider;
+    private final TextResources resources;
+    private final ChannelDefinitions channelIdMapper;
+    private final TokenManager tokenManager;
+    private final CarChannelTypeProvider channelTypeProvider;
     private final ZoneId zoneId;
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Activate
-    public CarNetHandlerFactory(@Reference TimeZoneProvider tzProvider, @Reference CarNetTextResources resources,
-            @Reference CarNetChannelIdMapper channelIdMapper, @Reference CarNetTokenManager tokenManager,
-            @Reference CarNetChannelTypeProvider channelTypeProvider) {
+    public CarNetHandlerFactory(@Reference TimeZoneProvider tzProvider, @Reference TextResources resources,
+            @Reference ChannelDefinitions channelIdMapper, @Reference TokenManager tokenManager,
+            @Reference CarChannelTypeProvider channelTypeProvider) {
         this.resources = resources;
         this.channelIdMapper = channelIdMapper;
         this.tokenManager = tokenManager;
@@ -91,7 +91,7 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
             } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
                 return new CarNetVehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
             }
-        } catch (CarNetException e) {
+        } catch (CarException e) {
             logger.warn("Unable to create thing of type {}", thingTypeUID);
         }
 

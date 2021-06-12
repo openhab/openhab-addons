@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
-import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
+import org.openhab.binding.carnet.internal.api.token.TokenManager;
 
 /**
  * {@link CarNetBrandApiSkoda} provides the Skoda specific functions of the API, portal URL us
@@ -29,7 +29,7 @@ import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
  */
 @NonNullByDefault
 public class CarNetBrandApiSkoda extends CarNetApiBase {
-    public CarNetBrandApiSkoda(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+    public CarNetBrandApiSkoda(CarNetHttpClient httpClient, TokenManager tokenManager,
             @Nullable CarNetEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }

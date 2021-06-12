@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 
 /**
  * {@link CarNetBrandAuthenticator} defines the interface for brand specific authentication support/flow
@@ -22,5 +22,5 @@ import org.openhab.binding.carnet.internal.CarNetException;
  */
 @NonNullByDefault
 public interface CarNetBrandAuthenticator {
-    public String updateAuthorizationUrl(String url) throws CarNetException;
+    public String updateAuthorizationUrl(String url) throws CarException;
 }

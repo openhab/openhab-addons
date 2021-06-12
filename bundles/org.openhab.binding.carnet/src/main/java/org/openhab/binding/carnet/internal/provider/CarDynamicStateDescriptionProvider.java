@@ -25,8 +25,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DynamicStateDescriptionProvider.class, CarNetDynamicStateDescriptionProvider.class })
-public class CarNetDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+@Component(service = { DynamicStateDescriptionProvider.class, CarDynamicStateDescriptionProvider.class })
+public class CarDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
     @Reference
     protected void setChannelTypeI18nLocalizationService(

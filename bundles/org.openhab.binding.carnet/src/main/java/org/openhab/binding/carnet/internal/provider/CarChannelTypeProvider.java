@@ -23,9 +23,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetTextResources;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
+import org.openhab.binding.carnet.internal.TextResources;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -49,18 +48,18 @@ import org.slf4j.LoggerFactory;
  * @author Markus Eckhardt - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { ChannelTypeProvider.class, CarNetChannelTypeProvider.class })
-public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGroupTypeProvider {
-    private final Logger logger = LoggerFactory.getLogger(CarNetChannelTypeProvider.class);
-    private final CarNetChannelIdMapper channelIdMapper;
-    private final CarNetTextResources resources;
+@Component(service = { ChannelTypeProvider.class, CarChannelTypeProvider.class })
+public class CarChannelTypeProvider implements ChannelTypeProvider, ChannelGroupTypeProvider {
+    private final Logger logger = LoggerFactory.getLogger(CarChannelTypeProvider.class);
+    private final ChannelDefinitions channelIdMapper;
+    private final TextResources resources;
 
     private static List<ChannelType> channelTypes = new CopyOnWriteArrayList<ChannelType>(); // cache accross all things
     private static List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<ChannelGroupType>();
 
     @Activate
-    public CarNetChannelTypeProvider(@Reference CarNetTextResources resources,
-            @Reference CarNetChannelIdMapper channelIdMapper) {
+    public CarChannelTypeProvider(@Reference TextResources resources,
+            @Reference ChannelDefinitions channelIdMapper) {
         this.channelIdMapper = channelIdMapper;
         this.resources = resources;
     }
@@ -83,7 +82,7 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
         }
 
         ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID, group);
-        String label = CarNetChannelIdMapper.getGroupAttribute(resources, group, "label");
+        String label = ChannelDefinitions.getGroupAttribute(resources, group, "label");
         char index = group.charAt(group.length() - 1);
         if (Character.isDigit(index)) {
             label = label + "[" + index + "]"; // add group index to label
@@ -106,7 +105,7 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
         // .withDescription(CarNetChannelIdMapper.getGroupAttribute(resources, group, "description"))
         // .withChannelDefinitions(channelDefinitions).build();
         groupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, label)
-                .withDescription(CarNetChannelIdMapper.getGroupAttribute(resources, group, "description")).build();
+                .withDescription(ChannelDefinitions.getGroupAttribute(resources, group, "description")).build();
         channelGroupTypes.add(groupType);
         return groupType;
     }
@@ -150,7 +149,7 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
             return null;
         }
 
-        StateDescriptionFragmentBuilder desc = CarNetStateDescriptionProvider.buildStateDescriptor(resources,
+        StateDescriptionFragmentBuilder desc = CarStateDescriptionProvider.buildStateDescriptor(resources,
                 channelIdMapper, channelId);
         if (desc != null) {
             ct = ChannelTypeBuilder.state(channelTypeUID, channelDef.getLabel(), channelDef.itemType)

@@ -18,10 +18,10 @@ import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 
 /**
  * {@link CarNetServiceHonkFlash} implements honk&flash service.
@@ -35,7 +35,7 @@ public class CarNetServiceHonkFlash extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws CarException {
         // Honk&Flash requires CarFinder service to get geo position
         if (api.isRemoteServiceAvailable(CNAPI_SERVICE_CAR_FINDER)) {
             addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);

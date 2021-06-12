@@ -13,19 +13,19 @@
 package org.openhab.binding.carnet.internal.api.brand;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.CNAPI_BRAND_AUDI;
-import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
+import static org.openhab.binding.carnet.internal.CarUtils.getString;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetBrandAuthenticator;
 import org.openhab.binding.carnet.internal.api.CarNetEventListener;
 import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
-import org.openhab.binding.carnet.internal.api.CarNetTokenManager;
+import org.openhab.binding.carnet.internal.api.token.TokenManager;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
         properties.xrequest = "de.myaudi.mobile.assistant";
     }
 
-    public CarNetBrandApiAudi(CarNetHttpClient httpClient, CarNetTokenManager tokenManager,
+    public CarNetBrandApiAudi(CarNetHttpClient httpClient, TokenManager tokenManager,
             @Nullable CarNetEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
@@ -102,12 +102,12 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
     }
 
     @Override
-    public String updateAuthorizationUrl(String url) throws CarNetException {
+    public String updateAuthorizationUrl(String url) throws CarException {
         return url + "&prompt=login&ui_locales=de-DE%20de";
     }
 
     @Override
-    public CarNetCombinedConfig initialize(String vin, CarNetCombinedConfig configIn) throws CarNetException {
+    public CarNetCombinedConfig initialize(String vin, CarNetCombinedConfig configIn) throws CarException {
         CarNetCombinedConfig cfg = super.initialize(vin, configIn);
 
         if (!cfg.vstatus.pairingInfo.isPairingCompleted()) {
@@ -119,7 +119,7 @@ public class CarNetBrandApiAudi extends CarNetApiBase implements CarNetBrandAuth
     }
 
     @Override
-    public String[] getImageUrls() throws CarNetException {
+    public String[] getImageUrls() throws CarException {
         if (config.vstatus.imageUrls.length == 0) {
             // config.vstatus.imageUrls =
             Map<String, String> headers = fillAppHeaders(tokenManager.createProfileToken(config));

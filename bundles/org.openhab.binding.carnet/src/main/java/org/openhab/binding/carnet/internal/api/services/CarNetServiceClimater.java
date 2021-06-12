@@ -13,7 +13,7 @@
 package org.openhab.binding.carnet.internal.api.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
-import static org.openhab.binding.carnet.internal.CarNetUtils.*;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION;
 
 import java.math.BigDecimal;
@@ -23,14 +23,14 @@ import javax.measure.IncommensurableException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarException;
 import org.openhab.binding.carnet.internal.api.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData.CNClimaterElementState.CarNetClimaterZoneStateList;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData.CarNetClimaterZoneState;
-import org.openhab.binding.carnet.internal.api.CarNetChannelIdMapper.ChannelIdMapEntry;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class CarNetServiceClimater extends CarNetBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarException {
         addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, null, false, false);
         addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, SIUnits.CELSIUS, false, false);
         addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEAT_SOURCE, ITEMT_STRING, null, true, false);
@@ -66,7 +66,7 @@ public class CarNetServiceClimater extends CarNetBaseService {
     }
 
     @Override
-    public boolean serviceUpdate() throws CarNetException {
+    public boolean serviceUpdate() throws CarException {
         boolean updated = false;
         try {
             CarNetClimaterStatus cs = api.getClimaterStatus();
