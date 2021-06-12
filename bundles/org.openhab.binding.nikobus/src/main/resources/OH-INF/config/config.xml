@@ -9,7 +9,7 @@
 			<label>Command</label>
 			<description>Command to send</description>
 		</parameter>
-		<parameter name="delay" type="integer" required="true" min="0" unit="ms">
+		<parameter name="delay" type="integer" min="0" unit="ms">
 			<label>Delay</label>
 			<description>Delay in milliseconds before triggered</description>
 			<default>0</default>
@@ -21,7 +21,7 @@
 	</config-description>
 
 	<config-description uri="push-button:trigger-button:config">
-		<parameter name="threshold" type="integer" required="true" min="0" unit="ms">
+		<parameter name="threshold" type="integer" min="0" unit="ms">
 			<label>Threshold</label>
 			<description>Long-press threshold in milliseconds</description>
 			<default>1000</default>

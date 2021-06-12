@@ -22,6 +22,7 @@
     <module>org.openhab.automation.jsscripting</module>
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
+    <module>org.openhab.automation.pwm</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
@@ -57,6 +58,7 @@
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.airthings</module>

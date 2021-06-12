@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Temperature Sensor -->
+	<thing-type id="bus_temp_sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+		<label>Temperature Sensor</label>
+		<description>A OpenWebNet BUS/SCS temperature sensor. BTicino models: L/N/NT4577 etc.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-L/N/NT4577 etc.</property>
+			<property name="ownDeviceType">---</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Device Address</label>
+				<description>Example: Zone 2 --> where=2. For external sensors: sensor 5 --> where=500</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

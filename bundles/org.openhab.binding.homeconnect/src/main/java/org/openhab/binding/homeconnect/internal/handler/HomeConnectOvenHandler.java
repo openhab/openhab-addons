@@ -36,7 +36,6 @@ import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -89,18 +88,8 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
                     }
                     return UnDefType.UNDEF;
                 })));
-        handlers.put(CHANNEL_SETPOINT_TEMPERATURE, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                defaultSelectedProgramStateUpdateHandler().handle(channel.get().getUID(), cache);
-            }
-        });
-        handlers.put(CHANNEL_DURATION, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                defaultSelectedProgramStateUpdateHandler().handle(channel.get().getUID(), cache);
-            }
-        });
+        handlers.put(CHANNEL_SETPOINT_TEMPERATURE, getAndUpdateSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_DURATION, getAndUpdateSelectedProgramStateUpdateHandler());
     }
 
     @Override
