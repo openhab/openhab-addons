@@ -65,9 +65,19 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
             DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
 
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+
+    private static final SimpleDateFormat WEEK_FORMAT = new SimpleDateFormat("E, HH:mm");
+
     static {
         synchronized (DATE_FORMAT) {
             DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+        synchronized (TIME_FORMAT) {
+            TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+        synchronized (WEEK_FORMAT) {
+            WEEK_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
     }
 
@@ -134,7 +144,11 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                 channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
                         pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
             } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.DateTime) {
-                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "DateTime");
+                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "datetime");
+            } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.WeekTime) {
+                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "weektime");
+            } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.Time) {
+                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "time");
             } else {
                 /* used for enums and the numeric types without unit */
                 channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
@@ -144,10 +158,10 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
             Thing thing = getThing();
             switch (pfv.getPacketFieldSpec().getType()) {
+                case WeekTime:
                 case DateTime:
                     acceptedItemType = "DateTime";
                     break;
-                case WeekTime:
                 case Number:
                     acceptedItemType = ResolChannelTypeProvider.itemTypeForUnit(pfv.getPacketFieldSpec().getUnit());
                     break;
@@ -180,9 +194,31 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
                     thingBuilder.withChannel(channel).withLabel(thing.getLabel());
                     updateThing(thingBuilder.build());
+                } else if ("DateTime".equals(acceptedItemType)) {
+                    /* a date channel */
+                    Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
+                            .withLabel(pfv.getName(lang)).build();
+
+                    thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                    updateThing(thingBuilder.build());
+
+                } else if ("String".equals(acceptedItemType)) {
+                    /* a string channel */
+                    Channel channel = ChannelBuilder.create(channelUID, "String").withType(channelTypeUID)
+                            .withLabel(pfv.getName(lang)).build();
+
+                    thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                    updateThing(thingBuilder.build());
                 } else if (pfv.getRawValueDouble() != null) {
                     /* a number channel */
                     Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
+                            .withLabel(pfv.getName(lang)).build();
+
+                    thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                    updateThing(thingBuilder.build());
+                } else {
+                    /* a string channel */
+                    Channel channel = ChannelBuilder.create(channelUID, "String").withType(channelTypeUID)
                             .withLabel(pfv.getName(lang)).build();
 
                     thingBuilder.withChannel(channel).withLabel(thing.getLabel());
@@ -229,19 +265,33 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                          * }
                          */
                         break;
+                    case Time:
+                        synchronized (TIME_FORMAT) {
+                            this.updateState(channelId, new StringType(TIME_FORMAT.format(pfv.getRawValueDate())));
+                        }
+                        break;
+                    case WeekTime:
+                        synchronized (WEEK_FORMAT) {
+                            DateTimeType d = new DateTimeType(WEEK_FORMAT.format(pfv.getRawValueDate()));
+                            this.updateState(channelId, d);
+                        }
+                        break;
                     case DateTime:
                         synchronized (DATE_FORMAT) {
                             DateTimeType d = new DateTimeType(DATE_FORMAT.format(pfv.getRawValueDate()));
                             this.updateState(channelId, d);
                         }
                         break;
-                    case WeekTime:
-                    case Time:
                     default:
                         Bridge b = getBridge();
                         if (b != null) {
-                            String value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(),
-                                    ((ResolBridgeHandler) b).getLocale());
+                            ResolBridgeHandler handler = (ResolBridgeHandler) b.getHandler();
+                            String value;
+                            if (handler != null) {
+                                value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), handler.getLocale());
+                            } else {
+                                value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), Locale.getDefault());
+                            }
                             try {
                                 QuantityType<?> q = new QuantityType<>(value);
                                 this.updateState(channelId, q);
