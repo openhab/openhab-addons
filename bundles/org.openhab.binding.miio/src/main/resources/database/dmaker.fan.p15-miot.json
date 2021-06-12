@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"dmaker.fan.p9",
-			"dmaker.fan.p10"
+			"dmaker.fan.p15"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
@@ -15,8 +14,8 @@
 				"stateDescription": {
 					"options": [
 						{
-							"value": "fan-toggle",
-							"label": "Fan Toggle"
+							"value": "off-delay-time-toggle",
+							"label": "Off Delay Time Toggle"
 						}
 					]
 				},
@@ -24,26 +23,26 @@
 					{
 						"command": "action",
 						"parameterType": "EMPTY",
-						"siid": 2,
+						"siid": 3,
 						"aiid": 1,
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "fan-toggle"
+									"matchValue": "off-delay-time-toggle"
 								}
 							]
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"fan-toggle\"\u003d\"Fan Toggle\"]`"
+				"readmeComment": "Value mapping `[\"off-delay-time-toggle\"\u003d\"Off Delay Time Toggle\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Fan-Switch Status",
-				"channel": "On",
+				"friendlyName": "Fan - Switch Status",
+				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -61,8 +60,8 @@
 				"property": "fan-level",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Fan-Fan Level",
-				"channel": "FanLevel",
+				"friendlyName": "Fan - Gear Fan Level",
+				"channel": "fan_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -96,9 +95,9 @@
 			{
 				"property": "mode",
 				"siid": 2,
-				"piid": 4,
-				"friendlyName": "Fan-Mode",
-				"channel": "Mode",
+				"piid": 3,
+				"friendlyName": "Fan - Mode",
+				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -109,10 +108,6 @@
 						{
 							"value": "1",
 							"label": "Natural Wind"
-						},
-						{
-							"value": "2",
-							"label": "Sleep"
 						}
 					]
 				},
@@ -126,15 +121,14 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Straight Wind\",\"1\"\u003d\"Natural Wind\",\"2\"\u003d\"Sleep\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Straight Wind\",\"1\"\u003d\"Natural Wind\"]`"
 			},
 			{
 				"property": "horizontal-swing",
 				"siid": 2,
-				"piid": 5,
-				"friendlyName": "Fan-Horizontal Swing",
-				"channel": "HorizontalSwing",
-				"channelType": "miot_bool",
+				"piid": 4,
+				"friendlyName": "Fan - Horizontal Swing",
+				"channel": "horizontal_swing",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -147,9 +141,9 @@
 			{
 				"property": "horizontal-angle",
 				"siid": 2,
-				"piid": 6,
-				"friendlyName": "Fan-Horizontal Angle",
-				"channel": "HorizontalAngle",
+				"piid": 5,
+				"friendlyName": "Fan - Horizontal Angle",
+				"channel": "horizontal_angle",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -170,8 +164,8 @@
 							"label": "120"
 						},
 						{
-							"value": "150",
-							"label": "150"
+							"value": "140",
+							"label": "140"
 						}
 					]
 				},
@@ -179,17 +173,49 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\",\"150\"\u003d\"150\"]`"
+				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\",\"140\"\u003d\"140\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Fan - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "on1",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Indicator Light - Switch Status",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
 			},
 			{
 				"property": "alarm",
-				"siid": 2,
-				"piid": 7,
-				"friendlyName": "Fan-Alarm",
-				"channel": "Alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Alarm - Alarm",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -201,33 +227,31 @@
 				"category": "alarm"
 			},
 			{
-				"property": "off-delay-time",
-				"siid": 2,
-				"piid": 8,
-				"friendlyName": "Fan - Power Off Delay Time",
-				"channel": "OffDelayTime",
-				"type": "Number:Time",
-				"unit": "minutes",
+				"property": "fault",
+				"siid": 6,
+				"piid": 2,
+				"friendlyName": "Motor Controller - Device Fault",
+				"channel": "fault",
+				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 480,
-					"step": 1,
-					"pattern": "%.0f %unit%"
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						}
+					]
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
 			},
 			{
-				"property": "brightness",
-				"siid": 2,
-				"piid": 9,
-				"friendlyName": "Fan-Brightness",
-				"channel": "Brightness",
+				"property": "physical-controls-locked",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -235,39 +259,18 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"category": "light",
-				"tags": [
-					"Control",
-					"Light"
 				]
 			},
 			{
-				"property": "motor-control",
-				"siid": 2,
-				"piid": 10,
-				"friendlyName": "Fan-Motor Control",
-				"channel": "MotorControl",
-				"type": "Number",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "speed-level",
-				"siid": 2,
-				"piid": 11,
-				"friendlyName": "Fan-Speed Level",
-				"channel": "SpeedLevel",
-				"channelType": "miot_uint8",
+				"property": "off-delay-time",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Off Delay Time - Off Delay Time",
+				"channel": "off_delay_time",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
+					"minimum": 0,
+					"maximum": 480,
 					"step": 1,
 					"pattern": "%.0f"
 				},
@@ -275,25 +278,12 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "physical-controls-locked",
-				"siid": 3,
-				"piid": 1,
-				"friendlyName": "Physical Control Locked-Physical Control Locked",
-				"channel": "PhysicalControlsLocked",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
+						"parameterType": "STRING"
 					}
 				]
 			}
-		]
+		],
+		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"off-delay-time-toggle\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
+		"experimental": true
 	}
 }
