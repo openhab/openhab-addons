@@ -96,7 +96,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
-    private int onTime = 0; // in 0.1s
+    @Nullable
+    private Integer onTime = null; // in 0.1s
     private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values
@@ -282,17 +283,13 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 return;
         }
 
-        if (thing.getChannel(CHANNEL_ONTIME) != null) {
-            Boolean newOn = newLightState.on;
-            if (newOn != null && !newOn) {
-                // if light shall be off, no other commands are allowed, so reset the new light state
-                newLightState.clear();
-                newLightState.on = false;
-            } else if (newOn != null && newOn) {
-                newLightState.ontime = onTime;
-            }
-        } else {
-            newLightState.ontime = null;
+        Boolean newOn = newLightState.on;
+        if (newOn != null && !newOn) {
+            // if light shall be off, no other commands are allowed, so reset the new light state
+            newLightState.clear();
+            newLightState.on = false;
+        } else if (newOn != null && newOn) {
+            newLightState.ontime = onTime;
         }
 
         sendCommand(newLightState, command, channelUID, () -> {
