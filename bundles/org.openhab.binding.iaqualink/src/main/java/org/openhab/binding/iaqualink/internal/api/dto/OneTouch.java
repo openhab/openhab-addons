@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iaqualink.internal.api.model;
+package org.openhab.binding.iaqualink.internal.api.dto;
 
 /**
  * OneTouch Macros.
