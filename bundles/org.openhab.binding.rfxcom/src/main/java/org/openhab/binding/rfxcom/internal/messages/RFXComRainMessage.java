@@ -38,7 +38,9 @@ public class RFXComRainMessage extends RFXComBatteryDeviceMessage<RFXComRainMess
         RAIN4(4),
         RAIN5(5),
         RAIN6(6),
-        RAIN7(7);
+        RAIN7(7),
+        RAIN8(8),
+        RAIN9(9);
 
         private final int subType;
 

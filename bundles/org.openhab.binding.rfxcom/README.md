@@ -882,6 +882,7 @@ A Rain device
         *   RAIN4 - UPM RG700
         *   RAIN5 - WS2300
         *   RAIN6 - La Crosse TX5
+        *   RAIN9 - TFA 30.3233.1
 
 ### rfxsensor - RFXCOM RFXSensor 
 
