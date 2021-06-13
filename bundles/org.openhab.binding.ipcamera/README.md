@@ -115,7 +115,7 @@ Thing ipcamera:hikvision:West "West Camera"
     port=80,
     nvrChannel=4,
     serverPort=54324,
-    ffmpegOutput="/var/lib/openhab/openhab/html/cameras/camera-west/",
+    ffmpegOutput="/var/lib/openhab/cameras/West/",
     ffmpegInput="rtsp://192.168.0.XX:554/ISAPI/Streaming/channels/401"
 ]
 ```
