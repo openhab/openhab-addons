@@ -18,6 +18,7 @@ import static org.openhab.binding.irobot.internal.IRobotBindingConstants.UDP_POR
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -31,13 +32,11 @@ import javax.net.ssl.SSLContext;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.irobot.internal.discovery.IRobotDiscoveryService;
+import org.openhab.binding.irobot.internal.dto.MQTTProtocol.BlidResponse;
 
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.GsonJsonProvider;
-import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 
 /**
  * Helper functions to get blid and password. Seems pretty much reinventing a bicycle,
@@ -70,19 +69,16 @@ public class LoginRequester {
             socket.close();
         }
 
-        Configuration.ConfigurationBuilder builder = Configuration.builder();
-        builder = builder.jsonProvider(new GsonJsonProvider());
-        builder = builder.mappingProvider(new GsonMappingProvider());
-        builder = builder.options(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.SUPPRESS_EXCEPTIONS);
+        Gson gson = new Gson();
 
         final String json = new String(reply, 0, reply.length, StandardCharsets.UTF_8);
-        DocumentContext document = JsonPath.using(builder.build()).parse(json);
+        JsonReader jsonReader = new JsonReader(new StringReader(json));
+        BlidResponse msg = gson.fromJson(jsonReader, BlidResponse.class);
 
         @Nullable
-        String blid = document.read("$.robotid", String.class);
-        final @Nullable String hostname = document.read("$.hostname", String.class);
-        if (((blid == null) || blid.isEmpty()) && ((hostname != null) && !hostname.isEmpty())) {
-            String[] parts = hostname.split("-");
+        String blid = msg.robotid;
+        if (((blid == null) || blid.isEmpty()) && ((msg.hostname != null) && !msg.hostname.isEmpty())) {
+            String[] parts = msg.hostname.split("-");
             if (parts.length == 2) {
                 blid = parts[1];
             }

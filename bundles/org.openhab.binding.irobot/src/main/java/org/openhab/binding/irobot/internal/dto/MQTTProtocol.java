@@ -262,4 +262,69 @@ public class MQTTProtocol {
     public static class StateMessage {
         public ReportedState state;
     }
+
+    // DISCOVERY
+    public static class RobotCapabilities {
+        public Integer pose;
+        public Integer ota;
+        public Integer multiPass;
+        public Integer carpetBoost;
+        public Integer pp;
+        public Integer binFullDetect;
+        public Integer langOta;
+        public Integer maps;
+        public Integer edge;
+        public Integer eco;
+        public Integer scvConf;
+    }
+
+    /*
+     * JSON of the following contents (addresses are undisclosed):
+     * @formatter:off
+     * {
+     *   "ver":"3",
+     *   "hostname":"Roomba-<blid>",
+     *   "robotname":"Roomba",
+     *   "robotid":"<blid>", --> available on some models only
+     *   "ip":"XXX.XXX.XXX.XXX",
+     *   "mac":"XX:XX:XX:XX:XX:XX",
+     *   "sw":"v2.4.6-3",
+     *   "sku":"R981040",
+     *   "nc":0,
+     *   "proto":"mqtt",
+     *   "cap":{
+     *     "pose":1,
+     *     "ota":2,
+     *     "multiPass":2,
+     *     "carpetBoost":1,
+     *     "pp":1,
+     *     "binFullDetect":1,
+     *     "langOta":1,
+     *     "maps":1,
+     *     "edge":1,
+     *     "eco":1,
+     *     "svcConf":1
+     *   }
+     * }
+     * @formatter:on
+     */
+    public static class DiscoveryResponse {
+        public String ver;
+        public String hostname;
+        public String robotname;
+        public String robotid;
+        public String ip;
+        public String mac;
+        public String sw;
+        public String sku;
+        public String nc;
+        public String proto;
+        public RobotCapabilities cap;
+    }
+
+    // LoginRequester
+    public static class BlidResponse {
+        public String robotid;
+        public String hostname;
+    }
 };
