@@ -79,6 +79,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
@@ -220,6 +221,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -448,6 +450,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -699,6 +702,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -996,6 +1000,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1269,6 +1274,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1539,6 +1545,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1834,6 +1841,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -2116,6 +2124,7 @@
 				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
 					each camera that ends with a slash and has write permissions can be entered.
 				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
