@@ -28,13 +28,17 @@ Note: if you are setting this up on a Raspberry Pi without `raspi-config` you ca
 sudo mkdir -p /etc/systemd/system/pigpiod.service.d/
 sudo nano /etc/systemd/system/pigpiod.service.d/public.conf
 ```
+
       [Service]
       ExecStart=
       ExecStart=/usr/bin/pigpiod
+
 ```
 sudo systemctl daemon-reload
 ```
+
 Now that Remote GPIO is enabled, get the daemon going (even if installed with apt-get):
+
 ```
 sudo systemctl enable pigpiod 
 sudo systemctl start pigpiod
@@ -58,7 +62,7 @@ Note: If you are running Pigpio on same host as openHAB, then set host to **::1*
 Set the number of the pin in `gpioId`.
 If you want to invert the value, set `invert` to true.
 To prevent incorrect change events, you can adjust the `debouncingTime`.
-Using `pullupdown` you can enable pull up or pull down resistor (0 = Off, 1 = Pull Down, 2 = Pull Up).
+Using `pullupdown` you can enable pull up or pull down resistor (OFF = Off, DOWN = Pull Down, UP = Pull Up).
 
 ### GPIO digital output channel
 
@@ -81,7 +85,7 @@ Thing gpio:pigpio-remote:sample-pi-1 "Sample-Pi 1" [host="192.168.2.36", port=88
 Thing gpio:pigpio-remote:sample-pi-2 "Sample-Pi 2" [host="192.168.2.37", port=8888] {
     Channels:
         Type pigpio-digital-input : sample-input-3 [ gpioId=16, debouncingTime=20]
-        Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5, pullupdown=2]
+        Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5, pullupdown="UP"]
         Type pigpio-digital-output : sample-output-2 [ gpioId=4, invert=true]
 }
 ```
