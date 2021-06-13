@@ -66,16 +66,23 @@ Number:ElectricCurrent     GoEChargerCurrentL3                  "Current l3"    
 Number:Power               GoEChargerPowerL1                    "Power l1"                              {channel="goecharger:goe:garage:powerL1"}
 Number:Power               GoEChargerPowerL2                    "Power l2"                              {channel="goecharger:goe:garage:powerL2"}
 Number:Power               GoEChargerPowerL3                    "Power l3"                              {channel="goecharger:goe:garage:powerL3"}
+Number:Power               GoEChargerPowerAll                   "Power over all"                       {channel="goecharger:goe:garage:powerAll"}
 Number                     GoEChargerPhases                     "Phases"                                {channel="goecharger:goe:garage:phases"}
 Number:Energy              GoEChargerSessionChargeEnergyLimit   "Current session charge energy limit"   {channel="goecharger:goe:garage:sessionChargeEnergyLimit"}
 Number:Energy              GoEChargerSessionChargedEnergy       "Current session charged energy"        {channel="goecharger:goe:garage:sessionChargedEnergy"}
 Number:Energy              GoEChargerTotalChargedEnergy         "Total charged energy"                  {channel="goecharger:goe:garage:totalChargedEnergy"}
 Switch                     GoEChargerAllowCharging              "Allow charging"                        {channel="goecharger:goe:garage:allowCharging"}
 Number:ElectricCurrent     GoEChargerCableCurrent               "Cable encoding"                        {channel="goecharger:goe:garage:cableCurrent"}
-Number:Temperature         GoEChargerTemperature                "Temperature"                           {channel="goecharger:goe:garage:temperature"}
+Number:Temperature         GoEChargertemptma1                   "Temperature_tma1"                      {channel="goecharger:goe:garage:temptma1"}
+Number:Temperature         GoEChargertemptma1                   "Temperature_tma2"                      {channel="goecharger:goe:garage:temptma2"}
 String                     GoEChargerFirmware                   "Firmware"                              {channel="goecharger:goe:garage:firmware"}
 String                     GoEChargerAccessConfiguration        "Access configuration"                  {channel="goecharger:goe:garage:accessConfiguration"}
 ```
+Changes 13.06.21:
+Temperature is not supported any more, GO-E added two temperatures tma1 and tma2.
+
+Added channel "Power over all" showing the combinde power of all three phases
+
 
 ## Setting charge current of Go-eCharger based on photovoltaik output
 

@@ -43,10 +43,12 @@ public class GoEChargerBindingConstants {
     public static final String POWER_L1 = "powerL1";
     public static final String POWER_L2 = "powerL2";
     public static final String POWER_L3 = "powerL3";
+    public static final String POWER_ALL = "powerAll";
     public static final String ALLOW_CHARGING = "allowCharging";
     public static final String CABLE_ENCODING = "cableCurrent";
     public static final String PHASES = "phases";
-    public static final String TEMPERATURE = "temperature";
+    public static final String TEMP_TMA1 = "temptma1";
+    public static final String TEMP_TMA2 = "temptma2";
     public static final String SESSION_CHARGE_CONSUMPTION = "sessionChargedEnergy";
     public static final String SESSION_CHARGE_CONSUMPTION_LIMIT = "sessionChargeEnergyLimit";
     public static final String TOTAL_CONSUMPTION = "totalChargedEnergy";

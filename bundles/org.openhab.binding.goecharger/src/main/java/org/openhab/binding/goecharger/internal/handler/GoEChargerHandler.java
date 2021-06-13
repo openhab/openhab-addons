@@ -22,13 +22,15 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.FIRMWARE;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURRENT;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_ALL;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L2;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L3;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PWM_SIGNAL;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION_LIMIT;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMPERATURE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMP_TMA1;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMP_TMA2;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TOTAL_CONSUMPTION;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L2;
@@ -198,11 +200,16 @@ public class GoEChargerHandler extends BaseThingHandler {
                     count++;
                 }
                 return new DecimalType(count);
-            case TEMPERATURE:
-                if (goeResponse.temperature == null) {
+            case TEMP_TMA1:
+                if (goeResponse.temptma == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.temperature, SIUnits.CELSIUS);
+                return new QuantityType<>(goeResponse.temptma[0], SIUnits.CELSIUS);
+            case TEMP_TMA2:
+                if (goeResponse.temptma == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.temptma[1], SIUnits.CELSIUS);
             case SESSION_CHARGE_CONSUMPTION:
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
@@ -272,6 +279,11 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[9] * 100, Units.WATT);
+            case POWER_ALL:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[11] * 100, Units.WATT);
         }
         return UnDefType.UNDEF;
     }
@@ -288,7 +300,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         String value = null;
         switch (channelUID.getId()) {
             case MAX_CURRENT:
-                key = "amp";
+                key = "amx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 } else if (command instanceof QuantityType<?>) {
