@@ -36,6 +36,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcFatalExecption;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcTlsExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 import org.openhab.binding.ihc.internal.ws.services.IhcAirlinkManagementService;
@@ -60,6 +61,10 @@ public class IhcClient {
         CONNECTING,
         CONNECTED
     }
+
+    public static final String TLS_VER_AUTO = "AUTO";
+    public static final String TLS_VER_V1 = "TLSv1";
+    public static final String TLS_VER_V1_2 = "TLSv1.2";
 
     public static final String CONTROLLER_STATE_READY = "text.ctrl.state.ready";
     public static final String CONTROLLER_STATE_INITIALIZE = "text.ctrl.state.initialize";
@@ -98,7 +103,7 @@ public class IhcClient {
     private List<IhcEventListener> eventListeners = new ArrayList<>();
 
     public IhcClient(String host, String username, String password) {
-        this(host, username, password, 5000, "TLSv1");
+        this(host, username, password, 5000, TLS_VER_V1);
     }
 
     public IhcClient(String host, String username, String password, int timeout, String tlsVersion) {
@@ -171,7 +176,20 @@ public class IhcClient {
      * @throws IhcExecption
      */
     public void openConnection() throws IhcExecption {
-        logger.debug("Opening connection");
+        if (TLS_VER_AUTO.equalsIgnoreCase(tlsVersion)) {
+            try {
+                openConnection(TLS_VER_V1);
+            } catch (IhcTlsExecption e) {
+                logger.debug("Connection failed with TLS {}, trying with TLS {}", TLS_VER_V1, TLS_VER_V1_2);
+                openConnection(TLS_VER_V1_2);
+            }
+        } else {
+            openConnection(tlsVersion);
+        }
+    }
+
+    private void openConnection(String tlsVersion) throws IhcExecption {
+        logger.debug("Opening connection with TLS version {}", tlsVersion);
 
         setConnectionState(ConnectionState.CONNECTING);
         ihcConnectionPool = new IhcConnectionPool(tlsVersion);

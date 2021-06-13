@@ -34,6 +34,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcFatalExecption;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcTlsExecption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,8 +142,10 @@ public class IhcConnectionPool {
             connMngr.setDefaultMaxPerRoute(6);
 
             httpClientBuilder.setConnectionManager(connMngr);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+        } catch (KeyManagementException e) {
             throw new IhcFatalExecption(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IhcTlsExecption(e);
         }
     }
 
