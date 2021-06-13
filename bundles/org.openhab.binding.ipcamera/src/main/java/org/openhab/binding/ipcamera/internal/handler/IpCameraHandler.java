@@ -1686,7 +1686,8 @@ public class IpCameraHandler extends BaseThingHandler {
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
         if (cameraConfig.getFfmpegOutput().isEmpty()) {
-            cameraConfig.setFfmpegOutput(OpenHAB.getUserDataFolder() + "/cameras/" + this.thing.getUID().getId() + "/");
+            cameraConfig
+                    .setFfmpegOutput(OpenHAB.getUserDataFolder() + "/ipcamera/" + this.thing.getUID().getId() + "/");
         }
 
         if (cameraConfig.getServerPort() < 1) {
