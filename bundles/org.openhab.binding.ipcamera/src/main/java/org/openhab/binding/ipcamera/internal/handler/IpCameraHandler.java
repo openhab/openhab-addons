@@ -57,6 +57,7 @@ import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProv
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -1685,7 +1686,7 @@ public class IpCameraHandler extends BaseThingHandler {
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
         if (cameraConfig.getFfmpegOutput().isEmpty()) {
-            cameraConfig.setFfmpegOutput("/etc/openhab/html/cameras/" + this.thing.getUID().getId() + "/");
+            cameraConfig.setFfmpegOutput(OpenHAB.getUserDataFolder() + "/cameras/" + this.thing.getUID().getId() + "/");
         }
 
         if (cameraConfig.getServerPort() < 1) {
