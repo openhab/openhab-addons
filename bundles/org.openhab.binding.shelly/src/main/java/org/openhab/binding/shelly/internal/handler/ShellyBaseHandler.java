@@ -528,7 +528,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     private void fillDeviceStatus(ShellySettingsStatus status, boolean updated) {
         String alarm = "";
-        boolean force = false;
 
         // Update uptime and WiFi, internal temp
         ShellyComponents.updateDeviceStatus(this, status);
@@ -567,7 +566,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         stats.coiotErrors = coap.getErrorCount();
 
         if (!alarm.isEmpty()) {
-            postEvent(alarm, force);
+            postEvent(alarm, false);
         }
     }
 
@@ -597,7 +596,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         State value = cache.getValue(channelId);
         String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
 
-        if (force || !lastAlarm.equals(alarm) || (now() > (stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))) {
+        if ((force || !lastAlarm.equals(alarm)) && now() > (stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
             if (alarm.isEmpty() || alarm.equals(ALARM_TYPE_NONE)) {
                 cache.updateChannel(channelId, getStringType(alarm));
             } else {
