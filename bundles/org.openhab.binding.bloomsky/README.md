@@ -37,28 +37,17 @@ The binding has no configuration options, all configuration is done at Thing and
 
 ## Thing Configuration
 
-The **bridge** thing only has one configuration parameter:
+The **bridge** thing has three (3) configuration parameters:
 
 | Parameter | Parameter ID | Required/Optional |Description |
 | :---: | :--- | --- | --- |
 | API Key | apiKey | Required | API key to access the BloomSky personal weather station API service.  Obtain this key from the BloomSky Device Owners page. |
-| _Refresh Interval_ | refreshInterval | Optional | _This may be a better place to hold the refresh timing to keep it simple_ |
+| Refresh Interval | refreshInterval | Required | Default (minimumn) value is 5 minutes. This is based on the API which updates on 5 minute intervals. |
+| Measurement Display Units | units | Required | Observations can be displayed in either Imperial (US) or Metric (SI) units.  Default is set to system locale. |  
 
-The **sky** thing only has one configuration parameter:
+The **sky** and **storm** things do not have configuration parameters, they will refresh and display units based on the bridge configuration.
 
-| Parameter | Parameter ID | Required/Optional |Description |
-| :---: | :--- | --- | --- |
-| Refresh Interval | refreshInterval | Required | Refresh interval in minutes.  Frequency the weather data is retrieved from the personal weather station. The default value is 30 minutes and the minimum is 5 minutes. |
-
-
-The **storm** thing only has one configuration parameter:
-
-| Parameter | Parameter ID | Required/Optional |Description |
-| :---: | :--- | --- | --- |
-| Refresh Interval | refreshInterval | Required | Refresh interval in minutes.  Frequency the weather data is updated. The default value is 30 minutes and the minimum is 5 minutes. |
-
-
-The refresh request for either the sky or storm things will also pull the other devices information.  It is recommended to keep the refresh interval the same for both things.
+The refresh request for either the sky or storm things will also pull its associated device's information/observations.
 
 ## Channels
 
