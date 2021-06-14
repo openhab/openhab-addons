@@ -18,12 +18,15 @@
 		<channels>
 			<channel id="rawMessage" typeId="rawmessage"/>
 			<channel id="rawPayload" typeId="rawpayload"/>
+			<channel id="pulses" typeId="pulses"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
-				<description>Raw items cannot provide a device ID, so this value is always RAW.</description>
+				<description>Received raw message cannot provide a device ID, so to receive raw messages the device id must be RAW.
+					For transmit-only things, use any device id.</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
 				<label>Sub Type</label>
@@ -34,6 +37,35 @@
 					<option value="RAW_PACKET3">RAW_PACKET3</option>
 					<option value="RAW_PACKET4">RAW_PACKET4</option>
 				</options>
+			</parameter>
+			<parameter name="repeat" type="integer" min="1" max="255">
+				<label>Repeat</label>
+				<description>Number of times to repeat. Defaults to 5.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="onPulses" type="text" required="false">
+				<label>On Pulses</label>
+				<description>Pulses to send for an ON command. Space delimited pulse lengths in usec. Must be an even number of
+					pulse lengths, with a maximum of 142 total pulses. Max pulse length is 65535. Pulses of value 0 will be transmitted
+					as 10000. See the RFXtfx user guide for more information.</description>
+			</parameter>
+			<parameter name="offPulses" type="text" required="false">
+				<label>Off Pulses</label>
+				<description>Pulses to send for an OFF command. Space delimited pulse lengths in usec. Must be an even number of
+					pulse lengths, with a maximum of 142 total pulses. Max pulse length is 65535. Pulses of value 0 will be transmitted
+					as 10000. See the RFXtfx user guide for more information.</description>
+			</parameter>
+			<parameter name="openPulses" type="text" required="false">
+				<label>Open Pulses</label>
+				<description>Pulses to send for an OPEN command. Space delimited pulse lengths in usec. Must be an even number of
+					pulse lengths, with a maximum of 142 total pulses. Max pulse length is 65535. Pulses of value 0 will be transmitted
+					as 10000. See the RFXtfx user guide for more information.</description>
+			</parameter>
+			<parameter name="closedPulses" type="text" required="false">
+				<label>Closed Pulses</label>
+				<description>Pulses to send for an CLOSED command. Space delimited pulse lengths in usec. Must be an even number of
+					pulse lengths, with a maximum of 142 total pulses. Max pulse length is 65535. Pulses of value 0 will be transmitted
+					as 10000. See the RFXtfx user guide for more information.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

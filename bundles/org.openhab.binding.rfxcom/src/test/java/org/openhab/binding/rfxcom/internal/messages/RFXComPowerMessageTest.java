@@ -29,6 +29,6 @@ public class RFXComPowerMessageTest {
     public void checkNotImplemented() {
         // TODO Note that this message is supported in the 1.9 binding
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactory.createMessage(RFXComBaseMessage.PacketType.POWER));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(RFXComBaseMessage.PacketType.POWER));
     }
 }

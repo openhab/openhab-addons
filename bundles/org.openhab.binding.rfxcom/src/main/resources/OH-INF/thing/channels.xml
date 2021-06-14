@@ -18,6 +18,12 @@
 		<description>Hexadecimal representation of payload of raw and undecoded RFXCOM messages</description>
 	</channel-type>
 
+	<channel-type id="pulses">
+		<item-type>String</item-type>
+		<label>Pulses</label>
+		<description>Decimal representation of the pulse lengths for a raw message in usec.</description>
+	</channel-type>
+
 	<channel-type id="command">
 		<item-type>Switch</item-type>
 		<label>Command</label>
