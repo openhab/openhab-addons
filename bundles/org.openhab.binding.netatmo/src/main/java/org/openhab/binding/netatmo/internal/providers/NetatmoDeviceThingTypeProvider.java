@@ -90,7 +90,7 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
                         .withConfigDescriptionURI(new URI(configDescription));
 
                 List<String> extensions = supportedThingType.getExtensions();
-                if (extensions.size() > 0) {
+                if (!extensions.isEmpty()) {
                     thingTypeBuilder.withExtensibleChannelTypeIds(extensions);
                 }
 

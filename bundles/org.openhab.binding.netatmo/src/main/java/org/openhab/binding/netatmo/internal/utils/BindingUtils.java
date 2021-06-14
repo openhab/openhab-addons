@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.service.component.ComponentContext;
 
 /**
@@ -26,7 +27,7 @@ import org.osgi.service.component.ComponentContext;
  * @author Gaël L'hopital - Initial contribution
  *
  */
-
+@NonNullByDefault
 public class BindingUtils {
     public static Map<String, Object> ComponentContextToMap(ComponentContext componentContext) {
         Dictionary<String, Object> properties = componentContext.getProperties();

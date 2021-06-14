@@ -49,9 +49,8 @@ public class PresenceChannelHelper extends AbstractChannelHelper {
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
                 // The auto-mode state shouldn't be updated, because this isn't a dedicated information. When the
                 // floodlight is switched on the state within the Netatmo API is "on" and the information if the
-                // previous
-                // state was "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode
-                // state.
+                // previous state was "auto" instead of "off" is lost... Therefore the binding handles its own
+                // auto-mode state.
                 if (floodlightAutoMode == UnDefType.UNDEF) {
                     floodlightAutoMode = OnOffType.from(camera.getLightModeStatus() == PresenceLightMode.AUTO);
                 }

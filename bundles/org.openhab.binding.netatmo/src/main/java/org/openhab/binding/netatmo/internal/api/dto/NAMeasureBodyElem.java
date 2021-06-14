@@ -25,26 +25,16 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class NAMeasureBodyElem<T> {
-    // private long begTime;
-    // private long stepTime;
     private List<List<T>> value = List.of();
-
-    // public long getBegTime() {
-    // return begTime;
-    // }
-    //
-    // public long getStepTime() {
-    // return stepTime;
-    // }
 
     public List<List<T>> getValue() {
         return value;
     }
 
     public @Nullable T getSingleValue() {
-        if (value.size() > 0) {
+        if (!value.isEmpty()) {
             List<T> first = value.get(0);
-            if (first.size() > 0) {
+            if (!first.isEmpty()) {
                 return first.get(0);
             }
         }

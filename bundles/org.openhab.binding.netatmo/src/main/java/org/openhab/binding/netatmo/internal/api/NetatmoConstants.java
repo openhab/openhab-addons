@@ -65,7 +65,8 @@ public class NetatmoConstants {
         RAIN_INTENSITY,
         WIND_SPEED,
         WIND_ANGLE,
-        HUMIDITY;
+        HUMIDITY,
+        UNKNOWN;
     }
 
     public static final Map<MeasureClass, Measure> NA_MEASURES = Map.of(MeasureClass.INTERIOR_TEMPERATURE,
@@ -122,7 +123,8 @@ public class NetatmoConstants {
         CO2(MeasureClass.CO2),
         NOISE(MeasureClass.NOISE),
         PRESSURE(MeasureClass.PRESSURE),
-        WIND(MeasureClass.WIND_SPEED);
+        WIND(MeasureClass.WIND_SPEED),
+        UNKNOWN(MeasureClass.UNKNOWN);
 
         private MeasureClass unit;
 
@@ -149,7 +151,8 @@ public class NetatmoConstants {
         THREE_HOURS("3hours"),
         ONE_DAY("1day"),
         ONE_WEEK("1week"),
-        ONE_MONTH("1month");
+        ONE_MONTH("1month"),
+        UNKNOWN("");
 
         private static Map<String, MeasureScale> stringMap = Arrays.stream(values())
                 .collect(Collectors.toMap(MeasureScale::getDescriptor, Function.identity()));

@@ -23,16 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class NAMain extends NADevice {
     private boolean readOnly;
-    private boolean favorite;
-
-    /**
-     * true when the device is a user favorite and not owned by them
-     *
-     * @return favorite
-     **/
-    public boolean isFavorite() {
-        return favorite;
-    }
 
     /**
      * true when the user was invited to (or has favorited) a station, false when the user owns it

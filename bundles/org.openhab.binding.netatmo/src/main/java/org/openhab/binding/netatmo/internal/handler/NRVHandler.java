@@ -32,7 +32,6 @@ import org.openhab.core.thing.ThingStatus;
  * @author Gaël L'hopital - Initial contribution
  *
  */
-@SuppressWarnings("unused")
 @NonNullByDefault
 public class NRVHandler extends NetatmoDeviceHandler {
 

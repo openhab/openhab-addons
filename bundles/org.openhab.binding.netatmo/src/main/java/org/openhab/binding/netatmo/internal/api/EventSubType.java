@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This enum describes sub events in relation to a given event
  * according to API documentation
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public enum EventSubType {
     MISSING_SD(EventType.SD, 1), // Missing SD Card
     SD_INSERTED(EventType.SD, 2), // SD Card inserted

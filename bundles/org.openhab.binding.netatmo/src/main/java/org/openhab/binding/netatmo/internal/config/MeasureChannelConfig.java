@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureScale;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
@@ -23,23 +25,24 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
  * @author Gaël L'hopital - Initial contribution
  *
  */
+@NonNullByDefault
 public class MeasureChannelConfig {
-    public MeasureScale period;
-    public MeasureType type;
+    public MeasureScale period = MeasureScale.UNKNOWN;
+    public MeasureType type = MeasureType.UNKNOWN;
     public MeasureLimit limit = MeasureLimit.NONE;
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((limit == null) ? 0 : limit.hashCode());
-        result = prime * result + ((period == null) ? 0 : period.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (limit == MeasureLimit.NONE ? 0 : limit.hashCode());
+        result = prime * result + (period == MeasureScale.UNKNOWN ? 0 : period.hashCode());
+        result = prime * result + (type == MeasureType.UNKNOWN ? 0 : type.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }

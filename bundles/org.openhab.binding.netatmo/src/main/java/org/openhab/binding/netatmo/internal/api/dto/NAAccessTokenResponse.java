@@ -20,9 +20,9 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 
 /**
  * This is the Access Token Response, a simple value-object that holds the result of the
- * from an Access Token Request, as provided by Netatmo API :
+ * from an Access Token Request, as provided by Netatmo API.
  *
- * @author Gaël L'hopital - Adapted from OH core implementation for Netatmo API
+ * @author Gaël L'hopital - Initial contribution
  */
 public final class NAAccessTokenResponse implements Serializable, Cloneable {
 

@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.ThermostatZoneType;
 
 /**
  *
@@ -39,18 +38,9 @@ public class NAThermProgram extends NAObject {
     }
 
     // TODO Remove unused code found by UCDetector
-    // public double getZoneTemperature(SetpointMode currentMode) {
-    // try {
-    // ThermostatZoneType equivalentZone = ThermostatZoneType.valueOf(currentMode.toString());
-    // return getZoneTemperature(equivalentZone);
-    // } catch (IllegalArgumentException ignore) { // not all thermostat modes have an equivalent zone
-    // return Double.NaN;
+    // public double getZoneTemperature(ThermostatZoneType zone) {
+    // return zones.stream().filter(z -> z.getType() == zone).findFirst().map(NAZone::getTemp).orElse(Double.NaN);
     // }
-    // }
-
-    public double getZoneTemperature(ThermostatZoneType zone) {
-        return zones.stream().filter(z -> z.getType() == zone).findFirst().map(NAZone::getTemp).orElse(Double.NaN);
-    }
 
     public @Nullable NAZone getZone(String id) {
         return zones.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);

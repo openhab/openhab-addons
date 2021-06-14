@@ -218,18 +218,5 @@ public enum ModuleType {
 
     public static Boolean isModuleTypeImplemented(String name) {
         return Stream.of(values()).anyMatch(mt -> mt.toString().equals(name));
-        // if (name.isBlank()) {
-        // return false;
-        // }
-        // for (ModuleType item : values()) {
-        // if (name.equals(item.toString())) {
-        // return true;
-        // }
-        // }
-        // return false;
     }
-
-    // public static Stream<ModuleType> asStream() {
-    // return Stream.of(values());
-    // }
 }

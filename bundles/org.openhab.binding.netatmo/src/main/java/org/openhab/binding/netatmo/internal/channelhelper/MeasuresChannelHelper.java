@@ -22,6 +22,8 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureScale;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.MeasureChannelConfig;
 import org.openhab.core.thing.Channel;
@@ -57,7 +59,7 @@ public class MeasuresChannelHelper extends AbstractChannelHelper {
 
     private boolean isChannelConfigIfValid(Channel channel) {
         MeasureChannelConfig config = channel.getConfiguration().as(MeasureChannelConfig.class);
-        return config.period != null && config.type != null;
+        return config.period != MeasureScale.UNKNOWN && config.type != MeasureType.UNKNOWN;
     }
 
     public Map<MeasureChannelConfig, Object> getMeasures() {
