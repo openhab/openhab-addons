@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.provider;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.BINDING_ID;
+import static org.openhab.binding.carnet.internal.BindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,8 +58,7 @@ public class CarChannelTypeProvider implements ChannelTypeProvider, ChannelGroup
     private static List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<ChannelGroupType>();
 
     @Activate
-    public CarChannelTypeProvider(@Reference TextResources resources,
-            @Reference ChannelDefinitions channelIdMapper) {
+    public CarChannelTypeProvider(@Reference TextResources resources, @Reference ChannelDefinitions channelIdMapper) {
         this.channelIdMapper = channelIdMapper;
         this.resources = resources;
     }

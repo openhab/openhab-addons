@@ -13,7 +13,7 @@
 
 package org.openhab.binding.carnet.internal.discovery;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
+import static org.openhab.binding.carnet.internal.BindingConstants.*;
 
 import java.util.List;
 import java.util.Map;
@@ -21,10 +21,10 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.CarException;
-import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
-import org.openhab.binding.carnet.internal.handler.CarNetDeviceListener;
-import org.openhab.binding.carnet.internal.handler.CarNetVehicleInformation;
+import org.openhab.binding.carnet.internal.api.ApiException;
+import org.openhab.binding.carnet.internal.handler.AccountHandler;
+import org.openhab.binding.carnet.internal.handler.BridgeListener;
+import org.openhab.binding.carnet.internal.handler.VehicleInformation;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -37,19 +37,19 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Device discovery creates a thing in the inbox for each vehicle
- * found in the data received from {@link CarNetAccountHandler}.
+ * found in the data received from {@link AccountHandler}.
  *
  * @author Markus Michels - Initial Contribution
  *
  */
 @NonNullByDefault
-public class CarNetDiscoveryService extends AbstractDiscoveryService implements CarNetDeviceListener {
+public class CarNetDiscoveryService extends AbstractDiscoveryService implements BridgeListener {
     private final Logger logger = LoggerFactory.getLogger(CarNetDiscoveryService.class);
-    private final CarNetAccountHandler accountHandler;
+    private final AccountHandler accountHandler;
     private ThingUID bridgeUID;
     private static final int TIMEOUT = 10;
 
-    public CarNetDiscoveryService(CarNetAccountHandler bridgeHandler, Bundle bundle) {
+    public CarNetDiscoveryService(AccountHandler bridgeHandler, Bundle bundle) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.accountHandler = bridgeHandler;
         this.bridgeUID = bridgeHandler.getThing().getUID();
@@ -59,11 +59,11 @@ public class CarNetDiscoveryService extends AbstractDiscoveryService implements 
      * Called by Account Handler for each vehicle found under the account, creates the corresponding vehicle thing
      */
     @Override
-    public void informationUpdate(@Nullable List<CarNetVehicleInformation> vehicleList) {
+    public void informationUpdate(@Nullable List<VehicleInformation> vehicleList) {
         if (vehicleList == null) {
             return;
         }
-        for (CarNetVehicleInformation vehicle : vehicleList) {
+        for (VehicleInformation vehicle : vehicleList) {
             logger.debug("VIN {} discovery, create thing", vehicle.getId());
             Map<String, Object> properties = new TreeMap<String, Object>();
             ThingUID uid = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vehicle.getId());
@@ -84,7 +84,7 @@ public class CarNetDiscoveryService extends AbstractDiscoveryService implements 
     protected void startScan() {
         try {
             accountHandler.initializeThing();
-        } catch (CarException e) {
+        } catch (ApiException e) {
             logger.debug("Discovery failed: {}", e.getMessage());
         }
     }

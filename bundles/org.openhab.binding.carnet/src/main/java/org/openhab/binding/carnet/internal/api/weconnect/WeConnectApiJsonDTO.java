@@ -14,10 +14,10 @@ package org.openhab.binding.carnet.internal.api.weconnect;
 
 import java.util.ArrayList;
 
-import org.openhab.binding.carnet.internal.api.brand.CarNetBrandApiID;
+import org.openhab.binding.carnet.internal.api.brand.BrandWeConnect;
 
 /**
- * {@link CarNetBrandApiID} defines the We Connect API data formats
+ * {@link BrandWeConnect} defines the We Connect API data formats
  *
  * @author Markus Michels - Initial contribution
  */

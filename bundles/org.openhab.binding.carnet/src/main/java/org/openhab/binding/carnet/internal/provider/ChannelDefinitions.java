@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.provider;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
+import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
 
 import java.io.FileWriter;
@@ -25,7 +25,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.TextResources;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -363,24 +363,24 @@ public class ChannelDefinitions {
 
         // Doors/trunk
         add("STATE3_LEFT_FRONT_DOOR", "0x0301040002", "doorFrontLeftState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_LEFT_FRONT_DOOR", "0x0301040001");
-        add("SAFETY_LEFT_FRONT_DOOR", "0x0301040003");
+        add("LOCK2_LEFT_FRONT_DOOR", "0x0301040001", "doorFrontLeftLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("SAFETY_LEFT_FRONT_DOOR", "0x0301040003"/* , "doorFrontLeftSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS */);
         add("STATE3_RIGHT_FRONT_DOOR", "0x0301040008", "doorFrontRightState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_RIGHT_FRONT_DOOR", "0x0301040007");
-        add("SAFETY_RIGHT_FRONT_DOOR", "0x0301040009");
+        add("LOCK2_RIGHT_FRONT_DOOR", "0x0301040007", "doorFrontRightLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("SAFETY_RIGHT_FRONT_DOOR", "0x0301040009"/* , "doorFrontRightSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS */);
         add("STATE3_LEFT_REAR_DOOR", "0x0301040005", "doorRearLeftState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_LEFT_REAR_DOOR", "0x0301040004");
-        add("SAFETY_LEFT_REAR_DOOR", "0x0301040006");
+        add("LOCK2_LEFT_REAR_DOOR", "0x0301040004", "doorRearLeftLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("SAFETY_LEFT_REAR_DOOR", "0x0301040006"/* , "doorRearLeftSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS */);
         add("STATE3_RIGHT_REAR_DOOR", "0x030104000B", "doorRearRightState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_RIGHT_REAR_DOOR", "0x030104000A");
-        add("SAFETY_RIGHT_REAR_DOOR", "0x030104000C");
+        add("LOCK2_RIGHT_REAR_DOOR", "0x030104000A", "doorRearRightLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("SAFETY_RIGHT_REAR_DOOR", "0x030104000C"/* , "doorRearRightSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS */);
         add("STATE3_TRUNK_LID", "0x030104000E", "trunkLidState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK2_TRUNK_LID", "0x030104000D");
-        add("SAFETY_TRUNK_LID", "0x030104000F");
-        add("STATE3_HOOD", "0x0301040011", "hoodState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
-        add("LOCK3_HOOD", "0x0301040010");
-        add("SAFETY_HOOD", "0x0301040012");
+        add("LOCK3_HOOD", "0x0301040010", "hoodLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("SAFETY_HOOD", "0x0301040012"/* , "hoodSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS */);
         add("STATE3_CONVERTIBLE_TOP", "0x0301050009", "covertibleTopState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
+        add("LOCK2_TRUNK_LID", "0x030104000D", "trunkLidLocked", ITEMT_SWITCH, CHANNEL_GROUP_DOORS);
+        add("SAFETY_TRUNK_LID", "0x030104000F"/* , "trunkLidSafety", ITEMT_SWITCH, CHANNEL_GROUP_DOORS */);
+        add("STATE3_HOOD", "0x0301040011", "hoodState", ITEMT_CONTACT, CHANNEL_GROUP_DOORS);
         add("POS_CONVERTIBLE_TOP", "0x030105000A", "covertibleTopPos", ITEMT_PERCENT, CHANNEL_GROUP_DOORS);
 
         // Windows

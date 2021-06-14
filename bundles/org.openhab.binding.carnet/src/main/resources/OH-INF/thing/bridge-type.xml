@@ -18,8 +18,11 @@
 		<config-description-ref uri="bridge-type:carnet:account"/>
 	</bridge-type>
 
-	<!-- bridge-type id="vwid"> <label>VW ID (We Connect)</label> <description>This thing represents a We Connect ID Account.</description>
-		<config-description-ref uri="bridge-type:carnet:account"/> </bridge-type -->
+	<bridge-type id="vwid">
+		<label>VW ID (We Connect)</label>
+		<description>This thing represents a We Connect ID Account.</description>
+		<config-description-ref uri="bridge-type:carnet:account"/>
+	</bridge-type>
 
 	<bridge-type id="skoda">
 		<label>Skoda Connect Account (CarNet)</label>

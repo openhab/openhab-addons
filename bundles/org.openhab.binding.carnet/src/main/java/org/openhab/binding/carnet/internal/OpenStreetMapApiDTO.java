@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.carnet.internal;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
+import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetPosition;
-import org.openhab.binding.carnet.internal.api.CarNetHttpClient;
+import org.openhab.binding.carnet.internal.api.ApiException;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetPosition;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public class OpenStreetMapApiDTO {
         public String[] boundingbox;
     }
 
-    public String getAddressFromPosition(CarNetHttpClient http, CarNetPosition position) throws CarException {
+    public String getAddressFromPosition(CarNetHttpClient http, CarNetPosition position) throws ApiException {
         try {
             String url = "https://nominatim.openstreetmap.org/reverse?lat=" + position.getLattitude() + "&lon="
                     + position.getLongitude() + "&format=json";
@@ -76,7 +77,7 @@ public class OpenStreetMapApiDTO {
                     + getString(r.address.town) + ";" + getString(r.address.village) + ";"
                     + getString(r.address.country + ";" + getString(r.address.countryCocde));
             return address;
-        } catch (CarException e) {
+        } catch (ApiException e) {
             logger.debug("OSM: Unable to lookup address for Geo position: {}", e.toString());
             return "";
         }

@@ -30,6 +30,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -52,17 +53,17 @@ import com.google.gson.JsonSyntaxException;
 public class CarUtils {
     private static final String PRE = "Can't create object of type ";
 
-    public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws CarException {
+    public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ApiException {
         String className = CarUtils.substringAfter(classOfT.getName(), "$");
 
         if (json == null) {
-            throw new CarException(PRE + className + ": json is null!");
+            throw new ApiException(PRE + className + ": json is null!");
         }
 
         if (classOfT.isInstance(json)) {
             return wrap(classOfT).cast(json);
         } else if (json.isEmpty()) { // update GSON might return null
-            throw new CarException(PRE + className + "from empty JSON");
+            throw new ApiException(PRE + className + "from empty JSON");
         } else {
             try {
                 @Nullable
@@ -72,9 +73,9 @@ public class CarUtils {
                 }
                 return obj;
             } catch (JsonSyntaxException e) {
-                throw new CarException(PRE + className + "from JSON (syntax/format error): " + json, e);
+                throw new ApiException(PRE + className + "from JSON (syntax/format error): " + json, e);
             } catch (RuntimeException e) {
-                throw new CarException(PRE + className + "from JSON: " + json, e);
+                throw new ApiException(PRE + className + "from JSON: " + json, e);
             }
         }
     }
@@ -240,7 +241,7 @@ public class CarUtils {
         }
     }
 
-    public static String sha512(String pin, String challenge) throws CarException {
+    public static String sha512(String pin, String challenge) throws ApiException {
         try {
             MessageDigest hash = MessageDigest.getInstance("SHA-512");
             byte[] pinBytes = DatatypeConverter.parseHexBinary(pin);
@@ -255,7 +256,7 @@ public class CarUtils {
             }
             return sb.toString().toUpperCase();
         } catch (NoSuchAlgorithmException e) {
-            throw new CarException("sha512() failed", e);
+            throw new ApiException("sha512() failed", e);
         }
     }
 

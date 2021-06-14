@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.CarUtils;
-import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleHandler;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -34,12 +34,12 @@ import org.slf4j.LoggerFactory;
 public class ChannelCache {
     private final Logger logger = LoggerFactory.getLogger(ChannelCache.class);
 
-    private final CarNetVehicleHandler thingHandler;
+    private final VehicleHandler thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingId = "";
     private boolean enabled = false;
 
-    public ChannelCache(CarNetVehicleHandler thingHandler, String thingId) {
+    public ChannelCache(VehicleHandler thingHandler, String thingId) {
         this.thingHandler = thingHandler;
         setthingId(thingId);
     }

@@ -13,7 +13,7 @@
 
 package org.openhab.binding.carnet.internal.provider;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
+import static org.openhab.binding.carnet.internal.BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.List;

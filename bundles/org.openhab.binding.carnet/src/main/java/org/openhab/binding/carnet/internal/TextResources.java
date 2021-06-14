@@ -25,7 +25,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link CarNetHandlerFactory} retrieves localized text resources as defined in properties file.
+ * The {@link HandlerFactory} retrieves localized text resources as defined in properties file.
  *
  * @author Markus Michels - Initial contribution
  */
