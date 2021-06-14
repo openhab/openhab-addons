@@ -7,37 +7,6 @@
 		"maxProperties": 1,
 		"channels": [
 			{
-				"property": "",
-				"friendlyName": "Actions",
-				"channel": "actions",
-				"type": "String",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "off-delay-time-toggle",
-							"label": "Off Delay Time Toggle"
-						}
-					]
-				},
-				"actions": [
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 3,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "off-delay-time-toggle"
-								}
-							]
-						}
-					}
-				],
-				"readmeComment": "Value mapping `[\"off-delay-time-toggle\"\u003d\"Off Delay Time Toggle\"]`"
-			},
-			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
@@ -90,6 +59,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
+				"tags": [
+					"SetPoint"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"4\"\u003d\"Level4\"]`"
 			},
 			{
@@ -118,6 +91,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "flow",
 				"tags": [
 					"Control"
 				],
@@ -136,6 +110,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -176,6 +154,10 @@
 						"parameterType": "STRING"
 					}
 				],
+				"category": "incline",
+				"tags": [
+					"Setpoint"
+				],
 				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\",\"140\"\u003d\"140\"]`"
 			},
 			{
@@ -193,7 +175,11 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "on1",
@@ -208,6 +194,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lightbulb",
+				"tags": [
+					"Control"
 				]
 			},
 			{
@@ -244,6 +234,10 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
 			},
 			{
@@ -267,7 +261,8 @@
 				"piid": 1,
 				"friendlyName": "Off Delay Time - Off Delay Time",
 				"channel": "off_delay_time",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 480,
@@ -278,12 +273,47 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
 				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "off-delay-time-toggle",
+							"label": "Off Delay Time Toggle"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "off-delay-time-toggle"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"off-delay-time-toggle\"\u003d\"Off Delay Time Toggle\"]`"
 			}
 		],
 		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"off-delay-time-toggle\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
-		"experimental": true
+		"experimental": false
 	}
 }

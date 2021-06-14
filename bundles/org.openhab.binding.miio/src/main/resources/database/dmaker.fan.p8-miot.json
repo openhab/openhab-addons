@@ -87,6 +87,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
+				"tags": [
+					"SetPoint"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},
 			{
@@ -130,6 +134,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "flow",
 				"tags": [
 					"Control"
 				],
@@ -155,6 +160,10 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
 				]
 			},
 			{

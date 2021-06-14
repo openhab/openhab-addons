@@ -91,6 +91,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
+				"tags": [
+					"SetPoint"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"4\"\u003d\"Level4\"]`"
 			},
 			{
@@ -123,6 +127,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "flow",
 				"tags": [
 					"Control"
 				],
@@ -134,7 +139,6 @@
 				"piid": 5,
 				"friendlyName": "Fan-Horizontal Swing",
 				"channel": "HorizontalSwing",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -142,6 +146,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -182,6 +190,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "incline",
+				"tags": [
+					"Setpoint"
+				],
 				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\",\"150\"\u003d\"150\"]`"
 			},
 			{
@@ -220,6 +232,10 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
 				]
 			},
 			{
@@ -238,8 +254,7 @@
 				],
 				"category": "light",
 				"tags": [
-					"Control",
-					"Light"
+					"Control"
 				]
 			},
 			{
@@ -263,7 +278,6 @@
 				"piid": 11,
 				"friendlyName": "Fan-Speed Level",
 				"channel": "SpeedLevel",
-				"channelType": "miot_uint8",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 1,
