@@ -201,7 +201,7 @@ public class CommonCommands {
 
         InetAddress serverAddr;
         try {
-            serverAddr = InetAddress.getByName(sSoulissNodeIPAddressOnLAN);
+            serverAddr = InetAddress.getByName("151.76.13.51");
             DatagramPacket packet = new DatagramPacket(merd, merd.length, serverAddr,
                     SoulissUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
             SendDispatcherRunnable.put(socket, packet, this.logger);

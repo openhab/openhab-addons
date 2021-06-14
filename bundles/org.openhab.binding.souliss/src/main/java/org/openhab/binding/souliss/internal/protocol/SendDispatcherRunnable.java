@@ -51,6 +51,9 @@ public class SendDispatcherRunnable implements Runnable {
     static int iDelay = 0; // equal to 0 if array is empty
     static int sendMinDelay = 0;
 
+    @Nullable
+    DatagramSocket sender;
+
     public SendDispatcherRunnable(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         @Nullable
@@ -144,9 +147,16 @@ public class SendDispatcherRunnable implements Runnable {
 
     @Override
     public void run() {
-        DatagramSocket sender = null;
 
         try {
+            sender = new DatagramSocket(null);
+            DatagramChannel channel = DatagramChannel.open();
+            sender = channel.socket();
+            sender.setReuseAddress(true);
+
+            InetSocketAddress sa = new InetSocketAddress(230);
+            sender.bind(sa);
+
             if (checkTime()) {
                 SocketAndPacketStruct sp = pop();
                 if (sp != null) {
@@ -156,12 +166,8 @@ public class SendDispatcherRunnable implements Runnable {
                             packetsList.size());
                     // @Nullable
                     // DatagramSocket localSocket = sp.socket;
-                    DatagramChannel channel = DatagramChannel.open();
-                    sender = channel.socket();
-                    sender.setReuseAddress(true);
 
-                    InetSocketAddress sa = new InetSocketAddress(23000);
-                    sender.bind(sa);
+                    // DatagramSocket ds = this.gwHandler.getUdpSocket();
                     sender.send(sp.packet);
 
                 }

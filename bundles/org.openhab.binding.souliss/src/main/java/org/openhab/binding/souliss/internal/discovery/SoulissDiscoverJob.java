@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
-import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
-import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
+import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
+import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +84,7 @@ public class SoulissDiscoverJob implements Runnable {
             SoulissGatewayHandler gw = (SoulissGatewayHandler) t.getHandler();
             if (gw != null) {
                 logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
-                soulissCommands.sendDBStructFrame(gw.getSenderSocket(), gw.ipAddressOnLAN, gw.nodeIndex, gw.userIndex);
+                soulissCommands.sendDBStructFrame(gw.getUdpSocket(), gw.ipAddressOnLAN, gw.nodeIndex, gw.userIndex);
             } else {
                 logger.debug("Gateway null - Skipped");
             }

@@ -198,7 +198,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         if (bridge != null) {
             SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (soulissgwHandler != null) {
-                return soulissgwHandler.getSenderSocket();
+                return soulissgwHandler.getUdpSocket();
             }
         }
         return null;

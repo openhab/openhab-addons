@@ -71,7 +71,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 socket.setReuseAddress(true);
                 socket.setBroadcast(true);
 
-                InetSocketAddress sa = new InetSocketAddress(23000);
+                InetSocketAddress sa = new InetSocketAddress(230);
                 socket.bind(sa);
 
                 byte[] buf = new byte[200];
