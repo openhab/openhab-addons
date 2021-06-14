@@ -174,7 +174,7 @@ This binding currently supports following channel types:
 | rainrate        | Number        | Rain fall rate in millimeters per hour.                                            |
 | raintotal       | Number        | Total rain in millimeters.                                                         |
 | rawmessage      | String        | Hexadecimal representation of the raw RFXCOM msg incl. header and payload          |
-| rawpayload      | String        | Hexadecimal representation of payload RFXCOM messages                              |
+| rawpayload      | String        | Hexadecimal representation of the payload of RFXCOM messages                       |
 | setpoint        | Number        | Requested temperature.                                                             |
 | shutter         | Rollershutter | Shutter/blind channel.                                                             |
 | status          | String        | Status channel.                                                                    |
@@ -229,6 +229,7 @@ This binding currently supports the following things / message types:
 *   [lighting5 - RFXCOM Lighting5 Actuator](#lighting5---rfxcom-lighting5-actuator)
 *   [lighting6 - RFXCOM Lighting6 Actuator](#lighting6---rfxcom-lighting6-actuator)
 *   [rain - RFXCOM Rain Sensor](#rain---rfxcom-rain-sensor)
+*   [raw - RFXCOM Raw Messages](#raw---rfxcom-raw-messages)
 *   [rfxsensor - RFXCOM rfxsensor](#rfxsensor)
 *   [rfy - RFXCOM Rfy Actuator](#rfy---rfxcom-rfy-actuator)
 *   [security1 - RFXCOM Security1 Sensor](#security1---rfxcom-security1-sensor)
@@ -883,6 +884,31 @@ A Rain device
         *   RAIN5 - WS2300
         *   RAIN6 - La Crosse TX5
         *   RAIN9 - TFA 30.3233.1
+
+### raw - RFXCOM Raw Messages
+
+Raw messages.
+
+#### Channels
+
+| Name       | Channel Type              | Item Type | Remarks     |
+|------------|---------------------------|-----------|-------------|
+| rawMessage | [rawmessage](#channels)   | String    |             |
+| rawPayload | [rawpayload](#channels)   | String    |             |
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Raw items cannot provide a device ID, so this value is always RAW.
+
+*   subType - Sub Type
+    *   Specifies message sub type.
+
+        *   RAW_PACKET1
+        *   RAW_PACKET2
+        *   RAW_PACKET3
+        *   RAW_PACKET4
+
 
 ### rfxsensor - RFXCOM RFXSensor 
 
