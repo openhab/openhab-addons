@@ -135,6 +135,7 @@ Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone 
 - the `standAlone` config parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
+
 - the `where` config parameter (`OpenWebNet Device Address`):
   - example sensor `5` of external zone `00` --> `where="500"`
   - example: slave sensor `3` of zone 2 --> `where="302"`
@@ -168,10 +169,10 @@ Systems with Central Units (4 or 99 zones) are not fully supported yet.
 | `heatingValves`               | `bus_thermo_zone`                    | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3` | R | Y |
 | `conditioningValves`          | `bus_thermo_zone`                    | String             | The zone conditioning valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`  | R | Y |
 
-
 ### Notes on channels
 
 ####  `shutter` position
+
 For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN.
 It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically: in this case a *UP >> DOWN >> Position%* cycle will be performed automatically the first time a Percent command is sent to the shutter.
 
