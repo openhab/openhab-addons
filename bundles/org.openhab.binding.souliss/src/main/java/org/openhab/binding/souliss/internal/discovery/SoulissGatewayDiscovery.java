@@ -25,8 +25,8 @@ import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
-import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
 import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
+import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -129,8 +129,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
-            if (this.bridgeHandler.getSenderSocket() != null) {
-                soulissDiscoverRunnableClass = new SoulissDiscoverJob(this.bridgeHandler.getSenderSocket(), this);
+            if (this.bridgeHandler.getUdpSocket() != null) {
+                soulissDiscoverRunnableClass = new SoulissDiscoverJob(this.bridgeHandler.getUdpSocket(), this);
             }
         }
         // create discovery job, that run discovery class

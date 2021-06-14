@@ -22,13 +22,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissUDPConstants;
 import org.openhab.binding.souliss.internal.SoulissDatagramSocketFactory;
+import org.openhab.binding.souliss.internal.SoulissUDPConstants;
 import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
-import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
+import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SendDispatcherRunnable;
-import org.openhab.binding.souliss.internal.protocol.CommonCommands;
+import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -56,7 +56,11 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     // public @Nullable DatagramSocket datagramSocketDefaultPort;
     // Our own thread pool for the long-running listener job
 
-    private @Nullable DatagramSocket senderSocket;
+    private @Nullable DatagramSocket udpSocket;
+
+    public @Nullable DatagramSocket getUdpSocket() {
+        return udpSocket;
+    }
 
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
@@ -185,16 +189,12 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         // START SERVER ON DEFAULT PORT - Used for topics
         if (udpServerDefaultPortRunnableClass == null) {
             logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
-            // datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort,
-            // this.logger);
-            // datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort,
-            // this.logger);
+            udpSocket = SoulissDatagramSocketFactory.getSocketDatagram(24000, this.logger);
 
             // check if there is a socket
             // no.. create new and set to soulissparms class
             // new runnable udp listener
-            udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(
-                    NetworkParameters.discoverResult);
+            udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(NetworkParameters.discoverResult);
             // exec thread
             // scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
             // SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
@@ -202,7 +202,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
 
             // sender socket init
-            this.senderSocket = SoulissDatagramSocketFactory.getSocketDatagram(logger);
+            // this.socket = SoulissDatagramSocketFactory.getSocketDatagram(logger);
 
             // START JOB PING
 
@@ -246,7 +246,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        soulissCommands.sendTypicalRequestFrame(this.senderSocket, ipAddressOnLAN, nodeIndex, userIndex, nodes);
+        soulissCommands.sendTypicalRequestFrame(this.udpSocket, ipAddressOnLAN, nodeIndex, userIndex, nodes);
     }
 
     public void setNodes(int nodes) {
@@ -307,7 +307,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void sendSubscription() {
         if (ipAddressOnLAN.length() > 0) {
-            soulissCommands.sendSUBSCRIPTIONframe(this.senderSocket, ipAddressOnLAN, nodeIndex, userIndex, getNodes());
+            soulissCommands.sendSUBSCRIPTIONframe(this.udpSocket, ipAddressOnLAN, nodeIndex, userIndex, getNodes());
         }
         logger.debug("Sent subscription packet");
     }
@@ -323,10 +323,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     // public @Nullable DatagramSocket getReceiverSocket() {
     // return receiverSocket;
     // }
-
-    public @Nullable DatagramSocket getSenderSocket() {
-        return senderSocket;
-    }
 
     public void setDiscoveryService(SoulissGatewayDiscovery discoveryService) {
         this.discoveryService = discoveryService;
