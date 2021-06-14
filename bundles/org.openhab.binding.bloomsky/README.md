@@ -1,41 +1,64 @@
 # BloomSky Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+![Bloomsky](./doc/bloomsky_sky_weather_station.svg)
 
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This is a "read-only" binding that uses the [BloomSky API](http://weatherlution.com/bloomsky-api/?doing_wp_cron=1615241711.4678061008453369140625) to retrieve the sensor data from the **SKY1, SKY2** and **STORM** personal weather stations.  If you are not familiar with these weather stations, you can find out more at the [BloomSky Home Page](https://www.bloomsky.com/).
+
+If you already have this weather station, you will need to obtain an API authorization key at the [BloomSky Device Owners Portal](https://dashboard.bloomsky.com/) using the [Developers Link](https://dashboard.bloomsky.com/user#api) found on the left side of the screen after you log in.
+
+The BloomSky weather station posts updates every 5 minutes (this is not configurable and a drawback if you want real-time updates).  Subsequently, this binding's refresh rate cannot be set for less than 5 minutes (300 seconds). 
+
+The [API Documentation](./doc/v1.6BloomskyDeviceOwnerAPIDocumentationforBusinessOwners.pdf) is bare-bones; it was last updated in 2017 along with the addition of the STORM weather station.  While the WeatherUnderground/WeatherCompany does have an integration with personal weather stations including BloomSky, it is limited in the observations it provides and does not provide a way to retrieve the images or videos that are captured by the BloomSky weather station.  
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The following thing types are supported:
+
+| Thing | ID | Description |
+| --- | --- | --- |
+|![Account](./doc/location_details.png) | bridge | Represents the connection to the Owners BloomSky device account through the API key for accessing the weather station details and sensor readings |
+| ![BloomSky SKY1/SKY2](./doc/bloomsky_sky2_weather_station.svg) | sky | Provides station details for a specific location, weather sensor data and camera images captured for the most recent 5-minute interval by the _SKY1 or SKY2_ weather station:  <br> &#9726; City, Street Name <br> &#9726; Device Id, Name <br> &#9726; Latitude, Longitude, Altitude <br> &#9726; Number of Followers <br> &#9726; UTC, Daylight Savings Time <br> &#9726; Device Type (SKY1 or SKY2)  <br> &#9726; Temperature, Humidity, Barometric Pressure  <br> &#9726; UV Index, Luminance <br> &#9726; Battery Voltage, Rain, Night Indicator <br> &#9726; Image - URL & Time Stamp <br> &#9726; Video List Fahrenheit, Celsius   |
+|![BloomSKY STORM](./doc/bloomsky_storm_weather_station.svg) | storm | Provides weather sensor data captured for the most recent 5-minute interval by the _STORM_ weather station: <br> &#9726; UV Index <br> &#9726; Wind Speed, Direction, Gust <br> &#9726; Rain Rate, Daily & Rolling 24-Hour Accumulation |
+
+&#9888; **Note:** BloomSky _Indoor_ devices were discontinued October-2015; they are not supported by this binding.  
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Once a Bridge thing is configured with a valid API key, the binding will auto-discover the _SKY1/SKY2_ and optionally (if you have one installed), a _STORM_ weather station thing associated with that account.  The binding will use the openHAB locale setting to determine if readings are to be returned in imperial or metric units.
+
+If the system location (locale) is changed, the background discovery updates the configuration of the device sensor data automatically.
+
+If a bridge is correctly configured, the discovered thing will automatically go online.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the BloomSky Binding
-#
-# Default secret key for the pairing of the BloomSky Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+The binding has no configuration options, all configuration is done at Thing and Channel levels.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The **bridge** thing only has one configuration parameter:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter | Parameter ID | Required/Optional |Description |
+| :---: | :--- | --- | --- |
+| API Key | apiKey | Required | API key to access the BloomSky personal weather station API service.  Obtain this key from the BloomSky Device Owners page. |
+| _Refresh Interval_ | refreshInterval | Optional | _This may be a better place to hold the refresh timing to keep it simple_ |
+
+The **sky** thing only has one configuration parameter:
+
+| Parameter | Parameter ID | Required/Optional |Description |
+| :---: | :--- | --- | --- |
+| Refresh Interval | refreshInterval | Required | Refresh interval in minutes.  Frequency the weather data is retrieved from the personal weather station. The default value is 30 minutes and the minimum is 5 minutes. |
+
+
+The **storm** thing only has one configuration parameter:
+
+| Parameter | Parameter ID | Required/Optional |Description |
+| :---: | :--- | --- | --- |
+| Refresh Interval | refreshInterval | Required | Refresh interval in minutes.  Frequency the weather data is updated. The default value is 30 minutes and the minimum is 5 minutes. |
+
+
+The refresh request for either the sky or storm things will also pull the other devices information.  It is recommended to keep the refresh interval the same for both things.
 
 ## Channels
 
