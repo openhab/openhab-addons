@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 public class NetatmoDeviceHandler extends BaseBridgeHandler implements ConnectionListener {
     private final Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
 
-    private final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
+    protected final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
     private final List<AbstractChannelHelper> channelHelpers;
     private final Optional<MeasuresChannelHelper> measureChannelHelper;
 
@@ -99,12 +99,8 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         logger.debug("initializing handler for thing {}", getThing().getUID());
 
         config = getThing().getConfiguration().as(NetatmoThingConfiguration.class);
-        ModuleType supportedThingType = ModuleType.valueOf(getThing().getThingTypeUID().getId());
-        NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
-        if (bridgeHandler != null) {
-            bridgeHandler.registerDataListener(config.id, this);
-        }
 
+        ModuleType supportedThingType = ModuleType.valueOf(getThing().getThingTypeUID().getId());
         refreshStrategy = supportedThingType.getRefreshPeriod() == RefreshPolicy.AUTO ? new RefreshStrategy(-1)
                 : supportedThingType.getRefreshPeriod() == RefreshPolicy.CONFIG
                         ? new RefreshStrategy(config.refreshInterval)
@@ -112,14 +108,16 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
 
         measureChannelHelper
                 .ifPresent(channelHelper -> channelHelper.collectMeasuredChannels(getThing().getChannels()));
-        apiBridge.addConnectionListener(this);
+
+        getBridgeHandler().ifPresentOrElse(handler -> handler.registerDataListener(config.id, this),
+                () -> apiBridge.addConnectionListener(this));
     }
 
     @Override
     public void notifyStatusChange(ConnectionStatus connectionStatus) {
         if (connectionStatus.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
-            scheduleRefreshJob();
+            scheduler.schedule(() -> scheduleRefreshJob(), 5, TimeUnit.SECONDS);
         } else {
             freeRefreshJob();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, connectionStatus.getMessage());
@@ -131,10 +129,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         logger.debug("Running dispose()");
         freeRefreshJob();
         apiBridge.removeConnectionListener(this);
-        NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterDataListener(this);
-        }
+        getBridgeHandler().ifPresent(handler -> handler.unregisterDataListener(this));
     }
 
     private void freeRefreshJob() {
@@ -223,10 +218,8 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
             measureChannelHelper.ifPresent(measureHelper -> {
                 measureHelper.collectMeasuredChannels(getThing().getChannels());
                 if (refreshStrategy == null) {
-                    NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
-                    if (bridgeHandler != null) {
-                        bridgeHandler.callGetMeasurements(config.id, measureHelper.getMeasures());
-                    }
+                    getBridgeHandler()
+                            .ifPresent(handler -> handler.callGetMeasurements(config.id, measureHelper.getMeasures()));
                 } else {
                     callGetMeasurements(null, measureHelper.getMeasures());
                 }
@@ -326,11 +319,23 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         return UnDefType.UNDEF;
     }
 
-    protected @Nullable NetatmoDeviceHandler getBridgeHandler(@Nullable Bridge bridge) {
-        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            return (NetatmoDeviceHandler) bridge.getHandler();
-        }
-        return null;
+    private Optional<NetatmoDeviceHandler> getBridgeHandler() {
+        Bridge bridge = getBridge();
+        return Optional.ofNullable(bridge != null && bridge.getHandler() instanceof NetatmoDeviceHandler /*
+                                                                                                          * && bridge.
+                                                                                                          * getStatus()
+                                                                                                          * ==
+                                                                                                          * ThingStatus.
+                                                                                                          * ONLINE
+                                                                                                          */
+                ? (NetatmoDeviceHandler) bridge.getHandler()
+                : null);
+    }
+
+    protected Optional<HomeHandler> getHomeHandler() {
+        return Optional.ofNullable(
+                getBridgeHandler().filter(h -> h instanceof HomeHandler).map(HomeHandler.class::cast).orElse(null));
+        // return Optional.ofNullable(bridge instanceof HomeHandler ? (HomeHandler) bridge : null);
     }
 
     protected Map<String, NetatmoDeviceHandler> getDataListeners() {

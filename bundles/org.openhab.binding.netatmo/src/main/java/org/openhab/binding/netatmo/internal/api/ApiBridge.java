@@ -42,11 +42,9 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
-import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMap;
 import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMapDeserializer;
-import org.openhab.binding.netatmo.internal.deserialization.NAHomeDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMapDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
@@ -110,7 +108,6 @@ public class ApiBridge {
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
                 .registerTypeAdapter(NADynamicObjectMap.class, new NADynamicObjectMapDeserializer())
-                .registerTypeAdapter(NAHome.class, new NAHomeDeserializer())
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {

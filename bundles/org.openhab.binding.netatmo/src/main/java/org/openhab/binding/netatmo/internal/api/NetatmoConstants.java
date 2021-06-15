@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -203,23 +204,54 @@ public class NetatmoConstants {
         UNKNOWN;
     }
 
-    static final Set<Scope> WEATHER_SCOPES = Set.of(Scope.READ_STATION);
+    // static final Set<Scope> WEATHER_SCOPES = ;
+
     private static final Set<Scope> SMOKE_SCOPES = Set.of(Scope.READ_SMOKEDETECTOR);
-    static final Set<Scope> AIR_QUALITY_SCOPES = Set.of(Scope.READ_HOMECOACH);
-    static final Set<Scope> ENERGY_SCOPES = Set.of(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT);
+
+    // static final Set<Scope> AIR_CARE_SCOPES = ;
+
+    // static final Set<Scope> ENERGY_SCOPES = ;
+
     private static final Set<Scope> WELCOME_SCOPES = Set.of(Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA);
+
     private static final Set<Scope> DOORBELL_SCOPES = Set.of(Scope.READ_DOORBELL, Scope.WRITE_DOORBELL,
             Scope.ACCESS_DOORBELL);
+
     private static final Set<Scope> PRESENCE_SCOPES = Set.of(Scope.READ_PRESENCE, Scope.ACCESS_PRESENCE);
-    static final Set<Scope> SECURITY_SCOPES = Stream.of(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES)
-            .flatMap(Set::stream).collect(Collectors.toSet());
-    static final Set<Scope> ALL_SCOPES = Stream.of(WEATHER_SCOPES, ENERGY_SCOPES, SECURITY_SCOPES, AIR_QUALITY_SCOPES)
-            .flatMap(Set::stream).collect(Collectors.toSet());
+
+    // static final Set<Scope> SECURITY_SCOPES = ;
+
+    // static final Set<Scope> ALL_SCOPES = Stream.of(WEATHER_SCOPES, ENERGY_SCOPES, SECURITY_SCOPES, AIR_CARE_SCOPES)
+    // .flatMap(Set::stream).collect(Collectors.toSet());
 
     // Radio signal quality thresholds
     static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp : bad, average, good, full
     static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
     public static final int[] NO_RADIO = new int[0]; // No radio => no levels
+
+    public static enum FeatureArea {
+        AIR_CARE(Set.of(Scope.READ_HOMECOACH)),
+        WEATHER(Set.of(Scope.READ_STATION)),
+        ENERGY(Set.of(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT)),
+        SECURITY(Stream.of(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES).flatMap(Set::stream)
+                .collect(Collectors.toSet())),
+        NONE(Set.of());
+
+        private Set<Scope> scopes;
+
+        FeatureArea(Set<Scope> scopes) {
+            this.scopes = scopes;
+        }
+
+        public Set<Scope> getScopes() {
+            return scopes;
+        }
+
+        public static Set<Scope> allScopes() {
+            return EnumSet.allOf(FeatureArea.class).stream().map(FeatureArea::getScopes).flatMap(Set::stream)
+                    .collect(Collectors.toSet());
+        }
+    }
 
     // Thermostat definitions
     public static enum SetpointMode {

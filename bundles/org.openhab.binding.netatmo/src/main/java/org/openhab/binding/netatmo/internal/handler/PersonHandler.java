@@ -26,8 +26,9 @@ import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NASnapshot;
-import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -59,21 +60,23 @@ public class PersonHandler extends NetatmoEventDeviceHandler {
         super.initialize();
         getHomeHandler().ifPresent(h -> {
             List<NAHomeEvent> lastEvents = h.getLastEventOf(config.id);
-            if (lastEvents.size() > 0) {
+            if (!lastEvents.isEmpty()) {
                 setEvent(lastEvents.get(0));
             }
         });
     }
 
-    @Override
-    public void setNAThing(NAThing naModule) {
-        super.setNAThing(naModule);
-        getHomeHandler().ifPresent(h -> {
-            descriptionProvider.setStateOptions(
-                    new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID),
-                    h.getCameras().values().stream().map(p -> new StateOption(p.getId(), p.getName()))
-                            .collect(Collectors.toList()));
-        });
+    // @Override
+    // public void setNAThing(NAThing naModule) {
+    // super.setNAThing(naModule);
+    // getHomeHandler().ifPresent(h -> {
+    // });
+    // }
+
+    public void setCameras(NAObjectMap<NAWelcome> cameras) {
+        descriptionProvider.setStateOptions(
+                new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID), cameras.values()
+                        .stream().map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
     }
 
     @Override

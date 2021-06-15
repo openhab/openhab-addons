@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
@@ -23,6 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 
 /**
@@ -40,13 +40,18 @@ public abstract class RestManager {
     private final Set<Scope> requiredScopes;
     protected final ApiBridge apiHandler;
 
-    public RestManager(ApiBridge apiHandler) {
-        this(apiHandler, Collections.emptySet());
-    }
+    // public RestManager(ApiBridge apiHandler) {
+    // this(apiHandler, Collections.emptySet());
+    // }
 
-    public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes) {
+    // public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes) {
+    // this.apiHandler = apiHandler;
+    // this.requiredScopes = requiredScopes;
+    // }
+
+    public RestManager(ApiBridge apiHandler, FeatureArea features) {
         this.apiHandler = apiHandler;
-        this.requiredScopes = requiredScopes;
+        this.requiredScopes = features.getScopes();
     }
 
     public <T extends ApiResponse<?>> T get(UriBuilder uriBuilder, Class<T> classOfT) throws NetatmoException {

@@ -20,6 +20,7 @@ import java.util.Collection;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 
 /**
@@ -31,7 +32,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 @NonNullByDefault
 public class SecurityApi extends RestManager {
     public SecurityApi(ApiBridge apiClient) { // NO_UCD (unused code)
-        super(apiClient, NetatmoConstants.SECURITY_SCOPES);
+        super(apiClient, FeatureArea.SECURITY);
     }
 
     // /**

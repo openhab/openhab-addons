@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -84,11 +83,6 @@ public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
             servlet.unregisterDataListener(this);
         }
         super.dispose();
-    }
-
-    protected Optional<HomeSecurityHandler> getHomeHandler() {
-        NetatmoDeviceHandler handler = super.getBridgeHandler(getBridge());
-        return Optional.ofNullable((HomeSecurityHandler) handler);
     }
 
     public abstract void setEvent(NAEvent event);

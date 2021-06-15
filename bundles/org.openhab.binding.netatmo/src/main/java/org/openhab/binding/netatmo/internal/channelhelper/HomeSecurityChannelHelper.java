@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeSecurity;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
@@ -53,8 +52,8 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
     @Override
     public void setNewData(NAThing naThing) {
         super.setNewData(naThing);
-        if (naThing instanceof NAHomeSecurity) {
-            NAHomeSecurity home = (NAHomeSecurity) naThing;
+        if (naThing instanceof NAHome) {
+            NAHome home = (NAHome) naThing;
 
             logger.debug("welcome home '{}' counts Persons at home", home.getId());
 

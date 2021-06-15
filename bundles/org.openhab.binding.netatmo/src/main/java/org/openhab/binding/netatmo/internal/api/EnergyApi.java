@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
@@ -34,7 +35,7 @@ public class EnergyApi extends RestManager {
     }
 
     public EnergyApi(ApiBridge apiClient) {
-        super(apiClient, NetatmoConstants.ENERGY_SCOPES);
+        super(apiClient, FeatureArea.ENERGY);
     }
 
     public NAHome getHomeStatus(String homeId) throws NetatmoException {

@@ -21,7 +21,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeEnergy;
+import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermProgram;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NATimeTableItem;
@@ -47,7 +47,7 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        NAHomeEnergy localThing = (NAHomeEnergy) naThing;
+        NAHome localThing = (NAHome) naThing;
         NAThermProgram currentProgram = localThing.getActiveProgram();
         SetpointMode thermMode = localThing.getThermMode();
         switch (channelId) {

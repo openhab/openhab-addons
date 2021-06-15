@@ -18,6 +18,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.WeatherApi.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 
@@ -30,7 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 public class AircareApi extends RestManager {
 
     public AircareApi(ApiBridge apiClient) {
-        super(apiClient, NetatmoConstants.AIR_QUALITY_SCOPES);
+        super(apiClient, FeatureArea.AIR_CARE);
     }
 
     /**

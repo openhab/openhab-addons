@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlug;
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
@@ -54,16 +55,12 @@ import org.openhab.binding.netatmo.internal.channelhelper.Therm1PropsChannelHelp
 import org.openhab.binding.netatmo.internal.channelhelper.WindChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.CameraHandler;
 import org.openhab.binding.netatmo.internal.handler.HomeCoachHandler;
-import org.openhab.binding.netatmo.internal.handler.HomeEnergyHandler;
-import org.openhab.binding.netatmo.internal.handler.HomeSecurityHandler;
+import org.openhab.binding.netatmo.internal.handler.HomeHandler;
 import org.openhab.binding.netatmo.internal.handler.MainHandler;
-import org.openhab.binding.netatmo.internal.handler.NRVHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.handler.PersonHandler;
-import org.openhab.binding.netatmo.internal.handler.PlugHandler;
 import org.openhab.binding.netatmo.internal.handler.PresenceHandler;
 import org.openhab.binding.netatmo.internal.handler.RoomHandler;
-import org.openhab.binding.netatmo.internal.handler.Therm1Handler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -74,45 +71,49 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public enum ModuleType {
-    UNKNOWN(null, RefreshPolicy.NONE, null, List.of(), List.of(), List.of(), null),
-
+    UNKNOWN(null, RefreshPolicy.NONE, FeatureArea.NONE, null, List.of(), List.of(), List.of(), null),
+    NAHome(HomeHandler.class, RefreshPolicy.CONFIG, FeatureArea.NONE, null, List.of(),
+            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class),
+            List.of(GROUP_HOME_SECURITY, GROUP_HOME_ENERGY), null),
     // Security Group
-    NAHomeSecurity(HomeSecurityHandler.class, RefreshPolicy.CONFIG, null, List.of(),
-            List.of(HomeSecurityChannelHelper.class), List.of(GROUP_HOME_SECURITY), null),
-    NAPerson(PersonHandler.class, RefreshPolicy.PARENT, NAHomeSecurity, List.of(), List.of(PersonChannelHelper.class),
-            List.of(GROUP_PERSON, GROUP_PERSON_EVENT), null),
-    NACamera(CameraHandler.class, RefreshPolicy.PARENT, NAHomeSecurity, List.of(), List.of(CameraChannelHelper.class),
-            List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT), NAWelcome.class),
-    NOC(PresenceHandler.class, RefreshPolicy.PARENT, NAHomeSecurity, List.of(),
+    // NAHomeSecurity(HomeSecurityHandler.class, RefreshPolicy.CONFIG, null, List.of(),
+    // List.of(HomeSecurityChannelHelper.class), List.of(GROUP_HOME_SECURITY), null),
+    NAPerson(PersonHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(),
+            List.of(PersonChannelHelper.class), List.of(GROUP_PERSON, GROUP_PERSON_EVENT), null),
+    NACamera(CameraHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(),
+            List.of(CameraChannelHelper.class), List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT), NAWelcome.class),
+    NOC(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(),
             List.of(CameraChannelHelper.class, PresenceChannelHelper.class),
             List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT, GROUP_PRESENCE), NAWelcome.class),
 
     // Weather group
-    NAHomeWeather(null, RefreshPolicy.NONE, null, List.of(), List.of(), List.of(), null),
-    NAMain(MainHandler.class, RefreshPolicy.AUTO, null, List.of("measure", "measure-timestamp"),
+    // NAHomeWeather(null, RefreshPolicy.NONE, null, List.of(), List.of(), List.of(), null),
+    NAMain(MainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null, List.of("measure", "measure-timestamp"),
             List.of(PressureChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureChannelHelper.class, Co2ChannelHelper.class, DeviceChannelHelper.class,
                     MeasuresChannelHelper.class, LocationChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_NOISE, GROUP_PRESSURE, GROUP_DEVICE,
                     GROUP_SIGNAL, GROUP_LOCATION),
             NAThing.class),
-    NAModule1(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, List.of("measure", "measure-timestamp"),
+    NAModule1(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+            List.of("measure", "measure-timestamp"),
             List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, BatteryHelper.class,
                     MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
-    NAModule2(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, List.of(),
+    NAModule2(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of(),
             List.of(WindChannelHelper.class, BatteryHelper.class), List.of(GROUP_WIND, GROUP_SIGNAL, GROUP_BATTERY),
             NAModule.class),
-    NAModule3(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, List.of("sum-rain"),
+    NAModule3(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of("sum-rain"),
             List.of(RainChannelHelper.class, BatteryHelper.class, MeasuresChannelHelper.class),
             List.of(GROUP_RAIN, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
-    NAModule4(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, List.of("measure", "measure-timestamp"),
+    NAModule4(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+            List.of("measure", "measure-timestamp"),
             List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class,
                     BatteryHelper.class, MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
 
     // Aircare group
-    NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, null, List.of("measure", "measure-timestamp"),
+    NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, FeatureArea.AIR_CARE, null, List.of("measure", "measure-timestamp"),
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, PressureChannelHelper.class,
                     TemperatureChannelHelper.class, Co2ChannelHelper.class, HomeCoachChannelHelper.class,
                     DeviceChannelHelper.class, MeasuresChannelHelper.class),
@@ -121,19 +122,20 @@ public enum ModuleType {
             NAThing.class),
 
     // Energy group
-    NAHomeEnergy(HomeEnergyHandler.class, RefreshPolicy.AUTO, null, List.of(), List.of(HomeEnergyChannelHelper.class),
-            List.of(GROUP_HOME_ENERGY), null),
-    NAPlug(PlugHandler.class, RefreshPolicy.CONFIG, NAHomeEnergy, List.of(),
+    // NAHomeEnergy(HomeEnergyHandler.class, RefreshPolicy.AUTO, null, List.of(),
+    // List.of(HomeEnergyChannelHelper.class),
+    // List.of(GROUP_HOME_ENERGY), null),
+    NAPlug(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(),
             List.of(PlugChannelHelper.class, DeviceChannelHelper.class),
             List.of(GROUP_PLUG, GROUP_DEVICE, GROUP_SIGNAL), NAPlug.class),
-    NATherm1(Therm1Handler.class, RefreshPolicy.CONFIG, NAPlug, List.of(),
+    NATherm1(NetatmoDeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(),
             List.of(Therm1PropsChannelHelper.class, BatteryHelper.class),
             List.of(GROUP_TH_PROPERTIES, GROUP_SIGNAL, GROUP_ENERGY_BATTERY), NAThermostat.class),
-    NARoom(RoomHandler.class, RefreshPolicy.CONFIG, NAHomeEnergy, List.of(),
+    NARoom(RoomHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(),
             List.of(RoomChannelHelper.class, RoomTempChannelHelper.class, RoomSetpointChannelHelper.class),
             List.of(GROUP_ROOM_PROPERTIES, GROUP_TH_SETPOINT, GROUP_ROOM_TEMPERATURE), NARoom.class),
-    NRV(NRVHandler.class, RefreshPolicy.CONFIG, NAHomeEnergy, List.of(), List.of(BatteryHelper.class),
-            List.of(GROUP_ENERGY_BATTERY, GROUP_SIGNAL), NAPlug.class),
+    NRV(NetatmoDeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(),
+            List.of(BatteryHelper.class), List.of(GROUP_ENERGY_BATTERY, GROUP_SIGNAL), NAPlug.class),
     // Left for future implementation
     // NACamDoorTag : self explaining
     // NSD : smoke detector
@@ -152,23 +154,25 @@ public enum ModuleType {
 
     private final List<String> groups;
     private final List<String> extensions;
+    private final @Nullable ModuleType bridgeType;
     private final RefreshPolicy refreshPeriod;
-    private final @Nullable ThingTypeUID bridgeThingType;
     private final @Nullable Class<?> handlerClass;
     private final @Nullable Class<?> dto;
     private final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, this.name());
     private final List<Class<? extends AbstractChannelHelper>> channelHelpers;
+    private final FeatureArea features;
 
-    ModuleType(@Nullable Class<?> handlerClass, RefreshPolicy refreshPeriod, @Nullable ModuleType bridge,
-            List<String> extensions, List<Class<? extends AbstractChannelHelper>> setOfHelpers, List<String> groups,
-            @Nullable Class<?> dto) {
+    ModuleType(@Nullable Class<?> handlerClass, RefreshPolicy refreshPeriod, FeatureArea features,
+            @Nullable ModuleType bridge, List<String> extensions,
+            List<Class<? extends AbstractChannelHelper>> setOfHelpers, List<String> groups, @Nullable Class<?> dto) {
         this.handlerClass = handlerClass;
         this.groups = groups;
         this.refreshPeriod = refreshPeriod;
         this.extensions = extensions;
         this.channelHelpers = setOfHelpers;
-        this.bridgeThingType = bridge != null ? bridge.thingTypeUID : null;
+        this.bridgeType = bridge;
         this.dto = dto;
+        this.features = features;
     }
 
     public boolean matches(ThingTypeUID otherThingTypeUID) {
@@ -194,7 +198,13 @@ public enum ModuleType {
     }
 
     public @Nullable ThingTypeUID getBridgeThingType() {
-        return bridgeThingType;
+        ModuleType localBridge = bridgeType;
+        return localBridge == null || localBridge == ModuleType.UNKNOWN ? null : localBridge.thingTypeUID;
+    }
+
+    public ModuleType getBridgeType() {
+        ModuleType localBridge = bridgeType;
+        return localBridge == null ? ModuleType.UNKNOWN : localBridge;
     }
 
     public @Nullable Constructor<?> getHandlerConstructor() throws NoSuchMethodException, SecurityException {
@@ -219,4 +229,9 @@ public enum ModuleType {
     public static Boolean isModuleTypeImplemented(String name) {
         return Stream.of(values()).anyMatch(mt -> mt.toString().equals(name));
     }
+
+    public FeatureArea getFeatures() {
+        return features;
+    }
+
 }

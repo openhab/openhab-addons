@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.ALL_SCOPES;
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
 import java.util.HashMap;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class AuthenticationApi extends RestManager {
-    private static final String SCOPES = ALL_SCOPES.stream().map(s -> s.name().toLowerCase())
+    private static final String ALL_SCOPES = FeatureArea.allScopes().stream().map(s -> s.name().toLowerCase())
             .collect(Collectors.joining(" "));
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
@@ -46,7 +46,7 @@ class AuthenticationApi extends RestManager {
 
     AuthenticationApi(ApiBridge apiClient, OAuthFactory oAuthFactory, NetatmoBindingConfiguration configuration,
             ScheduledExecutorService scheduler) {
-        super(apiClient);
+        super(apiClient, FeatureArea.NONE);
         this.configuration = configuration;
         this.scheduler = scheduler;
     }
@@ -55,7 +55,7 @@ class AuthenticationApi extends RestManager {
         Map<String, @Nullable String> payload = new HashMap<>();
         payload.put(PASSWORD, configuration.password);
         payload.put(USERNAME, configuration.username);
-        payload.put(SCOPE, SCOPES);
+        payload.put(SCOPE, ALL_SCOPES);
         requestToken(getPayload(PASSWORD, payload));
     }
 
