@@ -25,12 +25,14 @@ import org.openhab.binding.solarwatt.internal.SolarwattBindingConstants;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.type.*;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
+import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.util.UnitUtils;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A {@link ChannelTypeProvider} that creates {@link ChannelType}s according to
@@ -43,8 +45,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = { ChannelTypeProvider.class, SolarwattChannelTypeProvider.class })
 public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
-
-    private final Logger logger = LoggerFactory.getLogger(SolarwattChannelTypeProvider.class);
 
     private final Map<String, ChannelType> channelMap = new ConcurrentHashMap<>();
 
@@ -70,7 +70,6 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
     public ChannelTypeUID assertChannelType(SolarwattChannel solarwattChannel) {
         ChannelType existingChannel = this.channelMap.get(solarwattChannel.getChannelName());
         if (existingChannel == null) {
-            this.logger.trace("Creating ChannelType for TagName {}", solarwattChannel.getChannelName());
             ChannelType createdChannel = this.getChannelType(solarwattChannel);
             this.channelMap.put(solarwattChannel.getChannelName(), createdChannel);
             return createdChannel.getUID();

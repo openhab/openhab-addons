@@ -44,17 +44,12 @@ public class EnergyManagerCollection {
 
                 if (device != null) {
                     this.devices.put(device.getGuid(), device);
-                } else {
-                    this.logger.debug("Don't know how to handle device {}: {}", deviceDTO.getGuid(),
-                            deviceDTO.getDeviceModel());
                 }
             } catch (Exception ex) {
                 this.logger.error("Error setting up initial device {}: {}", deviceDTO.getGuid(),
                         deviceDTO.getDeviceModel(), ex);
             }
         });
-
-        this.logger.trace("found devices {}", this.devices);
     }
 
     public Map<String, Device> getDevices() {

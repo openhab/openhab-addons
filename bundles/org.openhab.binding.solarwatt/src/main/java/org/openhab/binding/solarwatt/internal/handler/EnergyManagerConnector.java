@@ -66,11 +66,7 @@ public class EnergyManagerConnector {
 
             if (!hostname.isEmpty()) {
                 this.energyManagerURI = URI.create(PROTOCOL + hostname + WIZARD_DEVICES_URL);
-            } else {
-                this.logger.debug("Hostname is empty");
             }
-        } else {
-            this.logger.debug("Config is empty");
         }
     }
 
@@ -107,7 +103,6 @@ public class EnergyManagerConnector {
     private EnergyManagerCollection getEnergyManagerCollectionFromJson(ContentResponse response)
             throws SolarwattConnectionException {
         final String content = response.getContentAsString();
-        this.logger.trace("Energymanager returned with status {}: {} bytes", response.getStatus(), content.length());
 
         try {
             if (response.getStatus() == HttpStatus.OK_200) {
@@ -117,11 +112,10 @@ public class EnergyManagerConnector {
                 }
                 return EnergyManagerDevicesFactory.getEnergyManagerCollection(energyManagerDTO);
             } else {
-                this.logger.debug("Energymanager returned an error: {}", response.getReason());
                 throw new SolarwattConnectionException(response.getReason());
             }
         } catch (final JsonSyntaxException e) {
-            this.logger.debug("Error parsing json: {}", content, e);
+            this.logger.warn("Error parsing json: {}", content, e);
             throw new SolarwattConnectionException(e.getMessage());
         }
     }

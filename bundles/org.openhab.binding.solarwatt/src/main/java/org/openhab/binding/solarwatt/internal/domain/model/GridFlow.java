@@ -76,7 +76,7 @@ public class GridFlow extends Device {
             this.configInverterControl = gson.fromJson(rawConfigInverterControl, GridFlow.ConfigInverterControl.class);
         } catch (Exception ex) {
             this.configInverterControl = null;
-            this.logger.debug("Could not read ConfigInverterControl", ex);
+            this.logger.warn("Could not read ConfigInverterControl", ex);
         }
 
         GridFlow.ConfigInverterControl localConfigInverterControl = this.configInverterControl;

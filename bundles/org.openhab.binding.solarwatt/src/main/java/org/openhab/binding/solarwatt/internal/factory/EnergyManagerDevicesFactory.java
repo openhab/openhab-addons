@@ -17,7 +17,26 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.domain.EnergyManagerCollection;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
 import org.openhab.binding.solarwatt.internal.domain.dto.EnergyManagerDTO;
-import org.openhab.binding.solarwatt.internal.domain.model.*;
+import org.openhab.binding.solarwatt.internal.domain.model.BatteryConverter;
+import org.openhab.binding.solarwatt.internal.domain.model.Device;
+import org.openhab.binding.solarwatt.internal.domain.model.EVStation;
+import org.openhab.binding.solarwatt.internal.domain.model.EnergyManager;
+import org.openhab.binding.solarwatt.internal.domain.model.Forecast;
+import org.openhab.binding.solarwatt.internal.domain.model.GridFlow;
+import org.openhab.binding.solarwatt.internal.domain.model.Inverter;
+import org.openhab.binding.solarwatt.internal.domain.model.KebaEv;
+import org.openhab.binding.solarwatt.internal.domain.model.Location;
+import org.openhab.binding.solarwatt.internal.domain.model.MyReserve;
+import org.openhab.binding.solarwatt.internal.domain.model.MyReserveInverter;
+import org.openhab.binding.solarwatt.internal.domain.model.MyReservePowerMeter;
+import org.openhab.binding.solarwatt.internal.domain.model.PVPlant;
+import org.openhab.binding.solarwatt.internal.domain.model.PowerMeter;
+import org.openhab.binding.solarwatt.internal.domain.model.ProfileApp;
+import org.openhab.binding.solarwatt.internal.domain.model.S0Counter;
+import org.openhab.binding.solarwatt.internal.domain.model.ScheduleApp;
+import org.openhab.binding.solarwatt.internal.domain.model.SimpleSwitcher;
+import org.openhab.binding.solarwatt.internal.domain.model.SmartEnergyManagement;
+import org.openhab.binding.solarwatt.internal.domain.model.SunSpecInverter;
 
 /**
  * Factory to produce concrete instances which match the device structure returned by the energy manager.

@@ -23,7 +23,11 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * DTO class for the devices returned by the energy manager.
@@ -145,8 +149,9 @@ public class DeviceDTO {
             for (String key : parts) {
 
                 key = key.trim();
-                if (key.isEmpty())
+                if (key.isEmpty()) {
                     continue;
+                }
 
                 if (result == null) {
                     result = JsonNull.INSTANCE;
@@ -158,8 +163,9 @@ public class DeviceDTO {
                 } else if (result.isJsonArray()) {
                     int ix = Integer.valueOf(key) - 1;
                     result = ((JsonArray) result).get(ix);
-                } else
+                } else {
                     break;
+                }
             }
 
             return result;
@@ -199,7 +205,7 @@ public class DeviceDTO {
                 state = UnDefType.NULL;
             }
         } catch (Exception ex) {
-            this.logger.debug("failed getting state for {}", channelName, ex);
+            this.logger.warn("failed getting state for {}", channelName, ex);
         }
 
         return state;

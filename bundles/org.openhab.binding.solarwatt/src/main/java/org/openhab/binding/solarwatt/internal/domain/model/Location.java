@@ -137,7 +137,7 @@ public class Location extends Device {
             this.devicesMap = gson.fromJson(rawDevicesMap, IdDevicesMap.class);
         } catch (Exception ex) {
             this.devicesMap = null;
-            this.logger.debug("Could not read IdDevicesMap", ex);
+            this.logger.warn("Could not read IdDevicesMap", ex);
         }
     }
 

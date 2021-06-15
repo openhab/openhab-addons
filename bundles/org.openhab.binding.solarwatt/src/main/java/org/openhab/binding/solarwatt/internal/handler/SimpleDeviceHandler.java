@@ -27,7 +27,11 @@ import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.model.Device;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -115,7 +119,6 @@ public class SimpleDeviceHandler extends BaseThingHandler {
 
         if (device != null) {
             device.getSolarwattChannelSet().forEach((channelTag, solarwattChannel) -> {
-                this.logger.trace("{}: {}", this.getThing().getUID(), solarwattChannel.getChannelName());
                 this.assertChannel(solarwattChannel);
             });
         }

@@ -29,8 +29,11 @@ The attached devices and supported channels are discovered automatically.
 | Property | Default | Required | Description |
 |----------|---------|----------|-------------|
 | hostname | None | Yes | hostname or ip-address of the energy manager. |
+| refresh | 30 | No | Refresh interval in seconds for the current values of the channels. |
+| rescan | 5 | No | Rescan interval in minutes for the redetection of channgels and things. |
 
 ### Child Things
+
 | Property | Default | Required | Description |
 |----------|---------|----------|-------------|
 | guid | None | Yes | Guid of the device as used by the solarwatt energymanager. |

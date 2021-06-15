@@ -15,7 +15,11 @@ package org.openhab.binding.solarwatt.internal.handler;
 import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
@@ -96,7 +100,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     public EnergyManagerHandler(final Bridge thing, final SolarwattChannelTypeProvider channelTypeProvider,
             final HttpClient httpClient) {
         super(thing);
-        this.logger.debug("{} created", this);
         this.connector = new EnergyManagerConnector(httpClient);
         this.channelTypeProvider = channelTypeProvider;
     }
@@ -123,8 +126,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        this.logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
-
         if (command instanceof RefreshType) {
             this.updateChannels();
         }
@@ -176,12 +177,9 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * @param device which provides the channels
      */
     protected void initDeviceChannels(Device device) {
-        this.logger.debug("{}: initDeviceChannels for device {}", this, this.getThing().getUID());
-
         this.assertChannel(new SolarwattChannel(CHANNEL_DATETIME.getChannelName(), "time"));
 
         device.getSolarwattChannelSet().forEach((channelTag, solarwattChannel) -> {
-            this.logger.trace("{}: {}", this.getThing().getUID(), solarwattChannel.getChannelName());
             this.assertChannel(solarwattChannel);
         });
     }
@@ -231,7 +229,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      */
     @Override
     public void initialize() {
-        this.logger.debug("{} initialize", this);
         SolarwattBridgeConfiguration localConfig = this.getConfigAs(SolarwattBridgeConfiguration.class);
         this.initRefresh(localConfig);
         this.initDeviceCache(localConfig);
@@ -273,7 +270,6 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     private synchronized void initRefresh(SolarwattBridgeConfiguration localConfig) {
         ScheduledFuture<?> localRefreshJob = this.refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-            this.logger.trace("Setting Energymanager refreshInterval to '{}' seconds", localConfig.refresh);
             this.refreshJob = this.scheduler.scheduleWithFixedDelay(this.refreshRunnable, 0, localConfig.refresh,
                     TimeUnit.SECONDS);
         }

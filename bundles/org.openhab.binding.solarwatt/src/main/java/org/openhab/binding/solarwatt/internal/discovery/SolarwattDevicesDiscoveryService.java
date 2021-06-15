@@ -21,7 +21,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solarwatt.internal.domain.model.*;
+import org.openhab.binding.solarwatt.internal.domain.model.BatteryConverter;
+import org.openhab.binding.solarwatt.internal.domain.model.Device;
+import org.openhab.binding.solarwatt.internal.domain.model.EVStation;
+import org.openhab.binding.solarwatt.internal.domain.model.GridFlow;
+import org.openhab.binding.solarwatt.internal.domain.model.Inverter;
+import org.openhab.binding.solarwatt.internal.domain.model.Location;
+import org.openhab.binding.solarwatt.internal.domain.model.PVPlant;
+import org.openhab.binding.solarwatt.internal.domain.model.PowerMeter;
 import org.openhab.binding.solarwatt.internal.handler.EnergyManagerHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -87,11 +94,8 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
     protected void startBackgroundDiscovery() {
         ScheduledFuture<?> localScanningJob = this.scanningJob;
         if (localScanningJob == null || localScanningJob.isCancelled()) {
-            this.logger.trace("scanningJob created");
             this.scanningJob = this.scheduler.scheduleWithFixedDelay(this.scanningRunnable, 5, 5 * 60,
                     TimeUnit.SECONDS);
-        } else {
-            this.logger.trace("scanningJob active");
         }
     }
 
@@ -133,9 +137,7 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
                 this.logger.warn("No device data for solarwatt devices in discovery for energy manager {}.", bridgeUID);
             } else {
                 devices.forEach((key, entry) -> {
-                    if (entry instanceof EnergyManager) {
-                        // energy manager is our bridge
-                    } else if (entry instanceof BatteryConverter) {
+                    if (entry instanceof BatteryConverter) {
                         this.discover(bridgeUID, entry, THING_TYPE_BATTERYCONVERTER);
                     } else if (entry instanceof Inverter) {
                         this.discover(bridgeUID, entry, THING_TYPE_INVERTER);
@@ -149,11 +151,6 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
                         this.discover(bridgeUID, entry, THING_TYPE_PVPLANT);
                     } else if (entry instanceof GridFlow) {
                         this.discover(bridgeUID, entry, THING_TYPE_GRIDFLOW);
-                    } else if (entry instanceof SmartEnergyManagement || entry instanceof SimpleSwitcher) {
-                        // deprecated class
-                        this.logger.trace("Ignoring deprecated device {}", entry.getClass().getName());
-                    } else {
-                        this.logger.debug("Ignoring device {}", entry.getClass().getName());
                     }
                 });
             }

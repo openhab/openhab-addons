@@ -30,8 +30,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The concrete device handlers process the location specific commands.
@@ -40,7 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LocationHandler extends SimpleDeviceHandler {
-    private final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
 
     public LocationHandler(Thing thing, SolarwattChannelTypeProvider channelTypeProvider) {
         super(thing, channelTypeProvider);
@@ -116,8 +113,6 @@ public class LocationHandler extends SimpleDeviceHandler {
                 } else if (outerDevice instanceof EVStation) {
                     powerOuter.add(outerDevice.getBigDecimalFromChannel(CHANNEL_POWER_AC_IN.getChannelName()));
                     workOuter.add(outerDevice.getBigDecimalFromChannel(CHANNEL_WORK_AC_IN.getChannelName()));
-                } else {
-                    this.logger.debug("Unknown type of outer consumer {}", outerDevice);
                 }
             });
 
