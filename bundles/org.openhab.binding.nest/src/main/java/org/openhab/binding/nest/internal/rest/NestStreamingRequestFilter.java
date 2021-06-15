@@ -37,9 +37,6 @@ public class NestStreamingRequestFilter implements ClientRequestFilter {
 
     private final ConcurrentHashMap<String, String> accessTokens = new ConcurrentHashMap<>();
 
-    public NestStreamingRequestFilter() {
-    }
-
     @Override
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
