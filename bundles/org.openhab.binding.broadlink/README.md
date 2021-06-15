@@ -33,7 +33,7 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | ipAddress           | String  |               | Sets the IP address of the Broadlink device                                       |
 | staticIp            | Boolean | true          | Enabled if your broadlink device has a Static IP set                              |
 | port                | Integer | 80            | The network port for the device                                                   |
-| mac                 | String  |               | The devices MAC Address                                                           |
+| macAddress          | String  |               | The device's MAC Address                                                           |
 | pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
 | retries             | Integer | 1             | The number of re-attempts for a request before the device is considered `OFFLINE` |
 | ignoreFailedUpdates | Boolean | false         | Is enabled, failed status requests put the device `OFFLINE`                       |

@@ -22,6 +22,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -80,7 +81,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         Map<String, Object> properties = new HashMap<String, Object>(6);
         properties.put("ipAddress", remoteAddress);
         properties.put("port", Integer.valueOf(remotePort));
-        properties.put("mac", remoteMAC);
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, remoteMAC);
         properties.put("deviceType", modelAsHexString);
         ThingUID thingUID = new ThingUID(thingTypeUID, remoteMAC.replace(":", "-"));
         if (logger.isDebugEnabled()) {
@@ -99,7 +100,8 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         String deviceHumanName = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.get(thingTypeUID);
         String label = deviceHumanName + " [" + remoteAddress + "]";
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withLabel(label).build();
+                .withProperties(properties).withLabel(label).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
+                .build();
 
         thingDiscovered(result);
     }

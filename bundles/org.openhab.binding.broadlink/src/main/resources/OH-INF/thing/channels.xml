@@ -35,6 +35,11 @@
 		<label>Socket Power</label>
 		<category>PowerOutlet</category>
 	</channel-type>
+	<channel-type id="nightLight">
+		<item-type>Switch</item-type>
+		<label>Night Light</label>
+		<category>Lightbulb</category>
+	</channel-type>
 	<channel-type id="powerConsumption" advanced="true">
 		<item-type>Number</item-type>
 		<label>Power Consumption</label>

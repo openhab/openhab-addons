@@ -10,7 +10,7 @@
 		<channels>
 			<channel id="command" typeId="command"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
 	<thing-type id="rm2">
@@ -20,7 +20,7 @@
 			<channel id="command" typeId="command"/>
 			<channel id="temperature" typeId="temperature"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
 	<thing-type id="rm3">
@@ -29,7 +29,7 @@
 		<channels>
 			<channel id="command" typeId="command"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
 	<thing-type id="rm3q">
@@ -38,7 +38,7 @@
 		<channels>
 			<channel id="command" typeId="command"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
 	<thing-type id="rm4">
@@ -49,7 +49,7 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
 </thing:thing-descriptions>
