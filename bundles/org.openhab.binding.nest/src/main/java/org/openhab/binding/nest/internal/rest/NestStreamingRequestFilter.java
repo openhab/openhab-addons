@@ -13,6 +13,7 @@
 package org.openhab.binding.nest.internal.rest;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -21,6 +22,8 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Inserts Authorization and Cache-Control headers for requests on the streaming REST API.
@@ -30,18 +33,29 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class NestStreamingRequestFilter implements ClientRequestFilter {
-    private final String accessToken;
+    private final Logger logger = LoggerFactory.getLogger(NestStreamingRequestFilter.class);
 
-    public NestStreamingRequestFilter(String accessToken) {
-        this.accessToken = accessToken;
+    private final ConcurrentHashMap<String, String> accessTokens = new ConcurrentHashMap<>();
+
+    public NestStreamingRequestFilter() {
     }
 
     @Override
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-            headers.putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            String accessToken = accessTokens.get(requestContext.getUri().toString());
+            if (accessToken != null) {
+                headers.putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            } else {
+                logger.warn("No access token set! uri={}", requestContext.getUri());
+            }
             headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-cache");
         }
+    }
+
+    public void setAccessToken(String target, String token) {
+        logger.debug("Set access token. target={}, token={}", target, token);
+        accessTokens.put(target, token);
     }
 }

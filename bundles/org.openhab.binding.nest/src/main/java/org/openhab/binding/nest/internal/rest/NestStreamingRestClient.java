@@ -83,8 +83,22 @@ public class NestStreamingRestClient {
     }
 
     private SseEventSource createEventSource() throws FailedResolvingNestUrlException {
-        Client client = clientBuilder.register(new NestStreamingRequestFilter(accessToken)).build();
-        SseEventSource eventSource = eventSourceFactory.newSource(client.target(redirectUrlSupplier.getRedirectUrl()));
+        String target = redirectUrlSupplier.getRedirectUrl();
+
+        Client client;
+        NestStreamingRequestFilter filter;
+        if (clientBuilder.getConfiguration().isRegistered(NestStreamingRequestFilter.class)) {
+            filter = clientBuilder.getConfiguration().getInstances().stream()
+                    .filter(instance -> instance instanceof NestStreamingRequestFilter)
+                    .map(instance -> (NestStreamingRequestFilter) instance).findAny().orElseThrow();
+            client = clientBuilder.build();
+        } else {
+            filter = new NestStreamingRequestFilter();
+            client = clientBuilder.register(filter).build();
+        }
+        filter.setAccessToken(target, accessToken);
+
+        SseEventSource eventSource = eventSourceFactory.newSource(client.target(target));
         eventSource.register(this::onEvent, this::onError);
         return eventSource;
     }
