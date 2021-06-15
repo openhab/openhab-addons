@@ -332,7 +332,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage (ADC)</label>
 		<description>ADC voltage in V</description>
-		<state readOnly="true" pattern="%.0f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorValve">
