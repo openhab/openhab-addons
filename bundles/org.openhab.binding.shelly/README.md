@@ -207,6 +207,7 @@ Every device has a channel group `device` with the following channels:
 |          |internalTemp       |Number  |yes      |Internal device temperature (when provided by the device)                        |
 |          |selfTest           |String  |yes      |Result from device self-test (pending/not_completed/running/completed/unknown)   |
 |          |alarm              |Trigger |yes      |Self-Test result not_completed/completed/running/pending                         |
+|          |supplyVoltage      |Number  |yes      |Shelly 1PM, 1L, 2.5: Supply voltage (fixed or measured depending on device)      |
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kwh of the device (including all meters)              |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kwh of the device (including all meters)           |
@@ -401,12 +402,14 @@ In this case the is no real measurement based on power consumption, but the Shel
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 3EM (thing-type: shellyem3)
@@ -431,7 +434,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
-|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
@@ -439,7 +442,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
-|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter3    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
@@ -447,7 +450,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
-|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 
