@@ -36,7 +36,7 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public enum MiIoQuantiyTypes {
 
-    CELCIUS(SIUnits.CELSIUS, "C"),
+    CELSIUS(SIUnits.CELSIUS, "C", "celcius"),
     FAHRENHEIT(ImperialUnits.FAHRENHEIT),
     KELVIN(Units.KELVIN, "K"),
     PASCAL(SIUnits.PASCAL),
