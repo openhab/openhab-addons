@@ -289,22 +289,19 @@ public class RemoteopenhabRestClient {
         Client client;
         // Avoid a timeout exception after 1 minute by setting the read timeout to 0 (infinite)
         if (trustedCertificate) {
+            HostnameVerifier alwaysValidHostname = new HostnameVerifier() {
+                @Override
+                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
+                    return true;
+                }
+            };
             if (filterRegistered) {
                 client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
-                        .hostnameVerifier(new HostnameVerifier() {
-                            @Override
-                            public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                                return true;
-                            }
-                        }).readTimeout(0, TimeUnit.SECONDS).build();
+                        .hostnameVerifier(alwaysValidHostname).readTimeout(0, TimeUnit.SECONDS).build();
             } else {
                 client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
-                        .hostnameVerifier(new HostnameVerifier() {
-                            @Override
-                            public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                                return true;
-                            }
-                        }).readTimeout(0, TimeUnit.SECONDS).register(filter).build();
+                        .hostnameVerifier(alwaysValidHostname).readTimeout(0, TimeUnit.SECONDS).register(filter)
+                        .build();
             }
         } else {
             if (filterRegistered) {
