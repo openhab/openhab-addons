@@ -55,7 +55,7 @@ public class MiIoInfoApDTO {
     }
 
     public Long getRssi() {
-        if (rssi.isNumber()) {
+        if (rssi != null && rssi.isNumber()) {
             return rssi.getAsLong();
         }
         return null;

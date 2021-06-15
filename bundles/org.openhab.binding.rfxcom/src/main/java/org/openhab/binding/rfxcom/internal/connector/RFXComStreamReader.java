@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.rfxcom.internal.connector;
 
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.MAX_RFXCOM_MESSAGE_LEN;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -30,7 +32,6 @@ import org.slf4j.LoggerFactory;
 public class RFXComStreamReader extends Thread {
     private final Logger logger = LoggerFactory.getLogger(RFXComStreamReader.class);
     private static final int MAX_READ_TIMEOUTS = 4;
-    private static final int MAX_RFXCOM_MESSAGE_LEN = 256;
 
     private RFXComBaseConnector connector;
 

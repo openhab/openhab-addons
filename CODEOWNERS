@@ -26,6 +26,7 @@
 /bundles/org.openhab.binding.autelis/ @digitaldan
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
+/bundles/org.openhab.binding.benqprojector/ @mlobstein
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bloomsky/ @dschoepel
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister

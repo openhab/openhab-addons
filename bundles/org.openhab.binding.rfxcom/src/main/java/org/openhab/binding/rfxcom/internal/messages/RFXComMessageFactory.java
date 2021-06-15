@@ -84,6 +84,7 @@ public class RFXComMessageFactory {
                     put(PacketType.RFXSENSOR, RFXComRFXSensorMessage.class);
                     // put(PacketType.RFXMETER, RFXComRFXMeterMessage.class);
                     // put(PacketType.FS20, RFXComFS20Message.class);
+                    put(PacketType.RAW, RFXComRawMessage.class);
                     // put(PacketType.IO_LINES, RFXComIOLinesMessage.class);
                 }
             });
