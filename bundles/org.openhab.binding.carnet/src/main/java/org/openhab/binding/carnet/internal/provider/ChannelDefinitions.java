@@ -101,13 +101,18 @@ public class ChannelDefinitions {
         public String getLabel() {
             String key = channelName;
             Character index = channelName.charAt(key.length() - 1);
-            if (Character.isDigit(index)) {
+            boolean hasIndex = Character.isDigit(index);
+            if (hasIndex) {
                 key = key.substring(0, key.length() - 1); // ignore channel index for lookup
             }
             String label = getChannelAttribute(resources, key, "label");
             if (label.isEmpty()) {
                 throw new IllegalArgumentException("Missing label in channel definition " + channelName);
             }
+            if (hasIndex) {
+                label = label + index;
+            }
+
             if (groupName.isEmpty()) {
                 return label;
             }
