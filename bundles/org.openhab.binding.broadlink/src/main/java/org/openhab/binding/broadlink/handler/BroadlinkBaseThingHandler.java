@@ -174,7 +174,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             networkTrafficObserver.onBytesSent(payload);
         }
 
-        return BroadlinkProtocol.buildMessage(command, payload, count, thingConfig.getMAC(), deviceId,
+        return BroadlinkProtocol.buildMessage(command, payload, count, thingConfig.getMacAddress(), deviceId,
                 HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_IV), deviceKey, deviceType, logger);
     }
 

@@ -21,6 +21,7 @@ import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.ThingImpl;
@@ -43,7 +44,7 @@ public abstract class AbstractBroadlinkThingHandlerTest {
     protected void configureUnderlyingThing(ThingTypeUID thingTypeUID, String thingId) {
         properties = new HashMap<>();
         properties.put("authorizationKey", "097628343fe99e23765c1513accf8b02");
-        properties.put("mac", "AB:CD:AB:CD:AB:CD");
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, "AB:CD:AB:CD:AB:CD");
         properties.put("iv", "562e17996d093d28ddb3ba695a2e6f58");
         config = new Configuration(properties);
 

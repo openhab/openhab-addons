@@ -10,7 +10,7 @@
 		<channels>
 			<channel id="powerOn" typeId="powerOn"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
 	<thing-type id="sp2">
@@ -18,10 +18,12 @@
 		<description>The Broadlink SP2 is a Wi-Fi smart socket with night light.</description>
 		<channels>
 			<channel id="powerOn" typeId="powerOn"/>
-			<channel id="nightLight" typeId="nightLight"/>
+			<channel id="nightLight" typeId="nightLight">
+				<label>Night Light Power</label>
+			</channel>
 			<channel id="powerConsumption" typeId="powerConsumption"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
 	<thing-type id="sp3">
@@ -29,11 +31,11 @@
 		<description>The Broadlink SP3 is a Wi-Fi smart socket with night light. The SP mini 3 omits the night light.</description>
 		<channels>
 			<channel id="powerOn" typeId="powerOn"/>
-			<channel id="nightLight" typeId="powerOn">
+			<channel id="nightLight" typeId="nightLight">
 				<label>Night Light Power</label>
 			</channel>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
 </thing:thing-descriptions>

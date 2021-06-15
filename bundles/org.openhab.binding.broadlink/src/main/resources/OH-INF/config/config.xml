@@ -28,7 +28,7 @@
 			<required>true</required>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="mac" type="text">
+		<parameter name="macAddress" type="text">
 			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>MAC address of the device.</description>

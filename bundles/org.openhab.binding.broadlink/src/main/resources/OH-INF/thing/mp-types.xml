@@ -21,7 +21,7 @@
 				<label>Socket 4 Power</label>
 			</channel>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
 	<thing-type id="mp1_1k3s2u">
@@ -41,7 +41,7 @@
 				<label>USB Power</label>
 			</channel>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
 	<thing-type id="mp2">
@@ -52,7 +52,7 @@
 			<channel id="powerOn" typeId="powerOn"/>
 			<channel id="powerConsumption" typeId="powerConsumption"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
 </thing:thing-descriptions>

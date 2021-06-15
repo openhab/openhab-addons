@@ -25,7 +25,7 @@ public class BroadlinkDeviceConfiguration {
     private String ipAddress;
     private boolean staticIp;
     private int port;
-    private String mac;
+    private String macAddress;
     private int pollingInterval;
     @Nullable
     private String mapFilename;
@@ -35,7 +35,7 @@ public class BroadlinkDeviceConfiguration {
 
     public BroadlinkDeviceConfiguration() {
         ipAddress = "";
-        mac = "";
+        macAddress = "";
         pollingInterval = 30;
         staticIp = true;
     }
@@ -64,13 +64,13 @@ public class BroadlinkDeviceConfiguration {
         return port;
     }
 
-    public void setMAC(String mac) {
-        this.mac = mac;
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 
-    public byte[] getMAC() {
+    public byte[] getMacAddress() {
         byte configMac[] = new byte[6];
-        String elements[] = mac.split(":");
+        String elements[] = macAddress.split(":");
         for (int i = 0; i < 6; i++) {
             String element = elements[i];
             configMac[i] = (byte) Integer.parseInt(element, 16);
@@ -79,8 +79,8 @@ public class BroadlinkDeviceConfiguration {
         return configMac;
     }
 
-    public String getMACAsString() {
-        return mac;
+    public String getMacAddressAsString() {
+        return macAddress;
     }
 
     public int getPollingInterval() {
@@ -125,7 +125,7 @@ public class BroadlinkDeviceConfiguration {
 
     public String toString() {
         return (new StringBuilder("BroadlinkDeviceConfiguration [ipAddress=")).append(ipAddress).append(" (static: ")
-                .append(staticIp).append("), port=").append(port).append(", mac=").append(mac)
+                .append(staticIp).append("), port=").append(port).append(", macAddress=").append(macAddress)
                 .append(", pollingInterval=").append(pollingInterval).append(", mapFilename=").append(mapFilename)
                 .append("]").toString();
     }

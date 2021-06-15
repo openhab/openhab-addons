@@ -15,7 +15,7 @@
 			<channel id="light" typeId="light"/>
 			<channel id="air" typeId="air"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
 </thing:thing-descriptions>

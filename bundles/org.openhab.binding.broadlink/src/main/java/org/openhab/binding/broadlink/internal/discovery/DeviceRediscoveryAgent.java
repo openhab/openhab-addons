@@ -55,9 +55,9 @@ public class DeviceRediscoveryAgent implements BroadlinkSocketListener, Discover
                 remoteMAC);
 
         // if this thing matches the missingThingConfig, we've found it!
-        logger.trace("Comparing with desired mac: {}", missingThingConfig.getMACAsString());
+        logger.trace("Comparing with desired mac: {}", missingThingConfig.getMacAddressAsString());
 
-        if (missingThingConfig.getMACAsString().equals(remoteMAC)) {
+        if (missingThingConfig.getMacAddressAsString().equals(remoteMAC)) {
             logger.info("We have a match for target MAC {} at {} - reassociate!", remoteMAC, remoteAddress);
             foundDevice = true;
             this.drl.onDeviceRediscovered(remoteAddress);

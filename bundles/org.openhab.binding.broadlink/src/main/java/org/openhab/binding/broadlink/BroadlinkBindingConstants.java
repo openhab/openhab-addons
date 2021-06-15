@@ -70,7 +70,6 @@ public class BroadlinkBindingConstants {
     public static final String CHANNEL_OPEN_ALARM_TIMER = "isOpenAlarmTimer";
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";
-    public static final String MAC = "mac";
     public static final String KEY = "key";
     public static final String ID = "id";
     public static final String POLLING_INTERVAL = "pollingInterval";
