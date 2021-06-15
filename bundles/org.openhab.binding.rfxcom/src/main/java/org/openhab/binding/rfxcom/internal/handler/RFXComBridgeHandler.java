@@ -253,6 +253,15 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                             logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
                                     msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2,
                                     msg.firmwareVersion);
+                            if (msg.firmwareVersion < 1000) {
+                                /**
+                                 * Versions before 1000 had some different behaviour, so lets encourage upgrading.
+                                 * 1001 was released in Feb 2016!
+                                 */
+                                logger.warn(
+                                        "RFXCOM device using outdated firmware (version {}), consider flashing with more a more recent version",
+                                        msg.firmwareVersion);
+                            }
                             thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION,
                                     msg.hardwareVersion1 + "." + msg.hardwareVersion2);
                             thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
